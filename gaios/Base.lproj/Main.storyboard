@@ -23,257 +23,22 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="FMS-m7-CQZ" kind="relationship" relationship="rootViewController" id="aG8-vY-CuS"/>
+                        <segue destination="7q9-ZU-4Z3" kind="relationship" relationship="rootViewController" id="diO-vG-wnI"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b4X-9l-T7t" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4399" y="-163"/>
         </scene>
-        <!--EnableTwoFactorViewController-->
+        <!--SettingsViewController-->
         <scene sceneID="Qyc-qg-HlQ">
             <objects>
-                <viewControllerPlaceholder storyboardName="AuthenticatorFactors" referencedIdentifier="EnableTwoFactorViewController" id="7q9-ZU-4Z3" sceneMemberID="viewController">
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0ZK-KC-nIA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="Settings" referencedIdentifier="SettingsViewController" id="7q9-ZU-4Z3" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="ZP6-9w-fb8"/>
                 </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0ZK-KC-nIA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5481" y="-786"/>
-        </scene>
-        <!--Settings-->
-        <scene sceneID="gTh-es-VKH">
-            <objects>
-                <viewController id="FMS-m7-CQZ" customClass="SettingsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="cKE-NQ-dHi">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="grouped" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="r4T-PV-5vR">
-                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
-                                <color key="backgroundColor" name="customTitaniumDark"/>
-                                <color key="separatorColor" name="customGreyDark"/>
-                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SettingsCell" textLabel="xdo-GG-aBQ" detailTextLabel="NY2-F9-h6S" style="IBUITableViewCellStyleSubtitle" id="snX-RX-Sgz">
-                                        <rect key="frame" x="0.0" y="55.5" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="snX-RX-Sgz" id="TRu-yM-m4w">
-                                            <rect key="frame" x="0.0" y="0.0" width="287" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="xdo-GG-aBQ">
-                                                    <rect key="frame" x="50" y="5" width="33.5" height="20.5"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" id="NY2-F9-h6S">
-                                                    <rect key="frame" x="50" y="25.5" width="44" height="14.5"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" name="customTitaniumDark"/>
-                                        <inset key="separatorInset" minX="50" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                    </tableViewCell>
-                                </prototypes>
-                            </tableView>
-                        </subviews>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <constraints>
-                            <constraint firstItem="r4T-PV-5vR" firstAttribute="leading" secondItem="zSU-RL-XRq" secondAttribute="leading" id="7qO-6y-WcA"/>
-                            <constraint firstItem="zSU-RL-XRq" firstAttribute="bottom" secondItem="r4T-PV-5vR" secondAttribute="bottom" id="8Ps-g5-IDJ"/>
-                            <constraint firstItem="zSU-RL-XRq" firstAttribute="trailing" secondItem="r4T-PV-5vR" secondAttribute="trailing" id="Vq5-Tf-hBI"/>
-                            <constraint firstItem="r4T-PV-5vR" firstAttribute="top" secondItem="zSU-RL-XRq" secondAttribute="top" id="zmr-zn-WBB"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="zSU-RL-XRq"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Settings" id="4Mn-Wu-Qi7">
-                        <barButtonItem key="backBarButtonItem" title=" " id="jwb-Km-VXm"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="tableView" destination="r4T-PV-5vR" id="TLZ-m8-HfM"/>
-                        <segue destination="pU1-Se-Foe" kind="push" identifier="currency" id="ohf-w7-4lz"/>
-                        <segue destination="s51-Si-EAJ" kind="push" identifier="recovery" id="HPP-44-6o5"/>
-                        <segue destination="80V-46-g4d" kind="push" identifier="screenLock" id="xcl-Dg-JhF"/>
-                        <segue destination="jB7-Eo-Pwf" kind="push" identifier="twoFactorLimit" id="3Us-TD-UHA"/>
-                        <segue destination="gJH-oe-tiu" kind="push" identifier="pgp" id="jO3-Sh-DmK"/>
-                        <segue destination="7q9-ZU-4Z3" kind="push" identifier="setupTwoFactor" id="Zwa-S9-tmt"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5392.5" y="-164.78873239436621"/>
-        </scene>
-        <!--Currency-->
-        <scene sceneID="nqH-JI-YBf">
-            <objects>
-                <viewController title="Currency" hidesBottomBarWhenPushed="YES" id="pU1-Se-Foe" customClass="CurrencySelectorViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="FNv-hI-ukq">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="htB-zk-tJ7">
-                                <rect key="frame" x="0.0" y="64" width="320" height="504"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="X23-lN-mQ5" userLabel="Container View">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="125"/>
-                                        <subviews>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Search" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Yow-vt-kAL" customClass="SearchTextField" customModule="gaios" customModuleProvider="target">
-                                                <rect key="frame" x="16" y="20" width="288" height="40"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="40" id="mxD-KG-0g0"/>
-                                                </constraints>
-                                                <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                <textInputTraits key="textInputTraits"/>
-                                                <userDefinedRuntimeAttributes>
-                                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                        <real key="value" value="1"/>
-                                                    </userDefinedRuntimeAttribute>
-                                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                        <color key="value" name="customTitaniumMedium"/>
-                                                    </userDefinedRuntimeAttribute>
-                                                </userDefinedRuntimeAttributes>
-                                            </textField>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="83T-x6-5F9">
-                                                <rect key="frame" x="141" y="70" width="163" height="30"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="30" id="5zX-mX-SHf"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="16"/>
-                                                <color key="textColor" name="customTitaniumLight"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="search" translatesAutoresizingMaskIntoConstraints="NO" id="G9o-TV-lse">
-                                                <rect key="frame" x="25" y="32.5" width="15" height="15"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="15" id="HI6-Ui-6eV"/>
-                                                    <constraint firstAttribute="height" constant="15" id="ZFQ-yD-lUn"/>
-                                                </constraints>
-                                            </imageView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="erf-Ov-BjI">
-                                                <rect key="frame" x="16" y="70" width="75" height="30"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="75" id="2Db-Cf-mzC"/>
-                                                    <constraint firstAttribute="height" constant="30" id="pCp-af-iM5"/>
-                                                </constraints>
-                                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                        <color key="backgroundColor" name="customTitaniumDark"/>
-                                        <constraints>
-                                            <constraint firstItem="erf-Ov-BjI" firstAttribute="leading" secondItem="X23-lN-mQ5" secondAttribute="leading" constant="16" id="1kc-eZ-IBG"/>
-                                            <constraint firstItem="G9o-TV-lse" firstAttribute="top" secondItem="X23-lN-mQ5" secondAttribute="top" constant="32.5" id="8l3-dg-qp7"/>
-                                            <constraint firstItem="Yow-vt-kAL" firstAttribute="leading" secondItem="X23-lN-mQ5" secondAttribute="leading" constant="16" id="ECe-ki-OPg"/>
-                                            <constraint firstItem="83T-x6-5F9" firstAttribute="leading" secondItem="erf-Ov-BjI" secondAttribute="trailing" constant="50" id="FvE-Lz-tbO"/>
-                                            <constraint firstItem="83T-x6-5F9" firstAttribute="top" secondItem="Yow-vt-kAL" secondAttribute="bottom" constant="10" id="KXC-qi-Bte"/>
-                                            <constraint firstItem="Yow-vt-kAL" firstAttribute="top" secondItem="X23-lN-mQ5" secondAttribute="top" constant="20" id="Oa7-vZ-LhS"/>
-                                            <constraint firstAttribute="bottom" secondItem="erf-Ov-BjI" secondAttribute="bottom" constant="25" id="QVR-4g-6d0"/>
-                                            <constraint firstItem="erf-Ov-BjI" firstAttribute="top" secondItem="Yow-vt-kAL" secondAttribute="bottom" constant="10" id="QVz-cQ-mXb"/>
-                                            <constraint firstAttribute="trailing" secondItem="83T-x6-5F9" secondAttribute="trailing" constant="16" id="Zmg-mI-c1I"/>
-                                            <constraint firstAttribute="trailing" secondItem="Yow-vt-kAL" secondAttribute="trailing" constant="16" id="igc-L1-gj8"/>
-                                            <constraint firstItem="G9o-TV-lse" firstAttribute="leading" secondItem="X23-lN-mQ5" secondAttribute="leading" constant="25" id="odm-22-fUK"/>
-                                            <constraint firstItem="Yow-vt-kAL" firstAttribute="centerX" secondItem="X23-lN-mQ5" secondAttribute="centerX" id="ua1-Pf-H8z"/>
-                                            <constraint firstItem="Yow-vt-kAL" firstAttribute="leading" secondItem="X23-lN-mQ5" secondAttribute="leading" constant="16" id="v4J-lF-oef"/>
-                                            <constraint firstAttribute="trailing" secondItem="Yow-vt-kAL" secondAttribute="trailing" constant="16" id="yo1-wV-ezb"/>
-                                        </constraints>
-                                    </view>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="ZW2-ot-cFm">
-                                        <rect key="frame" x="0.0" y="125" width="320" height="379"/>
-                                        <color key="backgroundColor" name="customTitaniumDark"/>
-                                        <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="CurrencyCell" id="pBX-bn-UIZ" customClass="CurrencyCell" customModule="gaios" customModuleProvider="target">
-                                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
-                                                <autoresizingMask key="autoresizingMask"/>
-                                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="pBX-bn-UIZ" id="zdS-xP-Nai">
-                                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="hun-R1-zY9">
-                                                            <rect key="frame" x="16" y="12" width="41" height="20"/>
-                                                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Source" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="6Uu-xP-acl">
-                                                            <rect key="frame" x="253" y="12" width="51" height="20"/>
-                                                            <fontDescription key="fontDescription" type="system" weight="light" pointSize="16"/>
-                                                            <color key="textColor" name="customTitaniumLight"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                    </subviews>
-                                                    <color key="backgroundColor" name="customLowerBar"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="trailing" secondItem="6Uu-xP-acl" secondAttribute="trailing" constant="16" id="9qg-j3-OAy"/>
-                                                        <constraint firstItem="hun-R1-zY9" firstAttribute="leading" secondItem="zdS-xP-Nai" secondAttribute="leading" constant="16" id="doI-8A-8NY"/>
-                                                        <constraint firstItem="6Uu-xP-acl" firstAttribute="centerY" secondItem="zdS-xP-Nai" secondAttribute="centerY" id="lch-cc-Nu4"/>
-                                                        <constraint firstItem="hun-R1-zY9" firstAttribute="centerY" secondItem="zdS-xP-Nai" secondAttribute="centerY" id="m4n-kC-RKT"/>
-                                                    </constraints>
-                                                </tableViewCellContentView>
-                                                <color key="backgroundColor" name="customLowerBar"/>
-                                                <connections>
-                                                    <outlet property="fiat" destination="hun-R1-zY9" id="MuW-nC-Mv4"/>
-                                                    <outlet property="source" destination="6Uu-xP-acl" id="gWo-4E-0Ir"/>
-                                                </connections>
-                                            </tableViewCell>
-                                        </prototypes>
-                                    </tableView>
-                                </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="ZW2-ot-cFm" firstAttribute="leading" secondItem="htB-zk-tJ7" secondAttribute="leading" id="4SV-62-JJf"/>
-                                    <constraint firstAttribute="bottom" secondItem="ZW2-ot-cFm" secondAttribute="bottom" id="7VS-bg-PaV"/>
-                                    <constraint firstAttribute="trailing" secondItem="X23-lN-mQ5" secondAttribute="trailing" id="NX2-Pv-1O9"/>
-                                    <constraint firstAttribute="trailing" secondItem="ZW2-ot-cFm" secondAttribute="trailing" id="Qa4-wG-yUk"/>
-                                    <constraint firstItem="X23-lN-mQ5" firstAttribute="top" secondItem="htB-zk-tJ7" secondAttribute="top" id="h4a-Im-1qM"/>
-                                    <constraint firstItem="X23-lN-mQ5" firstAttribute="leading" secondItem="htB-zk-tJ7" secondAttribute="leading" id="j4G-lu-sgl"/>
-                                    <constraint firstItem="ZW2-ot-cFm" firstAttribute="top" secondItem="X23-lN-mQ5" secondAttribute="bottom" id="uEV-dC-vjV"/>
-                                </constraints>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <constraints>
-                            <constraint firstItem="htB-zk-tJ7" firstAttribute="leading" secondItem="zgX-yG-gIb" secondAttribute="leading" id="01g-My-eEl"/>
-                            <constraint firstItem="zgX-yG-gIb" firstAttribute="bottom" secondItem="htB-zk-tJ7" secondAttribute="bottom" id="Uza-cJ-lmT"/>
-                            <constraint firstItem="zgX-yG-gIb" firstAttribute="trailing" secondItem="htB-zk-tJ7" secondAttribute="trailing" id="loc-r8-sEA"/>
-                            <constraint firstItem="htB-zk-tJ7" firstAttribute="top" secondItem="zgX-yG-gIb" secondAttribute="top" id="swK-W5-2u2"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="zgX-yG-gIb"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="dxw-Su-8EE"/>
-                    <connections>
-                        <outlet property="currentCurrency" destination="erf-Ov-BjI" id="Eub-Az-hb8"/>
-                        <outlet property="currentExchange" destination="83T-x6-5F9" id="HlJ-Wc-uPE"/>
-                        <outlet property="tableView" destination="ZW2-ot-cFm" id="z5F-EH-pBY"/>
-                        <outlet property="textField" destination="Yow-vt-kAL" id="xHX-Va-em0"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="xz8-EI-Koh" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7661" y="-2344"/>
-        </scene>
-        <!--Recovery Words-->
-        <scene sceneID="too-UB-3pK">
-            <objects>
-                <viewController title="Recovery Words" hidesBottomBarWhenPushed="YES" id="s51-Si-EAJ" customClass="ShowMnemonicsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="z1K-lx-Zgs" propertyAccessControl="none">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="3uj-hq-ldh"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="KCD-3O-FGX"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="82h-vN-kvB" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="9844" y="-2342"/>
+            <point key="canvasLocation" x="5304" y="-164"/>
         </scene>
         <!--Watch Only Sign In-->
         <scene sceneID="BsB-J5-Jg9">
@@ -464,25 +229,6 @@
             </objects>
             <point key="canvasLocation" x="5393" y="1705"/>
         </scene>
-        <!--Pgp View Controller-->
-        <scene sceneID="hgQ-Xk-ixS">
-            <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="gJH-oe-tiu" customClass="PgpViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="6lm-Es-qha" customClass="PgpView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="aGY-cM-QaQ"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="sAz-T4-MUJ"/>
-                    <connections>
-                        <outlet property="content" destination="6lm-Es-qha" id="ONa-Lo-xs9"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0q9-e8-sHy" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10918" y="-2344"/>
-        </scene>
         <!--Enter your wallet mnemonic-->
         <scene sceneID="Vxs-Tv-sVV">
             <objects>
@@ -656,6 +402,7 @@
         <!--Wallets-->
         <scene sceneID="0mj-df-92g">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="3Qk-YW-F9t" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <collectionViewController hidesBottomBarWhenPushed="YES" id="SwO-Lj-Khe" customClass="WalletsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" id="SET-Ft-JEm">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
@@ -686,7 +433,6 @@
                         <barButtonItem key="backBarButtonItem" title=" " id="rxn-12-b1G"/>
                     </navigationItem>
                 </collectionViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="3Qk-YW-F9t" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6604" y="-210"/>
         </scene>
@@ -1222,45 +968,6 @@
             </objects>
             <point key="canvasLocation" x="4399" y="-1071"/>
         </scene>
-        <!--Screen Lock-->
-        <scene sceneID="tTF-6p-IPO">
-            <objects>
-                <viewController title="Screen Lock" hidesBottomBarWhenPushed="YES" id="80V-46-g4d" customClass="ScreenLockViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="DVi-ek-Eif" customClass="ScreenLockView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="wyB-Os-oZo"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="K5e-O9-3bg"/>
-                    <connections>
-                        <outlet property="content" destination="DVi-ek-Eif" id="1NH-1L-f2n"/>
-                        <segue destination="kWT-Yh-qgi" kind="push" identifier="restorePin" id="asu-sJ-gO5"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="asr-4L-aPd" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6604" y="-2343"/>
-        </scene>
-        <!--Two-Factor treshold-->
-        <scene sceneID="qcc-Ge-SXC">
-            <objects>
-                <viewController title="Two-Factor treshold" hidesBottomBarWhenPushed="YES" id="jB7-Eo-Pwf" customClass="TwoFactorLimitViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="I00-fi-Ow9" customClass="TwoFactorLimitView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="55a-8O-c7N"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="IfD-bJ-kSd"/>
-                    <connections>
-                        <outlet property="content" destination="I00-fi-Ow9" id="aJC-Gg-CAw"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="WXx-ec-RDp" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="8813" y="-2344"/>
-        </scene>
         <!--Pin Login View Controller-->
         <scene sceneID="jcB-Pl-M1Z">
             <objects>
@@ -1370,13 +1077,9 @@
         <namedColor name="customTitaniumLight">
             <color red="0.42745098039215684" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="customTitaniumMedium">
-            <color red="0.21568627450980393" green="0.24705882352941178" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QEt-l0-XBh"/>
         <segue reference="XPe-Xy-Qrf"/>
-        <segue reference="rZR-ak-fSt"/>
     </inferredMetricsTieBreakers>
 </document>
