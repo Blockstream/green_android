@@ -81,6 +81,7 @@
 		8128612122221347005598D3 /* ScreenLockView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8128612022221347005598D3 /* ScreenLockView.xib */; };
 		8128612722242E86005598D3 /* WatchOnlySignInView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8128612622242E86005598D3 /* WatchOnlySignInView.xib */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
+		81522EB8226F15B3009C297C /* Onboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81522EB7226F15B3009C297C /* Onboarding.storyboard */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		8173F1DD225E2863008E35F7 /* PinSetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8173F1DC225E2863008E35F7 /* PinSetViewController.swift */; };
@@ -220,6 +221,7 @@
 		8128612022221347005598D3 /* ScreenLockView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScreenLockView.xib; sourceTree = "<group>"; };
 		8128612622242E86005598D3 /* WatchOnlySignInView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WatchOnlySignInView.xib; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
+		81522EB7226F15B3009C297C /* Onboarding.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Onboarding.storyboard; sourceTree = "<group>"; };
 		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
 		81640CDF21FB2B4200E7F79C /* FeeButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeeButton.xib; sourceTree = "<group>"; };
 		8173F1DC225E2863008E35F7 /* PinSetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinSetViewController.swift; sourceTree = "<group>"; };
@@ -373,11 +375,11 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
-				818201B0226A1A8100BE12C3 /* SendNavigation */,
 				81073D7A21E8B27700E08F86 /* Localizable.strings */,
 				8187B47E21E9026900235A35 /* InfoPlist.strings */,
 				81A3B53E2244AE8C0091B6BC /* Authentication */,
 				81A3B53F2244AE9A0091B6BC /* Wallet */,
+				818201B0226A1A8100BE12C3 /* SendNavigation */,
 				811EE25B219EBB4500684AD8 /* Onboarding */,
 				811EE25A219EBB1500684AD8 /* Settings */,
 				81A3B5412244B11F0091B6BC /* AuthenticationFactors */,
@@ -435,6 +437,7 @@
 		811EE25B219EBB4500684AD8 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				81522EB7226F15B3009C297C /* Onboarding.storyboard */,
 				81EFB1E0222070E0001CE5AE /* TOSView.xib */,
 				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
 				81EFB1E2222075D3001CE5AE /* InstructionView.xib */,
@@ -450,13 +453,13 @@
 		818201B0226A1A8100BE12C3 /* SendNavigation */ = {
 			isa = PBXGroup;
 			children = (
+				818201B1226A1AD200BE12C3 /* Send.storyboard */,
 				0992F85920DD859200F6AAAB /* SendBtcViewController.swift */,
 				817A6306222461280054FC60 /* SendBtcDetailsView.xib */,
 				0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */,
 				817A6308222461510054FC60 /* SendBTCConfirmationView.xib */,
 				0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */,
 				818201AE2269EFA500BE12C3 /* FeesTableViewController.swift */,
-				818201B1226A1AD200BE12C3 /* Send.storyboard */,
 			);
 			path = SendNavigation;
 			sourceTree = "<group>";
@@ -514,6 +517,7 @@
 		81A3B5412244B11F0091B6BC /* AuthenticationFactors */ = {
 			isa = PBXGroup;
 			children = (
+				818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */,
 				095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */,
 				81286114222212B5005598D3 /* SetEmailView.xib */,
 				092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */,
@@ -521,7 +525,6 @@
 				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
 				81286118222212DB005598D3 /* SetGauthView.xib */,
 				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
-				818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */,
 			);
 			path = AuthenticationFactors;
 			sourceTree = "<group>";
@@ -704,6 +707,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81522EB8226F15B3009C297C /* Onboarding.storyboard in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				81286117222212C7005598D3 /* SetPhoneView.xib in Resources */,

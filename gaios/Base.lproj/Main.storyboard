@@ -341,14 +341,24 @@
                     <connections>
                         <outlet property="content" destination="soW-Tu-XRH" id="K8A-TV-iVr"/>
                         <segue destination="o6l-5o-Ocm" kind="push" identifier="enterMnemonic" id="XPe-Xy-Qrf"/>
-                        <segue destination="K3z-Ps-3aO" kind="push" identifier="createWallet" id="Sx5-0D-cpp"/>
                         <segue destination="0c7-Wv-kP2" kind="push" identifier="watchonly" id="FTn-9c-Qc3"/>
                         <segue destination="rMM-Df-D90" kind="push" identifier="pin" id="QEt-l0-XBh"/>
+                        <segue destination="wmg-xs-3of" kind="push" identifier="createWallet" id="ffv-Da-0EK"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uYz-un-mGa" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1785" y="-210"/>
+        </scene>
+        <!--TOSViewController-->
+        <scene sceneID="XBt-ix-h0F">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Onboarding" referencedIdentifier="TOSViewController" id="wmg-xs-3of" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="WFS-aK-2Ga"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tQN-Cd-3FK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-606" y="-892"/>
         </scene>
         <!--Network Selection Settings-->
         <scene sceneID="lkP-Xf-far">
@@ -372,7 +382,7 @@
         <!--Pin Set View Controller-->
         <scene sceneID="aHV-SQ-KCX">
             <objects>
-                <viewController storyboardIdentifier="PinSetViewController" id="kWT-Yh-qgi" customClass="PinSetViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PinSetViewController" id="kWT-Yh-qgi" customClass="PinSetViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="DDp-YV-A2x" customClass="PinView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -453,94 +463,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3q2-RO-OGg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5393" y="1705"/>
-        </scene>
-        <!--Save your recovery seed-->
-        <scene sceneID="FhL-3S-A4g">
-            <objects>
-                <viewController title="Save your recovery seed" id="L8U-ic-Qn1" customClass="InstructionViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="fTZ-DP-KDY" customClass="InstructionView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="1ca-to-uXX"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Save your recovery seed" id="fuM-E2-xnq">
-                        <barButtonItem key="backBarButtonItem" title=" " id="Zor-IS-vK3"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="content" destination="fTZ-DP-KDY" id="pwD-DH-Nfq"/>
-                        <segue destination="S7A-ZA-0zR" kind="push" identifier="next" id="wlE-4U-wuO"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="sHp-cb-nLm" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="544" y="-1071"/>
-        </scene>
-        <!--Write down the words-->
-        <scene sceneID="bd5-ER-PJh">
-            <objects>
-                <viewController title="Write down the words" id="S7A-ZA-0zR" customClass="CreateWalletViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="bPD-b7-m9p" customClass="CreateWalletView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="zrO-ma-neG"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Write down the words" id="WeO-lh-jbF">
-                        <barButtonItem key="backBarButtonItem" title=" " id="YJh-fO-aqv"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="content" destination="bPD-b7-m9p" id="h9k-Ew-i2c"/>
-                        <segue destination="B3F-nW-PwN" kind="push" identifier="next" id="PSo-EW-XKM"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="CBl-LD-o82" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1419" y="-1071"/>
-        </scene>
-        <!--What is word at position x ?-->
-        <scene sceneID="5yl-Lk-FVY">
-            <objects>
-                <viewController title="What is word at position x ?" id="B3F-nW-PwN" customClass="VerifyMnemonicsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="F3p-31-gqF" customClass="VerifyMnemonicsView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="ysd-3L-I4w"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Insert word" id="bxb-hx-Obc">
-                        <barButtonItem key="backBarButtonItem" title=" " id="TN8-yJ-gxI"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="content" destination="F3p-31-gqF" id="ZrK-U3-EbV"/>
-                        <segue destination="kWT-Yh-qgi" kind="push" identifier="next" id="Kqq-cQ-hZv"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="UHJ-QQ-qOm" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2355" y="-1071"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="Zfd-ub-cQ4">
-            <objects>
-                <viewController id="K3z-Ps-3aO" customClass="TOSViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Fpd-gZ-cfS" customClass="TOSView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="MvP-Nb-9KG"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="wFa-tX-bg8">
-                        <barButtonItem key="backBarButtonItem" title=" " id="iB5-qt-YxX"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="content" destination="Fpd-gZ-cfS" id="cGi-2b-LWG"/>
-                        <segue destination="L8U-ic-Qn1" kind="push" identifier="next" id="J4O-s5-XFN"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="nGd-aF-8Ei" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-422" y="-1071"/>
         </scene>
         <!--Pgp View Controller-->
         <scene sceneID="hgQ-Xk-ixS">
@@ -1453,7 +1375,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Onv-2S-vYj"/>
+        <segue reference="QEt-l0-XBh"/>
         <segue reference="XPe-Xy-Qrf"/>
         <segue reference="rZR-ak-fSt"/>
     </inferredMetricsTieBreakers>

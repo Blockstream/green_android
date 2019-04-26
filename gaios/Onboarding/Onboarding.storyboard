@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="eFI-YZ-ULD">
+    <device id="retina4_0" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="Bly-bQ-95j">
+            <objects>
+                <viewController storyboardIdentifier="TOSViewController" id="S0W-fW-qCs" customClass="TOSViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qs6-xL-m5q" customClass="TOSView" customModule="gaios" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <viewLayoutGuide key="safeArea" id="7J5-Eg-cIc"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="oTI-A3-jsj">
+                        <barButtonItem key="backBarButtonItem" title=" " id="e9c-Yr-wZ1"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="content" destination="qs6-xL-m5q" id="PR3-0w-NGX"/>
+                        <segue destination="Mq7-Jo-Lgk" kind="show" identifier="next" id="9E9-DE-i7j"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fLI-gC-5Ze" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="573.75" y="-1071.1267605633802"/>
+        </scene>
+        <!--Save your recovery seed-->
+        <scene sceneID="M8O-p4-vgQ">
+            <objects>
+                <viewController title="Save your recovery seed" id="Mq7-Jo-Lgk" customClass="InstructionViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="aGX-zL-mrf" customClass="InstructionView" customModule="gaios" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <viewLayoutGuide key="safeArea" id="5Nc-yh-iwB"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Save your recovery seed" id="7QW-bm-IkV">
+                        <barButtonItem key="backBarButtonItem" title=" " id="boF-a0-wDr"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="content" destination="aGX-zL-mrf" id="Fi4-Wc-ktc"/>
+                        <segue destination="qad-06-fQc" kind="show" identifier="next" id="yEy-6C-a2T"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LOf-Sf-s0Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1541.25" y="-1071.1267605633802"/>
+        </scene>
+        <!--Write down the words-->
+        <scene sceneID="ivu-DC-CEu">
+            <objects>
+                <viewController title="Write down the words" id="qad-06-fQc" customClass="CreateWalletViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="hQE-Sf-c7C" customClass="CreateWalletView" customModule="gaios" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <viewLayoutGuide key="safeArea" id="6DZ-2M-6L4"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Write down the words" id="Mjx-8S-eVW">
+                        <barButtonItem key="backBarButtonItem" title=" " id="oxP-Hu-mdL"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="content" destination="hQE-Sf-c7C" id="B3g-E2-G3g"/>
+                        <segue destination="zdF-a8-8gY" kind="show" identifier="next" id="2Pr-mH-PAA"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="v6w-xZ-Zvd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2415" y="-1071.1267605633802"/>
+        </scene>
+        <!--What is word at position x ?-->
+        <scene sceneID="9ae-tN-ccm">
+            <objects>
+                <viewController title="What is word at position x ?" id="zdF-a8-8gY" customClass="VerifyMnemonicsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="l4d-xb-mdo" customClass="VerifyMnemonicsView" customModule="gaios" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <viewLayoutGuide key="safeArea" id="TL3-Ih-wuA"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Insert word" id="wAQ-88-v5j">
+                        <barButtonItem key="backBarButtonItem" title=" " id="0la-jY-5wz"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="content" destination="l4d-xb-mdo" id="zpk-mc-2t6"/>
+                        <segue destination="usf-T1-04Q" kind="show" identifier="next" id="Y7F-tm-6XY"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BPI-5t-S6T" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3352.5" y="-1071.1267605633802"/>
+        </scene>
+        <!--Pin Set View Controller-->
+        <scene sceneID="Yp3-nt-HKD">
+            <objects>
+                <viewController storyboardIdentifier="PinSetViewController" id="usf-T1-04Q" customClass="PinSetViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Xbe-me-8Vz" customClass="PinView" customModule="gaios" customModuleProvider="target">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <viewLayoutGuide key="safeArea" id="6Xo-dm-dlJ"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="vxa-7n-mhI" propertyAccessControl="all">
+                        <barButtonItem key="backBarButtonItem" title=" " id="IkX-2a-gn4"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="content" destination="Xbe-me-8Vz" id="KrJ-lT-YRG"/>
+                        <segue destination="JFP-X4-fjW" kind="show" identifier="next" id="i5O-Id-ejc"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="AO8-hl-snM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4350" y="-1071.1267605633802"/>
+        </scene>
+        <!--EnableTwoFactorViewController-->
+        <scene sceneID="QX1-wV-1EN">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AuthenticatorFactors" referencedIdentifier="EnableTwoFactorViewController" id="JFP-X4-fjW" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="8xW-HE-641"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LQS-SW-CSC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5383.125" y="-1071.1267605633802"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="9uM-Rb-76c">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="eFI-YZ-ULD" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ooY-3K-njj">
+                        <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="S0W-fW-qCs" kind="relationship" relationship="rootViewController" id="p8s-9Y-iTq"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bPT-hz-QdL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-423.75" y="-1071.1267605633802"/>
+        </scene>
+    </scenes>
+    <resources>
+        <namedColor name="customTitaniumDark">
+            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>
