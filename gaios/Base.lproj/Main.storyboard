@@ -30,6 +30,16 @@
             </objects>
             <point key="canvasLocation" x="4399" y="-163"/>
         </scene>
+        <!--EnableTwoFactorViewController-->
+        <scene sceneID="Qyc-qg-HlQ">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AuthenticatorFactors" referencedIdentifier="EnableTwoFactorViewController" id="7q9-ZU-4Z3" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="ZP6-9w-fb8"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0ZK-KC-nIA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5481" y="-786"/>
+        </scene>
         <!--Settings-->
         <scene sceneID="gTh-es-VKH">
             <objects>
@@ -91,8 +101,8 @@
                         <segue destination="s51-Si-EAJ" kind="push" identifier="recovery" id="HPP-44-6o5"/>
                         <segue destination="80V-46-g4d" kind="push" identifier="screenLock" id="xcl-Dg-JhF"/>
                         <segue destination="jB7-Eo-Pwf" kind="push" identifier="twoFactorLimit" id="3Us-TD-UHA"/>
-                        <segue destination="hHc-Dv-gzZ" kind="push" identifier="setupTwoFactor" id="EcC-We-I1f"/>
                         <segue destination="gJH-oe-tiu" kind="push" identifier="pgp" id="jO3-Sh-DmK"/>
+                        <segue destination="7q9-ZU-4Z3" kind="push" identifier="setupTwoFactor" id="Zwa-S9-tmt"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ccd-m7-Tkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -374,7 +384,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="content" destination="DDp-YV-A2x" id="PvV-mF-wPW"/>
-                        <segue destination="hHc-Dv-gzZ" kind="push" identifier="next" id="ON0-2j-3cM"/>
+                        <segue destination="fXn-xX-Vsi" kind="push" identifier="next" id="1TJ-ii-34x"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7V0-pH-DYl" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -438,7 +448,6 @@
                     <connections>
                         <outlet property="tableView" destination="LSB-PT-hak" id="9tm-1r-oS5"/>
                         <segue destination="tlD-ov-u71" kind="push" identifier="system_message" id="iWB-Pl-uU1"/>
-                        <segue destination="hHc-Dv-gzZ" kind="push" identifier="twofactor" id="hq8-em-13M"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3q2-RO-OGg" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -551,63 +560,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0q9-e8-sHy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10918" y="-2344"/>
-        </scene>
-        <!--Google Authenticator code-->
-        <scene sceneID="GTt-jg-L7t">
-            <objects>
-                <viewController title="Google Authenticator code" hidesBottomBarWhenPushed="YES" id="JPY-s7-yK3" customClass="SetGauthViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="wfp-HT-1DG" customClass="SetGauthView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="gwa-Hb-xqQ"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="3Mt-d4-Akq"/>
-                    <connections>
-                        <outlet property="content" destination="wfp-HT-1DG" id="kVh-0i-kvt"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0hh-lv-EsQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="3364" y="-2341"/>
-        </scene>
-        <!--Enter Phone Number-->
-        <scene sceneID="jbi-9W-Urk">
-            <objects>
-                <viewController storyboardIdentifier="phone" title="Enter Phone Number" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="AkI-Xf-xYq" customClass="SetPhoneViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="vs7-FJ-Axx" customClass="SetPhoneView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="Aux-bg-c2m"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="36v-4g-Mee"/>
-                    <connections>
-                        <outlet property="content" destination="vs7-FJ-Axx" id="xKd-YA-VlU"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="LeC-5w-MHG" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="4398.75" y="-2341.9014084507044"/>
-        </scene>
-        <!--Enter your email address-->
-        <scene sceneID="IZJ-eN-QjP">
-            <objects>
-                <viewController title="Enter your email address" hidesBottomBarWhenPushed="YES" id="cU7-Jm-nt6" customClass="SetEmailViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="qVZ-nM-S9I" customClass="SetEmailView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="TBK-g7-1RG"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="fuf-LT-K16"/>
-                    <connections>
-                        <outlet property="content" destination="qVZ-nM-S9I" id="JAX-jV-a5U"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="pdB-Nu-ruw" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5396" y="-2342"/>
         </scene>
         <!--Enter your wallet mnemonic-->
         <scene sceneID="Vxs-Tv-sVV">
@@ -1338,91 +1290,13 @@
             </objects>
             <point key="canvasLocation" x="4399" y="1705"/>
         </scene>
-        <!--Improve Security-->
-        <scene sceneID="5u0-Qt-LQO">
+        <!--EnableTwoFactorViewController-->
+        <scene sceneID="kmr-s1-fpf">
             <objects>
-                <viewController id="hHc-Dv-gzZ" customClass="EnableTwoFactorViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="ELO-vc-9sa">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="KDf-73-rQl">
-                                <rect key="frame" x="16" y="457" width="288" height="42"/>
-                                <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="bGR-Sx-zR1"/>
-                                </constraints>
-                                <state key="normal" title="Go to Wallet">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </state>
-                                <connections>
-                                    <action selector="walletButtonClick:" destination="hHc-Dv-gzZ" eventType="touchUpInside" id="4Oo-7Y-c36"/>
-                                </connections>
-                            </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Bpx-al-4Lo">
-                                <rect key="frame" x="16" y="84" width="288" height="365"/>
-                                <color key="backgroundColor" name="customTitaniumDark"/>
-                                <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
-                                <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" textLabel="uQs-0S-rmB" imageView="k4Q-gz-Z4a" style="IBUITableViewCellStyleDefault" id="wot-dv-GH3">
-                                        <rect key="frame" x="0.0" y="28" width="288" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="wot-dv-GH3" id="xma-ww-2M0">
-                                            <rect key="frame" x="0.0" y="0.0" width="288" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" id="uQs-0S-rmB">
-                                                    <rect key="frame" x="74" y="0.0" width="199" height="44"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" image="2fa_email" id="k4Q-gz-Z4a">
-                                                    <rect key="frame" x="15" y="0.0" width="44" height="44"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                            <real key="value" value="0.0"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
-                                                </imageView>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" name="customTitaniumDark"/>
-                                        <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </tableViewCell>
-                                </prototypes>
-                                <connections>
-                                    <outlet property="dataSource" destination="hHc-Dv-gzZ" id="fyf-8R-5s2"/>
-                                    <outlet property="delegate" destination="hHc-Dv-gzZ" id="7UO-VX-9oO"/>
-                                </connections>
-                            </tableView>
-                        </subviews>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <constraints>
-                            <constraint firstItem="KDf-73-rQl" firstAttribute="top" secondItem="Bpx-al-4Lo" secondAttribute="bottom" constant="8" id="3jZ-jR-Rb1"/>
-                            <constraint firstItem="Qxc-t3-6oR" firstAttribute="trailing" secondItem="Bpx-al-4Lo" secondAttribute="trailing" constant="16" id="Iba-rN-jnZ"/>
-                            <constraint firstItem="Qxc-t3-6oR" firstAttribute="trailing" secondItem="KDf-73-rQl" secondAttribute="trailing" constant="16" id="Mm0-2j-Bco"/>
-                            <constraint firstItem="Qxc-t3-6oR" firstAttribute="bottom" secondItem="KDf-73-rQl" secondAttribute="bottom" constant="20" id="RVp-vM-g8G"/>
-                            <constraint firstItem="Bpx-al-4Lo" firstAttribute="leading" secondItem="Qxc-t3-6oR" secondAttribute="leading" constant="16" id="cVh-04-ZxD"/>
-                            <constraint firstItem="Bpx-al-4Lo" firstAttribute="top" secondItem="Qxc-t3-6oR" secondAttribute="top" constant="20" id="dET-cX-Lil"/>
-                            <constraint firstItem="KDf-73-rQl" firstAttribute="leading" secondItem="Qxc-t3-6oR" secondAttribute="leading" constant="16" id="tzI-Md-Tcv"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="Qxc-t3-6oR"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Improve Security" id="Bha-3V-CYg">
-                        <barButtonItem key="backBarButtonItem" title=" " id="lKx-Ix-ZI7"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="tableview" destination="Bpx-al-4Lo" id="FxA-uF-LXo"/>
-                        <outlet property="walletButton" destination="KDf-73-rQl" id="CYG-o3-2Ed"/>
-                        <segue destination="AkI-Xf-xYq" kind="push" identifier="phone" id="J3A-P7-WsW"/>
-                        <segue destination="JPY-s7-yK3" kind="push" identifier="gauth" id="JAa-xy-EZp"/>
-                        <segue destination="cU7-Jm-nt6" kind="push" identifier="email" id="saa-dB-vMn"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="x9g-88-9Vc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="AuthenticatorFactors" referencedIdentifier="EnableTwoFactorViewController" id="fXn-xX-Vsi" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="oxK-Ke-gS1"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Pbe-ys-wtd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4399" y="-1071"/>
         </scene>
@@ -1580,7 +1454,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Onv-2S-vYj"/>
-        <segue reference="ON0-2j-3cM"/>
         <segue reference="XPe-Xy-Qrf"/>
         <segue reference="rZR-ak-fSt"/>
     </inferredMetricsTieBreakers>

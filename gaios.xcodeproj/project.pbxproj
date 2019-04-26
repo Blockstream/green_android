@@ -89,6 +89,7 @@
 		817A6307222461280054FC60 /* SendBtcDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 817A6306222461280054FC60 /* SendBtcDetailsView.xib */; };
 		817A6309222461510054FC60 /* SendBTCConfirmationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 817A6308222461510054FC60 /* SendBTCConfirmationView.xib */; };
 		818201B2226A1AD200BE12C3 /* Send.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B1226A1AD200BE12C3 /* Send.storyboard */; };
+		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
 		81837788224E6C8D00DC0FB1 /* PgpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81837787224E6C8D00DC0FB1 /* PgpView.xib */; };
 		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
@@ -227,6 +228,7 @@
 		817A6306222461280054FC60 /* SendBtcDetailsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendBtcDetailsView.xib; sourceTree = "<group>"; };
 		817A6308222461510054FC60 /* SendBTCConfirmationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendBTCConfirmationView.xib; sourceTree = "<group>"; };
 		818201B1226A1AD200BE12C3 /* Send.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Send.storyboard; sourceTree = "<group>"; };
+		818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuthenticatorFactors.storyboard; sourceTree = "<group>"; };
 		81837787224E6C8D00DC0FB1 /* PgpView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PgpView.xib; sourceTree = "<group>"; };
 		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
 		8187B47D21E9026900235A35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -519,6 +521,7 @@
 				09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */,
 				81286118222212DB005598D3 /* SetGauthView.xib */,
 				09546B322165EB3A009BABFE /* SetGauthViewController.swift */,
+				818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */,
 			);
 			path = AuthenticationFactors;
 			sourceTree = "<group>";
@@ -704,6 +707,7 @@
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
 				81286117222212C7005598D3 /* SetPhoneView.xib in Resources */,
+				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				81E9B80221C92EF7004D87B6 /* WalletCardView.xib in Resources */,
 				811B963A21F5FC9500DE02CB /* HeaderWalletsCollection.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
