@@ -98,7 +98,9 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
 
     @Override
     public void onBackPressed() {
-        if (mViewPager.getCurrentItem() == 0)
+        if (mViewPager == null)
+            super.onBackPressed();
+        else if (mViewPager.getCurrentItem() == 0)
             super.onBackPressed();
         else
             mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
@@ -107,8 +109,12 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_SELECTION)
-            mViewPager.setCurrentItem(0);
+        if (requestCode == REQUEST_SELECTION) {
+            if (mViewPager == null)
+                super.onBackPressed();
+            else
+                mViewPager.setCurrentItem(0);
+        }
     }
 
     @Override

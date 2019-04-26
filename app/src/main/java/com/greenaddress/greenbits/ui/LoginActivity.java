@@ -62,6 +62,10 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     }
 
     protected void loginWithPin(String pin) {
+        if (mService == null) {
+            shortToast(R.string.id_you_are_not_connected);
+            return;
+        }
         final PinData pinData = PinData.fromPreferenceValues(mService.cfgPin());
         mService.getExecutor().execute(() -> {
             mService.resetSession();

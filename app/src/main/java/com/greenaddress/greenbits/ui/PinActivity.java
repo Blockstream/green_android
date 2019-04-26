@@ -178,7 +178,9 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     @Override
     public void onPinInserted(final String pin) {
-        mService.rescheduleDisconnect();
+        if (mService != null) {
+            mService.rescheduleDisconnect();
+        }
         login(pin);
     }
 
