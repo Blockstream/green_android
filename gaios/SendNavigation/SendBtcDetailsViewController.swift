@@ -172,7 +172,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     @objc func reviewButtonClick(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "confirm", sender: self)
+        self.performSegue(withIdentifier: "next", sender: self)
     }
 
     @objc func currencySwitchClick(_ sender: UIButton) {

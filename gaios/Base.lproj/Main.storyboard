@@ -445,31 +445,12 @@
             </objects>
             <point key="canvasLocation" x="5393" y="1705"/>
         </scene>
-        <!--Send-->
-        <scene sceneID="6to-Y3-nG0">
-            <objects>
-                <viewController title="Send" hidesBottomBarWhenPushed="YES" id="JTf-5L-T5h" customClass="SendBTCConfirmationViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="ukH-nG-ORX" customClass="SendBTCConfirmationView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="4ey-B9-Lvr"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Send" id="h9D-wi-d1p"/>
-                    <connections>
-                        <outlet property="content" destination="ukH-nG-ORX" id="9nH-rG-LNT"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="apl-wB-AIH" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="9844" y="-210"/>
-        </scene>
         <!--Save your recovery seed-->
         <scene sceneID="FhL-3S-A4g">
             <objects>
                 <viewController title="Save your recovery seed" id="L8U-ic-Qn1" customClass="InstructionViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fTZ-DP-KDY" customClass="InstructionView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="1ca-to-uXX"/>
@@ -835,146 +816,15 @@
             </objects>
             <point key="canvasLocation" x="6604" y="-210"/>
         </scene>
-        <!--Send To-->
-        <scene sceneID="Sna-hx-PkN">
+        <!--SendBtcViewController-->
+        <scene sceneID="ieN-Kf-Moh">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="6PL-t1-BTP" customClass="SendBtcViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="80T-QO-J8J">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d8I-AI-FXT">
-                                <rect key="frame" x="0.0" y="169" width="320" height="325"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MJw-os-RAp" customClass="QRCodeReaderView" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="325"/>
-                                        <color key="backgroundColor" name="customTitaniumDark"/>
-                                    </view>
-                                </subviews>
-                                <color key="backgroundColor" name="customTitaniumDark"/>
-                                <constraints>
-                                    <constraint firstItem="MJw-os-RAp" firstAttribute="top" secondItem="d8I-AI-FXT" secondAttribute="top" id="1ur-Zh-2Rv"/>
-                                    <constraint firstItem="MJw-os-RAp" firstAttribute="leading" secondItem="d8I-AI-FXT" secondAttribute="leading" id="2cG-eE-uaE"/>
-                                    <constraint firstItem="MJw-os-RAp" firstAttribute="height" secondItem="d8I-AI-FXT" secondAttribute="height" id="7AK-Rz-SlO"/>
-                                    <constraint firstItem="MJw-os-RAp" firstAttribute="width" secondItem="d8I-AI-FXT" secondAttribute="width" id="9L5-Ze-PDX"/>
-                                </constraints>
-                            </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ch2-Ie-Uc8">
-                                <rect key="frame" x="0.0" y="64" width="320" height="105"/>
-                                <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="Enter the address" textAlignment="natural" minimumFontSize="7" translatesAutoresizingMaskIntoConstraints="NO" id="9pc-Yf-hDI">
-                                        <rect key="frame" x="16" y="14" width="288" height="47"/>
-                                        <color key="backgroundColor" red="0.19215686269999999" green="0.23137254900000001" blue="0.27058823529999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="47" id="7pJ-qC-yhP"/>
-                                        </constraints>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardAppearance="alert" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                <color key="value" red="0.30980392159999998" green="0.34901960780000002" blue="0.38823529410000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                            </userDefinedRuntimeAttribute>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                <real key="value" value="1"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                    </textField>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="OR" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="MLQ-Wi-yRf">
-                                        <rect key="frame" x="148.5" y="76" width="23" height="14"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" name="customTitaniumDark"/>
-                                <constraints>
-                                    <constraint firstItem="MLQ-Wi-yRf" firstAttribute="top" secondItem="9pc-Yf-hDI" secondAttribute="bottom" constant="15" id="Cbm-Dj-j3c"/>
-                                    <constraint firstAttribute="trailing" secondItem="9pc-Yf-hDI" secondAttribute="trailing" constant="16" id="Rdy-EE-twW"/>
-                                    <constraint firstAttribute="height" constant="105" id="a25-tm-0f8"/>
-                                    <constraint firstItem="9pc-Yf-hDI" firstAttribute="leading" secondItem="Ch2-Ie-Uc8" secondAttribute="leading" constant="16" id="fpL-Bp-XcW"/>
-                                    <constraint firstItem="9pc-Yf-hDI" firstAttribute="top" secondItem="Ch2-Ie-Uc8" secondAttribute="top" constant="14" id="wGX-DX-7eS"/>
-                                    <constraint firstItem="MLQ-Wi-yRf" firstAttribute="centerX" secondItem="Ch2-Ie-Uc8" secondAttribute="centerX" id="zDs-vO-yI6"/>
-                                </constraints>
-                            </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ntr-qR-GML">
-                                <rect key="frame" x="0.0" y="494" width="320" height="74"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T6C-vr-Lee">
-                                        <rect key="frame" x="16" y="16" width="288" height="42"/>
-                                        <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="42" id="bV1-K0-KLK"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
-                                        <state key="normal" title="Add amount">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </state>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" name="customLowerBar"/>
-                                <constraints>
-                                    <constraint firstItem="T6C-vr-Lee" firstAttribute="leading" secondItem="Ntr-qR-GML" secondAttribute="leading" constant="16" id="0Fo-KL-1v8"/>
-                                    <constraint firstAttribute="bottom" secondItem="T6C-vr-Lee" secondAttribute="bottom" constant="16" id="EoT-yW-4SP"/>
-                                    <constraint firstAttribute="trailing" secondItem="T6C-vr-Lee" secondAttribute="trailing" constant="16" id="K0m-AD-mOb"/>
-                                    <constraint firstItem="T6C-vr-Lee" firstAttribute="top" secondItem="Ntr-qR-GML" secondAttribute="top" constant="16" id="oHX-9j-kyD"/>
-                                </constraints>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <constraints>
-                            <constraint firstItem="Ntr-qR-GML" firstAttribute="top" secondItem="d8I-AI-FXT" secondAttribute="bottom" id="1kl-8S-45F"/>
-                            <constraint firstItem="Ch2-Ie-Uc8" firstAttribute="trailing" secondItem="pM9-VM-X1j" secondAttribute="trailing" id="3WN-Qu-Fdo"/>
-                            <constraint firstItem="d8I-AI-FXT" firstAttribute="leading" secondItem="pM9-VM-X1j" secondAttribute="leading" id="Cdy-0m-pEr"/>
-                            <constraint firstItem="d8I-AI-FXT" firstAttribute="top" secondItem="Ch2-Ie-Uc8" secondAttribute="bottom" id="Iei-Cu-xzK"/>
-                            <constraint firstItem="d8I-AI-FXT" firstAttribute="top" secondItem="MLQ-Wi-yRf" secondAttribute="bottom" constant="15" id="M86-3l-TXZ"/>
-                            <constraint firstItem="Ch2-Ie-Uc8" firstAttribute="top" secondItem="pM9-VM-X1j" secondAttribute="top" id="PZM-nG-Q4Q"/>
-                            <constraint firstItem="pM9-VM-X1j" firstAttribute="trailing" secondItem="d8I-AI-FXT" secondAttribute="trailing" id="PcU-26-8HD"/>
-                            <constraint firstItem="pM9-VM-X1j" firstAttribute="bottom" secondItem="Ntr-qR-GML" secondAttribute="bottom" id="XnG-ku-Che"/>
-                            <constraint firstItem="Ch2-Ie-Uc8" firstAttribute="leading" secondItem="pM9-VM-X1j" secondAttribute="leading" id="YOg-yl-pdq"/>
-                            <constraint firstItem="Ntr-qR-GML" firstAttribute="leading" secondItem="pM9-VM-X1j" secondAttribute="leading" id="bQS-fh-Sqj"/>
-                            <constraint firstItem="pM9-VM-X1j" firstAttribute="trailing" secondItem="Ntr-qR-GML" secondAttribute="trailing" id="egL-au-xUO"/>
-                            <constraint firstItem="d8I-AI-FXT" firstAttribute="centerX" secondItem="pM9-VM-X1j" secondAttribute="centerX" id="ev2-6o-Q42"/>
-                            <constraint firstItem="d8I-AI-FXT" firstAttribute="width" secondItem="80T-QO-J8J" secondAttribute="width" id="uwV-q4-RCC"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="pM9-VM-X1j"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Send To" id="ye3-D0-s8n">
-                        <barButtonItem key="backBarButtonItem" title=" " id="MQL-LV-Jjo"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="bottomButton" destination="T6C-vr-Lee" id="oQu-K9-LCT"/>
-                        <outlet property="orLabel" destination="MLQ-Wi-yRf" id="D6c-7f-Rhf"/>
-                        <outlet property="qrCodeReaderBackgroundView" destination="MJw-os-RAp" id="kle-mb-aPo"/>
-                        <outlet property="textfield" destination="9pc-Yf-hDI" id="I44-qm-Vdk"/>
-                        <segue destination="cFP-IA-4E2" kind="push" identifier="next" id="Uzj-6y-k3B"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="mrw-ey-SWl" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="Send" referencedIdentifier="SendBtcViewController" id="fBd-sV-72B" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="vv7-KO-SBM"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1jl-gd-baq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7976" y="-210"/>
-        </scene>
-        <!--Send-->
-        <scene sceneID="KX8-8m-ozF">
-            <objects>
-                <viewController title="Send" hidesBottomBarWhenPushed="YES" id="cFP-IA-4E2" customClass="SendBtcDetailsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="zHX-qb-iAe" customClass="SendBtcDetailsView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="x2K-bM-Wig"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Send" id="EwO-MP-uNv">
-                        <barButtonItem key="backBarButtonItem" title=" " id="Jrr-FR-cZA"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="content" destination="zHX-qb-iAe" id="9AM-Sx-wlW"/>
-                        <segue destination="JTf-5L-T5h" kind="push" identifier="confirm" id="lJH-qb-lib"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="m4z-Q1-GsB" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="8813" y="-210"/>
+            <point key="canvasLocation" x="7973" y="211"/>
         </scene>
         <!--Transactions Controller-->
         <scene sceneID="7fK-jx-vqZ">
@@ -988,7 +838,7 @@
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" reuseIdentifier="TransactionTableCell"  restorationIdentifier="TransactionTableCell" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="oBb-7u-b9F" customClass="TransactionTableCell" customModule="gaios" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="TransactionTableCell" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="TransactionTableCell" id="oBb-7u-b9F" customClass="TransactionTableCell" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="oBb-7u-b9F" id="gCi-bd-h2x">
@@ -1008,8 +858,8 @@
                     <connections>
                         <segue destination="zxH-Uq-pPW" kind="push" identifier="detail" id="m9D-Ww-ii0"/>
                         <segue destination="jsC-nu-G2U" kind="push" identifier="receive" id="g4H-sA-Rhj"/>
-                        <segue destination="6PL-t1-BTP" kind="push" identifier="send" id="N3b-0p-Evi"/>
                         <segue destination="SwO-Lj-Khe" kind="push" identifier="wallets" animates="NO" id="KmS-eB-Wwz"/>
+                        <segue destination="fBd-sV-72B" kind="push" identifier="send" id="u8q-Ra-05v"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zxA-j3-WFJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1118,7 +968,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="viewInExplorerButton" destination="F98-li-Gxq" id="KgB-5A-IRQ"/>
-                        <segue destination="cFP-IA-4E2" kind="push" identifier="rbf" id="nPw-9e-cll"/>
+                        <segue destination="nWv-jt-Zi4" kind="push" identifier="rbf" id="au9-Uo-eI2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bFv-Dd-3RS" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1684,6 +1534,16 @@
             </objects>
             <point key="canvasLocation" x="1418" y="-210"/>
         </scene>
+        <!--SendBtcDetailsViewController-->
+        <scene sceneID="0Wn-me-O22">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Send" referencedIdentifier="SendBtcDetailsViewController" id="nWv-jt-Zi4" propertyAccessControl="all" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="dhb-ct-a3w"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BZH-kg-hYn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8813" y="1272"/>
+        </scene>
     </scenes>
     <resources>
         <image name="2fa_email" width="50" height="50"/>
@@ -1721,7 +1581,6 @@
     <inferredMetricsTieBreakers>
         <segue reference="Onv-2S-vYj"/>
         <segue reference="ON0-2j-3cM"/>
-        <segue reference="Uzj-6y-k3B"/>
         <segue reference="XPe-Xy-Qrf"/>
         <segue reference="rZR-ak-fSt"/>
     </inferredMetricsTieBreakers>
