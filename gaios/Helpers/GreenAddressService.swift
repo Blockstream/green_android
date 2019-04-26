@@ -40,6 +40,7 @@ class GreenAddressService {
     var isWatchOnly: Bool = false
 
     public init() {
+        try! gdkInit(config: [:])
         session = try! Session(notificationCompletionHandler: newNotification)
     }
 

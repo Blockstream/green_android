@@ -47,7 +47,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let socks5Port = useProxy ? networkSettings?["socks5_port"] as? String ?? "" : ""
         let useTor = networkSettings?["tor"] as? Bool ?? false
         let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
-        try getSession().connectWithProxy(network: Network(rawValue: networkName)!, proxy_uri: proxyURI, use_tor: useTor)
+        let netParams: [String: Any] = ["name": networkName, "use_tor": useTor, "proxy": proxyURI]
+        try getSession().connect(netParams: netParams)
     }
 
     func disconnect() {
