@@ -66,7 +66,7 @@ class PinSetViewController: UIViewController {
         if self.mode == .edit {
             self.navigationController?.popViewController(animated: true)
         } else if self.mode == .restore {
-            getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "TabViewController")
+            getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         } else {
             self.performSegue(withIdentifier: "next", sender: self)
         }

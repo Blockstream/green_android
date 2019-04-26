@@ -36,8 +36,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return service
     }
 
-    func instantiateViewControllerAsRoot(identifier: String) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+    func instantiateViewControllerAsRoot(storyboard: String, identifier: String) {
+        let storyboard = UIStoryboard(name: storyboard, bundle: nil)
         let firstVC = storyboard.instantiateViewController(withIdentifier: identifier)
         guard let window = self.window else { return }
         if window.rootViewController != nil {
@@ -65,9 +65,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func lock() {
         window?.endEditing(true)
         if isPinEnabled(network: getNetwork()) {
-            instantiateViewControllerAsRoot(identifier: "PinLoginNavigationController")
+            instantiateViewControllerAsRoot(storyboard: "Main", identifier: "PinLoginNavigationController")
         } else {
-            instantiateViewControllerAsRoot(identifier: "InitialViewController")
+            instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
         }
     }
 

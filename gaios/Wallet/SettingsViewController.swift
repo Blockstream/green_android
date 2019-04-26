@@ -301,7 +301,7 @@ class SettingsViewController: UIViewController {
             self.stopAnimating()
         }.done {
             getGAService().reset()
-            getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "InitialViewController")
+            getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
         }.catch { _ in
             print("disconnection error never happens")
         }

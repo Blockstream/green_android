@@ -90,7 +90,7 @@ class PinLoginViewController: UIViewController {
         }.done {
             GreenAddressService.restoreFromMnemonics = false
             self.pinAttemptsPreference = 0
-            appDelegate.instantiateViewControllerAsRoot(identifier: "TabViewController")
+            appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             var message = NSLocalizedString("id_login_failed", comment: "")
             if let authError = error as? AuthenticationTypeHandler.AuthError {
@@ -106,7 +106,7 @@ class PinLoginViewController: UIViewController {
                             self.stopAnimating()
                             removeKeychainData()
                             self.pinAttemptsPreference = 0
-                            appDelegate.instantiateViewControllerAsRoot(identifier: "InitialViewController")
+                            appDelegate.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
                             return
                         }
                     }
@@ -150,7 +150,7 @@ class PinLoginViewController: UIViewController {
     }
 
     @objc func back(sender: UIBarButtonItem) {
-        getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "InitialViewController")
+        getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
     }
 
     @objc func click(sender: UIButton) {

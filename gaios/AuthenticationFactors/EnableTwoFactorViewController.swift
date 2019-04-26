@@ -100,7 +100,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
     }
 
     @IBAction func walletButtonClick(_ sender: UIButton) {
-        getAppDelegate()!.instantiateViewControllerAsRoot(identifier: "TabViewController")
+        getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
     }
 
     func disable(_ type: TwoFactorType) {

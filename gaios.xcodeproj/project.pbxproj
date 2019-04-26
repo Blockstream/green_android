@@ -98,6 +98,7 @@
 		818C740D2224395B00B0F794 /* PinView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 818C740C2224395B00B0F794 /* PinView.xib */; };
 		81A8EBC82224524A00F5C577 /* SystemMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81A8EBC72224524A00F5C577 /* SystemMessageView.xib */; };
 		81ACC4AF22733533004B1E92 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4AE22733533004B1E92 /* Settings.storyboard */; };
+		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
 		81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */; };
 		81C208A32201ED6A00F4BC1F /* Toast+SnackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C208A22201ED6A00F4BC1F /* Toast+SnackBar.swift */; };
 		81D94CF121B93905003B03F9 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
@@ -262,6 +263,7 @@
 		8192BB9A21EF616F00B04185 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		81A8EBC72224524A00F5C577 /* SystemMessageView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SystemMessageView.xib; sourceTree = "<group>"; };
 		81ACC4AE22733533004B1E92 /* Settings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
+		81ACC4B0227337F3004B1E92 /* Wallet.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Wallet.storyboard; sourceTree = "<group>"; };
 		81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemMessageViewController.swift; sourceTree = "<group>"; };
 		81C208A22201ED6A00F4BC1F /* Toast+SnackBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Toast+SnackBar.swift"; sourceTree = "<group>"; };
 		81D94CF021B93905003B03F9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -501,6 +503,7 @@
 				81073D7621E6024600E08F86 /* TabViewController.swift */,
 				81A8EBC72224524A00F5C577 /* SystemMessageView.xib */,
 				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
+				81ACC4B0227337F3004B1E92 /* Wallet.storyboard */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -710,6 +713,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81522EB8226F15B3009C297C /* Onboarding.storyboard in Resources */,
+				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				81ACC4AF22733533004B1E92 /* Settings.storyboard in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,

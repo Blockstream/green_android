@@ -152,7 +152,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         }.done { _ in
             if isPinEnabled(network: getNetwork()) {
                 GreenAddressService.restoreFromMnemonics = true
-                appDelegate.instantiateViewControllerAsRoot(identifier: "TabViewController")
+                appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
             } else {
                 self.performSegue(withIdentifier: "next", sender: self)
             }

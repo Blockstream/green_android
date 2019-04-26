@@ -93,7 +93,7 @@ class WatchOnlySignIn: KeyboardViewController {
             self.stopAnimating()
         }.done {
             getGAService().isWatchOnly = true
-            appDelegate.instantiateViewControllerAsRoot(identifier: "TabViewController")
+            appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             let message: String
             if let err = error as? GaError, err != GaError.GenericError {
