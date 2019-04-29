@@ -44,7 +44,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     }
 
     @Override
-    public synchronized void onNewNofification(final Object session, final Object jsonObject) {
+    public synchronized void onNewNotification(final Object session, final Object jsonObject) {
         if (mModel == null) {
             mTemp.add(jsonObject);
         } else {
