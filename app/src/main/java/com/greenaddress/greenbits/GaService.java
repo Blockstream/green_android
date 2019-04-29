@@ -467,15 +467,9 @@ public class GaService extends Service  {
     private void onNetConnectivityChanged() {
         final NetworkInfo info = getNetworkInfo();
         Log.d(TAG, "onNetConnectivityChanged " + info);
-        if (isDisconnected())
-            return;
-        if (info == null) {
-            // No network connection, go offline until notified that its back
-            mSession.reconnectDisable();
-        } else {
-            mSession.reconnectNow();
+        // TODO: auto-reconnect using gdk
+        if (info != null)
             mSPV.onNetConnectivityChangedAsync(info);
-        }
     }
 
     public NetworkInfo getNetworkInfo() {
