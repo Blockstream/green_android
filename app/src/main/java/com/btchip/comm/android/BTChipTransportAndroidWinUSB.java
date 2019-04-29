@@ -19,17 +19,17 @@
 
 package com.btchip.comm.android;
 
-import java.util.concurrent.Future;
-
-import android.util.Log;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
+import android.util.Log;
 
 import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.utils.Dump;
 import com.btchip.utils.FutureUtils;
+
+import java.util.concurrent.Future;
 
 public class BTChipTransportAndroidWinUSB implements BTChipTransport {
 

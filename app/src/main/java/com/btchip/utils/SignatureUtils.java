@@ -19,11 +19,11 @@
 
 package com.btchip.utils;
 
+import com.btchip.BTChipException;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
-
-import com.btchip.BTChipException;
 
 public class SignatureUtils {
 	

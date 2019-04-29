@@ -19,10 +19,10 @@
 
 package com.btchip.utils;
 
+import com.btchip.BTChipException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import com.btchip.BTChipException;
 
 public class BufferUtils {
 	

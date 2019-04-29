@@ -19,9 +19,9 @@
 
 package com.btchip.comm;
 
-import java.io.ByteArrayOutputStream;
-
 import com.btchip.BTChipException;
+
+import java.io.ByteArrayOutputStream;
 
 public class LedgerHelper {
 	

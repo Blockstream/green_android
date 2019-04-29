@@ -19,9 +19,9 @@
 
 package com.btchip.comm;
 
-import java.util.concurrent.Future;
-
 import com.btchip.BTChipException;
+
+import java.util.concurrent.Future;
 
 public interface BTChipTransport {
 	

@@ -31,7 +31,6 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.BuildConfig;
-import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.PopupMethodResolver;
