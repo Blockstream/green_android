@@ -100,7 +100,6 @@ public class GDKSession {
     public void disconnect() {
         GDK.disconnect(mNativeSession);
         GDK.destroy_session(mNativeSession);
-        instance=null;
     }
 
     public void loginWithPin(final String pin, final PinData pinData) {
