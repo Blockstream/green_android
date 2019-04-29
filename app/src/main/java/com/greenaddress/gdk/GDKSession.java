@@ -69,7 +69,8 @@ public class GDKSession {
     public void connect(final String network, final boolean isDebug) throws RuntimeException {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("name", network);
-        details.put("log_level", isDebug ? "none" : "debug");
+        details.put("use_tor", false);
+        details.put("log_level", isDebug ? "debug" : "none");
         GDK.connect(mNativeSession, details);
     }
 
@@ -78,8 +79,7 @@ public class GDKSession {
         details.put("name", network);
         details.put("proxy", proxyAsString);
         details.put("use_tor", useTor);
-        details.put("proxy", proxyAsString);
-        details.put("log_level", isDebug ? "none" : "debug");
+        details.put("log_level", isDebug ? "debug" : "none");
         GDK.connect(mNativeSession, details);
     }
 
