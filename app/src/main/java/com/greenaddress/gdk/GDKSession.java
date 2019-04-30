@@ -52,8 +52,6 @@ public class GDKSession {
     }
 
     private GDKSession() {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        GDK.init(new JSONConverterImpl(), details);
         mNotification = new NotificationHandlerImpl();
         GDK.setNotificationHandler(mNotification);
         mNativeSession = GDK.create_session();
@@ -100,6 +98,7 @@ public class GDKSession {
     public void disconnect() {
         GDK.disconnect(mNativeSession);
         GDK.destroy_session(mNativeSession);
+        instance = null;
     }
 
     public void loginWithPin(final String pin, final PinData pinData) {

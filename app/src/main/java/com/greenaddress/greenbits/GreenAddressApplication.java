@@ -11,8 +11,12 @@ import android.os.IBinder;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.gdk.JSONConverterImpl;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenbits.ui.FailHardActivity;
@@ -64,6 +68,15 @@ public class GreenAddressApplication extends MultiDexApplication {
 
         if (!CryptoHelper.initialize()) {
             failHard("Initialization failed", "Cryptographic initialization failed");
+            return;
+        }
+
+        // GDK initialization parameters
+        final ObjectNode details = (new ObjectMapper()).createObjectNode();
+        try {
+            GDK.init(new JSONConverterImpl(), details);
+        } catch (Exception e) {
+            failHard("GDK initialization failed", e.getMessage());
             return;
         }
 
