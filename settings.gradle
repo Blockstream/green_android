@@ -1,1 +1,1 @@
-include ':app', ':bitcoinj:core'
+include ':app', ':bitcoinj:core', ':bitcoinj:tools'
