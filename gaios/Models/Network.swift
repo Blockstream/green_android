@@ -33,7 +33,7 @@ func getGdkNetworks() -> [GdkNetwork] {
         #if DEBUG
         return true
         #else
-        let net = data[$0] as? [String: Any]
+        let net = data![$0] as? [String: Any]
         let development = net!["development"] as? Bool
         return !development!
         #endif
