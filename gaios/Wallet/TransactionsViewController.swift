@@ -166,6 +166,7 @@ class TransactionsController: UITableViewController {
     func loadWallet() {
         guard let twoFactorReset = getGAService().getTwoFactorReset() else { return }
         guard let settings = getGAService().getSettings() else { return }
+        let network = getGdkNetwork(getNetwork())
         getSubaccount(self.pointerWallet).done { wallet in
             self.presentingWallet = wallet
             guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
@@ -173,7 +174,7 @@ class TransactionsController: UITableViewController {
             view.unit.text = settings.denomination.toString()
             view.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.balance.satoshi)
             view.walletName.text = wallet.localizedName()
-            view.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
+            view.networkImage.image = UIImage(named: network.icon!)
             if twoFactorReset.isResetActive {
                 view.actionsView.isHidden = true
             } else if getGAService().isWatchOnly {

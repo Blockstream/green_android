@@ -53,7 +53,8 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         cell.unit.text = settings.denomination.toString()
         cell.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.balance.satoshi)
         cell.walletName.text = wallet.localizedName()
-        cell.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
+        let network = getGdkNetwork(getNetwork())
+        cell.networkImage.image = UIImage(named: network.icon!)
         return cell
     }
 
@@ -72,10 +73,11 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         case UICollectionView.elementKindSectionFooter:
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
                 footerId, for: indexPath) as? FooterWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
-            footer.networkImage.image = UIImage.init(named: getNetwork() == "Mainnet".lowercased() ? "btc" : "btc_testnet")
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addWallet))
             footer.addGestureRecognizer(tapGestureRecognizer)
             footer.isUserInteractionEnabled = true
+            let network = getGdkNetwork(getNetwork())
+            footer.networkImage.image = UIImage(named: network.icon!)
             return footer
         default:
             return UICollectionReusableView()

@@ -112,6 +112,7 @@
 		81EFB1E522207CE7001CE5AE /* CreateWalletView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81EFB1E422207CE7001CE5AE /* CreateWalletView.xib */; };
 		81EFB1E9222082C3001CE5AE /* VerifyMnemonicsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81EFB1E8222082C3001CE5AE /* VerifyMnemonicsView.xib */; };
 		81EFB1EB2220B688001CE5AE /* InitialView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81EFB1EA2220B688001CE5AE /* InitialView.xib */; };
+		81F74BA52278857800A397C9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F74BA42278857800A397C9 /* Network.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 		FF29CA7222374E8B0035F95A /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7122374E8B0035F95A /* URL.swift */; };
 		FF29CA7422374ED20035F95A /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7322374ED20035F95A /* UIViewController.swift */; };
@@ -277,6 +278,7 @@
 		81EFB1E422207CE7001CE5AE /* CreateWalletView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CreateWalletView.xib; sourceTree = "<group>"; };
 		81EFB1E8222082C3001CE5AE /* VerifyMnemonicsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VerifyMnemonicsView.xib; sourceTree = "<group>"; };
 		81EFB1EA2220B688001CE5AE /* InitialView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InitialView.xib; sourceTree = "<group>"; };
+		81F74BA42278857800A397C9 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF29CA7122374E8B0035F95A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
@@ -515,6 +517,7 @@
 				81205D6821C3B7EB005180CF /* Events.swift */,
 				811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */,
 				81D94CF021B93905003B03F9 /* Settings.swift */,
+				81F74BA42278857800A397C9 /* Network.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -874,6 +877,7 @@
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				092D5C6220BEE9B10077048C /* VerifyMnemonicsViewController.swift in Sources */,
+				81F74BA52278857800A397C9 /* Network.swift in Sources */,
 				811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,

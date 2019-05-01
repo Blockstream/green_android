@@ -18,14 +18,6 @@ func getNetwork() -> String {
     return (defaults?["network"] as? String ?? "Mainnet").lowercased()
 }
 
-func getGdkNetwork(_ network: String) throws -> [String: Any]? {
-    var result = try! getNetworks()
-    if !(result?.keys.contains(network))! {
-        throw GaError.GenericError
-    }
-    return result![network] as? [String: Any]
-}
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

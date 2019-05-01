@@ -80,6 +80,7 @@
                         <segue destination="0c7-Wv-kP2" kind="push" identifier="watchonly" id="FTn-9c-Qc3"/>
                         <segue destination="rMM-Df-D90" kind="push" identifier="pin" id="QEt-l0-XBh"/>
                         <segue destination="wmg-xs-3of" kind="push" identifier="createWallet" id="ffv-Da-0EK"/>
+                        <segue destination="2Iq-H3-b6z" kind="push" identifier="network" id="djN-MN-PxA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uYz-un-mGa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -97,21 +98,41 @@
             <point key="canvasLocation" x="-608" y="-210"/>
         </scene>
         <!--Network Selection Settings-->
-        <scene sceneID="lkP-Xf-far">
+        <scene sceneID="bSY-nl-Tly">
             <objects>
-                <viewController storyboardIdentifier="networkSelection" useStoryboardIdentifierAsRestorationIdentifier="YES" id="aGG-jd-tuj" customClass="NetworkSelectionSettings" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="fD6-o4-FhZ" customClass="NetworkSelectionSettingsView" customModule="gaios" customModuleProvider="target">
+                <tableViewController storyboardIdentifier="NetworkSelectionSettings" id="2Iq-H3-b6z" customClass="NetworkSelectionSettings" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="jHt-4d-qg2">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="fug-Ic-anz"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="mED-fj-Ktx"/>
-                    <connections>
-                        <outlet property="content" destination="fD6-o4-FhZ" id="19Q-Jh-Lfi"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="hgF-7l-W9P" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="cell" textLabel="pQ5-0m-Lj3" style="IBUITableViewCellStyleDefault" id="CFo-US-3Lr">
+                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="CFo-US-3Lr" id="Obi-zp-ZPf">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="pQ5-0m-Lj3">
+                                            <rect key="frame" x="16" y="0.0" width="288" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="2Iq-H3-b6z" id="rzM-gh-kn7"/>
+                            <outlet property="delegate" destination="2Iq-H3-b6z" id="aEn-CA-FI9"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="HhP-5X-H6L"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zFj-MI-IOJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1785" y="1517"/>
         </scene>
@@ -333,7 +354,7 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Onv-2S-vYj"/>
-        <segue reference="4QF-E2-lEm"/>
+        <segue reference="QEt-l0-XBh"/>
+        <segue reference="XPe-Xy-Qrf"/>
     </inferredMetricsTieBreakers>
 </document>

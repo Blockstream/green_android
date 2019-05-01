@@ -41,9 +41,8 @@ class InitialViewController: UIViewController {
     }
 
     func reload() {
-        let defaults = getUserNetworkSettings()
-        let networkName = defaults?["network"] as? String ?? "Bitcoin"
-        content.networkButton.setTitle(networkName == "Mainnet" ? "Bitcoin" : networkName, for: .normal)
+        let network = getNetwork()
+        content.networkButton.setTitle(getGdkNetwork(network).name, for: .normal)
         content.walletDetectionStackView.isHidden = !isPinEnabled(network: getNetwork())
     }
 
@@ -53,7 +52,7 @@ class InitialViewController: UIViewController {
         } else if sender == content.restoreButton {
             onAction(identifier: "enterMnemonic")
         } else if sender == content.networkButton {
-            networkButtonClicked()
+            self.performSegue(withIdentifier: "network", sender: self)
         }
     }
 
@@ -73,26 +72,22 @@ class InitialViewController: UIViewController {
         }
     }
 
-    func networkButtonClicked() {
-        guard let networkSelector = self.storyboard?.instantiateViewController(withIdentifier: "networkSelection") as? NetworkSelectionSettings else { fatalError("Invalid network selector") }
-        networkSelector.onSave = {
-            let network = getNetwork()
-            onFirstInitialization(network: network)
-            self.reload()
-        }
-        networkSelector.providesPresentationContextTransitionStyle = true
-        networkSelector.definesPresentationContext = true
-        networkSelector.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-        networkSelector.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        self.present(networkSelector, animated: true, completion: nil)
-    }
-
     @objc func loginClicked() {
         self.performSegue(withIdentifier: "pin", sender: self)
     }
 
     @IBAction func watchButtonClicked(_ sender: Any) {
         self.performSegue(withIdentifier: "watchonly", sender: self)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let networkSelector = segue.destination as? NetworkSelectionSettings {
+            networkSelector.onSave = {
+                let network = getNetwork()
+                onFirstInitialization(network: network)
+                self.reload()
+            }
+        }
     }
 }
 

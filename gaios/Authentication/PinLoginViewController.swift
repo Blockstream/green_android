@@ -20,12 +20,11 @@ class PinLoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let network = getNetwork()
-        let networkImage = network == "Mainnet".lowercased() ? UIImage(named: "btc") : UIImage(named: "btc_testnet")
+        let network = getGdkNetwork(getNetwork())
         let navigationBarHeight: CGFloat =  navigationController!.navigationBar.frame.height
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: navigationBarHeight, height: navigationBarHeight))
         imageView.contentMode = .scaleAspectFit
-        imageView.image = networkImage
+        imageView.image = UIImage(named: network.icon!)
         navigationItem.titleView = imageView
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))
