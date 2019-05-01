@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.greenaddress.greenapi.data.BalanceData;
-import com.greenaddress.greenapi.data.CreateTransactionData;
 import com.greenaddress.greenapi.data.EstimatesData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.JSONData;
@@ -206,14 +205,14 @@ public class GDKSession {
     }
 
     public ObjectNode createTransactionFromUri(final String uri, final int subaccount) throws AddressFormatException {
-        final BalanceData balanceData = new BalanceData();
-        balanceData.setAddress(uri);
-        final List<BalanceData> balanceDataList = new ArrayList<>();
-        balanceDataList.add(balanceData);
-        final CreateTransactionData createTransactionData = new CreateTransactionData();
-        createTransactionData.setAddressees(balanceDataList);
-        createTransactionData.setSubaccount(subaccount);
-        final ObjectNode transaction = createTransactionRaw(createTransactionData);
+        final ObjectNode tx = mObjectMapper.createObjectNode();
+        tx.put("subaccount", subaccount);
+        final ObjectNode address = mObjectMapper.createObjectNode();
+        address.put("address", uri);
+        final ArrayNode addressees = mObjectMapper.createArrayNode();
+        addressees.add(address);
+        tx.set("addressees", addressees);
+        final ObjectNode transaction = createTransactionRaw(tx);
         final String error = transaction.get("error").asText();
         if ("id_invalid_address".equals(error)) {
             throw new AddressFormatException();

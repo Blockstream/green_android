@@ -24,11 +24,6 @@ public class TwoFactorStatusData extends JSONData {
     private HWDeviceDetailData device;
     private HWDeviceRequiredData required_data; // FIXME: Strongly type this
 
-    @JsonIgnore
-    public CreateTransactionData getResultAsCreateTransactionData() throws JsonProcessingException {
-        return (new ObjectMapper()).treeToValue(result, CreateTransactionData.class);
-    }
-
     public String getStatus() {
         return status;
     }

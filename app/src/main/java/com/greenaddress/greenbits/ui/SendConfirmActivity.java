@@ -14,8 +14,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenapi.data.BalanceData;
-import com.greenaddress.greenapi.data.CreateTransactionData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
@@ -28,7 +26,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     private static final String TAG = SendConfirmActivity.class.getSimpleName();
 
     private HWDeviceData mHwData;
-    private String mTxJson;
+    private ObjectNode mTxJson;
     private SwipeButton mSwipeButton;
 
     @Override
@@ -37,15 +35,14 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             toFirst();
             return;
         }
-        final CreateTransactionData mTxData;
         try {
-            mTxJson = getIntent().getStringExtra("transaction");
+
             final String hwwJson = getIntent().getStringExtra("hww");
             final ObjectMapper mObjectMapper = new ObjectMapper();
             mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            mTxData = mObjectMapper.readValue(mTxJson, CreateTransactionData.class);
             if (hwwJson != null)
                 mHwData = mObjectMapper.readValue(hwwJson, HWDeviceData.class);
+            mTxJson =  mObjectMapper.readValue(getIntent().getStringExtra("transaction"), ObjectNode.class);
         } catch (final Exception e) {
             e.printStackTrace();
             UI.toast(this, e.getLocalizedMessage(), Toast.LENGTH_LONG);
@@ -65,9 +62,9 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         mSwipeButton = UI.find(this, R.id.swipeButton);
 
         // Setup views fields
-        final BalanceData currentRecipient = mTxData.getAddressees().get(0);
-        final boolean isSweeping = mTxData.getIsSweep();
-        final Integer subaccount = mTxData.getChangeSubaccount();
+        final String currentRecipient = mTxJson.withArray("addressees").get(0).get("address").asText();
+        final boolean isSweeping = mTxJson.get("is_sweep").asBoolean();
+        final Integer subaccount = mTxJson.get("change_subaccount").asInt();
         UI.hideIf(isSweeping, noteTextTitle);
         UI.hideIf(isSweeping, noteText);
         if (isSweeping)
@@ -78,22 +75,22 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
                 mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
             subaccountText.setText(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
         }
-        addressText.setText(currentRecipient.getAddress());
-        noteText.setText(mTxData.getMemo());
+        addressText.setText(currentRecipient);
+        noteText.setText(mTxJson.get("memo") == null ? "" : mTxJson.get("memo").asText());
         CharInputFilter.setIfNecessary(noteText);
 
         // Set currency & amount
-        final long amount = mTxData.getSatoshi();
-        final long fee = mTxData.getFee();
+        final long amount = mTxJson.get("satoshi").asLong();
+        final long fee = mTxJson.get("fee").asLong();
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
         final TextView sendFee = UI.find(this, R.id.sendFee);
         sendAmount.setText(getFormatAmount(amount));
         sendFee.setText(getFormatAmount(fee));
 
-        if (mHwData != null && mTxData.getChangeAddress() != null && mTxData.getChangeAmount() > 0) {
+        if (mHwData != null && !mTxJson.get("change_address").isNull() && !mTxJson.get("change_amount").isNull()) {
             UI.show(UI.find(this, R.id.changeLayout));
             final TextView view = UI.find(this, R.id.changeAddressText);
-            view.setText(mTxData.getChangeAddress().getAddress());
+            view.setText(mTxJson.get("change_address").get("address").asText());
         }
 
         mSwipeButton.setOnActiveListener(this);
@@ -120,27 +117,26 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final GaActivity activity = SendConfirmActivity.this;
         mService.getExecutor().execute(() -> {
             try {
-                ObjectNode tx = (ObjectNode) new ObjectMapper().readTree(mTxJson);
-                tx.set("memo", new TextNode(memo));
+                mTxJson.set("memo", new TextNode(memo));
                 // sign transaction
                 final ConnectionManager cm = mService.getConnectionManager();
-                final GDKTwoFactorCall signCall = mService.getSession().signTransactionRaw(activity, tx);
-                tx = signCall.resolve(null, cm.getHWResolver());
+                final GDKTwoFactorCall signCall = mService.getSession().signTransactionRaw(activity, mTxJson);
+                mTxJson = signCall.resolve(null, cm.getHWResolver());
 
                 // send transaction
-                final boolean isSweep = tx.get("is_sweep").asBoolean();
+                final boolean isSweep = mTxJson.get("is_sweep").asBoolean();
                 if (isSweep) {
-                    mService.getSession().broadcastTransactionRaw(tx.get("transaction").asText());
+                    mService.getSession().broadcastTransactionRaw(mTxJson.get("transaction").asText());
                 } else {
-                    final GDKTwoFactorCall sendCall = mService.getSession().sendTransactionRaw(activity, tx);
+                    final GDKTwoFactorCall sendCall = mService.getSession().sendTransactionRaw(activity, mTxJson);
                     sendCall.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
                     mService.getModel().getTwoFactorConfigDataObservable().refresh();
                 }
-                if (tx.has("previous_transaction")) {
+                if (mTxJson.has("previous_transaction")) {
                     //emptying list to avoid showing replaced txs
-                    mService.getModel().getTransactionDataObservable(tx.get("change_subaccount").asInt())
+                    mService.getModel().getTransactionDataObservable(mTxJson.get("change_subaccount").asInt())
                     .setTransactionDataList(new ArrayList<>());
-                    final String hash = tx.get("previous_transaction").get("txhash").asText();
+                    final String hash = mTxJson.get("previous_transaction").get("txhash").asText();
                     mService.getModel().getEventDataObservable().removeTx(hash);
                 }
                 UI.toast(activity, R.string.id_transaction_sent, Toast.LENGTH_LONG);
