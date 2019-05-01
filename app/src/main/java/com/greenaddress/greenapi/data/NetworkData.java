@@ -34,6 +34,10 @@ public class NetworkData extends JSONData {
     private List<String> wampCertPins;
     private List<String> wampCertRoots;
     private List<String> defaultPeers;
+    private Integer blindedPrefix;
+    private Integer ctBits;
+    private Integer ctExponent;
+    private String policyAsset;
 
     @JsonIgnore
     public NetworkParameters getNetworkParameters() {
@@ -108,6 +112,38 @@ public class NetworkData extends JSONData {
         if (network.equals("testnet"))
             return R.drawable.ic_btc_testnet;
         return R.drawable.ic_btc_testnet;
+    }
+
+    public String getPolicyAsset() {
+        return policyAsset;
+    }
+
+    public void setPolicyAsset(String policyAsset) {
+        this.policyAsset = policyAsset;
+    }
+
+    public Integer getCtBits() {
+        return ctBits;
+    }
+
+    public void setCtBits(Integer ctBits) {
+        this.ctBits = ctBits;
+    }
+
+    public Integer getCtExponent() {
+        return ctExponent;
+    }
+
+    public void setCtExponent(Integer ctExponent) {
+        this.ctExponent = ctExponent;
+    }
+
+    public Integer getBlindedPrefix() {
+        return blindedPrefix;
+    }
+
+    public void setBlindedPrefix(Integer blindedPrefix) {
+        this.blindedPrefix = blindedPrefix;
     }
 
     public Boolean getDevelopment() {
