@@ -25,6 +25,7 @@ class SettingsViewController: UIViewController {
         }
     }
     var isWatchOnly: Bool { get { return getGAService().isWatchOnly } }
+    var isLiquid: Bool { get { return getGdkNetwork(getNetwork()).liquid } }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -97,10 +98,13 @@ class SettingsViewController: UIViewController {
             subtitle: NSLocalizedString("id_log_out", comment: ""),
             section: .network,
             type: .Logout)
-        if !isWatchOnly && !isResetActive {
-            return [setupPin, watchOnly, logout]
+
+        if isWatchOnly || isResetActive {
+            return [logout]
+        } else if isLiquid {
+            return [setupPin, logout]
         }
-        return [logout]
+        return [setupPin, watchOnly, logout]
     }
 
     func getAccount() -> [SettingsItem] {
@@ -129,10 +133,12 @@ class SettingsViewController: UIViewController {
             section: .account,
             type: .DefaultCustomFeeRate)
 
-        if !isWatchOnly && !isResetActive {
-            return [bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate]
+        if isWatchOnly && isResetActive {
+            return []
+        } else if isLiquid {
+            return [defaultTransactionPriority, defaultCustomFeeRate]
         }
-        return []
+        return [bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate]
     }
 
     func getTwoFactor() -> [SettingsItem] {
@@ -186,22 +192,23 @@ class SettingsViewController: UIViewController {
             section: .twoFactor,
             type: .CancelTwoFactor)
 
-        var menu = [SettingsItem]()
-        if !isWatchOnly && !isResetActive {
-            menu.append(contentsOf: [setupTwoFactor])
-            if twoFactorConfig?.anyEnabled ?? false {
-                menu.append(contentsOf: [thresholdTwoFactor])
-                if twoFactorConfig?.enableMethods.contains("email") ?? false {
-                    menu.append(contentsOf: [locktimeRecovery, locktimeRequest])
-                }
-                menu.append(contentsOf: [resetTwoFactor])
-            }
+        if isWatchOnly {
+            return []
+        } else if isResetActive && !isDisputeActive {
+            return [disputeTwoFactor, cancelTwoFactor]
+        } else if isResetActive && isDisputeActive {
+            return [cancelTwoFactor]
+        } else if isLiquid {
+            return [setupTwoFactor]
         }
-        if !isWatchOnly && isResetActive {
-            if !isDisputeActive {
-                menu.append(disputeTwoFactor)
+        var menu = [SettingsItem]()
+        menu.append(contentsOf: [setupTwoFactor])
+        if twoFactorConfig?.anyEnabled ?? false {
+            menu.append(contentsOf: [thresholdTwoFactor])
+            if twoFactorConfig?.enableMethods.contains("email") ?? false {
+                menu.append(contentsOf: [locktimeRecovery, locktimeRequest])
             }
-            menu.append(cancelTwoFactor)
+            menu.append(contentsOf: [resetTwoFactor])
         }
         return menu
     }
