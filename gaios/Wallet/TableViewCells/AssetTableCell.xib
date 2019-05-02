@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="4Qc-x4-1p7" customClass="AssetTableCell" customModule="gaios" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="546" height="180"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pDX-tN-1JC">
+                    <rect key="frame" x="16" y="48" width="514" height="94"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="249" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cTF-sD-3jH">
+                            <rect key="frame" x="16" y="40" width="424" height="14.5"/>
+                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Value" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k84-tq-oJk">
+                            <rect key="frame" x="456" y="37" width="42" height="20.5"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" name="customCardDark"/>
+                    <constraints>
+                        <constraint firstItem="k84-tq-oJk" firstAttribute="leading" secondItem="cTF-sD-3jH" secondAttribute="trailing" constant="16" id="PMD-BS-9Wp"/>
+                        <constraint firstItem="cTF-sD-3jH" firstAttribute="top" relation="greaterThanOrEqual" secondItem="pDX-tN-1JC" secondAttribute="top" constant="8" id="QQ6-hP-5uT"/>
+                        <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="cTF-sD-3jH" secondAttribute="bottom" constant="8" id="Y1v-kH-IfW"/>
+                        <constraint firstItem="k84-tq-oJk" firstAttribute="centerY" secondItem="pDX-tN-1JC" secondAttribute="centerY" id="ZCP-jI-Q71"/>
+                        <constraint firstItem="cTF-sD-3jH" firstAttribute="centerY" secondItem="pDX-tN-1JC" secondAttribute="centerY" id="es2-NS-TzG"/>
+                        <constraint firstAttribute="trailing" secondItem="k84-tq-oJk" secondAttribute="trailing" constant="16" id="jR6-HV-vNx"/>
+                        <constraint firstItem="cTF-sD-3jH" firstAttribute="leading" secondItem="pDX-tN-1JC" secondAttribute="leading" constant="16" id="ptO-CD-Auo"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                            <real key="value" value="0.0"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="6"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
+                            <color key="value" name="customTitaniumDark"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="number" keyPath="shadowRadius">
+                            <real key="value" value="4"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
+                            <real key="value" value="4"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+            </subviews>
+            <color key="backgroundColor" name="customTitaniumDark"/>
+            <constraints>
+                <constraint firstItem="pDX-tN-1JC" firstAttribute="leading" secondItem="qlQ-BW-Scf" secondAttribute="leading" constant="16" id="INb-Pe-akx"/>
+                <constraint firstItem="qlQ-BW-Scf" firstAttribute="trailing" secondItem="pDX-tN-1JC" secondAttribute="trailing" constant="16" id="IZX-1X-zvr"/>
+                <constraint firstItem="pDX-tN-1JC" firstAttribute="top" secondItem="qlQ-BW-Scf" secondAttribute="top" constant="4" id="J6k-Jr-J8P"/>
+                <constraint firstItem="qlQ-BW-Scf" firstAttribute="bottom" secondItem="pDX-tN-1JC" secondAttribute="bottom" constant="4" id="a8C-8k-djG"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="qlQ-BW-Scf"/>
+            <connections>
+                <outlet property="title" destination="cTF-sD-3jH" id="SgN-QL-vKO"/>
+                <outlet property="value" destination="k84-tq-oJk" id="hiB-qn-hCu"/>
+            </connections>
+            <point key="canvasLocation" x="73.913043478260875" y="-109.15178571428571"/>
+        </view>
+    </objects>
+    <resources>
+        <namedColor name="customCardDark">
+            <color red="0.078431372549019607" green="0.11764705882352941" blue="0.15686274509803921" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customTitaniumDark">
+            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

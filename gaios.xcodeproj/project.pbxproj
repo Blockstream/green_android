@@ -96,6 +96,9 @@
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
 		818C740D2224395B00B0F794 /* PinView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 818C740C2224395B00B0F794 /* PinView.xib */; };
+		81923A33228084FF0097BEA8 /* AssetsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81923A32228084FF0097BEA8 /* AssetsTableViewController.swift */; };
+		81923A35228089BE0097BEA8 /* AssetTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81923A34228089BE0097BEA8 /* AssetTableCell.swift */; };
+		81923A38228194950097BEA8 /* AssetTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81923A37228194950097BEA8 /* AssetTableCell.xib */; };
 		81A8EBC82224524A00F5C577 /* SystemMessageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81A8EBC72224524A00F5C577 /* SystemMessageView.xib */; };
 		81ACC4AF22733533004B1E92 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4AE22733533004B1E92 /* Settings.storyboard */; };
 		81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81ACC4B0227337F3004B1E92 /* Wallet.storyboard */; };
@@ -240,6 +243,9 @@
 		8187B47F21E9027100235A35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8189BEFF2236F2270091B466 /* ScreenLocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLocker.swift; sourceTree = "<group>"; };
 		818C740C2224395B00B0F794 /* PinView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PinView.xib; sourceTree = "<group>"; };
+		81923A32228084FF0097BEA8 /* AssetsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsTableViewController.swift; sourceTree = "<group>"; };
+		81923A34228089BE0097BEA8 /* AssetTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetTableCell.swift; sourceTree = "<group>"; };
+		81923A37228194950097BEA8 /* AssetTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetTableCell.xib; sourceTree = "<group>"; };
 		8192BB8521EF52B100B04185 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8192BB8621EF52B100B04185 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8192BB8721EF52BB00B04185 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -505,6 +511,7 @@
 				81073D7621E6024600E08F86 /* TabViewController.swift */,
 				81A8EBC72224524A00F5C577 /* SystemMessageView.xib */,
 				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
+				81923A32228084FF0097BEA8 /* AssetsTableViewController.swift */,
 				81ACC4B0227337F3004B1E92 /* Wallet.storyboard */,
 			);
 			path = Wallet;
@@ -555,6 +562,8 @@
 			children = (
 				092D47F820EA2907005720F3 /* TransactionTableCell.swift */,
 				092D47F620EA28ED005720F3 /* TransactionTableCell.xib */,
+				81923A34228089BE0097BEA8 /* AssetTableCell.swift */,
+				81923A37228194950097BEA8 /* AssetTableCell.xib */,
 			);
 			path = TableViewCells;
 			sourceTree = "<group>";
@@ -728,6 +737,7 @@
 				8128611B222212F8005598D3 /* NetworkSelectionSettingsView.xib in Resources */,
 				817A6309222461510054FC60 /* SendBTCConfirmationView.xib in Resources */,
 				818201B2226A1AD200BE12C3 /* Send.storyboard in Resources */,
+				81923A38228194950097BEA8 /* AssetTableCell.xib in Resources */,
 				81837788224E6C8D00DC0FB1 /* PgpView.xib in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				81EFB1E522207CE7001CE5AE /* CreateWalletView.xib in Resources */,
@@ -870,6 +880,7 @@
 			files = (
 				0933A599210716EC00C43838 /* GreenAddress.swift in Sources */,
 				0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */,
+				81923A33228084FF0097BEA8 /* AssetsTableViewController.swift in Sources */,
 				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
 				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
@@ -933,6 +944,7 @@
 				81E9B80021C92DB1004D87B6 /* WalletCardView.swift in Sources */,
 				81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date.swift in Sources */,
+				81923A35228089BE0097BEA8 /* AssetTableCell.swift in Sources */,
 				FF29CA7422374ED20035F95A /* UIViewController.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,

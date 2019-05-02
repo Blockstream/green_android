@@ -160,6 +160,7 @@ class TransactionsController: UITableViewController {
         view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.receiveToWallet)))
         view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sendfromWallet)))
         view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.wallets)))
+        view.assetsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.showAssets)))
         return view
     }
 
@@ -167,21 +168,37 @@ class TransactionsController: UITableViewController {
         guard let twoFactorReset = getGAService().getTwoFactorReset() else { return }
         guard let settings = getGAService().getSettings() else { return }
         let network = getGdkNetwork(getNetwork())
-        getSubaccount(self.pointerWallet).done { wallet in
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then {
+            getSubaccount(self.pointerWallet)
+        }.ensure {
+            self.stopAnimating()
+        }.done { wallet in
             self.presentingWallet = wallet
             guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
-            view.balance.text = String.toBtc(satoshi: wallet.balance.satoshi, showDenomination: false)
+            let satoshi = wallet.btc.satoshi
+            view.balance.text = String.toBtc(satoshi: satoshi, showDenomination: false)
             view.unit.text = settings.denomination.toString()
-            view.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.balance.satoshi)
-            view.walletName.text = wallet.localizedName()
+            view.balanceFiat.text = "≈ " + String.toFiat(satoshi: satoshi)
+            view.walletName.text = self.presentingWallet!.localizedName()
             view.networkImage.image = UIImage(named: network.icon!)
+            view.assetsLabel.text = String(format: NSLocalizedString(wallet.balance.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.balance.count)
             if twoFactorReset.isResetActive {
                 view.actionsView.isHidden = true
             } else if getGAService().isWatchOnly {
                 view.sendImage.image = UIImage(named: "qr_sweep")
                 view.sendLabel.text = NSLocalizedString("id_sweep", comment: "")
             }
-        }.catch { _ in }
+        }.catch { err in
+            print(err.localizedDescription)
+        }
+    }
+
+    @objc func showAssets(_ sender: UIButton) {
+        guard presentingWallet?.balance != nil else { return }
+        self.performSegue(withIdentifier: "assets", sender: self)
     }
 
     @objc func wallets(_ sender: UIButton) {
@@ -210,6 +227,9 @@ class TransactionsController: UITableViewController {
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? WalletsViewController {
             nextController.subaccountDelegate = self
+        } else if let nextController = segue.destination as? AssetsTableViewController {
+            nextController.wallet = presentingWallet
+            nextController.title = presentingWallet!.localizedName()
         }
     }
 

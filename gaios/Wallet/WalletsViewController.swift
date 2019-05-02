@@ -49,9 +49,9 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? WalletCardView else { fatalError("Fail to dequeue reusable cell") }
         let wallet = wallets[indexPath.row]
         guard let settings = getGAService().getSettings() else { return cell }
-        cell.balance.text = String.toBtc(satoshi: wallet.balance.satoshi, showDenomination: false)
+        cell.balance.text = String.toBtc(satoshi: wallet.btc.satoshi, showDenomination: false)
         cell.unit.text = settings.denomination.toString()
-        cell.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.balance.satoshi)
+        cell.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.btc.satoshi)
         cell.walletName.text = wallet.localizedName()
         let network = getGdkNetwork(getNetwork())
         cell.networkImage.image = UIImage(named: network.icon!)
@@ -63,7 +63,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         case UICollectionView.elementKindSectionHeader:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
                 headerId, for: indexPath) as? HeaderWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
-            let satoshi = wallets.map { $0.balance.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
+            let satoshi = wallets.map { $0.btc.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
             header.title.text = NSLocalizedString("id_total_balance", comment: "")

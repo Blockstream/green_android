@@ -101,7 +101,9 @@ extension UIView {
     }
 
     func makeGradientCard() -> CAGradientLayer {
-        let gradient = makeGradient(colours: [UIColor.cardDark(), UIColor.cardMedium(), UIColor.cardLight()], locations: [0.0, 0.5, 1.0])
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let colours = isLiquid ? [UIColor.cardBlueDark(), UIColor.cardBlueMedium(), UIColor.cardBlueLight()] : [UIColor.cardDark(), UIColor.cardMedium(), UIColor.cardLight()]
+        let gradient = makeGradient(colours: colours, locations: [0.0, 0.5, 1.0])
         gradient.startPoint = CGPoint(x: 0.0, y: 1.0)
         gradient.endPoint = CGPoint(x: 1.0, y: 1.0)
         gradient.frame = self.bounds

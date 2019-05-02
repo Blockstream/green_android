@@ -79,7 +79,7 @@ public enum DenominationType: String, CodingKey {
     func toString() -> String {
         switch self {
         case .BTC:
-            return "BTC"
+            return getGdkNetwork(getNetwork()).liquid ? "L-BTC" : "BTC"
         case .MilliBTC:
             return "mBTC"
         case .MicroBTC:
@@ -91,14 +91,14 @@ public enum DenominationType: String, CodingKey {
 
     static func fromString(_ value: String) -> DenominationType {
         switch value.lowercased() {
-        case "btc":
+        case "btc", "l-btc":
             return .BTC
         case "mbtc":
             return .MilliBTC
         case "µbtc", "ubtc":
             return .MicroBTC
         default:
-            return .Bits
+            return .BTC
         }
     }
 }

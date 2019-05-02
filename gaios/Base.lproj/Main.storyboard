@@ -76,6 +76,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="content" destination="soW-Tu-XRH" id="K8A-TV-iVr"/>
+                        <outlet property="watchOnlyButton" destination="KmY-Ea-Vkz" id="Gc9-hx-lmk"/>
                         <segue destination="o6l-5o-Ocm" kind="push" identifier="enterMnemonic" id="XPe-Xy-Qrf"/>
                         <segue destination="0c7-Wv-kP2" kind="push" identifier="watchonly" id="FTn-9c-Qc3"/>
                         <segue destination="rMM-Df-D90" kind="push" identifier="pin" id="QEt-l0-XBh"/>

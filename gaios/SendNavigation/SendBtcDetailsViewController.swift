@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-class SendBtcDetailsViewController: UIViewController {
+class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
     @IBOutlet var content: SendBtcDetailsView!
     let blockTime = ["~ 30 " + NSLocalizedString("id_minutes", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_4_hours", comment: ""), ""]
@@ -12,6 +12,7 @@ class SendBtcDetailsViewController: UIViewController {
     var isFiat = false
     var transaction: Transaction!
     var amountData: [String: Any]?
+    var assetTag: String?
 
     var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
@@ -88,6 +89,17 @@ class SendBtcDetailsViewController: UIViewController {
         content.recipientTitle.text = NSLocalizedString("id_recipient", comment: "").uppercased()
         content.sendingTitle.text = NSLocalizedString("id_sending", comment: "").uppercased()
         content.minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "").uppercased()
+        content.assetNameLabel.text = NSLocalizedString("id_select_asset", comment: "")
+
+        // setup liquid view
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        content.assetView.isHidden = !isLiquid
+        content.sendAllFundsButton.isHidden = isLiquid
+        content.currencySwitch.isHidden = isLiquid
+        content.maxAmountLabel.isHidden = isLiquid
+        content.maxAmountLabel.text = String.toBtc(satoshi: wallet!.btc.satoshi)
+        content.assetView.heightAnchor.constraint(equalToConstant: 0).isActive = !isLiquid
+        content.assetView.layoutIfNeeded()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -96,17 +108,17 @@ class SendBtcDetailsViewController: UIViewController {
         content.reviewButton.addTarget(self, action: #selector(reviewButtonClick(_:)), for: .touchUpInside)
         content.sendAllFundsButton.addTarget(self, action: #selector(sendAllFundsButtonClick(_:)), for: .touchUpInside)
         content.currencySwitch.addTarget(self, action: #selector(currencySwitchClick(_:)), for: .touchUpInside)
+        let assetTap = UITapGestureRecognizer(target: self, action: #selector(self.assetClick(_:)))
+        content.assetClickableView.addGestureRecognizer(assetTap)
 
-        if transaction.satoshi != 0 {
-            updateAmountData(transaction.satoshi)
+        let addressee = transaction.addressees.first!
+        content.addressLabel.text = addressee.address
+        if addressee.satoshi != 0 {
+            updateAmountData(addressee.satoshi)
         }
-
-        let address = transaction.addressees[0].address
-        content.addressLabel.text = address
 
         updateReviewButton(false)
         updateFeeButtons()
-        updateMaxAmountLabel()
         setCurrencySwitch()
         updateTransaction()
     }
@@ -130,16 +142,14 @@ class SendBtcDetailsViewController: UIViewController {
         let newAmountData = convertAmount(details: ["satoshi": satoshi])
         if newAmountData?["satoshi"] as? UInt64 != amountData?["satoshi"] as? UInt64 {
             amountData = newAmountData
-            updateAmountTextField(true)
+            updateAmountTextField()
         }
     }
 
-    func updateAmountTextField(_ forceUpdate: Bool) {
-        if forceUpdate {
-            guard let settings = getGAService().getSettings() else { return }
-            let textAmount = content.sendAllFundsButton.isSelected ? NSLocalizedString("id_all", comment: "") : amountData?[!isFiat ? settings.denomination.rawValue : "fiat"] as? String ?? String()
-            content.amountTextField.text = textAmount
-        }
+    func updateAmountTextField() {
+        guard let settings = getGAService().getSettings() else { return }
+        let textAmount = content.sendAllFundsButton.isSelected ? NSLocalizedString("id_all", comment: "") : amountData?[!isFiat ? settings.denomination.rawValue : "fiat"] as? String ?? String()
+        content.amountTextField.text = textAmount
         content.amountTextField.textColor = content.amountTextField.isEnabled ? UIColor.white : UIColor.lightGray
     }
 
@@ -156,30 +166,26 @@ class SendBtcDetailsViewController: UIViewController {
         updateFeeButtons()
     }
 
-    func updateMaxAmountLabel() {
-        guard let wallet = self.wallet else { return }
-        wallet.getBalance().get { balance in
-            self.content.maxAmountLabel.text = String.toBtc(satoshi: wallet.balance.satoshi)
-        }.done { _ in }.catch { _ in }
-    }
-
     @objc func sendAllFundsButtonClick(_ sender: UIButton) {
         content.sendAllFundsButton.isSelected = !content.sendAllFundsButton.isSelected
         content.amountTextField.isEnabled = !content.sendAllFundsButton.isSelected
         content.amountTextField.isUserInteractionEnabled = !content.sendAllFundsButton.isSelected
         updateTransaction()
-        updateAmountTextField(true)
+        updateAmountTextField()
     }
 
     @objc func reviewButtonClick(_ sender: UIButton) {
         self.performSegue(withIdentifier: "next", sender: self)
     }
 
+    @objc func assetClick(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "assets", sender: self)
+    }
+
     @objc func currencySwitchClick(_ sender: UIButton) {
         isFiat = !isFiat
         setCurrencySwitch()
-        updateAmountTextField(true)
-        updateMaxAmountLabel()
+        updateAmountTextField()
         updateTransaction()
     }
 
@@ -187,6 +193,10 @@ class SendBtcDetailsViewController: UIViewController {
         if let nextController = segue.destination as? SendBTCConfirmationViewController {
             nextController.wallet = wallet
             nextController.transaction = transaction
+        } else if let nextController = segue.destination as? AssetsTableViewController {
+            nextController.wallet = wallet
+            nextController.delegate = self
+            nextController.title = NSLocalizedString("id_select_asset", comment: "")
         }
     }
 
@@ -201,14 +211,30 @@ class SendBtcDetailsViewController: UIViewController {
         updateTransaction()
     }
 
+    func onSelect(_ tag: String) {
+        assetTag = tag == "L-BTC" ? "btc" : tag
+        content.assetNameLabel.text = tag
+        let satoshi = wallet?.balance[assetTag!]?.satoshi
+        if satoshi != nil {
+            content.maxAmountLabel.text = "\(String.toBtc(satoshi: satoshi!, showDenomination: false)) \(tag)"
+        }
+    }
+
     func updateTransaction() {
         guard let feeEstimate = feeEstimates[selectedFee] else { return }
         transaction.sendAll = content.sendAllFundsButton.isSelected
         transaction.feeRate = feeEstimate
 
+        if getGdkNetwork(getNetwork()).liquid && assetTag == nil {
+            uiErrorLabel.text = NSLocalizedString("id_select_asset", comment: "")
+            uiErrorLabel.isHidden = false
+            return
+        }
+
         if !transaction.addresseesReadOnly {
             let satoshi = amountData?["satoshi"] as? UInt64 ?? 0
-            let addressee = Addressee(address: content.addressLabel.text!, satoshi: satoshi)
+            let address = content.addressLabel.text!
+            let addressee = Addressee(address: address, satoshi: satoshi, assetTag: assetTag)
             transaction.addressees = [addressee]
         }
 
@@ -340,6 +366,11 @@ class SendBtcDetailsView: UIView {
     @IBOutlet weak var slowFeeButton: FeeButton!
     @IBOutlet weak var customFeeButton: FeeButton!
     @IBOutlet weak var sendingTitle: UILabel!
+    @IBOutlet weak var assetView: UIView!
+    @IBOutlet weak var assetTitleLabel: UILabel!
+    @IBOutlet weak var assetNameLabel: UILabel!
+    @IBOutlet weak var assetClickableView: UIView!
+
     lazy var feeRateButtons = [fastFeeButton, mediumFeeButton, slowFeeButton, customFeeButton]
 
     override init(frame: CGRect) {

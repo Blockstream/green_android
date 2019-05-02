@@ -81,7 +81,6 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     @IBOutlet weak var amountTitle: UILabel!
     @IBOutlet weak var memoTitle: UILabel!
     @IBOutlet weak var walletTitle: UILabel!
-
     @IBOutlet weak var hashLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var amountLabel: UILabel!
@@ -91,13 +90,16 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     @IBOutlet weak var increasefeeLabel: UILabel!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var memoTextView: UITextView!
-
     @IBOutlet weak var statusImage: UIImageView!
     @IBOutlet weak var statusCell: UITableViewCell!
     @IBOutlet weak var recipientCell: UITableViewCell!
     @IBOutlet weak var walletCell: UITableViewCell!
+    @IBOutlet weak var assetCell: UITableViewCell!
     @IBOutlet weak var walletGradientView: UIView!
     @IBOutlet weak var saveButton: UIButton!
+    @IBOutlet weak var assetTag: UILabel!
+    @IBOutlet weak var assetValue: UILabel!
+
     var gradientLayer = CAGradientLayer()
 
     override func viewDidLoad() {
@@ -139,44 +141,59 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     }
 
     func updateUI() {
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
         hashLabel.text = transaction.hash
         amountLabel.text = String(format: "%@ / %@", String.toBtc(satoshi: transaction.satoshi), String.toFiat(satoshi: transaction.satoshi))
         feeLabel.text = String(format: "%d satoshi, %.2f sat/vbyte", transaction.fee, Double(transaction.feeRate) / 1000)
+        dateLabel.text = transaction.date()
+
+        // enable memo text
         memoTextView.text = transaction.memo
         memoTextView.delegate = self
-        dateLabel.text = transaction.date()
-        statusImage.isHidden = true
-        statusLabel.textColor = UIColor.customTitaniumLight()
+        memoTextView.isEditable = !getGAService().isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive
 
+        // show/hide recipient
         if transaction.type == "redeposit" {
             walletCell.isHidden = true
             recipientCell.isHidden = true
         } else if transaction.type == "incoming" {
-            walletLabel.text = wallet.localizedName() // + " " + (transaction.address() ?? "")
+            walletLabel.text = wallet.localizedName()
             recipientCell.isHidden = true
         } else {
             recipientLabel.text = transaction.address()
             walletCell.isHidden = true
         }
+
+        // tx status label
+        statusLabel.textColor = UIColor.customTitaniumLight()
         if transaction.blockHeight == 0 {
             statusLabel.textColor = UIColor.errorRed()
             statusLabel.text = NSLocalizedString("id_unconfirmed", comment: "")
-        } else if getGAService().getBlockheight() - (transaction.blockHeight) < 5 {
+        } else if isLiquid && getGAService().getBlockheight() - transaction.blockHeight < 1 {
+            statusLabel.text = NSLocalizedString("id_12_confirmations", comment: "")
+        } else if !isLiquid && getGAService().getBlockheight() - transaction.blockHeight < 5 {
             let blocks = getGAService().getBlockheight() - transaction.blockHeight + 1
             statusLabel.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), blocks)
         } else {
             statusLabel.text = NSLocalizedString("id_completed", comment: "")
-            statusImage.image = UIImage(named: "check")
-            statusImage.isHidden = false
         }
-        if transaction.canRBF && !getGAService().isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive {
-            statusImage.image = UIImage(named: "bump_fee")
-            statusImage.isHidden = false
-            increasefeeLabel.isHidden = false
-        } else {
-            increasefeeLabel.isHidden = true
+
+        // show/hide bump fee
+        statusImage.image = UIImage(named: "bump_fee")
+        let showBumpFee = !isLiquid && transaction.canRBF && !getGAService().isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive
+        statusImage.isHidden = !showBumpFee
+        increasefeeLabel.isHidden = !showBumpFee
+
+        // show 1st asset for liquid network
+        assetCell.isHidden = true
+        if getGdkNetwork(getNetwork()).liquid {
+            if let asset = transaction.assets.first {
+                assetValue.text = String.toBtc(satoshi: asset.value, showDenomination: false)
+                assetTag.text = asset.key
+                assetCell.isHidden = false
+            }
         }
-        memoTextView.isEditable = !getGAService().isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive
+
         self.tableView.reloadData()
     }
 
@@ -188,9 +205,11 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         // Hide cells
-        if walletCell.isHidden && indexPath.row == 5 {
+        if walletCell.isHidden && indexPath.row == 6 {
             return 0
-        } else if recipientCell.isHidden && indexPath.row == 4 {
+        } else if recipientCell.isHidden && indexPath.row == 5 {
+            return 0
+        } else if assetCell.isHidden && indexPath.row == 2 {
             return 0
         }
         return super.tableView(tableView, heightForRowAt: indexPath)

@@ -29,10 +29,23 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.toTitle.text = NSLocalizedString("id_to", comment: "")
         content.myNotesTitle.text = NSLocalizedString("id_my_notes", comment: "")
         content.feeTitle.text = NSLocalizedString("id_total_with_fee", comment: "")
+        content.assetsTitle.text = NSLocalizedString("id_sending", comment: "")
+        content.assetsFeeTitle.text = NSLocalizedString("id_fee", comment: "")
         gradientLayer = content.fromView.makeGradientCard()
         content.fromView.layer.insertSublayer(gradientLayer, at: 0)
+
+        // setup liquid view
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        content.assetsView.heightAnchor.constraint(equalToConstant: 0).isActive = !isLiquid
+        content.sendView.heightAnchor.constraint(equalToConstant: 0).isActive = isLiquid
+        content.assetsView.isHidden = !isLiquid
+        content.sendView.isHidden = isLiquid
+        content.assetsView.layoutIfNeeded()
+        content.sendView.layoutIfNeeded()
+
+        // load content
         setupCurrencyButton()
-        update()
+        reload()
     }
 
     override func viewDidLayoutSubviews() {
@@ -52,16 +65,20 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.currencyButton.removeTarget(self, action: #selector(click(_:)), for: .touchUpInside)
     }
 
-    func update() {
-        let address = transaction.addressees.first!.address
-        let satoshi = transaction.addressees.first!.satoshi
-        content.toLabel.text = address
-        if isFiat {
-            content.amountText.text = String.toFiat(satoshi: satoshi, showCurrency: false)
-            content.feeLabel.text = String.toFiat(satoshi: satoshi + transaction.fee)
+    func reload() {
+        let addressee = transaction.addressees.first!
+        content.toLabel.text = addressee.address
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        if isLiquid {
+            content.assetTagLabel.text = addressee.assetTag == "btc" ? "L-BTC" : addressee.assetTag
+            content.assetValueLabel.text = String.toBtc(satoshi: addressee.satoshi, showDenomination: false)
+            content.assetsFeeLabel.text = String.toBtc(satoshi: transaction.fee)
+        } else if isFiat {
+            content.amountText.text = String.toFiat(satoshi: addressee.satoshi, showCurrency: false)
+            content.feeLabel.text = String.toFiat(satoshi: addressee.satoshi + transaction.fee)
         } else {
-            content.amountText.text = String.toBtc(satoshi: satoshi, showDenomination: false)
-            content.feeLabel.text = String.toBtc(satoshi: satoshi + transaction.fee)
+            content.amountText.text = String.toBtc(satoshi: addressee.satoshi, showDenomination: false)
+            content.feeLabel.text = String.toBtc(satoshi: addressee.satoshi + transaction.fee)
         }
     }
 
@@ -80,7 +97,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     @objc func click(_ sender: Any?) {
         isFiat = !isFiat
         setupCurrencyButton()
-        update()
+        reload()
     }
 
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -198,6 +215,13 @@ class SendBTCConfirmationView: UIView {
     @IBOutlet weak var feeTitle: UILabel!
     @IBOutlet weak var amountText: UITextField!
     @IBOutlet weak var currencyButton: UIButton!
+    @IBOutlet weak var assetsView: UIView!
+    @IBOutlet weak var sendView: UIView!
+    @IBOutlet weak var assetsTitle: UILabel!
+    @IBOutlet weak var assetTagLabel: UILabel!
+    @IBOutlet weak var assetValueLabel: UILabel!
+    @IBOutlet weak var assetsFeeTitle: UILabel!
+    @IBOutlet weak var assetsFeeLabel: UILabel!
 
     override init(frame: CGRect) {
         super.init(frame: frame)

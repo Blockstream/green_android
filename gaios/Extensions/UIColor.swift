@@ -42,6 +42,22 @@ extension UIColor {
         return UIColor.init(red: 0x14 / 255, green: 0x1E / 255, blue: 0x28 / 255, alpha: 1)
     }
 
+    class func cardBlueLight() -> UIColor {
+        return UIColor.init(red: 0x00 / 255, green: 0x90 / 255, blue: 0x90 / 255, alpha: 1)
+    }
+
+    class func cardBlueMedium() -> UIColor {
+        return UIColor.init(red: 0x23 / 255, green: 0x46 / 255, blue: 0x51 / 255, alpha: 1)
+    }
+
+    class func cardBlueDark() -> UIColor {
+        return UIColor.init(red: 0x16 / 255, green: 0x1E / 255, blue: 0x27 / 255, alpha: 1)
+    }
+
+    class func blueLight() -> UIColor {
+        return UIColor.init(red: 0x00 / 255, green: 0x70 / 255, blue: 0x6A / 255, alpha: 1)
+    }
+
     class func errorRed() -> UIColor {
         return UIColor(named: "errorRed")!
     }

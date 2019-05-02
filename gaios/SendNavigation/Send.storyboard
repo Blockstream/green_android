@@ -20,10 +20,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gc2-dn-6NU">
-                                <rect key="frame" x="0.0" y="169" width="320" height="325"/>
+                                <rect key="frame" x="0.0" y="169" width="320" height="281"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="v67-PB-604" customClass="QRCodeReaderView" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="325"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="281"/>
                                         <color key="backgroundColor" name="customTitaniumDark"/>
                                     </view>
                                 </subviews>
@@ -74,7 +74,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2g2-dg-Nwn">
-                                <rect key="frame" x="0.0" y="494" width="320" height="74"/>
+                                <rect key="frame" x="0.0" y="450" width="320" height="74"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EV6-b6-oPs">
                                         <rect key="frame" x="16" y="16" width="288" height="42"/>
@@ -146,11 +146,30 @@
                     <connections>
                         <outlet property="content" destination="phk-0c-HC0" id="oaS-er-HcV"/>
                         <segue destination="Agf-J9-aru" kind="show" identifier="next" id="082-hk-XXL"/>
+                        <segue destination="8r0-9y-XZE" kind="show" identifier="assets" id="8fV-fg-Xky"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wlU-78-7k6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2248" y="38"/>
+        </scene>
+        <!--Assets Table View Controller-->
+        <scene sceneID="PZ8-bd-PJg">
+            <objects>
+                <tableViewController id="8r0-9y-XZE" customClass="AssetsTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="ybG-gm-jje">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <connections>
+                            <outlet property="dataSource" destination="8r0-9y-XZE" id="55K-cP-svr"/>
+                            <outlet property="delegate" destination="8r0-9y-XZE" id="dhA-SN-SFq"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cgq-rh-BTs" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2246" y="938"/>
         </scene>
         <!--Send-->
         <scene sceneID="90b-rI-MLu">
@@ -176,7 +195,7 @@
         <!--Navigation Controller-->
         <scene sceneID="jax-93-eiL">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="bsr-VN-pxJ" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" hidesBottomBarWhenPushed="YES" toolbarHidden="NO" id="bsr-VN-pxJ" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="fH3-Wk-kRL">
                         <rect key="frame" x="0.0" y="20" width="320" height="44"/>

@@ -3,7 +3,8 @@ import UIKit
 
 class InitialViewController: UIViewController {
     @IBOutlet var content: InitialView!
-
+    @IBOutlet weak var watchOnlyButton: UIBarButtonItem!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
@@ -41,9 +42,11 @@ class InitialViewController: UIViewController {
     }
 
     func reload() {
-        let network = getNetwork()
-        content.networkButton.setTitle(getGdkNetwork(network).name, for: .normal)
-        content.walletDetectionStackView.isHidden = !isPinEnabled(network: getNetwork())
+        let network =  getGdkNetwork(getNetwork())
+        content.networkButton.setTitle(network.name, for: .normal)
+        content.walletDetectionStackView.isHidden = !isPinEnabled(network: network.network)
+        watchOnlyButton.tintColor = !network.liquid ? UIColor.customTitaniumLight() : UIColor.clear
+        watchOnlyButton.isEnabled = !network.liquid
     }
 
     @objc func click(_ sender: UIButton) {

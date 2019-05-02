@@ -18,12 +18,21 @@ enum TransactionError: Error {
 }
 
 struct Addressee: Codable {
+
+    enum CodingKeys: String, CodingKey {
+        case address
+        case satoshi
+        case assetTag = "asset_tag"
+    }
+
     let address: String
     let satoshi: UInt64
+    let assetTag: String?
 
-    init(address: String, satoshi: UInt64) {
+    init(address: String, satoshi: UInt64, assetTag: String? = nil) {
         self.address = address
         self.satoshi = satoshi
+        self.assetTag = assetTag
     }
 }
 
@@ -44,7 +53,8 @@ struct Transaction {
             return out.map { value in
                 let address = value["address"] as? String
                 let satoshi = value["satoshi"] as? UInt64
-                return Addressee(address: address!, satoshi: satoshi!)
+                let assetTag = value["asset_tag"] as? String
+                return Addressee(address: address!, satoshi: satoshi!, assetTag: assetTag)
             }
         }
         set {
@@ -52,6 +62,7 @@ struct Transaction {
                 var out = [String: Any]()
                 out["address"] = addr.address
                 out["satoshi"] = addr.satoshi
+                out["asset_tag"] = addr.assetTag
                 return out
             }
             details["addressees"] = addressees
@@ -102,7 +113,21 @@ struct Transaction {
     }
 
     var satoshi: UInt64 {
-        get { return get("satoshi") ?? 0 }
+        get {
+            let dict = get("satoshi") as [String: Any]?
+            return dict?["btc"] as? UInt64 ?? 0
+        }
+    }
+
+    var assets: [String: UInt64] {
+        get {
+            guard getGdkNetwork(getNetwork()).liquid else {
+                return [:]
+            }
+            var dict = get("satoshi") as [String: UInt64]? ?? [:]
+            dict.removeValue(forKey: "btc")
+            return dict
+        }
     }
 
     var sendAll: Bool {
@@ -119,7 +144,8 @@ struct Transaction {
     }
 
     func amount() -> String {
-        let satoshi = String.toBtc(satoshi: self.satoshi)
+        let isLiquid = getGdkNetwork(getNetwork()).liquid && !self.assets.isEmpty
+        let satoshi = isLiquid ? String.toBtc(satoshi: self.assets.first!.value, showDenomination: false) : String.toBtc(satoshi: self.satoshi)
         if type == "outgoing" || type == "redeposit" {
             return "-" + satoshi
         } else {
@@ -184,7 +210,8 @@ class WalletItem: Codable {
     var receiveAddress: String?
     let receivingId: String
     let type: String
-    var balance: Balance
+    var balance: [String: Balance]
+    var btc: Balance { get { return balance["btc"]! }}
 
     func localizedName() -> String {
         return pointer == 0 ? NSLocalizedString("id_main_account", comment: "") : name
@@ -202,13 +229,13 @@ class WalletItem: Codable {
         return receiveAddress ?? String()
     }
 
-    func getBalance() -> Promise<Balance> {
+    func getBalance() -> Promise<[String: Balance]> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
             try getSession().getBalance(details: ["subaccount": self.pointer, "num_confs": 0])
         }.compactMap(on: bgq) { data in
             let jsonData = try JSONSerialization.data(withJSONObject: data)
-            self.balance = try JSONDecoder().decode(Balance.self, from: jsonData)
+            self.balance = try JSONDecoder().decode([String: Balance].self, from: jsonData)
             return self.balance
         }
     }

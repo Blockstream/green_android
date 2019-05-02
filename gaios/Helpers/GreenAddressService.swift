@@ -85,6 +85,7 @@ class GreenAddressService {
             blockHeight = height
             post(event: .Block, data: data)
         case .Transaction:
+            post(event: .Transaction, data: data)
             do {
                 let json = try JSONSerialization.data(withJSONObject: data, options: [])
                 let txEvent = try JSONDecoder().decode(TransactionEvent.self, from: json)
@@ -96,7 +97,6 @@ class GreenAddressService {
                     }
                 }
             } catch { break }
-            post(event: .Transaction, data: data)
         case .TwoFactorReset:
             do {
                 let json = try JSONSerialization.data(withJSONObject: data, options: [])
