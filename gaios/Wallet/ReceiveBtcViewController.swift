@@ -27,6 +27,10 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.amountLabel.text = NSLocalizedString("id_amount", comment: "")
         content.shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
         content.shareButton.setGradient(true)
+
+        if getGdkNetwork(getNetwork()).liquid {
+            content.hideAmount()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -83,7 +87,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         Guarantee().compactMap(on: bgq) {
             return wallet.getAddress()
         }.done { address in
-            let uri = self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
+            let uri = getGdkNetwork(getNetwork()).liquid || self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
             UIPasteboard.general.string = uri
             Toast.show(NSLocalizedString("id_address_copied_to_clipboard", comment: ""), timeout: Toast.SHORT)
         }.catch { _ in }
@@ -143,7 +147,10 @@ class ReceiveBtcViewController: KeyboardViewController {
                 throw GaError.GenericError
             }
             let uri: String
-            if self.getSatoshi() == 0 {
+            if getGdkNetwork(getNetwork()).liquid {
+                uri = address
+                self.content.walletAddressLabel.text = address
+            } else if self.getSatoshi() == 0 {
                 uri = Bip21Helper.btcURIforAddress(address: address)
                 self.content.walletAddressLabel.text = address
             } else {
@@ -227,5 +234,12 @@ class ReceiveBtcView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         shareButton.updateGradientLayerFrame()
+    }
+
+    func hideAmount() {
+        amountLabel.isHidden = true
+        amountTextfield.isHidden = true
+        fiatSwitchButton.isHidden = true
+        estimateLabel.isHidden = true
     }
 }
