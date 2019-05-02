@@ -25,7 +25,8 @@ class NetworkSelectionSettings: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath as IndexPath)
         let network = networks[indexPath.row]
         cell.textLabel!.text = network.name
-        cell.imageView?.image = UIImage(named: network.icon!)
+        let imageName = network.liquid ? "btc_liquid_title" : network.icon
+        cell.imageView?.image = UIImage(named: imageName!)
         cell.accessoryView = selectedNetwork == network.network ? UIImageView(image: UIImage(named: "check")) : nil
         cell.setNeedsLayout()
         return cell

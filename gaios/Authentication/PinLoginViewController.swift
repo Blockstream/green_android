@@ -24,7 +24,8 @@ class PinLoginViewController: UIViewController {
         let navigationBarHeight: CGFloat =  navigationController!.navigationBar.frame.height
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: navigationBarHeight, height: navigationBarHeight))
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: network.icon!)
+        let imageName = network.liquid ? "btc_liquid_title" : network.icon
+        imageView.image = UIImage(named: imageName!)
         navigationItem.titleView = imageView
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))

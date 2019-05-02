@@ -6,6 +6,7 @@ struct GdkNetwork: Codable {
     enum CodingKeys: String, CodingKey {
         case name
         case network
+        case liquid
         case development
         case txExplorerUrl = "tx_explorer_url"
         case icon
@@ -13,6 +14,7 @@ struct GdkNetwork: Codable {
 
     let name: String
     let network: String
+    let liquid: Bool
     let development: Bool
     let txExplorerUrl: String
     var icon: String?
@@ -23,6 +25,7 @@ func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork 
     let jsonData = try! JSONSerialization.data(withJSONObject: res![network]!)
     var network = try! JSONDecoder().decode(GdkNetwork.self, from: jsonData)
     network.icon = network.network.lowercased() == "mainnet" ? "btc" : "btc_testnet"
+    network.icon = network.liquid ? "btc_liquid" : network.icon
     return network
 }
 

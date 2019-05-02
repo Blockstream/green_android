@@ -21,8 +21,11 @@ class WalletFullCardView: UIView {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.sendLabel.text = NSLocalizedString("id_send", comment: "").capitalized
-        self.receiveLabel.text = NSLocalizedString("id_receive", comment: "").capitalized
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        sendLabel.text = NSLocalizedString("id_send", comment: "").capitalized
+        receiveLabel.text = NSLocalizedString("id_receive", comment: "").capitalized
+        sendImage.tintColor = isLiquid ? .white : UIColor.customMatrixGreen()
+        receiveImage.tintColor = isLiquid ? .white : UIColor.customMatrixGreen()
     }
 
     override func layoutSubviews() {
