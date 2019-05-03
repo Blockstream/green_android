@@ -81,7 +81,7 @@ public class TransactionItem implements Serializable {
         counterparty = "";
         this.subaccount = subaccount;
 
-        satoshi = txData.getSatoshi();
+        satoshi = txData.getSatoshi().get("btc");
 
         switch (txData.getType()) {
         case "outgoing":

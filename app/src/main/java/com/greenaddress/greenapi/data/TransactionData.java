@@ -11,6 +11,7 @@ import org.bitcoinj.core.Sha256Hash;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,7 +25,7 @@ public class TransactionData extends JSONData {
     private Integer subaccount;
     private List<Integer> subaccounts;
     private String txhash;
-    private Long satoshi;
+    private Map<String,Long> satoshi;
     private String type;
     private Boolean canRbf;
     private Boolean canCpfp;
@@ -51,11 +52,6 @@ public class TransactionData extends JSONData {
     private List<InputOutputData> inputs;
     private List<InputOutputData> outputs;
 
-
-    @JsonIgnore
-    public Coin getSatoshiAsCoin() {
-        return satoshi == null ? null : Coin.valueOf(satoshi);
-    }
 
     @JsonIgnore
     public Sha256Hash getTxhashAsSha256Hash() {
@@ -292,11 +288,11 @@ public class TransactionData extends JSONData {
         this.txhash = txhash;
     }
 
-    public Long getSatoshi() {
+    public Map<String, Long> getSatoshi() {
         return satoshi;
     }
 
-    public void setSatoshi(final Long satoshi) {
+    public void setSatoshi(Map<String, Long> satoshi) {
         this.satoshi = satoshi;
     }
 
