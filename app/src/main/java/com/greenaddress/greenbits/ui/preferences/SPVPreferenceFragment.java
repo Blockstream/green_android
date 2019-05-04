@@ -1,6 +1,9 @@
 package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.EditTextPreference;
@@ -9,7 +12,9 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.greenaddress.greenbits.ui.MnemonicActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.ScanForResultActivity;
 import com.greenaddress.greenbits.ui.UI;
 
 import java.net.URI;
@@ -21,8 +26,12 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     Preference.OnPreferenceClickListener {
 
     private static final String TAG = GAPreferenceFragment.class.getSimpleName();
+    private static final int QRSCANNER = 1338;
+    private static final int CAMERA_PERMISSION = 150;
+
     private EditTextPreference mTrustedPeer;
     private Preference mResetSPV;
+    private Preference mScanSPV;
     private CheckBoxPreference mSPVEnabled;
     private CheckBoxPreference mSPVSyncOnMobile;
 
@@ -41,6 +50,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mResetSPV = find("reset_spv");
         mSPVEnabled = find("spvEnabled");
         mSPVSyncOnMobile = find("spvSyncMobile");
+        mScanSPV = find("scan_spv");
 
         mSPVEnabled.setSingleLineTitle(false);
         mSPVSyncOnMobile.setSingleLineTitle(false);
@@ -51,6 +61,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             mResetSPV.setEnabled(false);
             mSPVEnabled.setEnabled(false);
             mSPVSyncOnMobile.setEnabled(false);
+            mScanSPV.setEnabled(false);
         } else {
             // Initialise values and bindings for preference changes
             bindPreferenceSummaryToValue(mTrustedPeer);
@@ -59,6 +70,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             mSPVSyncOnMobile.setChecked(mService.isSPVSyncOnMobileEnabled());
 
             mTrustedPeer.setEnabled(mService.isSPVEnabled());
+            mScanSPV.setEnabled(mService.isSPVEnabled());
             final boolean setTextValue = true;
             setTrustedPeersPreference(mService.getSPVTrustedPeers(), setTextValue);
 
@@ -66,6 +78,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             mSPVEnabled.setOnPreferenceChangeListener(this);
             mSPVSyncOnMobile.setOnPreferenceChangeListener(this);
             mTrustedPeer.setOnPreferenceChangeListener(this);
+            mScanSPV.setOnPreferenceClickListener(this);
         }
 
         getActivity().setResult(Activity.RESULT_OK, null);
@@ -92,6 +105,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mTrustedPeer.setEnabled(newValue);
         mService.setSPVEnabledAsync(newValue);
         mSPVSyncOnMobile.setEnabled(newValue);
+        mScanSPV.setEnabled(newValue);
         if (!newValue) {
             mSPVSyncOnMobile.setChecked(false);
             mService.setSPVSyncOnMobileEnabledAsync(false);
@@ -170,7 +184,38 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         if (preference == mResetSPV) {
             UI.toast(getActivity(), R.string.id_spv_reset_and_restarted, Toast.LENGTH_LONG);
             mService.resetSPVAsync();
+        } else if (preference == mScanSPV) {
+            onScanClicked();
         }
         return false;
+    }
+
+    private void onScanClicked() {
+        final String[] perms = { "android.permission.CAMERA" };
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1 &&
+            getActivity().checkSelfPermission(perms[0]) != PackageManager.PERMISSION_GRANTED)
+            requestPermissions(perms, CAMERA_PERMISSION);
+        else {
+            final Intent scanner = new Intent(getActivity(), ScanForResultActivity.class);
+            startActivityForResult(scanner, QRSCANNER);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, final String[] permissions, final int[] granted) {
+        if (requestCode == CAMERA_PERMISSION && granted != null && granted.length > 0 &&
+            granted[0] == PackageManager.PERMISSION_GRANTED)
+            startActivityForResult(new Intent(getActivity(), ScanForResultActivity.class), QRSCANNER);
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == QRSCANNER && data != null &&
+            data.getStringExtra(ScanForResultActivity.INTENT_EXTRA_RESULT) != null) {
+            String address = data.getStringExtra(ScanForResultActivity.INTENT_EXTRA_RESULT);
+            address = address.contains("://") ? address.split("://")[1] : address;
+            setTrustedPeers(address);
+        }
     }
 }

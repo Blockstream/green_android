@@ -14,6 +14,11 @@
         android:summary="@string/id_example_89014283334011612858333"
         android:dependency="spvEnabled" />
     <Preference
+        android:key="scan_spv"
+        android:title="@string/id_scan_qr_spv"
+        android:summary="@string/id_tap_to_scan_qr_code_spv_address"
+        android:dependency="spvEnabled" />
+    <Preference
         android:key="reset_spv"
         android:title="@string/id_reset_spv"
         android:summary="@string/id_tap_to_restart_the_simplified"
