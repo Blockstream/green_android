@@ -104,28 +104,28 @@ afterEvaluate {
 }
 
 configurations {
-    api.exclude group: "org.json", module: "json"
+    implementation.exclude group: "org.json", module: "json"
 }
 
 dependencies {
-    api project(':bitcoinj:core')
+    implementation project(':bitcoinj:core')
 
-    api 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
     // force material-dialogs to use latest support libs
-    api 'com.android.support:support-v13:28.0.0'
-    api 'com.android.support:support-annotations:28.0.0'
-    api 'com.android.support:appcompat-v7:28.0.0'
-    api 'com.android.support:design:28.0.0'
-    api 'com.android.support:recyclerview-v7:28.0.0'
-    api 'com.android.support:gridlayout-v7:28.0.0'
-    api 'com.android.support:cardview-v7:28.0.0'
-    api 'com.takisoft.fix:preference-v7:28.0.0.0'
-    api 'com.android.support.constraint:constraint-layout:1.1.3'
-    api 'com.android.support:multidex:1.0.3'
+    implementation 'com.android.support:support-v13:28.0.0'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:gridlayout-v7:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.takisoft.fix:preference-v7:28.0.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:multidex:1.0.3'
 
-    api 'com.google.zxing:core:3.3.2'
-    api 'com.afollestad.material-dialogs:core:0.9.6.0'
-    api 'com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.9.6'
+    implementation 'com.google.zxing:core:3.3.2'
+    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.9.6'
 
     // used to redirect bitcoinj logging to android in debug builds, enable manually
     // debugApi 'com.noveogroup.android:android-logger:1.3.6'
