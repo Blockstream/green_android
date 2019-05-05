@@ -14,7 +14,6 @@ build_tag_release:
     - ./tools/uncrustify
     - git diff
     - git diff --quiet
-    - ./app/fetch_gdk_binaries.sh
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
@@ -26,7 +25,6 @@ build_tag_osx_release:
     - ./tools/uncrustify
     - git diff
     - git diff --quiet
-    - ./app/fetch_gdk_binaries.sh
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 

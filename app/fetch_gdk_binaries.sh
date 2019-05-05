@@ -22,6 +22,13 @@ APP_ROOT=${OLD_PWD}
 if [ -d "${APP_ROOT}/app" ]; then
     APP_ROOT="${APP_ROOT}/app"
 fi
+
+ONCEFLAG=${APP_ROOT}/src/main/jniLibs/$SHA256.done
+
+if [ -f $ONCEFLAG ]; then
+    exit 0
+fi
+
 GDK_JAVA_DIR="${APP_ROOT}/src/main/java/com/blockstream"
 
 # Clean up any previous install
@@ -39,3 +46,5 @@ mv ${NAME}/java/com/blockstream/ ${GDK_JAVA_DIR}
 
 # Cleanup
 rm -fr $NAME
+
+touch $ONCEFLAG

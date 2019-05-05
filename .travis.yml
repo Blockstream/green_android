@@ -4,7 +4,7 @@ matrix:
   include:
     - services:
         - docker
-      script: docker run -v $PWD:/gb greenaddress/android@sha256:259e21fd9127b8b4d462e114c777cd60449e27121d708357dd34e3c8bdd9f8e7 /bin/sh -c "cd /gb && tools/uncrustify && git diff && git diff --quiet && ./app/fetch_gdk_binaries.sh && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew lintProductionRelease && ./gradlew assembleProductionRelease"
+      script: docker run -v $PWD:/gb greenaddress/android@sha256:259e21fd9127b8b4d462e114c777cd60449e27121d708357dd34e3c8bdd9f8e7 /bin/sh -c "cd /gb && tools/uncrustify && git diff && git diff --quiet && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew lintProductionRelease && ./gradlew assembleProductionRelease"
     - os: osx
       osx_image: xcode8.3
       env:
@@ -22,6 +22,5 @@ matrix:
       script:
         - export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
         - cd $HOME/build/blockstream/green_android && ./tools/uncrustify && git diff && git diff --quiet
-        - cd $HOME/build/blockstream/green_android/app && ./fetch_gdk_binaries.sh
         - cd $HOME/build/blockstream/green_android && ./gradlew lintProductionRelease
-        - cd $HOME/build/blockstream/green_android && ./gradlew assembleProductionDebug
+        - cd $HOME/build/blockstream/green_android && ./gradlew assembleProductionRelease

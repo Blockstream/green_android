@@ -28,12 +28,8 @@ The above tools can be installed from the Android SDK manager.
 
 #### Use the released native libraries (recommended):
 
-To fetch and install the pre-built naitive libraries, run:
-
-`./app/fetch_gdk_binaries.sh`
-
 The pre-built native libraries are the same versions used in the builds
-published by GreenAddress.
+published by GreenAddress. Gradle/Android Studio will automatically use the latest.
 
 #### Cross-compile the native libraries (advanced):
 

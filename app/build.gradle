@@ -91,6 +91,16 @@ android {
         ignoreWarnings false
         disable 'MissingTranslation'
     }
+    task fetchdepstask (type: Exec) {
+        workingDir '.'
+        commandLine './fetch_gdk_binaries.sh'
+    }
+}
+
+afterEvaluate {
+  android.applicationVariants.all { variant ->
+    variant.javaCompiler.dependsOn(fetchdepstask)
+  }
 }
 
 configurations {
