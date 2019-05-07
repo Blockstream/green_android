@@ -33,6 +33,8 @@ import org.bitcoinj.core.AddressFormatException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -169,14 +171,19 @@ public class GDKSession {
         return twoFactorConfigData;
     }
 
-    public BalanceData getBalance(final Integer subAccount, final long confirmations) throws IOException {
+    public Map<String,BalanceData> getBalance(final Integer subAccount, final long confirmations) throws IOException {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
         final ObjectNode balanceData = (ObjectNode) GDK.get_balance(mNativeSession, details);
-        final BalanceData balanceData1 = mObjectMapper.treeToValue(balanceData, BalanceData.class);
-        debugEqual(balanceData, balanceData1);
-        return balanceData1;
+        final Map<String, BalanceData> map = new HashMap<>();
+        final Iterator<String> iterator = balanceData.fieldNames();
+        while (iterator.hasNext()) {
+            final String key = iterator.next();
+            final BalanceData b = mObjectMapper.treeToValue(balanceData.get(key), BalanceData.class);
+            map.put(key,b);
+        }
+        return map;
     }
 
     public BalanceData convertBalance(final BalanceData balanceData) throws IOException, RuntimeException {

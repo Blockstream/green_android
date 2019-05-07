@@ -28,7 +28,7 @@ public class BalanceDataObservable extends Observable implements Observer {
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                final BalanceData balance = mSession.getBalance(mSubaccount, 0);
+                final BalanceData balance = mSession.getBalance(mSubaccount, 0).get("btc");
                 setBalanceData(balance);
             } catch (IOException e) {
                 Log.e("OBS", e.getMessage());
