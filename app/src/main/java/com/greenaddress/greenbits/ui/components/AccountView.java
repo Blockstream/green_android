@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -73,6 +74,7 @@ public class AccountView extends CardView {
         mNetworkImage2 = UI.find(view, R.id.networkImage2);
         mSubaccount= UI.find(view, R.id.subaccount);
         mAddSubaccount = UI.find(view, R.id.addSubaccount);
+
     }
 
     // Show actions
@@ -94,6 +96,10 @@ public class AccountView extends CardView {
                                        ? getResources().getDrawable(R.drawable.ic_stack_wallets)
                                        : getResources().getDrawable(R.drawable.ic_arrow_forward_24dp)
                                        );
+    }
+
+    public void setBackgroundForNetwork(final NetworkData network) {
+        mBodyLayout.setBackground(getResources().getDrawable(network.getCardBackground()));
     }
 
     public void setIcon(final Drawable resource) {

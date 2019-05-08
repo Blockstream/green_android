@@ -7,6 +7,8 @@
     <color name="darkJungleGreen">#12171e</color>
     <color name="mediumJungleGreen">#2b333b</color>
     <color name="buttonJungleGreen">#19222c</color>
+    <color name="liquidLight">#76dfd1</color>
+    <color name="liquidDark">#46beae</color>
 
 
     <color name="primary">@color/colorPrimary</color>

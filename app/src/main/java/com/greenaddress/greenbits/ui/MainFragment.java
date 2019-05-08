@@ -81,6 +81,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         mAccountView = UI.find(mView, R.id.accountView);
         mAccountView.setIcon(getResources().getDrawable(getGAService().getNetwork().getIcon()));
         mAccountView.listMode(true);
+        mAccountView.setBackgroundForNetwork(service.getNetwork());
         mAccountView.setOnClickListener(this);
         if (service.getModel().isTwoFAReset())
             mAccountView.hideActions();

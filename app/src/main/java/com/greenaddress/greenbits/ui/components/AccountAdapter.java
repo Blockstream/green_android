@@ -71,6 +71,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             }
             holder.mAccountView.listMode(false);
             holder.mAccountView.setIcon(mResources.getDrawable(mService.getNetwork().getIcon()));
+            holder.mAccountView.setBackgroundForNetwork(mService.getNetwork());
             holder.mAccountView.setOnClickListener(listener);
             holder.mAccountView.showAdd(false);
         } else {

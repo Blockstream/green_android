@@ -59,6 +59,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final TextView noteText = UI.find(this, R.id.noteText);
         final TextView addressText = UI.find(this, R.id.addressText);
         final TextView subaccountText = UI.find(this, R.id.subaccountText);
+        subaccountText.setBackground(getResources().getDrawable(mService.getNetwork().getCardBackground()));
         mSwipeButton = UI.find(this, R.id.swipeButton);
 
         // Setup views fields
