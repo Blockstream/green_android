@@ -86,6 +86,7 @@
                 android:layout_height="8dp" />
 
             <LinearLayout
+                android:id="@+id/sendAllLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
@@ -104,11 +105,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"/>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/sections_spacing" />
+
             </LinearLayout>
 
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/sections_spacing" />
+
 
             <TextView
                 android:layout_width="match_parent"
@@ -120,6 +124,7 @@
                 android:id="@+id/selectAsset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="4dp"
                 android:text="Selected Asset"/>
 
             <Space

@@ -92,7 +92,9 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             mAccountView.showActions(service.isWatchOnly());
 
         final TextView assetsSelection = UI.find(mView, R.id.assetsSelection);
-        assetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(), AssetsSelectActivity.class),REQUEST_SELECT_ASSET));
+        assetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(),
+                                                                                  AssetsSelectActivity.class),
+                                                                       REQUEST_SELECT_ASSET));
         try {
             assetsSelection.setText(service.getSession().getBalance(0,0).size() + " assets in this wallet");
         } catch (IOException e) {

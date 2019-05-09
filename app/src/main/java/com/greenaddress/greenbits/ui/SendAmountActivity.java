@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private TextView mAccountBalance;
     private Button mNextButton;
     private Button mSendAllButton;
+    private LinearLayout mSendAllLayout;
 
     private FontFitEditText mAmountText;
     private Button mUnitButton;
@@ -86,6 +88,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mRecipientText = UI.find(this, R.id.addressText);
         mAccountBalance = UI.find(this, R.id.accountBalanceText);
 
+        mSendAllLayout = UI.find( this, R.id.sendAllLayout);
         mAmountText = UI.find(this, R.id.amountText);
         mUnitButton = UI.find(this, R.id.unitButton);
         mSelectAsset = UI.find(this, R.id.selectAsset);
@@ -209,11 +212,22 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             isKeyboardOpen = (keypadHeight > screenHeight * 0.15); // 0.15 ratio is perhaps enough to determine keypad height.
         });
 
-        mSelectAsset.setOnClickListener(v -> startActivityForResult(new Intent(this, AssetsSelectActivity.class),REQUEST_SELECT_ASSET));
+        mSelectAsset.setOnClickListener(v -> startActivityForResult(new Intent(this, AssetsSelectActivity.class),
+                                                                    REQUEST_SELECT_ASSET));
     }
 
     private void updateAssetSelected() {
         mSelectAsset.setText("Selected asset: " + mSelectedAsset);
+        if ("btc".equals(mSelectedAsset)) {
+            mSendAllLayout.setVisibility(View.VISIBLE);
+            mUnitButton.setVisibility(View.VISIBLE);
+            mAmountText.setHint(R.string.zeroDecimal);
+        } else {
+            mSendAllLayout.setVisibility(View.GONE);
+            mUnitButton.setVisibility(View.GONE);
+            mAmountText.setHint(R.string.zero);
+        }
+
     }
 
     private int[] getBlockTargets() {
@@ -387,7 +401,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         if (caller == mSelectAsset) {
             final JsonNode assetTag = addressee.get("asset_tag");
-            changed |= assetTag == null || !assetTag.asText().equals(mSelectedAsset) ;
+            changed |= assetTag == null || !assetTag.asText().equals(mSelectedAsset);
             addressee.put("asset_tag", mSelectedAsset);
             updateAssetSelected();
         }
