@@ -98,6 +98,9 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
         final int subaccount = getGAService().getModel().getCurrentSubaccount();
         mTxList = getGAService().getModel().getTransactionDataObservable(subaccount).getTransactionDataList();
         UI.attachHideKeyboardListener(getActivity(), mView);
+
+        UI.hideIf(getGAService().isLiquid(), UI.find(mView, R.id.amountLayout));
+
         return mView;
     }
 

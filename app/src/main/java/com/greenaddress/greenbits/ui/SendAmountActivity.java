@@ -93,6 +93,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mUnitButton = UI.find(this, R.id.unitButton);
         mSelectAsset = UI.find(this, R.id.selectAsset);
         updateAssetSelected();
+        UI.hideIf( mService.isLiquid(), mSendAllLayout);
+
 
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener(this);
@@ -218,14 +220,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     private void updateAssetSelected() {
         mSelectAsset.setText("Selected asset: " + mSelectedAsset);
-        if ("btc".equals(mSelectedAsset)) {
-            mSendAllLayout.setVisibility(View.VISIBLE);
-            mUnitButton.setVisibility(View.VISIBLE);
-        } else {
-            mSendAllLayout.setVisibility(View.GONE);
-            mUnitButton.setVisibility(View.GONE);
-        }
-
+        UI.showIf("btc".equals(mSelectedAsset), mUnitButton);
     }
 
     private int[] getBlockTargets() {

@@ -43,6 +43,14 @@
                 style="@style/SectionTitle"
                 android:text="@string/id_sending"/>
 
+            <TextView
+                android:id="@+id/selectAsset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="Selected Asset"
+                />
+
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -111,21 +119,6 @@
                     android:layout_height="@dimen/sections_spacing" />
 
             </LinearLayout>
-
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/SectionTitle"
-                android:text="Asset"/>
-
-            <TextView
-                android:id="@+id/selectAsset"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:text="Selected Asset"/>
 
             <Space
                 android:layout_width="match_parent"

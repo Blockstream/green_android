@@ -50,52 +50,59 @@
                 android:layout_width="match_parent"
                 android:layout_height="32dp" />
 
-            <TextView
-                android:id="@+id/accountBalanceText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/card_padding"
-                android:text="@string/id_request_amount"/>
-
-            <RelativeLayout
+            <LinearLayout
+                android:id="@+id/amountLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp">
+                android:orientation="vertical">
 
-                <com.greenaddress.greenbits.ui.FontFitEditText
-                    android:id="@+id/amountEditText"
+                <TextView
+                    android:id="@+id/accountBalanceText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/card_padding"
+                    android:text="@string/id_request_amount"/>
+
+                <RelativeLayout
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal|center_vertical"
-                    android:layout_marginEnd="16dp"
-                    android:layout_toStartOf="@+id/unitButton"
-                    android:gravity="start"
-                    android:hint="@string/zeroDecimal"
-                    android:inputType="numberDecimal"
-                    android:textColor="@color/textColor"
-                    android:textSize="36sp"
-                    android:textAllCaps="false" />
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp">
 
-                <Button
-                    android:id="@+id/unitButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    android:background="@drawable/material_button_currency"
-                    android:includeFontPadding="false"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
-                    android:paddingStart="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="8dp"
-                    android:textSize="18sp"
-                    android:textAllCaps="false" />
+                    <com.greenaddress.greenbits.ui.FontFitEditText
+                        android:id="@+id/amountEditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:layout_marginEnd="16dp"
+                        android:layout_toStartOf="@+id/unitButton"
+                        android:gravity="start"
+                        android:hint="@string/zeroDecimal"
+                        android:inputType="numberDecimal"
+                        android:textColor="@color/textColor"
+                        android:textSize="36sp"
+                        android:textAllCaps="false" />
 
-            </RelativeLayout>
+                    <Button
+                        android:id="@+id/unitButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentBottom="true"
+                        android:background="@drawable/material_button_currency"
+                        android:includeFontPadding="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingTop="8dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="8dp"
+                        android:textSize="18sp"
+                        android:textAllCaps="false" />
 
+                </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
     <Button
