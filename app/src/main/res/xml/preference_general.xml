@@ -21,6 +21,7 @@
         android:summary=""/>
 
     <PreferenceCategory android:title="@string/id_account"
+        android:key="account_title"
         android:icon="@drawable/ic_account"
         android:layout="@layout/preference_category_green"/>
 

@@ -8,6 +8,7 @@ import android.support.v14.preference.SwitchPreference;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceCategory;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -64,6 +65,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private Preference mTwoFactorRequestResetPref;
     private Preference mMemonicPref;
     private ListPreference mTimeoutPref;
+    private PreferenceCategory mAccountTitle;
+    private Preference mSPV;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
@@ -111,6 +114,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mWatchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
         initWatchOnlySummary();
         mWatchOnlyLogin.setOnPreferenceClickListener((preference) -> onWatchOnlyLoginClicked());
+        mAccountTitle = find("account_title");
 
         // Network & Logout
         final Preference logout = find(PrefKeys.LOGOUT);
@@ -260,7 +264,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         findPreference("network_monitor").setVisible(false);
 
         // SPV_SYNCRONIZATION Syncronization Submenu
-        findPreference(PrefKeys.SPV_SYNCRONIZATION).setOnPreferenceClickListener(preference -> {
+        mSPV = findPreference(PrefKeys.SPV_SYNCRONIZATION);
+        mSPV.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SettingsActivity.class);
             intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, SPVPreferenceFragment.class.getName() );
             startActivity(intent);
@@ -541,20 +546,24 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mPinPref.setVisible(!isHW);
         mMemonicPref.setVisible(!isHW);
 
-        final boolean isElements = mService.isElements();
-        mCustomRatePref.setVisible(!isElements);
-        mTxPriorityPref.setVisible(!isElements);
-        mPriceSourcePref.setVisible(!isElements);
-        mUnitPref.setVisible(!isElements);
+        final boolean isLiquid = mService.isLiquid();
+        mCustomRatePref.setVisible(!isLiquid);
+        mTxPriorityPref.setVisible(!isLiquid);
+        mPriceSourcePref.setVisible(!isLiquid);
+        mUnitPref.setVisible(!isLiquid);
+        mWatchOnlyLogin.setVisible(!isLiquid);
+        mAccountTitle.setVisible(!isLiquid);
+        mSPV.setVisible(!isLiquid);
 
         final boolean anyEnabled = mService.getModel().getTwoFactorConfig().isAnyEnabled();
-        mLimitsPref.setVisible(anyEnabled);
+        mLimitsPref.setVisible(anyEnabled && !isLiquid);
         mSendLocktimePref.setVisible(anyEnabled);
-        mTwoFactorRequestResetPref.setVisible(anyEnabled);
+        mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
 
         final boolean emailConfirmed = mService.getModel().getTwoFactorConfig().getEmail().isConfirmed();
         mLocktimePref.setVisible(emailConfirmed);
         mSendLocktimePref.setVisible(emailConfirmed);
+
     }
 
     @Override
