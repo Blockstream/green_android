@@ -33,6 +33,7 @@ import java.util.Locale;
 
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
+import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 
 public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
     private static final String TAG = SendAmountActivity.class.getSimpleName();
@@ -50,6 +51,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private FontFitEditText mAmountText;
     private Button mUnitButton;
 
+    private TextView mSelectAsset;
+
     private boolean mIsFiat = false;
     private ObjectNode mCurrentAmount; // output from GA_convert_amount
 
@@ -57,6 +60,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private int mSelectedFee;
     private long mMinFeeRate;
     private Long mVsize;
+    private String mSelectedAsset = "btc";
 
     private static final int mButtonIds[] =
     { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
@@ -84,6 +88,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         mAmountText = UI.find(this, R.id.amountText);
         mUnitButton = UI.find(this, R.id.unitButton);
+        mSelectAsset = UI.find(this, R.id.selectAsset);
+        updateAssetSelected();
 
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener(this);
@@ -202,6 +208,12 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
             isKeyboardOpen = (keypadHeight > screenHeight * 0.15); // 0.15 ratio is perhaps enough to determine keypad height.
         });
+
+        mSelectAsset.setOnClickListener(v -> startActivityForResult(new Intent(this, AssetsSelectActivity.class),REQUEST_SELECT_ASSET));
+    }
+
+    private void updateAssetSelected() {
+        mSelectAsset.setText("Selected asset: " + mSelectedAsset);
     }
 
     private int[] getBlockTargets() {
@@ -373,6 +385,13 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             changed |= !satoshi.toString().equals(replacedValue == null ? "" : replacedValue.toString());
         }
 
+        if (caller == mSelectAsset) {
+            final JsonNode assetTag = addressee.get("asset_tag");
+            changed |= assetTag == null || !assetTag.asText().equals(mSelectedAsset) ;
+            addressee.put("asset_tag", mSelectedAsset);
+            updateAssetSelected();
+        }
+
         final GDKSession session = mService.getSession();
         final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
         final JsonNode replacedValue = mTx.replace("fee_rate", fee_rate);
@@ -440,6 +459,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         if (requestCode == REQUEST_BITCOIN_URL_SEND && resultCode == RESULT_OK) {
             setResult(resultCode);
             finishOnUiThread();
+        } else if (requestCode == REQUEST_SELECT_ASSET && resultCode == RESULT_OK) {
+            mSelectedAsset = data.getStringExtra(PrefKeys.ASSET_SELECTED);
+            updateTransaction(mSelectAsset);
         }
     }
 

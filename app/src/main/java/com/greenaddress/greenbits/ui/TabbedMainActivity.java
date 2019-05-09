@@ -49,7 +49,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     public static final int
         REQUEST_BITCOIN_URL_LOGIN = 1,
         REQUEST_TX_DETAILS = 2,
-        REQUEST_BITCOIN_URL_SEND = 3;
+        REQUEST_BITCOIN_URL_SEND = 3,
+        REQUEST_SELECT_ASSET = 4;
     private ViewPager mViewPager;
     private BottomNavigationView mNavigation;
     private MaterialDialog mSubaccountDialog;

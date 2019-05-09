@@ -114,6 +114,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/SectionTitle"
+                android:text="Asset"/>
+
+            <TextView
+                android:id="@+id/selectAsset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Selected Asset"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/sections_spacing" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SectionTitle"
                 android:text="@string/id_miner_fee"/>
 
             <LinearLayout

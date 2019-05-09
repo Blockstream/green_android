@@ -25,6 +25,7 @@ import com.greenaddress.greenbits.ui.components.OnGdkListener;
 
 import org.bitcoinj.core.Sha256Hash;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Observer;
 
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
+import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 
 public class MainFragment extends SubaccountFragment implements View.OnClickListener, OnGdkListener {
     private static final String TAG = MainFragment.class.getSimpleName();
@@ -90,7 +92,12 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             mAccountView.showActions(service.isWatchOnly());
 
         final TextView assetsSelection = UI.find(mView, R.id.assetsSelection);
-        assetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(), AssetsSelectActivity.class),1000));
+        assetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(), AssetsSelectActivity.class),REQUEST_SELECT_ASSET));
+        try {
+            assetsSelection.setText(service.getSession().getBalance(0,0).size() + " assets in this wallet");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return mView;
     }
