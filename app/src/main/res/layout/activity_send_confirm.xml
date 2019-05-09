@@ -40,6 +40,16 @@
                 android:textIsSelectable="true" />
 
             <TextView
+                android:id="@+id/sendAsset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColor"
+                android:visibility="gone"
+                android:paddingBottom="4dp"
+                android:textIsSelectable="true"
+                />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_fee" />

@@ -300,7 +300,7 @@ public class TransactionData extends JSONData {
     @JsonIgnore
     public String getFirstAsset() {
         final Iterator<String> iter = satoshi.keySet().iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             final String current = iter.next();
             if (!"btc".equals(current))
                 return current;

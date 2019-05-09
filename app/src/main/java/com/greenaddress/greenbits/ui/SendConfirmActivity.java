@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -85,12 +86,13 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final long amount = mTxJson.get("satoshi").asLong();
         final long fee = mTxJson.get("fee").asLong();
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
+        final TextView sendAsset = UI.find(this, R.id.sendAsset);
         final TextView sendFee = UI.find(this, R.id.sendFee);
         final JsonNode assetTag = address.get("asset_tag");
         if (assetTag != null) {
-            sendAmount.setText(String.format("%s %s",
-                                             mService.getValueString(address.get("satoshi").asLong(), false, false),
-                                             assetTag.asText()));
+            sendAmount.setText(mService.getValueString(address.get("satoshi").asLong(), false, false));
+            sendAsset.setVisibility(View.VISIBLE);
+            sendAsset.setText(assetTag.asText());
         } else {
             sendAmount.setText(getFormatAmount(amount));
         }

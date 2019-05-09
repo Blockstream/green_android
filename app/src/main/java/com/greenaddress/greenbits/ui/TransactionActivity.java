@@ -294,7 +294,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         // Allow RBF if it might decrease the number of blocks until confirmation
         final boolean allowRbf = block > 1 || mService.getNetwork().alwaysAllowRBF();
 
-        if(!mService.isLiquid()) {
+        if (!mService.isLiquid()) {
             UI.show(mStatusIncreaseFee);
             mStatusIncreaseFee.setOnClickListener(this);
         }
