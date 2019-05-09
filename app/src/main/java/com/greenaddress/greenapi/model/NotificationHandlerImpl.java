@@ -119,7 +119,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 final ArrayNode arrayNode = (ArrayNode) transaction.get("subaccounts");
                 final List<Integer> subaccounts = mObjectMapper.readValue(
                     arrayNode.toString(), new TypeReference<List<Integer>>(){});
-                if ("incoming".equals(transaction.get("type").asText())) {
+                if (transaction.get("type") != null && "incoming".equals(transaction.get("type").asText())) {
                     mModel.getToastObservable().setMessage(R.string.id_a_new_transaction_has_just);
                 }
 
@@ -136,21 +136,24 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     transactionData.setSubaccount(subaccount);
                     transactionData.setSubaccounts(subaccounts);
                     Log.d("OBSNTF", "transactionData " + transactionData);
-                    final int description;
+                    Integer description = null;
                     if (subaccounts.size() > 1) {
                         description = R.string.id_new_transaction_involving;
-                    } else if ("incoming".equals(transaction.get("type").asText())) {
-                        description = R.string.id_new_incoming_transaction_in;
-                    } else {
-                        description = R.string.id_new_outgoing_transaction_from;
+                    } else if (transaction.get("type") != null) {
+                        if ("incoming".equals(transaction.get("type").asText())) {
+                            description = R.string.id_new_incoming_transaction_in;
+                        } else {
+                            description = R.string.id_new_outgoing_transaction_from;
+                        }
                     }
 
-                    if (!eventPushed) {
+                    if (!eventPushed && description != null) {
                         mModel.getEventDataObservable().pushEvent(new EventData(
                                                                       R.string.id_new_transaction, description,
                                                                       transactionData));
+                        eventPushed = true;
                     }
-                    eventPushed = true;
+
                 }
                 break;
             }
