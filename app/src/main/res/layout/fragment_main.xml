@@ -43,6 +43,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <TextView
+                android:id="@+id/assetsSelection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select assets"
+                android:textAlignment="center"
+                android:padding="10dp" />
+
             <ProgressBar
                 android:id="@+id/loadingList"
                 android:layout_width="match_parent"
@@ -62,6 +70,7 @@
                 android:id="@+id/mainTransactionList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/assetsSelection"
                 android:scrollbars="vertical"
                 android:visibility="gone"/>
 

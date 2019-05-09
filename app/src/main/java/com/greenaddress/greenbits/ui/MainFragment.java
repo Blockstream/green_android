@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -87,6 +88,9 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             mAccountView.hideActions();
         else
             mAccountView.showActions(service.isWatchOnly());
+
+        final TextView assetsSelection = UI.find(mView, R.id.assetsSelection);
+        assetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(), AssetsSelectActivity.class),1000));
 
         return mView;
     }

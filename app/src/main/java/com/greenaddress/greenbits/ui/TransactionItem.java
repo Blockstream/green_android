@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.os.Bundle;
 import android.util.Log;
 
 import com.greenaddress.greenapi.JSONMap;
@@ -81,7 +82,7 @@ public class TransactionItem implements Serializable {
         counterparty = "";
         this.subaccount = subaccount;
 
-        satoshi = txData.getSatoshi().get("btc");
+        satoshi = txData.getSatoshi() != null && txData.getSatoshi().get("btc") != null ? txData.getSatoshi().get("btc") : 0;
 
         switch (txData.getType()) {
         case "outgoing":
@@ -136,4 +137,6 @@ public class TransactionItem implements Serializable {
             return "";
         }
     }
+
+
 }
