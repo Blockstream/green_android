@@ -108,13 +108,17 @@ public class ListTransactionsAdapter extends
         if (txItem.getConfirmations() == 0) {
             confirmations = mActivity.getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
-        } else if (!txItem.hasEnoughConfirmations()) {
+        } else if (mService.isLiquid() && txItem.getConfirmations() < 2) {
+            confirmations = mActivity.getString(R.string.id_12_confirmations);
+            confirmationsColor = R.color.grey_light;
+        } else if (!mService.isLiquid() && !txItem.hasEnoughConfirmations()) {
             confirmations = mActivity.getString(R.string.id_d6_confirmations, txItem.getConfirmations());
             confirmationsColor = R.color.grey_light;
         } else {
             confirmations = mActivity.getString(R.string.id_completed);
             confirmationsColor = R.color.grey_light;
         }
+
         holder.listNumberConfirmation.setText(confirmations);
         holder.listNumberConfirmation.setTextColor(getColor(confirmationsColor));
 
