@@ -47,6 +47,8 @@ public class TransactionItem implements Serializable {
     public final String data;
     public final List<TransactionData> eps;
     public Integer subaccount;
+    public boolean isAsset;
+    public String asset;
 
     public String toString() {
         return String.format("%s %s %s %s", date.toString(), type.name(), satoshi, counterparty);
@@ -82,8 +84,9 @@ public class TransactionItem implements Serializable {
         counterparty = "";
         this.subaccount = subaccount;
 
-        satoshi = txData.getSatoshi() != null && txData.getSatoshi().get("btc") !=
-                  null ? txData.getSatoshi().get("btc") : 0;
+        asset = txData.getAsset();
+        satoshi = txData.getSatoshi().get(asset);
+        isAsset = txData.isAsset();
 
         switch (txData.getType()) {
         case "outgoing":
@@ -128,14 +131,17 @@ public class TransactionItem implements Serializable {
     }
 
     public String getAmountWithUnit(final GaService service) {
-        final String unit = service.getBitcoinUnit();
-        final String unitKey = unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
-        try {
-            final String amount = service.getSession().convertSatoshi(this.satoshi).get(unitKey).asText();
-            return (type == TYPE.IN ? "" : "-") + amount + " " + unit;
-        } catch (final RuntimeException | IOException e) {
-            Log.e("", "Conversion error: " + e.getLocalizedMessage());
-            return "";
+        if (isAsset) {
+            return String.valueOf(satoshi);
+        } else {
+            final String unitKey = service.getUnitKey();
+            try {
+                final String amount = service.getSession().convertSatoshi(this.satoshi).get(unitKey).asText();
+                return (type == TYPE.IN ? "" : "-") + amount + " " + service.getBitcoinUnit();
+            } catch (final RuntimeException | IOException e) {
+                Log.e("", "Conversion error: " + e.getLocalizedMessage());
+                return "";
+            }
         }
     }
 

@@ -124,6 +124,10 @@ public class GaService extends Service  {
         mSession = GDKSession.getInstance();
     }
 
+    public boolean isLiquid() {
+        return getNetwork().getLiquid();
+    }
+
     class GaBinder extends Binder {
         GaService getService() { return GaService.this; }
     }
@@ -185,11 +189,11 @@ public class GaService extends Service  {
     }
 
     public String getBitcoinUnit() {
-        return mModel.getSettings().getUnit();
+        return (isLiquid() ? "L-" : "") +  mModel.getSettings().getUnit();
     }
 
     public String getUnitKey() {
-        final String unit = getBitcoinUnit();
+        final String unit = mModel.getSettings().getUnit();
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
     }
 

@@ -165,6 +165,14 @@
                     android:textColor="@color/textColor"
                     android:textIsSelectable="true" />
 
+                <TextView
+                    android:id="@+id/txAssetText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor"
+                    android:visibility="gone"
+                    android:paddingTop="4dp"
+                    android:textIsSelectable="true" />
 
                 <View
                     android:layout_width="wrap_content"

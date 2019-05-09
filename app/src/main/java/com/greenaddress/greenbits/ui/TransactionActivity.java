@@ -142,7 +142,14 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         }
         final String neg = negative ? "-" : "";
         final TextView amountText = UI.find(this, R.id.txAmountText);
-        amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
+        if (mTxItem.isAsset) {
+            amountText.setText(String.format("%s%s", neg, mTxItem.satoshi));
+            final TextView txAssetText = UI.find(this, R.id.txAssetText);
+            txAssetText.setVisibility(View.VISIBLE);
+            txAssetText.setText(mTxItem.asset);
+        } else {
+            amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
+        }
 
         // Set date/time
         final TextView dateText = UI.find(this, R.id.txDateText);

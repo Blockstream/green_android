@@ -292,6 +292,16 @@ public class TransactionData extends JSONData {
         return satoshi;
     }
 
+    @JsonIgnore
+    public boolean isAsset() {
+        return satoshi.get("btc") == null;
+    }
+
+    @JsonIgnore
+    public String getAsset() {
+        return satoshi.keySet().iterator().next();
+    }
+
     public void setSatoshi(Map<String, Long> satoshi) {
         this.satoshi = satoshi;
     }
