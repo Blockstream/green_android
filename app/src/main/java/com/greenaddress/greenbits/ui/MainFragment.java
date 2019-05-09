@@ -96,7 +96,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                                                                                   AssetsSelectActivity.class),
                                                                        REQUEST_SELECT_ASSET));
         try {
-            final int size = service.getSession().getBalance(0,0).size();
+            final int size = service.getSession().getBalance(service.getModel().getCurrentSubaccount(),0).size();
             assetsSelection.setText(size <= 1 ? "" : size + " assets in this wallet");
         } catch (IOException e) {
             e.printStackTrace();

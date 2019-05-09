@@ -143,7 +143,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final String neg = negative ? "-" : "";
         final TextView amountText = UI.find(this, R.id.txAmountText);
         if (mTxItem.isAsset) {
-            amountText.setText(String.format("%s%s", neg, mTxItem.satoshi));
+            amountText.setText(String.format("%s%s", neg, mService.getValueString( mTxItem.satoshi, false, false)));
             final TextView txAssetText = UI.find(this, R.id.txAssetText);
             txAssetText.setVisibility(View.VISIBLE);
             txAssetText.setText(mTxItem.asset);

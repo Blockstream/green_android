@@ -30,7 +30,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         Map<String, BalanceData> assetsBalances;
         try {
-            assetsBalances = mService.getSession().getBalance(0, 0); // TODO handle subaccounts
+            assetsBalances = mService.getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
             final AssetsAdapter adapter = new AssetsAdapter(assetsBalances, mService, this, getResources(), this);
             assetsList.setAdapter(adapter);
         } catch (IOException e) {

@@ -221,11 +221,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         if ("btc".equals(mSelectedAsset)) {
             mSendAllLayout.setVisibility(View.VISIBLE);
             mUnitButton.setVisibility(View.VISIBLE);
-            mAmountText.setHint(R.string.zeroDecimal);
         } else {
             mSendAllLayout.setVisibility(View.GONE);
             mUnitButton.setVisibility(View.GONE);
-            mAmountText.setHint(R.string.zero);
         }
 
     }
@@ -512,8 +510,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private String getBitcoinUnitClean() {
-        final String unit = getBitcoinUnit();
-        return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
+        return mService.getUnitKey();
     }
 
     @Override
@@ -521,7 +518,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        final String key = isFiat() ? "fiat" : getBitcoinUnitClean();
+        final String key = isAsset() ? "btc" : (isFiat() ? "fiat" : getBitcoinUnitClean());
         final String value = mAmountText.getText().toString();
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode amount = mapper.createObjectNode();
@@ -535,6 +532,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
+    }
+
+    private boolean isAsset() {
+        return !"btc".equals(mSelectedAsset);
     }
 
     @Override

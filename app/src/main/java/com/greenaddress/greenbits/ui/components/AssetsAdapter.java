@@ -56,7 +56,8 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final String assetName = mAssetsNames.get(position);
         holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetName));
         holder.mAssetName.setText(assetName);
-        holder.mAssetValue.setText(mAssets.get(assetName).getSatoshi().toString());
+        long satoshi = mAssets.get(assetName).getSatoshi();
+        holder.mAssetValue.setText(mService.getValueString(satoshi, false, "btc".equals(assetName)));
     }
 
     @Override

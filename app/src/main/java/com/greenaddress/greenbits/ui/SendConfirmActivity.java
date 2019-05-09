@@ -9,9 +9,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.HWDeviceData;
@@ -63,7 +63,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         mSwipeButton = UI.find(this, R.id.swipeButton);
 
         // Setup views fields
-        final String currentRecipient = mTxJson.withArray("addressees").get(0).get("address").asText();
+        final JsonNode address = mTxJson.withArray("addressees").get(0);
+        final String currentRecipient = address.get("address").asText();
         final boolean isSweeping = mTxJson.get("is_sweep").asBoolean();
         final Integer subaccount = mTxJson.get("change_subaccount").asInt();
         UI.hideIf(isSweeping, noteTextTitle);
@@ -85,7 +86,14 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final long fee = mTxJson.get("fee").asLong();
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
         final TextView sendFee = UI.find(this, R.id.sendFee);
-        sendAmount.setText(getFormatAmount(amount));
+        final JsonNode assetTag = address.get("asset_tag");
+        if (assetTag != null) {
+            sendAmount.setText(String.format("%s %s",
+                                             mService.getValueString(address.get("satoshi").asLong(), false, false),
+                                             assetTag.asText()));
+        } else {
+            sendAmount.setText(getFormatAmount(amount));
+        }
         sendFee.setText(getFormatAmount(fee));
 
         if (mHwData != null && !mTxJson.get("change_address").isNull() && !mTxJson.get("change_amount").isNull()) {
