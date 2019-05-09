@@ -81,7 +81,7 @@ public class ListTransactionsAdapter extends
             }
         }
 
-        UI.showIf(txItem.replaceable, holder.imageReplaceable);
+        UI.showIf(txItem.replaceable && !mService.isLiquid(), holder.imageReplaceable);
 
         final boolean humanCpty = txItem.type == TransactionItem.TYPE.OUT &&
                                   txItem.counterparty != null && !txItem.counterparty.isEmpty() /*&&
@@ -125,14 +125,15 @@ public class ListTransactionsAdapter extends
             amountColor = R.color.white;
         holder.textValue.setTextColor(getColor(amountColor));
 
-        holder.mainLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                final Intent transactionActivity = new Intent(mActivity, TransactionActivity.class);
-                transactionActivity.putExtra("TRANSACTION", txItem);
-                mActivity.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
-            }
+        holder.mainLayout.setOnClickListener(v -> {
+            final Intent transactionActivity = new Intent(mActivity, TransactionActivity.class);
+            transactionActivity.putExtra("TRANSACTION", txItem);
+            mActivity.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
         });
+
+        if (mService.isLiquid() && txItem.isAsset) {
+            holder.textWho.setText(txItem.asset);
+        }
     }
 
     @NonNull

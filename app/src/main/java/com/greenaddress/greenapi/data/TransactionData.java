@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Sha256Hash;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -294,12 +294,18 @@ public class TransactionData extends JSONData {
 
     @JsonIgnore
     public boolean isAsset() {
-        return satoshi.get("btc") == null;
+        return getFirstAsset() != null;
     }
 
     @JsonIgnore
-    public String getAsset() {
-        return satoshi.keySet().iterator().next();
+    public String getFirstAsset() {
+        final Iterator<String> iter = satoshi.keySet().iterator();
+        while(iter.hasNext()) {
+            final String current = iter.next();
+            if (!"btc".equals(current))
+                return current;
+        }
+        return null;
     }
 
     public void setSatoshi(Map<String, Long> satoshi) {
