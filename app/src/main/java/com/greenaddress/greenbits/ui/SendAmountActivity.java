@@ -214,8 +214,14 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             isKeyboardOpen = (keypadHeight > screenHeight * 0.15); // 0.15 ratio is perhaps enough to determine keypad height.
         });
 
-        mSelectAsset.setOnClickListener(v -> startActivityForResult(new Intent(this, AssetsSelectActivity.class),
-                                                                    REQUEST_SELECT_ASSET));
+        if (mService.isLiquid()) {
+            mSelectAsset.setOnClickListener(v -> startActivityForResult(
+                    new Intent(this, AssetsSelectActivity.class),
+                    REQUEST_SELECT_ASSET));
+        } else {
+            mSelectAsset.setVisibility(View.GONE);
+        }
+
     }
 
     private void updateAssetSelected() {
