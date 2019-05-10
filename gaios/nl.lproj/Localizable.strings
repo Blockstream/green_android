@@ -1,4 +1,5 @@
 "id_1030_minutes" = "~ 10-30 minuten";
+"id_12_confirmations" = "1/2 confirmations";
 "id_1d_2s_ago" = "%1$d %2$@ geleden";
 "id_1d_minutes" = "%1$d minuten";
 "id_1s_blocks_left_2d" = "%1$@ blocks resterend %2$d";
@@ -29,6 +30,7 @@
 "id_always" = "Altijd";
 "id_amount" = "Bedrag";
 "id_are_you_sure_you_want_to_view" = "Weet je zeker dat je de transactie wilt bekijken met %@?";
+"id_asset" = "Asset";
 "id_attempts_remaining_d" = "Resterende pogingen: %d";
 "id_auto_logout_timeout" = "Time-out auto-afmelding";
 "id_autolock_after" = "Auto-vergrendeling na";
@@ -53,12 +55,10 @@
 "id_choose_your_network" = "Kies je netwerk";
 "id_clear" = "WISSEN";
 "id_completed" = "Voltooid";
+"id_confidential" = "Confidential";
 "id_confirm_code" = "Bevestig code";
 "id_confirm_passphrase" = "Confirm passphrase";
-"id_confirmation" = "Bevestiging";
-"id_confirmation_in_12_blocks_2" = "Bevestiging in 12 blocks, gemiddeld 2 uur";
-"id_confirmation_in_24_blocks_4" = "Bevestiging in 24 blocks, gemiddeld 4 uur";
-"id_confirmation_in_3_blocks_30" = "Bevestiging in 3 blocks, gemiddeld 30 minuten";
+"id_confirmation_in_d_blocks" = "Confirmation in %d blocks";
 "id_congratulations" = "Gefeliciteerd!";
 "id_connect_through_a_proxy" = "Via proxy verbinden";
 "id_connect_with_tor" = "Met Tor verbinden";
@@ -74,6 +74,8 @@
 "id_custom_network_not_found" = "Eigen netwerk niet gevonden";
 "id_custom_network_with_this_name" = "Er bestaat al een eigen netwerk met deze naam";
 "id_d6_confirmations" = "%d/6 bevestigingen";
+"id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "Datum";
 "id_day" = "dag";
 "id_days" = "dagen";
@@ -149,10 +151,12 @@
 "id_green_logo" = "Logo Green";
 "id_green_mnemonic_qr_code" = "QR-code woordenlijst Green";
 "id_green_only_supports_one_pin_for" = "Green ondersteunt maar één PIN voor elk netwerk. Nieuwe wallets vereisen een woordenlijst bij elke aanmelding.";
-"id_green_only_supports_one_pin_per" = "Green ondersteunt maar één PIN per apparaat. Om een nieuwe PIN voor deze wallet in te stellen, moet eerst de PIN van je originele wallet worden uitgeschakeld.";
+"id_green_only_supports_one_pin_per" = "Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.";
 "id_green_uses_biometric" = "Green ondersteunt biometrische authenticatie voor een makkelijk te gebruiken wallet";
 "id_green_uses_multisig_with_one" = "Green gebruikt multisig met één signature van je apparaat, en één signature van de servers van Blockstream. Het instellen van tweetrapsauthenticatie zorgt voor meer veiligheid bij het verkrijgen van de signature van de server.";
+"id_hardware_wallet_support_for" = "Hardware wallet support for Confidential Transactions coming soon.";
 "id_hash" = "Hash";
+"id_hex" = "HEX";
 "id_high" = "Hoog";
 "id_hold_your_nfc_tag_close_to_the" = "Houd je NFC-tag in de buurt van je apparaat";
 "id_hour" = "uur";
@@ -166,6 +170,7 @@
 "id_increase_fee" = "Tarief verhogen";
 "id_information_not_available" = "Informatie niet beschikbaar.";
 "id_insufficient_funds" = "Balans niet toereikend";
+"id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
 "id_invalid_address" = "Ongeldig adres";
 "id_invalid_amount" = "Ongeldig bedrag";
 "id_invalid_mnemonic" = "Ongeldige woordenlijst";
@@ -181,6 +186,7 @@
 "id_invalid_twofactor_code" = "Ongeldige code tweetrapsauthenticatie";
 "id_invalid_url" = "Ongeldige URL";
 "id_is_a_noncustodial" = "is een zelf-management";
+"id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Laatste ping: %1$d ms";
 "id_later" = "LATER";
 "id_ledger_dashboard_detected" = "Ledger Dashboard gedetecteerd. Open de juiste app voor toegang.";
@@ -199,7 +205,6 @@
 "id_malleated" = "aangepast";
 "id_medium" = "Gemiddeld";
 "id_memo" = "Memo";
-"id_miner_fee" = "TARIEF VOOR MINERS";
 "id_minute" = "min.";
 "id_minutes" = "min.";
 "id_mnemonic" = "Woordenlijst";
@@ -210,6 +215,7 @@
 "id_name" = "Naam";
 "id_network" = "NETWERK";
 "id_network_configuration" = "Netwerkconfiguratie";
+"id_network_fee" = "NETWORK FEE";
 "id_network_monitor" = "Netwerk-monitor";
 "id_new_accounts_functionality" = "De functie voor nieuwe accounts verschijnt binnenkort!";
 "id_new_incoming_transaction_in" = "Nieuwe binnenkomende transactie in account %@ (%@).";
@@ -231,6 +237,7 @@
 "id_notifications" = "Notificaties";
 "id_now" = "Now";
 "id_ok" = "OK";
+"id_on_average" = "on average";
 "id_one_attempt_remaining" = "Nog één poging te gaan";
 "id_one_network_must_be_selected" = "Er moet één netwerk worden geselecteerd. Standaard is dit bitcoin.";
 "id_only_connect_to_trusted_nodes" = "Alleen verbinden met vertrouwde node(s) voor SPV";
@@ -302,12 +309,14 @@
 "id_s_network" = "%@ netwerk";
 "id_save" = "Opslaan";
 "id_save_your_mnemonic" = "Sla je woordenlijst op";
+"id_scan_a_qr_code_for_spv_pairing" = "Scan a QR code for SPV pairing";
 "id_scan_the_qr_code_in_google" = "Scan de QR-code in Google Authenticator:";
 "id_screen_lock" = "Schermvergrendeling";
 "id_search" = "Zoeken";
 "id_second" = "sec.";
 "id_seconds" = "sec.";
 "id_security" = "BEVEILIGING";
+"id_select_asset" = "Select asset";
 "id_select_network" = "Netwerk selecteren";
 "id_select_word_number_d" = "Selecteer woord nummer %d";
 "id_send" = "Verzenden";
@@ -316,6 +325,7 @@
 "id_send_to" = "Verzenden naar";
 "id_sending" = "VERZENDEN";
 "id_sending_request" = "Verzoek verzenden…";
+"id_sent" = "Sent";
 "id_sent_to" = "Verzonden naar";
 "id_set_a_new_pin" = "Kies een nieuwe PIN";
 "id_set_custom_fee_rate" = "Aangepast transactietarief instellen";
@@ -354,6 +364,7 @@
 "id_system_message" = "Systeembericht";
 "id_tap_on_the_card_to_view" = "Tik op de kaart om de transacties in te zien.";
 "id_tap_to_restart_the_simplified" = "Tik om Simplified Payment Verification te herstarten";
+"id_tap_to_scan_a_qr_code_and" = "Tap to scan a QR code and connect to a node for SPV";
 "id_terms_of_service" = "Dienstvoorwaarden";
 "id_terms_of_use" = "Gebruiksvoorwaarden";
 "id_thank_you_for_downloading_green" = "Bedankt voor het downloaden van Green! We zouden een beoordeling op prijs stellen.";
@@ -363,6 +374,7 @@
 "id_the_password_cant_be_empty" = "Het wachtwoord mag niet leeg zijn";
 "id_the_recovery_key_below_will_not" = "De onderstaande herstelsleutel zal niet opnieuw worden getoond. Maak er nu een veilige back-up van om te zorgen dat je altijd toegang hebt tot je bezittingen.";
 "id_there_is_already_a_pin_set_for" = "Er is al een PIN ingesteld voor een %@ wallet. Als je doorgaat kan er geen PIN worden ingesteld en kun je je alleen aanmelden met de 24 woorden van de woordenlijst. Je kunt de PIN uitschakelen via de instellingen of door hem drie keer verkeerd in te voeren.";
+"id_ticker" = "TICKER";
 "id_time_s" = "Tijd: %@";
 "id_to" = "NAAR";
 "id_tor_connectivity_disabled" = "Tor-connectiviteit uitgeschakeld!";
@@ -408,6 +420,7 @@
 "id_warning_there_is_already_a" = "WAARSCHUWING: er is al een verzoek gaande om je tweetrapsauthenticatie te resetten. Als je het nu aanvraagt met een nieuw e-mailadres, ontstaat er een dispuut en wordt je wallet waarschijnlijk permanent onbeschikbaar.";
 "id_warning_wallet_locked_by" = "WAARSCHUWING: wallet vergrendeld door dispuut tweetrapsauthenticatie. Neem contact op met onze klantendienst voor meer informatie.";
 "id_warning_wallet_locked_for" = "WAARSCHUWING: wallet vergrendeld voor resetten tweetrapsauthenticatie in %d dagen. Neem contact op met onze klantendienst voor meer informatie.";
+"id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
 "id_watchonly" = "Watch-only";
 "id_watchonly_disabled" = "Watch-only uitgeschakeld";
 "id_watchonly_login" = "Aanmelden Watch-only";

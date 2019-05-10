@@ -1,4 +1,5 @@
 "id_1030_minutes" = "~ 10-30 Минут";
+"id_12_confirmations" = "1/2 confirmations";
 "id_1d_2s_ago" = "%1$d%2$@тому назад";
 "id_1d_minutes" = "%1$d минут";
 "id_1s_blocks_left_2d" = "%1$@блоков осталось%2$d";
@@ -29,6 +30,7 @@
 "id_always" = "Всегда";
 "id_amount" = "Сумма";
 "id_are_you_sure_you_want_to_view" = "Вы уверены, что хотите просмотреть транзакцию, используя %@?";
+"id_asset" = "Asset";
 "id_attempts_remaining_d" = "Осталось попыток: %d";
 "id_auto_logout_timeout" = "Автоматический выход";
 "id_autolock_after" = "Автоматическая блокировка";
@@ -53,12 +55,10 @@
 "id_choose_your_network" = "Выберите сеть";
 "id_clear" = "ОЧИСТИТЬ";
 "id_completed" = "Завершено";
+"id_confidential" = "Confidential";
 "id_confirm_code" = "Подтвердите код";
 "id_confirm_passphrase" = "Подтвердите кодовую фразу";
-"id_confirmation" = "Подтверждение";
-"id_confirmation_in_12_blocks_2" = "Подтверждение в 12 блоках, в среднем 2 часа";
-"id_confirmation_in_24_blocks_4" = "Подтверждение в 24 блоках, в среднем 4 часа";
-"id_confirmation_in_3_blocks_30" = "Подтверждение в 3 блоках, в среднем 30 минут";
+"id_confirmation_in_d_blocks" = "Confirmation in %d blocks";
 "id_congratulations" = "Поздравляем!";
 "id_connect_through_a_proxy" = "Установить соединение через прокси-сервер";
 "id_connect_with_tor" = "Установить соединение с Tor";
@@ -74,6 +74,8 @@
 "id_custom_network_not_found" = "Настраиваемая сеть не найдена";
 "id_custom_network_with_this_name" = "Настраиваемая сеть с таким именем уже существует";
 "id_d6_confirmations" = "%d/6 подтверждений";
+"id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "Дата";
 "id_day" = "день";
 "id_days" = "дней";
@@ -149,10 +151,12 @@
 "id_green_logo" = "Логотип кошелька Green";
 "id_green_mnemonic_qr_code" = "Мнемонический QR-код кошелька Green";
 "id_green_only_supports_one_pin_for" = "Green поддерживает только один PIN-код для каждой сети. Новый кошелек требует введения мнемонической фразы каждый раз, когда вы входите в систему.";
-"id_green_only_supports_one_pin_per" = "Green поддерживает только один PIN-код для одного устройства. Чтобы установить PIN-код для этого кошелька, сначала отключите PIN-код на исходном кошельке.";
+"id_green_only_supports_one_pin_per" = "Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.";
 "id_green_uses_biometric" = "Green использует биометрическую аутентификацию, чтобы обеспечить легкий доступ к кошельку";
 "id_green_uses_multisig_with_one" = "Green использует мультиподпись с подписью, сгенерированной вашим устройством, и подписью, сгенерированной серверами Blockstream. Настройка двухфакторной аутентификации обеспечивает дополнительный уровень безопасности для подписи на сервере.";
+"id_hardware_wallet_support_for" = "Hardware wallet support for Confidential Transactions coming soon.";
 "id_hash" = "Хеш";
+"id_hex" = "HEX";
 "id_high" = "Высокий";
 "id_hold_your_nfc_tag_close_to_the" = "Держите NFC-тег рядом с вашим устройством";
 "id_hour" = "час";
@@ -166,6 +170,7 @@
 "id_increase_fee" = "Повышение комиссии";
 "id_information_not_available" = "Информация недоступна.";
 "id_insufficient_funds" = "Недостаточно средств";
+"id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
 "id_invalid_address" = "Невалидный адрес";
 "id_invalid_amount" = "Недопустимая сумма";
 "id_invalid_mnemonic" = "Недопустимая мнемоническая фраза";
@@ -181,6 +186,7 @@
 "id_invalid_twofactor_code" = "Невалидный двухфакторный код";
 "id_invalid_url" = "Неверный URL";
 "id_is_a_noncustodial" = "управляется только владельцем";
+"id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Последний сигнал: %1$d мс";
 "id_later" = "ПОЗЖЕ";
 "id_ledger_dashboard_detected" = "Обнаружена панель Ledger, пожалуйста, откройте правильное приложение для доступа.";
@@ -199,7 +205,6 @@
 "id_malleated" = "деформированная";
 "id_medium" = "Средний";
 "id_memo" = "Уведомление";
-"id_miner_fee" = "КОМИССИЯ МАЙНЕРА";
 "id_minute" = "минута";
 "id_minutes" = "минут";
 "id_mnemonic" = "Мнемоническая фраза";
@@ -210,6 +215,7 @@
 "id_name" = "Имя";
 "id_network" = "СЕТЬ";
 "id_network_configuration" = "Конфигурация сети";
+"id_network_fee" = "NETWORK FEE";
 "id_network_monitor" = "Сетевой монитор";
 "id_new_accounts_functionality" = "Ожидается добавление новых аккаунтов!";
 "id_new_incoming_transaction_in" = "Новая входящая транзакция на аккаунте%@ (%@).";
@@ -231,6 +237,7 @@
 "id_notifications" = "Уведомления";
 "id_now" = "Сейчас";
 "id_ok" = "Ok";
+"id_on_average" = "on average";
 "id_one_attempt_remaining" = "Осталась одна попытка";
 "id_one_network_must_be_selected" = "Необходимо выбрать одну из сетей. Биткоин установлен по умолчанию";
 "id_only_connect_to_trusted_nodes" = "Соединять только с проверенными узлом(ами) для SPV";
@@ -302,12 +309,14 @@
 "id_s_network" = "%@ сеть";
 "id_save" = "Сохранить";
 "id_save_your_mnemonic" = "Сохраните вашу мнемоническую фразу";
+"id_scan_a_qr_code_for_spv_pairing" = "Scan a QR code for SPV pairing";
 "id_scan_the_qr_code_in_google" = "Отсканируйте QR-код из Google Authenticator:";
 "id_screen_lock" = "Блокировка экрана";
 "id_search" = "Поиск";
 "id_second" = "секунда";
 "id_seconds" = "секунд";
 "id_security" = "БЕЗОПАСНОСТЬ";
+"id_select_asset" = "Select asset";
 "id_select_network" = "Выберите сеть";
 "id_select_word_number_d" = "Выберите слово номер %d";
 "id_send" = "Отправить";
@@ -316,6 +325,7 @@
 "id_send_to" = "Отправить";
 "id_sending" = "ОТПРАВКА";
 "id_sending_request" = "Отправка запроса...";
+"id_sent" = "Sent";
 "id_sent_to" = "Отправить на";
 "id_set_a_new_pin" = "Установить новый PIN-код ";
 "id_set_custom_fee_rate" = "Установить размер комиссии";
@@ -354,6 +364,7 @@
 "id_system_message" = "Системное сообщение";
 "id_tap_on_the_card_to_view" = "Нажать на карточку для просмотра транзакций.";
 "id_tap_to_restart_the_simplified" = "Нажмите, чтобы перезапустить Simplified Payment Verification";
+"id_tap_to_scan_a_qr_code_and" = "Tap to scan a QR code and connect to a node for SPV";
 "id_terms_of_service" = "Условия обслуживания";
 "id_terms_of_use" = "Условия использования";
 "id_thank_you_for_downloading_green" = "Благодарим вас за загрузку кошелька Green! Пожалуйста, оставьте нам свой отзыв, если у вас будет такая возможность";
@@ -363,6 +374,7 @@
 "id_the_password_cant_be_empty" = "Поле пароля не может быть пустым";
 "id_the_recovery_key_below_will_not" = "Ключ восстановления больше не будет показан. Сделайте резервное копирование для того, чтобы всегда иметь доступ к своим средствам.";
 "id_there_is_already_a_pin_set_for" = " PIN-код установлен для %@кошелька.  В дальнейшем вы не сможете устанавливать PIN-код и логин, для входа потребуется мнемоническая фраза из 24 слов. Вы можете отключить PIN-код удалением его в настройках или 3-кратным ошибочным введением.";
+"id_ticker" = "TICKER";
 "id_time_s" = "Время:%@";
 "id_to" = "ДО";
 "id_tor_connectivity_disabled" = "Соединение с Tor разорвано!";
@@ -408,6 +420,7 @@
 "id_warning_there_is_already_a" = "ВНИМАНИЕ: Поступил запрос на двухфакторную аутентификацию вашего кошелька. Если вы повторите запрос с нового адреса электронной почты, ваш кошелек станет оспариваемым и, вероятно, недоступным для вас навсегда.";
 "id_warning_wallet_locked_by" = "ВНИМАНИЕ: Кошелек заблокирован. Обратитесь в службу поддержки за дополнительной информацией.";
 "id_warning_wallet_locked_for" = "ВНИМАНИЕ: Кошелек заблокирован до двухфакторного сброса через %d дней. Обратитесь в службу поддержки за дополнительной информацией.";
+"id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
 "id_watchonly" = "Холодный кошелек";
 "id_watchonly_disabled" = "Холодный кошелек отключен";
 "id_watchonly_login" = "Логин холодного кошелька";

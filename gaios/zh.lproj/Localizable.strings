@@ -1,4 +1,5 @@
 "id_1030_minutes" = "~ 10-30分钟";
+"id_12_confirmations" = "1/2 confirmations";
 "id_1d_2s_ago" = "%1$d %2$@前";
 "id_1d_minutes" = "%1$d分钟";
 "id_1s_blocks_left_2d" = "剩余%1$@区块%2$d";
@@ -29,6 +30,7 @@
 "id_always" = "永远";
 "id_amount" = "金额";
 "id_are_you_sure_you_want_to_view" = "你确定要使用%@查看交易吗?";
+"id_asset" = "Asset";
 "id_attempts_remaining_d" = "剩余尝试机会：%d";
 "id_auto_logout_timeout" = "自动登出超时";
 "id_autolock_after" = "自动锁定之后";
@@ -53,12 +55,10 @@
 "id_choose_your_network" = "选择你的网络";
 "id_clear" = "清除";
 "id_completed" = "完成";
+"id_confidential" = "Confidential";
 "id_confirm_code" = "确认码";
 "id_confirm_passphrase" = "Confirm passphrase";
-"id_confirmation" = "确认";
-"id_confirmation_in_12_blocks_2" = "12个区块后将进行确认，平均耗时2小时";
-"id_confirmation_in_24_blocks_4" = "24个区块内确认，平均用时4小时";
-"id_confirmation_in_3_blocks_30" = "3个区块后将进行确认，平均耗时30分钟";
+"id_confirmation_in_d_blocks" = "Confirmation in %d blocks";
 "id_congratulations" = "恭喜！";
 "id_connect_through_a_proxy" = "通过proxy连接";
 "id_connect_with_tor" = "连接Tor";
@@ -74,6 +74,8 @@
 "id_custom_network_not_found" = "未找到自定义网络";
 "id_custom_network_with_this_name" = "已存在同名的自定义网络";
 "id_d6_confirmations" = "已确认%d/6";
+"id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "日期";
 "id_day" = "天";
 "id_days" = "天";
@@ -149,10 +151,12 @@
 "id_green_logo" = "Green Logo";
 "id_green_mnemonic_qr_code" = "Green助记符二维码";
 "id_green_only_supports_one_pin_for" = "Green对于每个网络只能支持1个PIN。每次登录新建钱包都需要输入助记符。";
-"id_green_only_supports_one_pin_per" = "Green对于每台设备只支持1个PIN。要为这个钱包设置PIN，需要先关闭原有钱包的PIN。";
+"id_green_only_supports_one_pin_per" = "Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.";
 "id_green_uses_biometric" = "Green使用生物识别验证来使得用户能够更轻松地打开钱包";
 "id_green_uses_multisig_with_one" = "Green使用multisig，其中一个签名由你的设备生成，另一个由Blockstream服务器生成。设置双重验证将能为服务器生成的签名增添更多一层保护。";
+"id_hardware_wallet_support_for" = "Hardware wallet support for Confidential Transactions coming soon.";
 "id_hash" = "哈希";
+"id_hex" = "HEX";
 "id_high" = "高";
 "id_hold_your_nfc_tag_close_to_the" = "将NFC标签靠近设备";
 "id_hour" = "小时";
@@ -166,6 +170,7 @@
 "id_increase_fee" = "提高费用";
 "id_information_not_available" = "信息不可用。";
 "id_insufficient_funds" = "资金不足";
+"id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
 "id_invalid_address" = "地址无效";
 "id_invalid_amount" = "金额无效";
 "id_invalid_mnemonic" = "助记符无效";
@@ -181,6 +186,7 @@
 "id_invalid_twofactor_code" = "双重验证码无效";
 "id_invalid_url" = "URL无效";
 "id_is_a_noncustodial" = "是一个非托管的";
+"id_label" = "LABEL";
 "id_last_ping_1d_ms" = "最后一次ping：%1$d ms";
 "id_later" = "稍后";
 "id_ledger_dashboard_detected" = "检测到Ledger Dashboard，请打开正确的应用来获取。";
@@ -199,7 +205,6 @@
 "id_malleated" = "已延展";
 "id_medium" = "中";
 "id_memo" = "备忘录";
-"id_miner_fee" = "矿工费用";
 "id_minute" = "分钟";
 "id_minutes" = "分钟";
 "id_mnemonic" = "助记符";
@@ -210,6 +215,7 @@
 "id_name" = "姓名";
 "id_network" = "网络";
 "id_network_configuration" = "网络配置";
+"id_network_fee" = "NETWORK FEE";
 "id_network_monitor" = "网络监视器";
 "id_new_accounts_functionality" = "新的账户功能即将上线！";
 "id_new_incoming_transaction_in" = "账户%@收到新交易（%@）。";
@@ -231,6 +237,7 @@
 "id_notifications" = "通知";
 "id_now" = "Now";
 "id_ok" = "确认";
+"id_on_average" = "on average";
 "id_one_attempt_remaining" = "还可再试一次";
 "id_one_network_must_be_selected" = "必须选择一个网络。默认选择比特币";
 "id_only_connect_to_trusted_nodes" = "SPV请仅连接至受信任的节点";
@@ -302,12 +309,14 @@
 "id_s_network" = "%@网络";
 "id_save" = "保存";
 "id_save_your_mnemonic" = "保存你的助记符";
+"id_scan_a_qr_code_for_spv_pairing" = "Scan a QR code for SPV pairing";
 "id_scan_the_qr_code_in_google" = "使用谷歌验证器扫描二维码：";
 "id_screen_lock" = "锁屏";
 "id_search" = "搜索";
 "id_second" = "秒";
 "id_seconds" = "秒";
 "id_security" = "安全";
+"id_select_asset" = "Select asset";
 "id_select_network" = "选择网络";
 "id_select_word_number_d" = "选择词语数字%d";
 "id_send" = "发送";
@@ -316,6 +325,7 @@
 "id_send_to" = "发送给";
 "id_sending" = "正在发送";
 "id_sending_request" = "正在发送请求...";
+"id_sent" = "Sent";
 "id_sent_to" = "发送至";
 "id_set_a_new_pin" = "设置一个新的PIN";
 "id_set_custom_fee_rate" = "设置自定义费率";
@@ -354,6 +364,7 @@
 "id_system_message" = "系统消息";
 "id_tap_on_the_card_to_view" = "点击卡片以查看交易。";
 "id_tap_to_restart_the_simplified" = "点击以重启简单付款认证";
+"id_tap_to_scan_a_qr_code_and" = "Tap to scan a QR code and connect to a node for SPV";
 "id_terms_of_service" = "服务协议";
 "id_terms_of_use" = "用户协议";
 "id_thank_you_for_downloading_green" = "感谢下载Green！有空请给我们打分评价";
@@ -363,6 +374,7 @@
 "id_the_password_cant_be_empty" = "密码不能为空";
 "id_the_recovery_key_below_will_not" = "恢复密钥将不再显示。请立即创建该密钥的安全副本，以确保随时能够获得资金的访问权限。";
 "id_there_is_already_a_pin_set_for" = "钱包%@已设置PIN。继续进行将无法设置PIN，登录需要24字助记词。可在设置中关闭PIN，或输入错误3次也可关闭PIN。";
+"id_ticker" = "TICKER";
 "id_time_s" = "时间：%@";
 "id_to" = "发送至";
 "id_tor_connectivity_disabled" = "Tor连接已断开！";
@@ -408,6 +420,7 @@
 "id_warning_there_is_already_a" = "警告：该钱包已发送重置双重验证请求。如果现在再次使用新的邮件地址发送请求，你的钱包将进入争议状态，你可能将永远无法获得访问权限。";
 "id_warning_wallet_locked_by" = "警告：钱包已被双重验证争议锁定。请联系客服以获取更多信息。";
 "id_warning_wallet_locked_for" = "警告：双重验证重置已将钱包锁定，锁定时间为%d天。请联系客服以获取更多信息。";
+"id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
 "id_watchonly" = "Watch-only";
 "id_watchonly_disabled" = "Watch-only已关闭";
 "id_watchonly_login" = "Watch-only登录";

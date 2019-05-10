@@ -1,4 +1,5 @@
 "id_1030_minutes" = "~ 10-30 Minuti";
+"id_12_confirmations" = "1/2 conferme";
 "id_1d_2s_ago" = "%1$d %2$@ fa";
 "id_1d_minutes" = "%1$d minuti";
 "id_1s_blocks_left_2d" = "%1$@ blocchi rimanenti %2$d";
@@ -29,6 +30,7 @@
 "id_always" = "Sempre";
 "id_amount" = "Importo";
 "id_are_you_sure_you_want_to_view" = "Sei sicuro di voler vedere la transazione usando %@?";
+"id_asset" = "Asset";
 "id_attempts_remaining_d" = "Tentativi rimasti: %d";
 "id_auto_logout_timeout" = "Timeout per auto logout";
 "id_autolock_after" = "Autolock Dopo";
@@ -53,12 +55,10 @@
 "id_choose_your_network" = "Scegli la rete";
 "id_clear" = "CANCELLA";
 "id_completed" = "Completo";
+"id_confidential" = "Confidenziale";
 "id_confirm_code" = "Conferma codice";
 "id_confirm_passphrase" = "Conferma passphrase";
-"id_confirmation" = "Conferme";
-"id_confirmation_in_12_blocks_2" = "Conferma in 12 blocchi, 2 ore in media";
-"id_confirmation_in_24_blocks_4" = "Conferma in 24 blocchi, 4 ore in media";
-"id_confirmation_in_3_blocks_30" = "Conferma in 3 blocchi, 30 minuti in media";
+"id_confirmation_in_d_blocks" = "Conferma in %d blocchi";
 "id_congratulations" = "Congratulazioni!";
 "id_connect_through_a_proxy" = "Connettiti tramite proxy";
 "id_connect_with_tor" = "Connettiti con Tor";
@@ -74,6 +74,8 @@
 "id_custom_network_not_found" = "Network custom non trovato";
 "id_custom_network_with_this_name" = "Il network custom è già presente.";
 "id_d6_confirmations" = "%d/6 conferme";
+"id_d_asset_in_this_account" = "%d asset in questo account";
+"id_d_assets_in_this_account" = "%d asset in questo account";
 "id_date" = "Data";
 "id_day" = "giorno";
 "id_days" = "giorni";
@@ -149,10 +151,12 @@
 "id_green_logo" = "Green Logo";
 "id_green_mnemonic_qr_code" = "QR Code della Mnemonica Green";
 "id_green_only_supports_one_pin_for" = "Green supporta un solo PIN per network. Nuovi wallet richiederanno la mnemonica ad ogni login.";
-"id_green_only_supports_one_pin_per" = "Green supporta un solo PIN per dispositivo. Per impostare un PIN per questo wallet dovrai disabilitare il PIN del wallet precedente.";
+"id_green_only_supports_one_pin_per" = "Green supporta un solo PIN per network. Disabilita il PIN attualmente attivo per poterne impostare uno nuovo.";
 "id_green_uses_biometric" = "Green usa l'autenticazione biometrica per garantire un facile accesso al wallet";
 "id_green_uses_multisig_with_one" = "Green utilizza uno schema multifirma in cui una firma è generata dal tuo dispositivo e un' altra da un server di Blockstream. L' Autenticazione a Due Fattori aggiunge un livello di sicurezza aggiuntivo autorizzando la firma generata dal server.";
+"id_hardware_wallet_support_for" = "Supporto hardware wallet per transazioni confidenziali sarà disponibile prossimamente";
 "id_hash" = "Hash";
+"id_hex" = "HEX";
 "id_high" = "Alta";
 "id_hold_your_nfc_tag_close_to_the" = "Tieni il tag NFC vicino al dispositivo";
 "id_hour" = "ora";
@@ -166,6 +170,7 @@
 "id_increase_fee" = "Aumenta le commissioni";
 "id_information_not_available" = "Informazione non disponibile.";
 "id_insufficient_funds" = "Fondi insufficienti";
+"id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
 "id_invalid_address" = "Indirizzo non valido";
 "id_invalid_amount" = "Importo non valido";
 "id_invalid_mnemonic" = "Mnemonica non valida";
@@ -181,6 +186,7 @@
 "id_invalid_twofactor_code" = "Codice non valido";
 "id_invalid_url" = "URL non valido";
 "id_is_a_noncustodial" = "non è in custodia";
+"id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Ultimo ping: %1$d ms";
 "id_later" = "PIÙ TARDI";
 "id_ledger_dashboard_detected" = "Dashboard Ledger rilevata, avvia l'app corretta per accedere.";
@@ -199,7 +205,6 @@
 "id_malleated" = "malleata";
 "id_medium" = "Medio";
 "id_memo" = "Memo";
-"id_miner_fee" = "COMMISSIONE MINER";
 "id_minute" = "minuto";
 "id_minutes" = "minuti";
 "id_mnemonic" = "Mnemonica";
@@ -210,6 +215,7 @@
 "id_name" = "Nome";
 "id_network" = "NETWORK";
 "id_network_configuration" = "Configurazione Network";
+"id_network_fee" = "NETWORK FEE";
 "id_network_monitor" = "Network Monitor";
 "id_new_accounts_functionality" = "La creazione di nuovi account sarà disponibile in una versione successiva.";
 "id_new_incoming_transaction_in" = "Nuova transazione in uscita dall' account %@ (%@).";
@@ -231,6 +237,7 @@
 "id_notifications" = "Notifiche";
 "id_now" = "Ora";
 "id_ok" = "Ok";
+"id_on_average" = "in media";
 "id_one_attempt_remaining" = "Un tentativo rimasto";
 "id_one_network_must_be_selected" = "Un network dev'essere selezionato. Bitcoin selezionato di default";
 "id_only_connect_to_trusted_nodes" = "Connettiti solo a nodi fidati per SPV";
@@ -302,12 +309,14 @@
 "id_s_network" = " %@ network";
 "id_save" = "Salva";
 "id_save_your_mnemonic" = "Conserva la tua mnemonica";
+"id_scan_a_qr_code_for_spv_pairing" = "Scansiona un QR code per SPV pairing";
 "id_scan_the_qr_code_in_google" = "Scansiona il QR Code con Google Authenticator:";
 "id_screen_lock" = "Blocca Schermo";
 "id_search" = "Cerca";
 "id_second" = "secondo";
 "id_seconds" = "secondi";
 "id_security" = "SICUREZZA";
+"id_select_asset" = "Seleziona asset";
 "id_select_network" = "Scegli il network";
 "id_select_word_number_d" = "Seleziona la parola numero %d";
 "id_send" = "Invia";
@@ -316,6 +325,7 @@
 "id_send_to" = "Invia a";
 "id_sending" = "INVIO";
 "id_sending_request" = "Invio richiesta…";
+"id_sent" = "Inviato";
 "id_sent_to" = "Inviato a";
 "id_set_a_new_pin" = "Imposta un nuovo PIN";
 "id_set_custom_fee_rate" = "Imposta commissione personalizzata";
@@ -354,6 +364,7 @@
 "id_system_message" = "Messaggio di Sistema";
 "id_tap_on_the_card_to_view" = "Tocca la scheda per vedere le transazioni.";
 "id_tap_to_restart_the_simplified" = "Premi per re-inizializzare la Simplified Payment Verification (SPV)";
+"id_tap_to_scan_a_qr_code_and" = "Tap per scansionare un QR code e collegarti ad un nodo per SPV";
 "id_terms_of_service" = "Termini del servizio";
 "id_terms_of_use" = "Termini di Utilizzo";
 "id_thank_you_for_downloading_green" = "Grazie di aver scaricato Green! Lasciaci una recensione quando hai un momento";
@@ -363,6 +374,7 @@
 "id_the_password_cant_be_empty" = "La password non può essere vuota";
 "id_the_recovery_key_below_will_not" = "La chiave qua sotto non verrà mostrata in futuro. Trascrivila e conservala adesso per assicurarti di poter sempre accedere ai tuoi fondi.";
 "id_there_is_already_a_pin_set_for" = "Esiste già un PIN per un wallet %@. Procedendo non potrai impostare un PIN e il login richiederà la mnemonica da 24 parole. Puoi disabilitare il PIN dalle impostazione o con 3 tentativi sbagliati.";
+"id_ticker" = "TICKER";
 "id_time_s" = "Tempo: %@";
 "id_to" = "A";
 "id_tor_connectivity_disabled" = "Connessione Tor Disabilitata!";
@@ -408,6 +420,7 @@
 "id_warning_there_is_already_a" = "ATTENZIONE: Esiste già una richiesta per resettare il Secondo Fattore sul tuo wallet. Se richiedi di resettarlo con un nuovo indirizzo email, il tuo wallet diventerà contestato e potrebbe diventare permanentemente non-disponibile.";
 "id_warning_wallet_locked_by" = "ATTENZIONE: Wallet bloccato da contestazione del Secondo Fattore. Contatta il supporto per maggiori informazioni.";
 "id_warning_wallet_locked_for" = "ATTENZIONE: Wallet bloccato, reset Secondo Fattore fra %d giorni. Contatta il supporto per maggiori informazioni.";
+"id_warning_you_need_a_positive" = "Attenzione! Per inviare transazioni è richiesto un bilancio positivo di L-BTC";
 "id_watchonly" = "Watch-only";
 "id_watchonly_disabled" = "Watch-only disabilitato";
 "id_watchonly_login" = "Login Watch-only";

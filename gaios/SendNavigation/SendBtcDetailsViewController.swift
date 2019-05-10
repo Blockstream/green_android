@@ -87,7 +87,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         content.reviewButton.setTitle(NSLocalizedString("id_review", comment: ""), for: .normal)
         content.recipientTitle.text = NSLocalizedString("id_recipient", comment: "").uppercased()
         content.sendingTitle.text = NSLocalizedString("id_sending", comment: "").uppercased()
-        content.minerFeeTitle.text = NSLocalizedString("id_miner_fee", comment: "").uppercased()
+        content.minerFeeTitle.text = NSLocalizedString("id_network_fee", comment: "").uppercased()
         content.assetNameLabel.text = NSLocalizedString("id_select_asset", comment: "")
 
         // setup liquid view

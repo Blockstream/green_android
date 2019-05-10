@@ -1,4 +1,5 @@
 "id_1030_minutes" = "~ 10-30 minutos";
+"id_12_confirmations" = "1/2 confirmations";
 "id_1d_2s_ago" = "Hace %1$d%2$@";
 "id_1d_minutes" = "%1$d minutos";
 "id_1s_blocks_left_2d" = "Restan %1$@ bloques %2$d";
@@ -29,6 +30,7 @@
 "id_always" = "Siempre";
 "id_amount" = "Cantidad";
 "id_are_you_sure_you_want_to_view" = "¿Está seguro de que quiere visualizar la transacción con %@?";
+"id_asset" = "Asset";
 "id_attempts_remaining_d" = "Intentos restantes: %d";
 "id_auto_logout_timeout" = "Tiempo de espera para cierre de sesión automático";
 "id_autolock_after" = "Bloquear automáticamente después de";
@@ -53,12 +55,10 @@
 "id_choose_your_network" = "Seleccionar tu red";
 "id_clear" = "BORRAR";
 "id_completed" = "Completado";
+"id_confidential" = "Confidential";
 "id_confirm_code" = "Confirmar el código";
 "id_confirm_passphrase" = "Confirm passphrase";
-"id_confirmation" = "Confirmación";
-"id_confirmation_in_12_blocks_2" = "Confirmación de 12 bloques, un promedio de 2 horas";
-"id_confirmation_in_24_blocks_4" = "Confirmación de 24 bloques, un promedio de 4 horas";
-"id_confirmation_in_3_blocks_30" = "Confirmación de 3 bloques, un promedio de 30 minutos";
+"id_confirmation_in_d_blocks" = "Confirmation in %d blocks";
 "id_congratulations" = "¡Felicidades!";
 "id_connect_through_a_proxy" = "Conectarse a través de un proxy";
 "id_connect_with_tor" = "Conectarse con Tor";
@@ -74,6 +74,8 @@
 "id_custom_network_not_found" = "No se encuentra la red personalizada";
 "id_custom_network_with_this_name" = "Ya existe una red personalizada con este nombre";
 "id_d6_confirmations" = "%d/6 confirmaciones";
+"id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "Fecha";
 "id_day" = "día";
 "id_days" = "días";
@@ -149,10 +151,12 @@
 "id_green_logo" = "Logo de Green";
 "id_green_mnemonic_qr_code" = "Código QR de tu Frase de Recuperación de Green";
 "id_green_only_supports_one_pin_for" = "Green solo acepta un PIN para cada red. Las nuevas carteras requerirán la Frase de Recuperación cada vez que inicies sesión.";
-"id_green_only_supports_one_pin_per" = "Green solo acepta un PIN por dispositivo. Para establecer un PIN para esta cartera, primero deshabilita el PIN de la cartera original.";
+"id_green_only_supports_one_pin_per" = "Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.";
 "id_green_uses_biometric" = "Green utiliza la autenticación biométrica para simplificar el acceso a la cartera";
 "id_green_uses_multisig_with_one" = "Green utiliza las multifirmas con una firma generada por tu dispositivo y otra generada por los servidores de Blockstream. Establecer una autenticación de dos factores añade un nivel de seguridad adicional para la firma originada en el servidor.";
+"id_hardware_wallet_support_for" = "Hardware wallet support for Confidential Transactions coming soon.";
 "id_hash" = "Hash";
+"id_hex" = "HEX";
 "id_high" = "Altura";
 "id_hold_your_nfc_tag_close_to_the" = "Acerque su etiqueta NFC al dispositivo";
 "id_hour" = "hora";
@@ -166,6 +170,7 @@
 "id_increase_fee" = "Aumentar comisión";
 "id_information_not_available" = "Información no disponible.";
 "id_insufficient_funds" = "Fondos insuficientes";
+"id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
 "id_invalid_address" = "Dirección inválida";
 "id_invalid_amount" = "Cantidad inválida";
 "id_invalid_mnemonic" = "Frase de Recuperación inválida";
@@ -181,6 +186,7 @@
 "id_invalid_twofactor_code" = "Código de dos factores inválido";
 "id_invalid_url" = "URL inválido";
 "id_is_a_noncustodial" = "es una cartera sin custodia";
+"id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Último pin: %1$d ms";
 "id_later" = "LUEGO";
 "id_ledger_dashboard_detected" = "Ledger Dashboard detectado. Abre la app correcta para acceder.";
@@ -199,7 +205,6 @@
 "id_malleated" = "maleable";
 "id_medium" = "Medio";
 "id_memo" = "Nota";
-"id_miner_fee" = "COMISIÓN DE MINERO";
 "id_minute" = "minuto";
 "id_minutes" = "minutos";
 "id_mnemonic" = "Frase de Recuperación";
@@ -210,6 +215,7 @@
 "id_name" = "Nombre";
 "id_network" = "RED";
 "id_network_configuration" = "Configuración de red";
+"id_network_fee" = "NETWORK FEE";
 "id_network_monitor" = "Monitor de red";
 "id_new_accounts_functionality" = "¡Próximamente, una nueva función de las cuentas!";
 "id_new_incoming_transaction_in" = "Nueva transacción entrante en la cuenta %@ (%@).";
@@ -231,6 +237,7 @@
 "id_notifications" = "Notificaciones";
 "id_now" = "Now";
 "id_ok" = "OK";
+"id_on_average" = "on average";
 "id_one_attempt_remaining" = "Un intento restante";
 "id_one_network_must_be_selected" = "Debe seleccionarse una red. Se selecciona Bitcoin por defecto.";
 "id_only_connect_to_trusted_nodes" = "Conectar solo con nodo(s) confiable(s) para SPV";
@@ -302,12 +309,14 @@
 "id_s_network" = "%@ red";
 "id_save" = "Guardar";
 "id_save_your_mnemonic" = "Guarda tu Frase de Recuperación";
+"id_scan_a_qr_code_for_spv_pairing" = "Scan a QR code for SPV pairing";
 "id_scan_the_qr_code_in_google" = "Escanear el código QR en Google Authenticator:";
 "id_screen_lock" = "Bloqueo de pantalla";
 "id_search" = "Buscar";
 "id_second" = "segundo";
 "id_seconds" = "segundos";
 "id_security" = "SEGURIDAD";
+"id_select_asset" = "Select asset";
 "id_select_network" = "Seleccionar red";
 "id_select_word_number_d" = "Seleccionar número de palabras %d";
 "id_send" = "Enviar";
@@ -316,6 +325,7 @@
 "id_send_to" = "Enviar a";
 "id_sending" = "ENVIANDO";
 "id_sending_request" = "Enviando solicitud...";
+"id_sent" = "Sent";
 "id_sent_to" = "Enviado a";
 "id_set_a_new_pin" = "Establecer un nuevo PIN";
 "id_set_custom_fee_rate" = "Establecer comisión por vbyte personalizada";
@@ -354,6 +364,7 @@
 "id_system_message" = "Mensaje de sistema";
 "id_tap_on_the_card_to_view" = "Haz clic en la tarjeta para visualizar las transacciones.";
 "id_tap_to_restart_the_simplified" = "Toca para reiniciar la verificación simple de pago";
+"id_tap_to_scan_a_qr_code_and" = "Tap to scan a QR code and connect to a node for SPV";
 "id_terms_of_service" = "Condiciones de servicio";
 "id_terms_of_use" = "Condiciones de uso";
 "id_thank_you_for_downloading_green" = "¡Gracias por descargar Green! Cuando tengas tiempo, déjanos una reseña";
@@ -363,6 +374,7 @@
 "id_the_password_cant_be_empty" = "La contraseña no puede quedar vacía";
 "id_the_recovery_key_below_will_not" = "La Frase de Recuperación que aparece abajo no se volverá a mostrar. Haz una copia de seguridad de la clave para asegurarte de siempre tener acceso a tus fondos.";
 "id_there_is_already_a_pin_set_for" = "Ya se ha establecido un PIN para la cartera %@. Si continúas, no podrás establecer un PIN y deberás ingresar con la Frase de Recuperación de 24 palabras. El PIN puede desactivarse desde el panel de configuración o si se ingresa el PIN equivocado 3 veces.";
+"id_ticker" = "TICKER";
 "id_time_s" = "Tiempo: %@";
 "id_to" = "A";
 "id_tor_connectivity_disabled" = "¡Conectividad Tor deshabilitada!";
@@ -408,6 +420,7 @@
 "id_warning_there_is_already_a" = "ADVERTENCIA: Ya hay una solicitud para restablecer la autenticación de dos factores en tu cartera. Si envías una nueva solicitud desde otra dirección de correo electrónico ahora, tu cartera quedará impugnada y es posible que pierdas el acceso a ella de forma permanente.";
 "id_warning_wallet_locked_by" = "ADVERTENCIA: cartera bloqueada por disputa de dos factores. Contacta a soporte técnico para obtener más información.";
 "id_warning_wallet_locked_for" = "ADVERTENCIA: cartera bloqueada por restablecimiento de dos factores en %d días. Contacta a soporte técnico para obtener más información.";
+"id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
 "id_watchonly" = "Solo lectura";
 "id_watchonly_disabled" = "Modo de solo lectura deshabilitado";
 "id_watchonly_login" = "Iniciar sesión en modo de solo lectura";
