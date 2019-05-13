@@ -132,7 +132,7 @@ public class TransactionItem implements Serializable {
 
     public String getAmountWithUnit(final GaService service) {
         if (isAsset) {
-            return service.getValueString(satoshi,false,false);
+            return (type == TYPE.IN ? "" : "-") + service.getValueString(satoshi,false,false);
         } else {
             final String unitKey = service.getUnitKey();
             try {
