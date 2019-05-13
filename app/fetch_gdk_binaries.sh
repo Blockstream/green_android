@@ -2,6 +2,11 @@
 # Downloads and installs the pre-built gdk libraries for use by Green-Android
 set -e
 
+if [ -d gdk ]; then
+    echo "Found a 'gdk' folder, exiting now"
+    exit 0
+fi
+
 # The version of gdk to fetch and its sha256 checksum for integrity checking
 NAME="gdk-android-jni"
 TARBALL="${NAME}.tar.gz"
