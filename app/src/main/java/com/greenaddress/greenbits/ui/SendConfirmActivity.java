@@ -101,7 +101,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         if (mHwData != null && !mTxJson.get("change_address").isNull() && !mTxJson.get("change_amount").isNull()) {
             UI.show(UI.find(this, R.id.changeLayout));
             final TextView view = UI.find(this, R.id.changeAddressText);
-            view.setText(mTxJson.get("change_address").get("address").asText());
+            // FIXME: HWs are not supported (yet) on Liquid, hardcoding BTC here
+            view.setText(mTxJson.get("change_address").get("btc").get("address").asText());
         }
 
         mSwipeButton.setOnActiveListener(this);
