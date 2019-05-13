@@ -15,8 +15,8 @@
         android:dependency="spvEnabled" />
     <Preference
         android:key="scan_spv"
-        android:title="@string/id_scan_qr_spv"
-        android:summary="@string/id_tap_to_scan_qr_code_spv_address"
+        android:title="@string/id_scan_a_qr_code_for_spv_pairing"
+        android:summary="@string/id_tap_to_scan_a_qr_code_and"
         android:dependency="spvEnabled" />
     <Preference
         android:key="reset_spv"
