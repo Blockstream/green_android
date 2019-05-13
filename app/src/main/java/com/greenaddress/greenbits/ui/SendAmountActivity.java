@@ -119,7 +119,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             mFeeEstimates[i] = estimates.get(mBlockTargets[i]);
             mFeeButtons[i] = this.findViewById(mButtonIds[i]);
             final String summary = String.format("(%s)", UI.getFeeRateString(estimates.get(mBlockTargets[i])));
-            final String expectedConfirmationTime = getExpectedConfirmationTime(this, mService.isLiquid() ? 60 : 6, mBlockTargets[i]);
+            final String expectedConfirmationTime = getExpectedConfirmationTime(this,
+                                                                                mService.isLiquid() ? 60 : 6,
+                                                                                mBlockTargets[i]);
             final String buttonText = getString(mFeeButtonsText[i]) + (i == 3 ? "" : expectedConfirmationTime);
             mFeeButtons[i].init(buttonText, summary, i == 3);
             mFeeButtons[i].setOnClickListener(this);

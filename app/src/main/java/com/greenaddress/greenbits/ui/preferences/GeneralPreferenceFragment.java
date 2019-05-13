@@ -557,12 +557,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         final boolean anyEnabled = mService.getModel().getTwoFactorConfig().isAnyEnabled();
         mLimitsPref.setVisible(anyEnabled && !isLiquid);
-        mSendLocktimePref.setVisible(anyEnabled);
         mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
 
         final boolean emailConfirmed = mService.getModel().getTwoFactorConfig().getEmail().isConfirmed();
-        mLocktimePref.setVisible(emailConfirmed);
-        mSendLocktimePref.setVisible(emailConfirmed);
+        mLocktimePref.setVisible(emailConfirmed && !isLiquid);
+        mSendLocktimePref.setVisible(emailConfirmed && !isLiquid);
     }
 
     @Override
