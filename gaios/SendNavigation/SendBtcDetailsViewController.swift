@@ -5,7 +5,6 @@ import PromiseKit
 class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
     @IBOutlet var content: SendBtcDetailsView!
-    let blockTime = ["~ 30 " + NSLocalizedString("id_minutes", comment: ""), NSLocalizedString("id_2_hours", comment: ""), NSLocalizedString("id_4_hours", comment: ""), ""]
     var feeLabel: UILabel = UILabel()
     var uiErrorLabel: UIErrorLabel!
     var wallet: WalletItem?
@@ -280,7 +279,8 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
                 feeButton.isUserInteractionEnabled = true
             }
             feeButton.isSelect = false
-            feeButton.timeLabel.text = String(format: "%@", blockTime[index])
+            let tp = TransactionPriority(rawValue: [3, 12, 24, 0][index]) ?? TransactionPriority.Medium
+            feeButton.timeLabel.text = tp == .Custom ? "" : "~ \(tp.time)"
             guard let fee = feeEstimates[index] else {
                 feeButton.feerateLabel.text = NSLocalizedString("id_set_custom_fee_rate", comment: "")
                 break
@@ -367,7 +367,6 @@ class SendBtcDetailsView: UIView {
     @IBOutlet weak var customFeeButton: FeeButton!
     @IBOutlet weak var sendingTitle: UILabel!
     @IBOutlet weak var assetView: UIView!
-    @IBOutlet weak var assetTitleLabel: UILabel!
     @IBOutlet weak var assetNameLabel: UILabel!
     @IBOutlet weak var assetClickableView: UIView!
 

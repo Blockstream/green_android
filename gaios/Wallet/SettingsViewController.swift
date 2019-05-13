@@ -123,7 +123,7 @@ class SettingsViewController: UIViewController {
 
         let defaultTransactionPriority = SettingsItem(
             title: NSLocalizedString("id_default_transaction_priority", comment: ""),
-            subtitle: toString(settings.transactionPriority, detail: true),
+            subtitle: settings.transactionPriority.description,
             section: .account,
             type: .DefaultTransactionPriority)
 
@@ -266,19 +266,6 @@ class SettingsViewController: UIViewController {
         menu.append(contentsOf: getAdvanced())
         menu.append(contentsOf: getAbout())
         return menu
-    }
-
-    func toString(_ tp: TransactionPriority, detail: Bool) -> String {
-        switch tp {
-        case .Low:
-            return NSLocalizedString(detail ? "id_confirmation_in_24_blocks_4" : "id_slow", comment: "")
-        case .Medium:
-            return NSLocalizedString(detail ? "id_confirmation_in_12_blocks_2" : "id_medium", comment: "")
-        case .High:
-            return NSLocalizedString(detail ? "id_confirmation_in_3_blocks_30" : "id_fast", comment: "")
-        default:
-            return ""
-        }
     }
 
     func toString(_ section: SettingsSections) -> String {
@@ -466,14 +453,12 @@ class SettingsViewController: UIViewController {
 
     func showDefaultTransactionPriority() {
         guard let settings = getGAService().getSettings() else { return }
-        let list = [toString(TransactionPriority.High, detail: false),
-                    toString(TransactionPriority.Medium, detail: false),
-                    toString(TransactionPriority.Low, detail: false)]
-        let selected = toString(settings.transactionPriority, detail: false)
+        let list = [TransactionPriority.High.text, TransactionPriority.Medium.text, TransactionPriority.Low.text]
+        let selected = settings.transactionPriority.text
         let popup = PopupList(self, title: NSLocalizedString("id_default_transaction_priority", comment: ""), list: list, selected: selected)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
             guard let string = value as? String else { throw GaError.GenericError }
-            if string == self.toString(.Low, detail: false) { settings.transactionPriority = .Low} else if string == self.toString(.Medium, detail: false) { settings.transactionPriority = .Medium} else if string == self.toString(.High, detail: false) { settings.transactionPriority = .High}
+            if string == TransactionPriority.Low.text { settings.transactionPriority = .Low} else if string == TransactionPriority.Medium.text { settings.transactionPriority = .Medium} else if string == TransactionPriority.High.text { settings.transactionPriority = .High}
             let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
             return try getGAService().getSession().changeSettings(details: details!)
         }, completing: { self.reloadData() })

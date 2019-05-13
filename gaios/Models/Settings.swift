@@ -36,36 +36,29 @@ enum SettingsType: String, Codable {
 }
 
 // Type of priority of a fee for transaction
-public enum TransactionPriority: String {
-    case Low
-    case Medium
-    case High
-    case Custom
+public enum TransactionPriority: Int {
+    case Low = 24
+    case Medium = 12
+    case High = 3
+    case Custom = 0
 
-    init(_ numBlock: Int) {
-        switch numBlock {
-        case 24:
-            self = .Low
-        case 12:
-            self = .Medium
-        case 3:
-            self = .High
-        default:
-            self = .Custom
-        }
+    var text: String {
+        let string = [TransactionPriority.Low: "id_slow", TransactionPriority.Medium: "id_medium", TransactionPriority.High: "id_fast", TransactionPriority.Custom: "id_custom"][self]
+        return NSLocalizedString(string ?? "", comment: "")
     }
 
-    func toNumBlock() -> Int {
-        switch self {
-        case .Low:
-            return 24
-        case .Medium:
-            return 12
-        case .High:
-            return 3
-        default :
-            return 0
-        }
+    var time: String {
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let blocksPerHour = isLiquid ? 60 : 6
+        let blocks = self.rawValue
+        let n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour)
+        let time = NSLocalizedString((blocks % blocksPerHour) == 0 ? (blocks == blocksPerHour ? "id_hour" : "id_hours") : "id_minutes", comment: "")
+        return String(format: "%d %@", n, time)
+    }
+
+    var description: String {
+        let confirmationInBlocks = String(format: NSLocalizedString("id_confirmation_in_d_blocks", comment: ""), self.rawValue)
+        return confirmationInBlocks + ", " + time + " " + NSLocalizedString("id_on_average", comment: "")
     }
 }
 
@@ -199,8 +192,8 @@ class Settings: Codable {
     }
 
     var transactionPriority: TransactionPriority {
-        get { return TransactionPriority(self.requiredNumBlock)}
-        set { self.requiredNumBlock = newValue.toNumBlock()}
+        get { return TransactionPriority(rawValue: self.requiredNumBlock) ?? .Medium}
+        set { self.requiredNumBlock = newValue.rawValue}
     }
 
     var autolock: AutoLockType {

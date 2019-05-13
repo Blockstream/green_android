@@ -14,16 +14,16 @@
         <!--Send to-->
         <scene sceneID="1pb-bq-Hya">
             <objects>
-                <viewController storyboardIdentifier="SendBtcViewController" id="cHx-pa-a2X" customClass="SendBtcViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SendBtcViewController" hidesBottomBarWhenPushed="YES" id="cHx-pa-a2X" customClass="SendBtcViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="HGl-iv-Xwo">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gc2-dn-6NU">
-                                <rect key="frame" x="0.0" y="169" width="320" height="281"/>
+                                <rect key="frame" x="0.0" y="169" width="320" height="325"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="v67-PB-604" customClass="QRCodeReaderView" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="281"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="325"/>
                                         <color key="backgroundColor" name="customTitaniumDark"/>
                                     </view>
                                 </subviews>
@@ -74,7 +74,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2g2-dg-Nwn">
-                                <rect key="frame" x="0.0" y="450" width="320" height="74"/>
+                                <rect key="frame" x="0.0" y="494" width="320" height="74"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EV6-b6-oPs">
                                         <rect key="frame" x="16" y="16" width="288" height="42"/>
