@@ -227,7 +227,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private void updateAssetSelected() {
         mSelectAsset.setText(mSelectedAsset.isEmpty() ? getString(R.string.id_select_asset) : mService.getAssetName(
                                  mSelectedAsset));
-        UI.showIf("btc".equals(mSelectedAsset), mUnitButton);
+        UI.showIf(!mService.isLiquid() || "btc".equals(mSelectedAsset), mUnitButton);
     }
 
     private int[] getBlockTargets() {
@@ -542,7 +542,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private boolean isAsset() {
-        return !"btc".equals(mSelectedAsset);
+        return mService.isLiquid() && !"btc".equals(mSelectedAsset);
     }
 
     @Override
