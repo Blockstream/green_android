@@ -3,17 +3,13 @@ package com.greenaddress.greenbits.ui.components;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.greenaddress.greenapi.data.BalanceData;
-import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
@@ -24,7 +20,7 @@ import java.util.Map;
 public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
     private final Map<String, BalanceData> mAssets;
-    private final List<String> mAssetsNames;
+    private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;
     private final GaService mService;
     private final Resources mResources;
@@ -37,7 +33,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     public AssetsAdapter(final Map<String, BalanceData> assets, final GaService service,
                          final OnAssetSelected cb, final Resources resources, final Activity activity) {
         mAssets = assets;
-        mAssetsNames = new ArrayList<>(assets.keySet()); // TODO custom ordering?
+        mAssetsIds = new ArrayList<>(assets.keySet()); // TODO custom ordering?
         mService = service;
         mOnAccountSelected = cb;
         mResources = resources;
@@ -53,11 +49,11 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
     @Override
     public void onBindViewHolder(final Item holder, final int position) {
-        final String assetName = mAssetsNames.get(position);
-        holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetName));
-        holder.mAssetName.setText(assetName);
-        long satoshi = mAssets.get(assetName).getSatoshi();
-        holder.mAssetValue.setText(mService.getValueString(satoshi, false, "btc".equals(assetName)));
+        final String assetId = mAssetsIds.get(position);
+        holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
+        holder.mAssetName.setText(mService.getAssetName(assetId));
+        long satoshi = mAssets.get(assetId).getSatoshi();
+        holder.mAssetValue.setText(mService.getValueString(satoshi, false, "btc".equals(assetId)));
     }
 
     @Override

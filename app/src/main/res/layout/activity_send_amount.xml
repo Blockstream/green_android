@@ -48,7 +48,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                android:text="Selected Asset"
+                style="@style/assetButton"
+                android:text="@string/id_select_asset"
                 />
 
             <RelativeLayout

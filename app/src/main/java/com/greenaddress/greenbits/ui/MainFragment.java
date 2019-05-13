@@ -99,8 +99,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             if (service.isLiquid()) {
                 final int size = service.getSession().getBalance(service.getModel().getCurrentSubaccount(),0).size();
                 assetsSelection.setText(size == 1 ?
-                        getString(R.string.id_d_asset_in_this_account, size ) :
-                        getString(R.string.id_d_assets_in_this_account, size));
+                                        getString(R.string.id_d_asset_in_this_account, size) :
+                                        getString(R.string.id_d_assets_in_this_account, size));
             } else {
                 assetsSelection.setVisibility(View.GONE);
             }

@@ -62,7 +62,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private int mSelectedFee;
     private long mMinFeeRate;
     private Long mVsize;
-    private String mSelectedAsset = "btc";
+    private String mSelectedAsset = "";
 
     private static final int mButtonIds[] =
     { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
@@ -216,16 +216,16 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         if (mService.isLiquid()) {
             mSelectAsset.setOnClickListener(v -> startActivityForResult(
-                    new Intent(this, AssetsSelectActivity.class),
-                    REQUEST_SELECT_ASSET));
+                                                new Intent(this, AssetsSelectActivity.class),
+                                                REQUEST_SELECT_ASSET));
         } else {
             mSelectAsset.setVisibility(View.GONE);
         }
-
     }
 
     private void updateAssetSelected() {
-        mSelectAsset.setText("Selected asset: " + mSelectedAsset);
+        mSelectAsset.setText(mSelectedAsset.isEmpty() ? getString(R.string.id_select_asset) : mService.getAssetName(
+                                 mSelectedAsset));
         UI.showIf("btc".equals(mSelectedAsset), mUnitButton);
     }
 
@@ -381,6 +381,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private void updateTransaction(final View caller) {
         if (isFinishing())
             return;
+
+        if (mService.isLiquid() && mSelectedAsset.isEmpty()) {
+            mNextButton.setText(R.string.id_select_asset);
+            return;
+        }
 
         ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
         boolean changed;

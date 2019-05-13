@@ -192,6 +192,14 @@ public class GaService extends Service  {
         return (isLiquid() ? "L-" : "") +  mModel.getSettings().getUnit();
     }
 
+    public String getAssetName(final String assetId) {
+        if ("btc".equals(assetId)) {
+            return "L-BTC";
+        } else {
+            return assetId;
+        }
+    }
+
     public String getUnitKey() {
         final String unit = mModel.getSettings().getUnit();
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
