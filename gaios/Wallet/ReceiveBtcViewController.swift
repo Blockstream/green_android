@@ -39,7 +39,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         content.fiatSwitchButton.addTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
         content.shareButton.addTarget(self, action: #selector(shareButtonClicked(_:)), for: .touchUpInside)
-        refresh()
+        reload()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -70,12 +70,12 @@ class ReceiveBtcViewController: KeyboardViewController {
         if wallet?.pointer == pointer {
             wallet?.receiveAddress = address
             DispatchQueue.main.async {
-                self.refresh()
+                self.reload()
             }
         }
     }
 
-    func refresh() {
+    func reload() {
         updateQRCode()
         setButton()
         updateEstimate()
@@ -106,8 +106,7 @@ class ReceiveBtcViewController: KeyboardViewController {
             guard let amount = data[settings.denomination.rawValue] as? String else { return }
             content.amountTextfield.text = String(format: "%f", Double(amount) ?? 0)
         }
-        setButton()
-        updateEstimate()
+        reload()
     }
 
     func setButton() {
@@ -130,7 +129,6 @@ class ReceiveBtcViewController: KeyboardViewController {
         } else {
             content.estimateLabel.text = "≈ " + String.toBtc(satoshi: satoshi)
         }
-        updateQRCode()
     }
 
     func updateQRCode() {
@@ -169,7 +167,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
-        updateEstimate()
+        reload()
     }
 
     @objc func shareButtonClicked(_ sender: UIButton?) {
