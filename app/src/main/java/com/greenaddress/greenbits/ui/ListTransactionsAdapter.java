@@ -83,13 +83,11 @@ public class ListTransactionsAdapter extends
 
         UI.showIf(txItem.replaceable && !mService.isLiquid(), holder.imageReplaceable);
 
-        final boolean humanCpty = txItem.type == TransactionItem.TYPE.OUT &&
-                                  txItem.counterparty != null && !txItem.counterparty.isEmpty() /*&&
-                                                                                                   !GaService.isValidAddress(txItem.counterparty, mService.getNetwork())*/;
-
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {
-            if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
+            if (mService.isLiquid() && txItem.isAsset)
+                message = txItem.asset;
+            else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = mActivity.getString(R.string.id_redeposited);
             else if (txItem.type == TransactionItem.TYPE.IN)
                 message = mActivity.getString(R.string.id_received);
@@ -135,9 +133,6 @@ public class ListTransactionsAdapter extends
             mActivity.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
         });
 
-        if (mService.isLiquid() && txItem.isAsset) {
-            holder.textWho.setText(txItem.asset);
-        }
     }
 
     @NonNull
