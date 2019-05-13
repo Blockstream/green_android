@@ -96,5 +96,6 @@ public class FirstScreenActivity extends LoginActivity {
     public void onSelectNetwork() {
         mSelectNetwork.setText(mService.getNetwork().getName());
         UI.showIf(mService.hasPin(), mWalletDetected);
+        invalidateOptionsMenu();
     }
 }
