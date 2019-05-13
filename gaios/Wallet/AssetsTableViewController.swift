@@ -26,9 +26,12 @@ class AssetsTableViewController: UITableViewController {
         tableView.register(nib, forCellReuseIdentifier: "cell")
         tableView.tableFooterView = UIView()
 
-        wallet!.getBalance().done { _ in
-            self.tableView.reloadData()
-        }.catch { _ in }
+        // reload if empty balance
+        if wallet!.balance.isEmpty {
+            wallet!.getBalance().done { _ in
+                self.tableView.reloadData()
+            }.catch { _ in }
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

@@ -45,11 +45,10 @@ class TransactionsController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransactions(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
-
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onNewTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onNewBlock(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
         loadWallet()
-        load()
+        loadTransactions()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -77,19 +76,16 @@ class TransactionsController: UITableViewController {
         }
     }
 
-    @objc func refreshTransactions(_ notification: NSNotification) {
+    @objc func onNewBlock(_ notification: NSNotification) {
+        self.loadTransactions()
+    }
+
+    @objc func onNewTransaction(_ notification: NSNotification) {
         guard let dict = notification.userInfo as NSDictionary? else { return }
-        var subaccounts = [UInt32]()
-        if notification.name.rawValue == EventType.Block.rawValue {
-            subaccounts.append(pointerWallet)
-        } else {
-            if let saccounts =  dict["subaccounts"] as? [UInt32] {
-                subaccounts.append(contentsOf: saccounts)
-            }
-        }
-        if subaccounts.filter({ $0 == pointerWallet }).count > 0 {
-           self.loadWallet()
-           self.load()
+        guard let subaccounts = dict["subaccounts"] as? [UInt32] else { return }
+        if subaccounts.contains(pointerWallet) {
+            self.loadWallet()
+            self.loadTransactions()
         }
     }
 
@@ -139,10 +135,11 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl?) {
-        self.load()
+        self.loadWallet()
+        self.loadTransactions()
     }
 
-    func load(_ pageId: Int = 0) {
+    func loadTransactions(_ pageId: Int = 0) {
         getTransactions(self.pointerWallet, pageId: pageId)
         .done { txs in
             self.txs.removeAll()
