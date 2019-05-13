@@ -383,11 +383,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         if (isFinishing())
             return;
 
-        if (mService.isLiquid() && mSelectedAsset.isEmpty()) {
-            mNextButton.setText(R.string.id_select_asset);
-            return;
-        }
-
         ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
         boolean changed;
 
@@ -427,6 +422,13 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             }
             addressee = (ObjectNode) mTx.get("addressees").get(0);
             mRecipientText.setText(addressee.get("address").asText());
+
+            // TODO this should be removed when handled in gdk
+            if (mService.isLiquid() && mSelectedAsset.isEmpty()) {
+                mNextButton.setText(R.string.id_select_asset);
+                return;
+            }
+
             final String error = mTx.get("error").asText();
             if (error.isEmpty()) {
                 // The tx is valid so show the updated amount
