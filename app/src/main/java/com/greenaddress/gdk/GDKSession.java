@@ -250,8 +250,21 @@ public class GDKSession {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
-        final ArrayNode unspentOutputs = (ArrayNode) GDK.get_unspent_outputs(mNativeSession, details);
-        return mObjectMapper.readValue(mObjectMapper.treeAsTokens(unspentOutputs), new TypeReference<List<TransactionData>>() {});
+        final ObjectNode unspentOutputs = (ObjectNode) GDK.get_unspent_outputs(mNativeSession, details);
+        if (unspentOutputs.has("btc")) {
+            // at the moment the returned json is different if calling get_unspent_outputs or
+            // get_transactions, since get_transactions is already updated for supporting assets and
+            // we don't need satoshi amount, this is an hack to not fail json parsing
+            ArrayNode arrayNode = (ArrayNode) unspentOutputs.get("btc");
+            for (int i = 0; i < arrayNode.size(); i++) {
+                ((ObjectNode) arrayNode.get(i)).remove("satoshi");
+            }
+            final List<TransactionData> transactionData = mObjectMapper.readValue(mObjectMapper.treeAsTokens(arrayNode), new TypeReference<List<TransactionData>>() {
+            });
+            return transactionData;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public Map<String, Object> getAvailableCurrencies() throws JsonProcessingException {
