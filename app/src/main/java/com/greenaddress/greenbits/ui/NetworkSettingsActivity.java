@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
@@ -160,7 +161,23 @@ public class NetworkSettingsActivity extends GaActivity {
             UI.toast(this, R.string.id_please_set_and_enable_socks5, Toast.LENGTH_LONG);
             return;
         }
+        if (selectedNetwork.getLiquid()) {
+            new MaterialDialog.Builder(this)
+            .title(R.string.id_warning)
+            .content(getResources().getString(R.string.id_liquid_is_a_bitcoin_sidechain))
+            .positiveText(android.R.string.ok)
+            .onPositive((dlg, which) -> save())
+            .show();
+            return;
+        }
+        save();
+    }
 
+    private void save() {
+        final NetworkData selectedNetwork = mNetworksViewAdapter.getSelected();
+        String networkName = selectedNetwork.getNetwork();
+        final String socksHost = UI.getText(mSocks5Host);
+        final String socksPort = UI.getText(mSocks5Port);
         if (socksHost.startsWith("{")) {
             try {
                 final NetworkData newNetwork = (new ObjectMapper()).readValue(socksHost, NetworkData.class);
