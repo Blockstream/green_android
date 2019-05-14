@@ -402,17 +402,24 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
                 return;
             }
         } else {
+            final boolean startWithBitcoin = scanned.toLowerCase().startsWith("bitcoin:");
+            if (service.isLiquid() && startWithBitcoin) {
+                UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
+                return;
+            }
             String text;
-            if (scanned.length() >= 8 && scanned.substring(0, 8).equalsIgnoreCase("bitcoin:")) {
+
+            if (service.isLiquid()) {
                 text = scanned;
             } else {
-                text = String.format("bitcoin:%s", scanned);
-            }
-            // qrcodes of bech32 addresses that use alphanumeric mode may be read as uppercase
-            final int i = text.indexOf("1");
-            final String hrp = i == -1 ? "" : text.substring(8, i).toLowerCase();
-            if (text.substring(8).equals(text.substring(8).toUpperCase()) && (hrp.equals("bc") || hrp.equals("tb"))) {
-                text = text.toLowerCase();
+                text = startWithBitcoin ? scanned : String.format("bitcoin:%s", scanned);
+                // qrcodes of bech32 addresses that use alphanumeric mode may be read as uppercase
+                final int i = text.indexOf("1");
+                final String hrp = i == -1 ? "" : text.substring(8, i).toLowerCase();
+                if (!service.isLiquid() && text.substring(8).equals(text.substring(8).toUpperCase()) &&
+                    (hrp.equals("bc") || hrp.equals("tb"))) {
+                    text = text.toLowerCase();
+                }
             }
             try {
                 final ObjectNode transactionFromUri = service.getSession().createTransactionFromUri(text, subaccount);
