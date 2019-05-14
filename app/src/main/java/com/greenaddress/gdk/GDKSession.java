@@ -119,11 +119,11 @@ public class GDKSession {
         GDK.login_watch_only(mNativeSession, username, password);
     }
 
-    public List<TransactionData> getTransactions(final int subAccount, final int pageId) throws IOException {
+    public List<TransactionData> getTransactions(final int subAccount, final int pageId) throws Exception {
         return getTransactionsPaged(subAccount,pageId).getList();
     }
 
-    public PagedData<TransactionData> getTransactionsPaged(final int subAccount, final int pageId) throws IOException {
+    public PagedData<TransactionData> getTransactionsPaged(final int subAccount, final int pageId) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("page_id", pageId);
@@ -171,7 +171,7 @@ public class GDKSession {
         return twoFactorConfigData;
     }
 
-    public Map<String,BalanceData> getBalance(final Integer subAccount, final long confirmations) throws IOException {
+    public Map<String,BalanceData> getBalance(final Integer subAccount, final long confirmations) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);

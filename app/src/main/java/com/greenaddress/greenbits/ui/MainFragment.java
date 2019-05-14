@@ -104,7 +104,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             } else {
                 assetsSelection.setVisibility(View.GONE);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -33,7 +33,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
             assetsBalances = mService.getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
             final AssetsAdapter adapter = new AssetsAdapter(assetsBalances, mService, this, getResources(), this);
             assetsList.setAdapter(adapter);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
