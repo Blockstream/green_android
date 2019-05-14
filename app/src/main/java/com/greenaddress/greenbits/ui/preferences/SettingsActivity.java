@@ -26,8 +26,6 @@ public class SettingsActivity extends GaPreferenceActivity {
         final Fragment fragment;
         if (preference.equals(SPVPreferenceFragment.class.getName()))
             fragment = new SPVPreferenceFragment();
-        else if (preference.equals(NetworkPreferenceFragment.class.getName()))
-            fragment = new NetworkPreferenceFragment();
         else
             fragment = new GeneralPreferenceFragment();
         getSupportFragmentManager().beginTransaction().add(android.R.id.content, fragment).commit();
