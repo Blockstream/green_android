@@ -126,7 +126,7 @@ public class TransactionItem implements Serializable {
         spvVerified = service.isSPVVerified(txHash);
 
         date = txData.getCreatedAt();
-        replaceable = !service.isElements() &&
+        replaceable = !service.isLiquid() &&
                       txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 

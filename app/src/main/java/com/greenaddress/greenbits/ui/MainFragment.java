@@ -283,10 +283,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
             mAccountView.setIcon(getResources().getDrawable(getGAService().getNetwork().getIcon()));
             mAccountView.setBalance(service, balanceData);
-            if (service.isElements()) {
-                // No fiat values in elements multiasset
-                UI.hide(UI.find(mView, R.id.mainLocalBalanceText));
-            }
         });
     }
 

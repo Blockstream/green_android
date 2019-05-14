@@ -65,9 +65,6 @@ public class NetworkData extends JSONData {
     }
 
     @JsonIgnore
-    public boolean isElements() { return false; /* FIXME: Elements support through GDK */ }
-
-    @JsonIgnore
     public boolean IsNetworkMainnet() {
         return getNetworkParameters() == MainNetParams.get();
     }

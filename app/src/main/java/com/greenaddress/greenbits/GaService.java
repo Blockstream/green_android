@@ -85,10 +85,6 @@ public class GaService extends Service  {
         return mNetwork.getNetworkParameters();
     }
 
-    public boolean isElements() {
-        return mNetwork.isElements();
-    }
-
     public boolean isMainnet() {
         return mNetwork.IsNetworkMainnet();
     }

@@ -114,7 +114,7 @@ public class SPV {
 
     public boolean isEnabled() {
         return !mService.isWatchOnly() && mService.cfg().getBoolean(PrefKeys.SPV_ENABLED, false) &&
-               !mService.isElements();
+               !mService.isLiquid();
     }
 
     public void setEnabledAsync(final boolean enabled) {
