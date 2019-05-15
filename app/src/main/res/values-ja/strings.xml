@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="id_1030_minutes">~ 10-30 分</string>
+  <string name="id_12_confirmations">1/2 confirmations</string>
   <string name="id_1d_2s_ago">%1$d%2$s前</string>
   <string name="id_1d_minutes">%1$d 分</string>
   <string name="id_1s_blocks_left_2d">%1$s 残りブロック %2$d</string>
@@ -31,6 +32,7 @@
   <string name="id_always">いつも</string>
   <string name="id_amount">額</string>
   <string name="id_are_you_sure_you_want_to_view">%sを利用してトランザクションを確認しますか？</string>
+  <string name="id_asset">Asset</string>
   <string name="id_attempts_remaining_d">残り: %d 回</string>
   <string name="id_auto_logout_timeout">自動ログアウト時間</string>
   <string name="id_autolock_after">オートロック制限</string>
@@ -55,12 +57,10 @@
   <string name="id_choose_your_network">ネットワークの選択</string>
   <string name="id_clear">クリア</string>
   <string name="id_completed">完了</string>
+  <string name="id_confidential">Confidential</string>
   <string name="id_confirm_code">コードを確認</string>
   <string name="id_confirm_passphrase">Confirm passphrase</string>
-  <string name="id_confirmation">検証</string>
-  <string name="id_confirmation_in_12_blocks_2">12ブロックで検証、平均2時間</string>
-  <string name="id_confirmation_in_24_blocks_4">24ブロックで検証、平均4時間</string>
-  <string name="id_confirmation_in_3_blocks_30">3ブロックで検証、平均30分</string>
+  <string name="id_confirmation_in_d_blocks">Confirmation in %d blocks</string>
   <string name="id_congratulations">おめでとうございます。</string>
   <string name="id_connect_through_a_proxy">プロキシを使って接続する</string>
   <string name="id_connect_with_tor">Torを使って接続する</string>
@@ -76,6 +76,8 @@
   <string name="id_custom_network_not_found">カスタムネットワークが見つかりません。</string>
   <string name="id_custom_network_with_this_name">この名前でのカスタムネットワークが既にあります。</string>
   <string name="id_d6_confirmations">%d/6 検証</string>
+  <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">日時</string>
   <string name="id_day">日</string>
   <string name="id_days">日</string>
@@ -151,10 +153,12 @@
   <string name="id_green_logo">Greenロゴ</string>
   <string name="id_green_mnemonic_qr_code">Green MnemonicQRコード</string>
   <string name="id_green_only_supports_one_pin_for">Greenは各ネットワークにつきひとつのPINをサポートします。新規ウォレットはログインの度にmnemonicが必要となります。</string>
-  <string name="id_green_only_supports_one_pin_per">Greenは各デバイスにつきひとつのPINをサポートします。このウォレットのPINを設定する為には既存のウォレットのPINを無効にして下さい。</string>
+  <string name="id_green_only_supports_one_pin_per">Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
   <string name="id_green_uses_biometric">Greenはウォレットへの簡単なアクセスの為に生体認証技術を使用します。</string>
   <string name="id_green_uses_multisig_with_one">GreenはBlockstreamのサーバーと貴方のデバイスで生成された署名の二つを活用しマルチ署名を利用します。2段階認証を設定する場合、サーバー側の署名のセキュリティにもう一段層加えることになります。</string>
+  <string name="id_hardware_wallet_support_for">Hardware wallet support for Confidential Transactions coming soon.</string>
   <string name="id_hash">ハッシュ</string>
+  <string name="id_hex">HEX</string>
   <string name="id_high">高い</string>
   <string name="id_hold_your_nfc_tag_close_to_the">デバイスにNFCタッグを近づけて下さい</string>
   <string name="id_hour">時間</string>
@@ -168,6 +172,7 @@
   <string name="id_increase_fee">手数料を高める</string>
   <string name="id_information_not_available">情報がありません。</string>
   <string name="id_insufficient_funds">資金が足りません</string>
+  <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
   <string name="id_invalid_address">アドレスが間違っています</string>
   <string name="id_invalid_amount">無効な数量</string>
   <string name="id_invalid_mnemonic">無効なmnemonic</string>
@@ -183,6 +188,7 @@
   <string name="id_invalid_twofactor_code">無効な2段階認証コード</string>
   <string name="id_invalid_url">無効なURL</string>
   <string name="id_is_a_noncustodial">保管されない</string>
+  <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">最終Ping: %1$d ms</string>
   <string name="id_later">後</string>
   <string name="id_ledger_dashboard_detected">Ledgerダッシュボードを検知しました。正しいアプリを使ってアクセスして下さい。</string>
@@ -201,7 +207,6 @@
   <string name="id_malleated">malleated</string>
   <string name="id_medium">中</string>
   <string name="id_memo">メモ</string>
-  <string name="id_miner_fee">マイナー手数料</string>
   <string name="id_minute">分</string>
   <string name="id_minutes">分</string>
   <string name="id_mnemonic">Mnemonic</string>
@@ -212,6 +217,7 @@
   <string name="id_name">名前</string>
   <string name="id_network">ネットワーク</string>
   <string name="id_network_configuration">ネットワーク設定</string>
+  <string name="id_network_fee">NETWORK FEE</string>
   <string name="id_network_monitor">ネットワーク・モニター</string>
   <string name="id_new_accounts_functionality">アカウントの新規機能が搭載される予定です</string>
   <string name="id_new_incoming_transaction_in">アカウント%sは新しいトランザクションを受信しています。(%s)。</string>
@@ -233,6 +239,7 @@
   <string name="id_notifications">告知事項</string>
   <string name="id_now">Now</string>
   <string name="id_ok">承諾</string>
+  <string name="id_on_average">on average</string>
   <string name="id_one_attempt_remaining">残り一回</string>
   <string name="id_one_network_must_be_selected">ネットワークを選択して下さい。ビットコインをデフォルトで選択します。</string>
   <string name="id_only_connect_to_trusted_nodes">SPVは信頼できるノードにだけ接続する</string>
@@ -304,12 +311,14 @@
   <string name="id_s_network">%s ネットワーク</string>
   <string name="id_save">保存</string>
   <string name="id_save_your_mnemonic">Mnemonicを保存する</string>
+  <string name="id_scan_a_qr_code_for_spv_pairing">Scan a QR code for SPV pairing</string>
   <string name="id_scan_the_qr_code_in_google">グーグル認証機でQRコードをスキャンする:</string>
   <string name="id_screen_lock">スクリーン・ロック</string>
   <string name="id_search">検索</string>
   <string name="id_second">秒</string>
   <string name="id_seconds">秒</string>
   <string name="id_security">セキュリティ</string>
+  <string name="id_select_asset">Select asset</string>
   <string name="id_select_network">ネットワーク選択</string>
   <string name="id_select_word_number_d">文字数の選択%d</string>
   <string name="id_send">送金</string>
@@ -318,6 +327,7 @@
   <string name="id_send_to">送り先</string>
   <string name="id_sending">送金中…</string>
   <string name="id_sending_request">要請中…</string>
+  <string name="id_sent">Sent</string>
   <string name="id_sent_to">送り先</string>
   <string name="id_set_a_new_pin">新しいPINの設定</string>
   <string name="id_set_custom_fee_rate">カスタム手数料の設定</string>
@@ -356,6 +366,7 @@
   <string name="id_system_message">システムメッセージ</string>
   <string name="id_tap_on_the_card_to_view">トランザクション確認にはカードをタップして下さい。</string>
   <string name="id_tap_to_restart_the_simplified">SPVをリスタートする</string>
+  <string name="id_tap_to_scan_a_qr_code_and">Tap to scan a QR code and connect to a node for SPV</string>
   <string name="id_terms_of_service">利用規約</string>
   <string name="id_terms_of_use">利用条件</string>
   <string name="id_thank_you_for_downloading_green">Greenをダウンロードして下さり誠にありがとうございます。お時間があればレビューもお願いします。</string>
@@ -365,6 +376,7 @@
   <string name="id_the_password_cant_be_empty">パスワードが空欄です</string>
   <string name="id_the_recovery_key_below_will_not">下の復元キーは二度とご覧になられません。資金のアクセスの為にバックアップをお願いします。</string>
   <string name="id_there_is_already_a_pin_set_for">%sウォレットには既にPINが設定されています。続ける場合、PINの設定は不可能でありログインするには24個のmnemonic単語が必要です。PINの無効化は設定、または、ログインを3回失敗した場合できます。</string>
+  <string name="id_ticker">TICKER</string>
   <string name="id_time_s">時間: %s</string>
   <string name="id_to">送り先</string>
   <string name="id_tor_connectivity_disabled">Tor未接続</string>
@@ -410,6 +422,7 @@
   <string name="id_warning_there_is_already_a">警告: 2段階認証を再設定する要請が既にありました。新しいEメールアドレスで再要請する場合、紛争プロセスに進むことになり、ウォレットが永久的に使えない状態になる可能性があります。</string>
   <string name="id_warning_wallet_locked_by">注意: ウォレットが2段階認証の紛争中です。サポートにお問い合わせして下さい。</string>
   <string name="id_warning_wallet_locked_for">注意: ウォレットが2段階認証の再設定の為、%d 日後ロックされます。より詳しい情報はカスタマーサポートにお問い合わせ下さい。</string>
+  <string name="id_warning_you_need_a_positive">Warning! You need a positive L-BTC balance to be able to send transactions.</string>
   <string name="id_watchonly">監視-Only</string>
   <string name="id_watchonly_disabled">監視-Only無効</string>
   <string name="id_watchonly_login">監視-Onlyログイン</string>

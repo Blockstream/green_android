@@ -60,10 +60,6 @@
   <string name="id_confidential">Confidential</string>
   <string name="id_confirm_code">Confirm Code</string>
   <string name="id_confirm_passphrase">Confirm passphrase</string>
-  <string name="id_confirmation">Confirmation</string>
-  <string name="id_confirmation_in_12_blocks_2">Confirmation in 12 blocks, 2 hours on average</string>
-  <string name="id_confirmation_in_24_blocks_4">Confirmation in 24 blocks, 4 hours on average</string>
-  <string name="id_confirmation_in_3_blocks_30">Confirmation in 3 blocks, 30 minutes on average</string>
   <string name="id_confirmation_in_d_blocks">Confirmation in %d blocks</string>
   <string name="id_congratulations">Congratulations!</string>
   <string name="id_connect_through_a_proxy">Connect through a proxy</string>
@@ -82,8 +78,6 @@
   <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_asset_in_this_account">%d asset in this account</string>
   <string name="id_d_assets_in_this_account">%d assets in this account</string>
-  <string name="id_d_hours_on_average">%d hours on average</string>
-  <string name="id_d_minutes_on_average">%d minutes on average</string>
   <string name="id_date">Date</string>
   <string name="id_day">day</string>
   <string name="id_days">days</string>
@@ -199,7 +193,6 @@
   <string name="id_later">LATER</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detected, please open the correct app to access.</string>
   <string name="id_lets_get_you_set_up">Let\'s get you set up.</string>
-  <string name="id_liquid_is_a_bitcoin_sidechain">Liquid is a Bitcoin sidechain. Currently the app only handles a subset of the features. Please bare with us while we improve support.</string>
   <string name="id_loading_transactions">Loading transactions…</string>
   <string name="id_log_in">Log In</string>
   <string name="id_log_in_using_mnemonic">Log in using mnemonic</string>
@@ -246,6 +239,7 @@
   <string name="id_notifications">Notifications</string>
   <string name="id_now">Now</string>
   <string name="id_ok">Ok</string>
+  <string name="id_on_average">on average</string>
   <string name="id_one_attempt_remaining">One attempt remaining</string>
   <string name="id_one_network_must_be_selected">One network must be selected. Selecting Bitcoin by default</string>
   <string name="id_only_connect_to_trusted_nodes">Only connect to trusted node(s) for SPV</string>

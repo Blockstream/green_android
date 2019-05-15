@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="id_1030_minutes">~ 10-30 minutos</string>
+  <string name="id_12_confirmations">1/2 confirmations</string>
   <string name="id_1d_2s_ago">Hace %1$d%2$s</string>
   <string name="id_1d_minutes">%1$d minutos</string>
   <string name="id_1s_blocks_left_2d">Restan %1$s bloques %2$d</string>
@@ -31,6 +32,7 @@
   <string name="id_always">Siempre</string>
   <string name="id_amount">Cantidad</string>
   <string name="id_are_you_sure_you_want_to_view">¿Está seguro de que quiere visualizar la transacción con %s?</string>
+  <string name="id_asset">Asset</string>
   <string name="id_attempts_remaining_d">Intentos restantes: %d</string>
   <string name="id_auto_logout_timeout">Tiempo de espera para cierre de sesión automático</string>
   <string name="id_autolock_after">Bloquear automáticamente después de</string>
@@ -55,12 +57,10 @@
   <string name="id_choose_your_network">Seleccionar tu red</string>
   <string name="id_clear">BORRAR</string>
   <string name="id_completed">Completado</string>
+  <string name="id_confidential">Confidential</string>
   <string name="id_confirm_code">Confirmar el código</string>
   <string name="id_confirm_passphrase">Confirm passphrase</string>
-  <string name="id_confirmation">Confirmación</string>
-  <string name="id_confirmation_in_12_blocks_2">Confirmación de 12 bloques, un promedio de 2 horas</string>
-  <string name="id_confirmation_in_24_blocks_4">Confirmación de 24 bloques, un promedio de 4 horas</string>
-  <string name="id_confirmation_in_3_blocks_30">Confirmación de 3 bloques, un promedio de 30 minutos</string>
+  <string name="id_confirmation_in_d_blocks">Confirmation in %d blocks</string>
   <string name="id_congratulations">¡Felicidades!</string>
   <string name="id_connect_through_a_proxy">Conectarse a través de un proxy</string>
   <string name="id_connect_with_tor">Conectarse con Tor</string>
@@ -76,6 +76,8 @@
   <string name="id_custom_network_not_found">No se encuentra la red personalizada</string>
   <string name="id_custom_network_with_this_name">Ya existe una red personalizada con este nombre</string>
   <string name="id_d6_confirmations">%d/6 confirmaciones</string>
+  <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">Fecha</string>
   <string name="id_day">día</string>
   <string name="id_days">días</string>
@@ -151,10 +153,12 @@
   <string name="id_green_logo">Logo de Green</string>
   <string name="id_green_mnemonic_qr_code">Código QR de tu Frase de Recuperación de Green</string>
   <string name="id_green_only_supports_one_pin_for">Green solo acepta un PIN para cada red. Las nuevas carteras requerirán la Frase de Recuperación cada vez que inicies sesión.</string>
-  <string name="id_green_only_supports_one_pin_per">Green solo acepta un PIN por dispositivo. Para establecer un PIN para esta cartera, primero deshabilita el PIN de la cartera original.</string>
+  <string name="id_green_only_supports_one_pin_per">Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
   <string name="id_green_uses_biometric">Green utiliza la autenticación biométrica para simplificar el acceso a la cartera</string>
   <string name="id_green_uses_multisig_with_one">Green utiliza las multifirmas con una firma generada por tu dispositivo y otra generada por los servidores de Blockstream. Establecer una autenticación de dos factores añade un nivel de seguridad adicional para la firma originada en el servidor.</string>
+  <string name="id_hardware_wallet_support_for">Hardware wallet support for Confidential Transactions coming soon.</string>
   <string name="id_hash">Hash</string>
+  <string name="id_hex">HEX</string>
   <string name="id_high">Altura</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Acerque su etiqueta NFC al dispositivo</string>
   <string name="id_hour">hora</string>
@@ -168,6 +172,7 @@
   <string name="id_increase_fee">Aumentar comisión</string>
   <string name="id_information_not_available">Información no disponible.</string>
   <string name="id_insufficient_funds">Fondos insuficientes</string>
+  <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
   <string name="id_invalid_address">Dirección inválida</string>
   <string name="id_invalid_amount">Cantidad inválida</string>
   <string name="id_invalid_mnemonic">Frase de Recuperación inválida</string>
@@ -183,6 +188,7 @@
   <string name="id_invalid_twofactor_code">Código de dos factores inválido</string>
   <string name="id_invalid_url">URL inválido</string>
   <string name="id_is_a_noncustodial">es una cartera sin custodia</string>
+  <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">Último pin: %1$d ms</string>
   <string name="id_later">LUEGO</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detectado. Abre la app correcta para acceder.</string>
@@ -201,7 +207,6 @@
   <string name="id_malleated">maleable</string>
   <string name="id_medium">Medio</string>
   <string name="id_memo">Nota</string>
-  <string name="id_miner_fee">COMISIÓN DE MINERO</string>
   <string name="id_minute">minuto</string>
   <string name="id_minutes">minutos</string>
   <string name="id_mnemonic">Frase de Recuperación</string>
@@ -212,6 +217,7 @@
   <string name="id_name">Nombre</string>
   <string name="id_network">RED</string>
   <string name="id_network_configuration">Configuración de red</string>
+  <string name="id_network_fee">NETWORK FEE</string>
   <string name="id_network_monitor">Monitor de red</string>
   <string name="id_new_accounts_functionality">¡Próximamente, una nueva función de las cuentas!</string>
   <string name="id_new_incoming_transaction_in">Nueva transacción entrante en la cuenta %s (%s).</string>
@@ -233,6 +239,7 @@
   <string name="id_notifications">Notificaciones</string>
   <string name="id_now">Now</string>
   <string name="id_ok">OK</string>
+  <string name="id_on_average">on average</string>
   <string name="id_one_attempt_remaining">Un intento restante</string>
   <string name="id_one_network_must_be_selected">Debe seleccionarse una red. Se selecciona Bitcoin por defecto.</string>
   <string name="id_only_connect_to_trusted_nodes">Conectar solo con nodo(s) confiable(s) para SPV</string>
@@ -304,12 +311,14 @@
   <string name="id_s_network">%s red</string>
   <string name="id_save">Guardar</string>
   <string name="id_save_your_mnemonic">Guarda tu Frase de Recuperación</string>
+  <string name="id_scan_a_qr_code_for_spv_pairing">Scan a QR code for SPV pairing</string>
   <string name="id_scan_the_qr_code_in_google">Escanear el código QR en Google Authenticator:</string>
   <string name="id_screen_lock">Bloqueo de pantalla</string>
   <string name="id_search">Buscar</string>
   <string name="id_second">segundo</string>
   <string name="id_seconds">segundos</string>
   <string name="id_security">SEGURIDAD</string>
+  <string name="id_select_asset">Select asset</string>
   <string name="id_select_network">Seleccionar red</string>
   <string name="id_select_word_number_d">Seleccionar número de palabras %d</string>
   <string name="id_send">Enviar</string>
@@ -318,6 +327,7 @@
   <string name="id_send_to">Enviar a</string>
   <string name="id_sending">ENVIANDO</string>
   <string name="id_sending_request">Enviando solicitud...</string>
+  <string name="id_sent">Sent</string>
   <string name="id_sent_to">Enviado a</string>
   <string name="id_set_a_new_pin">Establecer un nuevo PIN</string>
   <string name="id_set_custom_fee_rate">Establecer comisión por vbyte personalizada</string>
@@ -356,6 +366,7 @@
   <string name="id_system_message">Mensaje de sistema</string>
   <string name="id_tap_on_the_card_to_view">Haz clic en la tarjeta para visualizar las transacciones.</string>
   <string name="id_tap_to_restart_the_simplified">Toca para reiniciar la verificación simple de pago</string>
+  <string name="id_tap_to_scan_a_qr_code_and">Tap to scan a QR code and connect to a node for SPV</string>
   <string name="id_terms_of_service">Condiciones de servicio</string>
   <string name="id_terms_of_use">Condiciones de uso</string>
   <string name="id_thank_you_for_downloading_green">¡Gracias por descargar Green! Cuando tengas tiempo, déjanos una reseña</string>
@@ -365,6 +376,7 @@
   <string name="id_the_password_cant_be_empty">La contraseña no puede quedar vacía</string>
   <string name="id_the_recovery_key_below_will_not">La Frase de Recuperación que aparece abajo no se volverá a mostrar. Haz una copia de seguridad de la clave para asegurarte de siempre tener acceso a tus fondos.</string>
   <string name="id_there_is_already_a_pin_set_for">Ya se ha establecido un PIN para la cartera %s. Si continúas, no podrás establecer un PIN y deberás ingresar con la Frase de Recuperación de 24 palabras. El PIN puede desactivarse desde el panel de configuración o si se ingresa el PIN equivocado 3 veces.</string>
+  <string name="id_ticker">TICKER</string>
   <string name="id_time_s">Tiempo: %s</string>
   <string name="id_to">A</string>
   <string name="id_tor_connectivity_disabled">¡Conectividad Tor deshabilitada!</string>
@@ -410,6 +422,7 @@
   <string name="id_warning_there_is_already_a">ADVERTENCIA: Ya hay una solicitud para restablecer la autenticación de dos factores en tu cartera. Si envías una nueva solicitud desde otra dirección de correo electrónico ahora, tu cartera quedará impugnada y es posible que pierdas el acceso a ella de forma permanente.</string>
   <string name="id_warning_wallet_locked_by">ADVERTENCIA: cartera bloqueada por disputa de dos factores. Contacta a soporte técnico para obtener más información.</string>
   <string name="id_warning_wallet_locked_for">ADVERTENCIA: cartera bloqueada por restablecimiento de dos factores en %d días. Contacta a soporte técnico para obtener más información.</string>
+  <string name="id_warning_you_need_a_positive">Warning! You need a positive L-BTC balance to be able to send transactions.</string>
   <string name="id_watchonly">Solo lectura</string>
   <string name="id_watchonly_disabled">Modo de solo lectura deshabilitado</string>
   <string name="id_watchonly_login">Iniciar sesión en modo de solo lectura</string>

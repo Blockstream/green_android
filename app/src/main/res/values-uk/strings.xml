@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="id_1030_minutes">~ 10-30 Хвилин</string>
+  <string name="id_12_confirmations">1/2 confirmations</string>
   <string name="id_1d_2s_ago">%1$d %2$s тому</string>
   <string name="id_1d_minutes">%1$d хвилин</string>
   <string name="id_1s_blocks_left_2d">%1$s блоків залишилося %2$d</string>
@@ -31,6 +32,7 @@
   <string name="id_always">Завжди</string>
   <string name="id_amount">Сума</string>
   <string name="id_are_you_sure_you_want_to_view">Ви впевнені, що бажаєте переглянути транзакцію за допомогою %s?</string>
+  <string name="id_asset">Asset</string>
   <string name="id_attempts_remaining_d">Залишилося спроб: %d</string>
   <string name="id_auto_logout_timeout">Автоматичний вихід</string>
   <string name="id_autolock_after">Автоблокування</string>
@@ -55,12 +57,10 @@
   <string name="id_choose_your_network">Виберіть мережу</string>
   <string name="id_clear">ОЧИСТИТИ</string>
   <string name="id_completed">Завершено</string>
+  <string name="id_confidential">Confidential</string>
   <string name="id_confirm_code">Підтвердіть код</string>
   <string name="id_confirm_passphrase">Confirm passphrase</string>
-  <string name="id_confirmation">Підтвердження</string>
-  <string name="id_confirmation_in_12_blocks_2">Підтвердження у 12 блоках, в середньому 2 години</string>
-  <string name="id_confirmation_in_24_blocks_4">Підтвердження у 24 блоках, у середньому 4 години </string>
-  <string name="id_confirmation_in_3_blocks_30">Підтвердження у 3 блоках, в середньому 30 хвилин</string>
+  <string name="id_confirmation_in_d_blocks">Confirmation in %d blocks</string>
   <string name="id_congratulations">Вітаємо!</string>
   <string name="id_connect_through_a_proxy">Встановити з’єднання через проксі-сервер</string>
   <string name="id_connect_with_tor">Встановити з’єднання з Tor</string>
@@ -76,6 +76,8 @@
   <string name="id_custom_network_not_found">Спеціалізовану мережу не знайдено</string>
   <string name="id_custom_network_with_this_name">Спеціалізована мережа з такою назвою вже існує </string>
   <string name="id_d6_confirmations">%d/6 підтверджень</string>
+  <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">Дата</string>
   <string name="id_day">день</string>
   <string name="id_days">днів</string>
@@ -151,10 +153,12 @@
   <string name="id_green_logo">Логотип гаманця Green</string>
   <string name="id_green_mnemonic_qr_code">Мнемонічний QR-код гаманця Green</string>
   <string name="id_green_only_supports_one_pin_for">Green підтримує лише один PIN-код для кожної мережі. Новий гаманець вимагає введення мнемонічної фрази кожного разу при вході в систему.</string>
-  <string name="id_green_only_supports_one_pin_per">Green підтримує лише один PIN-код для одного пристрою. Для того, щоб встановити PIN-код для цього гаманця, спочатку вимкніть PIN-код на оригінальному гаманці.</string>
+  <string name="id_green_only_supports_one_pin_per">Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
   <string name="id_green_uses_biometric">Green використовує біометричну аутентифікацію для того, щоб забезпечити легкий доступ до гаманця </string>
   <string name="id_green_uses_multisig_with_one">Green використовує мультипідпис з підписом, створеним вашим пристроєм, та підписом, згенерованим за допомогою серверів Blockstream. Налаштування двофакторної аутентифікації дає змогу отримати додатковий рівень безпеки для підпису на сервері.</string>
+  <string name="id_hardware_wallet_support_for">Hardware wallet support for Confidential Transactions coming soon.</string>
   <string name="id_hash">Хеш</string>
+  <string name="id_hex">HEX</string>
   <string name="id_high">Високий</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Тримайте NFC-тег поряд із вашим приcтроєм</string>
   <string name="id_hour">година</string>
@@ -168,6 +172,7 @@
   <string name="id_increase_fee">Підвищити комісію</string>
   <string name="id_information_not_available">Інформація недоступна.</string>
   <string name="id_insufficient_funds">Недостатньо коштів</string>
+  <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
   <string name="id_invalid_address">Неправильна адреса</string>
   <string name="id_invalid_amount">Неправильна сума</string>
   <string name="id_invalid_mnemonic">Неправильна мнемонічна фраза</string>
@@ -183,6 +188,7 @@
   <string name="id_invalid_twofactor_code">Неправильний двофакторний код</string>
   <string name="id_invalid_url">Неправильний URL</string>
   <string name="id_is_a_noncustodial">керується тільки власником</string>
+  <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">Останній пінг: %1$d мс</string>
   <string name="id_later">ПІЗНІШЕ</string>
   <string name="id_ledger_dashboard_detected">Знайдена панель Ledger, будь ласка, відкрийте правильний додаток для доступу.</string>
@@ -201,7 +207,6 @@
   <string name="id_malleated">деформована</string>
   <string name="id_medium">Середня</string>
   <string name="id_memo">Пам\'ятка</string>
-  <string name="id_miner_fee">КОМІСІЯ МАЙНЕРА</string>
   <string name="id_minute">хвилина</string>
   <string name="id_minutes">хвилин</string>
   <string name="id_mnemonic">Мнемонічна фраза</string>
@@ -212,6 +217,7 @@
   <string name="id_name">Ім’я</string>
   <string name="id_network">МЕРЕЖА</string>
   <string name="id_network_configuration">Конфігурація мережі</string>
+  <string name="id_network_fee">NETWORK FEE</string>
   <string name="id_network_monitor">Монітор мережі</string>
   <string name="id_new_accounts_functionality">Очікується додавання нових акаунтів!</string>
   <string name="id_new_incoming_transaction_in">Нова вхідна транзакція на акаунті %s (%s).</string>
@@ -233,6 +239,7 @@
   <string name="id_notifications">Повідомлення</string>
   <string name="id_now">Зараз</string>
   <string name="id_ok">Ok</string>
+  <string name="id_on_average">on average</string>
   <string name="id_one_attempt_remaining">Залишилась одна спроба</string>
   <string name="id_one_network_must_be_selected">Виберіть одну з мереж. За початковими налаштуваннями встановлено Біткоїн</string>
   <string name="id_only_connect_to_trusted_nodes">З’єднувати лише з перевіреними нодами для SPV</string>
@@ -304,12 +311,14 @@
   <string name="id_s_network">%s мережа</string>
   <string name="id_save">Зберегти</string>
   <string name="id_save_your_mnemonic">Збережіть вашу мнемонічну фразу</string>
+  <string name="id_scan_a_qr_code_for_spv_pairing">Scan a QR code for SPV pairing</string>
   <string name="id_scan_the_qr_code_in_google">Відскануйте QR-код із Google Authenticator</string>
   <string name="id_screen_lock">Блокування екрану</string>
   <string name="id_search">Пошук</string>
   <string name="id_second">секунда</string>
   <string name="id_seconds">секунд</string>
   <string name="id_security">БЕЗПЕКА</string>
+  <string name="id_select_asset">Select asset</string>
   <string name="id_select_network">Оберіть мережу</string>
   <string name="id_select_word_number_d">Виберіть слово номер %d</string>
   <string name="id_send">Надіслати</string>
@@ -318,6 +327,7 @@
   <string name="id_send_to">Надіслати</string>
   <string name="id_sending">ВІДПРАВЛЕННЯ</string>
   <string name="id_sending_request">Відправка запиту...</string>
+  <string name="id_sent">Sent</string>
   <string name="id_sent_to">Відправити на</string>
   <string name="id_set_a_new_pin">Встановити новий PIN-код</string>
   <string name="id_set_custom_fee_rate">Встановити розмір комісії</string>
@@ -356,6 +366,7 @@
   <string name="id_system_message">Системне повідомлення</string>
   <string name="id_tap_on_the_card_to_view">Натисніть на картку для перегляду транзакцій. </string>
   <string name="id_tap_to_restart_the_simplified">Торкніться, щоб перезапустити Спрощену Верифікацію Оплати (SPV)</string>
+  <string name="id_tap_to_scan_a_qr_code_and">Tap to scan a QR code and connect to a node for SPV</string>
   <string name="id_terms_of_service">Умови надання послуг</string>
   <string name="id_terms_of_use">Умови використання</string>
   <string name="id_thank_you_for_downloading_green">Дякуємо вам за завантаження гаманця Green! Будь ласка, залиште свій відгук, якщо у вас буде така можливість</string>
@@ -365,6 +376,7 @@
   <string name="id_the_password_cant_be_empty">Поле пароля не може залишатись порожнім</string>
   <string name="id_the_recovery_key_below_will_not">Ключ відновлення більше не буде показано. Виконайте резервне копіювання для того, щоб завжди мати доступ до власних коштів. </string>
   <string name="id_there_is_already_a_pin_set_for">PIN-код встановлено для %sгаманця. Якщо продовжити, не можна буде встановити PIN і для входу буде потрібно ввести мнемонічну фразу з 24 слів. Ви зможете вимкнути PIN-код в налаштуваннях або 3-кратним помилковим введенням.</string>
+  <string name="id_ticker">TICKER</string>
   <string name="id_time_s">Час:%s</string>
   <string name="id_to">ДО</string>
   <string name="id_tor_connectivity_disabled">З\'єднання з Tor розірвано!</string>
@@ -410,6 +422,7 @@
   <string name="id_warning_there_is_already_a">УВАГА: Надійшов запит на скидання двофакторної аутентифікації вашого гаманця. Якщо ви повторно надішлете запит з новим email-ом, ваш гаманець стане оскаржуваним, і, ймовірно, недоступним для вас назавжди.</string>
   <string name="id_warning_wallet_locked_by">УВАГА: Гаманець заблоковано через двофакторне оскарження. Зверніться до служби підтримки за додатковою інформацією.</string>
   <string name="id_warning_wallet_locked_for">УВАГА: Гаманець заблоковано для двофакторного скидання через %d днів. Зверніться до служби підтримки за додатковою інформацією.</string>
+  <string name="id_warning_you_need_a_positive">Warning! You need a positive L-BTC balance to be able to send transactions.</string>
   <string name="id_watchonly">Холодний гаманець</string>
   <string name="id_watchonly_disabled">Холодний гаманець відключено</string>
   <string name="id_watchonly_login">Логін холодного гаманця</string>

@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <string name="id_1030_minutes">약 10-30 분</string>
+  <string name="id_12_confirmations">1/2 confirmations</string>
   <string name="id_1d_2s_ago">1%1$d2%2$s전</string>
   <string name="id_1d_minutes">%1$d분</string>
   <string name="id_1s_blocks_left_2d">%1$s블록 남음%2$d</string>
@@ -31,6 +32,7 @@
   <string name="id_always">항상</string>
   <string name="id_amount">금액</string>
   <string name="id_are_you_sure_you_want_to_view">정말로 %s를 사용하여 거래를 확인하시겠습니까?</string>
+  <string name="id_asset">Asset</string>
   <string name="id_attempts_remaining_d">남은 시도: %d</string>
   <string name="id_auto_logout_timeout">자동 로그아웃 시간</string>
   <string name="id_autolock_after">자동 잠금 시간</string>
@@ -55,12 +57,10 @@
   <string name="id_choose_your_network">사용자 지정 네트워크 선택</string>
   <string name="id_clear">새로고침</string>
   <string name="id_completed">완료</string>
+  <string name="id_confidential">Confidential</string>
   <string name="id_confirm_code">코드 컨펌</string>
   <string name="id_confirm_passphrase">비밀번호 확인</string>
-  <string name="id_confirmation">컨펌</string>
-  <string name="id_confirmation_in_12_blocks_2">12블록 후 컨펌. 평균적으로 2시간 소모</string>
-  <string name="id_confirmation_in_24_blocks_4">24블록 또는 이후 컨펌. 평균적으로 4시간 소모</string>
-  <string name="id_confirmation_in_3_blocks_30">3블록 후 컨펌. 평균적으로 30분 소모</string>
+  <string name="id_confirmation_in_d_blocks">Confirmation in %d blocks</string>
   <string name="id_congratulations">축하합니다!</string>
   <string name="id_connect_through_a_proxy">프록시를 사용하여 연결하기</string>
   <string name="id_connect_with_tor">Tor를 사용하여 연결하기</string>
@@ -76,6 +76,8 @@
   <string name="id_custom_network_not_found">사용자 지정 네트워크 찾지 못함</string>
   <string name="id_custom_network_with_this_name">이 이름을 가진 사용자 지정 네트워크는 이미 존재합니다</string>
   <string name="id_d6_confirmations">%d/6 컨펌</string>
+  <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">날짜</string>
   <string name="id_day">일</string>
   <string name="id_days">일</string>
@@ -151,10 +153,12 @@
   <string name="id_green_logo">Green 로고</string>
   <string name="id_green_mnemonic_qr_code">Green 니모닉(복원 코드) QR 코드</string>
   <string name="id_green_only_supports_one_pin_for">Green 은 각 네트워크 별로 한 개의 PIN을 지원합니다. 새로운 지갑은 로그인 시 니모닉(복원 코드)이 필요합니다.</string>
-  <string name="id_green_only_supports_one_pin_per">Green 은 매체 별 한 개의 PIN을 지원합니다. 이 지갑에 비밀번호를 설정하시려면, 기존 지갑의 PIN을 삭제해주세요.</string>
+  <string name="id_green_only_supports_one_pin_per">Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.</string>
   <string name="id_green_uses_biometric">Green 은 지갑에 쉽게 접근하기 위하여 생체인증 기술을 사용합니다.</string>
   <string name="id_green_uses_multisig_with_one">Green 은 Blockstream 서버의 서명과 사용자의 매체에서 생성되는 서명으로 멀티서명 기술을 사용합니다. 2FA를 설정할 경우, 서버측 서명을 더욱 안전하게 만듭니다.</string>
+  <string name="id_hardware_wallet_support_for">Hardware wallet support for Confidential Transactions coming soon.</string>
   <string name="id_hash">해시</string>
+  <string name="id_hex">HEX</string>
   <string name="id_high">높음</string>
   <string name="id_hold_your_nfc_tag_close_to_the">NFC 태그를 기기에 가까이 대세요</string>
   <string name="id_hour">한 시간</string>
@@ -168,6 +172,7 @@
   <string name="id_increase_fee">수수료 늘리기</string>
   <string name="id_information_not_available">해당 정보가 없습니다.</string>
   <string name="id_insufficient_funds">자산 부족</string>
+  <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
   <string name="id_invalid_address">유효하지 않은 주소</string>
   <string name="id_invalid_amount">유효하지 않은 액수</string>
   <string name="id_invalid_mnemonic">유효하지 않은 니모닉(복원 코드)</string>
@@ -183,6 +188,7 @@
   <string name="id_invalid_twofactor_code">유효하지 않은 2FA 코드</string>
   <string name="id_invalid_url">유효하지 않은 URL</string>
   <string name="id_is_a_noncustodial">자산을 맡겨 신뢰를 요구하지 않는 지갑입니다.</string>
+  <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">마지막 핑: %1$d ms</string>
   <string name="id_later">이후</string>
   <string name="id_ledger_dashboard_detected">Ledger 대시 보드가 감지되었습니다. 올바른 앱을 열어 사용하세요.</string>
@@ -201,7 +207,6 @@
   <string name="id_malleated">바뀜</string>
   <string name="id_medium">중간</string>
   <string name="id_memo">메모</string>
-  <string name="id_miner_fee">채굴 수수료</string>
   <string name="id_minute">분</string>
   <string name="id_minutes">분</string>
   <string name="id_mnemonic">니모닉(복원 코드)</string>
@@ -212,6 +217,7 @@
   <string name="id_name">이름</string>
   <string name="id_network">네트워크</string>
   <string name="id_network_configuration">네트워크 설정</string>
+  <string name="id_network_fee">NETWORK FEE</string>
   <string name="id_network_monitor">네트워크 모니터</string>
   <string name="id_new_accounts_functionality">새 계정 추가 기능이 곧 추가될 예정입니다.</string>
   <string name="id_new_incoming_transaction_in">%s 계정에 새로운 거래(%s)가 들어옵니다.</string>
@@ -233,6 +239,7 @@
   <string name="id_notifications">알람</string>
   <string name="id_now">지금</string>
   <string name="id_ok">Ok</string>
+  <string name="id_on_average">on average</string>
   <string name="id_one_attempt_remaining">시도 한번 남음</string>
   <string name="id_one_network_must_be_selected">하나의 네트워크만 선택해야 합니다. 기존값대로 비트코인을 선택합니다.</string>
   <string name="id_only_connect_to_trusted_nodes">SPV를 사용할때는 신뢰하는 노드[들]에게만 연결하세요.</string>
@@ -304,12 +311,14 @@
   <string name="id_s_network">%s 네트워크</string>
   <string name="id_save">저장</string>
   <string name="id_save_your_mnemonic">니모닉(복원 코드)을 기록해 두세요</string>
+  <string name="id_scan_a_qr_code_for_spv_pairing">Scan a QR code for SPV pairing</string>
   <string name="id_scan_the_qr_code_in_google">구글 OTP에서 QR 코드를 스캔하십시오:</string>
   <string name="id_screen_lock">화면 잠금</string>
   <string name="id_search">검색</string>
   <string name="id_second">초</string>
   <string name="id_seconds">초</string>
   <string name="id_security">보안</string>
+  <string name="id_select_asset">Select asset</string>
   <string name="id_select_network">네트워크 선택</string>
   <string name="id_select_word_number_d">단어 %d번째 단어를 선택하십시오</string>
   <string name="id_send">보내기</string>
@@ -318,6 +327,7 @@
   <string name="id_send_to">수령인</string>
   <string name="id_sending">보내는 중</string>
   <string name="id_sending_request">요청 보내는 중...</string>
+  <string name="id_sent">Sent</string>
   <string name="id_sent_to">수령인</string>
   <string name="id_set_a_new_pin">새로운 비밀번호 설정</string>
   <string name="id_set_custom_fee_rate">사용자 지정 수수료 설정</string>
@@ -356,6 +366,7 @@
   <string name="id_system_message">시스템 메시지</string>
   <string name="id_tap_on_the_card_to_view">카드를 터치하여 거래를 확인하세요</string>
   <string name="id_tap_to_restart_the_simplified">터치하여 Simplified Payment Verification을 다시 시작하세요</string>
+  <string name="id_tap_to_scan_a_qr_code_and">Tap to scan a QR code and connect to a node for SPV</string>
   <string name="id_terms_of_service">서비스 약관</string>
   <string name="id_terms_of_use">이용약관</string>
   <string name="id_thank_you_for_downloading_green">Green을 다운로드 해주셔서 감사합니다! 시간 되시면 리뷰를 남겨주세요.</string>
@@ -365,6 +376,7 @@
   <string name="id_the_password_cant_be_empty">비밀번호는 비워 둘 수 없습니다</string>
   <string name="id_the_recovery_key_below_will_not">밑의 복원 키는 다시 표시되지 않습니다. 자산을 잃어버리지 않도록 안전하게 보관해두세요.</string>
   <string name="id_there_is_already_a_pin_set_for">%s 지갑에는 비밀번호가 이미 설정되어 있습니다. 이대로 진행할 경우 비밀번호는 설정할 수 없으며 로그인을 위해서는 24개의 니모닉(복원 코드)이 필요합니다. 3번 로그인 실패를 하거나 설정에서 비밀번호를 해제하실 수 있습니다. </string>
+  <string name="id_ticker">TICKER</string>
   <string name="id_time_s">시간: %s</string>
   <string name="id_to">받는 분</string>
   <string name="id_tor_connectivity_disabled">Tor 연결이 비활성화됐습니다!</string>
@@ -410,6 +422,7 @@
   <string name="id_warning_there_is_already_a">경고: 2FA 재설정 요청이 이미 되어 있습니다. 만약 새로운 이메일 주소로 요청하시면 지갑은 분쟁 상태로 전환되며 영원히 이용하실 수 없게 될 가능성이 높습니다.</string>
   <string name="id_warning_wallet_locked_by">경고: 지갑은 2FA 분쟁으로 잠금 상태입니다. 자세한 내용은 고객센터에 문의해주시길 바랍니다.</string>
   <string name="id_warning_wallet_locked_for">경고: 지갑은 %d일 안에 있을 2FA 재설정으로 잠금 상태입니다. 자세한 내용은 고객센터에 문의해주시길 바랍니다.</string>
+  <string name="id_warning_you_need_a_positive">Warning! You need a positive L-BTC balance to be able to send transactions.</string>
   <string name="id_watchonly">조회전용</string>
   <string name="id_watchonly_disabled">조회전용 모드 비활성화</string>
   <string name="id_watchonly_login">조회전용 모드로 로그인하기</string>
