@@ -9,7 +9,7 @@
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:progressBackgroundTint="@color/separator"
-        android:progressTint="@color/green_dark"
+        android:progressTint="?attr/colorAccent"
         android:layout_height="wrap_content"
         android:paddingStart="15dp"
         android:paddingEnd="15dp"

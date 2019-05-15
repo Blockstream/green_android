@@ -78,7 +78,6 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/material_button_currency"
                     android:includeFontPadding="false"
                     android:minWidth="0dp"
                     android:minHeight="0dp"
@@ -86,7 +85,8 @@
                     android:paddingTop="8dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="8dp"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    style="@style/currencyButton"/>
 
             </RelativeLayout>
             

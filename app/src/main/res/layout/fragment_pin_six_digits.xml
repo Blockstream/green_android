@@ -29,7 +29,7 @@
         android:gravity="center"
         android:layout_weight="1"
         android:textSize="16sp"
-        android:textColor="@color/green"
+        android:textColor="?attr/colorAccent"
         android:text="@string/id_skip"/>
 
     <android.inputmethodservice.KeyboardView
@@ -39,7 +39,7 @@
         android:background="@android:color/transparent"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:keyBackground="@drawable/material_button_keyboard"
-        android:keyTextSize="32sp"/>
+        android:keyTextSize="32sp"
+        style="@style/pinKeyboardView"/>
 
 </LinearLayout>

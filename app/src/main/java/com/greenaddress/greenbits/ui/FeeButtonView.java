@@ -66,12 +66,16 @@ public class FeeButtonView extends RelativeLayout {
                getResources().getDrawable(android.R.color.transparent);
     }
 
-    public void setSelected(final boolean selected) {
+    public void setSelected(final boolean selected, final boolean isLiquid) {
+        final int feeButtonSelected = isLiquid ? R.drawable.fee_button_selected_liquid : R.drawable.fee_button_selected;
+        final int feeButtonUnSelected =
+            isLiquid ? R.drawable.fee_button_unselected_liquid : R.drawable.fee_button_unselected;
+
         mImage.setImageDrawable(selected ?
                                 getResources().getDrawable(R.drawable.ic_done) :
                                 getDrawable());
         mLayout.setBackground(selected ?
-                              getResources().getDrawable(R.drawable.fee_button_selected) :
-                              getResources().getDrawable(R.drawable.fee_button_unselected));
+                              getResources().getDrawable(feeButtonSelected) :
+                              getResources().getDrawable(feeButtonUnSelected));
     }
 }

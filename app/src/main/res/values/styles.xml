@@ -5,7 +5,8 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/darkJungleGreen</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="drawableSendReceiveIcColor">@color/accent</item>
         <item name="android:windowBackground">@color/darkJungleGreen</item>
         <item name="preferenceTheme">@style/preferenceTheme</item>
         <item name="actionMenuTextAppearance">@style/MenuTextAppearance</item>
@@ -36,6 +37,17 @@
              which is used to tint widgets -->
         <item name="colorAccent">@color/accent</item>
 
+        <!-- Default drawables for buttons -->
+        <item name="materialButton">@drawable/material_button</item>
+        <item name="materialButtonBorder">@drawable/material_button_border</item>
+        <item name="materialButtonBorderText">@color/green</item>
+        <item name="materialButtonKeyboard">@drawable/material_button_keyboard</item>
+        <item name="materialButtonSelection">@drawable/material_button_selection</item>
+        <item name="materialFeeButtonSelected">@drawable/fee_button_selected</item>
+        <item name="materialFeeButtonUnSelected">@drawable/fee_button_unselected</item>
+
+        <item name="qrBg">@drawable/ic_qr_bg</item>
+
         <!-- You can also set colorControlNormal, colorControlActivated
              colorControlHighlight & colorSwitchThumbNormal. -->
         <item name="android:windowBackground">@color/windowBackground</item>
@@ -54,11 +66,6 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="gradientButton" parent="AppTheme.Button">
-        <item name="android:background">@drawable/material_button</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
-
     <style name="assetButton" parent="AppTheme.Button">
         <item name="android:background">@drawable/material_button_asset</item>
         <item name="android:textColor">@color/white</item>
@@ -67,7 +74,13 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:drawableRight">@drawable/ic_navigate_next_black_24dp</item>
         <item name="android:layout_margin">14dp</item>
+    </style>
 
+    <!-- Fallback styles for Android < 21 that doesn't support dynamic attrs.
+        See the styles in v21/ for the "full" version -->
+    <style name="gradientButton" parent="AppTheme.Button">
+        <item name="android:background">@drawable/material_button</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="borderButton" parent="AppTheme.Button">
@@ -75,12 +88,20 @@
         <item name="android:textColor">@color/green</item>
     </style>
 
-    <style name="networkButton" parent="AppTheme.Button">
+    <style name="selectionButton" parent="AppTheme.Button">
         <item name="android:background">@drawable/material_button_selection</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:paddingTop">12dp</item>
-
     </style>
+
+    <style name="currencyButton" parent="AppTheme.Button">
+        <item name="android:background">@drawable/material_button_selection</item>
+    </style>
+
+    <style name="pinKeyboardView">
+        <item name="android:keyBackground">@drawable/material_button_keyboard</item>
+    </style>
+
+    <!-- Constant stuff -->
 
     <style name="settingsButton" parent="AppTheme.Button">
         <item name="android:background">@android:color/transparent</item>
@@ -112,7 +133,6 @@
         <item name="preferenceCategoryStyle">@style/FixForPreferenceCategoryStyle</item>
         <item name="android:textColor">@color/white</item>
         <item name="textColor">@color/white</item>
-        <item name="colorAccent">@color/green_dark</item>
     </style>
 
     <style name="FixForPreferenceCategoryStyle" parent="@style/Preference.Category.Material">

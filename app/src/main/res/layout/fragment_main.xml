@@ -18,9 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@android:color/transparent"
             app:layout_scrollFlags="scroll">
-
 
             <com.greenaddress.greenbits.ui.components.AccountView
                 android:id="@+id/accountView"
@@ -55,6 +54,7 @@
                 android:id="@+id/loadingList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:progressTint="?attr/colorAccent"
                 android:paddingTop="60dp"/>
 
             <TextView

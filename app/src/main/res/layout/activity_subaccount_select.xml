@@ -25,7 +25,6 @@
             android:id="@+id/total_amount_btc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/green_dark"
             android:text="0.0 BTC"
             android:textSize="18sp"
             />

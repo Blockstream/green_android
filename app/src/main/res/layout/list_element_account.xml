@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="visible"
-        android:background="@color/buttonJungleGreen"
+        android:background="?attr/sendReceiveBtnBg"
         >
 
         <LinearLayout
@@ -28,7 +28,7 @@
             android:layout_height="@dimen/card_size"
             android:padding="16dp"
             android:elevation="6dp"
-            android:background="@drawable/cardview"
+            android:background="?attr/themeCardview"
             android:orientation="vertical">
 
             <LinearLayout
@@ -40,7 +40,7 @@
                     android:id="@+id/networkImage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_btc"
+                    android:src="?attr/themeIcon"
                     android:layout_gravity="center_vertical"
                     android:background="@color/hide"
                     />
@@ -126,7 +126,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/buttonJungleGreen"
+                android:background="?attr/sendReceiveBtnBg"
                 android:orientation="horizontal">
 
                 <Space
@@ -159,7 +159,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/buttonJungleGreen"
+                android:background="?attr/sendReceiveBtnBg"
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
@@ -203,7 +203,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
-            android:src="@drawable/ic_btc"
+            android:src="?attr/themeIcon"
             />
 
         <ImageView

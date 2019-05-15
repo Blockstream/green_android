@@ -96,7 +96,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="4dp"
                 android:padding="12dp"
-                app:cardBackgroundColor="@color/colorAccent"
+                app:cardBackgroundColor="?attr/colorAccent"
                 app:text="@string/id_log_in"
                 app:textColor="@color/white" />
 

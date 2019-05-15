@@ -30,8 +30,6 @@ import java.util.Random;
 import java.util.Set;
 
 public class SelectionActivity extends LoginActivity implements View.OnClickListener {
-    private static final int PINSAVE = 1337;
-
     private String mMnemonic;
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
@@ -90,7 +88,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         } else {
             final Intent savePin = PinSaveActivity.createIntent(this, mMnemonic);
             savePin.putExtra("skip_visible", true);
-            startActivityForResult(savePin, PINSAVE);
+            startActivity(savePin);
         }
     }
 
@@ -116,16 +114,6 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
             UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
         } else {
             UI.toast(this, R.string.id_wallet_creation_failed, Toast.LENGTH_LONG);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-        case PINSAVE:
-            startActivity(new Intent(this, SuccessActivity.class));
-            break;
         }
     }
 

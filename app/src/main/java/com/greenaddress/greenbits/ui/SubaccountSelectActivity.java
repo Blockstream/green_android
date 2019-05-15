@@ -45,6 +45,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
             final BalanceData total = mService.getSession().convertBalance(balanceReq);
             final String btcString = mService.getValueString(total.toObjectNode(), false, true);
             final String fiatString = mService.getValueString(total.toObjectNode(), true, true);
+            mTotalAmountBtc.setTextColor(ThemeUtils.resolveColorAccent(this));
             mTotalAmountBtc.setText(btcString);
             mTotalAmountFiat.setText(" ≈ " + fiatString);
         } catch (final RuntimeException | IOException e) {

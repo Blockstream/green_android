@@ -1,0 +1,10 @@
+<resources>
+    <style name="BitcoinTheme" parent="AppTheme">
+        <item name="themeCardview">@drawable/cardview</item>
+        <item name="themeIcon">@drawable/ic_btc</item>
+
+        <item name="drawableSendReceiveIcColor">@color/colorAccent</item>
+        <item name="sendReceiveBtnBg">@color/buttonJungleGreen</item>
+    </style>
+    <style name="BitcoinTheme.NoActionBar" parent="AppTheme.NoActionBar"/>
+</resources>

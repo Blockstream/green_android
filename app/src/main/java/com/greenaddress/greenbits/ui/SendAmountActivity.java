@@ -263,6 +263,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             return;
         }
 
+        final boolean isLiquid = mService.getNetwork().getLiquid();
+
         // Setup balance
         final GaService service = mService;
         final BalanceData balanceData = service.getBalanceData(service.getModel().getCurrentSubaccount());
@@ -272,7 +274,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mSendAllButton.setSelected(mSendAll);
         mSendAllButton.setOnClickListener(this);
         for (int i = 0; i < mButtonIds.length; ++i) {
-            mFeeButtons[i].setSelected(i == mSelectedFee);
+            mFeeButtons[i].setSelected(i == mSelectedFee, isLiquid);
             mFeeButtons[i].setOnClickListener(this);
         }
 
@@ -320,10 +322,12 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                                         getBitcoinUnitClean()).asText());
             }
         } else {
+            final boolean isLiquid = mService.getNetwork().getLiquid();
+
             // Fee Button
             for (int i = 0; i < mButtonIds.length; ++i) {
                 final boolean isCurrentItem = mFeeButtons[i].getId() == view.getId();
-                mFeeButtons[i].setSelected(isCurrentItem);
+                mFeeButtons[i].setSelected(isCurrentItem, isLiquid);
                 mSelectedFee = isCurrentItem ? i : mSelectedFee;
             }
             // Set the block time in case the tx didn't change, if it did change

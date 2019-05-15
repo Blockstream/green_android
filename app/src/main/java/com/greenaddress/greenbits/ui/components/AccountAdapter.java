@@ -70,12 +70,9 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
                 holder.mAccountView.setBalance(mService, balance);
             }
             holder.mAccountView.listMode(false);
-            holder.mAccountView.setIcon(mResources.getDrawable(mService.getNetwork().getIcon()));
-            holder.mAccountView.setBackgroundForNetwork(mService.getNetwork());
             holder.mAccountView.setOnClickListener(listener);
             holder.mAccountView.showAdd(false);
         } else {
-            holder.mAccountView.setIcon2(mResources.getDrawable(mService.getNetwork().getIcon()));
             holder.mAccountView.showAdd(true);
             // TODO when implementing account creation, filter account names with CharInputFilter
             holder.mAccountView.setOnClickListener( view -> {

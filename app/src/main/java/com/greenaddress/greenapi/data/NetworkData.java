@@ -115,19 +115,6 @@ public class NetworkData extends JSONData {
         return R.drawable.ic_btc_testnet;
     }
 
-    @JsonIgnore
-    public int getCardBackground() {
-        if (network.equals("mainnet"))
-            return R.drawable.cardview;
-        if (network.equals("testnet"))
-            return R.drawable.cardview_testnet;
-        if (network.equals("localtest-liquid"))
-            return R.drawable.cardview_liquid;
-        if (network.equals("liquid"))
-            return R.drawable.cardview_liquid;
-        return R.drawable.cardview;
-    }
-
     public String getPolicyAsset() {
         return policyAsset;
     }

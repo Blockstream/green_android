@@ -47,7 +47,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="3dp"
             android:layout_marginTop="10dp"
-            app:cardBackgroundColor="@color/colorAccent"
+            app:cardBackgroundColor="?attr/colorAccent"
             app:textColor="@color/white"
             app:text="@string/id_enter" />
 
@@ -60,7 +60,7 @@
         android:background="@android:color/transparent"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:keyBackground="@drawable/material_button_keyboard"
+        android:keyBackground="?attr/materialButtonKeyboard"
         android:keyTextSize="32sp"/>
 
 </LinearLayout>

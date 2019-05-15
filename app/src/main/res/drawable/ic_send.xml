@@ -6,7 +6,6 @@
     android:viewportHeight="24">
 
   <path
-      android:fillColor="#00b45a"
-      android:fillType="evenOdd"
-      android:pathData="M0.63,8.78,8.8,13.26v7.43l4.72-4.85,4.58,2.51L23.37,3.21Zm20.52-3L17.41,16.55l-6.69-3.66ZM10.05,17.62V14.21l2.16,1.19ZM4,9.23,18.78,5.62,9.26,12.09Z" />
+      android:fillColor="?attr/drawableSendReceiveIcColor"
+      android:pathData="M 0.63 8.78 L 8.8 13.26 L 8.8 20.69 L 13.52 15.84 L 18.1 18.35 L 23.37 3.21 Z M 21.15 5.78 L 17.41 16.55 L 10.72 12.89 Z M 10.05 17.62 L 10.05 14.21 L 12.21 15.4 Z M 4 9.23 L 18.78 5.62 L 9.26 12.09 Z"/>
 </vector>

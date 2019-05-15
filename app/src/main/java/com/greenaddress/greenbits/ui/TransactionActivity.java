@@ -121,7 +121,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             confirmationsColor = R.color.grey_light;
         } else {
             confirmations = getString(R.string.id_completed);
-            confirmationsColor = R.color.green;
+            confirmationsColor = mService.isLiquid() ? R.color.liquidDark : R.color.green;
             mStatusIcon.setVisibility(View.VISIBLE);
         }
         mUnconfirmedText.setText(confirmations);
@@ -198,7 +198,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Set recipient / received on
         final TextView receivedOnText = UI.find(this, R.id.txReceivedOnText);
-        receivedOnText.setBackground(getResources().getDrawable(mService.getNetwork().getCardBackground()));
         final TextView receivedOnTitle = UI.find(this, R.id.txReceivedOnTitle);
         final TextView recipientText = UI.find(this, R.id.txRecipientText);
         final TextView recipientTitle = UI.find(this, R.id.txRecipientTitle);

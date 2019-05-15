@@ -122,7 +122,7 @@ public class ListTransactionsAdapter extends
 
         final int amountColor;
         if (txItem.type == TransactionItem.TYPE.IN)
-            amountColor = R.color.green;
+            amountColor = mService.isLiquid() ? R.color.liquidDark : R.color.green;
         else
             amountColor = R.color.white;
         holder.textValue.setTextColor(getColor(amountColor));

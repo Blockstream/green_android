@@ -82,9 +82,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
         // Setup account card view
         mAccountView = UI.find(mView, R.id.accountView);
-        mAccountView.setIcon(getResources().getDrawable(getGAService().getNetwork().getIcon()));
         mAccountView.listMode(true);
-        mAccountView.setBackgroundForNetwork(service.getNetwork());
         mAccountView.setOnClickListener(this);
         if (service.getModel().isTwoFAReset())
             mAccountView.hideActions();
@@ -281,7 +279,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             final int subaccount = service.getModel().getCurrentSubaccount();
             final SubaccountData subaccountData = service.getSubaccountData(subaccount);
             mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
-            mAccountView.setIcon(getResources().getDrawable(getGAService().getNetwork().getIcon()));
             mAccountView.setBalance(service, balanceData);
         });
     }

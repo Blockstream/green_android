@@ -25,8 +25,7 @@ public class AccountView extends CardView {
 
     private View mView;
     private Button mSendButton, mReceiveButton;
-    private ImageView mNetworkImage2;
-    private ImageButton mSelectButton, mNetworkImage;
+    private ImageButton mSelectButton;
     private LinearLayout mBodyLayout, mActionLayout, mSubaccount, mAddSubaccount;
     private TextView mTitleText, mBalanceText, mBalanceUnitText, mBalanceFiatText;
 
@@ -70,8 +69,6 @@ public class AccountView extends CardView {
         mBalanceUnitText = UI.find(view, R.id.mainBalanceUnitText);
         mBalanceFiatText = UI.find(view, R.id.mainLocalBalanceText);
         mSelectButton = UI.find(view, R.id.selectSubaccount);
-        mNetworkImage = UI.find(view, R.id.networkImage);
-        mNetworkImage2 = UI.find(view, R.id.networkImage2);
         mSubaccount= UI.find(view, R.id.subaccount);
         mAddSubaccount = UI.find(view, R.id.addSubaccount);
 
@@ -96,18 +93,6 @@ public class AccountView extends CardView {
                                        ? getResources().getDrawable(R.drawable.ic_stack_wallets)
                                        : getResources().getDrawable(R.drawable.ic_arrow_forward_24dp)
                                        );
-    }
-
-    public void setBackgroundForNetwork(final NetworkData network) {
-        mBodyLayout.setBackground(getResources().getDrawable(network.getCardBackground()));
-    }
-
-    public void setIcon(final Drawable resource) {
-        mNetworkImage.setImageDrawable(resource);
-    }
-
-    public void setIcon2(final Drawable resource) {
-        mNetworkImage2.setImageDrawable(resource);
     }
 
     public void setTitle(final String text) {

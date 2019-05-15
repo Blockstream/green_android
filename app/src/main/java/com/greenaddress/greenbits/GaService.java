@@ -219,8 +219,24 @@ public class GaService extends Service  {
         return mConnectionManager.isWatchOnly();
     }
 
-    public String getCurrentNetworkId() {
-        return PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+    public static String getCurrentNetworkId(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+    }
+
+    public static NetworkData getNetworkFromId(final String networkId) {
+        final List<NetworkData> networks = GDKSession.getNetworks();
+
+        NetworkData net = null;
+        for (final NetworkData n : networks) {
+            if (n.getNetwork().equals(networkId)) {
+                net = n;
+                break;
+            } else if (n.getNetwork().equals("mainnet")) {
+                net = n; // mainnet is our default network, we can replace it later if we find `networkId`
+            }
+        }
+
+        return net;
     }
 
     public void setCurrentNetworkId(final String networkId) {
@@ -285,7 +301,7 @@ public class GaService extends Service  {
         // android.os.SystemClock.sleep(10000);
 
         mSession = GDKSession.getInstance();
-        final String activeNetwork = getCurrentNetworkId();
+        final String activeNetwork = getCurrentNetworkId(this);
         setCurrentNetworkId(activeNetwork);
         if (mNetwork == null) {
             // Handle a previously registered network being deleted

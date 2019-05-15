@@ -76,8 +76,10 @@ public class NetworkSettingsActivity extends GaActivity {
 
             ViewHolder(final View itemView) {
                 super(itemView);
-                mButton = new Button(new ContextThemeWrapper(NetworkSettingsActivity.this, R.style.networkButton));
-                mButton.setBackgroundResource(R.drawable.material_button_selection);
+                mButton = new Button(new ContextThemeWrapper(NetworkSettingsActivity.this, R.style.selectionButton));
+                mButton.setPadding(12, 12, 12, 12);
+                mButton.setBackgroundResource(
+                    mService.isLiquid() ? R.drawable.material_button_selection_liquid : R.drawable.material_button_selection);
 
                 final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,

@@ -40,7 +40,7 @@
             style="@style/nextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/id_next" />
+            android:text="@string/id_go_to_wallet" />
 
     </FrameLayout>
 

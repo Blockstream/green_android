@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:textColor="@color/accent"
+        android:textColor="?attr/colorAccent"
         android:textSize="16sp" />
 
     <View

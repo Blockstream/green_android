@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -25,6 +26,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 /**
  * Base class for activities within the application.
@@ -53,9 +55,23 @@ public abstract class GaActivity extends AppCompatActivity {
         return (GreenAddressApplication) getApplication();
     }
 
+    protected Bundle getMetadata() {
+        Bundle metadata = null;
+        try {
+            metadata =
+                getPackageManager().getActivityInfo(this.getComponentName(), PackageManager.GET_META_DATA).metaData;
+        } catch (PackageManager.NameNotFoundException ignored) {}
+
+        return metadata;
+    }
+
     @Override
     protected final void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
+
+        setTheme(ThemeUtils.getThemeFromNetworkId(GaService.getNetworkFromId(GaService.getCurrentNetworkId(this)), this,
+                                                  getMetadata()));
+
         super.onCreate(savedInstanceState);
         final int viewId = getMainViewId();
         if (viewId != UI.INVALID_RESOURCE_ID)
@@ -180,21 +196,10 @@ public abstract class GaActivity extends AppCompatActivity {
             return;
         }
 
-        final int resourceIcon;
         final String netname = mService.getNetwork().getName();
-        switch (netname) {
-        case "Bitcoin":
-            resourceIcon = R.drawable.ic_btc;
-            break;
-        case "Testnet":
-            resourceIcon = R.drawable.ic_btc_testnet;
-            break;
-        default:
-            resourceIcon = 0;
-        }
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(resourceIcon);
+        getSupportActionBar().setIcon(mService.getNetwork().getIcon());
         if (!"Bitcoin".equals(netname))
             setTitle(String.format(" %s %s",
                                    netname, getString(resource)));

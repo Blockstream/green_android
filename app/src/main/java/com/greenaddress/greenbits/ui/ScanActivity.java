@@ -61,7 +61,7 @@ import de.schildbach.wallet.ui.scan.CameraManager;
 
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
-public class ScanActivity extends AppCompatActivity implements TextureView.SurfaceTextureListener, View.OnClickListener,
+public class ScanActivity extends GaActivity implements TextureView.SurfaceTextureListener, View.OnClickListener,
     TextWatcher {
 
     public static final String INTENT_STRING_TX = "intent_string_tx";
@@ -83,19 +83,12 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
 
     private static final int DIALOG_CAMERA_PROBLEM = 0;
 
-
     private static final Logger log = LoggerFactory.getLogger(ScanActivity.class);
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         UI.preventScreenshots(this);
 
-        final GaService service = ((GreenAddressApplication) getApplication()).mService;
-        if (service == null || service.getModel() == null) {
-            finish();
-            return;
-        }
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -121,7 +114,7 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
 
         mAddressEditText = UI.find(this, R.id.addressEdit);
         mAddressEditText.setHint(
-            service.isWatchOnly() ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
+            mService.isWatchOnly() ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
 
         UI.find(this, R.id.nextButton).setEnabled(false);
 
@@ -155,24 +148,17 @@ public class ScanActivity extends AppCompatActivity implements TextureView.Surfa
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        final GaService service = ((GreenAddressApplication) getApplication()).mService;
-        if (service == null || service.getModel() == null) {
-            finish();
-            return;
-        }
+    public void onResumeWithService() {
         mAddressEditText.addTextChangedListener(this);
         UI.find(this, R.id.nextButton).setOnClickListener(this);
         maybeOpenCamera();
     }
 
     @Override
-    protected void onPause() {
+    public void onPauseWithService() {
         cameraHandler.post(closeRunnable);
         mAddressEditText.removeTextChangedListener(this);
         UI.find(this, R.id.nextButton).setOnClickListener(null);
-        super.onPause();
     }
 
     @Override

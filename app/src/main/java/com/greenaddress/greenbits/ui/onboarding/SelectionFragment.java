@@ -15,6 +15,7 @@ import com.blockstream.libwally.Wally;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.MnemonicHelper;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.ThemeUtils;
 import com.greenaddress.greenbits.ui.UI;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class SelectionFragment extends Fragment {
             if (currentWord.equals(word)) {
                 hiddenWord = wordView;
                 wordView.setText("______");
-                wordView.setTextColor(getResources().getColor(R.color.green));
+                wordView.setTextColor(ThemeUtils.resolveColorAccent(getContext()));
             }else
                 wordView.setText(currentWord);
         }

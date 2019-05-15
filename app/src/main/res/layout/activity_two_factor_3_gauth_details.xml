@@ -64,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:textColor="@color/green_dark"
+                    android:textColor="?attr/colorAccent"
                     app:autoSizeMaxTextSize="16sp"
                     app:autoSizeMinTextSize="12sp"
                     app:autoSizeStepGranularity="2sp"

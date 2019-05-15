@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.onboarding.TermsActivity;
 
 public class FirstScreenActivity extends LoginActivity {
@@ -17,11 +18,16 @@ public class FirstScreenActivity extends LoginActivity {
     private Button mSelectNetwork;
     private TextView mWalletDetected;
 
+    private int mTheme;
+
     @Override
     protected int getMainViewId() { return R.layout.activity_first_screen; }
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
+        mTheme = ThemeUtils.getThemeFromNetworkId(GaService.getNetworkFromId(GaService.getCurrentNetworkId(
+                                                                                 this)), this, getMetadata());
+
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
         setTitle("");
 
@@ -42,9 +48,11 @@ public class FirstScreenActivity extends LoginActivity {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         builder.append(UI.getColoredString(getString(R.string.id_a_wallet_is_detected_on_this),
                                            getResources().getColor(R.color.grey_light)));
+
+        final int accentColor = mService.getNetwork().getLiquid() ? R.color.liquidGradientLight : R.color.green;
         builder.append(" ");
         builder.append(UI.getColoredString(getString(R.string.id_log_in),
-                                           getResources().getColor(R.color.green)));
+                                           getResources().getColor(accentColor)));
         mWalletDetected.setText(builder, BufferType.SPANNABLE);
         mWalletDetected.setOnClickListener(v -> startActivity(new Intent(this, PinActivity.class)));
     }
@@ -97,5 +105,10 @@ public class FirstScreenActivity extends LoginActivity {
         mSelectNetwork.setText(mService.getNetwork().getName());
         UI.showIf(mService.hasPin(), mWalletDetected);
         invalidateOptionsMenu();
+
+        // Recreate the activity to load the new theme if necessary
+        if (mTheme != ThemeUtils.getThemeFromNetworkId(mService.getNetwork(), this, getMetadata())) {
+            recreate();
+        }
     }
 }

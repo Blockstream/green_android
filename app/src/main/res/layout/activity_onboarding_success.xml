@@ -2,8 +2,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              android:padding="@dimen/activity_vertical_margin"
-    >
+              android:padding="@dimen/activity_vertical_margin">
 
     <View
         android:layout_width="match_parent"

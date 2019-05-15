@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.KeyStoreAES;
+import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 
 public class PinSaveActivity extends GaActivity implements PinFragment.OnPinListener {
 
@@ -42,6 +43,9 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         mPinFragment.setEnabled(false);
         startLoading();
 
+        Intent intent = new Intent(this, SecurityActivity.class);
+        intent.putExtra("from_onboarding",true);
+
         final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
         Futures.addCallback(mService.setPin(mnemonic, pin),
                             new FutureCallback<Void>() {
@@ -58,7 +62,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
                     KeyStoreAES.wipePIN(mService);
                 }
                 stopLoading();
-                finishOnUiThread();
+                startActivity(intent);
             }
 
             @Override

@@ -2,7 +2,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/fee_button_selected">
+    android:background="?attr/materialFeeButtonSelected">
 
     <TextView
         android:id="@+id/title"

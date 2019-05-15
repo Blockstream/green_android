@@ -15,8 +15,8 @@
         android:textSize="24sp"
         android:fontFamily="sans-serif"
         android:textAllCaps="false"
-        android:background="@drawable/material_button_selection"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp"/>
+        android:paddingEnd="16dp"
+        style="@style/selectionButton"/>
 
 </LinearLayout>

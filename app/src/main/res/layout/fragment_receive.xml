@@ -18,7 +18,7 @@
                 android:layout_width="240dp"
                 android:layout_height="240dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/ic_qr_bg"
+                android:background="?attr/qrBg"
                 android:layout_margin="20dp">
 
                 <FrameLayout
@@ -90,7 +90,6 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentBottom="true"
-                        android:background="@drawable/material_button_currency"
                         android:includeFontPadding="false"
                         android:minWidth="0dp"
                         android:minHeight="0dp"
@@ -99,7 +98,8 @@
                         android:paddingEnd="16dp"
                         android:paddingBottom="8dp"
                         android:textSize="18sp"
-                        android:textAllCaps="false" />
+                        android:textAllCaps="false"
+                        style="@style/currencyButton"/>
 
                 </RelativeLayout>
             </LinearLayout>

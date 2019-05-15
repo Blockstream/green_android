@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,8 +131,8 @@ public abstract class UI {
         b = new MaterialDialog.Builder(a)
             .title(title)
             .titleColorRes(R.color.white)
-            .positiveColorRes(R.color.accent)
-            .negativeColorRes(R.color.accent)
+            .positiveColor(ThemeUtils.resolveColorAccent(a))
+            .negativeColor(ThemeUtils.resolveColorAccent(a))
             .contentColorRes(R.color.white)
             .backgroundColor(a.getResources().getColor(R.color.buttonJungleGreen))
             .theme(Theme.DARK);
@@ -193,7 +194,7 @@ public abstract class UI {
             final Toast t = Toast.makeText(activity, translated, len);
             final View v = t.getView();
             v.setBackgroundColor(0xaf000000);
-            ((TextView) v.findViewById(android.R.id.message)).setTextColor(res.getColor(R.color.accentLight));
+            ((TextView) v.findViewById(android.R.id.message)).setTextColor(ThemeUtils.resolveColorAccent(activity));
             t.show();
         });
     }
