@@ -445,12 +445,22 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         if (currentPriority == null)
             mTxPriorityPref.setSummary("");
         else {
-            final String[] prioritySummaries = getResources().getStringArray(R.array.fee_target_summaries);
+            final String[] prioritySummaries = {prioritySummary(3), prioritySummary(12), prioritySummary(24)};
             final String[] priorityValues = getResources().getStringArray(R.array.fee_target_values);
             for (int index = 0; index < priorityValues.length; index++)
                 if (currentPriority.equals(Integer.valueOf(priorityValues[index])))
                     mTxPriorityPref.setSummary(prioritySummaries[index]);
         }
+    }
+
+    private String prioritySummary(final int blocks) {
+        final int blocksPerHour = mService.isLiquid() ? 60 : 6;
+        final int n = blocks % blocksPerHour == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour);
+        final String confirmationInBlocks = getResources().getString(R.string.id_confirmation_in_d_blocks, blocks);
+        final int idTime = blocks % blocksPerHour ==
+                           0 ? (blocks == blocksPerHour ? R.string.id_hour : R.string.id_hours) : R.string.id_minutes;
+        return String.format("%s, %d %s %s", confirmationInBlocks, n, getResources().getString(idTime),
+                             getResources().getString(R.string.id_on_average));
     }
 
     private void setTimeoutSummary(final Integer altimeout) {

@@ -79,12 +79,6 @@
         <item>@string/id_slow</item>
     </string-array>
 
-    <string-array name="fee_target_summaries" translatable="false">
-        <item>@string/id_confirmation_in_3_blocks_30</item>
-        <item>@string/id_confirmation_in_12_blocks_2</item>
-        <item>@string/id_confirmation_in_24_blocks_4</item>
-    </string-array>
-
     <plurals name="attempts_remaining" translatable="false">
         <item quantity="zero">@string/id_no_attempts_remaining</item>
         <item quantity="other">@string/id_attempts_remaining_d</item>
