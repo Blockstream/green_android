@@ -95,52 +95,34 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBtcDetailsViewController {
             nextController.wallet = wallet
-            nextController.transaction = transaction
-        }
-    }
-
-    private func createSweepTransaction(userInput: String, feeRate: UInt64) -> Promise<Transaction> {
-        let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().map(on: bgq) {_ in
-            try getSession().getReceiveAddress(subaccount: self.wallet!.pointer)
-        }.then(on: bgq) { address -> Promise<Transaction> in
-            let details: [String: Any] = ["private_key": userInput, "fee_rate": feeRate, "subaccount": self.wallet!.pointer, "addressees": [["address": address, "satoshi": 0]]]
-            return gaios.createTransaction(details: details)
+            nextController.transaction = sender as? Transaction
         }
     }
 
     func createTransaction(userInput: String) {
-        guard let settings = getGAService().getSettings() else { return }
-        guard let subaccount = wallet?.pointer else { return }
+        let settings = getGAService().getSettings()!
+        let subaccount = self.wallet!.pointer
         let feeRate: UInt64 = settings.customFeeRate ?? UInt64(1000)
+        let isSweep = getGAService().isWatchOnly
 
         startAnimating(type: NVActivityIndicatorType.ballRotateChase)
-
-        // multiple fast consecutive taps will race so 2 segues can/will be performed
-        updateButton(false)
-
-        createSweepTransaction(userInput: userInput, feeRate: feeRate).compactMap { tx -> Promise<Transaction> in
-            if tx.error.isEmpty {
-                return Promise<Transaction> { seal in seal.fulfill(tx) }
-            } else if tx.error != "id_invalid_private_key" || getGAService().isWatchOnly {
-                throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
-            }
-            if self.transaction != nil {
-                self.transaction!.addressees = [Addressee(address: userInput, satoshi: 0)]
-                self.transaction!.feeRate = feeRate
-                return gaios.createTransaction(transaction: self.transaction!)
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().compactMap { _ -> [String: Any] in
+            if isSweep {
+                let address = try! getSession().getReceiveAddress(subaccount: subaccount)
+                return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount, "addressees": [["address": address, "satoshi": 0]]]
             } else {
-                let details: [String: Any] = ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount]
-                return gaios.createTransaction(details: details)
+                return ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount]
             }
-        }.then { tx in
-            return tx
+        }.compactMap(on: bgq) { data in
+            try getSession().createTransaction(details: data)
+        }.compactMap(on: bgq) { data in
+            return Transaction(data)
         }.done { tx in
-            self.transaction = tx
-            if !tx.error.isEmpty && tx.error != "id_invalid_amount" && tx.error != "id_insufficient_funds" {
+            if !tx.error.isEmpty && tx.error != "id_invalid_amount" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-            self.performSegue(withIdentifier: "next", sender: self)
+            self.performSegue(withIdentifier: "next", sender: tx)
         }.catch { error in
             switch error {
             case TransactionError.invalid(let localizedDescription):
