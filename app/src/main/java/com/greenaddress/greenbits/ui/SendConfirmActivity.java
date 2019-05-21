@@ -67,7 +67,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final JsonNode address = mTxJson.withArray("addressees").get(0);
         final String currentRecipient = address.get("address").asText();
         final boolean isSweeping = mTxJson.get("is_sweep").asBoolean();
-        final Integer subaccount = mTxJson.get("change_subaccount").asInt();
+        final Integer subaccount = mTxJson.get("subaccount").asInt();
         UI.hideIf(isSweeping, noteTextTitle);
         UI.hideIf(isSweeping, noteText);
         if (isSweeping)
@@ -146,7 +146,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
                 }
                 if (mTxJson.has("previous_transaction")) {
                     //emptying list to avoid showing replaced txs
-                    mService.getModel().getTransactionDataObservable(mTxJson.get("change_subaccount").asInt())
+                    mService.getModel().getTransactionDataObservable(mTxJson.get("subaccount").asInt())
                     .setTransactionDataList(new ArrayList<>());
                     final String hash = mTxJson.get("previous_transaction").get("txhash").asText();
                     mService.getModel().getEventDataObservable().removeTx(hash);
