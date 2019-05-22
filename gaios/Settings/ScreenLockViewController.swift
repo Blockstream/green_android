@@ -115,7 +115,9 @@ class ScreenLockViewController: UIViewController {
                     return (try getSession().setPin(mnemonic: mnemonics, pin: password, device: deviceid), password) as? ([String: Any], String)
                 }.done { (data: [String: Any], password: String) -> Void in
                     try AuthenticationTypeHandler.addBiometryType(data: data, extraData: password, forNetwork: getNetwork())
-                }.catch { _ in
+                }.catch { error in
+                    let errorMessage = error.localizedDescription.isEmpty ? "id_operation_failure" : error.localizedDescription
+                    Toast.show(NSLocalizedString(errorMessage, comment: ""), timeout: Toast.SHORT)
                 }.finally {
                     self.stopAnimating()
                 }

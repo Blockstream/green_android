@@ -119,7 +119,8 @@ class PinSetViewController: UIViewController {
             if let err = error as? GaError, err != GaError.GenericError {
                 Toast.show(NSLocalizedString("id_you_are_not_connected_to_the", comment: ""), timeout: Toast.SHORT)
             } else {
-                Toast.show(NSLocalizedString("id_operation_failure", comment: ""), timeout: Toast.SHORT)
+                let errorMessage = error.localizedDescription.isEmpty ? "id_operation_failure" : error.localizedDescription
+                Toast.show(NSLocalizedString(errorMessage, comment: ""), timeout: Toast.SHORT)
             }
         }
     }

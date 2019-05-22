@@ -3,9 +3,21 @@ import LocalAuthentication
 import Security
 
 class AuthenticationTypeHandler {
-    public enum AuthError: Error {
+    public enum AuthError: Error, Equatable {
         case CanceledByUser
         case ServiceNotAvailable
+        case Unknown(desc: String)
+
+        var localizedDescription: String {
+            get {
+                switch self {
+                case .Unknown(let desc):
+                    return desc
+                default:
+                    return ""
+                }
+            }
+        }
     }
 
     static let AuthKeyBiometric = "com.blockstream.green.auth_key_biometric"
@@ -206,6 +218,8 @@ class AuthenticationTypeHandler {
         if status == errSecDuplicateItem {
             status = callWrapper(fun: SecItemDelete(q as CFDictionary))
             status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
+        } else if status != errSecSuccess {
+            throw AuthError.Unknown(desc: "UnknownSecStatusCode: \(status)")
         }
     }
 
