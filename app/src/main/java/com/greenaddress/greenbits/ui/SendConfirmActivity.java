@@ -92,7 +92,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         if (assetTag != null) {
             sendAmount.setText(mService.getValueString(address.get("satoshi").asLong(), false, false));
             sendAsset.setVisibility(View.VISIBLE);
-            sendAsset.setText(assetTag.asText());
+            sendAsset.setText(assetTag.asText().equals("btc") ? "L-BTC" : assetTag.asText());
         } else {
             sendAmount.setText(getFormatAmount(amount));
         }
