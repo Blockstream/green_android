@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -142,11 +143,20 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         }
         final String neg = negative ? "-" : "";
         final TextView amountText = UI.find(this, R.id.txAmountText);
-        if (mTxItem.isAsset) {
-            amountText.setText(String.format("%s%s", neg, mService.getValueString( mTxItem.satoshi, false, false)));
-            final TextView txAssetText = UI.find(this, R.id.txAssetText);
-            txAssetText.setVisibility(View.VISIBLE);
-            txAssetText.setText(mTxItem.asset);
+        if (mService.isLiquid()) {
+            amountText.setVisibility(View.GONE);
+
+            final CardView assetCardview = findViewById(R.id.txAssetCard);
+
+            final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
+            txAssetText.setText(mService.getAssetName(mTxItem.asset));
+
+            final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
+            txAssetValue.setText(String.format("%s%s", neg,
+                                               mService.getValueString(mTxItem.satoshi, false,
+                                                                       "btc".equals(mTxItem.asset))));
+
+            assetCardview.setVisibility(View.VISIBLE);
         } else {
             amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
         }

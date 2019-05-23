@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -86,13 +87,22 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final long amount = mTxJson.get("satoshi").asLong();
         final long fee = mTxJson.get("fee").asLong();
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
-        final TextView sendAsset = UI.find(this, R.id.sendAsset);
         final TextView sendFee = UI.find(this, R.id.sendFee);
         final JsonNode assetTag = address.get("asset_tag");
-        if (assetTag != null) {
-            sendAmount.setText(mService.getValueString(address.get("satoshi").asLong(), false, false));
-            sendAsset.setVisibility(View.VISIBLE);
-            sendAsset.setText(assetTag.asText().equals("btc") ? "L-BTC" : assetTag.asText());
+        if (mService.isLiquid()) {
+            sendAmount.setVisibility(View.GONE);
+            UI.find(this, R.id.amountWordSending).setVisibility(View.GONE); // hide the little "Amount" above the card
+
+            final CardView assetCardview = findViewById(R.id.txAssetCard);
+
+            final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
+            txAssetText.setText(mService.getAssetName(assetTag.asText()));
+
+            final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
+            txAssetValue.setText(mService.getValueString(address.get("satoshi").asLong(), false,
+                                                         "btc".equals(assetTag.asText())));
+
+            assetCardview.setVisibility(View.VISIBLE);
         } else {
             sendAmount.setText(getFormatAmount(amount));
         }

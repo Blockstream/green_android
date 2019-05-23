@@ -164,14 +164,13 @@
                     android:textColor="@color/textColor"
                     android:textIsSelectable="true" />
 
-                <TextView
-                    android:id="@+id/txAssetText"
-                    android:layout_width="wrap_content"
+                <include
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
                     android:visibility="gone"
-                    android:paddingTop="4dp"
-                    android:textIsSelectable="true" />
+                    android:layout_marginBottom="0dp"
+                    android:id="@+id/txAssetCard"
+                    layout="@layout/list_element_asset" />
 
                 <View
                     android:layout_width="wrap_content"

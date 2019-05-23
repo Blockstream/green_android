@@ -28,6 +28,7 @@
                 android:text="@string/id_sending"/>
 
             <TextView
+                android:id="@+id/amountWordSending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/id_amount" />
@@ -39,15 +40,13 @@
                 android:textColor="@color/textColor"
                 android:textIsSelectable="true" />
 
-            <TextView
-                android:id="@+id/sendAsset"
-                android:layout_width="wrap_content"
+            <include
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/textColor"
                 android:visibility="gone"
-                android:paddingBottom="4dp"
-                android:textIsSelectable="true"
-                />
+                android:layout_marginBottom="0dp"
+                android:id="@+id/txAssetCard"
+                layout="@layout/list_element_asset" />
 
             <TextView
                 android:layout_width="wrap_content"
