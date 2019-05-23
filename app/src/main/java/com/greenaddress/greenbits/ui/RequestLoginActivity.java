@@ -113,6 +113,10 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
         final Trezor t;
         t = Trezor.getDevice(this);
 
+        if (mService.isLiquid()) {
+            showInstructions(R.string.id_hardware_wallet_support_for);
+            return;
+        }
         if (t == null)
             return;
 
@@ -167,6 +171,10 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
     }
 
     private void onLedger(final boolean hasScreen) {
+        if (mService.isLiquid()) {
+            showInstructions(R.string.id_hardware_wallet_support_for);
+            return;
+        }
         showInstructions(R.string.id_logging_in);
         final String pin = mPin;
         mPin = null;
