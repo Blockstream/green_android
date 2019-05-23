@@ -4,7 +4,7 @@ import UIKit
 class InitialViewController: UIViewController {
     @IBOutlet var content: InitialView!
     @IBOutlet weak var watchOnlyButton: UIBarButtonItem!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true

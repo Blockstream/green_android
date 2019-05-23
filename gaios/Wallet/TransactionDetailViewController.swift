@@ -95,6 +95,7 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     @IBOutlet weak var recipientCell: UITableViewCell!
     @IBOutlet weak var walletCell: UITableViewCell!
     @IBOutlet weak var assetCell: UITableViewCell!
+    @IBOutlet weak var amountCell: UITableViewCell!
     @IBOutlet weak var walletGradientView: UIView!
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var assetTag: UILabel!
@@ -184,14 +185,14 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         statusImage.isHidden = !showBumpFee
         increasefeeLabel.isHidden = !showBumpFee
 
-        // show 1st asset for liquid network
+        // show 1st not l-btc asset for liquid network
         assetCell.isHidden = true
-        if getGdkNetwork(getNetwork()).liquid {
-            if let asset = transaction.assets.first {
-                assetValue.text = String.toBtc(satoshi: asset.value, showDenomination: false)
-                assetTag.text = asset.key
-                assetCell.isHidden = false
-            }
+        let asset = transaction.amounts.filter { $0.key != "btc" }.first
+        if isLiquid && asset != nil {
+            assetValue.text = String.toBtc(satoshi: asset!.value, showDenomination: false)
+            assetTag.text = asset!.key
+            assetCell.isHidden = false
+            amountCell.isHidden = true
         }
 
         self.tableView.reloadData()
@@ -205,11 +206,13 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
 
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         // Hide cells
-        if walletCell.isHidden && indexPath.row == 6 {
+        if assetCell.isHidden && indexPath.row == 2 {
+            return 0
+        } else if amountCell.isHidden && indexPath.row == 3 {
             return 0
         } else if recipientCell.isHidden && indexPath.row == 5 {
             return 0
-        } else if assetCell.isHidden && indexPath.row == 2 {
+        } else if walletCell.isHidden && indexPath.row == 6 {
             return 0
         }
         return super.tableView(tableView, heightForRowAt: indexPath)

@@ -119,14 +119,9 @@ struct Transaction {
         }
     }
 
-    var assets: [String: UInt64] {
+    var amounts: [String: UInt64] {
         get {
-            guard getGdkNetwork(getNetwork()).liquid else {
-                return [:]
-            }
-            var dict = get("satoshi") as [String: UInt64]? ?? [:]
-            dict.removeValue(forKey: "btc")
-            return dict
+            return get("satoshi") as [String: UInt64]? ?? [:]
         }
     }
 
@@ -144,12 +139,13 @@ struct Transaction {
     }
 
     func amount() -> String {
-        let isLiquid = getGdkNetwork(getNetwork()).liquid && !self.assets.isEmpty
-        let satoshi = isLiquid ? String.toBtc(satoshi: self.assets.first!.value, showDenomination: false) : String.toBtc(satoshi: self.satoshi)
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let asset = amounts.filter { $0.key != "btc" }.first
+        let amount = isLiquid && asset != nil ? String.toBtc(satoshi: asset!.value, showDenomination: false) : String.toBtc(satoshi: satoshi)
         if type == "outgoing" || type == "redeposit" {
-            return "-" + satoshi
+            return "-" + amount
         } else {
-            return satoshi
+            return amount
         }
     }
 

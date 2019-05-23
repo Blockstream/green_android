@@ -725,6 +725,7 @@
                         </connections>
                     </tableView>
                     <connections>
+                        <outlet property="amountCell" destination="iCz-id-Uea" id="qUz-4W-RHp"/>
                         <outlet property="amountLabel" destination="9i1-Gr-Zyb" id="wOY-HT-mXc"/>
                         <outlet property="amountTitle" destination="dbt-Lu-Yj4" id="7FE-lH-iJq"/>
                         <outlet property="assetCell" destination="qI3-9y-Rlh" id="qh0-WH-USj"/>
