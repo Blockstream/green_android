@@ -3,7 +3,7 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 
 import java.io.IOException;
@@ -12,23 +12,21 @@ import java.util.Observer;
 
 public class BalanceDataObservable extends Observable implements Observer {
     private BalanceData mBalanceData;
-    private GDKSession mSession;
     private ListeningExecutorService mExecutor;
     private Integer mSubaccount;
 
     private BalanceDataObservable() {}
 
-    public BalanceDataObservable(final GDKSession session, final ListeningExecutorService executor,
+    public BalanceDataObservable(final ListeningExecutorService executor,
                                  final Integer subaccount) {
         mExecutor = executor;
-        mSession = session;
         mSubaccount = subaccount;
     }
 
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                final BalanceData balance = mSession.getBalance(mSubaccount, 0).get("btc");
+                final BalanceData balance = getSession().getBalance(mSubaccount, 0).get("btc");
                 setBalanceData(balance);
             } catch (Exception e) {
                 Log.e("OBS", e.getMessage());

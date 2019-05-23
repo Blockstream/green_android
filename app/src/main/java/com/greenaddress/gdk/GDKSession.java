@@ -45,7 +45,7 @@ public class GDKSession {
     private final static ObjectMapper mObjectMapper = new ObjectMapper();
     private static GDKSession instance;
 
-    private final Object mNativeSession;
+    private Object mNativeSession;
     private final NotificationHandlerImpl mNotification;
 
     static {
@@ -58,7 +58,11 @@ public class GDKSession {
         mNativeSession = GDK.create_session();
     }
 
-    public static GDKSession getInstance() {
+    /*
+     * YOU SHOULD NEVER KEEP A REFERENCE TO THE INSTANCE RETURNED HERE. IT COULD BE DESTROYED
+     * AND LEAD TO ITS USAGE AFTER ITS DESTRUCTOR HAS BEEN CALLED
+     */
+    public static GDKSession getSession() {
         if (instance == null) {
             instance = new GDKSession();
         }
@@ -98,8 +102,6 @@ public class GDKSession {
 
     public void disconnect() {
         GDK.disconnect(mNativeSession);
-        GDK.destroy_session(mNativeSession);
-        instance = null;
     }
 
     public void loginWithPin(final String pin, final PinData pinData) {
@@ -323,6 +325,9 @@ public class GDKSession {
 
     public void destroy() {
         GDK.destroy_session(mNativeSession);
+        mNativeSession = null;
+
+        instance = null;
     }
 
     public Boolean changeMemo(final String txHashHex, final String memo) {

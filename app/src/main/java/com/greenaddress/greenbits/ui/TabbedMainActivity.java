@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.ConnectionMessageObservable;
 import com.greenaddress.greenapi.model.EventDataObservable;
@@ -109,7 +110,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         final String text = uri.toString();
         try {
             final int subaccount = mService.getModel().getCurrentSubaccount();
-            final ObjectNode transactionFromUri = mService.getSession().createTransactionFromUri(text, subaccount);
+            final ObjectNode transactionFromUri = getSession().createTransactionFromUri(text, subaccount);
             intent.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
         } catch (final AddressFormatException e) {
             e.printStackTrace();
@@ -133,7 +134,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         final View snackbarView = mSnackbar.getView();
         final TextView textView = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.RED);
-        mSnackbar.setAction(R.string.id_try_now, v -> mService.getSession().reconnectNow());
+        mSnackbar.setAction(R.string.id_try_now, v -> getSession().reconnectNow());
 
         // Set up the action bar.
         final SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

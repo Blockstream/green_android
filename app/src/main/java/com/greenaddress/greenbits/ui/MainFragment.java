@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -95,7 +96,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                                                                        REQUEST_SELECT_ASSET));
         try {
             if (service.isLiquid()) {
-                final int size = service.getSession().getBalance(service.getModel().getCurrentSubaccount(),0).size();
+                final int size =
+                    getSession().getBalance(service.getModel().getCurrentSubaccount(),0).size();
                 assetsSelection.setText(size == 1 ?
                                         getString(R.string.id_d_asset_in_this_account, size) :
                                         getString(R.string.id_d_assets_in_this_account, size));

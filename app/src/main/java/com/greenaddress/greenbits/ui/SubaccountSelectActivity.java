@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.SparseArray;
 import android.widget.TextView;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 
@@ -42,7 +43,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
         final BalanceData balanceReq = new BalanceData();
         balanceReq.setSatoshi(totalSatoshi);
         try {
-            final BalanceData total = mService.getSession().convertBalance(balanceReq);
+            final BalanceData total = getSession().convertBalance(balanceReq);
             final String btcString = mService.getValueString(total.toObjectNode(), false, true);
             final String fiatString = mService.getValueString(total.toObjectNode(), true, true);
             mTotalAmountBtc.setTextColor(ThemeUtils.resolveColorAccent(this));

@@ -3,7 +3,7 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.PagedData;
 import com.greenaddress.greenapi.data.TransactionData;
 
@@ -14,7 +14,6 @@ import java.util.Observer;
 
 public class TransactionDataObservable extends Observable implements Observer {
     private List<TransactionData> mTransactionDataList = new ArrayList<>();
-    private GDKSession mSession;
     private ListeningExecutorService mExecutor;
     private Integer mSubaccount;
     private boolean mUTXOOnly;
@@ -24,10 +23,9 @@ public class TransactionDataObservable extends Observable implements Observer {
 
     private TransactionDataObservable() {}
 
-    public TransactionDataObservable(final GDKSession session, final ListeningExecutorService executor,
+    public TransactionDataObservable(final ListeningExecutorService executor,
                                      final Integer subaccount, final boolean UTXOOnly) {
         mExecutor = executor;
-        mSession = session;
         mSubaccount = subaccount;
         mUTXOOnly = UTXOOnly;
         // this is not initialized by default but by visiting the account detail page
@@ -50,11 +48,12 @@ public class TransactionDataObservable extends Observable implements Observer {
         try {
             List<TransactionData> transactions;
             if (mUTXOOnly) {
-                transactions = mSession.getUTXO(mSubaccount, 0);
+                transactions = getSession().getUTXO(mSubaccount, 0);
             } else {
                 final int pageId = mNextPage == null ? 0 : mNextPage;
-                PagedData<TransactionData> transactionsPaged = mSession.getTransactionsPaged(mSubaccount,
-                                                                                             pageId);
+                PagedData<TransactionData> transactionsPaged = getSession().getTransactionsPaged(
+                    mSubaccount,
+                    pageId);
                 Log.d("OBS","page " + transactionsPaged.getPageId() +
                       "nextpage " + transactionsPaged.getNextPageId() );
                 transactions = transactionsPaged.getList();

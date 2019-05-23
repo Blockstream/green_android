@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
@@ -63,7 +64,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
             try {
                 mService.resetSession();
                 mService.getConnectionManager().connect();
-                mService.getSession().registerUser(this, null, mnemonic).resolve(null, null);
+                getSession().registerUser(this, null, mnemonic).resolve(null, null);
                 mService.resetSession();
                 mService.getConnectionManager().loginWithMnemonic(mnemonic, "");
             } catch (final Exception ex) {

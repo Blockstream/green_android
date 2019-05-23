@@ -5,7 +5,7 @@ import android.util.Pair;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,11 +16,9 @@ import java.util.Observable;
 
 public class AvailableCurrenciesObservable extends Observable {
     private Map<String, Object> availableCurrencies;
-    private GDKSession mSession;
     private ListeningExecutorService mExecutor;
 
-    public AvailableCurrenciesObservable(final GDKSession session, final ListeningExecutorService executor) {
-        mSession = session;
+    public AvailableCurrenciesObservable(final ListeningExecutorService executor) {
         mExecutor = executor;
         refresh();
     }
@@ -28,7 +26,7 @@ public class AvailableCurrenciesObservable extends Observable {
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                Map<String, Object> availableCurrencies = mSession.getAvailableCurrencies();
+                Map<String, Object> availableCurrencies = getSession().getAvailableCurrencies();
                 setAvailableCurrencies(availableCurrencies);
             } catch (JsonProcessingException e) {
                 Log.e("OBS", "getAvailableCurrencies error " +  e.getMessage());

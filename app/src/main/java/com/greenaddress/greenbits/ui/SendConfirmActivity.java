@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.HWDeviceData;
@@ -109,7 +110,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
     private String getFormatAmount(final long amount) {
         try {
-            final ObjectNode feeNode = mService.getSession().convertSatoshi(amount);
+            final ObjectNode feeNode = getSession().convertSatoshi(amount);
             return String.format("%s / %s",
                                  mService.getValueString(feeNode, false, true),
                                  mService.getValueString(feeNode, true, true));
@@ -131,15 +132,15 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
                 // mTxJson.set("memo", new TextNode(memo));
                 // sign transaction
                 final ConnectionManager cm = mService.getConnectionManager();
-                final GDKTwoFactorCall signCall = mService.getSession().signTransactionRaw(activity, mTxJson);
+                final GDKTwoFactorCall signCall = getSession().signTransactionRaw(activity, mTxJson);
                 mTxJson = signCall.resolve(null, cm.getHWResolver());
 
                 // send transaction
                 final boolean isSweep = mTxJson.get("is_sweep").asBoolean();
                 if (isSweep) {
-                    mService.getSession().broadcastTransactionRaw(mTxJson.get("transaction").asText());
+                    getSession().broadcastTransactionRaw(mTxJson.get("transaction").asText());
                 } else {
-                    final GDKTwoFactorCall sendCall = mService.getSession().sendTransactionRaw(activity, mTxJson);
+                    final GDKTwoFactorCall sendCall = getSession().sendTransactionRaw(activity, mTxJson);
                     sendCall.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
                     mService.getModel().getTwoFactorConfigDataObservable().refresh();
                 }

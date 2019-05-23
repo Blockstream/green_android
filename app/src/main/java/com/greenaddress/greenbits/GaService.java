@@ -53,13 +53,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
+
 public class GaService extends Service  {
     private static final String TAG = GaService.class.getSimpleName();
 
     private NetworkData mNetwork;
     private Model mModel;
     private ConnectionManager mConnectionManager;
-    private GDKSession mSession;
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
 
     private String mSignUpMnemonic;
@@ -95,7 +96,6 @@ public class GaService extends Service  {
 
     public synchronized void disconnect() {
         mConnectionManager.disconnect();
-        mSession = GDKSession.getInstance();
     }
 
     public boolean hasPin() {
@@ -116,8 +116,8 @@ public class GaService extends Service  {
     }
 
     public void resetSession() {
-        mSession.disconnect();
-        mSession = GDKSession.getInstance();
+        getSession().disconnect();
+        getSession().destroy();
     }
 
     public boolean isLiquid() {
@@ -154,10 +154,6 @@ public class GaService extends Service  {
 
     public Model getModel() {
         return mModel;
-    }
-
-    public GDKSession getSession() {
-        return mSession;
     }
 
     public ConnectionManager getConnectionManager() {
@@ -203,7 +199,7 @@ public class GaService extends Service  {
 
     public String getValueString(final long amount, final boolean asFiat, boolean withUnit) {
         try {
-            return getValueString(mSession.convertSatoshi(amount), asFiat, withUnit);
+            return getValueString(getSession().convertSatoshi(amount), asFiat, withUnit);
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             return "";
@@ -300,14 +296,13 @@ public class GaService extends Service  {
         // Uncomment to test slow service creation
         // android.os.SystemClock.sleep(10000);
 
-        mSession = GDKSession.getInstance();
         final String activeNetwork = getCurrentNetworkId(this);
         setCurrentNetworkId(activeNetwork);
         if (mNetwork == null) {
             // Handle a previously registered network being deleted
             setCurrentNetworkId("mainnet");
         }
-        mConnectionManager = new ConnectionManager(mSession, mNetwork.getNetwork(), getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled());
+        mConnectionManager = new ConnectionManager(mNetwork.getNetwork(), getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled());
 
         String deviceId = cfg().getString(PrefKeys.DEVICE_ID, null);
         if (deviceId == null) {
@@ -374,9 +369,9 @@ public class GaService extends Service  {
         // android.os.SystemClock.sleep(10000);
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
 
-        mModel = new Model(mSession, mExecutor);
+        mModel = new Model(mExecutor);
         initSettings();
-        mSession.setNotificationModel(this);
+        getSession().setNotificationModel(this);
         final int activeAccount = mConnectionManager.isLoginWithPin() ? cfg().getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
         if (mModel.getSubaccountDataObservable().getSubaccountDataWithPointer(activeAccount) != null)
             mModel.getActiveAccountObservable().setActiveAccount(activeAccount);
@@ -425,7 +420,7 @@ public class GaService extends Service  {
     }
 
     public String getMnemonic() {
-        return mSession.getMnemonicPassphrase();
+        return getSession().getMnemonicPassphrase();
     }
 
     public List<Long> getFeeEstimates() {
@@ -434,7 +429,7 @@ public class GaService extends Service  {
 
     public ListenableFuture<Void> setPin(final String mnemonic, final String pin) {
         return mExecutor.submit(() -> {
-            final PinData pinData = mSession.setPin(mnemonic, pin, "default");
+            final PinData pinData = getSession().setPin(mnemonic, pin, "default");
             cfgPin().edit().putString("ident", pinData.getPinIdentifier())
                     .putString("encrypted", pinData.getEncryptedGB())
                     .putInt("counter", 0)
@@ -548,7 +543,7 @@ public class GaService extends Service  {
     }
 
     public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
-        return mExecutor.submit(() -> mSession.changeMemo(txHashHex, memo));
+        return mExecutor.submit(() -> getSession().changeMemo(txHashHex, memo));
     }
 
 }

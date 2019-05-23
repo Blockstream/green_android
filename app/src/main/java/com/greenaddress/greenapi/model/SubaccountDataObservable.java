@@ -4,7 +4,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.SubaccountData;
 
 import java.io.IOException;
@@ -13,7 +13,6 @@ import java.util.Observable;
 
 public class SubaccountDataObservable extends Observable {
     private List<SubaccountData> mSubaccountData;
-    private GDKSession mSession;
     private ListeningExecutorService mExecutor;
     private SparseArray<TransactionDataObservable> mTransactionDataObservables;
     private SparseArray<TransactionDataObservable> mUTXODataObservables;
@@ -22,10 +21,8 @@ public class SubaccountDataObservable extends Observable {
     private ActiveAccountObservable mActiveAccountObservable;
     private BlockchainHeightObservable mBlockchainHeightObservable;
 
-    SubaccountDataObservable(final GDKSession session,
-                             final ListeningExecutorService executor,
+    SubaccountDataObservable(final ListeningExecutorService executor,
                              final Model model) {
-        mSession = session;
         mExecutor = executor;
         mTransactionDataObservables = model.getTransactionDataObservables();
         mBalanceDataObservables = model.getBalanceDataObservables();
@@ -40,7 +37,7 @@ public class SubaccountDataObservable extends Observable {
         // this call is syncronous, because other observables depends on this to be initialized
         try {
             final long millis=System.currentTimeMillis();
-            final List<SubaccountData> subAccounts = mSession.getSubAccounts();
+            final List<SubaccountData> subAccounts = getSession().getSubAccounts();
             for (SubaccountData subAccount : subAccounts) {
                 final int pointer = subAccount.getPointer();
                 initObservables(pointer);
@@ -54,26 +51,25 @@ public class SubaccountDataObservable extends Observable {
 
     private void initObservables(int pointer) {
         if (mTransactionDataObservables.get(pointer) == null) {
-            final TransactionDataObservable transactionDataObservable = new TransactionDataObservable(mSession,
-                                                                                                      mExecutor,
+            final TransactionDataObservable transactionDataObservable = new TransactionDataObservable(mExecutor,
                                                                                                       pointer, false);
             mActiveAccountObservable.addObserver(transactionDataObservable);
             mBlockchainHeightObservable.addObserver(transactionDataObservable);
             mTransactionDataObservables.put(pointer, transactionDataObservable);
         }
         if (mBalanceDataObservables.get(pointer) == null) {
-            final BalanceDataObservable balanceDataObservable = new BalanceDataObservable(mSession, mExecutor, pointer);
+            final BalanceDataObservable balanceDataObservable = new BalanceDataObservable(mExecutor, pointer);
             mBlockchainHeightObservable.addObserver(balanceDataObservable);
             mBalanceDataObservables.put(pointer, balanceDataObservable);
         }
         if (mReceiveAddressObservables.get(pointer) == null) {
             final ReceiveAddressObservable addressObservable =
-                new ReceiveAddressObservable(mSession, mExecutor, pointer);
+                new ReceiveAddressObservable(mExecutor, pointer);
             mReceiveAddressObservables.put(pointer, addressObservable);
             mActiveAccountObservable.addObserver(addressObservable);
         }
         if (mUTXODataObservables.get(pointer) == null) {
-            final TransactionDataObservable utxoDataObservable = new TransactionDataObservable(mSession, mExecutor,
+            final TransactionDataObservable utxoDataObservable = new TransactionDataObservable(mExecutor,
                                                                                                pointer, true);
             mBlockchainHeightObservable.addObserver(utxoDataObservable);
             mUTXODataObservables.put(pointer, utxoDataObservable);

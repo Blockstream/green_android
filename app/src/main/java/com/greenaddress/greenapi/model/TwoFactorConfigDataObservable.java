@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 
 import java.io.IOException;
@@ -12,13 +12,10 @@ import java.util.Observable;
 
 public class TwoFactorConfigDataObservable extends Observable {
     private TwoFactorConfigData mTwoFactorConfigData;
-    private GDKSession mSession;
     private ListeningExecutorService mExecutor;
 
-    public TwoFactorConfigDataObservable(final GDKSession session,
-                                         final ListeningExecutorService executor,
+    public TwoFactorConfigDataObservable(final ListeningExecutorService executor,
                                          final EventDataObservable eventDataObservable) {
-        mSession = session;
         mExecutor = executor;
         addObserver(eventDataObservable);
         refresh();
@@ -27,7 +24,7 @@ public class TwoFactorConfigDataObservable extends Observable {
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                final TwoFactorConfigData twoFactorConfig = mSession.getTwoFactorConfig();
+                final TwoFactorConfigData twoFactorConfig = getSession().getTwoFactorConfig();
                 setTwoFactorConfigData(twoFactorConfig);
             } catch (IOException e) {
                 Log.e("OBS", e.getMessage());

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
@@ -140,14 +140,14 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 // FIXME: If we didn't pass in the full transaction (with utxos)
                 // then this call will go to the server. So, we should do it in
                 // the background and display a wait icon until it returns
-                mTx = service.getSession().createTransactionRaw(txJson);
+                mTx = getSession().createTransactionRaw(txJson);
             }
 
             final JsonNode node = mTx.get("satoshi");
             if (node != null && node.asLong() != 0L) {
                 final long newSatoshi = node.asLong();
                 try {
-                    mCurrentAmount = service.getSession().convertSatoshi(newSatoshi);
+                    mCurrentAmount = getSession().convertSatoshi(newSatoshi);
                     mAmountText.setText(mCurrentAmount.get(getBitcoinUnitClean()).asText());
                 } catch (final RuntimeException | IOException e) {
                     Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
@@ -410,7 +410,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             updateAssetSelected();
         }
 
-        final GDKSession session = mService.getSession();
         final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
         final JsonNode replacedValue = mTx.replace("fee_rate", fee_rate);
         changed |= !fee_rate.toString().equals(replacedValue == null ? "" : replacedValue.toString());
@@ -419,7 +418,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         if (changed || caller == mRecipientText) {
             // Our tx has changed, so recreate it
             try {
-                mTx = session.createTransactionRaw(mTx);
+                mTx = getSession().createTransactionRaw(mTx);
             } catch (final Exception e) {
                 // FIXME: Toast and go back to main activity since we must be disconnected
                 throw new RuntimeException(e);
@@ -440,7 +439,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                     final long newSatoshi = addressee.get("satoshi").asLong();
                     // avoid updating view if value hasn't changed
                     if (mSendAll || (mCurrentAmount != null && mCurrentAmount.get("satoshi").asLong() != newSatoshi)) {
-                        mCurrentAmount = session.convertSatoshi(newSatoshi);
+                        mCurrentAmount = getSession().convertSatoshi(newSatoshi);
                         mAmountText.setText(mCurrentAmount.get(isFiat() ? "fiat" : getBitcoinUnitClean()).asText());
                     }
                 } catch (final RuntimeException | IOException e) {
@@ -539,7 +538,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         try {
             // avoid updating the view if changing from fiat to btc or vice versa
             if (!mSendAll && (mCurrentAmount == null || !mCurrentAmount.get(key).asText().equals(value))) {
-                mCurrentAmount = mService.getSession().convert(amount);
+                mCurrentAmount = getSession().convert(amount);
                 updateTransaction(null);
             }
         } catch (final RuntimeException | IOException e) {

@@ -19,6 +19,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;

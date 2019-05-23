@@ -9,6 +9,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.EventData;
@@ -67,7 +68,7 @@ public class MessagesActivity extends LoggedActivity
                 mService.getExecutor().execute(() -> {
                     try {
                         final ConnectionManager cm = mService.getConnectionManager();
-                        final GDKTwoFactorCall call = mService.getSession().ackSystemMessage(this, mCurrentMessage);
+                        final GDKTwoFactorCall call = getSession().ackSystemMessage(this, mCurrentMessage);
                         call.resolve(null, cm.getHWResolver());
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());

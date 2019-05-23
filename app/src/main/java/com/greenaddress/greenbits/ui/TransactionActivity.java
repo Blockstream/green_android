@@ -20,7 +20,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.model.Model;
@@ -132,7 +132,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         String btc;
         String fiat;
         try {
-            final ObjectNode amount = mService.getSession().convertSatoshi(mTxItem.satoshi);
+            final ObjectNode amount = getSession().convertSatoshi(mTxItem.satoshi);
             btc = mService.getValueString(amount, false, true);
             fiat = mService.getValueString(amount, true, true);
         } catch (final RuntimeException | IOException e) {
@@ -261,7 +261,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
         String btcFee;
         try {
-            btcFee = mService.getValueString(mService.getSession().convertSatoshi(fee), false, true);
+            btcFee = mService.getValueString(getSession().convertSatoshi(fee), false, true);
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             btcFee = "";
@@ -414,18 +414,17 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         Log.d(TAG,"onBumpFeeButtonClicked");
         try {
             startLoading();
-            final GDKSession session = mService.getSession();
             final Model model = mService.getModel();
             final String txhash = mTxItem.txHash.toString();
             final int subaccount = mTxItem.subaccount == null ? model.getCurrentSubaccount() : mTxItem.subaccount;
-            final JsonNode txToBump = session.getTransactionRaw(subaccount, txhash);
+            final JsonNode txToBump = getSession().getTransactionRaw(subaccount, txhash);
             final JsonNode feeRate = txToBump.get("fee_rate");
             BumpTxData bumpTxData = new BumpTxData();
             bumpTxData.setPreviousTransaction(txToBump);
             bumpTxData.setFeeRate(feeRate.asLong());
             bumpTxData.setSubaccount(subaccount);
             Log.d(TAG,"createTransactionRaw(" + bumpTxData.toString() + ")");
-            final ObjectNode tx = session.createTransactionRaw(bumpTxData);
+            final ObjectNode tx = getSession().createTransactionRaw(bumpTxData);
             final Intent intent = new Intent(this, SendAmountActivity.class);
             intent.putExtra(INTENT_STRING_TX, tx.toString());
             startActivity(intent);

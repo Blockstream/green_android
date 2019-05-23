@@ -3,30 +3,28 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 import java.util.Observable;
 import java.util.Observer;
 
 public class ReceiveAddressObservable extends Observable implements Observer {
     private String mReceiveAddress;
-    private GDKSession mSession;
     private ListeningExecutorService mExecutor;
     private Integer mSubaccount;
 
     private ReceiveAddressObservable() {}
 
-    public ReceiveAddressObservable(final GDKSession session, final ListeningExecutorService executor,
+    public ReceiveAddressObservable(final ListeningExecutorService executor,
                                     final Integer subaccount) {
         mExecutor = executor;
-        mSession = session;
         mSubaccount = subaccount;
     }
 
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                final String address = mSession.getReceiveAddress(mSubaccount);
+                final String address = getSession().getReceiveAddress(mSubaccount);
                 setReceiveAddress(address);
             } catch (Exception e) {
                 e.printStackTrace();

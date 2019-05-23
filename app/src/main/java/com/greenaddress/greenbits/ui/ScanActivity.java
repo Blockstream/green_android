@@ -43,6 +43,7 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.ResultPointCallback;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SweepData;
 import com.greenaddress.greenbits.GaService;
@@ -378,7 +379,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
             sweepData.setFeeRate(feeRate);
             sweepData.setAddressees(balanceDataList);
             sweepData.setSubaccount(subaccount);
-            final ObjectNode transactionRaw = service.getSession().createTransactionRaw(sweepData);
+            final ObjectNode transactionRaw = getSession().createTransactionRaw(sweepData);
             final String error = transactionRaw.get("error").asText();
             if (error.isEmpty()) {
                 result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
@@ -408,7 +409,8 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
                 }
             }
             try {
-                final ObjectNode transactionFromUri = service.getSession().createTransactionFromUri(text, subaccount);
+                final ObjectNode transactionFromUri =
+                    getSession().createTransactionFromUri(text, subaccount);
                 result.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
             } catch (final AddressFormatException e) {
                 UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);

@@ -3,7 +3,7 @@ package com.greenaddress.greenapi.model;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
@@ -16,21 +16,17 @@ import java.util.Observer;
 
 public class EventDataObservable extends Observable implements Observer {
     private List<EventData> mEventDataList = new ArrayList<>();
-    private GDKSession mSession;
 
     public boolean hasEvents() {
         return !mEventDataList.isEmpty();
     }
 
-    private EventDataObservable() {}
-
-    public EventDataObservable(final GDKSession session) {
-        mSession = session;
+    public EventDataObservable() {
         refresh();
     }
 
     public void refresh() {
-        final String systemMessage = mSession.getSystemMessage();
+        final String systemMessage = getSession().getSystemMessage();
         if (!TextUtils.isEmpty(systemMessage)) {
             // Add to system messages
             pushEvent(new EventData(R.string.id_system_message, R.string.notification_format_string,

@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.NotificationsData;
 import com.greenaddress.greenapi.data.PricingData;
@@ -317,7 +317,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         } else {
             mWatchOnlyLogin.setSummary("");
             mService.getExecutor().submit(() -> {
-                final String username2 = mService.getSession().getWatchOnlyUsername();
+                final String username2 = getSession().getWatchOnlyUsername();
                 getActivity().runOnUiThread(() -> {
                     if (username2.isEmpty())
                         mWatchOnlyLogin.setSummary(R.string.id_set_up_watchonly_credentials);
@@ -330,7 +330,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
     private void updateSettings(final SettingsData settings) {
         try {
-            final GDKTwoFactorCall gdkTwoFactorCall = mService.getSession().changeSettings(
+            final GDKTwoFactorCall gdkTwoFactorCall = getSession().changeSettings(
                 getActivity(), settings.toObjectNode());
             gdkTwoFactorCall.resolve(null, null);
             mService.getModel().getSettingsObservable().setSettings(settings);
@@ -351,7 +351,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         if (mService.warnIfOffline(getActivity())) {
             return false;
         }
-        final GDKSession session = mService.getSession();
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_watchonly);
         final EditText inputUser = UI.find(v, R.id.input_user);
         try {
@@ -370,7 +369,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 return;
             }
             try {
-                session.setWatchOnly(username, password);
+                getSession().setWatchOnly(username, password);
                 initWatchOnlySummary();
             } catch (final Exception e) {
                 UI.toast(getActivity(), R.string.id_username_not_available, Toast.LENGTH_LONG);
@@ -670,7 +669,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         }
         mService.getExecutor().execute(() -> {
             try {
-                mService.getSession().sendNlocktimes();
+                getSession().sendNlocktimes();
             } catch (final Exception e) {
                 // Ignore, user can send again if email fails to arrive
             }
@@ -691,7 +690,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         mService.getExecutor().execute(() -> {
             try {
-                final GDKTwoFactorCall call = mService.getSession().twoFactorChangeLimits(getActivity(), limitsData);
+                final GDKTwoFactorCall call = getSession().twoFactorChangeLimits(getActivity(), limitsData);
                 final ObjectNode newLimits =
                     call.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
                 mService.getModel().getTwoFactorConfigDataObservable().updateLimits(newLimits);

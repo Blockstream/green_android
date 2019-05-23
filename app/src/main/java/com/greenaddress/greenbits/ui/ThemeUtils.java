@@ -5,10 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.util.TypedValue;
 
-import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
-
-import java.util.List;
 
 public class ThemeUtils {
     public static int getThemeFromNetworkId(final NetworkData net, final Context context, final Bundle metadata) {

@@ -3,7 +3,7 @@ package com.greenaddress.greenapi.model;
 import android.util.SparseArray;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 
@@ -28,13 +28,12 @@ public class Model {
 
     private Model() {}
 
-    public Model(final GDKSession session, final ListeningExecutorService executor) {
-        mSubaccountDataObservable = new SubaccountDataObservable(session,
-                                                                 executor, this);
-        mEventDataObservable = new EventDataObservable(session);
-        mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(session, executor, mEventDataObservable);
-        mFeeObservable = new FeeObservable(session, executor);
-        mAvailableCurrenciesObservable = new AvailableCurrenciesObservable(session, executor);
+    public Model(final ListeningExecutorService executor) {
+        mSubaccountDataObservable = new SubaccountDataObservable(executor, this);
+        mEventDataObservable = new EventDataObservable();
+        mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(executor, mEventDataObservable);
+        mFeeObservable = new FeeObservable(executor);
+        mAvailableCurrenciesObservable = new AvailableCurrenciesObservable(executor);
     }
 
     public SubaccountDataObservable getSubaccountDataObservable() {

@@ -17,6 +17,7 @@ import android.view.View;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.EventDataObservable;
@@ -78,7 +79,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                     try {
                         final TransactionData txData = (TransactionData) e.getValue();
                         final JsonNode transactionRaw =
-                            mService.getSession().getTransactionRaw(txData.getSubaccount(), txData.getTxhash());
+                            getSession().getTransactionRaw(txData.getSubaccount(), txData.getTxhash());
                         final ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                         final TransactionData fullTxData =
@@ -117,7 +118,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             final long satoshi = tx.getSatoshi().get("btc");
             String amount;
             try {
-                amount = mService.getValueString(mService.getSession().convertSatoshi(satoshi), false, true);
+                amount = mService.getValueString(getSession().convertSatoshi(satoshi), false, true);
             } catch (final RuntimeException | IOException e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
                 amount = "";

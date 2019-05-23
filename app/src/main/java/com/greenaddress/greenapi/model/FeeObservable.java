@@ -3,7 +3,7 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,12 +11,10 @@ import java.util.Observable;
 
 public class FeeObservable extends Observable {
     private List<Long> fees;
-    private GDKSession mSession;
     private ListeningExecutorService mExecutor;
 
 
-    public FeeObservable(final GDKSession session, final ListeningExecutorService executor) {
-        mSession = session;
+    public FeeObservable(final ListeningExecutorService executor) {
         mExecutor = executor;
         refresh();
     }
@@ -24,7 +22,7 @@ public class FeeObservable extends Observable {
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                final List<Long> feeEstimates = mSession.getFeeEstimates();
+                final List<Long> feeEstimates = getSession().getFeeEstimates();
                 setFees(feeEstimates);
             } catch (IOException e) {
                 e.printStackTrace();

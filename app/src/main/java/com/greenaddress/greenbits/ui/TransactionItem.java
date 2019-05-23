@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui;
 import android.os.Bundle;
 import android.util.Log;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
@@ -136,7 +137,7 @@ public class TransactionItem implements Serializable {
         } else {
             final String unitKey = service.getUnitKey();
             try {
-                final String amount = service.getSession().convertSatoshi(this.satoshi).get(unitKey).asText();
+                final String amount = getSession().convertSatoshi(this.satoshi).get(unitKey).asText();
                 return (type == TYPE.IN ? "" : "-") + amount + " " + service.getBitcoinUnit();
             } catch (final RuntimeException | IOException e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());

@@ -22,6 +22,7 @@ import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.CodeResolver;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
@@ -241,7 +242,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
             try {
                 final ConnectionManager cm = mService.getConnectionManager();
                 cm.connect();
-                mService.getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
+                getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
                 mService.resetSession();
                 cm.login(parent, mHwDeviceData, mHwResolver);
             } catch (final Exception e) {

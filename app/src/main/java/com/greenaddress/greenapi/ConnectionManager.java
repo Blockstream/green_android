@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.greenaddress.gdk.CodeResolver;
-import com.greenaddress.gdk.GDKSession;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.ui.BuildConfig;
@@ -28,7 +28,6 @@ public class ConnectionManager extends Observable {
     }
 
     private ConnState mState;
-    private GDKSession mSession;
     private String mWatchOnlyUsername;
     private String mNetwork;
     private String mProxyHost;
@@ -40,10 +39,9 @@ public class ConnectionManager extends Observable {
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
 
-    public ConnectionManager(final GDKSession session, final String network,
+    public ConnectionManager(final String network,
                              final String proxyHost, final String proxyPort,
                              final boolean proxyEnabled, final boolean torEnabled) {
-        this.mSession = session;
         this.mNetwork = network;
         this.mProxyHost = proxyHost;
         this.mProxyPort = proxyPort;
@@ -164,9 +162,9 @@ public class ConnectionManager extends Observable {
                proxyString = String.format(Locale.US, "%s:%s", mProxyHost, mProxyPort);
                Log.d(TAG, "connecting with proxy " + proxyString);
             }
-            mSession.connectWithProxy(mNetwork, proxyString, mTorEnabled, isDebug);
+            getSession().connectWithProxy(mNetwork, proxyString, mTorEnabled, isDebug);
         } else {
-            mSession.connect(mNetwork, isDebug);
+            getSession().connect(mNetwork, isDebug);
         }
         setState(ConnState.CONNECTED);
     }
@@ -178,7 +176,7 @@ public class ConnectionManager extends Observable {
             setState(ConnState.LOGGINGIN);
             this.mHWDevice = hwDevice;
             this.mHWResolver = hwResolver;
-            mSession.login(parent, hwDevice, "", "").resolve(null, hwResolver);
+            getSession().login(parent, hwDevice, "", "").resolve(null, hwResolver);
             mLastLoginException = null;
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {
@@ -208,17 +206,17 @@ public class ConnectionManager extends Observable {
                 Log.d(TAG, "logging with mnemonic");
                 mWatchOnlyUsername = null;
                 mLoginWithPin = false;
-                mSession.login(parent, null, mnenonic, mnemonicPassword).resolve(null, null);
+                getSession().login(parent, null, mnenonic, mnemonicPassword).resolve(null, null);
             } else if (!TextUtils.isEmpty(pin) && pinData != null) {
                 Log.d(TAG, "logging with pin");
                 mWatchOnlyUsername = null;
                 mLoginWithPin = true;
-                mSession.loginWithPin(pin, pinData);
+                getSession().loginWithPin(pin, pinData);
             } else if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
                 Log.d(TAG, "logging watch only");
                 mWatchOnlyUsername = username;
                 mLoginWithPin = false;
-                mSession.loginWatchOnly(username, password);
+                getSession().loginWatchOnly(username, password);
             } else {
                 throw new Exception("wrong parameters");
             }
@@ -238,7 +236,7 @@ public class ConnectionManager extends Observable {
         mLoginWithPin = false;
         mHWDevice = null;
         mHWResolver = null;
-        mSession.disconnect();
+        getSession().disconnect();
         setState(ConnState.DISCONNECTED);
     }
 }

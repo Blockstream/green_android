@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
@@ -178,7 +179,7 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
         try {
             // avoid updating the view if changing from fiat to btc or vice versa
             if (mCurrentAmount == null || !mCurrentAmount.get(key).asText().equals(value)) {
-                mCurrentAmount = getGAService().getSession().convert(amount);
+                mCurrentAmount = getSession().convert(amount);
                 update();
             }
         } catch (final RuntimeException | IOException e) {
