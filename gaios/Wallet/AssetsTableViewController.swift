@@ -47,6 +47,7 @@ class AssetsTableViewController: UITableViewController {
         let balance = assets[indexPath.row].value
         cell.title.text = tag
         cell.value.text = balance.btc
+        cell.selectionStyle = .none
         return cell
     }
 

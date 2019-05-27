@@ -213,9 +213,9 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
     func onSelect(_ tag: String) {
         assetTag = tag == "L-BTC" ? "btc" : tag
         content.assetNameLabel.text = tag
-        let satoshi = wallet?.balance[assetTag!]?.satoshi
-        if satoshi != nil {
-            content.maxAmountLabel.text = "\(String.toBtc(satoshi: satoshi!, showDenomination: false)) \(tag)"
+        content.currencySwitch.isHidden = assetTag != "btc"
+        if let satoshi = wallet?.balance[assetTag!]?.satoshi {
+            content.maxAmountLabel.text = "\(String.toBtc(satoshi: satoshi, showDenomination: false)) \(tag)"
         }
     }
 
