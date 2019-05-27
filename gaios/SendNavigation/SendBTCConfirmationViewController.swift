@@ -5,12 +5,13 @@ import PromiseKit
 
 class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDelegate, UITextViewDelegate {
 
-    @IBOutlet var content: SendBTCConfirmationView!
-    var uiErrorLabel: UIErrorLabel!
     var wallet: WalletItem?
     var transaction: Transaction!
-    var isFiat = false
-    var gradientLayer = CAGradientLayer()
+
+    @IBOutlet var content: SendBTCConfirmationView!
+    private var uiErrorLabel: UIErrorLabel!
+    private var isFiat = false
+    private var gradientLayer = CAGradientLayer()
 
     override func viewDidLoad() {
         super.viewDidLoad()

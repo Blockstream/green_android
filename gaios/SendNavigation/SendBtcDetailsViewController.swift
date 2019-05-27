@@ -4,16 +4,18 @@ import PromiseKit
 
 class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
-    @IBOutlet var content: SendBtcDetailsView!
-    var feeLabel: UILabel = UILabel()
-    var uiErrorLabel: UIErrorLabel!
     var wallet: WalletItem?
-    var isFiat = false
     var transaction: Transaction!
-    var amountData: [String: Any]?
-    var assetTag: String?
 
-    var feeEstimates: [UInt64?] = {
+    @IBOutlet var content: SendBtcDetailsView!
+    private var feeLabel: UILabel = UILabel()
+    private var uiErrorLabel: UIErrorLabel!
+    private var isFiat = false
+    private var amountData: [String: Any]?
+    private var assetTag: String?
+    private var promise: Promise<Transaction>?
+
+    private var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
         let estimates = getFeeEstimates() ?? []
         for (index, value) in [3, 12, 24, 0].enumerated() {
@@ -23,12 +25,12 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         return feeEstimates
     }()
 
-    var minFeeRate: UInt64 = {
+    private var minFeeRate: UInt64 = {
         guard let estimates = getFeeEstimates() else { return 1000 }
         return estimates[0]
     }()
 
-    var selectedFee: Int = {
+    private var selectedFee: Int = {
         guard let settings = getGAService().getSettings() else { return 0 }
         switch settings.transactionPriority {
         case .High:
