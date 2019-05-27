@@ -11,7 +11,6 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
     private var feeLabel: UILabel = UILabel()
     private var uiErrorLabel: UIErrorLabel!
     private var isFiat = false
-    private var amountData: [String: Any]?
     private var assetTag: String?
     private var promise: Promise<Transaction>?
 
@@ -114,10 +113,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
         let addressee = transaction.addressees.first!
         content.addressLabel.text = addressee.address
-        if addressee.satoshi != 0 {
-            updateAmountData(addressee.satoshi)
-        }
-
+        updateAmountTextField()
         updateReviewButton(false)
         updateFeeButtons()
         setCurrencySwitch()
@@ -139,30 +135,29 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         return nil
     }
 
-    func updateAmountData(_ satoshi: UInt64) {
-        let newAmountData = convertAmount(details: ["satoshi": satoshi])
-        if newAmountData?["satoshi"] as? UInt64 != amountData?["satoshi"] as? UInt64 {
-            amountData = newAmountData
-            updateAmountTextField()
-        }
-    }
-
     func updateAmountTextField() {
-        guard let settings = getGAService().getSettings() else { return }
-        let textAmount = content.sendAllFundsButton.isSelected ? NSLocalizedString("id_all", comment: "") : amountData?[!isFiat ? settings.denomination.rawValue : "fiat"] as? String ?? String()
-        content.amountTextField.text = textAmount
         content.amountTextField.textColor = content.amountTextField.isEnabled ? UIColor.white : UIColor.lightGray
+        if content.sendAllFundsButton.isSelected {
+            content.amountTextField.text = NSLocalizedString("id_all", comment: "")
+            return
+        }
+        if content.amountTextField.text == NSLocalizedString("id_all", comment: "") {
+            content.amountTextField.text = ""
+            return
+        }
+        guard let addressee = transaction.addressees.first else { return }
+        guard addressee.satoshi != 0 else { return }
+        let amount = convertAmount(details: ["satoshi": addressee.satoshi])
+        let denomination = getGAService().getSettings()!.denomination.rawValue
+        content.amountTextField.text = amount?[isFiat ? "fiat" : denomination] as? String ?? ""
     }
 
     func setCurrencySwitch() {
-        guard let settings = getGAService().getSettings() else { return }
-        if !isFiat {
-            content.currencySwitch.setTitle(settings.denomination.toString(), for: UIControl.State.normal)
-            content.currencySwitch.backgroundColor = UIColor.customMatrixGreen()
-        } else {
-            content.currencySwitch.setTitle(settings.getCurrency(), for: UIControl.State.normal)
-            content.currencySwitch.backgroundColor = UIColor.clear
-        }
+        let settings = getGAService().getSettings()!
+        let title = isFiat ? settings.getCurrency() : settings.denomination.toString()
+        let color = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
+        content.currencySwitch.setTitle(title, for: UIControl.State.normal)
+        content.currencySwitch.backgroundColor = color
         content.currencySwitch.setTitleColor(UIColor.white, for: UIControl.State.normal)
         updateFeeButtons()
     }
@@ -202,14 +197,15 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
-        guard var amountText = content.amountTextField.text else { return }
-        amountText = amountText.replacingOccurrences(of: ",", with: ".")
-        content.amountTextField.text = amountText
-        guard let settings = getGAService().getSettings() else { return }
-        let amount = !amountText.isEmpty ? amountText : "0"
-        let conversionKey = !isFiat ? settings.denomination.rawValue : "fiat"
-        amountData = convertAmount(details: [conversionKey: amount])
         updateTransaction()
+    }
+
+    func getSatoshi() -> UInt64? {
+        guard var amountText = content.amountTextField.text else { return 0 }
+        amountText = amountText.replacingOccurrences(of: ",", with: ".")
+        let conversionKey = isFiat ? "fiat" : getGAService().getSettings()!.denomination.rawValue
+        guard let amount = convertAmount(details: [conversionKey: amountText.isEmpty ? "0" : amountText]) else { return 0 }
+        return amount["satoshi"] as? UInt64
     }
 
     func onSelect(_ tag: String) {
@@ -233,7 +229,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         }
 
         if !transaction.addresseesReadOnly {
-            let satoshi = amountData?["satoshi"] as? UInt64 ?? 0
+            let satoshi = self.getSatoshi() ?? 0
             let address = content.addressLabel.text!
             let addressee = Addressee(address: address, satoshi: satoshi, assetTag: assetTag)
             transaction.addressees = [addressee]
@@ -245,7 +241,6 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
             if !tx.error.isEmpty {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-            self.updateAmountData(tx.addressees[0].satoshi)
             self.uiErrorLabel.isHidden = true
             self.updateReviewButton(true)
             self.updateFeeButtons()
