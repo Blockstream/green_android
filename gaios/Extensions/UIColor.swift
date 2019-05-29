@@ -30,6 +30,14 @@ extension UIColor {
         return UIColor(named: "customMnemonicDark")!
     }
 
+    class func customModalDark() -> UIColor {
+        return UIColor(named: "customModalDark")!
+    }
+
+    class func customModalMedium() -> UIColor {
+        return UIColor(named: "customModalMedium")!
+    }
+
     class func cardLight() -> UIColor {
         return UIColor.init(red: 0x0A / 255, green: 0x7C / 255, blue: 0x4A / 255, alpha: 1)
     }

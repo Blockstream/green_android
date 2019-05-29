@@ -17,8 +17,8 @@
             <rect key="frame" x="0.0" y="0.0" width="450" height="364"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="center" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Ci8-Bg-8NX">
-                    <rect key="frame" x="16" y="0.0" width="418" height="364"/>
+                <stackView opaque="NO" contentMode="center" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="Ci8-Bg-8NX">
+                    <rect key="frame" x="16" y="12" width="418" height="352"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MYW-fh-gjQ">
                             <rect key="frame" x="0.0" y="0.0" width="418" height="51"/>
@@ -45,7 +45,7 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jgT-OB-hup">
-                            <rect key="frame" x="0.0" y="55" width="418" height="134"/>
+                            <rect key="frame" x="0.0" y="63" width="418" height="134"/>
                             <subviews>
                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="Socks5 Hostname" textAlignment="natural" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="4jN-PM-RE7">
                                     <rect key="frame" x="0.0" y="25" width="418" height="40"/>
@@ -105,7 +105,7 @@
                             </constraints>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Xf-sd-G7a">
-                            <rect key="frame" x="0.0" y="193" width="418" height="51"/>
+                            <rect key="frame" x="0.0" y="209" width="418" height="51"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" text="Connect with Tor" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Czr-Lk-61L">
                                     <rect key="frame" x="0.0" y="15.5" width="357" height="20.5"/>
@@ -129,7 +129,7 @@
                             </constraints>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZIr-Cc-Z5j">
-                            <rect key="frame" x="0.0" y="248" width="418" height="42"/>
+                            <rect key="frame" x="0.0" y="272" width="418" height="42"/>
                             <color key="backgroundColor" name="customMatrixGreen"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="42" id="Jwe-KG-YFp"/>
@@ -140,7 +140,7 @@
                             </state>
                         </button>
                         <view contentMode="scaleToFill" verticalHuggingPriority="249" translatesAutoresizingMaskIntoConstraints="NO" id="DX9-v3-IwQ">
-                            <rect key="frame" x="0.0" y="294" width="418" height="70"/>
+                            <rect key="frame" x="0.0" y="326" width="418" height="26"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </view>
                     </subviews>
@@ -149,7 +149,7 @@
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="B27-uA-oPT" firstAttribute="trailing" secondItem="Ci8-Bg-8NX" secondAttribute="trailing" constant="16" id="HV9-bn-Xfx"/>
-                <constraint firstItem="Ci8-Bg-8NX" firstAttribute="top" secondItem="B27-uA-oPT" secondAttribute="top" id="N0n-8G-bet"/>
+                <constraint firstItem="Ci8-Bg-8NX" firstAttribute="top" secondItem="B27-uA-oPT" secondAttribute="top" constant="12" id="N0n-8G-bet"/>
                 <constraint firstItem="B27-uA-oPT" firstAttribute="bottom" secondItem="Ci8-Bg-8NX" secondAttribute="bottom" id="mN6-Kj-Y7T"/>
                 <constraint firstItem="Ci8-Bg-8NX" firstAttribute="leading" secondItem="B27-uA-oPT" secondAttribute="leading" constant="16" id="zW9-lI-iUf"/>
             </constraints>

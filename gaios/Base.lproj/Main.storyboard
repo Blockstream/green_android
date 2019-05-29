@@ -81,7 +81,7 @@
                         <segue destination="0c7-Wv-kP2" kind="push" identifier="watchonly" id="FTn-9c-Qc3"/>
                         <segue destination="rMM-Df-D90" kind="push" identifier="pin" id="QEt-l0-XBh"/>
                         <segue destination="wmg-xs-3of" kind="push" identifier="createWallet" id="ffv-Da-0EK"/>
-                        <segue destination="2Iq-H3-b6z" kind="push" identifier="network" id="djN-MN-PxA"/>
+                        <segue destination="2Iq-H3-b6z" kind="modal" identifier="network" id="djN-MN-PxA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uYz-un-mGa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -101,29 +101,110 @@
         <!--Network Selection Settings-->
         <scene sceneID="bSY-nl-Tly">
             <objects>
-                <tableViewController storyboardIdentifier="NetworkSelectionSettings" id="2Iq-H3-b6z" customClass="NetworkSelectionSettings" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="NetworkSelectionSettings" id="2Iq-H3-b6z" customClass="NetworkSelectionSettings" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="jHt-4d-qg2">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <color key="backgroundColor" name="customModalBlueDark"/>
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="ng0-eo-DlS" customClass="NetworkSelectionHeaderView" customModule="gaios" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="128"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose Your Network" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rc4-mc-9hn">
+                                    <rect key="frame" x="18" y="66" width="282" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WB9-MN-vuD">
+                                    <rect key="frame" x="282" y="32" width="18" height="18"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="18" id="34T-b9-BVG"/>
+                                        <constraint firstAttribute="height" constant="18" id="RsM-Ew-wI0"/>
+                                    </constraints>
+                                    <state key="normal" backgroundImage="cancel"/>
+                                </button>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="WB9-MN-vuD" firstAttribute="top" secondItem="ng0-eo-DlS" secondAttribute="top" constant="32" id="8bn-gX-Qly"/>
+                                <constraint firstItem="Rc4-mc-9hn" firstAttribute="top" secondItem="WB9-MN-vuD" secondAttribute="bottom" constant="16" id="AJN-21-ZDV"/>
+                                <constraint firstAttribute="bottom" secondItem="Rc4-mc-9hn" secondAttribute="bottom" constant="28" id="TBp-3S-suA"/>
+                                <constraint firstAttribute="trailing" secondItem="Rc4-mc-9hn" secondAttribute="trailing" constant="20" id="gaj-FK-QL2"/>
+                                <constraint firstAttribute="trailing" secondItem="WB9-MN-vuD" secondAttribute="trailing" constant="20" id="qB1-ZU-eNM"/>
+                                <constraint firstItem="Rc4-mc-9hn" firstAttribute="leading" secondItem="ng0-eo-DlS" secondAttribute="leading" constant="18" id="tjI-CU-NOu"/>
+                            </constraints>
+                            <connections>
+                                <outlet property="cancelButton" destination="WB9-MN-vuD" id="3tV-PZ-aZN"/>
+                                <outlet property="titleLabel" destination="Rc4-mc-9hn" id="AV1-N7-36W"/>
+                            </connections>
+                        </view>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="cell" textLabel="pQ5-0m-Lj3" style="IBUITableViewCellStyleDefault" id="CFo-US-3Lr">
-                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="networkSelectionCell" rowHeight="92" id="dNz-Dp-O2i" customClass="NetworkSelectionTableCell" customModule="gaios" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="156" width="320" height="92"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="CFo-US-3Lr" id="Obi-zp-ZPf">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="dNz-Dp-O2i" id="GtD-a4-q2I">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="92"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="pQ5-0m-Lj3">
-                                            <rect key="frame" x="16" y="0.0" width="288" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AB9-oY-MG3">
+                                            <rect key="frame" x="16" y="8" width="288" height="70"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="btc" translatesAutoresizingMaskIntoConstraints="NO" id="7J4-Cv-w1h">
+                                                    <rect key="frame" x="8" y="23" width="24" height="24"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="24" id="EOi-aA-MAp"/>
+                                                        <constraint firstAttribute="width" constant="24" id="HCa-Og-Zei"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Network Name" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tmk-tN-Q85">
+                                                    <rect key="frame" x="40" y="19.5" width="240" height="31"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
+                                                            <real key="value" value="-1"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
+                                                </label>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="network_indicator" translatesAutoresizingMaskIntoConstraints="NO" id="gi9-uI-EFx">
+                                                    <rect key="frame" x="272" y="2" width="14" height="14"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="14" id="Eyn-7v-67f"/>
+                                                        <constraint firstAttribute="width" constant="14" id="aBb-av-itp"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" name="customModalBlueDark"/>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="gi9-uI-EFx" secondAttribute="trailing" constant="2" id="3cQ-U6-ZJP"/>
+                                                <constraint firstItem="tmk-tN-Q85" firstAttribute="leading" secondItem="7J4-Cv-w1h" secondAttribute="trailing" constant="8" id="JOo-Z4-VFF"/>
+                                                <constraint firstItem="gi9-uI-EFx" firstAttribute="top" secondItem="AB9-oY-MG3" secondAttribute="top" constant="2" id="KQ4-56-7W9"/>
+                                                <constraint firstItem="tmk-tN-Q85" firstAttribute="top" secondItem="gi9-uI-EFx" secondAttribute="bottom" constant="3.5" id="Lfu-MH-EHA"/>
+                                                <constraint firstItem="tmk-tN-Q85" firstAttribute="centerY" secondItem="7J4-Cv-w1h" secondAttribute="centerY" id="WZZ-r1-57i"/>
+                                                <constraint firstAttribute="trailing" secondItem="tmk-tN-Q85" secondAttribute="trailing" constant="8" id="aBx-oK-kZ5"/>
+                                                <constraint firstItem="7J4-Cv-w1h" firstAttribute="leading" secondItem="AB9-oY-MG3" secondAttribute="leading" constant="8" id="aNT-ZB-IUd"/>
+                                                <constraint firstItem="7J4-Cv-w1h" firstAttribute="top" secondItem="AB9-oY-MG3" secondAttribute="top" constant="23" id="ehl-Qa-PYX"/>
+                                                <constraint firstAttribute="bottom" secondItem="7J4-Cv-w1h" secondAttribute="bottom" constant="23" id="hr7-xD-SRN"/>
+                                                <constraint firstAttribute="height" constant="70" id="i0z-C7-Rcb"/>
+                                            </constraints>
+                                        </view>
                                     </subviews>
+                                    <constraints>
+                                        <constraint firstItem="AB9-oY-MG3" firstAttribute="top" secondItem="GtD-a4-q2I" secondAttribute="top" constant="8" id="L7X-BY-ndC"/>
+                                        <constraint firstAttribute="bottom" secondItem="AB9-oY-MG3" secondAttribute="bottom" constant="8" id="VXI-yK-HIo"/>
+                                        <constraint firstItem="AB9-oY-MG3" firstAttribute="leading" secondItem="GtD-a4-q2I" secondAttribute="leadingMargin" id="Y7u-Yx-u4b"/>
+                                        <constraint firstItem="AB9-oY-MG3" firstAttribute="trailing" secondItem="GtD-a4-q2I" secondAttribute="trailingMargin" id="wpo-Vh-I7Y"/>
+                                    </constraints>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" name="customModalBlueDark"/>
+                                <connections>
+                                    <outlet property="cardView" destination="AB9-oY-MG3" id="JgJ-l7-M2U"/>
+                                    <outlet property="indicatorImageView" destination="gi9-uI-EFx" id="Nna-XW-dY0"/>
+                                    <outlet property="logoImageView" destination="7J4-Cv-w1h" id="4QD-Hy-Q1g"/>
+                                    <outlet property="logoWidthConstraint" destination="HCa-Og-Zei" id="NBU-RC-vQD"/>
+                                    <outlet property="networkNameLabel" destination="tmk-tN-Q85" id="yTV-J0-0tW"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -135,7 +216,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zFj-MI-IOJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1785" y="1517"/>
+            <point key="canvasLocation" x="-1910.625" y="1461.9718309859154"/>
         </scene>
         <!--Pin Set View Controller-->
         <scene sceneID="aHV-SQ-KCX">
@@ -344,9 +425,15 @@
         </scene>
     </scenes>
     <resources>
+        <image name="btc" width="48" height="48"/>
+        <image name="cancel" width="14" height="14"/>
         <image name="logo_big" width="90" height="110"/>
+        <image name="network_indicator" width="18" height="18"/>
         <image name="qr" width="25" height="25"/>
         <image name="watch_only_v2" width="48" height="48"/>
+        <namedColor name="customModalBlueDark">
+            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

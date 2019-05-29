@@ -9,11 +9,13 @@ class NetworkSelectionSettings: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_select_network", comment: "")
         let nib = Bundle.main.loadNibNamed("NetworkSelectionSettingsView", owner: self, options: nil)
         tableView.tableFooterView = nib?.first as? NetworkSelectionSettingsView
         tableView.keyboardDismissMode = UIScrollView.KeyboardDismissMode.onDrag
+        tableView.estimatedRowHeight = 85
+        tableView.rowHeight = UITableView.automaticDimension
         networks = getGdkNetworks()
+        loadHeader()
         loadFooter()
     }
 
@@ -21,13 +23,14 @@ class NetworkSelectionSettings: UITableViewController {
         return networks.count
     }
 
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath as IndexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "networkSelectionCell", for: indexPath as IndexPath) as? NetworkSelectionTableCell else { return UITableViewCell() }
         let network = networks[indexPath.row]
-        cell.textLabel!.text = network.name
-        let imageName = network.liquid ? "btc_liquid_title" : network.icon
-        cell.imageView?.image = UIImage(named: imageName!)
-        cell.accessoryView = selectedNetwork == network.network ? UIImageView(image: UIImage(named: "check")) : nil
+        cell.configure(with: network, selected: network.network == selectedNetwork)
         cell.setNeedsLayout()
         return cell
     }
@@ -51,7 +54,7 @@ class NetworkSelectionSettings: UITableViewController {
             // save network setup
             UserDefaults.standard.set(["network": selectedNetwork, "proxy": content.proxySwitch.isOn, "tor": content.torSwitch.isOn, "socks5_hostname": socks5Hostname, "socks5_port": socks5Port], forKey: "network_settings")
             onSave!()
-            navigationController?.popViewController(animated: true)
+            dismissModal()
             return
         }
         // show warning alert
@@ -68,6 +71,16 @@ class NetworkSelectionSettings: UITableViewController {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         view.endEditing(true)
         return true
+    }
+
+    func loadHeader() {
+        guard let header = tableView.tableHeaderView as? NetworkSelectionHeaderView else { return }
+        header.titleLabel.text = NSLocalizedString("id_choose_your_network", comment: "")
+        header.cancelButton.addTarget(self, action: #selector(NetworkSelectionSettings.dismissModal), for: .touchUpInside)
+    }
+
+    @objc func dismissModal() {
+        self.dismiss(animated: true, completion: nil)
     }
 
     func loadFooter() {
@@ -96,6 +109,11 @@ class NetworkSelectionSettings: UITableViewController {
         content.socks5Port.text = defaults?["socks5_port"] as? String ?? ""
         content.torSwitch.isOn = defaults?["tor"] as? Bool ?? false
     }
+}
+
+class NetworkSelectionHeaderView: UIView {
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var cancelButton: UIButton!
 }
 
 class NetworkSelectionSettingsView: UIView {
