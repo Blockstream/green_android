@@ -8,12 +8,15 @@ if (($# < 1)); then
     exit 1
 fi
 
-TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim -- "$@"`
+SIGN_EXPORT=0
+
+TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim,sign-and-export -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case $1 in
         --iphone) DEVICE=iphoneos; TARGET=iphone; shift ;;
         --iphonesim) DEVICE=iphonesim; TARGET=iphonesim; shift ;;
+        --sign-and-export) SIGN_EXPORT=1; shift ;;
         -- ) break ;;
     esac
 done
@@ -37,5 +40,9 @@ fi
 Pods/SwiftLint/swiftlint
 
 SDK=$(xcodebuild -showsdks | grep $DEVICE | tr -s ' ' | tr -d '\-' | cut -f 3-)
-xcodebuild CODE_SIGN_STYLE="Manual" PROVISIONING_PROFILE="b38d1a3f-9e58-491f-8e19-f9a9db0bbd45" DEVELOPMENT_TEAM="D9W37S9468" CODE_SIGN_IDENTITY="iPhone Distribution" -$SDK -workspace gaios.xcworkspace -scheme gaios clean archive -configuration release -archivePath ./build/Green.xcarchive
-xcodebuild -exportArchive -archivePath ./build/Green.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build/Green.ipa
+if [ $SIGN_EXPORT -eq 1]; then
+    xcodebuild CODE_SIGN_STYLE="Manual" PROVISIONING_PROFILE="b38d1a3f-9e58-491f-8e19-f9a9db0bbd45" DEVELOPMENT_TEAM="D9W37S9468" CODE_SIGN_IDENTITY="iPhone Distribution" -$SDK -workspace gaios.xcworkspace -scheme gaios clean archive -configuration release -archivePath ./build/Green.xcarchive
+    xcodebuild -exportArchive -archivePath ./build/Green.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build/Green.ipa
+else
+    xcodebuild CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -$SDK -workspace gaios.xcworkspace -scheme gaios clean build -configuration release
+fi

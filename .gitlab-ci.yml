@@ -2,7 +2,15 @@ cache:
   paths:
     - gdk/
 
-build_tag_release:
+build_release_iphone:
+  tags:
+    - osx
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./tools/build.sh --iphone static
+
+build_tag_release_export:
+  when: manual
   artifacts:
     name: "green-ios-release-$CI_COMMIT_REF_NAME"
     expire_in: 1 hour
@@ -10,10 +18,11 @@ build_tag_release:
     paths:
       - build/Green.ipa
   tags:
+    - fastosx
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --iphone static
+    - ./tools/build.sh --sign-and-export --iphone static
 
 #package_release:
 #  tags:
