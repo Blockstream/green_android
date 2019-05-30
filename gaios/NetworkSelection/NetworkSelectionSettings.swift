@@ -14,7 +14,7 @@ class NetworkSelectionSettings: UITableViewController {
         tableView.keyboardDismissMode = UIScrollView.KeyboardDismissMode.onDrag
         tableView.estimatedRowHeight = 85
         tableView.rowHeight = UITableView.automaticDimension
-        networks = getGdkNetworks()
+        networks = getGdkNetworks().sorted { $0.name < $1.name }
         loadHeader()
         loadFooter()
     }
