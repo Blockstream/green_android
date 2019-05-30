@@ -262,6 +262,7 @@ extension EnterMnemonicsViewController: UICollectionViewDelegate {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "wordCell", for: indexPath) as? MnemonicWordCell else { fatalError("Fail to dequeue reusable cell") }
         cell.wordLabel.text = String(indexPath.row + indexPath.section * 3 + 1)
         cell.wordText.text = mnemonic[indexPath.row + indexPath.section * 3]
+        checkTextfield(textField: cell.wordText)
         cell.delegate = self
         return cell
     }
