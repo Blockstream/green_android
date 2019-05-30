@@ -24,7 +24,6 @@
                     <navigationItem key="navigationItem" id="DSk-AC-jAE"/>
                     <connections>
                         <outlet property="content" destination="0vK-Vs-Lgw" id="fBa-bg-cH8"/>
-                        <segue destination="o6l-5o-Ocm" kind="push" identifier="enterMnemonics" id="4QF-E2-lEm"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZOO-44-PSc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -78,7 +77,7 @@
                         <outlet property="content" destination="soW-Tu-XRH" id="K8A-TV-iVr"/>
                         <outlet property="watchOnlyButton" destination="KmY-Ea-Vkz" id="Gc9-hx-lmk"/>
                         <segue destination="o6l-5o-Ocm" kind="push" identifier="enterMnemonic" id="XPe-Xy-Qrf"/>
-                        <segue destination="0c7-Wv-kP2" kind="push" identifier="watchonly" id="FTn-9c-Qc3"/>
+                        <segue destination="0c7-Wv-kP2" kind="modal" identifier="watchonly" id="FTn-9c-Qc3"/>
                         <segue destination="rMM-Df-D90" kind="push" identifier="pin" id="QEt-l0-XBh"/>
                         <segue destination="wmg-xs-3of" kind="push" identifier="createWallet" id="ffv-Da-0EK"/>
                         <segue destination="2Iq-H3-b6z" kind="modal" identifier="network" id="djN-MN-PxA"/>
@@ -443,6 +442,5 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="QEt-l0-XBh"/>
-        <segue reference="XPe-Xy-Qrf"/>
     </inferredMetricsTieBreakers>
 </document>

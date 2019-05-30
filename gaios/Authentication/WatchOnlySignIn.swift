@@ -14,13 +14,17 @@ class WatchOnlySignIn: KeyboardViewController {
     }
     @IBOutlet var content: WatchOnlySignInView!
     var buttonConstraint: NSLayoutConstraint?
+    private var network = getGdkNetwork(getNetwork())
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        let logoName = network.liquid ? "btc_liquid_title" : network.icon
+        content.networkLogoImageView.image = UIImage(named: logoName!)
+        content.networkNameLabel.text = network.name
         content.titlelabel.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
         content.rememberTitle.text = NSLocalizedString("id_remember_username", comment: "")
         content.warningLabel.text = NSLocalizedString("id_watchonly_mode_can_be_activated", comment: "")
+        content.cancelButton.addTarget(self, action: #selector(WatchOnlySignIn.dismissModal), for: .touchUpInside)
         content.rememberSwitch.addTarget(self, action: #selector(rememberSwitch), for: .valueChanged)
         content.loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
         content.loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
@@ -37,6 +41,13 @@ class WatchOnlySignIn: KeyboardViewController {
             content.usernameTextField.text = username!
             content.rememberSwitch.isOn = true
         }
+        if UIScreen.main.nativeBounds.height <= 1136 {
+            content.titlelabel.font = UIFont(name: content.titlelabel.font.fontName, size: 22)
+        }
+    }
+
+    @objc func dismissModal() {
+        self.dismiss(animated: true, completion: nil)
     }
 
     @objc func rememberSwitch(_ sender: UISwitch) {
@@ -58,15 +69,27 @@ class WatchOnlySignIn: KeyboardViewController {
 
     override func keyboardWillShow(notification: NSNotification) {
         super.keyboardWillShow(notification: notification)
-        buttonConstraint?.isActive = false
-        let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
-        buttonConstraint = content.loginButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height)
-        buttonConstraint?.isActive = true
+        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+            self.buttonConstraint?.isActive = false
+            let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
+            self.buttonConstraint = self.content.loginButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height)
+            self.buttonConstraint?.isActive = true
+            if UIScreen.main.nativeBounds.height <= 1334 {
+                self.content.titlelabel.isHidden = true
+                self.content.greenBlockView.isHidden = true
+            }
+        })
     }
 
     override func keyboardWillHide(notification: NSNotification) {
         super.keyboardWillShow(notification: notification)
-        buttonConstraint?.isActive = false
+        UIView.animate(withDuration: 0.5, animations: { [unowned self] in
+            self.buttonConstraint?.isActive = false
+            if UIScreen.main.nativeBounds.height <= 1334 {
+                self.content.titlelabel.isHidden = false
+                self.content.greenBlockView.isHidden = false
+            }
+        })
     }
 
     @objc func click(_ sender: Any) {
@@ -74,6 +97,7 @@ class WatchOnlySignIn: KeyboardViewController {
         let appDelegate = getAppDelegate()!
 
         firstly {
+            dismissKeyboard()
             self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
@@ -115,6 +139,10 @@ class WatchOnlySignInView: UIView {
     @IBOutlet weak var rememberTitle: UILabel!
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var warningLabel: UILabel!
+    @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var networkLogoImageView: UIImageView!
+    @IBOutlet weak var networkNameLabel: UILabel!
+    @IBOutlet weak var greenBlockView: UIView!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
