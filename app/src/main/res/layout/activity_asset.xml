@@ -37,7 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/SectionTitle"
-                    android:text="id_asset_id" />
+                    android:text="@string/id_asset_id" />
 
                 <TextView
                     android:id="@+id/idText"
@@ -60,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/SectionTitle"
-                    android:text="id_precision" />
+                    android:text="@string/id_precision" />
 
                 <EditText
                     android:id="@+id/precisionText"
@@ -83,7 +83,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/SectionTitle"
-                    android:text="id_ticker" />
+                    android:text="@string/id_ticker" />
 
                 <EditText
                     android:id="@+id/tickerText"
@@ -112,7 +112,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         style="@style/SectionTitle"
-                        android:text="id_name" />
+                        android:text="@string/id_name" />
 
                     <TextView
                         android:id="@+id/nameSave"

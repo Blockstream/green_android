@@ -149,7 +149,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             // Tor address
             if (!mService.isProxyEnabled()) {
                 UI.popup(getActivity(), R.string.id_tor_connectivity_disabled, android.R.string.ok)
-                .content(R.string.id_you_need_to_enable_the_proxy).build().show();
+                .content(R.string.id_connecting_to_a_trusted_node).build().show();
                 return false;
             }
             setTrustedPeers(peers);
