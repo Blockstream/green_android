@@ -12,7 +12,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
     private var uiErrorLabel: UIErrorLabel!
     private var isFiat = false
     private var assetTag: String?
-    private var promise: Promise<Transaction>?
+    private var txTask: TransactionTask?
 
     private var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
@@ -234,8 +234,9 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
             let addressee = Addressee(address: address, satoshi: satoshi, assetTag: assetTag)
             transaction.addressees = [addressee]
         }
-
-        gaios.createTransaction(transaction: transaction).get { tx in
+        txTask?.cancel()
+        txTask = TransactionTask(tx: transaction)
+        txTask?.execute().get { tx in
             self.transaction = tx
         }.done { tx in
             if !tx.error.isEmpty {
@@ -344,6 +345,36 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         updateFeeButtons()
         updateTransaction()
         dismissKeyboard(nil)
+    }
+}
+
+class TransactionTask {
+    var tx: Transaction
+    private var cancelme = false
+    private var task: DispatchWorkItem?
+
+    init(tx: Transaction) {
+        self.tx = tx
+        task = DispatchWorkItem {
+            let data = try? getSession().createTransaction(details: self.tx.details)
+            self.tx = Transaction(data!)
+        }
+    }
+
+    func execute() -> Promise<Transaction> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Promise<Transaction> { seal in
+            self.task!.notify(queue: bgq) {
+                guard !self.cancelme else { return seal.reject(PMKError.cancelled) }
+                seal.fulfill(self.tx)
+            }
+            bgq.async(execute: self.task!)
+        }
+    }
+
+    func cancel() {
+        cancelme = true
+        task?.cancel()
     }
 }
 
