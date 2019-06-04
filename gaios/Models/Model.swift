@@ -121,6 +121,20 @@ struct Transaction {
         }
     }
 
+    var assets: [String: AssetInfo] {
+        get {
+            let assets = get("asset_info") as [String: Any]? ?? [:]
+            return assets.mapValues { value -> AssetInfo in
+                let json = try! JSONSerialization.data(withJSONObject: value, options: [])
+                return try! JSONDecoder().decode(AssetInfo.self, from: json)
+            }
+        }
+    }
+
+    var defaultAsset: String {
+        return amounts.filter { $0.key != "btc" }.first?.key ?? "btc"
+    }
+
     var sendAll: Bool {
         get { return get("send_all") ?? false }
         set { details["send_all"] = newValue }
@@ -136,13 +150,19 @@ struct Transaction {
 
     func amount() -> String {
         let isLiquid = getGdkNetwork(getNetwork()).liquid
-        let asset = amounts.filter { $0.key != "btc" }.first
-        let amount = isLiquid && asset != nil ? String.toBtc(satoshi: asset!.value, showDenomination: false) : String.toBtc(satoshi: satoshi)
-        if type == "outgoing" || type == "redeposit" {
-            return "-" + amount
-        } else {
-            return amount
+        let assetInfo = assets[defaultAsset] ?? AssetInfo(assetId: defaultAsset, name: "", precision: 0, ticker: "")
+        let details = isLiquid && defaultAsset != "btc" ? ["satoshi": amounts[defaultAsset]!,
+                                  "asset_info": assetInfo.encode()!] : ["satoshi": satoshi]
+        let res = try? getSession().convertAmount(input: details)
+        let format = type == "outgoing" || type == "redeposit" ? "- %@ %@" : "%@ %@"
+        if isLiquid {
+            let value = res![defaultAsset] as? String
+            let ticker = defaultAsset == "btc" ? "L-BTC" : assetInfo.ticker ?? ""
+            return String(format: format, value!, ticker)
         }
+        let denomination = getGAService().getSettings()!.denomination
+        let value = res![denomination.rawValue] as? String
+        return String(format: format, value!, denomination.toString())
     }
 
     func address() -> String? {
@@ -160,7 +180,6 @@ struct Transaction {
         let date = Date.dateFromString(dateString: createdAt)
         return Date.dayMonthYear(date: date)
     }
-
 }
 
 struct Balance: Codable {
@@ -174,6 +193,8 @@ struct Balance: Codable {
         case mbtc
         case satoshi
         case ubtc
+        case sats
+        case assetInfo = "asset_info"
     }
 
     let bits: String
@@ -182,8 +203,10 @@ struct Balance: Codable {
     let fiatCurrency: String
     let fiatRate: String
     let mbtc: String
-    var satoshi: UInt64
+    let satoshi: UInt64
     let ubtc: String
+    let sats: String
+    let assetInfo: AssetInfo?
 }
 
 class WalletItem: Codable {

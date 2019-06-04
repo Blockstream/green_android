@@ -11,7 +11,6 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     @IBOutlet var content: SendBTCConfirmationView!
     private var uiErrorLabel: UIErrorLabel!
     private var isFiat = false
-    private var gradientLayer = CAGradientLayer()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,8 +31,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.feeTitle.text = NSLocalizedString("id_total_with_fee", comment: "")
         content.assetsTitle.text = NSLocalizedString("id_sending", comment: "")
         content.assetsFeeTitle.text = NSLocalizedString("id_fee", comment: "")
-        gradientLayer = content.fromView.makeGradientCard()
-        content.fromView.layer.insertSublayer(gradientLayer, at: 0)
+        content.load()
 
         // setup liquid view
         let isLiquid = getGdkNetwork(getNetwork()).liquid
@@ -47,12 +45,6 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         // load content
         setupCurrencyButton()
         reload()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        gradientLayer.frame = content.fromView.bounds
-        gradientLayer.setNeedsDisplay()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -71,8 +63,9 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.toLabel.text = addressee.address
         let isLiquid = getGdkNetwork(getNetwork()).liquid
         if isLiquid {
-            content.assetTagLabel.text = addressee.assetTag == "btc" ? "L-BTC" : addressee.assetTag
-            content.assetValueLabel.text = String.toBtc(satoshi: addressee.satoshi, showDenomination: false)
+            let tag = addressee.assetTag ?? "btc"
+            let asset = wallet?.balance[tag]?.assetInfo
+            content.assetTableCell?.setup(tag: tag, asset: asset, satoshi: addressee.satoshi)
             content.assetsFeeLabel.text = String.toBtc(satoshi: transaction.fee)
         } else if isFiat {
             content.amountText.text = String.toFiat(satoshi: addressee.satoshi, showCurrency: false)
@@ -206,10 +199,11 @@ class SendBTCConfirmationView: UIView {
     @IBOutlet weak var assetsView: UIView!
     @IBOutlet weak var sendView: UIView!
     @IBOutlet weak var assetsTitle: UILabel!
-    @IBOutlet weak var assetTagLabel: UILabel!
-    @IBOutlet weak var assetValueLabel: UILabel!
     @IBOutlet weak var assetsFeeTitle: UILabel!
     @IBOutlet weak var assetsFeeLabel: UILabel!
+    @IBOutlet weak var assetsCell: UIView!
+    var assetTableCell: AssetTableCell?
+    var gradientLayer = CAGradientLayer()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -219,5 +213,20 @@ class SendBTCConfirmationView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
+    }
+
+    func load() {
+        assetTableCell = Bundle.main.loadNibNamed("AssetTableCell", owner: self, options: nil)!.first as? AssetTableCell
+        assetsCell.addSubview(assetTableCell!)
+        gradientLayer = fromView.makeGradientCard()
+        fromView.layer.insertSublayer(gradientLayer, at: 0)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer.frame = fromView.bounds
+        gradientLayer.setNeedsLayout()
+        assetTableCell?.frame = assetsCell.bounds
+        assetTableCell?.setNeedsLayout()
     }
 }

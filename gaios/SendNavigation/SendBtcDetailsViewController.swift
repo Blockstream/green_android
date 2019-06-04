@@ -14,6 +14,11 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
     private var assetTag: String?
     private var txTask: TransactionTask?
 
+    private var asset: AssetInfo? {
+        guard let tag = assetTag else { return nil }
+        return wallet?.balance[tag]?.assetInfo ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
+    }
+
     private var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
         let estimates = getFeeEstimates() ?? []
@@ -147,9 +152,13 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         }
         guard let addressee = transaction.addressees.first else { return }
         guard addressee.satoshi != 0 else { return }
-        let amount = convertAmount(details: ["satoshi": addressee.satoshi])
-        let denomination = getGAService().getSettings()!.denomination.rawValue
-        content.amountTextField.text = amount?[isFiat ? "fiat" : denomination] as? String ?? ""
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let denominationBtc = getGAService().getSettings()!.denomination.rawValue
+        let denominationAsset = assetTag ?? "btc"
+        let key = isLiquid ? denominationAsset : isFiat ? "fiat" : denominationBtc
+        let details = isLiquid ? ["satoshi": addressee.satoshi, "asset_info": asset!.encode()!] : ["satoshi": addressee.satoshi]
+        let res = try? getSession().convertAmount(input: details)
+        content.amountTextField.text = res?[key] as? String ?? ""
     }
 
     func setCurrencySwitch() {
@@ -201,18 +210,23 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
     }
 
     func getSatoshi() -> UInt64? {
-        guard var amountText = content.amountTextField.text else { return 0 }
+        var amountText = content.amountTextField.text!
         amountText = amountText.replacingOccurrences(of: ",", with: ".")
-        let conversionKey = isFiat ? "fiat" : getGAService().getSettings()!.denomination.rawValue
-        guard let amount = convertAmount(details: [conversionKey: amountText.isEmpty ? "0" : amountText]) else { return 0 }
-        return amount["satoshi"] as? UInt64
+        amountText = amountText.isEmpty ? "0" : amountText
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let denominationBtc = getGAService().getSettings()!.denomination.rawValue
+        let denominationAsset = assetTag ?? "btc"
+        let key = isLiquid ? denominationAsset : isFiat ? "fiat" : denominationBtc
+        let details = isLiquid ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
+        let res = try? getSession().convertAmount(input: details)
+        return res?["satoshi"] as? UInt64
     }
 
     func onSelect(_ tag: String) {
-        assetTag = tag == "L-BTC" ? "btc" : tag
-        content.assetNameLabel.text = tag
-        content.currencySwitch.isHidden = assetTag != "btc"
-        if let satoshi = wallet?.balance[assetTag!]?.satoshi {
+        assetTag = tag
+        content.assetNameLabel.text = asset?.name ?? tag
+        content.currencySwitch.isHidden = tag != "btc"
+        if let satoshi = wallet?.balance[tag]?.satoshi {
             content.maxAmountLabel.text = "\(String.toBtc(satoshi: satoshi, showDenomination: false)) \(tag)"
         }
     }

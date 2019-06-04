@@ -37,12 +37,16 @@ class TransactionDetailViewController: KeyboardViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let tableViewController = segue.destination as? TransactionTableViewController {
-            tableViewController.transaction = transaction
-            tableViewController.wallet = wallet
-        } else if let nextController = segue.destination as? SendBtcDetailsViewController {
-            nextController.transaction = sender as? Transaction
-            nextController.wallet = wallet
+        if let next = segue.destination as? TransactionTableViewController {
+            next.transaction = transaction
+            next.wallet = wallet
+        } else if let next = segue.destination as? SendBtcDetailsViewController {
+            next.transaction = sender as? Transaction
+            next.wallet = wallet
+        } else if let next = segue.destination as? AssetTableViewController {
+            next.tag = sender as? String
+            next.asset = transaction.assets[next.tag]
+            next.satoshi = transaction.amounts[next.tag]
         }
     }
 
@@ -94,17 +98,19 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     @IBOutlet weak var statusCell: UITableViewCell!
     @IBOutlet weak var recipientCell: UITableViewCell!
     @IBOutlet weak var walletCell: UITableViewCell!
-    @IBOutlet weak var assetCell: UITableViewCell!
     @IBOutlet weak var amountCell: UITableViewCell!
     @IBOutlet weak var walletGradientView: UIView!
     @IBOutlet weak var saveButton: UIButton!
-    @IBOutlet weak var assetTag: UILabel!
-    @IBOutlet weak var assetValue: UILabel!
+    @IBOutlet weak var assetCell: UITableViewCell!
+    @IBOutlet weak var assetView: UIView!
+    @IBOutlet weak var assetLabel: UILabel!
 
+    var assetTableCell: AssetTableCell!
     var gradientLayer = CAGradientLayer()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.separatorStyle = .none
         hashTitle.text = NSLocalizedString("id_txid", comment: "").uppercased()
         feeTitle.text = NSLocalizedString("id_fee", comment: "").uppercased()
         amountTitle.text = NSLocalizedString("id_amount", comment: "").uppercased()
@@ -112,11 +118,14 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         recipientTitle.text = NSLocalizedString("id_recipient", comment: "").uppercased()
         walletTitle.text = NSLocalizedString("id_received_on", comment: "").uppercased()
         increasefeeLabel.text = NSLocalizedString("id_increase_fee", comment: "")
+        assetLabel.text = NSLocalizedString("id_asset", comment: "").uppercased()
         saveButton.setTitle(NSLocalizedString("id_save", comment: "").uppercased(), for: .normal)
         saveButton.isHidden = true
         gradientLayer = walletGradientView.makeGradientCard()
         walletGradientView.layer.insertSublayer(gradientLayer, at: 0)
-        self.tableView.separatorStyle = .none
+
+        assetTableCell = Bundle.main.loadNibNamed("AssetTableCell", owner: self, options: nil)!.first as? AssetTableCell
+        assetView.addSubview(assetTableCell!)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -124,8 +133,10 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
          NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
 
-        let tap = UITapGestureRecognizer(target: self, action: #selector(increaseFeeClicked))
-        statusCell.addGestureRecognizer(tap)
+        let increaseFeeTap = UITapGestureRecognizer(target: self, action: #selector(increaseFeeClicked))
+        let assetTap = UITapGestureRecognizer(target: self, action: #selector(assetClicked))
+        statusCell.addGestureRecognizer(increaseFeeTap)
+        assetView.addGestureRecognizer(assetTap)
         updateUI()
     }
 
@@ -137,7 +148,10 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        assetView.setNeedsLayout()
         gradientLayer.frame = walletGradientView.bounds
+        assetTableCell?.frame = assetView.bounds
+        assetTableCell?.setNeedsLayout()
         gradientLayer.setNeedsDisplay()
     }
 
@@ -186,15 +200,13 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         increasefeeLabel.isHidden = !showBumpFee
 
         // show 1st not l-btc asset for liquid network
-        assetCell.isHidden = true
-        let asset = transaction.amounts.filter { $0.key != "btc" }.first
-        if isLiquid && asset != nil {
-            assetValue.text = String.toBtc(satoshi: asset!.value, showDenomination: false)
-            assetTag.text = asset!.key
-            assetCell.isHidden = false
-            amountCell.isHidden = true
+        assetCell.isHidden = !isLiquid
+        amountCell.isHidden = isLiquid
+        if isLiquid {
+            let asset = transaction.assets[transaction.defaultAsset]
+            let value = transaction.amounts[transaction.defaultAsset]
+            assetTableCell.setup(tag: transaction.defaultAsset, asset: asset, satoshi: value!)
         }
-
         self.tableView.reloadData()
     }
 
@@ -223,8 +235,14 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate, "subaccount": wallet.pointer]
         gaios.createTransaction(details: details).done { tx in
             self.parent?.performSegue(withIdentifier: "rbf", sender: tx)
-        }.catch { _ in
+        }.catch { err in
+            print(err.localizedDescription)
         }
+    }
+
+    @objc func assetClicked(sender: UITapGestureRecognizer?) {
+        let assetTag = transaction.amounts.filter { $0.key != "btc" }.first?.key ?? "btc"
+        self.parent?.performSegue(withIdentifier: "asset", sender: assetTag)
     }
 
     @IBAction func saveClick(_ sender: Any) {

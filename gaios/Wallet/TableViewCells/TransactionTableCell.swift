@@ -19,11 +19,12 @@ class TransactionTableCell: UITableViewCell {
         amount.text = transaction.amount()
         selectionStyle = .none
         date.text = transaction.date()
-        let asset = transaction.amounts.filter { $0.key != "btc" }.first
-        if !transaction.memo.isEmpty {
+
+        if isLiquid {
+            let assetTag = transaction.defaultAsset
+            address.text = transaction.assets[assetTag] == nil ? assetTag : ""
+        } else if !transaction.memo.isEmpty {
             address.text = transaction.memo
-        } else if isLiquid, asset != nil {
-            address.text = asset!.key
         } else if transaction.type == "redeposit" {
             address.text = NSLocalizedString("id_redeposited", comment: String())
         } else if transaction.type == "incoming" {
