@@ -6,4 +6,5 @@ class HeaderWalletsCollection: UICollectionViewCell {
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var btcLabel: UILabel!
     @IBOutlet weak var fiatLabel: UILabel!
+    @IBOutlet weak var equalsLabel: UILabel!
 }

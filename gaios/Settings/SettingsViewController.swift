@@ -234,7 +234,20 @@ class SettingsViewController: UIViewController {
             subtitle: NSLocalizedString("id_set_up_pgp_key_for", comment: ""),
             section: .advanced,
             type: .Pgp)
-        return !isWatchOnly && !isResetActive ? [pgp] : []
+        let sweep = SettingsItem(
+            title: NSLocalizedString("id_sweep", comment: ""),
+            subtitle: NSLocalizedString("id_sweep_from_paper_wallet", comment: ""),
+            section: .advanced,
+            type: .Sweep)
+
+        var advanced = [SettingsItem]()
+        if !isWatchOnly && !isResetActive {
+            advanced.append(pgp)
+        }
+        if !isLiquid {
+            advanced.append(sweep)
+        }
+        return advanced
     }
 
     func getAbout() -> [SettingsItem] {
@@ -539,6 +552,10 @@ class SettingsViewController: UIViewController {
         if let controller = segue.destination as? EnableTwoFactorViewController {
             controller.isHiddenWalletButton = true
         }
+
+        if let controller = segue.destination as? WalletsViewController {
+            controller.isSweep = true
+        }
     }
 }
 
@@ -592,6 +609,7 @@ extension SettingsViewController: UITableViewDelegate {
         case .Mnemonic: performSegue(withIdentifier: "recovery", sender: nil)
         case .Autolock: showAutolock()
         case .Pgp: performSegue(withIdentifier: "pgp", sender: nil)
+        case .Sweep: performSegue(withIdentifier: "sweep_to_wallets", sender: nil)
         case .TermsOfUse:
             UIApplication.shared.open(URL(string: "https://blockstream.com/green/terms/")!)
         case .PrivacyPolicy:

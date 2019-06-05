@@ -160,7 +160,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         self.startAnimating(message: NSLocalizedString("id_transaction_sent", comment: ""))
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.1) {
             self.stopAnimating()
-            self.popBack(toControllerType: TransactionsController.self)
+            getAppDelegate()?.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }
     }
 
@@ -184,19 +184,6 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         let contentInsets = UIEdgeInsets.zero
         content.scrollView.contentInset = contentInsets
         content.scrollView.scrollIndicatorInsets = contentInsets
-    }
-
-    /// pop back to specific viewcontroller
-    func popBack<T: UIViewController>(toControllerType: T.Type) {
-        if var viewControllers: [UIViewController] = self.navigationController?.viewControllers {
-            viewControllers = viewControllers.reversed()
-            for currentViewController in viewControllers {
-                if currentViewController .isKind(of: toControllerType) {
-                    self.navigationController?.popToViewController(currentViewController, animated: true)
-                    break
-                }
-            }
-        }
     }
 }
 

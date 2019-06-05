@@ -352,3 +352,12 @@ func changeAddresses(_ accounts: [UInt32]) -> Promise<[WalletItem]> {
         return updates.map { $0.receiveAddress = $0.generateNewAddress(); return $0 }
     }
 }
+
+func getWallet(from wallets: [WalletItem], pointer: UInt32) throws -> WalletItem {
+    guard wallets.count > 0 else { throw GaError.GenericError }
+    var wallet: WalletItem? = wallets.filter { $0.pointer == pointer }.first
+    if wallet == nil {
+        wallet = wallets[0]
+    }
+    return wallet!
+}

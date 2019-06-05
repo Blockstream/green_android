@@ -30,6 +30,7 @@ enum SettingsType: String, Codable {
     case Mnemonic
     case Autolock
     case Pgp
+    case Sweep
     case Version
     case TermsOfUse
     case PrivacyPolicy

@@ -8,6 +8,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
 
     var wallet: WalletItem?
     var transaction: Transaction?
+    var isSweep: Bool = false
 
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var qrCodeReaderBackgroundView: QRCodeReaderView!
@@ -16,13 +17,14 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.title = NSLocalizedString("id_send_to", comment: "")
+        if let wallet = wallet {
+            self.title = isSweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), wallet.localizedName()) : NSLocalizedString("id_send_to", comment: "")
+        }
         orLabel.text = NSLocalizedString("id_or", comment: "")
 
         textfield.delegate = self
         textfield.attributedPlaceholder =
-            NSAttributedString(string: NSLocalizedString(getGAService().isWatchOnly ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: ""),
+            NSAttributedString(string: NSLocalizedString(isSweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: ""),
                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
         textfield.leftViewMode = .always
@@ -103,12 +105,11 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         let settings = getGAService().getSettings()!
         let subaccount = self.wallet!.pointer
         let feeRate: UInt64 = settings.customFeeRate ?? UInt64(1000)
-        let isSweep = getGAService().isWatchOnly
 
         startAnimating(type: NVActivityIndicatorType.ballRotateChase)
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap { _ -> [String: Any] in
-            if isSweep {
+        Guarantee().compactMap { [unowned self] _ -> [String: Any] in
+            if self.isSweep {
                 return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount]
             } else {
                 return ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount]

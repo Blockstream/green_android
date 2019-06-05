@@ -359,7 +359,10 @@
 "id_spv_synchronization" = "SPV synchronization";
 "id_spv_unverified" = "SPV unverified";
 "id_sweep" = "Sweep";
+"id_sweep_into_s" = "Sweep into %@";
 "id_sweep_from_paper_wallet" = "Sweep From Paper Wallet";
+"id_sweep_select_wallet" = "Select Wallet";
+"id_sweep_where_to_sweep" = "Where do you want to import the funds?";
 "id_synchronize_spv_on_mobile" = "Synchronize SPV on mobile";
 "id_system_message" = "System Message";
 "id_tap_on_the_card_to_view" = "Tap on the card to view transactions.";

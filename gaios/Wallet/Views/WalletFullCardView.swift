@@ -8,13 +8,16 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var balance: UILabel!
     @IBOutlet weak var balanceFiat: UILabel!
     @IBOutlet weak var sendView: UIView!
+    @IBOutlet weak var sweepView: UIView!
     @IBOutlet weak var receiveView: UIView!
     @IBOutlet weak var actionsView: UIStackView!
     @IBOutlet weak var sendLabel: UILabel!
+    @IBOutlet weak var sweepLabel: UILabel!
     @IBOutlet weak var receiveLabel: UILabel!
     @IBOutlet weak var stackButton: UIButton!
     @IBOutlet weak var networkImage: UIImageView!
     @IBOutlet weak var sendImage: UIImageView!
+    @IBOutlet weak var sweepImage: UIImageView!
     @IBOutlet weak var receiveImage: UIImageView!
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var unit: UILabel!
@@ -26,8 +29,10 @@ class WalletFullCardView: UIView {
         super.awakeFromNib()
         let isLiquid = getGdkNetwork(getNetwork()).liquid
         sendLabel.text = NSLocalizedString("id_send", comment: "").capitalized
+        sweepLabel.text = NSLocalizedString("id_sweep", comment: "").capitalized
         receiveLabel.text = NSLocalizedString("id_receive", comment: "").capitalized
         sendImage.tintColor = isLiquid ? .white : UIColor.customMatrixGreen()
+        sweepImage.tintColor = isLiquid ? .white : UIColor.customMatrixGreen()
         receiveImage.tintColor = isLiquid ? .white : UIColor.customMatrixGreen()
     }
 

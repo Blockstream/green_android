@@ -452,6 +452,7 @@
 		811EE25A219EBB1500684AD8 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				8128611E22221326005598D3 /* TwoFactorLimitView.xib */,
 				09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */,
@@ -523,7 +524,6 @@
 				09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */,
 				817A630422245B090054FC60 /* ReceiveBtcView.xib */,
 				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
-				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
 				092D47F420EA2570005720F3 /* NotificationsViewController.swift */,
 				81E9B7FD21C90F74004D87B6 /* WalletsViewController.swift */,
 				811EE25C219EC17800684AD8 /* TransactionsViewController.swift */,

@@ -5,6 +5,8 @@ import PromiseKit
 class WalletsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var wallets = [WalletItem]()
+    var isSweep: Bool = false
+    var wallet: WalletItem!
     weak var subaccountDelegate: SubaccountDelegate?
     private let cellId = "cell"
     private let headerId = "header"
@@ -25,8 +27,11 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: true)
-        getSubaccounts().done { wallets in
+        if !isSweep {
+            navigationController?.setNavigationBarHidden(true, animated: true)
+        }
+        title = ""
+        getSubaccounts().done {[unowned self] wallets in
             self.wallets = wallets
             self.collectionView?.reloadData()
         }.catch {_ in }
@@ -66,13 +71,14 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             let satoshi = wallets.map { $0.btc.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
-            header.title.text = NSLocalizedString("id_total_balance", comment: "")
-            header.btcLabel.text = String.toBtc(satoshi: satoshi)
-            header.fiatLabel.text = String.toFiat(satoshi: satoshi)
+            header.title.text = isSweep ? NSLocalizedString("id_sweep_where_to_sweep", comment: ""): NSLocalizedString("id_total_balance", comment: "")
+            header.btcLabel.text = isSweep ? "" : String.toBtc(satoshi: satoshi)
+            header.fiatLabel.text = isSweep ? "" :String.toFiat(satoshi: satoshi)
+            header.equalsLabel.isHidden = isSweep
             return header
         case UICollectionView.elementKindSectionFooter:
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
-                footerId, for: indexPath) as? FooterWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
+            footerId, for: indexPath) as? FooterWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addWallet))
             footer.addGestureRecognizer(tapGestureRecognizer)
             footer.isUserInteractionEnabled = true
@@ -89,7 +95,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        if getGAService().isWatchOnly {
+        if getGAService().isWatchOnly || isSweep {
             return CGSize.zero
         }
         return CGSize(width: self.view.frame.width, height: 184)
@@ -102,9 +108,13 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let wallet = wallets[indexPath.row]
+        wallet = wallets[indexPath.row]
         subaccountDelegate?.onChange(wallet.pointer)
-        navigationController?.popViewController(animated: false)
+        if isSweep {
+            performSegue(withIdentifier: "sweep", sender: nil)
+        } else {
+            navigationController?.popViewController(animated: false)
+        }
     }
 
     @objc func addWallet(_ sender: Any?) {
@@ -112,6 +122,13 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let controller = segue.destination as? SendBtcViewController {
+            controller.isSweep = true
+            controller.wallet = wallet
         }
     }
 }

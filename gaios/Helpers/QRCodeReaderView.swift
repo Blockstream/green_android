@@ -28,11 +28,9 @@ class QRCodeReaderView: UIView {
     }()
 
     lazy var borderView: UIView = {
-        let borderView = UIView(frame: frame)
-        borderView.backgroundColor = UIColor(white: 0, alpha: 0)
-        borderView.borderWidth = 1
-        borderView.borderColor = UIColor.white
-        return borderView
+        let borderImageView = UIImageView(frame: frame)
+        borderImageView.image = UIImage(named: "qr_bg")
+        return borderImageView
     }()
 
     lazy var placeholderTextView: UIView = {

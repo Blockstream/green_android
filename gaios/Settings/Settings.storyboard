@@ -84,11 +84,20 @@
                         <segue destination="Iqe-bb-Dln" kind="show" identifier="twoFactorLimit" id="cKq-4n-8Je"/>
                         <segue destination="Lpg-sH-ks3" kind="show" identifier="pgp" id="8fb-Zo-jH0"/>
                         <segue destination="XeE-HA-893" kind="show" identifier="setupTwoFactor" id="PwA-VM-nme"/>
+                        <segue destination="53E-v4-Ycb" kind="show" identifier="sweep_to_wallets" id="zD7-L6-IpD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tgq-mW-4Be" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8812" y="-1077"/>
+        </scene>
+        <!--WalletsViewController-->
+        <scene sceneID="o0e-OX-CWI">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Wallet" referencedIdentifier="WalletsViewController" id="53E-v4-Ycb" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rby-NF-qdF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="9698" y="-1077"/>
         </scene>
         <!--Currency-->
         <scene sceneID="8I2-uC-Whc">

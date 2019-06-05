@@ -148,7 +148,7 @@
         <!--Wallets-->
         <scene sceneID="UxH-ol-idL">
             <objects>
-                <collectionViewController hidesBottomBarWhenPushed="YES" id="jnB-Fe-Ffd" customClass="WalletsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController storyboardIdentifier="WalletsViewController" hidesBottomBarWhenPushed="YES" id="jnB-Fe-Ffd" customClass="WalletsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" id="LIs-BQ-End">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -177,10 +177,13 @@
                     <navigationItem key="navigationItem" title="Wallets" id="5wk-hw-lE9">
                         <barButtonItem key="backBarButtonItem" title=" " id="pDg-ut-OZ7"/>
                     </navigationItem>
+                    <connections>
+                        <segue destination="h6g-rr-LAM" kind="show" identifier="sweep" id="iez-Y1-r6h"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Vlh-VX-dUh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6604" y="-210"/>
+            <point key="canvasLocation" x="6604" y="-45"/>
         </scene>
         <!--SendBtcViewController-->
         <scene sceneID="CHa-MC-LT0">
@@ -195,7 +198,7 @@
         <!--Transactions Controller-->
         <scene sceneID="xDR-n6-1G7">
             <objects>
-                <tableViewController id="nnX-e3-FvS" customClass="TransactionsController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="TransactionsController" id="nnX-e3-FvS" customClass="TransactionsController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="lOc-MI-e19">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -858,4 +861,7 @@
             <color red="0.42745098039215684" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
+    <inferredMetricsTieBreakers>
+        <segue reference="U7f-MS-5Z1"/>
+    </inferredMetricsTieBreakers>
 </document>

@@ -12,6 +12,8 @@ class TransactionsController: UITableViewController {
     var presentingWallet: WalletItem?
     var txs: [Transactions] = []
     var fetchTxs: Promise<Void>?
+    var isSweep: Bool = false
+    let pointerKey = String(format: "%@_wallet_pointer", getNetwork())
 
     lazy var noTransactionsLabel: UILabel = {
         let noTransactionsLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 100, y: self.tableView.tableHeaderView!.frame.height, width: 200, height: self.view.frame.size.height - self.tableView.tableHeaderView!.frame.height))
@@ -156,12 +158,14 @@ class TransactionsController: UITableViewController {
         let view: WalletFullCardView = ((Bundle.main.loadNibNamed("WalletFullCardView", owner: self, options: nil)![0] as? WalletFullCardView)!)
         view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.receiveToWallet)))
         view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sendfromWallet)))
+        view.sweepView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sweepFromWallet)))
         view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.wallets)))
         view.assetsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.showAssets)))
         return view
     }
 
     func loadWallet() {
+        pointerWallet = UInt32(UserDefaults.standard.integer(forKey: pointerKey))
         guard let twoFactorReset = getGAService().getTwoFactorReset() else { return }
         guard let settings = getGAService().getSettings() else { return }
         let network = getGdkNetwork(getNetwork())
@@ -169,10 +173,11 @@ class TransactionsController: UITableViewController {
             self.startAnimating()
             return Guarantee()
         }.then {
-            getSubaccount(self.pointerWallet)
+            getSubaccounts()
         }.ensure {
             self.stopAnimating()
-        }.done { wallet in
+        }.done { wallets in
+            let wallet = try getWallet(from: wallets, pointer: self.pointerWallet)
             self.presentingWallet = wallet
             guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
             let satoshi = wallet.btc.satoshi
@@ -185,8 +190,8 @@ class TransactionsController: UITableViewController {
             if twoFactorReset.isResetActive {
                 view.actionsView.isHidden = true
             } else if getGAService().isWatchOnly {
-                view.sendImage.image = UIImage(named: "qr_sweep")
-                view.sendLabel.text = NSLocalizedString("id_sweep", comment: "")
+                view.sendView.isHidden = true
+                view.sweepView.isHidden = false
             }
         }.catch { err in
             print(err.localizedDescription)
@@ -206,6 +211,11 @@ class TransactionsController: UITableViewController {
         self.performSegue(withIdentifier: "send", sender: self)
     }
 
+    @objc func sweepFromWallet(_ sender: UIButton) {
+        isSweep = true
+        self.performSegue(withIdentifier: "send", sender: self)
+    }
+
     @objc func receiveToWallet(_ sender: UIButton) {
         self.performSegue(withIdentifier: "receive", sender: self)
     }
@@ -216,6 +226,7 @@ class TransactionsController: UITableViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? SendBtcViewController {
+            nextController.isSweep = isSweep
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? ReceiveBtcViewController {
             nextController.wallet = presentingWallet
@@ -229,7 +240,6 @@ class TransactionsController: UITableViewController {
             nextController.title = presentingWallet!.localizedName()
         }
     }
-
 }
 
 extension TransactionsController: UITableViewDataSourcePrefetching {
@@ -249,5 +259,7 @@ extension TransactionsController: UITableViewDataSourcePrefetching {
 extension TransactionsController: SubaccountDelegate {
     func onChange(_ pointer: UInt32) {
         self.pointerWallet = pointer
+        UserDefaults.standard.set(Int(pointer), forKey: pointerKey)
+        UserDefaults.standard.synchronize()
     }
 }

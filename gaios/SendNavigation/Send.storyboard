@@ -174,7 +174,7 @@
         <!--Send-->
         <scene sceneID="90b-rI-MLu">
             <objects>
-                <viewController hidesBottomBarWhenPushed="YES" id="Agf-J9-aru" customClass="SendBTCConfirmationViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TransactionsController" hidesBottomBarWhenPushed="YES" id="Agf-J9-aru" customClass="SendBTCConfirmationViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="fmo-Wf-jeY" customClass="SendBTCConfirmationView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
