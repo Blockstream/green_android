@@ -122,23 +122,23 @@ public class GDKSession {
     }
 
     public List<TransactionData> getTransactions(final int subAccount, final int first, final int count) throws Exception {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("subaccount", subAccount);
-        details.put("first", first);
-        details.put("count", count);
-        final ArrayNode txListObject = (ArrayNode) GDK.get_transactions(mNativeSession, details);
+        final ArrayNode txListObject = getTransactionsRaw(subAccount, first, count);
         final List<TransactionData> transactionDataPagedData =
                 mObjectMapper.readValue(mObjectMapper.treeAsTokens(txListObject),
                         new TypeReference<List<TransactionData>>() {});
         return transactionDataPagedData;
     }
 
-    public JsonNode getTransactionRaw(final int subAccount, final String txhash) {
+    public ArrayNode getTransactionsRaw(final int subAccount, final int first, final int count) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
-        details.put("page_id", 0);
-        final ObjectNode txListObject = (ObjectNode) GDK.get_transactions(mNativeSession, details);
-        final ArrayNode array = (ArrayNode) txListObject.get("list");
+        details.put("first", first);
+        details.put("count", count);
+        return (ArrayNode) GDK.get_transactions(mNativeSession, details);
+    }
+
+    public JsonNode getTransactionRaw(final int subAccount, final String txhash) throws Exception {
+        final ArrayNode array = getTransactionsRaw(subAccount, 0, 30);
         for (JsonNode node : array ) {
             if (node.get("txhash").asText().equals(txhash))
                 return node;
