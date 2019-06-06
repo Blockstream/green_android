@@ -17,10 +17,11 @@ public class TransactionDataObservable extends Observable implements Observer {
     private ListeningExecutorService mExecutor;
     private Integer mSubaccount;
     private boolean mUTXOOnly;
-    private Integer mNextPage;
     private Integer mPageLoaded = 0;
+    private Integer mLastPage = Integer.MAX_VALUE;
     private boolean mExecutedOnce = false;
 
+    private static final int TX_PER_PAGE = 15;
     private TransactionDataObservable() {}
 
     public TransactionDataObservable(final ListeningExecutorService executor,
@@ -37,8 +38,8 @@ public class TransactionDataObservable extends Observable implements Observer {
 
     public void refresh(final boolean reset) {
         if (reset) {
-            mNextPage = null;
             mPageLoaded = 0;
+            mLastPage = Integer.MAX_VALUE;
             mTransactionDataList.clear();
         }
         mExecutor.submit(this::refreshSync);
@@ -50,15 +51,11 @@ public class TransactionDataObservable extends Observable implements Observer {
             if (mUTXOOnly) {
                 transactions = getSession().getUTXO(mSubaccount, 0);
             } else {
-                final int pageId = mNextPage == null ? 0 : mNextPage;
-                PagedData<TransactionData> transactionsPaged = getSession().getTransactionsPaged(
-                    mSubaccount,
-                    pageId);
-                Log.d("OBS","page " + transactionsPaged.getPageId() +
-                      "nextpage " + transactionsPaged.getNextPageId() );
-                transactions = transactionsPaged.getList();
-                mNextPage = transactionsPaged.getNextPageId();
+                transactions = getSession().getTransactions(mSubaccount, mPageLoaded * TX_PER_PAGE, TX_PER_PAGE);
+                if (transactions.size() < TX_PER_PAGE)
+                    mLastPage = mPageLoaded;
                 mPageLoaded++;
+                Log.d("OBS", "page loaded " + mPageLoaded + " " + transactions.size() + " Loaded txs");
             }
             mExecutedOnce = true;
             setTransactionDataList(transactions);
@@ -77,7 +74,7 @@ public class TransactionDataObservable extends Observable implements Observer {
     }
     public void setTransactionDataList(final List<TransactionData> transactionData) {
         Log.d("OBS",
-              "pageLoaded:" + mPageLoaded + " mNextPage: " + mNextPage + " set" + (mUTXOOnly ? "UTXO" : "Transaction") + "DataList(" +  mSubaccount + ", " + transactionData +
+              "pageLoaded:" + mPageLoaded + " set" + (mUTXOOnly ? "UTXO" : "Transaction") + "DataList(" +  mSubaccount + ", " + transactionData +
               ")");
         this.mTransactionDataList.addAll(transactionData);
         fire();
@@ -103,7 +100,7 @@ public class TransactionDataObservable extends Observable implements Observer {
     }
 
     public boolean isLastPage() {
-        return mNextPage != null && mNextPage == 0;
+        return (mPageLoaded >= mLastPage);
     }
 
     public boolean isExecutedOnce() {

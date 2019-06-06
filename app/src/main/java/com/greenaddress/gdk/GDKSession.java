@@ -121,19 +121,15 @@ public class GDKSession {
         GDK.login_watch_only(mNativeSession, username, password);
     }
 
-    public List<TransactionData> getTransactions(final int subAccount, final int pageId) throws Exception {
-        return getTransactionsPaged(subAccount,pageId).getList();
-    }
-
-    public PagedData<TransactionData> getTransactionsPaged(final int subAccount, final int pageId) throws Exception {
+    public List<TransactionData> getTransactions(final int subAccount, final int first, final int count) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
-        details.put("page_id", pageId);
-        final ObjectNode txListObject = (ObjectNode) GDK.get_transactions(mNativeSession, details);
-        final PagedData<TransactionData> transactionDataPagedData =
+        details.put("first", first);
+        details.put("count", count);
+        final ArrayNode txListObject = (ArrayNode) GDK.get_transactions(mNativeSession, details);
+        final List<TransactionData> transactionDataPagedData =
                 mObjectMapper.readValue(mObjectMapper.treeAsTokens(txListObject),
-                        new TypeReference<PagedData<TransactionData>>() {});
-        debugEqual(txListObject,transactionDataPagedData);
+                        new TypeReference<List<TransactionData>>() {});
         return transactionDataPagedData;
     }
 
