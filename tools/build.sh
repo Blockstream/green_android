@@ -27,7 +27,7 @@ fi
 
 cd gdk
 git fetch origin -t
-git checkout release_0.0.13
+git checkout release_0.0.14
 rm -rf build-*
 ./tools/build.sh --$TARGET static --lto=true
 cd ..

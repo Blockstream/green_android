@@ -3,13 +3,9 @@ import PromiseKit
 
 struct Transactions {
     let list: [Transaction]
-    let nextPageId: UInt32
-    let pageId: UInt32
 
-    init(list: [Transaction], nextPageId: UInt32, pageId: UInt32) {
+    init(list: [Transaction]) {
         self.list = list
-        self.nextPageId = nextPageId
-        self.pageId = pageId
     }
 }
 
@@ -241,18 +237,14 @@ class Wallets: Codable {
     let array: [WalletItem]
 }
 
-func getTransactions(_ pointer: UInt32, pageId: Int = 0) -> Promise<Transactions> {
+func getTransactions(_ pointer: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {_ in
-        try getSession().getTransactions(details: ["subaccount": pointer, "page_id": pageId])
+        try getSession().getTransactions(details: ["subaccount": pointer, "first": first, "count": 15])
     }.compactMap(on: bgq) { data in
-        guard let dict = data["list"] as? [[String: Any]] else { throw GaError.GenericError }
-        let list = dict.map { tx -> Transaction in
-            return Transaction(tx)
-        }
-        let nextPageId = data["next_page_id"] as? UInt32 ?? 0
-        let pageId = data["page_id"] as? UInt32 ?? 0
-        return Transactions(list: list, nextPageId: nextPageId, pageId: pageId)
+        guard let dict = data["array"] as? [[String: Any]] else { throw GaError.GenericError }
+        let list = dict.map { Transaction($0) }
+        return Transactions(list: list)
     }
 }
 

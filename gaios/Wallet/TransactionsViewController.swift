@@ -140,7 +140,7 @@ class TransactionsController: UITableViewController {
     }
 
     func loadTransactions(_ pageId: Int = 0) {
-        getTransactions(self.pointerWallet, pageId: pageId)
+        getTransactions(self.pointerWallet, first: 0)
         .done { txs in
             self.txs.removeAll()
             self.txs.append(txs)
@@ -234,12 +234,12 @@ class TransactionsController: UITableViewController {
 
 extension TransactionsController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        let fetch = indexPaths.contains { $0.row >= self.txs[$0.section].list.count - 1 }
-        let pageId = Int(self.txs.last?.nextPageId ?? 0)
-        if !fetch { return }
-        if pageId == 0 { return }
+        if !indexPaths.contains { $0.row >= self.txs[$0.section].list.count - 1 } { return }
+        if self.txs.count == 0 { return }
+        if self.txs.last?.list.count == 0 { return }
         if fetchTxs != nil && fetchTxs!.isPending { return }
-        fetchTxs = getTransactions(self.pointerWallet, pageId: pageId).map { txs in
+        let count = txs.map { $0.list.count }.reduce(0, +)
+        fetchTxs = getTransactions(self.pointerWallet, first: UInt32(count)).map { txs in
             self.txs.append(txs)
             self.reload()
         }
