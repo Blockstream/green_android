@@ -26,11 +26,15 @@ import com.btchip.utils.Dump;
 import com.btchip.utils.VarintUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 public class BTChipDongle implements BTChipConstants {
 
 	private BTChipFirmware firmwareVersion;
+	private BTChipApplication application;
 
 	public enum OperationMode {
 		WALLET(0x01),
@@ -163,6 +167,24 @@ public class BTChipDongle implements BTChipConstants {
 		@Override
 		public String toString() {
 			return String.format("%s.%s.%s compressed keys %b", major, minor, patch, compressedKeys);
+		}
+	}
+
+	public class BTChipApplication {
+		private String name;
+		private String version;
+
+		public BTChipApplication(String name, String version) {
+			this.name = name;
+			this.version = version;
+		}
+
+		public String getName() { return name; }
+		public String getVersion() { return version; }
+
+		@Override
+		public String toString() {
+			return name + " " + version;
 		}
 	}
 
@@ -693,6 +715,31 @@ public class BTChipDongle implements BTChipConstants {
 		int patch = response[4] & 0xff;
 		this.firmwareVersion = new BTChipFirmware(major, minor, patch, compressedKeys);
 		return this.firmwareVersion;
+	}
+
+	private static String readString(byte[] buffer, int offset, int length) {
+		return StandardCharsets.US_ASCII.decode(ByteBuffer.wrap(Arrays.copyOfRange(buffer, offset, offset + length))).toString();
+	}
+
+	public BTChipApplication getApplication() throws BTChipException {
+		final int APP_DETAILS_FORMAT_VERSION = 1;
+
+		byte[] response = exchangeApdu(BTCHIP_CLA_COMMON_SDK, BTCHIP_INS_GET_APP_NAME_AND_VERSION, (byte)0x00, (byte)0x00, 0x00, OK);
+
+		int offset = 0;
+		if (response[offset++] != APP_DETAILS_FORMAT_VERSION) {
+			throw new BTChipException("Unsupported application format");
+		}
+
+		int nameLength = (response[offset++] & 0xff);
+		final String name = BTChipDongle.readString(response, offset, nameLength);
+		offset += nameLength;
+
+		int versionLength = (response[offset++] & 0xff);
+		final String version = BTChipDongle.readString(response, offset, versionLength);
+
+		this.application = new BTChipApplication(name, version);
+		return this.application;
 	}
 
 	public void setKeymapEncoding(byte[] keymapEncoding) throws BTChipException {

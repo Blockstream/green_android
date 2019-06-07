@@ -86,6 +86,11 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
         if (usb == null)
             return;
 
+        if (mService.isLiquid()) {
+            showInstructions(R.string.id_hardware_wallet_support_for);
+            return;
+        }
+
         final ImageView hardwareIcon = UI.find(this, R.id.hardwareIcon);
         mVendorId = usb.getVendorId();
         Log.d(TAG, "Vendor: " + mVendorId + " Product: " + usb.getProductId());
@@ -196,6 +201,21 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
         try {
             final BTChipDongle dongle = new BTChipDongle(transport, hasScreen);
             final BTChipFirmware fw = dongle.getFirmwareVersion();
+            try {
+                // This should only be supported by the Nano X
+                final BTChipDongle.BTChipApplication application = dongle.getApplication();
+                Log.d(TAG, "Ledger application:" + application.toString());
+
+                if ((mService.getNetwork().getMainnet() && !application.getName().equals("Bitcoin"))
+                    || !application.getName().equals("Bitcoin Test")) {
+                    // We using the wrong app, prompt the user to open the bitcoin app.
+                    mUsb = null;
+                    mInLedgerDashboard = true;
+                    showInstructions(R.string.id_ledger_dashboard_detected); // TODO: we should have a more specific str here
+                    return;
+                }
+            } catch (BTChipException ignored) { }
+
             final int major = fw.getMajor(), minor = fw.getMinor(), patch = fw.getPatch();
 
             Log.d(TAG, "BTChip/Ledger firmware version " + fw.toString() + '(' +

@@ -22,6 +22,8 @@
     <usb-device vendor-id="11415" product-id="0000"/>
     <!-- VID 0x2c97 PID 0x0000 - Ledger Nano S -->
     <usb-device vendor-id="11415" product-id="0001"/>
+    <!-- VID 0x2c97 PID 0x0004 - Ledger Nano X -->
+    <usb-device vendor-id="11415" product-id="0004"/>
 
 
 

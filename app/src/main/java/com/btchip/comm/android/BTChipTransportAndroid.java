@@ -172,7 +172,8 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 			if ((device.getVendorId() == VID || device.getVendorId() == VID2) &&
 			   ((device.getProductId() == PID_WINUSB) || (device.getProductId() == PID_HID) ||
 			    (device.getProductId() == PID_NANOS) || (device.getProductId() == PID_BLUE) ||
-			    (device.getProductId() == PID_HID_LEDGER) || (device.getProductId() == PID_HID_LEDGER_PROTON))) {
+				(device.getProductId() == PID_NANOX) || (device.getProductId() == PID_HID_LEDGER) ||
+				(device.getProductId() == PID_HID_LEDGER_PROTON))) {
 				return device;
 			}
 		}
@@ -201,7 +202,7 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
         }
         connection.claimInterface(dongleInterface, true);
         ledger = ((device.getProductId() == PID_HID_LEDGER) || (device.getProductId() == PID_HID_LEDGER_PROTON)
-		|| (device.getProductId() == PID_NANOS) || (device.getProductId() == PID_BLUE));
+		|| (device.getProductId() == PID_NANOS) || (device.getProductId() == PID_BLUE) || (device.getProductId() == PID_NANOX));
         if (device.getProductId() == PID_WINUSB) {
         	return new BTChipTransportAndroidWinUSB(connection, dongleInterface, in, out, TIMEOUT);
         }
@@ -214,7 +215,7 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 
 	public static boolean isLedgerWithScreen(final UsbDevice d) {
 		final int pId = d.getProductId();
-		final boolean screenDevice = pId == PID_NANOS || pId == PID_BLUE;
+		final boolean screenDevice = pId == PID_NANOS || pId == PID_BLUE || pId == PID_NANOX;
 		return screenDevice && d.getVendorId() == VID2;
 	}
 	
@@ -226,5 +227,6 @@ public class BTChipTransportAndroid implements BTChipTransportFactory {
 	private static final int PID_HID_LEDGER_PROTON = 0x4b7c;
 	private static final int PID_NANOS = 0x0000;
 	private static final int PID_BLUE = 0x0001;
+	private static final int PID_NANOX = 0x0004;
 	private static final int TIMEOUT = 20000;	
 }
