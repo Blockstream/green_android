@@ -18,6 +18,8 @@ import java.util.Map;
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
 
     private RecyclerView assetsList;
+    private Map<String, BalanceData> mAssetsBalances;
+    private boolean finish = false;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -30,8 +32,8 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         assetsList = findViewById(R.id.assetsList);
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         try {
-            final Map<String, BalanceData> assetsBalances = getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
-            final AssetsAdapter adapter = new AssetsAdapter(assetsBalances, mService, this);
+            mAssetsBalances = getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
+            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, mService, this);
             assetsList.setAdapter(adapter);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -68,10 +70,18 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     }
 
     @Override
-    public void onAssetSelected(final String assetSelected) {
-        Log.d("ASSET", "selected " + assetSelected);
+    public void onAssetSelected(final String assetId) {
+        Log.d("ASSET", "selected " + assetId);
+        if (getCallingActivity().getClassName().equals(TabbedMainActivity.class.getName()) ) {
+            final Intent intent = new Intent(AssetsSelectActivity.this, AssetActivity.class);
+            intent.putExtra("ASSET_ID", assetId)
+                    .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
+                    .putExtra("SATOSHI", mAssetsBalances.get(assetId).getSatoshi());
+            startActivity(intent);
+            return;
+        }
         final Intent intent = getIntent();
-        intent.putExtra(PrefKeys.ASSET_SELECTED, assetSelected);
+        intent.putExtra(PrefKeys.ASSET_SELECTED, assetId);
         setResult(RESULT_OK, intent);
         finish();
     }

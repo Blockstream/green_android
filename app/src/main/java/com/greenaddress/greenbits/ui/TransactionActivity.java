@@ -28,6 +28,8 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
+import org.bitcoinj.core.Transaction;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -149,16 +151,21 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final CardView assetCardview = findViewById(R.id.txAssetCard);
 
             final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
-            final String label = "btc".equals(mTxItem.asset) ? "L-BTC" : (mTxItem.assetInfo != null &&
-                    mTxItem.assetInfo.getName() != null) ? mTxItem.assetInfo.getName() : mTxItem.asset;
-            txAssetText.setText(label);
-
             final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
+            final String label = mTxItem.assetInfo != null && mTxItem.assetInfo.getName() != null ? mTxItem.assetInfo.getName() : mTxItem.asset;
             final String amount = mService.getValueString(mTxItem.satoshi, false, false);
             final String ticker = mTxItem.assetInfo != null && mTxItem.assetInfo.getTicker() != null ? mTxItem.assetInfo.getTicker() : "";
+            txAssetText.setText("btc".equals(mTxItem.asset) ? "L-BTC" : label);
             txAssetValue.setText(String.format("%s%s %s", neg, amount, ticker));
 
             assetCardview.setVisibility(View.VISIBLE);
+            assetCardview.setOnClickListener(v -> {
+                final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
+                intent.putExtra("ASSET_ID", mTxItem.asset)
+                        .putExtra("ASSET_INFO", mTxItem.assetInfo)
+                        .putExtra("SATOSHI", mTxItem.satoshi);
+                startActivity(intent);
+            });
         } else {
             amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
         }
