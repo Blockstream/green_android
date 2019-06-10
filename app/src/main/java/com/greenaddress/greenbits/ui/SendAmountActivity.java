@@ -24,6 +24,8 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import static com.greenaddress.gdk.GDKSession.getSession;
+
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
@@ -31,6 +33,7 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
@@ -63,6 +66,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private long mMinFeeRate;
     private Long mVsize;
     private String mSelectedAsset = "";
+    private Map<String, BalanceData> mAssetsBalances;
 
     private static final int mButtonIds[] =
     { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
@@ -92,9 +96,15 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mAmountText = UI.find(this, R.id.amountText);
         mUnitButton = UI.find(this, R.id.unitButton);
         mSelectAsset = UI.find(this, R.id.selectAsset);
-        updateAssetSelected();
-        UI.hideIf( mService.isLiquid(), mSendAllLayout);
 
+        // Retrieve assets list
+        try {
+            mAssetsBalances = getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
+            updateAssetSelected();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        UI.hideIf( mService.isLiquid(), mSendAllLayout);
 
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener(this);
@@ -225,8 +235,13 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private void updateAssetSelected() {
-        mSelectAsset.setText(mSelectedAsset.isEmpty() ? getString(R.string.id_select_asset) : mService.getAssetName(
-                                 mSelectedAsset));
+        if (mSelectedAsset.isEmpty()) {
+            mSelectAsset.setText(getString(R.string.id_select_asset));
+            return;
+        }
+        final AssetInfoData assetInfo = mAssetsBalances.get(mSelectedAsset).getAssetInfo();
+        final String label = assetInfo != null ? assetInfo.getName() : mSelectedAsset;
+        mSelectAsset.setText("btc".equals(mSelectedAsset) ? "L-BTC" : label);
         UI.showIf(!mService.isLiquid() || "btc".equals(mSelectedAsset), mUnitButton);
     }
 

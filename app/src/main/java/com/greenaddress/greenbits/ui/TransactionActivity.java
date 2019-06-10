@@ -152,9 +152,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
             final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
             final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
-            final String label = mTxItem.assetInfo != null && mTxItem.assetInfo.getName() != null ? mTxItem.assetInfo.getName() : mTxItem.asset;
+            final String label = mTxItem.assetInfo != null &&
+                                 mTxItem.assetInfo.getName() != null ? mTxItem.assetInfo.getName() : mTxItem.asset;
             final String amount = mService.getValueString(mTxItem.satoshi, false, false);
-            final String ticker = mTxItem.assetInfo != null && mTxItem.assetInfo.getTicker() != null ? mTxItem.assetInfo.getTicker() : "";
+            final String ticker = mTxItem.assetInfo != null &&
+                                  mTxItem.assetInfo.getTicker() != null ? mTxItem.assetInfo.getTicker() : "";
             txAssetText.setText("btc".equals(mTxItem.asset) ? "L-BTC" : label);
             txAssetValue.setText(String.format("%s%s %s", neg, amount, ticker));
 
@@ -162,8 +164,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             assetCardview.setOnClickListener(v -> {
                 final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
                 intent.putExtra("ASSET_ID", mTxItem.asset)
-                        .putExtra("ASSET_INFO", mTxItem.assetInfo)
-                        .putExtra("SATOSHI", mTxItem.satoshi);
+                .putExtra("ASSET_INFO", mTxItem.assetInfo)
+                .putExtra("SATOSHI", mTxItem.satoshi);
                 startActivity(intent);
             });
         } else {

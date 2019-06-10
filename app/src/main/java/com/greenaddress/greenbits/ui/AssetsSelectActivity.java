@@ -75,8 +75,8 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         if (getCallingActivity().getClassName().equals(TabbedMainActivity.class.getName()) ) {
             final Intent intent = new Intent(AssetsSelectActivity.this, AssetActivity.class);
             intent.putExtra("ASSET_ID", assetId)
-                    .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
-                    .putExtra("SATOSHI", mAssetsBalances.get(assetId).getSatoshi());
+            .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
+            .putExtra("SATOSHI", mAssetsBalances.get(assetId).getSatoshi());
             startActivity(intent);
             return;
         }
