@@ -18,7 +18,6 @@ import com.greenaddress.greenapi.data.EstimatesData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.JSONData;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.data.PagedData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenapi.data.ReconnectHint;
 import com.greenaddress.greenapi.data.SubaccountData;

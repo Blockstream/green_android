@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import static com.greenaddress.gdk.GDKSession.getSession;
-import com.greenaddress.greenapi.data.PagedData;
+
 import com.greenaddress.greenapi.data.TransactionData;
 
 import java.util.ArrayList;
