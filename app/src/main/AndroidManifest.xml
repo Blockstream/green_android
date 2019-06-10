@@ -248,6 +248,11 @@
             android:name=".NetworkSettingsActivity"
             android:screenOrientation="portrait"
             />
+        <activity
+            android:name=".AssetActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/id_asset"
+            />
 
     </application>
 
