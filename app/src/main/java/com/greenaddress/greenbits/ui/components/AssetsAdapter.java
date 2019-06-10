@@ -23,21 +23,23 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;
     private final GaService mService;
-    private final Resources mResources;
-    private final Activity mActivity;
 
+    @FunctionalInterface
     public interface OnAssetSelected {
         void onAssetSelected(String assetSelected);
     }
 
     public AssetsAdapter(final Map<String, BalanceData> assets, final GaService service,
-                         final OnAssetSelected cb, final Resources resources, final Activity activity) {
+                         final OnAssetSelected cb) {
         mAssets = assets;
-        mAssetsIds = new ArrayList<>(assets.keySet()); // TODO custom ordering?
         mService = service;
         mOnAccountSelected = cb;
-        mResources = resources;
-        mActivity = activity;
+        mAssetsIds = new ArrayList<>(mAssets.keySet());
+        if (mAssetsIds.contains("btc")) {
+            // Move btc as first in the list
+            mAssetsIds.remove("btc");
+            mAssetsIds.add(0,"btc");
+        }
     }
 
     @Override
@@ -51,9 +53,14 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     public void onBindViewHolder(final Item holder, final int position) {
         final String assetId = mAssetsIds.get(position);
         holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
-        holder.mAssetName.setText(mService.getAssetName(assetId));
-        long satoshi = mAssets.get(assetId).getSatoshi();
-        holder.mAssetValue.setText(mService.getValueString(satoshi, false, "btc".equals(assetId)));
+        final BalanceData balance = mAssets.get(assetId);
+        final String label = balance.getAssetInfo() != null ? balance.getAssetInfo().getName() : assetId;
+        final String ticker = balance.getAssetInfo() != null ? balance.getAssetInfo().getTicker() : "";
+        // TODO: make asset conversion with precision
+        final long satoshi = balance.getSatoshi();
+        final String amount = mService.getValueString(satoshi, false, false);
+        holder.mAssetName.setText(label);
+        holder.mAssetValue.setText(amount + " " + ("btc".equals(assetId) ? "L-BTC" : ticker));
     }
 
     @Override

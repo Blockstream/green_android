@@ -86,7 +86,8 @@ public class ListTransactionsAdapter extends
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {
             if (mService.isLiquid() && txItem.isAsset)
-                message = txItem.asset;
+                message = "btc".equals(txItem.asset) || (txItem.assetInfo != null &&
+                        txItem.assetInfo.getTicker() != null) ? "" : txItem.asset;
             else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = mActivity.getString(R.string.id_redeposited);
             else if (txItem.type == TransactionItem.TYPE.IN)

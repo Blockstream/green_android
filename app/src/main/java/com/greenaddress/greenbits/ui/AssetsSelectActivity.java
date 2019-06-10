@@ -20,7 +20,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     private RecyclerView assetsList;
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreateWithService(final Bundle savedInstanceState) {
         if (mService == null || mService.getModel() == null) {
             toFirst();
             return;
@@ -29,12 +29,11 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         setContentView(R.layout.activity_assets_selection);
         assetsList = findViewById(R.id.assetsList);
         assetsList.setLayoutManager(new LinearLayoutManager(this));
-        Map<String, BalanceData> assetsBalances;
         try {
-            assetsBalances = getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
-            final AssetsAdapter adapter = new AssetsAdapter(assetsBalances, mService, this, getResources(), this);
+            final Map<String, BalanceData> assetsBalances = getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
+            final AssetsAdapter adapter = new AssetsAdapter(assetsBalances, mService, this);
             assetsList.setAdapter(adapter);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

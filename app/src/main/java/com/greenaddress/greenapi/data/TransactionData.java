@@ -39,6 +39,7 @@ public class TransactionData extends JSONData {
     private Boolean serverSigned;
     private Boolean userSigned;
     private String data;
+    private Map<String, AssetInfoData> assetInfo;
     // FIXME: I don't think these belong here
     private Integer ptIdx;
     private Integer scriptType;
@@ -344,5 +345,11 @@ public class TransactionData extends JSONData {
         this.subtype = subtype;
     }
 
+    public Map<String, AssetInfoData> getAssetInfo() {
+        return assetInfo;
+    }
 
+    public void setAssetInfo(final Map<String, AssetInfoData> assetInfo) {
+        this.assetInfo = assetInfo;
+    }
 }

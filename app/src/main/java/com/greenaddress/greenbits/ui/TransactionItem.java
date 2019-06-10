@@ -5,6 +5,7 @@ import android.util.Log;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.JSONMap;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class TransactionItem implements Serializable {
 
@@ -47,9 +49,10 @@ public class TransactionItem implements Serializable {
     public final List<Sha256Hash> replacedHashes;
     public final String data;
     public final List<TransactionData> eps;
-    public Integer subaccount;
-    public boolean isAsset;
-    public String asset;
+    public final Integer subaccount;
+    public final boolean isAsset;
+    public final String asset;
+    public final AssetInfoData assetInfo;
 
     public String toString() {
         return String.format("%s %s %s %s", date.toString(), type.name(), satoshi, counterparty);
@@ -86,6 +89,7 @@ public class TransactionItem implements Serializable {
         this.subaccount = subaccount;
 
         asset = txData.getFirstAsset() == null ? "btc" : txData.getFirstAsset();
+        assetInfo = txData.getAssetInfo() == null ? null : txData.getAssetInfo().get(asset);
         satoshi = txData.getSatoshi().get(asset);
         isAsset = txData.isAsset();
 
@@ -133,7 +137,9 @@ public class TransactionItem implements Serializable {
 
     public String getAmountWithUnit(final GaService service) {
         if (isAsset) {
-            return (type == TYPE.IN ? "" : "-") + service.getValueString(satoshi,false,false);
+            final String ticker = assetInfo != null ? assetInfo.getTicker() : "";
+            final String amount = service.getValueString(satoshi, false, false);
+            return (type == TYPE.IN ? "" : "-") + amount + " " + ("btc".equals(asset) ? "L-BTC" : ticker);
         } else {
             final String unitKey = service.getUnitKey();
             try {

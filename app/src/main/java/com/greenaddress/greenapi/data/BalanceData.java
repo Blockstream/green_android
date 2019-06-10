@@ -22,10 +22,11 @@ public class BalanceData extends JSONData {
     private String mbtc;
     private String ubtc;
     private Long satoshi;
+    private AssetInfoData assetInfo;
 
     @JsonIgnore
     public ObjectNode toObjectNode() {
-        return new ObjectMapper().convertValue(this,ObjectNode.class);
+        return new ObjectMapper().convertValue(this, ObjectNode.class);
     }
 
     public String getAddress() {
@@ -100,4 +101,11 @@ public class BalanceData extends JSONData {
         this.satoshi = satoshi;
     }
 
+    public AssetInfoData getAssetInfo() {
+        return assetInfo;
+    }
+
+    public void setAssetInfo(final AssetInfoData assetInfo) {
+        this.assetInfo = assetInfo;
+    }
 }
