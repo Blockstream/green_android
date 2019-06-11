@@ -149,17 +149,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             amountText.setVisibility(View.GONE);
 
             final CardView assetCardview = findViewById(R.id.txAssetCard);
-
             final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
             final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
-            final String label = mTxItem.assetInfo != null &&
-                                 mTxItem.assetInfo.getName() != null ? mTxItem.assetInfo.getName() : mTxItem.asset;
-            final String amount = mService.getValueString(mTxItem.satoshi, false, false);
-            final String ticker = mTxItem.assetInfo != null &&
-                                  mTxItem.assetInfo.getTicker() != null ? mTxItem.assetInfo.getTicker() : "";
-            txAssetText.setText("btc".equals(mTxItem.asset) ? "L-BTC" : label);
-            txAssetValue.setText(String.format("%s%s %s", neg, amount, ticker));
-
+            txAssetText.setText(mTxItem.getAssetName());
+            txAssetValue.setText(mTxItem.getAmountWithUnit(mService));
             assetCardview.setVisibility(View.VISIBLE);
             assetCardview.setOnClickListener(v -> {
                 final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);

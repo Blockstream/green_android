@@ -135,22 +135,30 @@ public class TransactionItem implements Serializable {
                       txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 
+    public String getAssetName() {
+        return "btc".equals(asset) ? "L-BTC" : assetInfo != null &&
+               assetInfo.getName() != null ? assetInfo.getName() : asset;
+    }
+
+    public String getAssetTicker() {
+        return "btc".equals(asset) ? "L-BTC" :  assetInfo != null &&
+               assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
+    }
+
     public String getAmountWithUnit(final GaService service) {
         if (isAsset) {
             final String ticker = assetInfo != null ? assetInfo.getTicker() : "";
             final String amount = service.getValueString(satoshi, false, false);
-            return (type == TYPE.IN ? "" : "-") + amount + " " + ("btc".equals(asset) ? "L-BTC" : ticker);
+            return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount, getAssetTicker());
         } else {
             final String unitKey = service.getUnitKey();
             try {
                 final String amount = getSession().convertSatoshi(this.satoshi).get(unitKey).asText();
-                return (type == TYPE.IN ? "" : "-") + amount + " " + service.getBitcoinUnit();
+                return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount, service.getBitcoinUnit());
             } catch (final RuntimeException | IOException e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
                 return "";
             }
         }
     }
-
-
 }
