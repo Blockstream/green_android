@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
@@ -31,6 +32,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     private HWDeviceData mHwData;
     private ObjectNode mTxJson;
     private SwipeButton mSwipeButton;
+    private AssetInfoData mAssetInfo;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             if (hwwJson != null)
                 mHwData = mObjectMapper.readValue(hwwJson, HWDeviceData.class);
             mTxJson =  mObjectMapper.readValue(getIntent().getStringExtra("transaction"), ObjectNode.class);
+            mAssetInfo = (AssetInfoData) getIntent().getSerializableExtra("asset_info");
         } catch (final Exception e) {
             e.printStackTrace();
             UI.toast(this, e.getLocalizedMessage(), Toast.LENGTH_LONG);
@@ -94,14 +97,15 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             UI.find(this, R.id.amountWordSending).setVisibility(View.GONE); // hide the little "Amount" above the card
 
             final CardView assetCardview = findViewById(R.id.txAssetCard);
-
             final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
-            txAssetText.setText(mService.getAssetName(assetTag.asText()));
-
             final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
-            txAssetValue.setText(mService.getValueString(address.get("satoshi").asLong(), false,
-                                                         "btc".equals(assetTag.asText())));
 
+            final String asset = assetTag.asText();
+            final String label = mAssetInfo != null ? mAssetInfo.getName() : asset;
+            final String value = mService.getValueString(address.get("satoshi").asLong(), false, false);
+            final String ticker = mAssetInfo != null && mAssetInfo.getTicker() != null ? mAssetInfo.getTicker() : "";
+            txAssetText.setText("btc".equals(asset) ? "L-BTC" : label);
+            txAssetValue.setText(String.format("%s %s", value, "btc".equals(asset) ? "L-BTC" : ticker));
             assetCardview.setVisibility(View.VISIBLE);
         } else {
             sendAmount.setText(getFormatAmount(amount));

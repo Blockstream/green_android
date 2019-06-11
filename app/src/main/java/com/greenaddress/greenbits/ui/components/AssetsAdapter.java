@@ -59,7 +59,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         // TODO: make asset conversion with precision
         final long satoshi = balance.getSatoshi();
         final String amount = mService.getValueString(satoshi, false, false);
-        holder.mAssetName.setText(label);
+        holder.mAssetName.setText("btc".equals(assetId) ? "L-BTC" : label);
         holder.mAssetValue.setText(amount + " " + ("btc".equals(assetId) ? "L-BTC" : ticker));
     }
 

@@ -519,6 +519,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
         intent.putExtra("transaction", transactionData.toString());
+        intent.putExtra("asset_info", mAssetsBalances.get(
+                            mSelectedAsset.isEmpty() ? "btc" : mSelectedAsset).getAssetInfo());
         if (mService.getConnectionManager().isHW())
             intent.putExtra("hww", mService.getConnectionManager().getHWDeviceData().toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);

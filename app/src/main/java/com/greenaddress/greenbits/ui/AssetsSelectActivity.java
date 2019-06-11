@@ -73,6 +73,8 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     public void onAssetSelected(final String assetId) {
         Log.d("ASSET", "selected " + assetId);
         if (getCallingActivity().getClassName().equals(TabbedMainActivity.class.getName()) ) {
+            if ("btc".equals(assetId))
+                return;
             final Intent intent = new Intent(AssetsSelectActivity.this, AssetActivity.class);
             intent.putExtra("ASSET_ID", assetId)
             .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
