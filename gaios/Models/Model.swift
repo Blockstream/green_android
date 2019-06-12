@@ -210,7 +210,8 @@ class WalletItem: Codable {
     }
 
     func generateNewAddress() -> String? {
-        return try? getSession().getReceiveAddress(subaccount: self.pointer)
+        let res = try? getSession().getReceiveAddress(details: ["subaccount": self.pointer])
+        return res?["address"] as? String
     }
 
     func getAddress() -> String {

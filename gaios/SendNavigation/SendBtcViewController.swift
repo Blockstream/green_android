@@ -109,8 +109,9 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap { _ -> [String: Any] in
             if isSweep {
-                let address = try! getSession().getReceiveAddress(subaccount: subaccount)
-                return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount, "addressees": [["address": address, "satoshi": 0]]]
+                let res = try! getSession().getReceiveAddress(details: ["subaccount": subaccount])
+                let address = res?["address"] as? String
+                return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount, "addressees": [["address": address!, "satoshi": 0]]]
             } else {
                 return ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount]
             }
