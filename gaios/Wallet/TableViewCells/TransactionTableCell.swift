@@ -49,8 +49,7 @@ class TransactionTableCell: UITableViewCell {
             status.textColor = UIColor.customTitaniumLight()
             status.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount)
         } else {
-            status.text = NSLocalizedString("id_completed", comment: "")
-            status.textColor = UIColor.customTitaniumLight()
+            status.text = ""
         }
     }
 
