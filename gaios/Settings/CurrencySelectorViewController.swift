@@ -39,7 +39,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     func getCurrentRate() {
         guard let settings = getGAService().getSettings() else { return }
         currentCurrency.text = settings.pricing["currency"]
-        currentExchange.text = settings.pricing["exchange"]
+        currentExchange.text = settings.pricing["exchange"]?.capitalized
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -67,7 +67,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CurrencyCell", for: indexPath) as? CurrencyCell else { fatalError("Fail to dequeue reusable cell") }
         let currency = searchCurrencyList[indexPath.row]
-        cell.source.text = currency.exchange
+        cell.source.text = currency.exchange.capitalized
         cell.fiat.text = currency.currency
         cell.selectionStyle = .none
         cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)

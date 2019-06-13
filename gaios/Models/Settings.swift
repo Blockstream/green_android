@@ -19,8 +19,6 @@ enum SettingsType: String, Codable {
     case SwitchNetwork
     case BitcoinDenomination = "unit"
     case ReferenceExchangeRate = "pricing"
-    case DefaultTransactionPriority = "required_num_blocks"
-    case DefaultCustomFeeRate = "customFeeRate"
     case SetupTwoFactor
     case ThresholdTwoFactor
     case LockTimeRecovery

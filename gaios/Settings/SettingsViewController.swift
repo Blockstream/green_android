@@ -84,6 +84,11 @@ class SettingsViewController: UIViewController {
     }
 
     func getNetworks() -> [SettingsItem] {
+        let switchNetwork = SettingsItem(
+            title: String(format: NSLocalizedString("id_switch_network", comment: ""), getNetwork()).localizedCapitalized,
+            subtitle: "",
+            section: .network,
+            type: .SwitchNetwork)
         let setupPin = SettingsItem(
             title: String(format: NSLocalizedString(AuthenticationTypeHandler.supportsBiometricAuthentication() ? "id_setup_pin_and_s" : "id_setup_pin", comment: ""), NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "")),
             subtitle: "",
@@ -91,7 +96,7 @@ class SettingsViewController: UIViewController {
             type: .SetupPin)
         let watchOnly = SettingsItem(
             title: NSLocalizedString("id_watchonly_login", comment: ""),
-            subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_set_up_watchonly_credentials" : "id_enabled_1s", comment: ""), username ?? ""),
+            subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_disabled" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .network,
             type: .WatchOnly)
         let logout = SettingsItem(
@@ -99,17 +104,12 @@ class SettingsViewController: UIViewController {
             subtitle: NSLocalizedString("id_log_out", comment: ""),
             section: .network,
             type: .Logout)
-        let switchNetwork = SettingsItem(
-            title: String(format: NSLocalizedString("id_switch_network", comment: ""), getNetwork()).localizedCapitalized,
-            subtitle: "",
-            section: .network,
-            type: .SwitchNetwork)
         if isWatchOnly || isResetActive {
-            return [logout, switchNetwork]
+            return [switchNetwork, logout]
         } else if isLiquid {
-            return [setupPin, logout, switchNetwork]
+            return [switchNetwork, setupPin, logout]
         }
-        return [setupPin, watchOnly, logout, switchNetwork]
+        return [switchNetwork, setupPin, watchOnly, logout]
     }
 
     func getAccount() -> [SettingsItem] {
@@ -122,37 +122,19 @@ class SettingsViewController: UIViewController {
 
         let referenceExchangeRate = SettingsItem(
             title: NSLocalizedString("id_reference_exchange_rate", comment: ""),
-            subtitle: String(format: NSLocalizedString("id_s_from_s", comment: ""), settings.pricing["currency"]!, settings.pricing["exchange"]!),
+            subtitle: "\(settings.pricing["currency"]!)/\(settings.pricing["exchange"]!.capitalized)",
             section: .account,
             type: .ReferenceExchangeRate)
-
-        let defaultTransactionPriority = SettingsItem(
-            title: NSLocalizedString("id_default_transaction_priority", comment: ""),
-            subtitle: settings.transactionPriority.description,
-            section: .account,
-            type: .DefaultTransactionPriority)
-
-        let defaultCustomFeeRate = SettingsItem(
-            title: NSLocalizedString("id_default_custom_fee_rate", comment: ""),
-            subtitle: String(format: "%.02f satoshi / vbyte", Float(settings.customFeeRate ?? 1000)/1000),
-            section: .account,
-            type: .DefaultCustomFeeRate)
-
         if isWatchOnly && isResetActive {
             return []
         } else if isLiquid {
-            return [bitcoinDenomination, defaultTransactionPriority, defaultCustomFeeRate]
+            return [bitcoinDenomination]
         }
-        return [bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate]
+        return [bitcoinDenomination, referenceExchangeRate]
     }
 
     func getTwoFactor() -> [SettingsItem] {
         guard let settings = getGAService().getSettings() else { return [] }
-        let setupTwoFactor = SettingsItem(
-            title: NSLocalizedString("id_twofactor_authentication", comment: ""),
-            subtitle: NSLocalizedString("id_set_up_twofactor_authentication", comment: ""),
-            section: .twoFactor,
-            type: .SetupTwoFactor)
         var thresholdValue = ""
         var locktimeRecoveryEnable = false
         if let twoFactorConfig = self.twoFactorConfig {
@@ -166,9 +148,14 @@ class SettingsViewController: UIViewController {
                 locktimeRecoveryEnable = notifications.emailOutgoing == true
             }
         }
+        let setupTwoFactor = SettingsItem(
+            title: NSLocalizedString("id_twofactor_authentication", comment: ""),
+            subtitle: "",
+            section: .twoFactor,
+            type: .SetupTwoFactor)
         let thresholdTwoFactor = SettingsItem(
             title: NSLocalizedString("id_twofactor_threshold", comment: ""),
-            subtitle: String(format: NSLocalizedString(thresholdValue == "" ? "id_set_twofactor_threshold" : "id_your_twofactor_threshold_is_s", comment: ""), thresholdValue),
+            subtitle: String(format: NSLocalizedString(thresholdValue == "" ? "" : "%@", comment: ""), thresholdValue),
             section: .twoFactor,
             type: .ThresholdTwoFactor)
         let locktimeRecovery = SettingsItem(
@@ -222,7 +209,7 @@ class SettingsViewController: UIViewController {
         guard let settings = getGAService().getSettings() else { return [] }
         let mnemonic = SettingsItem(
             title: NSLocalizedString("id_mnemonic", comment: ""),
-            subtitle: NSLocalizedString("id_touch_to_display", comment: ""),
+            subtitle: "",
             section: .security,
             type: .Mnemonic)
         let autolock = SettingsItem(
@@ -236,7 +223,7 @@ class SettingsViewController: UIViewController {
     func getAdvanced() -> [SettingsItem] {
         let pgp = SettingsItem(
             title: NSLocalizedString("id_pgp_key", comment: ""),
-            subtitle: NSLocalizedString("id_set_up_pgp_key_for", comment: ""),
+            subtitle: "",
             section: .advanced,
             type: .Pgp)
         let sweep = SettingsItem(
@@ -453,21 +440,6 @@ extension SettingsViewController {
         self.present(alert, animated: true, completion: nil)
     }
 
-    func showDefaultTransactionPriority() {
-        let list = [TransactionPriority.High.text, TransactionPriority.Medium.text, TransactionPriority.Low.text]
-        let settings = getGAService().getSettings()!
-        let selected = settings.transactionPriority.text
-        let alert = UIAlertController(title: NSLocalizedString("id_default_transaction_priority", comment: ""), message: "", preferredStyle: .actionSheet)
-        list.forEach { (item: String) in
-            alert.addAction(UIAlertAction(title: NSLocalizedString(item, comment: ""), style: item == selected  ? .destructive : .default) { _ in
-                settings.transactionPriority = TransactionPriority.from(item)
-                self.changeSettings(settings)
-            })
-        }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        self.present(alert, animated: true, completion: nil)
-    }
-
     func showBitcoinDenomination() {
         var list = [DenominationType.BTC.string, DenominationType.MilliBTC.string, DenominationType.MicroBTC.string]
         if !isLiquid {
@@ -483,27 +455,6 @@ extension SettingsViewController {
             })
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func showDefaultCustomRate() {
-        let settings = getGAService().getSettings()!
-        let hint = String(format: "%.02f", Float(settings.customFeeRate ?? 1000) / 1000)
-
-        let alert = UIAlertController(title: NSLocalizedString("id_default_custom_fee_rate", comment: ""), message: "", preferredStyle: .alert)
-        alert.addTextField { textField in
-            textField.text = hint
-            textField.keyboardType = .numberPad
-        }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
-            let textField = alert.textFields!.first
-            let value = textField!.text
-            let amount = value!.replacingOccurrences(of: ",", with: ".")
-            guard let feeRate = Double(amount) else { return }
-            settings.customFeeRate = UInt64(feeRate * 1000)
-            self.changeSettings(settings)
-        })
         self.present(alert, animated: true, completion: nil)
     }
 
@@ -600,9 +551,10 @@ extension SettingsViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = UITableViewCell()
+        let header = UITableViewCell(style: .value1, reuseIdentifier: nil)
         header.textLabel?.text = toString(sections[section])
         header.imageView?.image = getHeaderImage(from: section)
+        header.imageView?.contentMode = .scaleAspectFill
         header.isUserInteractionEnabled = false
         return header
     }
@@ -626,8 +578,6 @@ extension SettingsViewController: UITableViewDelegate {
         case .SwitchNetwork: performSegue(withIdentifier: "network", sender: nil)
         case .WatchOnly: showWatchOnly()
         case .ReferenceExchangeRate: performSegue(withIdentifier: "currency", sender: nil)
-        case .DefaultTransactionPriority: showDefaultTransactionPriority()
-        case .DefaultCustomFeeRate: showDefaultCustomRate()
         case .SetupTwoFactor: performSegue(withIdentifier: "setupTwoFactor", sender: nil)
         case .ThresholdTwoFactor: performSegue(withIdentifier: "twoFactorLimit", sender: nil)
         case .ResetTwoFactor: showResetTwoFactor()
@@ -667,7 +617,8 @@ extension SettingsViewController: UITableViewDataSource {
         cell.detailTextLabel?.numberOfLines = 2
         cell.detailTextLabel?.textColor = item.type == .Logout ? UIColor.errorRed() : UIColor.lightGray
         cell.selectionStyle = .none
-        cell.accessoryType = item.type == .Version ? .none : .disclosureIndicator
+        let noneTypes: [SettingsType] = [.Version, .Logout]
+        cell.accessoryType = noneTypes.contains(item.type) ? .none : .disclosureIndicator
         cell.setNeedsLayout()
         return cell
     }

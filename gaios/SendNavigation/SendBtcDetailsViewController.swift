@@ -327,6 +327,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
             alert?.dismiss(animated: true, completion: nil)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { [weak alert] (_) in
+            let settings = getGAService().getSettings()!
             guard var amount = alert!.textFields![0].text else { return }
             amount = amount.replacingOccurrences(of: ",", with: ".")
             guard let number = Double(amount) else { return }
@@ -335,8 +336,11 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
                 Toast.show(String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(minFeeRate)))
                 return
             }
+            let feeEstimate = UInt64(1000 * number)
             self.selectedFee = self.content.feeRateButtons.count - 1
-            self.feeEstimates[self.content.feeRateButtons.count - 1] = UInt64(1000 * number)
+            self.feeEstimates[self.content.feeRateButtons.count - 1] = feeEstimate
+            settings.customFeeRate = feeEstimate
+            self.changeSettings(settings)
             self.updateFeeButtons()
             self.updateTransaction()
         })
@@ -345,21 +349,64 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
     @objc func clickFeeButton(_ sender: UITapGestureRecognizer) {
         guard let view = sender.view else { return }
+        let settings = getGAService().getSettings()!
         switch view {
         case content.fastFeeButton:
+            settings.transactionPriority = .High
             self.selectedFee = 0
         case content.mediumFeeButton:
+            settings.transactionPriority = .Medium
             self.selectedFee = 1
         case content.slowFeeButton:
+            settings.transactionPriority = .Low
             self.selectedFee = 2
         case content.customFeeButton:
             showFeeCustomPopup()
         default:
             break
         }
+        changeSettings(settings)
         updateFeeButtons()
         updateTransaction()
         dismissKeyboard(nil)
+    }
+
+    func changeSettings(_ settings: Settings) {
+        let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+        let session = getGAService().getSession()
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().map {_ in
+        self.startAnimating()
+        }.compactMap(on: bgq) { _ in
+            try session.changeSettings(details: details!)
+        }.then(on: bgq) { call in
+            call.resolve(self)
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+        }.catch { error in
+            self.showAlert(error)
+        }
+    }
+}
+
+extension SendBtcDetailsViewController {
+
+    func showAlert(_ error: Error) {
+        let text: String
+        if let error = error as? TwoFactorCallError {
+            switch error {
+            case .failure(let localizedDescription), .cancel(let localizedDescription):
+                text = localizedDescription
+            }
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
+        }
+    }
+
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
     }
 }
 
