@@ -61,13 +61,6 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         content.amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
                                                                    attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
 
-        if transaction.addresseesReadOnly {
-            content.amountTextField.isEnabled = false
-            content.amountTextField.isUserInteractionEnabled = false
-            content.sendAllFundsButton.isHidden = true
-            content.maxAmountLabel.isHidden = true
-        }
-
         if let oldFeeRate = getOldFeeRate() {
             feeEstimates[content.feeRateButtons.count - 1] = oldFeeRate + minFeeRate
             var found = false
@@ -99,9 +92,11 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         // setup liquid view
         let isLiquid = getGdkNetwork(getNetwork()).liquid
         content.assetView.isHidden = !isLiquid
-        content.sendAllFundsButton.isHidden = isLiquid
+        content.amountTextField.isEnabled = !transaction.addresseesReadOnly
+        content.amountTextField.isUserInteractionEnabled = !transaction.addresseesReadOnly
+        content.sendAllFundsButton.isHidden = isLiquid || transaction.addresseesReadOnly
         content.currencySwitch.isHidden = isLiquid
-        content.maxAmountLabel.isHidden = isLiquid
+        content.maxAmountLabel.isHidden = isLiquid || transaction.addresseesReadOnly
         content.maxAmountLabel.text = String.toBtc(satoshi: wallet!.btc.satoshi)
         content.assetView.heightAnchor.constraint(equalToConstant: 0).isActive = !isLiquid
         content.assetView.layoutIfNeeded()
