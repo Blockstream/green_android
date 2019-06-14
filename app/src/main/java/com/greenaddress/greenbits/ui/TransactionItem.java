@@ -99,19 +99,19 @@ public class TransactionItem implements Serializable {
         isAsset = txData.isAsset();
 
         switch (txData.getType()) {
-            case "outgoing":
-                type = TYPE.OUT;
-                counterparty = txData.getAddressee();
-                break;
-            case "incoming":
-                type = TYPE.IN;
-                break;
-            case "redeposit":
-                // the amount is the fee
-                type = TYPE.REDEPOSIT;
-                break;
-            default:
-                throw new ParseException("cannot parse type", 0);
+        case "outgoing":
+            type = TYPE.OUT;
+            counterparty = txData.getAddressee();
+            break;
+        case "incoming":
+            type = TYPE.IN;
+            break;
+        case "redeposit":
+            // the amount is the fee
+            type = TYPE.REDEPOSIT;
+            break;
+        default:
+            throw new ParseException("cannot parse type", 0);
         }
 
         // TODO gdk
@@ -122,7 +122,7 @@ public class TransactionItem implements Serializable {
         isSpent = true;
         final Model model = service.getModel();
         final List<TransactionData> transactionDataList =
-                model.getUTXODataObservable(subaccount).getTransactionDataList();
+            model.getUTXODataObservable(subaccount).getTransactionDataList();
         if (transactionDataList == null) {
             isSpent = false;
         } else {
@@ -137,17 +137,17 @@ public class TransactionItem implements Serializable {
 
         date = txData.getCreatedAt();
         replaceable = !service.isLiquid() &&
-                txData.getCanRbf() && type != TransactionItem.TYPE.IN;
+                      txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 
     public String getAssetName() {
         return "btc".equals(assetId) ? "L-BTC" : assetInfo != null &&
-                assetInfo.getName() != null ? assetInfo.getName() : assetId;
+               assetInfo.getName() != null ? assetInfo.getName() : assetId;
     }
 
     public String getAssetTicker() {
         return "btc".equals(assetId) ? "L-BTC" : assetInfo != null &&
-                assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
+               assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
     }
 
     private AssetInfoData getAssetInfo() {
@@ -163,7 +163,8 @@ public class TransactionItem implements Serializable {
                 details.set("asset_info", getAssetInfo().toObjectNode());
             final ObjectNode converted = getSession().convert(details);
             final String amount = converted.get(isAsset ? assetId : service.getUnitKey()).asText();
-            return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount, isAsset ? getAssetTicker() : service.getBitcoinUnit());
+            return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount,
+                                 isAsset ? getAssetTicker() : service.getBitcoinUnit());
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
             return "";

@@ -60,7 +60,8 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final String assetId = mAssetsIds.get(position);
         holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         final BalanceData balanceData = mAssets.get(assetId);
-        final AssetInfoData assetInfo = balanceData.getAssetInfo() != null ? balanceData.getAssetInfo() : new AssetInfoData(assetId, assetId, 0, "");
+        final AssetInfoData assetInfo = balanceData.getAssetInfo() !=
+                                        null ? balanceData.getAssetInfo() : new AssetInfoData(assetId, assetId, 0, "");
         try {
             final ObjectNode details = mObjectMapper.createObjectNode();
             details.put("satoshi", balanceData.getSatoshi());
@@ -69,7 +70,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             final String amount = converted.get(assetId).asText();
             holder.mAssetName.setText("btc".equals(assetId) ? "L-BTC" : assetInfo.getName());
             holder.mAssetValue.setText(amount + " " + ("btc".equals(assetId) ? "L-BTC" : assetInfo.getTicker()));
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

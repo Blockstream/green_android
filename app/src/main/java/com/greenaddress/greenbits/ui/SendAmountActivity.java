@@ -547,14 +547,23 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        final String key = isAsset() ? "btc" : (isFiat() ? "fiat" : getBitcoinUnitClean());
+        final String key = isAsset() ? mSelectedAsset : isFiat() ? "fiat" : getBitcoinUnitClean();
+        if (key.isEmpty())
+            return;
         final String value = mAmountText.getText().toString();
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode amount = mapper.createObjectNode();
         amount.put(key, value.isEmpty() ? "0" : value);
+        if (isAsset()) {
+            final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset, mSelectedAsset, 0, "");
+            final AssetInfoData assetInfo = mAssetsBalances.get(key).getAssetInfo();
+            amount.set("asset_info", (assetInfo == null ? assetInfoDefault : assetInfo).toObjectNode());
+        }
         try {
             // avoid updating the view if changing from fiat to btc or vice versa
-            if (!mSendAll && (mCurrentAmount == null || !mCurrentAmount.get(key).asText().equals(value))) {
+            if (!mSendAll &&
+                (mCurrentAmount == null || mCurrentAmount.get(key) == null ||
+                 !mCurrentAmount.get(key).asText().equals(value))) {
                 mCurrentAmount = getSession().convert(amount);
                 updateTransaction(null);
             }

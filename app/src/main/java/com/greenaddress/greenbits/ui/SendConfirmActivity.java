@@ -99,14 +99,22 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             final CardView assetCardview = findViewById(R.id.txAssetCard);
             final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
             final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
-
             final String asset = assetTag.asText();
-            final String label = mAssetInfo != null ? mAssetInfo.getName() : asset;
-            final String value = mService.getValueString(address.get("satoshi").asLong(), false, false);
-            final String ticker = mAssetInfo != null && mAssetInfo.getTicker() != null ? mAssetInfo.getTicker() : "";
-            txAssetText.setText("btc".equals(asset) ? "L-BTC" : label);
-            txAssetValue.setText(String.format("%s %s", value, "btc".equals(asset) ? "L-BTC" : ticker));
-            assetCardview.setVisibility(View.VISIBLE);
+            final AssetInfoData assetInfo = mAssetInfo != null ? mAssetInfo : new AssetInfoData(asset, asset, 0, "");
+            final ObjectMapper mapper = new ObjectMapper();
+            final ObjectNode convert = mapper.createObjectNode();
+            convert.set("asset_info", assetInfo.toObjectNode());
+            convert.put("satoshi", address.get("satoshi").asLong());
+            try {
+                final ObjectNode converted = getSession().convert(convert);
+                final String value = converted.get(asset).asText();
+                final String ticker = assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
+                txAssetText.setText("btc".equals(asset) ? "L-BTC" : assetInfo.getName());
+                txAssetValue.setText(String.format("%s %s", value, "btc".equals(asset) ? "L-BTC" : ticker));
+                assetCardview.setVisibility(View.VISIBLE);
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
         } else {
             sendAmount.setText(getFormatAmount(amount));
         }

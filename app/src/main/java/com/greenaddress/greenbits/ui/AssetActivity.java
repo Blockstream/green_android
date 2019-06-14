@@ -59,7 +59,8 @@ public class AssetActivity extends LoggedActivity {
             mIdText.setText(getAssetInfo().getAssetId());
             mTickerText.setText(getAssetInfo().getTicker() == null ? "" : getAssetInfo().getTicker());
             mNameText.setText("btc".equals(mAssetId) ? "L-BTC" : getAssetInfo().getName());
-            mPrecisionText.setText(getAssetInfo().getPrecision() == null ? "0" : getAssetInfo().getPrecision().toString());
+            mPrecisionText.setText(
+                getAssetInfo().getPrecision() == null ? "0" : getAssetInfo().getPrecision().toString());
         }
         refresh();
     }
@@ -84,7 +85,8 @@ public class AssetActivity extends LoggedActivity {
         final CardView assetCardView = UI.find(this, R.id.assetCard);
         final TextView txAssetText = assetCardView.findViewById(R.id.assetName);
         final TextView txAssetValue = assetCardView.findViewById(R.id.assetValue);
-        final String ticker = "btc".equals(mAssetId) ? "L-BTC" : getAssetInfo().getTicker() == null ? "" : getAssetInfo().getTicker();
+        final String ticker = "btc".equals(mAssetId) ? "L-BTC" : getAssetInfo().getTicker() ==
+                              null ? "" : getAssetInfo().getTicker();
         try {
             final ObjectNode details = mObjectMapper.createObjectNode();
             details.put("satoshi", mSatoshi);
@@ -93,7 +95,7 @@ public class AssetActivity extends LoggedActivity {
             final String amount = converted.get(mAssetId).asText();
             txAssetText.setText("btc".equals(mAssetId) ? "L-BTC" :  getAssetInfo().getName());
             txAssetValue.setText(String.format("%s %s", amount, ticker));
-        } catch(final Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
