@@ -156,7 +156,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             assetCardview.setVisibility(View.VISIBLE);
             assetCardview.setOnClickListener(v -> {
                 final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
-                intent.putExtra("ASSET_ID", mTxItem.asset)
+                intent.putExtra("ASSET_ID", mTxItem.assetId)
                 .putExtra("ASSET_INFO", mTxItem.assetInfo)
                 .putExtra("SATOSHI", mTxItem.satoshi);
                 startActivity(intent);

@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenbits.GaService;
 
 import java.text.DateFormat;
@@ -24,10 +26,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
+
 public class ListTransactionsAdapter extends
     RecyclerView.Adapter<ListTransactionsAdapter.ViewHolder> {
 
-    private final static int REQUEST_TX_DETAILS = 4;
+    private static final int REQUEST_TX_DETAILS = 4;
 
     private final List<TransactionItem> mTxItems;
     private final Activity mActivity;
@@ -86,7 +90,7 @@ public class ListTransactionsAdapter extends
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {
             if (mService.isLiquid() && txItem.isAsset)
-                message = txItem.assetInfo != null && txItem.assetInfo.getName() != null ? "" : txItem.asset;
+                message = txItem.assetInfo != null && txItem.assetInfo.getName() != null ? "" : txItem.assetId;
             else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = mActivity.getString(R.string.id_redeposited);
             else if (txItem.type == TransactionItem.TYPE.IN)

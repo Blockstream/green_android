@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
@@ -17,8 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
+
 public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
+    private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private final Map<String, BalanceData> mAssets;
     private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;
@@ -53,14 +59,19 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     public void onBindViewHolder(final Item holder, final int position) {
         final String assetId = mAssetsIds.get(position);
         holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
-        final BalanceData balance = mAssets.get(assetId);
-        final String label = balance.getAssetInfo() != null ? balance.getAssetInfo().getName() : assetId;
-        final String ticker = balance.getAssetInfo() != null ? balance.getAssetInfo().getTicker() : "";
-        // TODO: make asset conversion with precision
-        final long satoshi = balance.getSatoshi();
-        final String amount = mService.getValueString(satoshi, false, false);
-        holder.mAssetName.setText("btc".equals(assetId) ? "L-BTC" : label);
-        holder.mAssetValue.setText(amount + " " + ("btc".equals(assetId) ? "L-BTC" : ticker));
+        final BalanceData balanceData = mAssets.get(assetId);
+        final AssetInfoData assetInfo = balanceData.getAssetInfo() != null ? balanceData.getAssetInfo() : new AssetInfoData(assetId, assetId, 0, "");
+        try {
+            final ObjectNode details = mObjectMapper.createObjectNode();
+            details.put("satoshi", balanceData.getSatoshi());
+            details.set("asset_info", assetInfo.toObjectNode());
+            final ObjectNode converted = getSession().convert(details);
+            final String amount = converted.get(assetId).asText();
+            holder.mAssetName.setText("btc".equals(assetId) ? "L-BTC" : assetInfo.getName());
+            holder.mAssetValue.setText(amount + " " + ("btc".equals(assetId) ? "L-BTC" : assetInfo.getTicker()));
+        } catch(final Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

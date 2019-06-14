@@ -6,11 +6,18 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.blockstream.libgreenaddress.GDK;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.data.BalanceData;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class AssetActivity extends LoggedActivity {
 
     private static final String TAG = AssetActivity.class.getSimpleName();
+    private static final ObjectMapper mObjectMapper = new ObjectMapper();
 
     private TextView mIdText;
     private EditText mPrecisionText;
@@ -49,9 +56,10 @@ public class AssetActivity extends LoggedActivity {
 
         mIdText.setText(mAssetId);
         if (mAssetInfo != null) {
-            mTickerText.setText(mAssetInfo.getTicker() != null ? mAssetInfo.getTicker() : "");
-            mNameText.setText(mAssetInfo.getName() != null ? mAssetInfo.getName() : "");
-            mPrecisionText.setText(mAssetInfo.getPrecision() != null ? mAssetInfo.getPrecision().toString() : "");
+            mIdText.setText(getAssetInfo().getAssetId());
+            mTickerText.setText(getAssetInfo().getTicker() == null ? "" : getAssetInfo().getTicker());
+            mNameText.setText("btc".equals(mAssetId) ? "L-BTC" : getAssetInfo().getName());
+            mPrecisionText.setText(getAssetInfo().getPrecision() == null ? "0" : getAssetInfo().getPrecision().toString());
         }
         refresh();
     }
@@ -67,14 +75,26 @@ public class AssetActivity extends LoggedActivity {
         }
     }
 
+    private AssetInfoData getAssetInfo() {
+        final AssetInfoData assetInfoDefault = new AssetInfoData(mAssetId, mAssetId, 0, "");
+        return mAssetInfo == null ? assetInfoDefault : mAssetInfo;
+    }
+
     private void refresh() {
         final CardView assetCardView = UI.find(this, R.id.assetCard);
         final TextView txAssetText = assetCardView.findViewById(R.id.assetName);
         final TextView txAssetValue = assetCardView.findViewById(R.id.assetValue);
-        final String label = mAssetInfo != null && mAssetInfo.getName() != null ? mAssetInfo.getName() : mAssetId;
-        final String amount = mService.getValueString(mSatoshi, false, false);
-        final String ticker = mAssetInfo != null && mAssetInfo.getTicker() != null ? mAssetInfo.getTicker() : "";
-        txAssetText.setText("btc".equals(mAssetId) ? "L-BTC" : label);
-        txAssetValue.setText(String.format("%s %s", amount, ticker));
+        final String ticker = "btc".equals(mAssetId) ? "L-BTC" : getAssetInfo().getTicker() == null ? "" : getAssetInfo().getTicker();
+        try {
+            final ObjectNode details = mObjectMapper.createObjectNode();
+            details.put("satoshi", mSatoshi);
+            details.set("asset_info",  getAssetInfo().toObjectNode());
+            final ObjectNode converted = getSession().convert(details);
+            final String amount = converted.get(mAssetId).asText();
+            txAssetText.setText("btc".equals(mAssetId) ? "L-BTC" :  getAssetInfo().getName());
+            txAssetValue.setText(String.format("%s %s", amount, ticker));
+        } catch(final Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -17,6 +17,15 @@ public class AssetInfoData extends JSONData implements Serializable {
     private Integer precision;
     private String ticker;
 
+    public AssetInfoData() {}
+
+    public AssetInfoData(final String assetId, final String name, final Integer precision, final String ticker) {
+        this.assetId = assetId;
+        this.name = name;
+        this.precision = precision;
+        this.ticker = ticker;
+    }
+
     @JsonIgnore
     public ObjectNode toObjectNode() {
         return new ObjectMapper().convertValue(this, ObjectNode.class);

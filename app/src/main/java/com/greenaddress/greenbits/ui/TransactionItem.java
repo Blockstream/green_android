@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -22,6 +25,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public class TransactionItem implements Serializable {
+
+    private static final ObjectMapper mObjectMapper = new ObjectMapper();
 
     public enum TYPE {
         OUT,
@@ -51,7 +56,7 @@ public class TransactionItem implements Serializable {
     public final List<TransactionData> eps;
     public final Integer subaccount;
     public final boolean isAsset;
-    public final String asset;
+    public final String assetId;
     public final AssetInfoData assetInfo;
 
     public String toString() {
@@ -78,7 +83,7 @@ public class TransactionItem implements Serializable {
         fee = txData.getFee();
         feeRate = txData.getFeeRate();
         size = txData.getTransactionSize();
-        vSize =txData.getTransactionVsize();
+        vSize = txData.getTransactionVsize();
         replacedHashes = new ArrayList<>();
         data = txData.getData();
         final String txhash = txData.getTxhash();
@@ -88,25 +93,25 @@ public class TransactionItem implements Serializable {
         counterparty = "";
         this.subaccount = subaccount;
 
-        asset = txData.getFirstAsset() == null ? "btc" : txData.getFirstAsset();
-        assetInfo = txData.getAssetInfo() == null ? null : txData.getAssetInfo().get(asset);
-        satoshi = txData.getSatoshi().get(asset);
+        assetId = txData.getFirstAsset() == null ? "btc" : txData.getFirstAsset();
+        assetInfo = txData.getAssetInfo() == null ? null : txData.getAssetInfo().get(assetId);
+        satoshi = txData.getSatoshi().get(assetId);
         isAsset = txData.isAsset();
 
         switch (txData.getType()) {
-        case "outgoing":
-            type = TYPE.OUT;
-            counterparty = txData.getAddressee();
-            break;
-        case "incoming":
-            type = TYPE.IN;
-            break;
-        case "redeposit":
-            // the amount is the fee
-            type = TYPE.REDEPOSIT;
-            break;
-        default:
-            throw new ParseException("cannot parse type", 0);
+            case "outgoing":
+                type = TYPE.OUT;
+                counterparty = txData.getAddressee();
+                break;
+            case "incoming":
+                type = TYPE.IN;
+                break;
+            case "redeposit":
+                // the amount is the fee
+                type = TYPE.REDEPOSIT;
+                break;
+            default:
+                throw new ParseException("cannot parse type", 0);
         }
 
         // TODO gdk
@@ -117,7 +122,7 @@ public class TransactionItem implements Serializable {
         isSpent = true;
         final Model model = service.getModel();
         final List<TransactionData> transactionDataList =
-            model.getUTXODataObservable(subaccount).getTransactionDataList();
+                model.getUTXODataObservable(subaccount).getTransactionDataList();
         if (transactionDataList == null) {
             isSpent = false;
         } else {
@@ -132,33 +137,36 @@ public class TransactionItem implements Serializable {
 
         date = txData.getCreatedAt();
         replaceable = !service.isLiquid() &&
-                      txData.getCanRbf() && type != TransactionItem.TYPE.IN;
+                txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 
     public String getAssetName() {
-        return "btc".equals(asset) ? "L-BTC" : assetInfo != null &&
-               assetInfo.getName() != null ? assetInfo.getName() : asset;
+        return "btc".equals(assetId) ? "L-BTC" : assetInfo != null &&
+                assetInfo.getName() != null ? assetInfo.getName() : assetId;
     }
 
     public String getAssetTicker() {
-        return "btc".equals(asset) ? "L-BTC" :  assetInfo != null &&
-               assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
+        return "btc".equals(assetId) ? "L-BTC" : assetInfo != null &&
+                assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
+    }
+
+    private AssetInfoData getAssetInfo() {
+        final AssetInfoData assetInfoDefault = new AssetInfoData(assetId, assetId, 0, "");
+        return assetInfo == null ? assetInfoDefault : assetInfo;
     }
 
     public String getAmountWithUnit(final GaService service) {
-        if (isAsset) {
-            final String ticker = assetInfo != null ? assetInfo.getTicker() : "";
-            final String amount = service.getValueString(satoshi, false, false);
-            return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount, getAssetTicker());
-        } else {
-            final String unitKey = service.getUnitKey();
-            try {
-                final String amount = getSession().convertSatoshi(this.satoshi).get(unitKey).asText();
-                return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount, service.getBitcoinUnit());
-            } catch (final RuntimeException | IOException e) {
-                Log.e("", "Conversion error: " + e.getLocalizedMessage());
-                return "";
-            }
+        try {
+            final ObjectNode details = mObjectMapper.createObjectNode();
+            details.put("satoshi", satoshi);
+            if (isAsset)
+                details.set("asset_info", getAssetInfo().toObjectNode());
+            final ObjectNode converted = getSession().convert(details);
+            final String amount = converted.get(isAsset ? assetId : service.getUnitKey()).asText();
+            return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount, isAsset ? getAssetTicker() : service.getBitcoinUnit());
+        } catch (final RuntimeException | IOException e) {
+            Log.e("", "Conversion error: " + e.getLocalizedMessage());
+            return "";
         }
     }
 }
