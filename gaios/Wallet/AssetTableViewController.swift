@@ -7,6 +7,7 @@ class AssetTableViewController: UITableViewController, UITextViewDelegate {
     var tag: String!
     var asset: AssetInfo?
     var satoshi: UInt64?
+    var negative: Bool = false
 
     private var isReadOnly = true
     private var assetTableCell: AssetTableCell?
@@ -137,6 +138,6 @@ class AssetTableViewController: UITableViewController, UITextViewDelegate {
     }
 
     func header() {
-        assetTableCell?.setup(tag: tag, asset: asset, satoshi: satoshi ?? 0)
+        assetTableCell?.setup(tag: tag, asset: asset, satoshi: satoshi ?? 0, negative: negative)
     }
 }

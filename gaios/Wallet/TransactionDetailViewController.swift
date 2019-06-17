@@ -47,6 +47,7 @@ class TransactionDetailViewController: KeyboardViewController {
             next.tag = sender as? String
             next.asset = transaction.assets[next.tag]
             next.satoshi = transaction.amounts[next.tag]
+            next.negative = transaction.type != "incoming"
         }
     }
 
@@ -205,7 +206,7 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         if isLiquid {
             let asset = transaction.assets[transaction.defaultAsset]
             let value = transaction.amounts[transaction.defaultAsset]
-            assetTableCell.setup(tag: transaction.defaultAsset, asset: asset, satoshi: value!)
+            assetTableCell.setup(tag: transaction.defaultAsset, asset: asset, satoshi: value!, negative: transaction.type != "incoming")
         }
         self.tableView.reloadData()
     }
@@ -241,8 +242,7 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     }
 
     @objc func assetClicked(sender: UITapGestureRecognizer?) {
-        let assetTag = transaction.amounts.filter { $0.key != "btc" }.first?.key ?? "btc"
-        self.parent?.performSegue(withIdentifier: "asset", sender: assetTag)
+        self.parent?.performSegue(withIdentifier: "asset", sender: transaction.defaultAsset)
     }
 
     @IBAction func saveClick(_ sender: Any) {
