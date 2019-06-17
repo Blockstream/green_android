@@ -296,7 +296,10 @@ public class GDKSession {
     }
 
     public String getReceiveAddress(final int subAccount ) {
-        return GDK.get_receive_address(mNativeSession, subAccount);
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("subaccount", subAccount);
+        final ObjectNode receiveAddress = (ObjectNode) GDK.get_receive_address(mNativeSession, details);
+        return receiveAddress.get("address").asText();
     }
 
     public static boolean isEnabled() {
