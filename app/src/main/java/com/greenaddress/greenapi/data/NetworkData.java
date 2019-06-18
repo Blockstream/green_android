@@ -1,5 +1,7 @@
 package com.greenaddress.greenapi.data;
 
+import android.support.annotation.NonNull;
+
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class NetworkData extends JSONData {
+public class NetworkData extends JSONData implements Comparable<NetworkData> {
     private String addressExplorerUrl;
     private String txExplorerUrl;
     private String bech32Prefix;
@@ -295,5 +297,10 @@ public class NetworkData extends JSONData {
     public int hashCode() {
 
         return Objects.hash(network);
+    }
+
+    @Override
+    public int compareTo(@NonNull NetworkData o) {
+        return getName().compareTo(o.getName());
     }
 }
