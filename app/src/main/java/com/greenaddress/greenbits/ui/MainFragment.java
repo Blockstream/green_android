@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -26,7 +25,6 @@ import com.greenaddress.greenbits.ui.components.OnGdkListener;
 
 import org.bitcoinj.core.Sha256Hash;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +33,7 @@ import java.util.Map;
 import java.util.Observer;
 
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
+import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 
 public class MainFragment extends SubaccountFragment implements View.OnClickListener, OnGdkListener {
@@ -96,8 +95,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                                                                        REQUEST_SELECT_ASSET));
         try {
             if (service.isLiquid()) {
-                final int size =
-                    getSession().getBalance(service.getModel().getCurrentSubaccount(),0).size();
+                final int size = getSession().getBalance(service.getModel().getCurrentSubaccount(),0).size();
                 assetsSelection.setText(size == 1 ?
                                         getString(R.string.id_d_asset_in_this_account, size) :
                                         getString(R.string.id_d_assets_in_this_account, size));
@@ -272,7 +270,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void onUpdateBalance(final BalanceDataObservable observable) {
         Log.d(TAG, "Updating balance");
-        final BalanceData balanceData = observable.getBalanceData();
+        final BalanceData balanceData = observable.getBtcBalanceData();
         if (isZombie() || balanceData == null)
             return;
 

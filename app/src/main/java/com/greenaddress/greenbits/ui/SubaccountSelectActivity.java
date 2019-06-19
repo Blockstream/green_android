@@ -4,13 +4,14 @@ import android.os.Bundle;
 import android.util.SparseArray;
 import android.widget.TextView;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class SubaccountSelectActivity extends LoggedActivity implements Observer {
     private TextView mTotalAmountBtc;
@@ -37,7 +38,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
         final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
         long totalSatoshi = 0L;
         for (int i = 0; i < balanceObservables.size(); i++) {
-            final BalanceData balanceData = balanceObservables.valueAt(i).getBalanceData();
+            final BalanceData balanceData = balanceObservables.valueAt(i).getBtcBalanceData();
             totalSatoshi += balanceData.getSatoshi();
         }
         final BalanceData balanceReq = new BalanceData();
