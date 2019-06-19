@@ -13,6 +13,8 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Map;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
+
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
 
     private RecyclerView assetsList;
@@ -31,6 +33,11 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         try {
             mAssetsBalances = getModel().getBalanceDataObservable(getModel().getCurrentSubaccount()).getBalanceData();
+            if (mAssetsBalances == null) {
+                // if balance observable does not hold the data yet
+                mAssetsBalances = getSession().getBalance(getModel().getCurrentSubaccount(), 0);
+            }
+
             final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, mService, this);
             assetsList.setAdapter(adapter);
         } catch (final Exception e) {
