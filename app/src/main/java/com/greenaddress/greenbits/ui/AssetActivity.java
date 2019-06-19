@@ -6,11 +6,9 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.blockstream.libgreenaddress.GDK;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.AssetInfoData;
-import com.greenaddress.greenapi.data.BalanceData;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
@@ -27,6 +25,7 @@ public class AssetActivity extends LoggedActivity {
     private AssetInfoData mAssetInfo;
     private String mAssetId;
     private Long mSatoshi;
+    private String mNeg;
 
     @Override
     protected int getMainViewId() {
@@ -50,9 +49,10 @@ public class AssetActivity extends LoggedActivity {
         mTickerText = UI.find(this, R.id.tickerText);
         mNameText = UI.find(this, R.id.nameText);
 
-        mAssetId = (String) getIntent().getSerializableExtra("ASSET_ID");
+        mAssetId = getIntent().getStringExtra("ASSET_ID");
         mAssetInfo = (AssetInfoData) getIntent().getSerializableExtra("ASSET_INFO");
-        mSatoshi = (Long) getIntent().getSerializableExtra("SATOSHI");
+        mSatoshi = getIntent().getLongExtra("SATOSHI", 0L);
+        mNeg = getIntent().getBooleanExtra("SATOSHI_NEG", false) ? "-" : "";
 
         mIdText.setText(mAssetId);
         if (mAssetInfo != null) {
@@ -94,7 +94,7 @@ public class AssetActivity extends LoggedActivity {
             final ObjectNode converted = getSession().convert(details);
             final String amount = converted.get(mAssetId).asText();
             txAssetText.setText("btc".equals(mAssetId) ? "L-BTC" :  getAssetInfo().getName());
-            txAssetValue.setText(String.format("%s %s", amount, ticker));
+            txAssetValue.setText(String.format("%s%s %s", mNeg, amount, ticker));
         } catch (final Exception e) {
             e.printStackTrace();
         }

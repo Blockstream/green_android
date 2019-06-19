@@ -21,14 +21,11 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-
-import org.bitcoinj.core.Transaction;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 
 
@@ -158,7 +156,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                 final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
                 intent.putExtra("ASSET_ID", mTxItem.assetId)
                 .putExtra("ASSET_INFO", mTxItem.assetInfo)
-                .putExtra("SATOSHI", mTxItem.satoshi);
+                .putExtra("SATOSHI", mTxItem.satoshi)
+                .putExtra("SATOSHI_NEG", negative);
                 startActivity(intent);
             });
         } else {
