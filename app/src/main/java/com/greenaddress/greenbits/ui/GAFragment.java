@@ -1,12 +1,11 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 abstract class GAFragment extends Fragment {
     private GreenAddressApplication mApp;
@@ -31,5 +30,9 @@ abstract class GAFragment extends Fragment {
 
     protected GaService getGAService() {
         return mApp.mService;
+    }
+
+    protected Model getModel() {
+        return mApp.mService.getModel();
     }
 }

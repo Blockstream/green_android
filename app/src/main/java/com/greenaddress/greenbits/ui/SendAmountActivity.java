@@ -23,8 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import static com.greenaddress.gdk.GDKSession.getSession;
-
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.GaService;
@@ -35,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
@@ -99,7 +98,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         // Retrieve assets list
         try {
-            mAssetsBalances = getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
+            mAssetsBalances = getModel().getCurrentAccountBalanceData();
             updateAssetSelected();
         } catch (final Exception e) {
             e.printStackTrace();

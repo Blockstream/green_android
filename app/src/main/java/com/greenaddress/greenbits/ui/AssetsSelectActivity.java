@@ -7,12 +7,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.ui.components.AssetsAdapter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
@@ -32,7 +30,8 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         assetsList = findViewById(R.id.assetsList);
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         try {
-            mAssetsBalances = getSession().getBalance(mService.getModel().getCurrentSubaccount(), 0);
+            mAssetsBalances = getModel().getCurrentAccountBalanceData();
+
             final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, mService, this);
             assetsList.setAdapter(adapter);
         } catch (final Exception e) {

@@ -476,7 +476,7 @@ public class GaService extends Service  {
     }
 
     public BalanceData getBalanceData(final int subAccount) {
-        return getModel().getBalanceDataObservable(subAccount).getBalanceData();
+        return getModel().getBalanceDataObservable(subAccount).getBtcBalanceData();
     }
 
     public String getFiatCurrency() {

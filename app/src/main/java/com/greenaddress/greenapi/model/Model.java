@@ -3,9 +3,11 @@ package com.greenaddress.greenapi.model;
 import android.util.SparseArray;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import static com.greenaddress.gdk.GDKSession.getSession;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
+
+import java.util.Map;
 
 
 public class Model {
@@ -136,5 +138,9 @@ public class Model {
 
     public int getCurrentSubaccount() {
         return getActiveAccountObservable().getActiveAccount();
+    }
+
+    public Map<String, BalanceData> getCurrentAccountBalanceData() {
+        return getBalanceDataObservable(getCurrentSubaccount()).getBalanceData();
     }
 }

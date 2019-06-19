@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -26,7 +25,6 @@ import com.greenaddress.greenbits.ui.components.OnGdkListener;
 
 import org.bitcoinj.core.Sha256Hash;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +44,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     private boolean justClicked = false;
     private ListTransactionsAdapter mTransactionsAdapter;
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+    private TextView mAssetsSelection;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -55,8 +54,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         Log.d(TAG, "onCreateView -> " + TAG);
         if (isZombieNoView())
             return null;
-
-        final GaService service = getGAService();
 
         mView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -68,7 +65,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), service, mTxItems);
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getGAService(), mTxItems);
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
         // FIXME, more efficient to use swap
@@ -77,37 +74,24 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.accent));
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             Log.d(TAG, "onRefresh -> " + TAG);
-            final int subaccount = service.getModel().getCurrentSubaccount();
-            service.getModel().getTransactionDataObservable(subaccount).refresh();
+            final int subaccount = getModel().getCurrentSubaccount();
+            getModel().getTransactionDataObservable(subaccount).refresh();
+            updateAssetSelection();
         });
 
         // Setup account card view
         mAccountView = UI.find(mView, R.id.accountView);
         mAccountView.listMode(true);
         mAccountView.setOnClickListener(this);
-        if (service.getModel().isTwoFAReset())
+        if (getModel().isTwoFAReset())
             mAccountView.hideActions();
         else
-            mAccountView.showActions(service.isWatchOnly());
+            mAccountView.showActions(getGAService().isWatchOnly());
 
-        final TextView assetsSelection = UI.find(mView, R.id.assetsSelection);
-        assetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(),
-                                                                                  AssetsSelectActivity.class),
-                                                                       REQUEST_SELECT_ASSET));
-        try {
-            if (service.isLiquid()) {
-                final int size =
-                    getSession().getBalance(service.getModel().getCurrentSubaccount(),0).size();
-                assetsSelection.setText(size == 1 ?
-                                        getString(R.string.id_d_asset_in_this_account, size) :
-                                        getString(R.string.id_d_assets_in_this_account, size));
-            } else {
-                assetsSelection.setVisibility(View.GONE);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        mAssetsSelection = UI.find(mView, R.id.assetsSelection);
+        mAssetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(),
+                                                                                   AssetsSelectActivity.class),
+                                                                        REQUEST_SELECT_ASSET));
         return mView;
     }
 
@@ -127,6 +111,23 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             onUpdateBalance(mBalanceDataObservable);
             onUpdateReceiveAddress(mReceiveAddressObservable);
             onUpdateTransactions(mTransactionDataObservable);
+            updateAssetSelection();
+        }
+    }
+
+    private void updateAssetSelection() {
+        try {
+            Log.d(TAG, "updateAssetSelection");
+            if (getGAService().isLiquid()) {
+                final int size = getModel().getCurrentAccountBalanceData().size();
+                mAssetsSelection.setText(size == 1 ?
+                                         getString(R.string.id_d_asset_in_this_account, size) :
+                                         getString(R.string.id_d_assets_in_this_account, size));
+            } else {
+                mAssetsSelection.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -272,7 +273,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void onUpdateBalance(final BalanceDataObservable observable) {
         Log.d(TAG, "Updating balance");
-        final BalanceData balanceData = observable.getBalanceData();
+        final BalanceData balanceData = observable.getBtcBalanceData();
         if (isZombie() || balanceData == null)
             return;
 
@@ -297,6 +298,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         Log.d(TAG, "Updating transactions");
         isLastPage=observable.isLastPage();
         getGaActivity().runOnUiThread(() -> reloadTransactions(txList, false));
+        updateAssetSelection();
     }
 
     @Override
@@ -308,9 +310,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     private void loadMoreItems() {
         Log.d(TAG, "loadMoreItems");
         isLoading=true;
-        final GaService service = getGAService();
-        final int subaccount = service.getModel().getCurrentSubaccount();
-        service.getModel().getTransactionDataObservable(subaccount).refresh(false);
+        final int subaccount = getModel().getCurrentSubaccount();
+        getModel().getTransactionDataObservable(subaccount).refresh(false);
     }
 
     private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
