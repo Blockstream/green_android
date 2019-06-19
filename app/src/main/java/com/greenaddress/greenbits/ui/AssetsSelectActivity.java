@@ -13,11 +13,12 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Map;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
+
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
 
     private RecyclerView assetsList;
     private Map<String, BalanceData> mAssetsBalances;
-    private boolean finish = false;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -27,6 +28,16 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         }
         setTitleBackTransparent();
         setContentView(R.layout.activity_assets_selection);
+
+        final String callingActivity = getCallingActivity() != null ? getCallingActivity().getClassName() : "";
+        if (callingActivity.equals(TabbedMainActivity.class.getName())) {
+            final String accountName = getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
+                getModel().getCurrentSubaccount()).getNameWithDefault(getString(R.string.id_main_account));
+            setTitle(accountName);
+        } else if (callingActivity.equals(SendAmountActivity.class.getName())) {
+            setTitle(R.string.id_select_asset);
+        }
+
         assetsList = findViewById(R.id.assetsList);
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         try {
