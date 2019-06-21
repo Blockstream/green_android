@@ -89,16 +89,21 @@ public class ListTransactionsAdapter extends
 
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {
-            if (mService.isLiquid() && txItem.isAsset)
-                message = txItem.assetInfo != null &&
-                          txItem.assetInfo.getEntity().getDomain() !=
-                          null ? txItem.assetInfo.getEntity().getDomain() : txItem.assetId;
+            if (mService.isLiquid() && txItem.isAsset && txItem.assetInfo != null)
+                message = txItem.assetInfo.getEntity().getDomain();
             else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
-                message = mActivity.getString(R.string.id_redeposited);
+                message = String.format("%s %s", mActivity.getString(
+                                            R.string.id_redeposited),
+                                        txItem.isAsset ? mActivity.getString(R.string.id_asset) : "");
             else if (txItem.type == TransactionItem.TYPE.IN)
-                message = mActivity.getString(R.string.id_received);
+                message = String.format("%s %s", mActivity.getString(
+                                            R.string.id_received),
+                                        txItem.isAsset ? mActivity.getString(R.string.id_asset) : "");
             else
-                message = txItem.counterparty;
+                message = mService.isLiquid() ? String.format("%s %s", mActivity.getString(
+                                                                  R.string.id_sent),
+                                                              txItem.isAsset ? mActivity.getString(
+                                                                  R.string.id_asset) : "") : txItem.counterparty;
         } else {
             if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(R.string.id_redeposited), txItem.memo);
