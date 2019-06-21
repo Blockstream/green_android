@@ -10,13 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.BalanceData;
-import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -106,7 +104,7 @@ public class AccountView extends CardView {
         mBalanceText.setVisibility(VISIBLE);
         mBalanceText.setText(valueBitcoin);
         mBalanceUnitText.setVisibility(VISIBLE);
-        mBalanceUnitText.setText(" " + service.getBitcoinUnit());
+        mBalanceUnitText.setText(" " + service.getBitcoinOrLiquidUnit());
         mBalanceFiatText.setText("≈  " + valueFiat);
     }
 

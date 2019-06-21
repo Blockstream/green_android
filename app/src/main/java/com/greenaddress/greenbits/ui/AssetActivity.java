@@ -12,6 +12,9 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
+/**
+ * Activity showing details about an asset (L-BTC excluded)
+ */
 public class AssetActivity extends LoggedActivity {
 
     private static final String TAG = AssetActivity.class.getSimpleName();
@@ -58,7 +61,7 @@ public class AssetActivity extends LoggedActivity {
         if (mAssetInfo != null) {
             mIdText.setText(getAssetInfo().getAssetId());
             mTickerText.setText(getAssetInfo().getTicker() == null ? "" : getAssetInfo().getTicker());
-            mNameText.setText("btc".equals(mAssetId) ? "L-BTC" : getAssetInfo().getName());
+            mNameText.setText(getAssetInfo().getName());
             mPrecisionText.setText(
                 getAssetInfo().getPrecision() == null ? "0" : getAssetInfo().getPrecision().toString());
         }
@@ -85,15 +88,14 @@ public class AssetActivity extends LoggedActivity {
         final CardView assetCardView = UI.find(this, R.id.assetCard);
         final TextView txAssetText = assetCardView.findViewById(R.id.assetName);
         final TextView txAssetValue = assetCardView.findViewById(R.id.assetValue);
-        final String ticker = "btc".equals(mAssetId) ? "L-BTC" : getAssetInfo().getTicker() ==
-                              null ? "" : getAssetInfo().getTicker();
+        final String ticker = getAssetInfo().getTicker() == null ? "" : getAssetInfo().getTicker();
         try {
             final ObjectNode details = mObjectMapper.createObjectNode();
             details.put("satoshi", mSatoshi);
             details.set("asset_info",  getAssetInfo().toObjectNode());
             final ObjectNode converted = getSession().convert(details);
             final String amount = converted.get(mAssetId).asText();
-            txAssetText.setText("btc".equals(mAssetId) ? "L-BTC" :  getAssetInfo().getName());
+            txAssetText.setText(getAssetInfo().getName());
             txAssetValue.setText(String.format("%s%s %s", mNeg, amount, ticker));
         } catch (final Exception e) {
             e.printStackTrace();

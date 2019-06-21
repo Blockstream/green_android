@@ -152,14 +152,16 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             txAssetText.setText(mTxItem.getAssetName());
             txAssetValue.setText(mTxItem.getAmountWithUnit(mService));
             assetCardview.setVisibility(View.VISIBLE);
-            assetCardview.setOnClickListener(v -> {
-                final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
-                intent.putExtra("ASSET_ID", mTxItem.assetId)
-                .putExtra("ASSET_INFO", mTxItem.assetInfo)
-                .putExtra("SATOSHI", mTxItem.satoshi)
-                .putExtra("SATOSHI_NEG", negative);
-                startActivity(intent);
-            });
+            if (!"btc".equals(mTxItem.assetId)) {
+                assetCardview.setOnClickListener(v -> {
+                    final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
+                    intent.putExtra("ASSET_ID", mTxItem.assetId)
+                    .putExtra("ASSET_INFO", mTxItem.assetInfo)
+                    .putExtra("SATOSHI", mTxItem.satoshi)
+                    .putExtra("SATOSHI_NEG", negative);
+                    startActivity(intent);
+                });
+            }
         } else {
             amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
         }

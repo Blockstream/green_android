@@ -53,17 +53,9 @@ public abstract class UI {
     private static final String TAG = UI.class.getSimpleName();
 
     static final int INVALID_RESOURCE_ID = 0;
-    public static final ArrayList<String> UNITS = Lists.newArrayList("BTC", "mBTC", "\u00B5BTC", "bits");
-    public enum FEE_TARGET {
-        HIGH(3),
-        NORMAL(6),
-        LOW(12),
-        ECONOMY(24),
-        CUSTOM(-1);
-        private final int mBlock;
-        FEE_TARGET(int block) { mBlock = block; }
-        public int getBlock() { return mBlock; }
-    }
+    public static final String[] UNITS = {"BTC", "mBTC", "\u00B5BTC", "bits"};
+    public static final List<String> UNITS_LIST = Arrays.asList(UNITS);
+    public static final String[] LIQUID_UNITS = {"L-BTC", "mL-BTC", "\u00B5L-BTC"};
 
     // Class to unify cancel and dismiss handling */
     private static class DialogCloseHandler implements DialogInterface.OnCancelListener,

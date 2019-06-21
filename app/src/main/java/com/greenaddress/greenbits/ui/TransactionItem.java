@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.os.Bundle;
 import android.util.Log;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
@@ -21,8 +20,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class TransactionItem implements Serializable {
 
@@ -145,8 +142,8 @@ public class TransactionItem implements Serializable {
                assetInfo.getName() != null ? assetInfo.getName() : assetId;
     }
 
-    public String getAssetTicker() {
-        return "btc".equals(assetId) ? "L-BTC" : assetInfo != null &&
+    public String getAssetTicker(final GaService service) {
+        return "btc".equals(assetId) ? service.getBitcoinOrLiquidUnit() : assetInfo != null &&
                assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
     }
 
@@ -164,7 +161,7 @@ public class TransactionItem implements Serializable {
             final ObjectNode converted = getSession().convert(details);
             final String amount = converted.get(isAsset ? assetId : service.getUnitKey()).asText();
             return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount,
-                                 isAsset ? getAssetTicker() : service.getBitcoinUnit());
+                                 isAsset ? getAssetTicker(service) : service.getBitcoinOrLiquidUnit());
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
             return "";

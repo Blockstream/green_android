@@ -92,7 +92,7 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener(this);
 
-        mUnitButton.setText(mIsFiat ? getFiatCurrency() : getGAService().getBitcoinUnit());
+        mUnitButton.setText(mIsFiat ? getFiatCurrency() : getBitcoinOrLiquidUnit());
         mUnitButton.setPressed(!mIsFiat);
         mUnitButton.setSelected(!mIsFiat);
 
@@ -157,12 +157,12 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
         return getGAService().getFiatCurrency();
     }
 
-    private String getBitcoinUnit() {
-        return getGAService().getBitcoinUnit();
+    private String getBitcoinOrLiquidUnit() {
+        return getGAService().getBitcoinOrLiquidUnit();
     }
 
     private String getBitcoinUnitClean() {
-        final String unit = getBitcoinUnit();
+        final String unit = getBitcoinOrLiquidUnit();
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
     }
 
@@ -194,7 +194,7 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
     public void onClick(final View view) {
         // Toggle unit display and selected state
         mIsFiat = !mIsFiat;
-        mUnitButton.setText(mIsFiat ? getFiatCurrency() : getBitcoinUnit());
+        mUnitButton.setText(mIsFiat ? getFiatCurrency() : getBitcoinOrLiquidUnit());
         mUnitButton.setPressed(!mIsFiat);
         mUnitButton.setSelected(!mIsFiat);
 

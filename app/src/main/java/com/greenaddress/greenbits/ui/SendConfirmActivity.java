@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.AssetInfoData;
@@ -25,6 +24,8 @@ import com.greenaddress.greenbits.ui.components.SwipeButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class SendConfirmActivity extends LoggedActivity implements SwipeButton.OnActiveListener {
     private static final String TAG = SendConfirmActivity.class.getSimpleName();
@@ -108,10 +109,13 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             convert.put("satoshi", address.get("satoshi").asLong());
             try {
                 final ObjectNode converted = getSession().convert(convert);
-                final String value = converted.get(asset).asText();
+                final String value =
+                    "btc".equals(asset) ? mService.getValueString(converted,false,
+                                                                  false) : converted.get(asset).asText();
                 final String ticker = assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
-                txAssetText.setText("btc".equals(asset) ? "L-BTC" : assetInfo.getName());
-                txAssetValue.setText(String.format("%s %s", value, "btc".equals(asset) ? "L-BTC" : ticker));
+                txAssetText.setText("btc".equals(asset) ? mService.getBitcoinOrLiquidUnit() : assetInfo.getName());
+                txAssetValue.setText(String.format("%s %s", value,
+                                                   "btc".equals(asset) ? mService.getBitcoinOrLiquidUnit() : ticker));
                 assetCardview.setVisibility(View.VISIBLE);
             } catch (final IOException e) {
                 e.printStackTrace();

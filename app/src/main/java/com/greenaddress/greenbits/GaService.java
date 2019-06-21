@@ -180,15 +180,12 @@ public class GaService extends Service  {
         return getSPVChainFile(getNetwork().getName());
     }
 
-    public String getBitcoinUnit() {
-        return (isLiquid() ? "L-" : "") +  mModel.getSettings().getUnit();
-    }
-
-    public String getAssetName(final String assetId) {
-        if ("btc".equals(assetId)) {
-            return "L-BTC";
+    public String getBitcoinOrLiquidUnit() {
+        final String bitcoinUnit = mModel.getSettings().getUnit();
+        if (isLiquid()) {
+            return UI.LIQUID_UNITS[UI.UNITS_LIST.indexOf(bitcoinUnit)];
         } else {
-            return assetId;
+            return bitcoinUnit;
         }
     }
 
@@ -208,7 +205,7 @@ public class GaService extends Service  {
     public String getValueString(final ObjectNode amount, final boolean asFiat, boolean withUnit) {
         if (asFiat)
             return amount.get("fiat").asText() + (withUnit ? (" " + getFiatCurrency()) : "");
-        return amount.get(getUnitKey()).asText() + (withUnit ? (" " + getBitcoinUnit()) : "");
+        return amount.get(getUnitKey()).asText() + (withUnit ? (" " + getBitcoinOrLiquidUnit()) : "");
     }
 
     public boolean isWatchOnly() {

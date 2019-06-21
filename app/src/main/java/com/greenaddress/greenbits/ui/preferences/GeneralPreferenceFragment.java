@@ -129,8 +129,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Bitcoin denomination
         mUnitPref = find(PrefKeys.UNIT);
-        mUnitPref.setEntries(UI.UNITS.toArray(new String[4]));
-        mUnitPref.setEntryValues(UI.UNITS.toArray(new String[4]));
+        mUnitPref.setEntries(mService.isLiquid() ? UI.LIQUID_UNITS : UI.UNITS);
+        mUnitPref.setEntryValues(UI.UNITS);
         mUnitPref.setOnPreferenceChangeListener((preference, newValue) -> {
             if (mService.warnIfOffline(getActivity())) {
                 return false;
@@ -302,7 +302,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             setPricingEntries(currenciesObservable);
         if (settingsObservable.getSettings() != null) {
             setPricingSummary(settingsObservable.getSettings().getPricing());
-            mUnitPref.setSummary(mService.getBitcoinUnit());
+            mUnitPref.setSummary(mService.getBitcoinOrLiquidUnit());
             setRequiredNumBlocksSummary(model.getSettings().getRequiredNumBlocks());
             if (twoFaData.getTwoFactorConfigData() != null) {
                 setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
@@ -559,7 +559,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mCustomRatePref.setVisible(!isLiquid);
         mTxPriorityPref.setVisible(!isLiquid);
         mPriceSourcePref.setVisible(!isLiquid);
-        mUnitPref.setVisible(!isLiquid);
         mWatchOnlyLogin.setVisible(!isLiquid);
         mAccountTitle.setVisible(!isLiquid);
         mSPV.setVisible(!isLiquid);
@@ -582,7 +581,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 final SettingsData settings = ((SettingsObservable) observable).getSettings();
                 setPricingSummary(settings.getPricing());
                 setRequiredNumBlocksSummary(settings.getRequiredNumBlocks());
-                setUnitSummary(settings.getUnit());
+                setUnitSummary(mService.getBitcoinOrLiquidUnit());
                 setTimeoutSummary(settings.getAltimeout());
                 mService.getModel().fireBalances();  // TODO should be just if unit or pricing changes
                 updatesVisibilities();
@@ -633,7 +632,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final EditText amountEdit = UI.find(v, R.id.set_limits_amount);
 
         final String[] currencies;
-        currencies = new String[] {mService.getBitcoinUnit(), mService.getFiatCurrency()};
+        currencies = new String[] {mService.getBitcoinOrLiquidUnit(), mService.getFiatCurrency()};
 
         final ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, currencies);

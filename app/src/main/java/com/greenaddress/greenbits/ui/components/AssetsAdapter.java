@@ -70,7 +70,11 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             final ObjectNode converted = getSession().convert(details);
             final String amount = converted.get(assetId).asText();
             holder.mAssetName.setText("btc".equals(assetId) ? "L-BTC" : assetInfo.getName());
-            holder.mAssetValue.setText(amount + " " + ("btc".equals(assetId) ? "L-BTC" : assetInfo.getTicker()));
+            if ("btc".equals(assetId) ) {
+                holder.mAssetValue.setText(mService.getValueString(converted,false,true));
+            } else {
+                holder.mAssetValue.setText(String.format("%s %s", amount, assetInfo.getTicker()));
+            }
         } catch (final Exception e) {
             e.printStackTrace();
         }

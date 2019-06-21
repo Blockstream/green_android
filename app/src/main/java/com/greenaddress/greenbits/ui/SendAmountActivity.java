@@ -108,7 +108,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener(this);
 
-        mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinUnit());
+        mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
         mUnitButton.setPressed(!isFiat());
         mUnitButton.setSelected(!isFiat());
 
@@ -240,7 +240,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
         final AssetInfoData assetInfo = mAssetsBalances.get(mSelectedAsset).getAssetInfo();
         final String label = assetInfo != null ? assetInfo.getName() : mSelectedAsset;
-        mSelectAsset.setText("btc".equals(mSelectedAsset) ? "L-BTC" : label);
+        mSelectAsset.setText("btc".equals(mSelectedAsset) ? getBitcoinOrLiquidUnit() : label);
         UI.showIf(!mService.isLiquid() || "btc".equals(mSelectedAsset), mUnitButton);
     }
 
@@ -326,7 +326,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         } else if (view == mUnitButton) {
             // Toggle unit display and selected state
             mIsFiat = !mIsFiat;
-            mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinUnit());
+            mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
             mUnitButton.setPressed(!isFiat());
             mUnitButton.setSelected(!isFiat());
             updateFeeSummaries();
@@ -533,8 +533,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         return mService.getFiatCurrency();
     }
 
-    private String getBitcoinUnit() {
-        return mService.getBitcoinUnit();
+    private String getBitcoinOrLiquidUnit() {
+        return mService.getBitcoinOrLiquidUnit();
     }
 
     private String getBitcoinUnitClean() {
