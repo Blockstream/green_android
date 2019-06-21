@@ -151,7 +151,7 @@ public class TransactionItem implements Serializable {
     }
 
     private AssetInfoData getAssetInfo() {
-        final AssetInfoData assetInfoDefault = new AssetInfoData(assetId, assetId, 0, "");
+        final AssetInfoData assetInfoDefault = new AssetInfoData(assetId, assetId, 0, "", "");
         return assetInfo == null ? assetInfoDefault : assetInfo;
     }
 

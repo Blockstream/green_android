@@ -16,14 +16,17 @@ public class AssetInfoData extends JSONData implements Serializable {
     private String name;
     private Integer precision;
     private String ticker;
+    private EntityData entity;
 
     public AssetInfoData() {}
 
-    public AssetInfoData(final String assetId, final String name, final Integer precision, final String ticker) {
+    public AssetInfoData(final String assetId, final String name, final Integer precision, final String ticker,
+                         final String domain) {
         this.assetId = assetId;
         this.name = name;
         this.precision = precision;
         this.ticker = ticker;
+        this.entity = new EntityData(domain);
     }
 
     @JsonIgnore
@@ -61,5 +64,13 @@ public class AssetInfoData extends JSONData implements Serializable {
 
     public void setTicker(final String ticker) {
         this.ticker = ticker;
+    }
+
+    public EntityData getEntity() {
+        return entity;
+    }
+
+    public void setEntity(final EntityData entity) {
+        this.entity = entity;
     }
 }

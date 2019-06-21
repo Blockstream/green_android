@@ -61,7 +61,8 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         final BalanceData balanceData = mAssets.get(assetId);
         final AssetInfoData assetInfo = balanceData.getAssetInfo() !=
-                                        null ? balanceData.getAssetInfo() : new AssetInfoData(assetId, assetId, 0, "");
+                                        null ? balanceData.getAssetInfo() : new AssetInfoData(assetId, assetId, 0, "",
+                                                                                              "");
         try {
             final ObjectNode details = mObjectMapper.createObjectNode();
             details.put("satoshi", balanceData.getSatoshi());

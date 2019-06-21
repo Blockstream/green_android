@@ -77,7 +77,7 @@ public class AssetActivity extends LoggedActivity {
     }
 
     private AssetInfoData getAssetInfo() {
-        final AssetInfoData assetInfoDefault = new AssetInfoData(mAssetId, mAssetId, 0, "");
+        final AssetInfoData assetInfoDefault = new AssetInfoData(mAssetId, mAssetId, 0, "", "");
         return mAssetInfo == null ? assetInfoDefault : mAssetInfo;
     }
 

@@ -554,7 +554,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final ObjectNode amount = mapper.createObjectNode();
         amount.put(key, value.isEmpty() ? "0" : value);
         if (isAsset()) {
-            final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset, mSelectedAsset, 0, "");
+            final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset, mSelectedAsset, 0, "", "");
             final AssetInfoData assetInfo = mAssetsBalances.get(key).getAssetInfo();
             amount.set("asset_info", (assetInfo == null ? assetInfoDefault : assetInfo).toObjectNode());
         }

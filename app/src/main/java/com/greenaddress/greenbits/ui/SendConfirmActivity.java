@@ -100,7 +100,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
             final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
             final String asset = assetTag.asText();
-            final AssetInfoData assetInfo = mAssetInfo != null ? mAssetInfo : new AssetInfoData(asset, asset, 0, "");
+            final AssetInfoData assetInfo = mAssetInfo !=
+                                            null ? mAssetInfo : new AssetInfoData(asset, asset, 0, "", "");
             final ObjectMapper mapper = new ObjectMapper();
             final ObjectNode convert = mapper.createObjectNode();
             convert.set("asset_info", assetInfo.toObjectNode());

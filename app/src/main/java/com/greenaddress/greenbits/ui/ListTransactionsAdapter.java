@@ -90,7 +90,9 @@ public class ListTransactionsAdapter extends
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {
             if (mService.isLiquid() && txItem.isAsset)
-                message = txItem.assetInfo != null && txItem.assetInfo.getName() != null ? "" : txItem.assetId;
+                message = txItem.assetInfo != null &&
+                          txItem.assetInfo.getEntity().getDomain() !=
+                          null ? txItem.assetInfo.getEntity().getDomain() : txItem.assetId;
             else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = mActivity.getString(R.string.id_redeposited);
             else if (txItem.type == TransactionItem.TYPE.IN)
