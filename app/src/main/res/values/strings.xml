@@ -178,6 +178,7 @@
   <string name="id_information_not_available">Information not available.</string>
   <string name="id_insufficient_funds">Insufficient funds</string>
   <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
+  <string name="id_insufficient_lbtc_to_send_a">Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC</string>
   <string name="id_invalid_address">Invalid address</string>
   <string name="id_invalid_amount">Invalid amount</string>
   <string name="id_invalid_mnemonic">Invalid mnemonic</string>
@@ -193,6 +194,7 @@
   <string name="id_invalid_twofactor_code">Invalid Two-Factor code</string>
   <string name="id_invalid_url">Invalid URL</string>
   <string name="id_is_a_noncustodial">is a non-custodial</string>
+  <string name="id_issuing_entity">Issuing Entity</string>
   <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">Last ping: %1$d ms</string>
   <string name="id_later">LATER</string>
@@ -218,6 +220,7 @@
   <string name="id_mnemonic_not_available">Mnemonic not available</string>
   <string name="id_month">month</string>
   <string name="id_months">months</string>
+  <string name="id_multiple_assets">Multiple Assets</string>
   <string name="id_my_notes">MY NOTES</string>
   <string name="id_name">Name</string>
   <string name="id_network">NETWORK</string>
@@ -238,6 +241,8 @@
   <string name="id_no_peers_connected">No Peers Connected</string>
   <string name="id_no_pin_provided_exiting">No PIN provided, exiting.</string>
   <string name="id_no_recipients">No recipients</string>
+  <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
+  <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
   <string name="id_no_utxos_found">No UTXOs found</string>
   <string name="id_normal">Normal</string>
   <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
@@ -409,6 +414,7 @@
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Unable to contact the Green service. Please check your network connection and wait to be reconnected.</string>
   <string name="id_unconfirmed">Unconfirmed</string>
+  <string name="id_unknown">Unknown</string>
   <string name="id_unknown_bip21_parameter">Unknown bip21 parameter</string>
   <string name="id_unknown_custom">Unknown (Custom)</string>
   <string name="id_updated">updated</string>
