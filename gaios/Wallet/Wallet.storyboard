@@ -30,288 +30,6 @@
             </objects>
             <point key="canvasLocation" x="4399" y="-163"/>
         </scene>
-        <!--Assets Table View Controller-->
-        <scene sceneID="ZvC-Am-Qvp">
-            <objects>
-                <tableViewController hidesBottomBarWhenPushed="YES" id="cQs-Px-Sid" customClass="AssetsTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="MYZ-d8-gs5">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <connections>
-                            <outlet property="dataSource" destination="cQs-Px-Sid" id="14Q-Lh-hGZ"/>
-                            <outlet property="delegate" destination="cQs-Px-Sid" id="sNa-Et-LKe"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="bLB-gm-ZpU">
-                        <barButtonItem key="backBarButtonItem" title=" " id="pHu-Bh-4D6"/>
-                    </navigationItem>
-                    <connections>
-                        <segue destination="Cam-KZ-eLS" kind="show" identifier="asset" id="wRG-gr-IfO"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="OlJ-Me-NSJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6604" y="-1013"/>
-        </scene>
-        <!--Asset Table View Controller-->
-        <scene sceneID="TZ2-gI-cSq">
-            <objects>
-                <tableViewController hidesBottomBarWhenPushed="YES" id="Cam-KZ-eLS" customClass="AssetTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="TRg-8s-Qji">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <sections>
-                            <tableViewSection id="Y5I-cV-WpT">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="70" id="Ly1-47-jOz">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ly1-47-jOz" id="dgL-Tu-X94">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="ecs-cD-449" detailTextLabel="9XP-9s-8QX" rowHeight="70" style="IBUITableViewCellStyleSubtitle" id="nuJ-u0-PHz">
-                                        <rect key="frame" x="0.0" y="70" width="320" height="70"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nuJ-u0-PHz" id="ZXd-2d-ne1">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="HEX" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" id="ecs-cD-449">
-                                                    <rect key="frame" x="16" y="14.5" width="30" height="18"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <color key="textColor" name="customTitaniumLight"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="hexadecimal" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" id="9XP-9s-8QX">
-                                                    <rect key="frame" x="16" y="35" width="86" height="18"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="Qdi-uT-FBr">
-                                        <rect key="frame" x="0.0" y="140" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Qdi-uT-FBr" id="BEa-ar-9My">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DECIMALS" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="4Zc-IJ-Quv">
-                                                    <rect key="frame" x="16" y="11" width="75" height="18"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <color key="textColor" name="customTitaniumLight"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ctu-UL-xFR">
-                                                    <rect key="frame" x="267" y="15" width="37" height="10"/>
-                                                    <state key="normal" title="SAVE">
-                                                        <color key="titleColor" name="customMatrixGreen"/>
-                                                    </state>
-                                                    <state key="disabled">
-                                                        <color key="titleColor" name="customTitaniumLight"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="decimalsSaveClick:" destination="Cam-KZ-eLS" eventType="touchUpInside" id="KO7-8D-2Fm"/>
-                                                    </connections>
-                                                </button>
-                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="TxS-Yz-VB9">
-                                                    <rect key="frame" x="16" y="29" width="288" height="0.0"/>
-                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                            <color key="value" name="customTitaniumLight"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                            <real key="value" value="1"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
-                                                    <connections>
-                                                        <action selector="decimalsChanged:" destination="Cam-KZ-eLS" eventType="editingChanged" id="JA0-Di-PS1"/>
-                                                    </connections>
-                                                </textField>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="Ctu-UL-xFR" secondAttribute="trailing" constant="16" id="2uR-Nu-4v5"/>
-                                                <constraint firstItem="Ctu-UL-xFR" firstAttribute="top" relation="greaterThanOrEqual" secondItem="BEa-ar-9My" secondAttribute="top" id="9HY-lc-ncn"/>
-                                                <constraint firstItem="4Zc-IJ-Quv" firstAttribute="top" secondItem="BEa-ar-9My" secondAttribute="top" constant="11" id="G6l-IK-nz8"/>
-                                                <constraint firstItem="TxS-Yz-VB9" firstAttribute="top" secondItem="Ctu-UL-xFR" secondAttribute="bottom" constant="4" id="VYo-Wk-wIb"/>
-                                                <constraint firstItem="TxS-Yz-VB9" firstAttribute="leading" secondItem="BEa-ar-9My" secondAttribute="leadingMargin" id="cUI-iQ-iDX"/>
-                                                <constraint firstItem="TxS-Yz-VB9" firstAttribute="trailing" secondItem="BEa-ar-9My" secondAttribute="trailingMargin" id="h9Q-n9-Y2p"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="TxS-Yz-VB9" secondAttribute="bottom" constant="4" id="hiJ-wH-llN"/>
-                                                <constraint firstItem="Ctu-UL-xFR" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="4Zc-IJ-Quv" secondAttribute="trailing" constant="16" id="p7A-Rk-7bX"/>
-                                                <constraint firstItem="Ctu-UL-xFR" firstAttribute="centerY" secondItem="4Zc-IJ-Quv" secondAttribute="centerY" id="qPC-Nb-HeY"/>
-                                                <constraint firstItem="4Zc-IJ-Quv" firstAttribute="leading" secondItem="BEa-ar-9My" secondAttribute="leading" constant="16" id="rPD-cI-08L"/>
-                                                <constraint firstItem="TxS-Yz-VB9" firstAttribute="top" secondItem="4Zc-IJ-Quv" secondAttribute="bottom" id="z7U-kv-70o"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="TWT-hu-CxA">
-                                        <rect key="frame" x="0.0" y="184" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="TWT-hu-CxA" id="zb0-aJ-dGI">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TICKER" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="G4w-Am-zNE">
-                                                    <rect key="frame" x="16" y="6" width="52" height="18"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <color key="textColor" name="customTitaniumLight"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Hbp-ZC-Gad">
-                                                    <rect key="frame" x="16" y="28" width="288" height="16"/>
-                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                            <color key="value" name="customTitaniumLight"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                            <real key="value" value="1"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
-                                                    <connections>
-                                                        <action selector="tickerChanged:" destination="Cam-KZ-eLS" eventType="editingChanged" id="iqk-pn-lMZ"/>
-                                                    </connections>
-                                                </textField>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="60H-4P-Fo8">
-                                                    <rect key="frame" x="267" y="0.0" width="37" height="30"/>
-                                                    <state key="normal" title="SAVE">
-                                                        <color key="titleColor" name="customMatrixGreen"/>
-                                                    </state>
-                                                    <state key="disabled">
-                                                        <color key="titleColor" name="customTitaniumLight"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="tickerSaveClick:" destination="Cam-KZ-eLS" eventType="touchUpInside" id="PXc-li-QNT"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <constraints>
-                                                <constraint firstItem="60H-4P-Fo8" firstAttribute="centerY" secondItem="G4w-Am-zNE" secondAttribute="centerY" id="4sH-Pc-YYr"/>
-                                                <constraint firstItem="G4w-Am-zNE" firstAttribute="leading" secondItem="zb0-aJ-dGI" secondAttribute="leading" constant="16" id="D31-p8-mjC"/>
-                                                <constraint firstItem="60H-4P-Fo8" firstAttribute="top" relation="greaterThanOrEqual" secondItem="zb0-aJ-dGI" secondAttribute="top" id="HQK-bf-t5b"/>
-                                                <constraint firstItem="Hbp-ZC-Gad" firstAttribute="leading" secondItem="zb0-aJ-dGI" secondAttribute="leading" constant="16" id="PFf-LS-OQX"/>
-                                                <constraint firstAttribute="trailing" secondItem="Hbp-ZC-Gad" secondAttribute="trailing" constant="16" id="XqV-3j-FBN"/>
-                                                <constraint firstAttribute="trailing" secondItem="60H-4P-Fo8" secondAttribute="trailing" constant="16" id="gcP-Z1-EUd"/>
-                                                <constraint firstItem="Hbp-ZC-Gad" firstAttribute="top" secondItem="G4w-Am-zNE" secondAttribute="bottom" constant="4" id="wCT-uj-zCH"/>
-                                                <constraint firstItem="60H-4P-Fo8" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="G4w-Am-zNE" secondAttribute="trailing" constant="16" id="wnG-sb-03G"/>
-                                                <constraint firstAttribute="bottom" secondItem="Hbp-ZC-Gad" secondAttribute="bottom" id="y76-4F-BIo"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="mts-jG-fua">
-                                        <rect key="frame" x="0.0" y="228" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="mts-jG-fua" id="6j7-dK-Cdp">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LABEL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" translatesAutoresizingMaskIntoConstraints="NO" id="tBu-9A-NkD">
-                                                    <rect key="frame" x="16" y="11" width="45" height="18"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                                    <color key="textColor" name="customTitaniumLight"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="ZA8-m0-PfY">
-                                                    <rect key="frame" x="16" y="33" width="288" height="80"/>
-                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="80" id="oua-VH-VUQ"/>
-                                                    </constraints>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardAppearance="alert"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                            <real key="value" value="1"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                            <color key="value" name="customTitaniumLight"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
-                                                    <connections>
-                                                        <outlet property="delegate" destination="Cam-KZ-eLS" id="qnR-sH-F7M"/>
-                                                    </connections>
-                                                </textView>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qt4-hA-ECB">
-                                                    <rect key="frame" x="267" y="5" width="37" height="30"/>
-                                                    <state key="normal" title="SAVE">
-                                                        <color key="titleColor" name="customMatrixGreen"/>
-                                                    </state>
-                                                    <state key="disabled">
-                                                        <color key="titleColor" name="customTitaniumLight"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="labelSaveClick:" destination="Cam-KZ-eLS" eventType="touchUpInside" id="8ef-Q1-HFH"/>
-                                                        <action selector="saveClick:" destination="kRY-Ur-Gvb" eventType="touchUpInside" id="yrj-LG-ZlK"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <constraints>
-                                                <constraint firstItem="ZA8-m0-PfY" firstAttribute="leading" secondItem="6j7-dK-Cdp" secondAttribute="leading" constant="16" id="6yc-oI-pZA"/>
-                                                <constraint firstAttribute="trailing" secondItem="ZA8-m0-PfY" secondAttribute="trailing" constant="16" id="9Fj-Dm-jtJ"/>
-                                                <constraint firstItem="qt4-hA-ECB" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="tBu-9A-NkD" secondAttribute="trailing" constant="16" id="MSG-l2-8Vb"/>
-                                                <constraint firstItem="tBu-9A-NkD" firstAttribute="top" secondItem="6j7-dK-Cdp" secondAttribute="top" constant="11" id="RbP-bQ-na5"/>
-                                                <constraint firstItem="tBu-9A-NkD" firstAttribute="leading" secondItem="6j7-dK-Cdp" secondAttribute="leading" constant="16" id="aLX-2T-Pdh"/>
-                                                <constraint firstItem="ZA8-m0-PfY" firstAttribute="top" secondItem="tBu-9A-NkD" secondAttribute="bottom" constant="4" id="dGw-sa-kFw"/>
-                                                <constraint firstItem="qt4-hA-ECB" firstAttribute="top" relation="greaterThanOrEqual" secondItem="6j7-dK-Cdp" secondAttribute="top" id="hMc-3o-1TP"/>
-                                                <constraint firstItem="qt4-hA-ECB" firstAttribute="centerY" secondItem="tBu-9A-NkD" secondAttribute="centerY" id="hfd-fh-AXy"/>
-                                                <constraint firstAttribute="bottom" secondItem="ZA8-m0-PfY" secondAttribute="bottom" constant="4" id="k4g-gu-rTA"/>
-                                                <constraint firstAttribute="trailing" secondItem="qt4-hA-ECB" secondAttribute="trailing" constant="16" id="vto-np-PFT"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                        </sections>
-                        <connections>
-                            <outlet property="dataSource" destination="Cam-KZ-eLS" id="sYe-xM-5iW"/>
-                            <outlet property="delegate" destination="Cam-KZ-eLS" id="OMr-MV-bR8"/>
-                        </connections>
-                    </tableView>
-                    <connections>
-                        <outlet property="assetCell" destination="Ly1-47-jOz" id="qFp-1k-Sb9"/>
-                        <outlet property="decimalsSaveButton" destination="Ctu-UL-xFR" id="UFT-3P-IRX"/>
-                        <outlet property="decimalsTextField" destination="TxS-Yz-VB9" id="EcE-Ah-EFd"/>
-                        <outlet property="decimalsTitle" destination="4Zc-IJ-Quv" id="UcO-9E-YvW"/>
-                        <outlet property="hexLabel" destination="9XP-9s-8QX" id="PDs-s8-9z8"/>
-                        <outlet property="hexTitle" destination="ecs-cD-449" id="haH-Kr-iM4"/>
-                        <outlet property="labelSaveButton" destination="qt4-hA-ECB" id="Q9P-LJ-nhu"/>
-                        <outlet property="labelTextView" destination="ZA8-m0-PfY" id="hxv-MM-fuo"/>
-                        <outlet property="labelTitle" destination="tBu-9A-NkD" id="Evh-HT-zF8"/>
-                        <outlet property="tickerSaveButton" destination="60H-4P-Fo8" id="6zB-7S-O4a"/>
-                        <outlet property="tickerTextField" destination="Hbp-ZC-Gad" id="fyR-86-U9B"/>
-                        <outlet property="tickerTitle" destination="G4w-Am-zNE" id="Yox-zJ-s4p"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6Xu-hM-D8I" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7974.375" y="-1013.0281690140845"/>
-        </scene>
         <!--SettingsViewController-->
         <scene sceneID="Saq-nT-2yY">
             <objects>
@@ -493,12 +211,20 @@
                         <segue destination="R7F-mq-oqL" kind="show" identifier="receive" id="uYc-26-M8s"/>
                         <segue destination="jnB-Fe-Ffd" kind="show" identifier="wallets" animates="NO" id="aSa-f1-T1t"/>
                         <segue destination="h6g-rr-LAM" kind="show" identifier="send" id="U7f-MS-5Z1"/>
-                        <segue destination="cQs-Px-Sid" kind="show" identifier="assets" id="1al-mD-rjK"/>
+                        <segue destination="fuN-54-EEf" kind="show" identifier="assets" id="Azw-5Y-ZWP"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nnN-0s-aUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="5393" y="754"/>
+        </scene>
+        <!--AssetsListTableViewController-->
+        <scene sceneID="TfI-YR-20x">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Assets" referencedIdentifier="AssetsListTableViewController" id="fuN-54-EEf" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oGk-nC-Yp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6247" y="878"/>
         </scene>
         <!--Receive-->
         <scene sceneID="5RU-Fp-d7a">
@@ -544,6 +270,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nBZ-Ly-lYG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6604" y="1705"/>
+        </scene>
+        <!--AssetDetailTableViewController-->
+        <scene sceneID="tiP-bX-LAg">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Assets" referencedIdentifier="AssetDetailTableViewController" id="unt-fJ-y4a" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NFH-2H-O7x" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6247" y="938"/>
         </scene>
         <!--Transaction Detail-->
         <scene sceneID="u5B-1L-Bp7">
@@ -603,7 +337,7 @@
                     <connections>
                         <outlet property="viewInExplorerButton" destination="YVY-xF-86f" id="LR1-sS-H5d"/>
                         <segue destination="bps-gl-13x" kind="show" identifier="rbf" id="voK-VA-3w5"/>
-                        <segue destination="Cam-KZ-eLS" kind="show" identifier="asset" id="GTe-RJ-ZQv"/>
+                        <segue destination="unt-fJ-y4a" kind="presentation" identifier="asset" id="3UK-oA-mdB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Ec-T2-5yh" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1090,6 +824,5 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="U7f-MS-5Z1"/>
-        <segue reference="GTe-RJ-ZQv"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -166,7 +166,7 @@
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </label>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="network_indicator" translatesAutoresizingMaskIntoConstraints="NO" id="gi9-uI-EFx">
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="network_selected" translatesAutoresizingMaskIntoConstraints="NO" id="gi9-uI-EFx">
                                                     <rect key="frame" x="272" y="2" width="14" height="14"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="14" id="Eyn-7v-67f"/>
@@ -427,7 +427,7 @@
         <image name="btc" width="48" height="48"/>
         <image name="cancel" width="14" height="14"/>
         <image name="logo_big" width="90" height="110"/>
-        <image name="network_indicator" width="18" height="18"/>
+        <image name="network_selected" width="18" height="18"/>
         <image name="qr" width="25" height="25"/>
         <image name="watch_only_v2" width="48" height="48"/>
         <namedColor name="customModalBlueDark">

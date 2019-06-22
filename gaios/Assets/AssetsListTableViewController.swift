@@ -6,7 +6,7 @@ protocol AssetsDelegate: class {
     func onSelect(_ tag: String)
 }
 
-class AssetsTableViewController: UITableViewController {
+class AssetsListTableViewController: UITableViewController {
 
     var wallet: WalletItem?
     weak var delegate: AssetsDelegate?
@@ -67,7 +67,7 @@ class AssetsTableViewController: UITableViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let next = segue.destination as? AssetTableViewController {
+        if let next = segue.destination as? AssetDetailTableViewController {
             next.tag = sender as? String
             next.asset = wallet?.balance[next.tag]?.assetInfo
             next.satoshi = wallet?.balance[next.tag]?.satoshi

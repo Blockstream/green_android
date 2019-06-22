@@ -153,10 +153,10 @@
             </objects>
             <point key="canvasLocation" x="2248" y="38"/>
         </scene>
-        <!--Assets Table View Controller-->
+        <!--Assets List Table View Controller-->
         <scene sceneID="PZ8-bd-PJg">
             <objects>
-                <tableViewController id="8r0-9y-XZE" customClass="AssetsTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="8r0-9y-XZE" customClass="AssetsListTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="ybG-gm-jje">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

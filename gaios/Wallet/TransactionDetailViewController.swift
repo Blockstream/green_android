@@ -43,11 +43,10 @@ class TransactionDetailViewController: KeyboardViewController {
         } else if let next = segue.destination as? SendBtcDetailsViewController {
             next.transaction = sender as? Transaction
             next.wallet = wallet
-        } else if let next = segue.destination as? AssetTableViewController {
+        } else if let next = segue.destination as? AssetDetailTableViewController {
             next.tag = sender as? String
             next.asset = transaction.assets[next.tag]
-            next.satoshi = transaction.amounts[next.tag]
-            next.negative = transaction.type != "incoming"
+            next.satoshi = wallet?.balance[next.tag]?.satoshi
         }
     }
 
@@ -112,14 +111,14 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.separatorStyle = .none
-        hashTitle.text = NSLocalizedString("id_txid", comment: "").uppercased()
-        feeTitle.text = NSLocalizedString("id_fee", comment: "").uppercased()
-        amountTitle.text = NSLocalizedString("id_amount", comment: "").uppercased()
-        memoTitle.text = NSLocalizedString("id_my_notes", comment: "").uppercased()
-        recipientTitle.text = NSLocalizedString("id_recipient", comment: "").uppercased()
-        walletTitle.text = NSLocalizedString("id_received_on", comment: "").uppercased()
+        hashTitle.text = NSLocalizedString("id_transaction_id", comment: "").capitalized
+        feeTitle.text = NSLocalizedString("id_fee", comment: "").capitalized
+        amountTitle.text = NSLocalizedString("id_amount", comment: "").capitalized
+        memoTitle.text = NSLocalizedString("id_my_notes", comment: "").capitalized
+        recipientTitle.text = NSLocalizedString("id_recipient", comment: "").capitalized
+        walletTitle.text = NSLocalizedString("id_received_on", comment: "").capitalized
         increasefeeLabel.text = NSLocalizedString("id_increase_fee", comment: "")
-        assetLabel.text = NSLocalizedString("id_asset", comment: "").uppercased()
+        assetLabel.text = NSLocalizedString("id_asset", comment: "").capitalized
         saveButton.setTitle(NSLocalizedString("id_save", comment: "").uppercased(), for: .normal)
         saveButton.isHidden = true
         gradientLayer = walletGradientView.makeGradientCard()
@@ -242,7 +241,9 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     }
 
     @objc func assetClicked(sender: UITapGestureRecognizer?) {
-        self.parent?.performSegue(withIdentifier: "asset", sender: transaction.defaultAsset)
+        if !(transaction.defaultAsset == "btc") {
+            self.parent?.performSegue(withIdentifier: "asset", sender: transaction.defaultAsset)
+        }
     }
 
     @IBAction func saveClick(_ sender: Any) {

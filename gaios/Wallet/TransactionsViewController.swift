@@ -235,7 +235,7 @@ class TransactionsController: UITableViewController {
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? WalletsViewController {
             nextController.subaccountDelegate = self
-        } else if let nextController = segue.destination as? AssetsTableViewController {
+        } else if let nextController = segue.destination as? AssetsListTableViewController {
             nextController.wallet = presentingWallet
             nextController.title = presentingWallet!.localizedName()
         }

@@ -193,7 +193,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         if let nextController = segue.destination as? SendBTCConfirmationViewController {
             nextController.wallet = wallet
             nextController.transaction = transaction
-        } else if let nextController = segue.destination as? AssetsTableViewController {
+        } else if let nextController = segue.destination as? AssetsListTableViewController {
             nextController.wallet = wallet
             nextController.delegate = self
             nextController.title = NSLocalizedString("id_select_asset", comment: "")

@@ -33,6 +33,7 @@
 "id_asset" = "Asset";
 "id_asset_details" = "Asset Details";
 "id_asset_id" = "Asset Id";
+"id_asset_name" = "Asset Name";
 "id_attempts_remaining_d" = "Attempts remaining: %d";
 "id_auto_logout_timeout" = "Auto logout timeout";
 "id_autolock_after" = "Autolock After";
@@ -176,6 +177,7 @@
 "id_information_not_available" = "Information not available.";
 "id_insufficient_funds" = "Insufficient funds";
 "id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
+"id_insufficient_lbtc_to_send_a" = "Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC";
 "id_invalid_address" = "Invalid address";
 "id_invalid_amount" = "Invalid amount";
 "id_invalid_mnemonic" = "Invalid mnemonic";
@@ -191,6 +193,7 @@
 "id_invalid_twofactor_code" = "Invalid Two-Factor code";
 "id_invalid_url" = "Invalid URL";
 "id_is_a_noncustodial" = "is a non-custodial";
+"id_issuing_entity" = "Issuing Entity";
 "id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Last ping: %1$d ms";
 "id_later" = "LATER";
@@ -216,6 +219,7 @@
 "id_mnemonic_not_available" = "Mnemonic not available";
 "id_month" = "month";
 "id_months" = "months";
+"id_multiple_assets" = "Multiple Assets";
 "id_my_notes" = "MY NOTES";
 "id_name" = "Name";
 "id_network" = "NETWORK";
@@ -236,6 +240,8 @@
 "id_no_peers_connected" = "No Peers Connected";
 "id_no_pin_provided_exiting" = "No PIN provided, exiting.";
 "id_no_recipients" = "No recipients";
+"id_no_registered_name_for_this" = "No registered name for this asset.";
+"id_no_registered_ticker_for_this" = "No registered ticker for this asset.";
 "id_no_utxos_found" = "No UTXOs found";
 "id_normal" = "Normal";
 "id_not_connected_connecting_in_ds_" = "Not connected. Connecting in %ds …";
@@ -322,6 +328,7 @@
 "id_second" = "second";
 "id_seconds" = "seconds";
 "id_security" = "SECURITY";
+"id_select_account" = "Select Account";
 "id_select_asset" = "Select asset";
 "id_select_network" = "Select network";
 "id_select_word_number_d" = "Select word number %d";
@@ -365,10 +372,8 @@
 "id_spv_synchronization" = "SPV synchronization";
 "id_spv_unverified" = "SPV unverified";
 "id_sweep" = "Sweep";
-"id_sweep_into_s" = "Sweep into %@";
 "id_sweep_from_paper_wallet" = "Sweep From Paper Wallet";
-"id_sweep_select_wallet" = "Select Wallet";
-"id_sweep_where_to_sweep" = "Where do you want to import the funds?";
+"id_sweep_into_s" = "Sweep into %@";
 "id_synchronize_spv_on_mobile" = "Synchronize SPV on mobile";
 "id_system_message" = "System Message";
 "id_tap_on_the_card_to_view" = "Tap on the card to view transactions.";
@@ -408,6 +413,7 @@
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Unable to contact the Green service. Please check your network connection and wait to be reconnected.";
 "id_unconfirmed" = "Unconfirmed";
+"id_unknown" = "Unknown";
 "id_unknown_bip21_parameter" = "Unknown bip21 parameter";
 "id_unknown_custom" = "Unknown (Custom)";
 "id_updated" = "updated";
@@ -437,6 +443,7 @@
 "id_we_use_the_camera_to_scan_qr" = "We use the camera to scan QR codes";
 "id_welcome" = "Welcome";
 "id_welcome_to" = "Welcome to";
+"id_where_do_you_want_to_import_the" = "Where do you want to import the funds?";
 "id_word_d_of_d" = "Word %d of %d";
 "id_write_down_the_words" = "Write down the words";
 "id_write_down_your_mnemonic_on" = "Write down your mnemonic on paper and store it somewhere safe.";
