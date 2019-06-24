@@ -20,14 +20,25 @@
         android:background="@color/buttonJungleGreen"
         >
 
-        <TextView
-            android:id="@+id/assetName"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="20dp"
             android:padding="10dp"
-            />
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/assetName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <TextView
+                android:id="@+id/assetDomain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey_light"
+                />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/assetValue"

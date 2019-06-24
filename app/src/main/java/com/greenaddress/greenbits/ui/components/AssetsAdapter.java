@@ -1,7 +1,5 @@
 package com.greenaddress.greenbits.ui.components;
 
-import android.app.Activity;
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,6 +73,14 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             } else {
                 holder.mAssetValue.setText(String.format("%s %s", amount, assetInfo.getTicker()));
             }
+            if (assetInfo.getEntity() != null && assetInfo.getEntity().getDomain() != null &&
+                assetInfo.getEntity().getDomain().length() > 0) {
+                holder.mAssetDomain.setVisibility(View.VISIBLE);
+                holder.mAssetDomain.setText(assetInfo.getEntity().getDomain());
+            } else {
+                holder.mAssetDomain.setVisibility(View.GONE);
+            }
+
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -89,12 +95,14 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
         final LinearLayout mAssetLayout;
         final TextView mAssetName;
+        final TextView mAssetDomain;
         final TextView mAssetValue;
 
         Item(final View v) {
             super(v);
             mAssetLayout = v.findViewById(R.id.assetLayout);
             mAssetName = v.findViewById(R.id.assetName);
+            mAssetDomain = v.findViewById(R.id.assetDomain);
             mAssetValue = v.findViewById(R.id.assetValue);
         }
     }
