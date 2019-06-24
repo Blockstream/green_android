@@ -499,6 +499,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             finishOnUiThread();
         } else if (requestCode == REQUEST_SELECT_ASSET && resultCode == RESULT_OK) {
             mSelectedAsset = data.getStringExtra(PrefKeys.ASSET_SELECTED);
+
+            // onTextChanged updates mCurrentAmount otherwise updateTransaction doesn't work
+            onTextChanged(null,0,0,0);
+
             updateTransaction(mSelectAsset);
         }
     }
