@@ -21,14 +21,15 @@ public class AssetActivity extends LoggedActivity {
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
 
     private TextView mIdText;
-    private EditText mPrecisionText;
-    private EditText mTickerText;
-    private EditText mNameText;
+    private TextView mPrecisionText;
+    private TextView mTickerText;
+    private TextView mNameText;
+    private TextView mDomainText;
+    private TextView mAssetBalanceText;
 
     private AssetInfoData mAssetInfo;
     private String mAssetId;
     private Long mSatoshi;
-    private String mNeg;
 
     @Override
     protected int getMainViewId() {
@@ -51,11 +52,12 @@ public class AssetActivity extends LoggedActivity {
         mPrecisionText = UI.find(this, R.id.precisionText);
         mTickerText = UI.find(this, R.id.tickerText);
         mNameText = UI.find(this, R.id.nameText);
+        mDomainText = UI.find(this, R.id.domainText);
+        mAssetBalanceText = UI.find(this, R.id.assetBalanceText);
 
         mAssetId = getIntent().getStringExtra("ASSET_ID");
         mAssetInfo = (AssetInfoData) getIntent().getSerializableExtra("ASSET_INFO");
         mSatoshi = getIntent().getLongExtra("SATOSHI", 0L);
-        mNeg = getIntent().getBooleanExtra("SATOSHI_NEG", false) ? "-" : "";
 
         mIdText.setText(mAssetId);
         if (mAssetInfo != null) {
@@ -64,6 +66,14 @@ public class AssetActivity extends LoggedActivity {
             mNameText.setText(getAssetInfo().getName());
             mPrecisionText.setText(
                 getAssetInfo().getPrecision() == null ? "0" : getAssetInfo().getPrecision().toString());
+            mDomainText.setText(
+                getAssetInfo().getEntity().getDomain() == null ? "" : getAssetInfo().getEntity().getDomain());
+        } else {
+            // only unregistered assets won't have name, ticker, domain
+            mNameText.setText(getString(R.string.id_no_registered_name_for_this));
+            mPrecisionText.setText("0");
+            mTickerText.setText(getString(R.string.id_no_registered_ticker_for_this));
+            mDomainText.setText(getString(R.string.id_unknown));
         }
         refresh();
     }
@@ -85,9 +95,6 @@ public class AssetActivity extends LoggedActivity {
     }
 
     private void refresh() {
-        final CardView assetCardView = UI.find(this, R.id.assetCard);
-        final TextView txAssetText = assetCardView.findViewById(R.id.assetName);
-        final TextView txAssetValue = assetCardView.findViewById(R.id.assetValue);
         final String ticker = getAssetInfo().getTicker() == null ? "" : getAssetInfo().getTicker();
         try {
             final ObjectNode details = mObjectMapper.createObjectNode();
@@ -95,8 +102,7 @@ public class AssetActivity extends LoggedActivity {
             details.set("asset_info",  getAssetInfo().toObjectNode());
             final ObjectNode converted = getSession().convert(details);
             final String amount = converted.get(mAssetId).asText();
-            txAssetText.setText(getAssetInfo().getName());
-            txAssetValue.setText(String.format("%s%s %s", mNeg, amount, ticker));
+            mAssetBalanceText.setText(amount);
         } catch (final Exception e) {
             e.printStackTrace();
         }

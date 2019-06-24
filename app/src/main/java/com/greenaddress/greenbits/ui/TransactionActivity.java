@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -22,6 +23,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.JSONMap;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
@@ -33,6 +35,7 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
@@ -57,6 +60,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private ImageView mStatusIcon;
 
     private TransactionItem mTxItem;
+    private Map<String, BalanceData> mAssetsBalances;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_transaction; }
@@ -88,6 +92,16 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         mTxItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
         final boolean isWatchOnly = mService.isWatchOnly();
+
+        try {
+            mAssetsBalances = getModel().getCurrentAccountBalanceData();
+        } catch (final Exception e) {
+            e.printStackTrace();
+            UI.toast(this, R.string.id_you_are_not_connected, Toast.LENGTH_LONG);
+            setResult(Activity.RESULT_CANCELED);
+            finishOnUiThread();
+            return;
+        }
 
         // Set txid
         final TextView hashText = UI.find(this, R.id.txHashText);
@@ -163,8 +177,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                     final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
                     intent.putExtra("ASSET_ID", mTxItem.assetId)
                     .putExtra("ASSET_INFO", mTxItem.assetInfo)
-                    .putExtra("SATOSHI", mTxItem.satoshi)
-                    .putExtra("SATOSHI_NEG", negative);
+                    .putExtra("SATOSHI", mAssetsBalances.get(mTxItem.assetId).getSatoshi());
                     startActivity(intent);
                 });
             }

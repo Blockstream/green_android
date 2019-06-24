@@ -18,88 +18,13 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin">
 
-            <include
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:id="@+id/assetCard"
-                layout="@layout/list_element_asset" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingStart="@dimen/activity_vertical_margin"
-                android:paddingEnd="@dimen/activity_vertical_margin">
-
-                <TextView
-                    android:id="@+id/idTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_asset_id" />
-
-                <TextView
-                    android:id="@+id/idText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
-                    android:textIsSelectable="true" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/activity_vertical_margin"
-                android:paddingEnd="@dimen/activity_vertical_margin">
-
-                <TextView
-                    android:id="@+id/precisionTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_precision" />
-
-                <EditText
-                    android:id="@+id/precisionText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
-                    android:enabled="false" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/activity_vertical_margin"
-                android:paddingEnd="@dimen/activity_vertical_margin">
-
-                <TextView
-                    android:id="@+id/tickerTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_ticker" />
-
-                <EditText
-                    android:id="@+id/tickerText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
-                    android:enabled="false" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/activity_vertical_margin"
-                android:paddingEnd="@dimen/activity_vertical_margin">
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingTop="20dp">
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -128,19 +53,128 @@
 
                 </LinearLayout>
 
-                <EditText
+                <TextView
                     android:id="@+id/nameText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
+                    android:textColor="@color/textColor" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/idTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
+                    android:text="@string/id_asset_id" />
+
+                <TextView
+                    android:id="@+id/idText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textColor="@color/textColor"
-                    android:maxLength="1024"
-                    android:background="@drawable/textbox"
-                    android:paddingTop="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingBottom="30dp"
-                    android:enabled="false" />
+                    android:textIsSelectable="true" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/assetBalanceTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
+                    android:text="@string/id_total_balance" />
+
+                <TextView
+                    android:id="@+id/assetBalanceText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/precisionTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
+                    android:text="@string/id_precision" />
+
+                <TextView
+                    android:id="@+id/precisionText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/tickerTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
+                    android:text="@string/id_ticker" />
+
+                <TextView
+                    android:id="@+id/tickerText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColor" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:paddingTop="20dp">
+
+                <TextView
+                    android:id="@+id/domainTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SectionTitle"
+                    android:text="@string/id_issuing_entity" />
+
+                <TextView
+                    android:id="@+id/domainText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:textColor="@color/textColor" />
 
             </LinearLayout>
         </LinearLayout>
