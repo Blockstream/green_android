@@ -5,6 +5,9 @@
 
         <item name="drawableSendReceiveIcColor">@color/colorAccent</item>
         <item name="sendReceiveBtnBg">@color/buttonJungleGreen</item>
+
+        <item name="receiveIconArrow">@color/accentLight</item>
+        <item name="receiveIconCircle">@color/accentPressed</item>
     </style>
     <style name="BitcoinTheme.NoActionBar" parent="AppTheme.NoActionBar"/>
 </resources>

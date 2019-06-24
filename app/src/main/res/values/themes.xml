@@ -16,4 +16,8 @@
 
     <attr name="drawableSendReceiveIcColor" format="reference"/>
     <attr name="sendReceiveBtnBg" format="reference"/>
+
+    <attr name="receiveIconArrow" format="reference"/>
+    <attr name="receiveIconCircle" format="reference"/>
+
 </resources>

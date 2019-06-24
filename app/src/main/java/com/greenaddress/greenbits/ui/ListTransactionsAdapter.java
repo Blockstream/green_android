@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -16,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenbits.GaService;
 
 import java.text.DateFormat;
@@ -25,8 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class ListTransactionsAdapter extends
     RecyclerView.Adapter<ListTransactionsAdapter.ViewHolder> {
@@ -132,10 +129,20 @@ public class ListTransactionsAdapter extends
         holder.listNumberConfirmation.setTextColor(getColor(confirmationsColor));
 
         final int amountColor;
-        if (txItem.type == TransactionItem.TYPE.IN)
+        final int sentOrReceive;
+        if (txItem.type == TransactionItem.TYPE.IN) {
             amountColor = mService.isLiquid() ? R.color.liquidDark : R.color.green;
-        else
+            sentOrReceive=R.drawable.ic_received;
+        } else {
             amountColor = R.color.white;
+            sentOrReceive=R.drawable.ic_sent;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            holder.sentOrReceive.setImageDrawable(mActivity.getResources().getDrawable(sentOrReceive,
+                                                                                       mActivity.getTheme()));
+        } else {
+            holder.sentOrReceive.setImageDrawable(mActivity.getResources().getDrawable(sentOrReceive));
+        }
         holder.textValue.setTextColor(getColor(amountColor));
 
         holder.mainLayout.setOnClickListener(v -> {
@@ -187,6 +194,7 @@ public class ListTransactionsAdapter extends
         public final FontAwesomeTextView unitText;
         public final TextView textWho;
         public final LinearLayout mainLayout;
+        public final ImageView sentOrReceive;
 
         public ViewHolder(final View v) {
 
@@ -198,6 +206,7 @@ public class ListTransactionsAdapter extends
             spvUnconfirmed = UI.find(v, R.id.spvUnconfirmed);
             textWho = UI.find(v, R.id.listWhoText);
             mainLayout = UI.find(v, R.id.list_item_layout);
+            sentOrReceive = UI.find(v, R.id.imageSentOrReceive);
             // TODO: For multiasset, enable unitText
             //if (GaService.IS_ELEMENTS)
             //    unitText = UI.find(v, R.id.listBitcoinUnitText);

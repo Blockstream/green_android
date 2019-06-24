@@ -21,6 +21,10 @@
 
         <item name="drawableSendReceiveIcColor">@android:color/white</item>
         <item name="sendReceiveBtnBg">@color/liquidButtonsBg</item>
+
+        <item name="receiveIconArrow">@color/receiveArrowColor</item>
+        <item name="receiveIconCircle">@color/receiveCircleColor</item>
+
     </style>
     <style name="LiquidTheme.NoActionBar" parent="AppTheme.NoActionBar"/>
 </resources>

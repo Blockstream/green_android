@@ -24,6 +24,9 @@
     <color name="secondaryTextColor">#EEEEEE</color>
     <color name="tertiaryTextColor">@color/grey_light</color>
 
+    <color name="receiveArrowColor">#00B196</color>
+    <color name="receiveCircleColor">#00514D</color>
+
     <color name="white">#ffffff</color>
     <color name="whiteSecondary">#b3ffffff</color>
 
