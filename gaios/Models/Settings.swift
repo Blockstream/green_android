@@ -72,15 +72,16 @@ public enum DenominationType: String, CodingKey {
     case Bits = "bits"
 
     func toString() -> String {
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
         switch self {
         case .BTC:
-            return getGdkNetwork(getNetwork()).liquid ? "L-BTC" : "BTC"
+            return isLiquid ? "L-BTC" : "BTC"
         case .MilliBTC:
-            return "mBTC"
+            return isLiquid ? "mL-BTC" : "mBTC"
         case .MicroBTC:
-            return "µBTC"
+            return isLiquid ? "µL-BTC" : "µBTC"
         case .Bits:
-            return "bits"
+            return isLiquid ? "L-bits" : "bits"
         }
     }
 
@@ -88,10 +89,12 @@ public enum DenominationType: String, CodingKey {
         switch value.lowercased() {
         case "btc", "l-btc":
             return .BTC
-        case "mbtc":
+        case "mbtc", "ml-btc":
             return .MilliBTC
-        case "µbtc", "ubtc":
+        case "µbtc", "ubtc", "µl-btc", "ul-btc":
             return .MicroBTC
+        case "bits", "l-bits":
+            return .Bits
         default:
             return .BTC
         }
@@ -189,8 +192,8 @@ class Settings: Codable {
     var notifications: SettingsNotifications?
 
     var denomination: DenominationType {
-        get { return DenominationType.fromString(self.unit)}
-        set { self.unit = newValue.toString()}
+        get { return DenominationType.fromString(self.unit) }
+        set { self.unit = newValue.rawValue }
     }
 
     var transactionPriority: TransactionPriority {

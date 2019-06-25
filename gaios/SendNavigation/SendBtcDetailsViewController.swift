@@ -97,7 +97,10 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         content.sendAllFundsButton.isHidden = isLiquid || transaction.addresseesReadOnly
         content.currencySwitch.isHidden = isLiquid
         content.maxAmountLabel.isHidden = isLiquid || transaction.addresseesReadOnly
-        content.maxAmountLabel.text = String.toBtc(satoshi: wallet!.btc.satoshi)
+
+        let balance = Balance.convert(details: ["satoshi": wallet!.btc.satoshi])
+        let (amount, _) = balance.get(tag: "btc")
+        content.maxAmountLabel.text =  "\(amount)"
         content.assetView.heightAnchor.constraint(equalToConstant: 0).isActive = !isLiquid
         content.assetView.layoutIfNeeded()
     }
@@ -152,8 +155,8 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         let denominationAsset = assetTag ?? "btc"
         let key = isLiquid ? denominationAsset : isFiat ? "fiat" : denominationBtc
         let details = isLiquid ? ["satoshi": addressee.satoshi, "asset_info": asset!.encode()!] : ["satoshi": addressee.satoshi]
-        let res = try? getSession().convertAmount(input: details)
-        content.amountTextField.text = res?[key] as? String ?? ""
+        let (amount, _) = Balance.convert(details: details).get(tag: key)
+        content.amountTextField.text = amount
     }
 
     func setCurrencySwitch() {
@@ -213,8 +216,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         let denominationAsset = assetTag ?? "btc"
         let key = isLiquid ? denominationAsset : isFiat ? "fiat" : denominationBtc
         let details = isLiquid ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
-        let res = try? getSession().convertAmount(input: details)
-        return res?["satoshi"] as? UInt64
+        return Balance.convert(details: details).satoshi
     }
 
     func onSelect(_ tag: String) {
@@ -223,7 +225,9 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         content.assetNameLabel.text = isBtc ? "L-BTC" : asset?.name
         content.currencySwitch.isHidden = tag != "btc"
         if let satoshi = wallet?.balance[tag]?.satoshi {
-            content.maxAmountLabel.text = "\(String.toBtc(satoshi: satoshi, showDenomination: false)) \(tag)"
+            let balance = Balance.convert(details: ["satoshi": satoshi])
+            let (amount, denom) = balance.get(tag: tag)
+            content.maxAmountLabel.text =  "\(amount) \(denom)"
         }
     }
 
@@ -295,8 +299,10 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
             }
             let feeSatVByte = Double(fee) / 1000.0
             let feeSatoshi = UInt64(feeSatVByte * Double(transaction.size))
-            let amount = isFiat ? String.toFiat(satoshi: feeSatoshi) : String.toBtc(satoshi: feeSatoshi)
-            feeButton.feerateLabel.text = String(format: "%@ (%.1f satoshi / vbyte)", amount, feeSatVByte)
+
+            let balance = Balance.convert(details: ["satoshi": feeSatoshi])
+            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : "btc")
+            feeButton.feerateLabel.text =  "\(amount) \(denom) (\(feeSatVByte) satoshi / vbyte)"
         }
         content.feeRateButtons[selectedFee]?.isSelect = true
     }

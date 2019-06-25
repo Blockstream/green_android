@@ -39,22 +39,17 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     func refresh() {
-        guard let settings = getGAService().getSettings() else { return }
-        let satoshi = getSatoshi()
-        if isFiat {
-            content.fiatButton.setTitle(settings.getCurrency(), for: UIControl.State.normal)
-            content.fiatButton.backgroundColor = UIColor.clear
-            content.convertedLabel.text = "≈ " + String.toBtc(satoshi: satoshi)
-        } else {
-            content.fiatButton.setTitle(settings.denomination.toString(), for: UIControl.State.normal)
-            content.fiatButton.backgroundColor = UIColor.customMatrixGreen()
-            content.convertedLabel.text = "≈ " + String.toFiat(satoshi: satoshi)
-        }
+        let balance = Balance.convert(details: ["satoshi": getSatoshi()])
+        let (amount, denom) = balance.get(tag: (isFiat ? "btc"  : "fiat"))
+        content.convertedLabel.text = "≈ \(amount) \(denom)"
+        content.fiatButton.setTitle(denom, for: UIControl.State.normal)
+        content.fiatButton.backgroundColor = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
     }
 
     @objc func currencySwitchClick(_ sender: UIButton) {
-        let satoshi = getSatoshi()
-        content.limitTextField.text = isFiat ? String.toBtc(satoshi: satoshi, showDenomination: false) : String.toFiat(satoshi: satoshi, showCurrency: false)
+        let balance = Balance.convert(details: ["satoshi": getSatoshi()])
+        let (amount, _) = balance.get(tag: (isFiat ? "btc"  : "fiat"))
+        content.limitTextField.text = "≈ \(amount)"
         isFiat = !isFiat
         refresh()
     }
@@ -102,7 +97,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         guard let text = content.limitTextField.text else { return 0 }
         let amount = text.replacingOccurrences(of: ",", with: ".")
         if Double(amount) == nil { return 0 }
-        return isFiat ? String.toSatoshi(fiat: amount) : String.toSatoshi(amount: amount)
+        return Balance.convert(details: [(isFiat ? "fiat" : "btc"): amount]).satoshi
     }
 }
 

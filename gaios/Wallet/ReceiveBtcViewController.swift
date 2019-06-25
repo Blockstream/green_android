@@ -95,22 +95,19 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     @objc func fiatSwitchButtonClick(_ sender: Any) {
         let satoshi = getSatoshi()
-        guard let settings = getGAService().getSettings() else { return }
-        let amount = try? getSession().convertAmount(input: ["satoshi": satoshi])
-        guard let data = amount else { return }
+        let balance = Balance.convert(details: ["satoshi": satoshi])
         if selectedType == TransactionType.BTC {
             selectedType = TransactionType.FIAT
-            content.amountTextfield.text = String(format: "%@", data["fiat"] as? String ?? "")
+            content.amountTextfield.text = String(format: "%@", balance.get(tag: "fiat").0)
         } else {
             selectedType = TransactionType.BTC
-            guard let amount = data[settings.denomination.rawValue] as? String else { return }
-            content.amountTextfield.text = String(format: "%f", Double(amount) ?? 0)
+            content.amountTextfield.text = String(format: "%f", balance.get(tag: "btc").0)
         }
         reload()
     }
 
     func setButton() {
-        guard let settings = getGAService().getSettings() else { return }
+        let settings = getGAService().getSettings()!
         if selectedType == TransactionType.BTC {
             content.fiatSwitchButton.setTitle(settings.denomination.toString(), for: UIControl.State.normal)
             content.fiatSwitchButton.backgroundColor = UIColor.customMatrixGreen()
@@ -124,11 +121,8 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func updateEstimate() {
         let satoshi = getSatoshi()
-        if selectedType == TransactionType.BTC {
-            content.estimateLabel.text = "≈ " + String.toFiat(satoshi: satoshi)
-        } else {
-            content.estimateLabel.text = "≈ " + String.toBtc(satoshi: satoshi)
-        }
+        let (amount, denom) = Balance.convert(details: ["satoshi": satoshi]).get(tag: selectedType == TransactionType.BTC ? "fiat": "btc")
+        content.estimateLabel.text = "≈ \(amount) \(denom)"
     }
 
     func updateQRCode() {
@@ -191,11 +185,9 @@ class ReceiveBtcViewController: KeyboardViewController {
         if amount.isEmpty || Double(amount) == nil {
             return 0
         }
-        if selectedType == TransactionType.BTC {
-            return String.toSatoshi(amount: amount)
-        } else {
-            return String.toSatoshi(fiat: amount)
-        }
+        let denomination = getGAService().getSettings()!.denomination
+        let key = selectedType == TransactionType.BTC ? denomination.rawValue : "fiat"
+        return Balance.convert(details: [key: amount]).satoshi
     }
 
     func getBTC() -> Double {

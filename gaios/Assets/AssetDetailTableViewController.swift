@@ -97,7 +97,9 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
                 cell.detailLabel.text = tag
             case .amount:
                 cell.titleLabel.text = NSLocalizedString("id_total_balance", comment: "")
-                cell.detailLabel.text = String(satoshi ?? 0)
+                let assetInfo = asset ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
+                let balance = Balance.convert(details: ["satoshi": satoshi ?? 0, "asset_info": assetInfo.encode()!])
+                cell.detailLabel.text = balance.get(tag: tag).0
             case .precision:
                 cell.titleLabel.text = NSLocalizedString("id_precision", comment: "")
                 cell.detailLabel.text = String(asset?.precision ?? 0)

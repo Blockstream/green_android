@@ -18,33 +18,6 @@ extension String {
         return String(partial)
     }
 
-    static func toBtc(satoshi: UInt64, showDenomination: Bool = true) -> String {
-        guard let settings = getGAService().getSettings() else { return "" }
-        let amount = try? getSession().convertAmount(input: ["satoshi": satoshi])
-        guard let data = amount, let value = data[settings.denomination.rawValue] as? String else { return "" }
-        return String(format: showDenomination ? "%@ %@" : "%@", value, settings.denomination.toString())
-    }
-
-    static func toFiat(satoshi: UInt64, showCurrency: Bool = true) -> String {
-        guard let settings = getGAService().getSettings() else { return "" }
-        let amount = try? getSession().convertAmount(input: ["satoshi": satoshi])
-        guard let data = amount, let value = data["fiat"] as? String else { return "" }
-        return String(format: showCurrency ? "%@ %@" : "%@", value, settings.getCurrency())
-    }
-
-    static func toSatoshi(fiat: String) -> UInt64 {
-        let amount = try? getSession().convertAmount(input: ["fiat": fiat])
-        guard let data = amount, let value = data["satoshi"] as? UInt64 else { return 0 }
-        return value
-    }
-
-    static func toSatoshi(amount: String) -> UInt64 {
-        guard let settings = getGAService().getSettings() else { return 0 }
-        let amount = try? getSession().convertAmount(input: [settings.denomination.rawValue: amount])
-        guard let data = amount, let value = data["satoshi"] as? UInt64 else { return 0 }
-        return value
-    }
-
     func heightWithConstrainedWidth(width: CGFloat, font: UIFont) -> CGFloat {
         let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
         let boundingBox = self.boundingRect(with: constraintRect, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedString.Key.font: font], context: nil)

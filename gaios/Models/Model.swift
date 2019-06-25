@@ -149,20 +149,14 @@ struct Transaction {
     }
 
     func amount() -> String {
-        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let isBtc = "btc" == defaultAsset
         let assetInfo = assets[defaultAsset] ?? AssetInfo(assetId: defaultAsset, name: "", precision: 0, ticker: "")
-        let details = isLiquid && defaultAsset != "btc" ? ["satoshi": amounts[defaultAsset]!,
-                                  "asset_info": assetInfo.encode()!] : ["satoshi": satoshi]
-        let res = try? getSession().convertAmount(input: details)
-        let format = type == "outgoing" || type == "redeposit" ? "- %@ %@" : "%@ %@"
-        if isLiquid {
-            let value = res![defaultAsset] as? String
-            let ticker = defaultAsset == "btc" ? "L-BTC" : assetInfo.ticker ?? ""
-            return String(format: format, value!, ticker)
-        }
-        let denomination = getGAService().getSettings()!.denomination
-        let value = res![denomination.rawValue] as? String
-        return String(format: format, value!, denomination.toString())
+        let details = isBtc ? ["satoshi": satoshi] : ["satoshi": amounts[defaultAsset]!,
+                                  "asset_info": assetInfo.encode()!]
+        let (value, ticker) = Balance.convert(details: details).get(tag: defaultAsset)
+        return String(format: "%@%@ %@",
+                      type == "outgoing" || type == "redeposit" ? "-" : "",
+                      value, ticker)
     }
 
     func address() -> String? {
@@ -195,6 +189,7 @@ struct Balance: Codable {
         case ubtc
         case sats
         case assetInfo = "asset_info"
+        case asset
     }
 
     let bits: String
@@ -207,6 +202,34 @@ struct Balance: Codable {
     let ubtc: String
     let sats: String
     let assetInfo: AssetInfo?
+    var asset: [String: String]?
+
+    static func convert(details: [String: Any]) -> Balance {
+        var res = try? getSession().convertAmount(input: details)
+        res?["asset_info"] = details["asset_info"]
+        var balance = try? JSONDecoder().decode(Balance.self, from: JSONSerialization.data(withJSONObject: res!, options: []))
+        if let assetInfo = balance?.assetInfo {
+            let value = res![assetInfo.assetId] as? String
+            balance?.asset = [assetInfo.assetId: value!]
+        }
+        return balance!
+    }
+
+    func get(tag: String) -> (String, String) {
+        if "fiat" == tag {
+            return (fiat, fiatCurrency)
+        }
+        if "btc" == tag {
+            let denomination = getGAService().getSettings()!.denomination
+            let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
+            let value = res![denomination.rawValue] as? String
+            return (value!, denomination.toString())
+        }
+        if let asset = asset?[tag] {
+            return (asset, assetInfo?.ticker ?? "")
+        }
+        return ("", "")
+    }
 }
 
 class WalletItem: Codable {

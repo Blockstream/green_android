@@ -167,7 +167,6 @@ class TransactionsController: UITableViewController {
     func loadWallet() {
         pointerWallet = UInt32(UserDefaults.standard.integer(forKey: pointerKey))
         guard let twoFactorReset = getGAService().getTwoFactorReset() else { return }
-        guard let settings = getGAService().getSettings() else { return }
         let network = getGdkNetwork(getNetwork())
         firstly {
             self.startAnimating()
@@ -180,10 +179,11 @@ class TransactionsController: UITableViewController {
             let wallet = try getWallet(from: wallets, pointer: self.pointerWallet)
             self.presentingWallet = wallet
             guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
-            let satoshi = wallet.btc.satoshi
-            view.balance.text = String.toBtc(satoshi: satoshi, showDenomination: false)
-            view.unit.text = settings.denomination.toString()
-            view.balanceFiat.text = "≈ " + String.toFiat(satoshi: satoshi)
+            let balance = Balance.convert(details: ["satoshi": wallet.btc.satoshi])
+            let (amount, denom) = balance.get(tag: "btc")
+            view.balance.text = amount
+            view.unit.text = denom
+            view.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency)"
             view.walletName.text = self.presentingWallet!.localizedName()
             view.networkImage.image = UIImage(named: network.icon!)
             view.assetsLabel.text = String(format: NSLocalizedString(wallet.balance.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.balance.count)

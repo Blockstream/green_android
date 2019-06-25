@@ -140,7 +140,7 @@ class SettingsViewController: UIViewController {
         if isWatchOnly && isResetActive {
             return []
         } else if isLiquid {
-            return [defaultTransactionPriority, defaultCustomFeeRate]
+            return [bitcoinDenomination, defaultTransactionPriority, defaultCustomFeeRate]
         }
         return [bitcoinDenomination, referenceExchangeRate, defaultTransactionPriority, defaultCustomFeeRate]
     }

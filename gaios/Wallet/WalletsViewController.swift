@@ -53,10 +53,12 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? WalletCardView else { fatalError("Fail to dequeue reusable cell") }
         let wallet = wallets[indexPath.row]
-        guard let settings = getGAService().getSettings() else { return cell }
-        cell.balance.text = String.toBtc(satoshi: wallet.btc.satoshi, showDenomination: false)
-        cell.unit.text = settings.denomination.toString()
-        cell.balanceFiat.text = "≈ " + String.toFiat(satoshi: wallet.btc.satoshi)
+
+        let balance = Balance.convert(details: ["satoshi": wallet.btc.satoshi])
+        let (amount, denom) = balance.get(tag: "btc")
+        cell.balance.text = amount
+        cell.unit.text = denom
+        cell.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency) "
         cell.walletName.text = wallet.localizedName()
         let network = getGdkNetwork(getNetwork())
         cell.networkImage.image = UIImage(named: network.icon!)
@@ -72,8 +74,10 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
                 return accumulation + nextValue
             }
             header.title.text = isSweep ? NSLocalizedString("id_where_would_you_like_to_import", comment: ""): NSLocalizedString("id_total_balance", comment: "")
-            header.btcLabel.text = isSweep ? "" : String.toBtc(satoshi: satoshi)
-            header.fiatLabel.text = isSweep ? "" :String.toFiat(satoshi: satoshi)
+            let balance = Balance.convert(details: ["satoshi": satoshi])
+            let (amount, denom) = balance.get(tag: "btc")
+            header.btcLabel.text = isSweep ? "" : "\(amount) \(denom)"
+            header.fiatLabel.text = isSweep ? "" : "\(balance.fiat) \(balance.fiatCurrency)"
             header.equalsLabel.isHidden = isSweep
             return header
         case UICollectionView.elementKindSectionFooter:

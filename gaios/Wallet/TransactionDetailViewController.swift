@@ -158,7 +158,9 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
     func updateUI() {
         let isLiquid = getGdkNetwork(getNetwork()).liquid
         hashLabel.text = transaction.hash
-        amountLabel.text = String(format: "%@ / %@", String.toBtc(satoshi: transaction.satoshi), String.toFiat(satoshi: transaction.satoshi))
+        let balance = Balance.convert(details: ["satoshi": transaction.satoshi])
+        let (amount, denom) = balance.get(tag: "btc")
+        amountLabel.text = "\(amount) \(denom) / \(balance.fiat) \(balance.fiatCurrency)"
         feeLabel.text = String(format: "%d satoshi, %.2f sat/vbyte", transaction.fee, Double(transaction.feeRate) / 1000)
         dateLabel.text = transaction.date()
 

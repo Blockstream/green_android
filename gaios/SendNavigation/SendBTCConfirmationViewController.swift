@@ -66,13 +66,12 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             let tag = addressee.assetTag ?? "btc"
             let asset = wallet?.balance[tag]?.assetInfo
             content.assetTableCell?.setup(tag: tag, asset: asset, satoshi: addressee.satoshi)
-            content.assetsFeeLabel.text = String.toBtc(satoshi: transaction.fee)
-        } else if isFiat {
-            content.amountText.text = String.toFiat(satoshi: addressee.satoshi, showCurrency: false)
-            content.feeLabel.text = String.toFiat(satoshi: addressee.satoshi + transaction.fee)
+            let (amount, denom) = Balance.convert(details: ["satoshi": transaction.fee]).get(tag: "btc")
+            content.assetsFeeLabel.text = "\(amount) \(denom)"
         } else {
-            content.amountText.text = String.toBtc(satoshi: addressee.satoshi, showDenomination: false)
-            content.feeLabel.text = String.toBtc(satoshi: addressee.satoshi + transaction.fee)
+            content.amountText.text = Balance.convert(details: ["satoshi": addressee.satoshi]).get(tag: isFiat ? "fiat" : "btc").0
+            let (amount, denom) = Balance.convert(details: ["satoshi": addressee.satoshi + transaction.fee]).get(tag: isFiat ? "fiat" : "btc")
+            content.feeLabel.text = "\(amount) \(denom)"
         }
     }
 
