@@ -149,9 +149,15 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final CardView assetCardview = findViewById(R.id.txAssetCard);
             final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
             final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
+            final TextView txAssetDomain = assetCardview.findViewById(R.id.assetDomain);
             txAssetText.setText(mTxItem.getAssetName());
             txAssetValue.setText(mTxItem.getAmountWithUnit(mService));
             assetCardview.setVisibility(View.VISIBLE);
+            if (mTxItem.getAssetDomain() != null) {
+                txAssetDomain.setVisibility(View.VISIBLE);
+                txAssetDomain.setText(mTxItem.getAssetDomain());
+            }
+
             if (!"btc".equals(mTxItem.assetId)) {
                 assetCardview.setOnClickListener(v -> {
                     final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);

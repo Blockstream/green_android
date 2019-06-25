@@ -2,8 +2,6 @@ package com.greenaddress.greenbits.ui;
 
 import android.util.Log;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.JSONMap;
@@ -20,6 +18,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class TransactionItem implements Serializable {
 
@@ -140,6 +140,12 @@ public class TransactionItem implements Serializable {
     public String getAssetName() {
         return "btc".equals(assetId) ? "L-BTC" : assetInfo != null &&
                assetInfo.getName() != null ? assetInfo.getName() : assetId;
+    }
+
+    public String getAssetDomain() {
+        return "btc".equals(assetId) ? null : assetInfo != null &&
+               assetInfo.getEntity() != null &&
+               assetInfo.getEntity().getDomain() != null ? assetInfo.getEntity().getDomain() : null;
     }
 
     public String getAssetTicker(final GaService service) {
