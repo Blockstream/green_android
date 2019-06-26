@@ -483,7 +483,10 @@ class SettingsViewController: UIViewController {
 
     func showBitcoinDenomination() {
         guard let settings = getGAService().getSettings() else { return }
-        let list = [DenominationType.BTC.toString(), DenominationType.MilliBTC.toString(), DenominationType.MicroBTC.toString(), DenominationType.Bits.toString()]
+        var list = [DenominationType.BTC.toString(), DenominationType.MilliBTC.toString(), DenominationType.MicroBTC.toString()]
+        if !isLiquid {
+            list.append(DenominationType.Bits.toString())
+        }
         let selected = settings.denomination.toString()
         let popup = PopupList(self, title: NSLocalizedString("id_bitcoin_denomination", comment: ""), list: list, selected: selected)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
