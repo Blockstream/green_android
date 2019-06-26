@@ -4,6 +4,7 @@ import UIKit
 class NetworkSelectionSettings: UITableViewController {
 
     var onSave: (() -> Void)?
+    var saveTitle = NSLocalizedString("id_save", comment: "")
     private var selectedNetwork = getNetwork()
     private var networks = [GdkNetwork]()
 
@@ -94,7 +95,7 @@ class NetworkSelectionSettings: UITableViewController {
         content.socks5Hostname.text = NSLocalizedString("id_socks5_hostname", comment: "")
         content.socks5Port.text = NSLocalizedString("id_socks5_port", comment: "")
         content.torLabel.text = NSLocalizedString("id_connect_with_tor", comment: "")
-        content.saveButton.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
+        content.saveButton.setTitle(saveTitle, for: .normal)
         content.saveButton.addTarget(self, action: #selector(save), for: .touchUpInside)
         content.proxySwitch.addTarget(self, action: #selector(changeProxy), for: .valueChanged)
         content.socks5Hostname.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: content.socks5Hostname.frame.height))

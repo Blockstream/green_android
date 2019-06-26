@@ -85,6 +85,7 @@
                         <segue destination="Lpg-sH-ks3" kind="show" identifier="pgp" id="8fb-Zo-jH0"/>
                         <segue destination="XeE-HA-893" kind="show" identifier="setupTwoFactor" id="PwA-VM-nme"/>
                         <segue destination="53E-v4-Ycb" kind="show" identifier="sweep_to_wallets" id="zD7-L6-IpD"/>
+                        <segue destination="Pkc-gZ-Tft" kind="presentation" identifier="network" id="8Qs-eL-NPn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tgq-mW-4Be" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -98,6 +99,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rby-NF-qdF" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="9698" y="-1077"/>
+        </scene>
+        <!--NetworkSelectionSettings-->
+        <scene sceneID="OJc-Zm-al4">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Main" referencedIdentifier="NetworkSelectionSettings" id="Pkc-gZ-Tft" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Yb0-mn-2X2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="9706" y="-951"/>
         </scene>
         <!--Currency-->
         <scene sceneID="8I2-uC-Whc">

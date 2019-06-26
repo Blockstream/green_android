@@ -98,13 +98,17 @@ class SettingsViewController: UIViewController {
             subtitle: NSLocalizedString("id_log_out", comment: ""),
             section: .network,
             type: .Logout)
-
+        let switchNetwork = SettingsItem(
+            title: String(format: NSLocalizedString("id_switch_network", comment: ""), getNetwork()).localizedCapitalized,
+            subtitle: "",
+            section: .network,
+            type: .SwitchNetwork)
         if isWatchOnly || isResetActive {
-            return [logout]
+            return [logout, switchNetwork]
         } else if isLiquid {
-            return [setupPin, logout]
+            return [setupPin, logout, switchNetwork]
         }
-        return [setupPin, watchOnly, logout]
+        return [setupPin, watchOnly, logout, switchNetwork]
     }
 
     func getAccount() -> [SettingsItem] {
@@ -556,6 +560,15 @@ class SettingsViewController: UIViewController {
         if let controller = segue.destination as? WalletsViewController {
             controller.isSweep = true
         }
+
+        if let controller = segue.destination as? NetworkSelectionSettings {
+            controller.saveTitle = NSLocalizedString("id_logout_and_switch", comment: "")
+            controller.onSave = {
+                let network = getNetwork()
+                onFirstInitialization(network: network)
+                self.logout()
+            }
+        }
     }
 }
 
@@ -595,6 +608,7 @@ extension SettingsViewController: UITableViewDelegate {
         case .BitcoinDenomination: showBitcoinDenomination()
         case .SetupPin: performSegue(withIdentifier: "screenLock", sender: nil)
         case .Logout: logout()
+        case .SwitchNetwork: performSegue(withIdentifier: "network", sender: nil)
         case .WatchOnly: showWatchOnly()
         case .ReferenceExchangeRate: performSegue(withIdentifier: "currency", sender: nil)
         case .DefaultTransactionPriority: showDefaultTransactionPriority()

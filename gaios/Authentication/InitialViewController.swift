@@ -85,6 +85,7 @@ class InitialViewController: UIViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let networkSelector = segue.destination as? NetworkSelectionSettings {
+            networkSelector.saveTitle = NSLocalizedString("id_save", comment: "")
             networkSelector.onSave = {
                 let network = getNetwork()
                 onFirstInitialization(network: network)
