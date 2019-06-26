@@ -28,7 +28,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZOO-44-PSc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-446" y="686"/>
+            <point key="canvasLocation" x="628" y="-1020"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="VJc-E9-yW1">
@@ -215,7 +215,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zFj-MI-IOJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1910.625" y="1461.9718309859154"/>
+            <point key="canvasLocation" x="-1785" y="686"/>
         </scene>
         <!--Pin Set View Controller-->
         <scene sceneID="aHV-SQ-KCX">
@@ -236,7 +236,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7V0-pH-DYl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="968" y="1517"/>
+            <point key="canvasLocation" x="626" y="326"/>
         </scene>
         <!--Enter your wallet mnemonic-->
         <scene sceneID="Vxs-Tv-sVV">
@@ -362,7 +362,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="peA-Kf-YoL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-446" y="1517"/>
+            <point key="canvasLocation" x="-446" y="327"/>
         </scene>
         <!--Create Mnemonic Navigation Controller-->
         <scene sceneID="bag-aB-G2t">
@@ -402,7 +402,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TDa-ki-BDK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-446" y="-1049"/>
+            <point key="canvasLocation" x="-446" y="-1020"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ncR-TD-Ar4">
@@ -420,7 +420,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="leu-KA-lcH" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3083" y="-1050"/>
+            <point key="canvasLocation" x="-3084" y="-1050"/>
         </scene>
     </scenes>
     <resources>
@@ -441,6 +441,6 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="QEt-l0-XBh"/>
+        <segue reference="Onv-2S-vYj"/>
     </inferredMetricsTieBreakers>
 </document>

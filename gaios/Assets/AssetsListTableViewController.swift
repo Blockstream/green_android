@@ -52,7 +52,6 @@ class AssetsListTableViewController: UITableViewController {
         let asset = assets[indexPath.row].value.assetInfo
         let satoshi = assets[indexPath.row].value.satoshi
         cell.configure(tag: tag, asset: asset, satoshi: satoshi)
-        cell.selectionStyle = .none
         return cell
     }
 
