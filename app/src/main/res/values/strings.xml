@@ -34,7 +34,8 @@
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
   <string name="id_asset">Asset</string>
   <string name="id_asset_details">Asset Details</string>
-  <string name="id_asset_id">Asset Id</string>
+  <string name="id_asset_id">Asset ID</string>
+  <string name="id_asset_name">Asset Name</string>
   <string name="id_attempts_remaining_d">Attempts remaining: %d</string>
   <string name="id_auto_logout_timeout">Auto logout timeout</string>
   <string name="id_autolock_after">Autolock After</string>
@@ -66,7 +67,7 @@
   <string name="id_congratulations">Congratulations!</string>
   <string name="id_connect_through_a_proxy">Connect through a proxy</string>
   <string name="id_connect_with_tor">Connect with Tor</string>
-  <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
+  <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
   <string name="id_connecting_to_tor_onion_nodes">Connecting to Tor (.onion) nodes allows maximum privacy and security. Press "OK" to continue.</string>
   <string name="id_continue">Continue</string>
   <string name="id_copy_to_clipboard">Copy To Clipboard</string>
@@ -194,7 +195,7 @@
   <string name="id_invalid_twofactor_code">Invalid Two-Factor code</string>
   <string name="id_invalid_url">Invalid URL</string>
   <string name="id_is_a_noncustodial">is a non-custodial</string>
-  <string name="id_issuing_entity">Issuing Entity</string>
+  <string name="id_issuer">Issuer</string>
   <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">Last ping: %1$d ms</string>
   <string name="id_later">LATER</string>
@@ -208,6 +209,7 @@
   <string name="id_logging_in">Logging in…</string>
   <string name="id_login_failed">Login Failed</string>
   <string name="id_login_options">Login options</string>
+  <string name="id_logout_and_switch">Logout and Switch</string>
   <string name="id_look_at_the_device_for_the">Look at the device for the number positions</string>
   <string name="id_low">Low</string>
   <string name="id_main_account">Main Account</string>
@@ -375,6 +377,7 @@
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
   <string name="id_sweep_into_s">Sweep into %s</string>
+  <string name="id_switch_network">Switch Network</string>
   <string name="id_synchronize_spv_on_mobile">Synchronize SPV on mobile</string>
   <string name="id_system_message">System Message</string>
   <string name="id_tap_on_the_card_to_view">Tap on the card to view transactions.</string>
@@ -444,7 +447,7 @@
   <string name="id_we_use_the_camera_to_scan_qr">We use the camera to scan QR codes</string>
   <string name="id_welcome">Welcome</string>
   <string name="id_welcome_to">Welcome to</string>
-  <string name="id_where_do_you_want_to_import_the">Where do you want to import the funds?</string>
+  <string name="id_where_would_you_like_to_import">Where would you like to import the funds?</string>
   <string name="id_word_d_of_d">Word %d of %d</string>
   <string name="id_write_down_the_words">Write down the words</string>
   <string name="id_write_down_your_mnemonic_on">Write down your mnemonic on paper and store it somewhere safe.</string>

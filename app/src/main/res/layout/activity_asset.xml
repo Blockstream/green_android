@@ -167,7 +167,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/SectionTitle"
-                    android:text="@string/id_issuing_entity" />
+                    android:text="@string/id_issuer" />
 
                 <TextView
                     android:id="@+id/domainText"
