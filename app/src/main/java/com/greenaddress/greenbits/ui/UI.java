@@ -32,11 +32,15 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
+import com.greenaddress.greenbits.GaService;
+
+import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -54,8 +58,16 @@ public abstract class UI {
 
     static final int INVALID_RESOURCE_ID = 0;
     public static final String[] UNITS = {"BTC", "mBTC", "\u00B5BTC", "bits"};
-    public static final List<String> UNITS_LIST = Arrays.asList(UNITS);
     public static final String[] LIQUID_UNITS = {"L-BTC", "mL-BTC", "\u00B5L-BTC"};
+
+    private static Function<String, String> toUnitKeyFunc = new Function<String, String>() {
+        @NullableDecl
+        @Override
+        public String apply(@NullableDecl String input) {
+            return input != null ? GaService.toUnitKey(input) : null;
+        }
+    };
+    public static final List<String> UNIT_KEYS_LIST = Lists.transform(Arrays.asList(UNITS), UI.toUnitKeyFunc);
 
     // Class to unify cancel and dismiss handling */
     private static class DialogCloseHandler implements DialogInterface.OnCancelListener,

@@ -30,6 +30,7 @@ import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 
 import java.io.IOException;
@@ -163,7 +164,7 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
 
     private String getBitcoinUnitClean() {
         final String unit = getBitcoinOrLiquidUnit();
-        return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
+        return GaService.toUnitKey(unit);
     }
 
     @Override

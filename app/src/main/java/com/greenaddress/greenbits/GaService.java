@@ -181,16 +181,21 @@ public class GaService extends Service  {
     }
 
     public String getBitcoinOrLiquidUnit() {
-        final String bitcoinUnit = mModel.getSettings().getUnit();
+        final int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey()), 0);
+
         if (isLiquid()) {
-            return UI.LIQUID_UNITS[UI.UNITS_LIST.indexOf(bitcoinUnit)];
+            return UI.LIQUID_UNITS[index];
         } else {
-            return bitcoinUnit;
+            return UI.UNITS[index];
         }
     }
 
     public String getUnitKey() {
         final String unit = mModel.getSettings().getUnit();
+        return toUnitKey(unit);
+    }
+
+    public static String toUnitKey(final String unit) {
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
     }
 
