@@ -105,7 +105,7 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
                 cell.titleLabel.text = NSLocalizedString("id_ticker", comment: "")
                 cell.detailLabel.text = asset?.ticker ?? NSLocalizedString("id_no_registered_ticker_for_this", comment: "")
             case .issuer:
-                cell.titleLabel.text = NSLocalizedString("id_issuing_entity", comment: "")
+                cell.titleLabel.text = NSLocalizedString("id_issuer", comment: "")
                 cell.detailLabel.text = asset?.entity?.domain ?? NSLocalizedString("id_unknown", comment: "")
             }
             return cell

@@ -71,7 +71,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             let satoshi = wallets.map { $0.btc.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
-            header.title.text = isSweep ? NSLocalizedString("id_where_do_you_want_to_import_the", comment: ""): NSLocalizedString("id_total_balance", comment: "")
+            header.title.text = isSweep ? NSLocalizedString("id_where_would_you_like_to_import", comment: ""): NSLocalizedString("id_total_balance", comment: "")
             header.btcLabel.text = isSweep ? "" : String.toBtc(satoshi: satoshi)
             header.fiatLabel.text = isSweep ? "" :String.toFiat(satoshi: satoshi)
             header.equalsLabel.isHidden = isSweep
