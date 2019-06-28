@@ -261,8 +261,19 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             getActivity().startActivity(intent);
         } else if (view.getId() == R.id.sendButton) {
             justClicked = true;
-            final Intent intent = new Intent(getActivity(), ScanActivity.class);
-            getActivity().startActivity(intent);
+
+            if (getGAService().isLiquid() && getModel().getCurrentAccountBalanceData().get("btc").getSatoshi() == 0L) {
+                UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
+                .content(R.string.id_insufficient_lbtc_to_send_a)
+                .onPositive((dialog, which) -> {
+                    final Intent intent = new Intent(getActivity(), ReceiveActivity.class);
+                    getActivity().startActivity(intent);
+                })
+                .build().show();
+            } else {
+                final Intent intent = new Intent(getActivity(), ScanActivity.class);
+                getActivity().startActivity(intent);
+            }
         } else if (view.getId() == R.id.selectSubaccount) {
             final Intent intent = new Intent(getActivity(), SubaccountSelectActivity.class);
             intent.setFlags(FLAG_ACTIVITY_NO_ANIMATION);
