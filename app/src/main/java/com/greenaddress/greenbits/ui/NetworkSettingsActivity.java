@@ -21,12 +21,15 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.greenaddress.gdk.GDKSession;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-public class NetworkSettingsActivity extends GaActivity {
+public class NetworkSettingsActivity extends GaActivity implements Observer {
 
     class NetworksViewAdapter extends RecyclerView.Adapter<NetworksViewAdapter.ViewHolder> {
 
@@ -121,6 +124,8 @@ public class NetworkSettingsActivity extends GaActivity {
     private EditText mSocks5Port;
     private NetworksViewAdapter mNetworksViewAdapter;
 
+    private boolean mIsLoggedIn = false;
+
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setContentView(R.layout.activity_networksettings);
@@ -139,13 +144,74 @@ public class NetworkSettingsActivity extends GaActivity {
         mNetworksViewAdapter = new NetworksViewAdapter(this, networks, mService.getNetwork());
         recyclerView.setAdapter(mNetworksViewAdapter);
 
+        final View closeButton = UI.find(this, R.id.close_network_settings);
+        closeButton.setOnClickListener(this::onCloseClick);
+
         mSwitchProxy.setOnCheckedChangeListener(this::onProxyChange);
         initProxy();
         mSwitchTor.setOnCheckedChangeListener(this::onTorChange);
         initTor(mNetworksViewAdapter.getSelected());
 
-        final View selectButton = UI.find(this, R.id.selectNetworkButton);
+        final Button selectButton = UI.find(this, R.id.selectNetworkButton);
         selectButton.setOnClickListener(this::onClick);
+
+        if (mService == null || mService.getConnectionManager() == null ||
+            mService.getConnectionManager().isDisconnectedOrLess()) {
+            selectButton.setText(R.string.id_save);
+        } else {
+            mIsLoggedIn = true;
+            selectButton.setText(R.string.id_logout_and_switch);
+
+            // Register the observer since we came in from the settings page
+            mService.getConnectionManager().addObserver(this);
+        }
+    }
+
+    private void cancelAndExit() {
+        setResult(RESULT_CANCELED);
+        finishOnUiThread();
+    }
+
+    @Override
+    protected void onResumeWithService() {
+        super.onResumeWithService();
+        if (mService == null || mService.getConnectionManager() == null) {
+            return;
+        }
+
+        if (mIsLoggedIn) {
+            // the connection was closed while this activity was paused, exit immediately
+            if (mService.getConnectionManager().isDisconnectedOrLess()) {
+                cancelAndExit();
+                return;
+            }
+
+            // still connected, add back the observer
+            mService.getConnectionManager().addObserver(this);
+        }
+    }
+
+    @Override
+    protected void onPauseWithService() {
+        super.onPauseWithService();
+        if (mService == null || mService.getConnectionManager() == null) {
+            return;
+        }
+
+        if (mIsLoggedIn) {
+            mService.getConnectionManager().deleteObserver(this);
+        }
+    }
+
+    @Override
+    public void update(Observable observable, Object arg) {
+        if (observable instanceof ConnectionManager) {
+            cancelAndExit();
+        }
+    }
+
+    private void onCloseClick(final View view) {
+        cancelAndExit();
     }
 
     private void onClick(final View view) {

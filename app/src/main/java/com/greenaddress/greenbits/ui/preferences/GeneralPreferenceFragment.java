@@ -32,6 +32,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
 import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.PopupMethodResolver;
@@ -45,6 +46,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static android.app.Activity.RESULT_OK;
+import static com.greenaddress.greenbits.ui.FirstScreenActivity.NETWORK_SELECTOR_REQUEST;
 
 public class GeneralPreferenceFragment extends GAPreferenceFragment implements Observer {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
@@ -54,6 +56,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
     private SwitchPreference mPinPref;
     private Preference mWatchOnlyLogin;
+    private Preference mSwitchNetwork;
     private ListPreference mUnitPref;
     private ListPreference mPriceSourcePref;
     private ListPreference mTxPriorityPref;
@@ -126,6 +129,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             logout();
             return false;
         });
+
+        // Switch network
+        mSwitchNetwork = find(PrefKeys.SWITCH_NETWORK);
+        mSwitchNetwork.setOnPreferenceClickListener((preference) -> onSwitchNetworkClicked());
 
         // Bitcoin denomination
         mUnitPref = find(PrefKeys.UNIT);
@@ -376,6 +383,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             }
         }).build();
         UI.showDialog(dialog);
+        return false;
+    }
+
+    private boolean onSwitchNetworkClicked() {
+        startActivityForResult(new Intent(getActivity(), NetworkSettingsActivity.class),
+                               NETWORK_SELECTOR_REQUEST);
         return false;
     }
 
@@ -707,6 +720,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         if (requestCode == GeneralPreferenceFragment.REQUEST_ENABLE_2FA && resultCode == RESULT_OK
             && data != null && "reset".equals(data.getStringExtra("method"))) {
+            logout();
+        } else if (requestCode == NETWORK_SELECTOR_REQUEST && resultCode == RESULT_OK) {
             logout();
         }
     }

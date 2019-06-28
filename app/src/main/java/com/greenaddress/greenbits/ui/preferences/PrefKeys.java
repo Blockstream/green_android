@@ -8,6 +8,7 @@ public class PrefKeys {
     public static final String PRICING = "pricing";
     public static final String UNIT = "unit";
     public static final String WATCH_ONLY_LOGIN = "watch_only_login";
+    public static final String SWITCH_NETWORK = "switch_network";
     public static final String REQUIRED_NUM_BLOCKS = "required_num_blocks";
     public static final String DEFAULT_FEERATE_SATBYTE = "default_feerate_satbyte";
     public static final String MNEMONIC_PASSPHRASE = "mnemonic_passphrase";

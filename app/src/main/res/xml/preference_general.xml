@@ -20,6 +20,10 @@
         android:title=""
         android:summary=""/>
 
+    <Preference
+        android:key="switch_network"
+        android:title="@string/id_switch_network" />
+
     <PreferenceCategory android:title="@string/id_account"
         android:key="account_title"
         android:icon="@drawable/ic_account"
