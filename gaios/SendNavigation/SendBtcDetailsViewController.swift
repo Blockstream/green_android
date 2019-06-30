@@ -161,7 +161,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
     func reloadCurrencySwitch() {
         let settings = getGAService().getSettings()!
-        let title = isFiat ? settings.getCurrency() : settings.denomination.toString()
+        let title = isFiat ? settings.getCurrency() : settings.denomination.string
         let color = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
         content.currencySwitch.setTitle(title, for: UIControl.State.normal)
         content.currencySwitch.backgroundColor = color

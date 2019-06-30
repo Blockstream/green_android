@@ -71,33 +71,21 @@ public enum DenominationType: String, CodingKey {
     case MicroBTC = "ubtc"
     case Bits = "bits"
 
-    func toString() -> String {
+    static let denominationsBTC: [DenominationType: String] = [ .BTC: "BTC", .MilliBTC: "mBTC", .MicroBTC: "µBTC", .Bits: "bits"]
+    static let denominationsLBTC: [DenominationType: String] = [ .BTC: "L-BTC", .MilliBTC: "mL-BTC", .MicroBTC: "µL-BTC", .Bits: "L-bits"]
+
+    var string: String {
         let isLiquid = getGdkNetwork(getNetwork()).liquid
-        switch self {
-        case .BTC:
-            return isLiquid ? "L-BTC" : "BTC"
-        case .MilliBTC:
-            return isLiquid ? "mL-BTC" : "mBTC"
-        case .MicroBTC:
-            return isLiquid ? "µL-BTC" : "µBTC"
-        case .Bits:
-            return isLiquid ? "L-bits" : "bits"
-        }
+        let denominations = isLiquid ? DenominationType.denominationsLBTC : DenominationType.denominationsBTC
+        let denom = denominations.filter { $0.key == self }.first
+        return denom!.value
     }
 
-    static func fromString(_ value: String) -> DenominationType {
-        switch value.lowercased() {
-        case "btc", "l-btc":
-            return .BTC
-        case "mbtc", "ml-btc":
-            return .MilliBTC
-        case "µbtc", "ubtc", "µl-btc", "ul-btc":
-            return .MicroBTC
-        case "bits", "l-bits":
-            return .Bits
-        default:
-            return .BTC
-        }
+    static func from(_ string: String) -> DenominationType {
+        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let denominations = isLiquid ? DenominationType.denominationsLBTC : DenominationType.denominationsBTC
+        let denom = denominations.filter { $0.value == string }.first
+        return denom?.key ?? .BTC
     }
 }
 
@@ -192,8 +180,13 @@ class Settings: Codable {
     var notifications: SettingsNotifications?
 
     var denomination: DenominationType {
-        get { return DenominationType.fromString(self.unit) }
-        set { self.unit = newValue.rawValue }
+        get {
+            let denom = DenominationType.denominationsBTC.filter { $0.value == self.unit }.first
+            return denom?.key ?? DenominationType.BTC
+        }
+        set {
+            self.unit = DenominationType.denominationsBTC[newValue] ?? "BTC"
+        }
     }
 
     var transactionPriority: TransactionPriority {

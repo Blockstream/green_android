@@ -115,7 +115,7 @@ class SettingsViewController: UIViewController {
         guard let settings = getGAService().getSettings() else { return [] }
         let bitcoinDenomination = SettingsItem(
             title: NSLocalizedString("id_bitcoin_denomination", comment: ""),
-            subtitle: settings.denomination.toString(),
+            subtitle: settings.denomination.string,
             section: .account,
             type: .BitcoinDenomination)
 
@@ -159,7 +159,7 @@ class SettingsViewController: UIViewController {
             if limits.isFiat == true {
                 thresholdValue = String(format: "%@ %@", limits.fiat, settings.getCurrency())
             } else {
-                thresholdValue = String(format: "%@ %@", limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!, settings.denomination.toString())
+                thresholdValue = String(format: "%@ %@", limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!, settings.denomination.string)
             }
             if let notifications = settings.notifications {
                 locktimeRecoveryEnable = notifications.emailOutgoing == true
@@ -483,15 +483,15 @@ class SettingsViewController: UIViewController {
 
     func showBitcoinDenomination() {
         guard let settings = getGAService().getSettings() else { return }
-        var list = [DenominationType.BTC.toString(), DenominationType.MilliBTC.toString(), DenominationType.MicroBTC.toString()]
+        var list = [DenominationType.BTC.string, DenominationType.MilliBTC.string, DenominationType.MicroBTC.string]
         if !isLiquid {
-            list.append(DenominationType.Bits.toString())
+            list.append(DenominationType.Bits.string)
         }
-        let selected = settings.denomination.toString()
+        let selected = settings.denomination.string
         let popup = PopupList(self, title: NSLocalizedString("id_bitcoin_denomination", comment: ""), list: list, selected: selected)
         resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
             guard let value = value as? String else { throw GaError.GenericError }
-            settings.denomination = DenominationType.fromString(value)
+            settings.denomination = DenominationType.from(value)
             let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
             return try getGAService().getSession().changeSettings(details: details!)
         }, completing: { self.reloadData() })

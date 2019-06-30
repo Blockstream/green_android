@@ -46,7 +46,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         guard let limits = limits else { return }
         isFiat = limits.isFiat
         let amount = isFiat ? limits.fiat : limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!
-        let denom = isFiat ? settings.getCurrency() : settings.denomination.toString()
+        let denom = isFiat ? settings.getCurrency() : settings.denomination.string
         content.limitTextField.text = amount
         content.descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
         refresh()

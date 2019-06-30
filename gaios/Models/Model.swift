@@ -223,7 +223,7 @@ struct Balance: Codable {
             let denomination = getGAService().getSettings()!.denomination
             let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
             let value = res![denomination.rawValue] as? String
-            return (value!, denomination.toString())
+            return (value!, denomination.string)
         }
         if let asset = asset?[tag] {
             return (asset, assetInfo?.ticker ?? "")
