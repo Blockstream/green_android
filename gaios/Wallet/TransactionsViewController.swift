@@ -208,7 +208,16 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "send", sender: self)
+        if getGdkNetwork(getNetwork()).liquid && presentingWallet?.btc.satoshi == 0 {
+            let message = NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "")
+            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_receive", comment: ""), style: .default) { _ in
+                self.performSegue(withIdentifier: "receive", sender: self)
+            })
+            self.present(alert, animated: true, completion: nil)
+        }
+        return self.performSegue(withIdentifier: "send", sender: self)
     }
 
     @objc func sweepFromWallet(_ sender: UIButton) {
