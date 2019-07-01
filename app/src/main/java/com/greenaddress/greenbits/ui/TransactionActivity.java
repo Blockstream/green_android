@@ -175,9 +175,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             if (!"btc".equals(mTxItem.assetId)) {
                 assetCardview.setOnClickListener(v -> {
                     final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
+                    BalanceData balance = mAssetsBalances.get(mTxItem.assetId);
                     intent.putExtra("ASSET_ID", mTxItem.assetId)
                     .putExtra("ASSET_INFO", mTxItem.assetInfo)
-                    .putExtra("SATOSHI", mAssetsBalances.get(mTxItem.assetId).getSatoshi());
+                    .putExtra("SATOSHI", balance != null ? balance.getSatoshi() : 0L);
                     startActivity(intent);
                 });
             }
