@@ -56,10 +56,11 @@ class SettingsViewController: UIViewController {
     func reloadData() {
         let bgq = DispatchQueue.global(qos: .background)
         let isWatchOnly = getGAService().isWatchOnly
+        let session = getGAService().getSession()
         Guarantee().compactMap(on: bgq) {
             if !isWatchOnly {
-                self.username = try getGAService().getSession().getWatchOnlyUsername()
-                let dataTwoFactorConfig = try getGAService().getSession().getTwoFactorConfig()
+                self.username = try session.getWatchOnlyUsername()
+                let dataTwoFactorConfig = try session.getTwoFactorConfig()
                 self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
             }
             return ()
@@ -226,7 +227,7 @@ class SettingsViewController: UIViewController {
             type: .Mnemonic)
         let autolock = SettingsItem(
             title: NSLocalizedString("id_auto_logout_timeout", comment: ""),
-            subtitle: settings.autolock.toString(),
+            subtitle: settings.autolock.string,
             section: .security,
             type: .Autolock)
         return !isWatchOnly && !isResetActive ? [mnemonic, autolock] : []
@@ -286,21 +287,18 @@ class SettingsViewController: UIViewController {
     }
 
     func toString(_ section: SettingsSections) -> String {
-        switch section {
-        case .about:
-            return NSLocalizedString("id_about", comment: "")
-        case .account:
-            return NSLocalizedString("id_account", comment: "")
-        case .network:
-            return NSLocalizedString("id_network", comment: "")
-        case .twoFactor:
-            return NSLocalizedString("id_twofactor", comment: "")
-        case .security:
-            return NSLocalizedString("id_security", comment: "")
-        case .advanced:
-            return NSLocalizedString("id_advanced", comment: "")
-        }
+        let strings: [SettingsSections: String] = [.about: "id_about", .account: "id_account", .advanced: "id_advanced", .network: "id_network", .security: "id_security", .twoFactor: "id_twofactor"]
+        return NSLocalizedString(strings[section]!, comment: "")
     }
+
+    func getHeaderImage(from sectionIndex: Int) -> UIImage {
+        let icons: [SettingsSections: String] = [.about: "about", .account: "account", .advanced: "advanced", .network: "network", .security: "security", .twoFactor: "twofactor"]
+        let section: SettingsSections = sections[sectionIndex]
+        return UIImage(named: icons[section]!)!
+    }
+}
+
+extension SettingsViewController {
 
     func logout() {
         let bgq = DispatchQueue.global(qos: .background)
@@ -316,58 +314,6 @@ class SettingsViewController: UIViewController {
         }.catch { _ in
             print("disconnection error never happens")
         }
-    }
-
-    func getHeaderImage(from sectionIndex: Int) -> UIImage {
-        let section: SettingsSections = sections[sectionIndex]
-        switch section {
-        case .about:
-            return UIImage(named: "about")!
-        case .account:
-            return UIImage(named: "account")!
-        case .advanced:
-            return UIImage(named: "advanced")!
-        case .network:
-            return UIImage(named: "network")!
-        case .security:
-            return UIImage(named: "security")!
-        case .twoFactor:
-            return UIImage(named: "twofactor")!
-        }
-    }
-
-    func resolvePopup(popup: PopupPromise, setting: @escaping (_ value: Any) throws -> TwoFactorCall, completing: @escaping () -> Void) {
-        let bgq = DispatchQueue.global(qos: .background)
-        popup.show().get {_ in
-            self.startAnimating()
-        }.compactMap(on: bgq) { newValue in
-            try setting(newValue)
-        }.then(on: bgq) { call in
-            call.resolve(self)
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            completing()
-        }.catch { error in
-            self.showAlert(error)
-        }
-    }
-
-    func showAlert(_ error: Error) {
-        let text: String
-        if let error = error as? TwoFactorCallError {
-            switch error {
-            case .failure(let localizedDescription), .cancel(let localizedDescription):
-                text = localizedDescription
-            }
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
-        }
-    }
-
-    func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
-        self.present(alert, animated: true, completion: nil)
     }
 
     func setWatchOnly(username: String, password: String) {
@@ -427,19 +373,14 @@ class SettingsViewController: UIViewController {
         }
     }
 
-    func setRecoveryEmail(_ value: Bool) {
-        guard let settings = getGAService().getSettings() else { return }
+    func changeSettings(_ settings: Settings) {
+        let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
+        let session = getGAService().getSession()
         let bgq = DispatchQueue.global(qos: .background)
-        let data = ["email_incoming": value, "email_outgoing": value]
-        let json = try! JSONSerialization.data(withJSONObject: data, options: [])
-        settings.notifications = try! JSONDecoder().decode(SettingsNotifications.self, from: json)
-        firstly {
+        Guarantee().map {_ in
             self.startAnimating()
-            return Guarantee()
-        }.compactMap(on: bgq) {
-            try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-        }.compactMap(on: bgq) { details in
-            try getGAService().getSession().changeSettings(details: details)
+        }.compactMap(on: bgq) { _ in
+            try session.changeSettings(details: details!)
         }.then(on: bgq) { call in
             call.resolve(self)
         }.ensure {
@@ -451,64 +392,119 @@ class SettingsViewController: UIViewController {
         }
     }
 
+    func resetTwoFactor(email: String, isDispute: Bool) {
+        let session = getGAService().getSession()
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().map {_ in
+            self.startAnimating()
+        }.compactMap(on: bgq) { _ in
+            try session.resetTwoFactor(email: email, isDispute: false)
+        }.then(on: bgq) { call in
+            call.resolve(self)
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.logout()
+        }.catch { error in
+            self.showAlert(error)
+        }
+    }
+}
+
+extension SettingsViewController {
+
+    func showAlert(_ error: Error) {
+        let text: String
+        if let error = error as? TwoFactorCallError {
+            switch error {
+            case .failure(let localizedDescription), .cancel(let localizedDescription):
+                text = localizedDescription
+            }
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
+        }
+    }
+
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
+    }
+
     func showLockTimeRecovery() {
-        guard let settings = getGAService().getSettings() else { return }
+        let settings = getGAService().getSettings()!
         var enabled = false
         if let notifications = settings.notifications {
             enabled = notifications.emailOutgoing == true
         }
         let alert = UIAlertController(title: NSLocalizedString("id_recovery_transaction_emails", comment: ""), message: "", preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_enable", comment: ""), style: enabled ? .destructive : .default) { _ in
-            self.setRecoveryEmail(true)
+            let notifications = ["email_incoming": true, "email_outgoing": true]
+            let json = try! JSONSerialization.data(withJSONObject: notifications, options: [])
+            settings.notifications = try! JSONDecoder().decode(SettingsNotifications.self, from: json)
+            self.changeSettings(settings)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_disable", comment: ""), style: !enabled ? .destructive : .default) { _ in
-            self.setRecoveryEmail(false)
+            let notifications = ["email_incoming": false, "email_outgoing": false]
+            let json = try! JSONSerialization.data(withJSONObject: notifications, options: [])
+            settings.notifications = try! JSONDecoder().decode(SettingsNotifications.self, from: json)
+            self.changeSettings(settings)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
 
     func showDefaultTransactionPriority() {
-        guard let settings = getGAService().getSettings() else { return }
         let list = [TransactionPriority.High.text, TransactionPriority.Medium.text, TransactionPriority.Low.text]
+        let settings = getGAService().getSettings()!
         let selected = settings.transactionPriority.text
-        let popup = PopupList(self, title: NSLocalizedString("id_default_transaction_priority", comment: ""), list: list, selected: selected)
-        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            guard let string = value as? String else { throw GaError.GenericError }
-            if string == TransactionPriority.Low.text { settings.transactionPriority = .Low} else if string == TransactionPriority.Medium.text { settings.transactionPriority = .Medium} else if string == TransactionPriority.High.text { settings.transactionPriority = .High}
-            let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-            return try getGAService().getSession().changeSettings(details: details!)
-        }, completing: { self.reloadData() })
+        let alert = UIAlertController(title: NSLocalizedString("id_default_transaction_priority", comment: ""), message: "", preferredStyle: .actionSheet)
+        list.forEach { (item: String) in
+            alert.addAction(UIAlertAction(title: NSLocalizedString(item, comment: ""), style: item == selected  ? .destructive : .default) { _ in
+                settings.transactionPriority = TransactionPriority.from(item)
+                self.changeSettings(settings)
+            })
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func showBitcoinDenomination() {
-        guard let settings = getGAService().getSettings() else { return }
         var list = [DenominationType.BTC.string, DenominationType.MilliBTC.string, DenominationType.MicroBTC.string]
         if !isLiquid {
             list.append(DenominationType.Bits.string)
         }
+        let settings = getGAService().getSettings()!
         let selected = settings.denomination.string
-        let popup = PopupList(self, title: NSLocalizedString("id_bitcoin_denomination", comment: ""), list: list, selected: selected)
-        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            guard let value = value as? String else { throw GaError.GenericError }
-            settings.denomination = DenominationType.from(value)
-            let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-            return try getGAService().getSession().changeSettings(details: details!)
-        }, completing: { self.reloadData() })
+        let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
+        list.forEach { (item: String) in
+            alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
+                settings.denomination = DenominationType.from(item)
+                self.changeSettings(settings)
+            })
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func showDefaultCustomRate() {
-        guard let settings = getGAService().getSettings() else { return }
+        let settings = getGAService().getSettings()!
         let hint = String(format: "%.02f", Float(settings.customFeeRate ?? 1000) / 1000)
-        let popup = PopupEditable(self, title: NSLocalizedString("id_default_custom_fee_rate", comment: ""), message: "", hint: hint, text: hint, keyboardType: .numberPad)
-        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            guard let value = value as? String else { throw GaError.GenericError }
-            let amount = value.replacingOccurrences(of: ",", with: ".")
-            guard let feeRate = Double(amount) else { throw GaError.GenericError }
+
+        let alert = UIAlertController(title: NSLocalizedString("id_default_custom_fee_rate", comment: ""), message: "", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.text = hint
+            textField.keyboardType = .numberPad
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
+            let textField = alert.textFields!.first
+            let value = textField!.text
+            let amount = value!.replacingOccurrences(of: ",", with: ".")
+            guard let feeRate = Double(amount) else { return }
             settings.customFeeRate = UInt64(feeRate * 1000)
-            let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-            return try getGAService().getSession().changeSettings(details: details!)
-        }, completing: { self.reloadData() })
+            self.changeSettings(settings)
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func showWatchOnly() {
@@ -525,34 +521,50 @@ class SettingsViewController: UIViewController {
     }
 
     func showAutolock() {
-        guard let settings = getGAService().getSettings() else { return }
-        let list = [AutoLockType.minute.toString(), AutoLockType.twoMinutes.toString(), AutoLockType.fiveMinutes.toString(), AutoLockType.tenMinutes.toString()]
-        let selected = settings.autolock.toString()
-        let popup = PopupList(self, title: NSLocalizedString("id_auto_logout_timeout", comment: ""), list: list, selected: selected)
-        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            guard let value = value as? String else { throw GaError.GenericError }
-            settings.autolock = AutoLockType.fromString(value)
-            let details = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-            return try getGAService().getSession().changeSettings(details: details!)
-        }, completing: { self.reloadData() })
+        let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string]
+        let settings = getGAService().getSettings()!
+        let selected = settings.autolock.string
+        let alert = UIAlertController(title: NSLocalizedString("id_auto_logout_timeout", comment: ""), message: "", preferredStyle: .actionSheet)
+        list.forEach { (item: String) in
+            alert.addAction(UIAlertAction(title: item, style: item == selected  ? .destructive : .default) { _ in
+                settings.autolock = AutoLockType.from(item)
+                self.changeSettings(settings)
+            })
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func showResetTwoFactor() {
         let hint = "jane@example.com"
-        let popup = PopupEditable(self, title: NSLocalizedString("id_request_twofactor_reset", comment: ""), message: NSLocalizedString("id_resetting_your_twofactor_takes", comment: ""), hint: hint, text: nil, keyboardType: .emailAddress)
-        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            guard let email = value as? String else { throw GaError.GenericError }
-            return try getGAService().getSession().resetTwoFactor(email: email, isDispute: false)
-        }, completing: { self.logout() })
+        let alert = UIAlertController(title: NSLocalizedString("id_request_twofactor_reset", comment: ""), message: NSLocalizedString("id_resetting_your_twofactor_takes", comment: ""), preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = hint
+            textField.keyboardType = .emailAddress
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
+            let textField = alert.textFields!.first
+            let email = textField!.text
+            self.resetTwoFactor(email: email!, isDispute: false)
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 
     func showDisputeTwoFactor() {
         let hint = "jane@example.com"
-        let popup = PopupEditable(self, title: NSLocalizedString("id_dispute_twofactor_reset", comment: ""), message: NSLocalizedString("id_warning_there_is_already_a", comment: ""), hint: hint, text: nil, keyboardType: .emailAddress)
-        resolvePopup(popup: popup, setting: { (_ value: Any) throws -> TwoFactorCall in
-            guard let email = value as? String else { throw GaError.GenericError }
-            return try getGAService().getSession().resetTwoFactor(email: email, isDispute: true)
-        }, completing: { self.logout() })
+        let alert = UIAlertController(title: NSLocalizedString("id_dispute_twofactor_reset", comment: ""), message: NSLocalizedString("id_warning_there_is_already_a", comment: ""), preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = hint
+            textField.keyboardType = .emailAddress
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
+            let textField = alert.textFields!.first
+            let email = textField!.text
+            self.resetTwoFactor(email: email!, isDispute: true)
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

@@ -44,9 +44,15 @@ public enum TransactionPriority: Int {
     case High = 3
     case Custom = 0
 
+    static let strings = [TransactionPriority.Low: "id_slow", TransactionPriority.Medium: "id_medium", TransactionPriority.High: "id_fast", TransactionPriority.Custom: "id_custom"]
+
     var text: String {
-        let string = [TransactionPriority.Low: "id_slow", TransactionPriority.Medium: "id_medium", TransactionPriority.High: "id_fast", TransactionPriority.Custom: "id_custom"][self]
-        return NSLocalizedString(string ?? "", comment: "")
+        return NSLocalizedString(TransactionPriority.strings[self] ?? "", comment: "")
+    }
+
+    static func from(_ string: String) -> TransactionPriority {
+        let priority = TransactionPriority.strings.filter { NSLocalizedString($0.value, comment: "") == string }.first
+        return priority?.key ?? .Medium
     }
 
     var time: String {
@@ -96,19 +102,19 @@ public enum AutoLockType: Int {
     case fiveMinutes = 5
     case tenMinutes = 10
 
-    func toString() -> String {
+    var string: String {
         let number = String(format: "%d", self.rawValue)
         let localized = NSLocalizedString(self == .minute ? "id_minute" : "id_minutes", comment: "")
         return "\(number) \(localized)"
     }
 
-    static func fromString(_ value: String) -> AutoLockType {
+    static func from(_ value: String) -> AutoLockType {
         switch value {
-        case AutoLockType.minute.toString():
+        case AutoLockType.minute.string:
             return .minute
-        case AutoLockType.twoMinutes.toString():
+        case AutoLockType.twoMinutes.string:
             return .twoMinutes
-        case AutoLockType.fiveMinutes.toString():
+        case AutoLockType.fiveMinutes.string:
             return .fiveMinutes
         default:
             return tenMinutes
