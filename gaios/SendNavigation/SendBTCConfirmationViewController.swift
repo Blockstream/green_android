@@ -65,7 +65,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         if isLiquid {
             let tag = addressee.assetTag ?? "btc"
             let asset = wallet?.balance[tag]?.assetInfo
-            content.assetTableCell?.setup(tag: tag, asset: asset, satoshi: addressee.satoshi)
+            content.assetTableCell?.configure(tag: tag, asset: asset, satoshi: addressee.satoshi)
             let (amount, denom) = Balance.convert(details: ["satoshi": transaction.fee]).get(tag: "btc")
             content.assetsFeeLabel.text = "\(amount) \(denom)"
         } else {

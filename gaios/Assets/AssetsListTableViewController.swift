@@ -26,6 +26,8 @@ class AssetsListTableViewController: UITableViewController {
         let nib = UINib(nibName: "AssetTableCell", bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: "cell")
         tableView.tableFooterView = UIView()
+        tableView.estimatedRowHeight = 70
+        tableView.rowHeight = UITableView.automaticDimension
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -43,7 +45,7 @@ class AssetsListTableViewController: UITableViewController {
         return assets.count
     }
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 70
+        return UITableView.automaticDimension
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -51,7 +53,7 @@ class AssetsListTableViewController: UITableViewController {
         let tag = assets[indexPath.row].key
         let asset = assets[indexPath.row].value.assetInfo
         let satoshi = assets[indexPath.row].value.satoshi
-        cell.setup(tag: tag, asset: asset, satoshi: satoshi)
+        cell.configure(tag: tag, asset: asset, satoshi: satoshi)
         cell.selectionStyle = .none
         return cell
     }

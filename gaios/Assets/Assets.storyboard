@@ -83,7 +83,7 @@
                                     <outlet property="saveButton" destination="QZY-KX-8B4" id="DZo-3d-oyU"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="AssetDetailTableCell" rowHeight="92" id="0n1-2e-aNA" customClass="AssetDetailTableCell" customModule="gaios" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="AssetDetailTableCell" rowHeight="92" id="0n1-2e-aNA" customClass="AssetDetailTableCell" customModule="gaios" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="163" width="414" height="92"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0n1-2e-aNA" id="7Cj-wL-wRS">

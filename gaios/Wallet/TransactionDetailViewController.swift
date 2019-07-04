@@ -207,7 +207,7 @@ class TransactionTableViewController: UITableViewController, UITextViewDelegate 
         if isLiquid {
             let asset = transaction.assets[transaction.defaultAsset]
             let value = transaction.amounts[transaction.defaultAsset]
-            assetTableCell.setup(tag: transaction.defaultAsset, asset: asset, satoshi: value!, negative: transaction.type != "incoming")
+            assetTableCell.configure(tag: transaction.defaultAsset, asset: asset, satoshi: value!, negative: transaction.type != "incoming")
         }
         self.tableView.reloadData()
     }
