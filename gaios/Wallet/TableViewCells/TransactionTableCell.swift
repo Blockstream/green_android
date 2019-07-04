@@ -19,20 +19,22 @@ class TransactionTableCell: UITableViewCell {
         amount.text = transaction.amount()
         selectionStyle = .none
         date.text = transaction.date()
-
-        if isLiquid {
-            let assetTag = transaction.defaultAsset
-            address.text = transaction.assets[assetTag] == nil ? assetTag : ""
+        let assetTag = transaction.defaultAsset
+        let isAsset = !(assetTag == "btc")
+        if isAsset && transaction.assets[assetTag]?.entity?.domain != nil {
+            address.text = transaction.assets[assetTag]?.entity?.domain ?? ""
         } else if !transaction.memo.isEmpty {
             address.text = transaction.memo
         } else if transaction.type == "redeposit" {
-            address.text = NSLocalizedString("id_redeposited", comment: String())
+            address.text = String(format: "%@ %@", NSLocalizedString("id_redeposited", comment: ""),
+                                  isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         } else if transaction.type == "incoming" {
-            address.text = NSLocalizedString("id_received", comment: String())
-        } else if isLiquid {
-            address.text = ""
+            address.text = String(format: "%@ %@", NSLocalizedString("id_received", comment: ""),
+                                  isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         } else {
-            address.text = transaction.address()
+            address.text = String(format: "%@ %@",
+                                  isLiquid ? NSLocalizedString("id_sent", comment: "") : transaction.address() ?? "",
+                                  isLiquid && isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         }
     }
 
