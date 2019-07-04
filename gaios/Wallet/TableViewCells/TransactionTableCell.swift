@@ -8,13 +8,17 @@ class TransactionTableCell: UITableViewCell {
     @IBOutlet weak var amount: UILabel!
     @IBOutlet weak var date: UILabel!
     @IBOutlet weak var bumpFee: UIImageView!
+    @IBOutlet weak var imageDirection: UIImageView!
+
+    var isLiquid: Bool {
+        return getGdkNetwork(getNetwork()).liquid
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()
     }
 
     func setup(with transaction: Transaction) {
-        let isLiquid = getGdkNetwork(getNetwork()).liquid
         bumpFee.isHidden = !transaction.canRBF || isLiquid
         amount.text = transaction.amount()
         selectionStyle = .none
@@ -39,7 +43,6 @@ class TransactionTableCell: UITableViewCell {
     }
 
     func checkBlockHeight(transaction: Transaction, blockHeight: UInt32) {
-        let isLiquid = getGdkNetwork(getNetwork()).liquid
         if transaction.blockHeight == 0 {
             status.text = NSLocalizedString("id_unconfirmed", comment: "")
             status.textColor = UIColor.errorRed()
@@ -58,8 +61,10 @@ class TransactionTableCell: UITableViewCell {
     func checkTransactionType(transaction: Transaction) {
         if transaction.type == "incoming" {
             amount.textColor = UIColor.customMatrixGreen()
+            imageDirection.image = UIImage(named: isLiquid ? "tx_received" : "tx_received_mainnet")
         } else {
             amount.textColor = UIColor.white
+            imageDirection.image = UIImage(named: "tx_send")
         }
     }
 }
