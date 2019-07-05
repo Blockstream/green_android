@@ -31,10 +31,10 @@
                     <rect key="frame" x="0.0" y="20" width="375" height="260"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="OF1-U4-IjE">
-                            <rect key="frame" x="112.5" y="55" width="150" height="150"/>
+                            <rect key="frame" x="87.5" y="30" width="200" height="200"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="150" id="4gL-yy-nH8"/>
-                                <constraint firstAttribute="width" constant="150" id="bIB-sl-TGy"/>
+                                <constraint firstAttribute="height" constant="200" id="4gL-yy-nH8"/>
+                                <constraint firstAttribute="width" constant="200" id="bIB-sl-TGy"/>
                             </constraints>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
@@ -46,7 +46,7 @@
                             </userDefinedRuntimeAttributes>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" textAlignment="center" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="none" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6HY-Xw-Roz">
-                            <rect key="frame" x="16" y="221" width="343" height="14.5"/>
+                            <rect key="frame" x="16" y="246" width="343" height="14.5"/>
                             <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
