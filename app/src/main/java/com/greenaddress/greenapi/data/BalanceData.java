@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.io.Serializable;
+
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BalanceData extends JSONData {
+public class BalanceData extends JSONData implements Serializable {
     //{"bits":"1584407.51","btc":"1.58440751","fiat":"1.74284826100000014072365527239843",
     // "fiat_currency":"USD","fiat_rate":"1.10000000000000008881784197001252","mbtc":"1584.40751",
     // "satoshi":158440751,"ubtc":"1584407.51"}

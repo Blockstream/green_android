@@ -5,7 +5,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenbits.ui.components.AssetsAdapter;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
@@ -41,12 +43,11 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
 
 
-public class TransactionActivity extends LoggedActivity implements View.OnClickListener {
+public class TransactionActivity extends LoggedActivity implements View.OnClickListener,
+    AssetsAdapter.OnAssetSelected  {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
-    private static final int FEE_BLOCK_NUMBERS[] = {1, 3, 6};
 
-    private Menu mMenu;
     private TextView mEstimatedBlocks;
     private TextView mMemoTitle;
     private TextView mMemoSave;
@@ -159,29 +160,12 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final TextView amountText = UI.find(this, R.id.txAmountText);
         if (mService.isLiquid()) {
             amountText.setVisibility(View.GONE);
+            final RecyclerView assetsList = findViewById(R.id.assetsList);
+            assetsList.setLayoutManager(new LinearLayoutManager(this));
+            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getAssetBalances(), mService, this);
+            assetsList.setAdapter(adapter);
+            assetsList.setVisibility(View.VISIBLE);
 
-            final CardView assetCardview = findViewById(R.id.txAssetCard);
-            final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
-            final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
-            final TextView txAssetDomain = assetCardview.findViewById(R.id.assetDomain);
-            txAssetText.setText(mTxItem.getAssetName());
-            txAssetValue.setText(mTxItem.getAmountWithUnit(mService));
-            assetCardview.setVisibility(View.VISIBLE);
-            if (mTxItem.getAssetDomain() != null) {
-                txAssetDomain.setVisibility(View.VISIBLE);
-                txAssetDomain.setText(mTxItem.getAssetDomain());
-            }
-
-            if (!"btc".equals(mTxItem.assetId)) {
-                assetCardview.setOnClickListener(v -> {
-                    final Intent intent = new Intent(TransactionActivity.this, AssetActivity.class);
-                    BalanceData balance = mAssetsBalances.get(mTxItem.assetId);
-                    intent.putExtra("ASSET_ID", mTxItem.assetId)
-                    .putExtra("ASSET_INFO", mTxItem.assetInfo)
-                    .putExtra("SATOSHI", balance != null ? balance.getSatoshi() : 0L);
-                    startActivity(intent);
-                });
-            }
         } else {
             amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
         }
@@ -349,7 +333,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_transaction, menu);
-        mMenu = menu;
         return true;
     }
 
@@ -471,4 +454,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         }
     }
 
+    @Override
+    public void onAssetSelected(final String assetId) {
+        super.onAssetSelected(assetId, mAssetsBalances.get(assetId) );
+    }
 }

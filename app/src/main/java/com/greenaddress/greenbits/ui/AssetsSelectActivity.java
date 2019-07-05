@@ -81,21 +81,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
     @Override
     public void onAssetSelected(final String assetId) {
-        Log.d("ASSET", "selected " + assetId);
-        if (getCallingActivity() !=
-            null && getCallingActivity().getClassName().equals(TabbedMainActivity.class.getName()) ) {
-            if ("btc".equals(assetId))
-                return;
-            final Intent intent = new Intent(AssetsSelectActivity.this, AssetActivity.class);
-            intent.putExtra("ASSET_ID", assetId)
-            .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
-            .putExtra("SATOSHI", mAssetsBalances.get(assetId).getSatoshi());
-            startActivity(intent);
-            return;
-        }
-        final Intent intent = getIntent();
-        intent.putExtra(PrefKeys.ASSET_SELECTED, assetId);
-        setResult(RESULT_OK, intent);
-        finish();
+        super.onAssetSelected(assetId, mAssetsBalances.get(assetId) );
     }
+
 }

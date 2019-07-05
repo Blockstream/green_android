@@ -1,11 +1,14 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.model.ToastObservable;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -79,4 +82,22 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         }
     }
 
+    protected void onAssetSelected(final String assetId, final BalanceData balance) {
+        Log.d("ASSET", "selected " + assetId);
+        if (getCallingActivity() !=
+            null && getCallingActivity().getClassName().equals(TabbedMainActivity.class.getName()) ) {
+            if ("btc".equals(assetId))
+                return;
+            final Intent intent = new Intent(this, AssetActivity.class);
+            intent.putExtra("ASSET_ID", assetId)
+            .putExtra("ASSET_INFO", balance.getAssetInfo())
+            .putExtra("SATOSHI", balance.getSatoshi());
+            startActivity(intent);
+            return;
+        }
+        final Intent intent = getIntent();
+        intent.putExtra(PrefKeys.ASSET_SELECTED, assetId);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
 }

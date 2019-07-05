@@ -51,8 +51,12 @@ public class ListTransactionsAdapter extends
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         final TransactionItem txItem = mTxItems.get(position);
-        holder.textValue.setText(txItem.getAmountWithUnit(mService));
-
+        final int assetsNumber = txItem.getAssetBalances().size();
+        if (assetsNumber > 1) {
+            holder.textValue.setText(mActivity.getString(R.string.id_d_assets,assetsNumber));
+        } else {
+            holder.textValue.setText(txItem.getAmountWithUnit(mService));
+        }
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
         final boolean spvVerified = txItem.spvVerified || txItem.isSpent ||
@@ -86,7 +90,9 @@ public class ListTransactionsAdapter extends
 
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {
-            if (mService.isLiquid() && txItem.isAsset && txItem.assetInfo != null)
+            if (mService.isLiquid() && assetsNumber > 1)
+                message = mActivity.getString(R.string.id_multiple_assets);
+            else if (mService.isLiquid() && txItem.isAsset && txItem.assetInfo != null)
                 message = txItem.assetInfo.getEntity().getDomain();
             else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
@@ -17,7 +18,9 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
@@ -56,8 +59,14 @@ public class TransactionItem implements Serializable {
     public final String assetId;
     public final AssetInfoData assetInfo;
 
+    public Map<String, BalanceData> mAssetBalances;
+
     public String toString() {
-        return String.format("%s %s %s %s", date.toString(), type.name(), satoshi, counterparty);
+        return String.format("%s %s %s", date.toString(), type.name(), counterparty);
+    }
+
+    public Map<String, BalanceData> getAssetBalances() {
+        return mAssetBalances;
     }
 
     public int getConfirmations() {
@@ -89,16 +98,26 @@ public class TransactionItem implements Serializable {
         blockHeight = txData.getBlockHeight();
         counterparty = "";
         this.subaccount = subaccount;
-
         assetId = txData.getFirstAsset() == null ? "btc" : txData.getFirstAsset();
         assetInfo = txData.getAssetInfo() == null ? null : txData.getAssetInfo().get(assetId);
         satoshi = txData.getSatoshi().get(assetId);
         isAsset = txData.isAsset();
 
+        mAssetBalances = new HashMap<>();
+        for (Map.Entry<String, Long> entry : txData.getSatoshi().entrySet()) {
+            BalanceData balance = new BalanceData();
+            balance.setSatoshi(entry.getValue());
+            if (txData.getAssetInfo() != null) {
+                balance.setAssetInfo(txData.getAssetInfo().get(entry.getKey()));
+            }
+            mAssetBalances.put(entry.getKey(), balance);
+        }
+
         switch (txData.getType()) {
         case "outgoing":
             type = TYPE.OUT;
             counterparty = txData.getAddressee();
+            mAssetBalances.remove("btc");
             break;
         case "incoming":
             type = TYPE.IN;
@@ -106,6 +125,7 @@ public class TransactionItem implements Serializable {
         case "redeposit":
             // the amount is the fee
             type = TYPE.REDEPOSIT;
+            mAssetBalances.remove("btc");
             break;
         default:
             throw new ParseException("cannot parse type", 0);
@@ -137,17 +157,6 @@ public class TransactionItem implements Serializable {
                       txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 
-    public String getAssetName() {
-        return "btc".equals(assetId) ? "L-BTC" : assetInfo != null &&
-               assetInfo.getName() != null ? assetInfo.getName() : assetId;
-    }
-
-    public String getAssetDomain() {
-        return "btc".equals(assetId) ? null : assetInfo != null &&
-               assetInfo.getEntity() != null &&
-               assetInfo.getEntity().getDomain() != null ? assetInfo.getEntity().getDomain() : null;
-    }
-
     public String getAssetTicker(final GaService service) {
         return "btc".equals(assetId) ? service.getBitcoinOrLiquidUnit() : assetInfo != null &&
                assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
@@ -166,7 +175,7 @@ public class TransactionItem implements Serializable {
                 details.set("asset_info", getAssetInfo().toObjectNode());
             final ObjectNode converted = getSession().convert(details);
             final String amount = converted.get(isAsset ? assetId : service.getUnitKey()).asText();
-            return String.format("%s%s %s", type == TYPE.IN ? "" : "-", amount,
+            return String.format("%s%s %s", type == TYPE.OUT ? "-" : "", amount,
                                  isAsset ? getAssetTicker(service) : service.getBitcoinOrLiquidUnit());
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());

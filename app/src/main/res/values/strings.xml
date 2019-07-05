@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">Custom network with this name already present</string>
   <string name="id_d6_confirmations">%d/6 confirmations</string>
   <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets">%d assets</string>
   <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">Date</string>
   <string name="id_day">day</string>
