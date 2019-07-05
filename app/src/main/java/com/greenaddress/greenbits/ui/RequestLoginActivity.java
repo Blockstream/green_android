@@ -22,7 +22,6 @@ import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.CodeResolver;
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
@@ -33,6 +32,8 @@ import com.satoshilabs.trezor.Trezor;
 import java.util.List;
 import java.util.Observer;
 import java.util.concurrent.Callable;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class RequestLoginActivity extends LoginActivity implements Observer {
 
@@ -204,14 +205,17 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
             try {
                 // This should only be supported by the Nano X
                 final BTChipDongle.BTChipApplication application = dongle.getApplication();
-                Log.d(TAG, "Ledger application:" + application.toString());
+                final boolean isMainnet = mService.getNetwork().getMainnet();
+                final boolean bothMainnet = isMainnet && application.getName().equals("Bitcoin");
+                final boolean bothTestnet = !isMainnet && application.getName().equals("Bitcoin Test");
 
-                if ((mService.getNetwork().getMainnet() && !application.getName().equals("Bitcoin"))
-                    || !application.getName().equals("Bitcoin Test")) {
+                Log.d(TAG, "Ledger application:" + application.getName() + " network is mainnet:"+ isMainnet);
+
+                if (!(bothMainnet || bothTestnet)) {
                     // We using the wrong app, prompt the user to open the bitcoin app.
                     mUsb = null;
                     mInLedgerDashboard = true;
-                    showInstructions(R.string.id_ledger_dashboard_detected); // TODO: we should have a more specific str here
+                    showInstructions(R.string.id_the_network_selected_on_the);
                     return;
                 }
             } catch (BTChipException ignored) { }
@@ -242,6 +246,10 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
         } catch (final BTChipException e) {
             if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
                 e.printStackTrace();
+            if (e.getSW() == 0x6faa) {
+                showInstructions(R.string.id_please_disconnect_your_ledger);
+                return;
+            }
             try {
                 transport.close();
             } catch (final BTChipException bte) {}
