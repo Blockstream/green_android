@@ -263,12 +263,16 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     }
 
     private void updateSnackBar(final ConnectionMessageObservable cmo) {
-        if (cmo.isOffline()) {
-            final TextView text = mSnackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
-            runOnUiThread(() -> text.setText(cmo.getMessage(getResources())));
-            mSnackbar.show();
-        } else {
-            mSnackbar.dismiss();
+        if (mSnackbar != null && cmo != null) {
+            runOnUiThread(() -> {
+                if (cmo.isOffline()) {
+                    final TextView text = mSnackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+                    text.setText(cmo.getMessage(getResources()));
+                    mSnackbar.show();
+                } else {
+                    mSnackbar.dismiss();
+                }
+            });
         }
     }
 
