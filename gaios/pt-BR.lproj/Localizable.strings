@@ -31,6 +31,9 @@
 "id_amount" = "Quantidade";
 "id_are_you_sure_you_want_to_view" = "Tem certeza que deseja visualizar a transação usando %@?";
 "id_asset" = "Asset";
+"id_asset_details" = "Asset Details";
+"id_asset_id" = "Asset ID";
+"id_asset_name" = "Asset Name";
 "id_attempts_remaining_d" = "Tentativas restantes: %d";
 "id_auto_logout_timeout" = "Tempo de espera para encerrar a sessão automaticamente";
 "id_autolock_after" = "Bloquear depois de";
@@ -62,6 +65,7 @@
 "id_congratulations" = "Parabéns!";
 "id_connect_through_a_proxy" = "Conectar-se através de um proxy";
 "id_connect_with_tor" = "Conectar-se com Tor";
+"id_connecting_to_a_trusted_node" = "Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)";
 "id_connecting_to_tor_onion_nodes" = "Conectar-se a nodes Tor (.onion) garante máxima privacidade e segurança. Pressione \"OK\" para continuar.";
 "id_continue" = "Continuar";
 "id_copy_to_clipboard" = "Copiar para a área de transferênca";
@@ -91,6 +95,7 @@
 "id_displays_the_progress_of_spv" = "Mostra o progresso da sincronização SPV";
 "id_dispute_twofactor_reset" = "Disputar reset da autenticação de dois fatores";
 "id_disputed" = "Disputado";
+"id_domain" = "Domain";
 "id_done" = "Feito";
 "id_dont_ask_me_again" = "Não perguntar novamente";
 "id_dont_store_your_mnemonic_on" = "Não armazene seu mnemônico em seu celular, computador, ou qualquer serviço online.";
@@ -124,6 +129,7 @@
 "id_enter_your_email_address" = "Digite seu endereço de email";
 "id_enter_your_s_wallet_mnemonic" = "Digite seu %@ mnemônico de carteira";
 "id_enter_your_wallet_mnemonic" = "Digite o mnemônico de sua carteira";
+"id_entity" = "Entity";
 "id_error" = "Erro";
 "id_error_logging_in_with_hardware" = "Erro durante o login com sua carteira de hardware";
 "id_error_nfc_tag_not_writable" = "Erro: Tag NFC não gravável";
@@ -171,6 +177,7 @@
 "id_information_not_available" = "Informação não disponível.";
 "id_insufficient_funds" = "Fundos insuficientes";
 "id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
+"id_insufficient_lbtc_to_send_a" = "Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC";
 "id_invalid_address" = "Endereço inválido";
 "id_invalid_amount" = "Quantidade inválida";
 "id_invalid_mnemonic" = "Mnemônico inválido";
@@ -186,6 +193,7 @@
 "id_invalid_twofactor_code" = "Código de autenticação inválido";
 "id_invalid_url" = "URL inválida";
 "id_is_a_noncustodial" = "é uma carteira não-custodial";
+"id_issuer" = "Issuer";
 "id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Último ping: %1$d ms";
 "id_later" = "MAIS TARDE";
@@ -199,6 +207,7 @@
 "id_logging_in" = "Entrando…";
 "id_login_failed" = "Falha ao entrar";
 "id_login_options" = "Opções de entrada";
+"id_logout_and_switch" = "Logout and Switch";
 "id_look_at_the_device_for_the" = "Olhe no dispositivo para a posição dos números";
 "id_low" = "Baixa";
 "id_main_account" = "Conta Principal";
@@ -211,6 +220,7 @@
 "id_mnemonic_not_available" = "Mnemônico não disponível";
 "id_month" = "mês";
 "id_months" = "meses";
+"id_multiple_assets" = "Multiple Assets";
 "id_my_notes" = "MINHAS NOTAS";
 "id_name" = "Nome";
 "id_network" = "REDE";
@@ -231,6 +241,8 @@
 "id_no_peers_connected" = "Sem peers conectados";
 "id_no_pin_provided_exiting" = "Nenhum PIN fornecido, saindo.";
 "id_no_recipients" = "Sem destinatários";
+"id_no_registered_name_for_this" = "No registered name for this asset.";
+"id_no_registered_ticker_for_this" = "No registered ticker for this asset.";
 "id_no_utxos_found" = "Nenhum UTXO encontrado";
 "id_normal" = "Normal";
 "id_not_connected_connecting_in_ds_" = "Não conectado. Conectando em %ds …";
@@ -259,6 +271,7 @@
 "id_pin_has_to_be_between_4_and_15" = "O PIN deve ter entre 4 e 15 dígitos";
 "id_pins_do_not_match_please_try" = "Os PINs não coincidem, por favor, tente novamente.";
 "id_please_disable_biometric" = "Por favor, desabilite a autenticação biométrica antes de remover o PIN";
+"id_please_disconnect_your_ledger" = "Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN";
 "id_please_enable_another" = "Por favor, habilite outro método de autenticação para evitar perder acesso aos seus fundos.";
 "id_please_enable_camera" = "Por favor, ative as permissões da câmera para utilizá-la.";
 "id_please_enable_pin" = "Por favor, ative a autenticação por PIN antes de adicionar ou remover a autenticação biométrica";
@@ -272,6 +285,7 @@
 "id_please_select_the_checkbox" = "Por favor, marque a caixa de marcação";
 "id_please_set_and_enable_socks5" = "Please set and enable SOCKS5 proxy and port to use Tor";
 "id_please_tap_card" = "Por favor, encoste o cartão";
+"id_precision" = "Precision";
 "id_privacy_policy" = "Política de Privacidade";
 "id_problem_with_key_1s" = "Problema com a chave %1$@";
 "id_providing_an_email_enables" = "Fornecer um email ativa notificações e a recuperação de transações.";
@@ -316,6 +330,7 @@
 "id_second" = "segundo";
 "id_seconds" = "segundos";
 "id_security" = "SEGURANÇA";
+"id_select_account" = "Select Account";
 "id_select_asset" = "Select asset";
 "id_select_network" = "Selecionar rede";
 "id_select_word_number_d" = "Selecionar palavra de número %d";
@@ -360,6 +375,8 @@
 "id_spv_unverified" = "SPV não verificado";
 "id_sweep" = "Varrer";
 "id_sweep_from_paper_wallet" = "Varrer Carteira de Papel";
+"id_sweep_into_s" = "Sweep into %@";
+"id_switch_network" = "Switch Network";
 "id_synchronize_spv_on_mobile" = "Sincronizar SPV na rede móvel";
 "id_system_message" = "Mensagem do Sistema";
 "id_tap_on_the_card_to_view" = "Encoste o cartão para ver transações.";
@@ -371,10 +388,11 @@
 "id_the_camera_has_a_problem_you" = "Problema com a câmera. Você provavelmente precisa reiniciar o dispositivo.";
 "id_the_easier_safer_and_faster" = "a carteira mais fácil, segura e rápida";
 "id_the_hardware_wallet_you_are" = "A carteira de hardware que você está utilizando ainda não é suportada";
+"id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_password_cant_be_empty" = "A senha não pode ficar em branco";
 "id_the_recovery_key_below_will_not" = "A chave de recuperação abaixo não será mostrada novamente. Por favor mantenha uma cópia segura agora para se certificar de que você sempre terá acesso aos seus fundos.";
 "id_there_is_already_a_pin_set_for" = "Já há um PIN configurado para a carteira %@. Preceder não permitirá a configuração de um novo PIN e será necessário o mnemônico de 24 palavras para entrar. Você pode desabilitar o PIN nas configurações ou com 3 tentativas falhas.";
-"id_ticker" = "TICKER";
+"id_ticker" = "Ticker";
 "id_time_s" = "Tempo: %@";
 "id_to" = "PARA";
 "id_tor_connectivity_disabled" = "Conectividade Tor Desabilitada!";
@@ -399,6 +417,7 @@
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Impossível contatar o serviço Green. Por favor, verifique sua conexão de rede e aguarde para ser reconectado.";
 "id_unconfirmed" = "Não confirmada";
+"id_unknown" = "Unknown";
 "id_unknown_bip21_parameter" = "Parâmetro bip21 desconhecido";
 "id_unknown_custom" = "Desconhecido (Personalizado)";
 "id_updated" = "atualizado";
@@ -428,6 +447,7 @@
 "id_we_use_the_camera_to_scan_qr" = "Usamos a câmera para escanear códigos QR";
 "id_welcome" = "Bem-vindo";
 "id_welcome_to" = "Bem-vindo a";
+"id_where_would_you_like_to_import" = "Where would you like to import the funds?";
 "id_word_d_of_d" = "Palavra %d de %d";
 "id_write_down_the_words" = "Anote as palavras";
 "id_write_down_your_mnemonic_on" = "Anote seu mnemônico em papel e guarde em local seguro.";
@@ -442,7 +462,6 @@
 "id_you_have_received_s" = "Você recebeu %@";
 "id_you_must_first_log_out_before" = "Você precisa sair antes de entrar.";
 "id_you_must_save_this_mnemonic_now" = "Você DEVE salvar este mnemônico AGORA";
-"id_you_need_to_enable_the_proxy" = "Você precisa habilitar a configuração de proxy (Orbot Socks5) antes de habilitar o Tor.";
 "id_you_only_have_one_twofactor" = "Você tem apenas um método de autenticação de dois fatores ativado";
 "id_you_will_need_to_reenter_your" = "Você precisará redigitar seu mnemônico para entrar novamente se não configurar um PIN. Pressione \"OK\" para continuar.";
 "id_your_green_wallet_is_now_ready" = "Sua carteira Green está pronta para uso agora.";

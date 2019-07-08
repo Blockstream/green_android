@@ -31,6 +31,9 @@
 "id_amount" = "Cantidad";
 "id_are_you_sure_you_want_to_view" = "¿Está seguro de que quiere visualizar la transacción con %@?";
 "id_asset" = "Asset";
+"id_asset_details" = "Asset Details";
+"id_asset_id" = "Asset ID";
+"id_asset_name" = "Asset Name";
 "id_attempts_remaining_d" = "Intentos restantes: %d";
 "id_auto_logout_timeout" = "Tiempo de espera para cierre de sesión automático";
 "id_autolock_after" = "Bloquear automáticamente después de";
@@ -62,6 +65,7 @@
 "id_congratulations" = "¡Felicidades!";
 "id_connect_through_a_proxy" = "Conectarse a través de un proxy";
 "id_connect_with_tor" = "Conectarse con Tor";
+"id_connecting_to_a_trusted_node" = "Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)";
 "id_connecting_to_tor_onion_nodes" = "Conectarse a los nodos de Tor (.onion) garantiza máxima privacidad y seguridad. Pulsa \"Aceptar\" para continuar.";
 "id_continue" = "Continuar";
 "id_copy_to_clipboard" = "Copiar al portapapeles";
@@ -91,6 +95,7 @@
 "id_displays_the_progress_of_spv" = "Muestra el progreso de la sincronización con SPV";
 "id_dispute_twofactor_reset" = "Disputar restablecimiento de autenticación de dos factores";
 "id_disputed" = "Disputado";
+"id_domain" = "Domain";
 "id_done" = "Listo";
 "id_dont_ask_me_again" = "No volver a preguntar";
 "id_dont_store_your_mnemonic_on" = "No almacenes la Frase de Recuperación en el teléfono, en la computadora o en cualquier servicio online.";
@@ -124,6 +129,7 @@
 "id_enter_your_email_address" = "Ingresa tu dirección de correo electrónico";
 "id_enter_your_s_wallet_mnemonic" = "Ingresa la %@ Frase de Recuperación de tu cartera";
 "id_enter_your_wallet_mnemonic" = "Ingresa la Frase de Recuperación de tu cartera";
+"id_entity" = "Entity";
 "id_error" = "Error";
 "id_error_logging_in_with_hardware" = "Error de inicio de sesión con la hardware wallet";
 "id_error_nfc_tag_not_writable" = "Error: la etiqueta NFC no es grabable";
@@ -171,6 +177,7 @@
 "id_information_not_available" = "Información no disponible.";
 "id_insufficient_funds" = "Fondos insuficientes";
 "id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
+"id_insufficient_lbtc_to_send_a" = "Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC";
 "id_invalid_address" = "Dirección inválida";
 "id_invalid_amount" = "Cantidad inválida";
 "id_invalid_mnemonic" = "Frase de Recuperación inválida";
@@ -186,6 +193,7 @@
 "id_invalid_twofactor_code" = "Código de dos factores inválido";
 "id_invalid_url" = "URL inválido";
 "id_is_a_noncustodial" = "es una cartera sin custodia";
+"id_issuer" = "Issuer";
 "id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Último pin: %1$d ms";
 "id_later" = "LUEGO";
@@ -199,6 +207,7 @@
 "id_logging_in" = "Iniciando sesión...";
 "id_login_failed" = "Error al iniciar sesión";
 "id_login_options" = "Opciones para cerrar sesión";
+"id_logout_and_switch" = "Logout and Switch";
 "id_look_at_the_device_for_the" = "Mira el dispositivo para ver las posiciones de los números";
 "id_low" = "Bajo";
 "id_main_account" = "Cuenta principal";
@@ -211,6 +220,7 @@
 "id_mnemonic_not_available" = "Frase de Recuperación no disponible";
 "id_month" = "mes";
 "id_months" = "meses";
+"id_multiple_assets" = "Multiple Assets";
 "id_my_notes" = "MIS NOTAS";
 "id_name" = "Nombre";
 "id_network" = "RED";
@@ -231,6 +241,8 @@
 "id_no_peers_connected" = "No hay pares conectados";
 "id_no_pin_provided_exiting" = "No se proporcionó ningún PIN. Saliendo.";
 "id_no_recipients" = "Sin receptores";
+"id_no_registered_name_for_this" = "No registered name for this asset.";
+"id_no_registered_ticker_for_this" = "No registered ticker for this asset.";
 "id_no_utxos_found" = "No se encontraron UTXO";
 "id_normal" = "Normal";
 "id_not_connected_connecting_in_ds_" = "Sin conexión. Conectando en %ds …";
@@ -259,6 +271,7 @@
 "id_pin_has_to_be_between_4_and_15" = "El PIN debe tener entre 4 y 15 dígitos";
 "id_pins_do_not_match_please_try" = "Los PIN no coinciden. Reintentar.";
 "id_please_disable_biometric" = "Deshabilita la autenticación biométrica antes de borrar el PIN";
+"id_please_disconnect_your_ledger" = "Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN";
 "id_please_enable_another" = "Habilita otro método de autenticación para evitar perder acceso a tus fondos.";
 "id_please_enable_camera" = "Habilita los permisos de la cámara para usar la cámara.";
 "id_please_enable_pin" = "Habilita la autenticación con el PIN antes de añadir o eliminar la autenticación biométrica";
@@ -272,6 +285,7 @@
 "id_please_select_the_checkbox" = "Selecciona la casilla";
 "id_please_set_and_enable_socks5" = "Please set and enable SOCKS5 proxy and port to use Tor";
 "id_please_tap_card" = "Toca con tu tarjeta";
+"id_precision" = "Precision";
 "id_privacy_policy" = "Política de privacidad";
 "id_problem_with_key_1s" = "Problema con clave %1$@";
 "id_providing_an_email_enables" = "Proporcionar un correo electrónico habilita las notificaciones y la recuperación de transacciones.";
@@ -316,6 +330,7 @@
 "id_second" = "segundo";
 "id_seconds" = "segundos";
 "id_security" = "SEGURIDAD";
+"id_select_account" = "Select Account";
 "id_select_asset" = "Select asset";
 "id_select_network" = "Seleccionar red";
 "id_select_word_number_d" = "Seleccionar número de palabras %d";
@@ -360,6 +375,8 @@
 "id_spv_unverified" = "SPV no verificada";
 "id_sweep" = "Barrer";
 "id_sweep_from_paper_wallet" = "Barrer fondos desde una cartera de papel";
+"id_sweep_into_s" = "Sweep into %@";
+"id_switch_network" = "Switch Network";
 "id_synchronize_spv_on_mobile" = "Sincronizar SPV en móvil";
 "id_system_message" = "Mensaje de sistema";
 "id_tap_on_the_card_to_view" = "Haz clic en la tarjeta para visualizar las transacciones.";
@@ -371,10 +388,11 @@
 "id_the_camera_has_a_problem_you" = "La cámara tiene algún problema. Es probable que tengas que reiniciar tu dispositivo.";
 "id_the_easier_safer_and_faster" = "la cartera más sencilla, segura y rápida";
 "id_the_hardware_wallet_you_are" = "la hardware wallet que estás utilizando aún no es compatible";
+"id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_password_cant_be_empty" = "La contraseña no puede quedar vacía";
 "id_the_recovery_key_below_will_not" = "La Frase de Recuperación que aparece abajo no se volverá a mostrar. Haz una copia de seguridad de la clave para asegurarte de siempre tener acceso a tus fondos.";
 "id_there_is_already_a_pin_set_for" = "Ya se ha establecido un PIN para la cartera %@. Si continúas, no podrás establecer un PIN y deberás ingresar con la Frase de Recuperación de 24 palabras. El PIN puede desactivarse desde el panel de configuración o si se ingresa el PIN equivocado 3 veces.";
-"id_ticker" = "TICKER";
+"id_ticker" = "Ticker";
 "id_time_s" = "Tiempo: %@";
 "id_to" = "A";
 "id_tor_connectivity_disabled" = "¡Conectividad Tor deshabilitada!";
@@ -399,6 +417,7 @@
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "No se puede conectar con el servicio de Green. Verifica tu conexión de red y espera a ser reconectado.";
 "id_unconfirmed" = "No confirmado";
+"id_unknown" = "Unknown";
 "id_unknown_bip21_parameter" = "Parámetro bip21 desconocido";
 "id_unknown_custom" = "Desconocido (personalizado)";
 "id_updated" = "actualizado";
@@ -428,6 +447,7 @@
 "id_we_use_the_camera_to_scan_qr" = "Utilizamos la cámara para escanear los códigos QR";
 "id_welcome" = "Bienvenido";
 "id_welcome_to" = "Te damos la bienvenida a";
+"id_where_would_you_like_to_import" = "Where would you like to import the funds?";
 "id_word_d_of_d" = "Palabra %d de %d";
 "id_write_down_the_words" = "Anota las palabras";
 "id_write_down_your_mnemonic_on" = "Anota tu Frase de Recuperación en un papel y guárdalo en algún lugar seguro.";
@@ -442,7 +462,6 @@
 "id_you_have_received_s" = "Recibiste %@";
 "id_you_must_first_log_out_before" = "Tienes que cerrar sesión antes de iniciar sesión.";
 "id_you_must_save_this_mnemonic_now" = "DEBES guardar la Frase de Recuperación AHORA.";
-"id_you_need_to_enable_the_proxy" = "Para habilitar Tor, primero debes habilitar la configuración del proxy (Orbot Socks5).";
 "id_you_only_have_one_twofactor" = "Solo tienes un método de autenticación de dos factores habilitado";
 "id_you_will_need_to_reenter_your" = "Tendrás que volver a ingresar tu Frase de Recuperación para iniciar sesión si no estableces un PIN. Presiona \"OK\" para continuar.";
 "id_your_green_wallet_is_now_ready" = "Tu Green Wallet está lista para usarse.";

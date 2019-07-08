@@ -31,6 +31,9 @@
 "id_amount" = "Bedrag";
 "id_are_you_sure_you_want_to_view" = "Weet je zeker dat je de transactie wilt bekijken met %@?";
 "id_asset" = "Asset";
+"id_asset_details" = "Asset Details";
+"id_asset_id" = "Asset ID";
+"id_asset_name" = "Asset Name";
 "id_attempts_remaining_d" = "Resterende pogingen: %d";
 "id_auto_logout_timeout" = "Time-out auto-afmelding";
 "id_autolock_after" = "Auto-vergrendeling na";
@@ -62,6 +65,7 @@
 "id_congratulations" = "Gefeliciteerd!";
 "id_connect_through_a_proxy" = "Via proxy verbinden";
 "id_connect_with_tor" = "Met Tor verbinden";
+"id_connecting_to_a_trusted_node" = "Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)";
 "id_connecting_to_tor_onion_nodes" = "Door te verbinden met Tor (.onion) nodes, verzeker je jezelf van maximale privacy en veiligheid. Druk op \"OK\" om door te gaan.";
 "id_continue" = "Doorgaan";
 "id_copy_to_clipboard" = "Naar klembord kopiëren";
@@ -91,6 +95,7 @@
 "id_displays_the_progress_of_spv" = "Toont de voortgang van de SPV-synchronisatie";
 "id_dispute_twofactor_reset" = "Resetten tweetrapsauthenticatie tegengaan";
 "id_disputed" = "In dispuut";
+"id_domain" = "Domain";
 "id_done" = "Klaar";
 "id_dont_ask_me_again" = "Niet opnieuw vragen";
 "id_dont_store_your_mnemonic_on" = "Sla je woordenlijst niet op in je mobiel, op je desktop, of in online diensten.";
@@ -124,6 +129,7 @@
 "id_enter_your_email_address" = "Voer je e-mailadres in";
 "id_enter_your_s_wallet_mnemonic" = "Voer de woordenlijst van je %@ wallet in";
 "id_enter_your_wallet_mnemonic" = "Voer de woordenlijst van je wallet in";
+"id_entity" = "Entity";
 "id_error" = "Fout";
 "id_error_logging_in_with_hardware" = "Aanmeldingsfout voor hardware wallet";
 "id_error_nfc_tag_not_writable" = "Fout: NFC-tag niet schrijfbaar";
@@ -171,6 +177,7 @@
 "id_information_not_available" = "Informatie niet beschikbaar.";
 "id_insufficient_funds" = "Balans niet toereikend";
 "id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
+"id_insufficient_lbtc_to_send_a" = "Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC";
 "id_invalid_address" = "Ongeldig adres";
 "id_invalid_amount" = "Ongeldig bedrag";
 "id_invalid_mnemonic" = "Ongeldige woordenlijst";
@@ -186,6 +193,7 @@
 "id_invalid_twofactor_code" = "Ongeldige code tweetrapsauthenticatie";
 "id_invalid_url" = "Ongeldige URL";
 "id_is_a_noncustodial" = "is een zelf-management";
+"id_issuer" = "Issuer";
 "id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Laatste ping: %1$d ms";
 "id_later" = "LATER";
@@ -199,6 +207,7 @@
 "id_logging_in" = "Aanmelden…";
 "id_login_failed" = "Aanmelden mislukt";
 "id_login_options" = "Aanmeldopties";
+"id_logout_and_switch" = "Logout and Switch";
 "id_look_at_the_device_for_the" = "Kijk op het apparaat voor de positie van de cijfers";
 "id_low" = "Laag";
 "id_main_account" = "Hoofdaccount";
@@ -211,6 +220,7 @@
 "id_mnemonic_not_available" = "Woordenlijst niet beschikbaar";
 "id_month" = "maand";
 "id_months" = "maanden";
+"id_multiple_assets" = "Multiple Assets";
 "id_my_notes" = "MIJN NOTITIES";
 "id_name" = "Naam";
 "id_network" = "NETWERK";
@@ -231,6 +241,8 @@
 "id_no_peers_connected" = "Geen peers verbonden";
 "id_no_pin_provided_exiting" = "Sluiten wegens ontbrekende PIN...";
 "id_no_recipients" = "Geen ontvangers";
+"id_no_registered_name_for_this" = "No registered name for this asset.";
+"id_no_registered_ticker_for_this" = "No registered ticker for this asset.";
 "id_no_utxos_found" = "Geen UTXO's gevonden";
 "id_normal" = "Normaal";
 "id_not_connected_connecting_in_ds_" = "Niet verbonden. Verbinden in %ds …";
@@ -259,6 +271,7 @@
 "id_pin_has_to_be_between_4_and_15" = "PIN moet tussen de 4 en 15 cijfers lang zijn";
 "id_pins_do_not_match_please_try" = "PIN is niet hetzelfde, probeer het opnieuw.";
 "id_please_disable_biometric" = "Schakel biometrische authenticatie uit voordat je de PIN verwijdert";
+"id_please_disconnect_your_ledger" = "Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN";
 "id_please_enable_another" = "Schakel een andere authenticatiemethode in om te voorkomen dat je toegang verliest tot je bezittingen.";
 "id_please_enable_camera" = "Geef cameratoestemming om de camera te kunnen gebruiken.";
 "id_please_enable_pin" = "Schakel PIN-authenticatie in voordat je biometrische authenticatie toevoegt of weghaalt";
@@ -272,6 +285,7 @@
 "id_please_select_the_checkbox" = "Selecteer het selectievakje";
 "id_please_set_and_enable_socks5" = "Please set and enable SOCKS5 proxy and port to use Tor";
 "id_please_tap_card" = "Tik de kaart aan";
+"id_precision" = "Precision";
 "id_privacy_policy" = "Privacybeleid";
 "id_problem_with_key_1s" = "Probleem met sleutel %1$@";
 "id_providing_an_email_enables" = "Door een e-mailadres toe te voegen, wordt het mogelijk om notificaties te ontvangen en transacties te herstellen.";
@@ -316,6 +330,7 @@
 "id_second" = "sec.";
 "id_seconds" = "sec.";
 "id_security" = "BEVEILIGING";
+"id_select_account" = "Select Account";
 "id_select_asset" = "Select asset";
 "id_select_network" = "Netwerk selecteren";
 "id_select_word_number_d" = "Selecteer woord nummer %d";
@@ -360,6 +375,8 @@
 "id_spv_unverified" = "SPV niet geverifieerd";
 "id_sweep" = "Opvegen";
 "id_sweep_from_paper_wallet" = "Opvegen van papieren wallet";
+"id_sweep_into_s" = "Sweep into %@";
+"id_switch_network" = "Switch Network";
 "id_synchronize_spv_on_mobile" = "Synchroniseer SPV op mobiel";
 "id_system_message" = "Systeembericht";
 "id_tap_on_the_card_to_view" = "Tik op de kaart om de transacties in te zien.";
@@ -371,10 +388,11 @@
 "id_the_camera_has_a_problem_you" = "Er zijn problemen met de camera. Het is wellicht nodig om het apparaat opnieuw te starten.";
 "id_the_easier_safer_and_faster" = "de simpelere, veiligere, en snellere wallet";
 "id_the_hardware_wallet_you_are" = "De hardware wallet die je gebruikt wordt niet ondersteund";
+"id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_password_cant_be_empty" = "Het wachtwoord mag niet leeg zijn";
 "id_the_recovery_key_below_will_not" = "De onderstaande herstelsleutel zal niet opnieuw worden getoond. Maak er nu een veilige back-up van om te zorgen dat je altijd toegang hebt tot je bezittingen.";
 "id_there_is_already_a_pin_set_for" = "Er is al een PIN ingesteld voor een %@ wallet. Als je doorgaat kan er geen PIN worden ingesteld en kun je je alleen aanmelden met de 24 woorden van de woordenlijst. Je kunt de PIN uitschakelen via de instellingen of door hem drie keer verkeerd in te voeren.";
-"id_ticker" = "TICKER";
+"id_ticker" = "Ticker";
 "id_time_s" = "Tijd: %@";
 "id_to" = "NAAR";
 "id_tor_connectivity_disabled" = "Tor-connectiviteit uitgeschakeld!";
@@ -399,6 +417,7 @@
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Contact opnemen met Green-dienst mislukt. Controleer je internetverbinding en wacht tot je opnieuw bent verbonden.";
 "id_unconfirmed" = "Onbevestigd";
+"id_unknown" = "Unknown";
 "id_unknown_bip21_parameter" = "Onbekende bip21-parameter";
 "id_unknown_custom" = "Onbekend (aangepast)";
 "id_updated" = "bijgewerkt";
@@ -428,6 +447,7 @@
 "id_we_use_the_camera_to_scan_qr" = "We gebruiken de camera om QR-codes te scannen";
 "id_welcome" = "Welkom";
 "id_welcome_to" = "Welkom bij";
+"id_where_would_you_like_to_import" = "Where would you like to import the funds?";
 "id_word_d_of_d" = "Woord %d van %d";
 "id_write_down_the_words" = "Schrijf de woorden op";
 "id_write_down_your_mnemonic_on" = "Noteer je woordenlijst op papier en sla het ergens veilig op.";
@@ -442,7 +462,6 @@
 "id_you_have_received_s" = "Je hebt %@ ontvangen";
 "id_you_must_first_log_out_before" = "Je moet je afmelden voor je je kunt aanmelden.";
 "id_you_must_save_this_mnemonic_now" = "Je MOET deze woordenlijst NU opslaan";
-"id_you_need_to_enable_the_proxy" = "Je moet eerst de proxy-configuratie (Orbot Socks5) inschakelen om Tor te kunnen gebruiken.";
 "id_you_only_have_one_twofactor" = "Je hebt slechts één tweetrapsauthenticatiemethode ingesteld";
 "id_you_will_need_to_reenter_your" = "Je zal je woordenlijst opnieuw moeten invoeren om je weer aan te melden als je geen PIN instelt. Druk op \"OK\" om door te gaan.";
 "id_your_green_wallet_is_now_ready" = "Green Wallet is nu klaar voor gebruik.";

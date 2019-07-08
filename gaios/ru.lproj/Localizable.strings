@@ -1,5 +1,5 @@
 "id_1030_minutes" = "~ 10-30 Минут";
-"id_12_confirmations" = "1/2 confirmations";
+"id_12_confirmations" = "1/2 подтверждений";
 "id_1d_2s_ago" = "%1$d%2$@тому назад";
 "id_1d_minutes" = "%1$d минут";
 "id_1s_blocks_left_2d" = "%1$@блоков осталось%2$d";
@@ -30,7 +30,10 @@
 "id_always" = "Всегда";
 "id_amount" = "Сумма";
 "id_are_you_sure_you_want_to_view" = "Вы уверены, что хотите просмотреть транзакцию, используя %@?";
-"id_asset" = "Asset";
+"id_asset" = "Актив";
+"id_asset_details" = "Asset Details";
+"id_asset_id" = "Asset ID";
+"id_asset_name" = "Asset Name";
 "id_attempts_remaining_d" = "Осталось попыток: %d";
 "id_auto_logout_timeout" = "Автоматический выход";
 "id_autolock_after" = "Автоматическая блокировка";
@@ -58,10 +61,11 @@
 "id_confidential" = "Confidential";
 "id_confirm_code" = "Подтвердите код";
 "id_confirm_passphrase" = "Подтвердите кодовую фразу";
-"id_confirmation_in_d_blocks" = "Confirmation in %d blocks";
+"id_confirmation_in_d_blocks" = "Подтверждение в %d блоках";
 "id_congratulations" = "Поздравляем!";
 "id_connect_through_a_proxy" = "Установить соединение через прокси-сервер";
 "id_connect_with_tor" = "Установить соединение с Tor";
+"id_connecting_to_a_trusted_node" = "Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)";
 "id_connecting_to_tor_onion_nodes" = "Подключение к Tor (.onion) узлам обеспечивает максимальную конфиденциальность и безопасность. Нажмите \"OK\" для продолжения.";
 "id_continue" = "Продолжить";
 "id_copy_to_clipboard" = "Скопировать в буфер обмена";
@@ -74,8 +78,8 @@
 "id_custom_network_not_found" = "Настраиваемая сеть не найдена";
 "id_custom_network_with_this_name" = "Настраиваемая сеть с таким именем уже существует";
 "id_d6_confirmations" = "%d/6 подтверждений";
-"id_d_asset_in_this_account" = "%d asset in this account";
-"id_d_assets_in_this_account" = "%d assets in this account";
+"id_d_asset_in_this_account" = "%d актив в этом аккаунте";
+"id_d_assets_in_this_account" = "%d активов в этом аккаунте";
 "id_date" = "Дата";
 "id_day" = "день";
 "id_days" = "дней";
@@ -91,6 +95,7 @@
 "id_displays_the_progress_of_spv" = "Отображает ход синхронизации SPV";
 "id_dispute_twofactor_reset" = "Оспорить двухфакторное восстановление";
 "id_disputed" = "Оспоримо";
+"id_domain" = "Domain";
 "id_done" = "Сделано";
 "id_dont_ask_me_again" = "Больше не спрашивать";
 "id_dont_store_your_mnemonic_on" = "Не храните свою мнемоническую фразу на телефоне, компьютере или онлайн-сервисе";
@@ -124,6 +129,7 @@
 "id_enter_your_email_address" = "Введите ваш адрес электронной почты";
 "id_enter_your_s_wallet_mnemonic" = "Введите%@ мнемоническую фразу вашего кошелька";
 "id_enter_your_wallet_mnemonic" = "Введите вашу мнемоническую фразу";
+"id_entity" = "Entity";
 "id_error" = "Ошибка";
 "id_error_logging_in_with_hardware" = "Ошибка при входе в аппаратный кошелек";
 "id_error_nfc_tag_not_writable" = "Ошибка: невозможно создать NFC-тег";
@@ -151,7 +157,7 @@
 "id_green_logo" = "Логотип кошелька Green";
 "id_green_mnemonic_qr_code" = "Мнемонический QR-код кошелька Green";
 "id_green_only_supports_one_pin_for" = "Green поддерживает только один PIN-код для каждой сети. Новый кошелек требует введения мнемонической фразы каждый раз, когда вы входите в систему.";
-"id_green_only_supports_one_pin_per" = "Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.";
+"id_green_only_supports_one_pin_per" = "Green поддерживает только один PIN-код для одной сети. Чтобы установить PIN-код для этого кошелька, сначала отключите PIN-код на исходном кошельке. ";
 "id_green_uses_biometric" = "Green использует биометрическую аутентификацию, чтобы обеспечить легкий доступ к кошельку";
 "id_green_uses_multisig_with_one" = "Green использует мультиподпись с подписью, сгенерированной вашим устройством, и подписью, сгенерированной серверами Blockstream. Настройка двухфакторной аутентификации обеспечивает дополнительный уровень безопасности для подписи на сервере.";
 "id_hardware_wallet_support_for" = "Hardware wallet support for Confidential Transactions coming soon.";
@@ -170,7 +176,8 @@
 "id_increase_fee" = "Повышение комиссии";
 "id_information_not_available" = "Информация недоступна.";
 "id_insufficient_funds" = "Недостаточно средств";
-"id_insufficient_lbtc_for_fees" = "Insufficient L-BTC for fees";
+"id_insufficient_lbtc_for_fees" = "Недостаточно L-BTC для комиссий";
+"id_insufficient_lbtc_to_send_a" = "Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC";
 "id_invalid_address" = "Невалидный адрес";
 "id_invalid_amount" = "Недопустимая сумма";
 "id_invalid_mnemonic" = "Недопустимая мнемоническая фраза";
@@ -186,6 +193,7 @@
 "id_invalid_twofactor_code" = "Невалидный двухфакторный код";
 "id_invalid_url" = "Неверный URL";
 "id_is_a_noncustodial" = "управляется только владельцем";
+"id_issuer" = "Issuer";
 "id_label" = "LABEL";
 "id_last_ping_1d_ms" = "Последний сигнал: %1$d мс";
 "id_later" = "ПОЗЖЕ";
@@ -199,6 +207,7 @@
 "id_logging_in" = "Выполняется вход...";
 "id_login_failed" = "Вход невозможен";
 "id_login_options" = "Варианты входа";
+"id_logout_and_switch" = "Logout and Switch";
 "id_look_at_the_device_for_the" = "Посмотрите расположение чисел на устройстве";
 "id_low" = "Низкий";
 "id_main_account" = "Основной аккаунт";
@@ -211,11 +220,12 @@
 "id_mnemonic_not_available" = "Мнемоническая фраза недоступна";
 "id_month" = "месяц";
 "id_months" = "месяцев";
+"id_multiple_assets" = "Multiple Assets";
 "id_my_notes" = "МОИ ЗАМЕТКИ";
 "id_name" = "Имя";
 "id_network" = "СЕТЬ";
 "id_network_configuration" = "Конфигурация сети";
-"id_network_fee" = "NETWORK FEE";
+"id_network_fee" = "КОМИССИЯ СЕТИ";
 "id_network_monitor" = "Сетевой монитор";
 "id_new_accounts_functionality" = "Ожидается добавление новых аккаунтов!";
 "id_new_incoming_transaction_in" = "Новая входящая транзакция на аккаунте%@ (%@).";
@@ -231,13 +241,15 @@
 "id_no_peers_connected" = "Нет подключенных узлов";
 "id_no_pin_provided_exiting" = "Отсутствует PIN-код, выход.";
 "id_no_recipients" = "Получатели отсутствуют";
+"id_no_registered_name_for_this" = "No registered name for this asset.";
+"id_no_registered_ticker_for_this" = "No registered ticker for this asset.";
 "id_no_utxos_found" = "UTXO не обнаружен";
 "id_normal" = "Нормальный";
 "id_not_connected_connecting_in_ds_" = "Нет соединения. Соединение произойдет через%d сек...";
 "id_notifications" = "Уведомления";
 "id_now" = "Сейчас";
 "id_ok" = "Ok";
-"id_on_average" = "on average";
+"id_on_average" = "в среднем";
 "id_one_attempt_remaining" = "Осталась одна попытка";
 "id_one_network_must_be_selected" = "Необходимо выбрать одну из сетей. Биткоин установлен по умолчанию";
 "id_only_connect_to_trusted_nodes" = "Соединять только с проверенными узлом(ами) для SPV";
@@ -259,6 +271,7 @@
 "id_pin_has_to_be_between_4_and_15" = "PIN-код должен содержать от 4 до 15 символов";
 "id_pins_do_not_match_please_try" = "PIN-коды не совпадают, повторите попытку.";
 "id_please_disable_biometric" = "Пожалуйста, отключите биометрическую аутентификацию перед удалением PIN-кода";
+"id_please_disconnect_your_ledger" = "Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN";
 "id_please_enable_another" = "Пожалуйста, включите еще один метод аутентификации во избежание потери доступа к вашим средствам.";
 "id_please_enable_camera" = "Включите разрешение для использования камеры.";
 "id_please_enable_pin" = "Пожалуйста, включите PIN-аутентификацию перед добавлением или удалением биометрической аутентификации";
@@ -272,6 +285,7 @@
 "id_please_select_the_checkbox" = "Установите флажок";
 "id_please_set_and_enable_socks5" = "Пожалуйста, включите SOCKS5 прокси и задайте порт для использования Tor";
 "id_please_tap_card" = "Пожалуйста, нажмите на карточку";
+"id_precision" = "Precision";
 "id_privacy_policy" = "Политика конфиденциальности";
 "id_problem_with_key_1s" = "Проблема с ключом %1$@";
 "id_providing_an_email_enables" = "Предоставление электронной почты позволяет получать уведомления и восстанавливать транзакции.";
@@ -316,7 +330,8 @@
 "id_second" = "секунда";
 "id_seconds" = "секунд";
 "id_security" = "БЕЗОПАСНОСТЬ";
-"id_select_asset" = "Select asset";
+"id_select_account" = "Select Account";
+"id_select_asset" = "Выберите актив";
 "id_select_network" = "Выберите сеть";
 "id_select_word_number_d" = "Выберите слово номер %d";
 "id_send" = "Отправить";
@@ -325,7 +340,7 @@
 "id_send_to" = "Отправить";
 "id_sending" = "ОТПРАВКА";
 "id_sending_request" = "Отправка запроса...";
-"id_sent" = "Sent";
+"id_sent" = "Отправлено";
 "id_sent_to" = "Отправить на";
 "id_set_a_new_pin" = "Установить новый PIN-код ";
 "id_set_custom_fee_rate" = "Установить размер комиссии";
@@ -360,6 +375,8 @@
 "id_spv_unverified" = "SPV не верифицирован";
 "id_sweep" = "Смести";
 "id_sweep_from_paper_wallet" = "Смести с бумажного кошелька";
+"id_sweep_into_s" = "Sweep into %@";
+"id_switch_network" = "Switch Network";
 "id_synchronize_spv_on_mobile" = "Синхронизируйте SPV на мобильном телефоне";
 "id_system_message" = "Системное сообщение";
 "id_tap_on_the_card_to_view" = "Нажать на карточку для просмотра транзакций.";
@@ -371,10 +388,11 @@
 "id_the_camera_has_a_problem_you" = "Проблемы с камерой. Возможно, вам необходимо перезапустить устройство.";
 "id_the_easier_safer_and_faster" = "более простой, безопасный и быстрый кошелек";
 "id_the_hardware_wallet_you_are" = "Используемый вами аппаратный кошелек еще не поддерживается";
+"id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_password_cant_be_empty" = "Поле пароля не может быть пустым";
 "id_the_recovery_key_below_will_not" = "Ключ восстановления больше не будет показан. Сделайте резервное копирование для того, чтобы всегда иметь доступ к своим средствам.";
 "id_there_is_already_a_pin_set_for" = " PIN-код установлен для %@кошелька.  В дальнейшем вы не сможете устанавливать PIN-код и логин, для входа потребуется мнемоническая фраза из 24 слов. Вы можете отключить PIN-код удалением его в настройках или 3-кратным ошибочным введением.";
-"id_ticker" = "TICKER";
+"id_ticker" = "Ticker";
 "id_time_s" = "Время:%@";
 "id_to" = "ДО";
 "id_tor_connectivity_disabled" = "Соединение с Tor разорвано!";
@@ -399,6 +417,7 @@
 "id_txid" = "TXID";
 "id_unable_to_contact_the_green" = "Не удалось связаться со службой поддержки Green. Проверьте подключение к сети и подождите, чтобы его повторно подключили.";
 "id_unconfirmed" = "Неподтвержденная";
+"id_unknown" = "Unknown";
 "id_unknown_bip21_parameter" = "Неизвестный параметр bip21";
 "id_unknown_custom" = "Неизвестный (настраиваемый)";
 "id_updated" = "обновленный";
@@ -420,7 +439,7 @@
 "id_warning_there_is_already_a" = "ВНИМАНИЕ: Поступил запрос на двухфакторную аутентификацию вашего кошелька. Если вы повторите запрос с нового адреса электронной почты, ваш кошелек станет оспариваемым и, вероятно, недоступным для вас навсегда.";
 "id_warning_wallet_locked_by" = "ВНИМАНИЕ: Кошелек заблокирован. Обратитесь в службу поддержки за дополнительной информацией.";
 "id_warning_wallet_locked_for" = "ВНИМАНИЕ: Кошелек заблокирован до двухфакторного сброса через %d дней. Обратитесь в службу поддержки за дополнительной информацией.";
-"id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
+"id_warning_you_need_a_positive" = "Внимание! Вам нужен положительный баланс L-BTC, чтобы иметь возможность отправлять транзакции.";
 "id_watchonly" = "Холодный кошелек";
 "id_watchonly_disabled" = "Холодный кошелек отключен";
 "id_watchonly_login" = "Логин холодного кошелька";
@@ -428,6 +447,7 @@
 "id_we_use_the_camera_to_scan_qr" = "Мы используем камеру для сканирования QR-кодов";
 "id_welcome" = "Приветствуем вас!";
 "id_welcome_to" = "Добро пожаловать в";
+"id_where_would_you_like_to_import" = "Where would you like to import the funds?";
 "id_word_d_of_d" = "Слово %d из %d";
 "id_write_down_the_words" = "Запишите слова";
 "id_write_down_your_mnemonic_on" = "Запишите свою мнемоническую фразу на бумаге и храните ее в безопасном месте.";
@@ -442,7 +462,6 @@
 "id_you_have_received_s" = "Вы получили %@";
 "id_you_must_first_log_out_before" = "Прежде, чем войти, произведите выход.";
 "id_you_must_save_this_mnemonic_now" = "Вы ДОЛЖНЫ сохранить эту мнемоническую фразу СЕЙЧАС";
-"id_you_need_to_enable_the_proxy" = "Необходимо включить конфигурацию прокси (Orbot Socks5) перед тем, как включить Tor.";
 "id_you_only_have_one_twofactor" = "У вас включен только один метод двухфакторной аутентификации";
 "id_you_will_need_to_reenter_your" = "Если вы не установите PIN-код, каждый раз, чтобы войти, вам придется вводить вашу мнемоническую фразу. Нажмите \"OK\" для продолжения.";
 "id_your_green_wallet_is_now_ready" = "Ваш Green-кошелек готов к использованию.";
