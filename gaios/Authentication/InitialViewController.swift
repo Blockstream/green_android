@@ -36,6 +36,7 @@ class InitialViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        guard content != nil else { return }
         content.createButton.removeTarget(self, action: #selector(click), for: .touchUpInside)
         content.restoreButton.removeTarget(self, action: #selector(click), for: .touchUpInside)
         content.networkButton.removeTarget(self, action: #selector(click), for: .touchUpInside)
