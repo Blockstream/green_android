@@ -8,17 +8,29 @@ class TwoFactorLimitViewController: KeyboardViewController {
     @IBOutlet var content: TwoFactorLimitView!
     fileprivate var isFiat = false
 
-    var satoshi: UInt64 {
-        guard let text = content.limitTextField.text else { return 0 }
-        let amount = text.replacingOccurrences(of: ",", with: ".")
-        if Double(amount) == nil { return 0 }
-        return Balance.convert(details: [(isFiat ? "fiat" : getGAService().getSettings()!.denomination.rawValue): amount]).satoshi
+    var amount: String? {
+        var amount = content.limitTextField.text!
+        amount = amount.replacingOccurrences(of: ",", with: ".")
+        amount = amount.isEmpty ? "0" : amount
+        guard let number = Double(amount) else { return nil }
+        if number < 0 { return nil }
+        return amount
+    }
+
+    var satoshi: UInt64? {
+        guard amount != nil else { return nil }
+        let details = [(isFiat ? "fiat" : denomination.rawValue): amount!]
+        return Balance.convert(details: details)?.satoshi
     }
 
     var limits: TwoFactorConfigLimits? {
         guard let dataTwoFactorConfig = try? getSession().getTwoFactorConfig() else { return nil }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: [])) else { return nil }
         return twoFactorConfig.limits
+    }
+
+    var denomination: DenominationType {
+        return getGAService().getSettings()!.denomination
     }
 
     override func viewDidLoad() {
@@ -45,15 +57,16 @@ class TwoFactorLimitViewController: KeyboardViewController {
         let settings = getGAService().getSettings()!
         guard let limits = limits else { return }
         isFiat = limits.isFiat
-        let amount = isFiat ? limits.fiat : limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: settings.denomination.rawValue)!)!
-        let denom = isFiat ? settings.getCurrency() : settings.denomination.string
+        let amount = isFiat ? limits.fiat : limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denomination.rawValue)!)!
+        let denom = isFiat ? settings.getCurrency() : denomination.string
         content.limitTextField.text = amount
         content.descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
         refresh()
     }
 
     func refresh() {
-        let balance = Balance.convert(details: ["satoshi": satoshi])
+        guard satoshi != nil else { return }
+        let balance = Balance.convert(details: ["satoshi": satoshi!])!
         let (amount, denom) = balance.get(tag: (isFiat ? "btc"  : "fiat"))
         let denomination = balance.get(tag: (isFiat ? "fiat"  : "btc")).1
         content.convertedLabel.text = "≈ \(amount) \(denom)"
@@ -62,7 +75,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     @objc func currencySwitchClick(_ sender: UIButton) {
-        let balance = Balance.convert(details: ["satoshi": satoshi])
+        guard satoshi != nil else { return }
+        let balance = Balance.convert(details: ["satoshi": satoshi!])!
         isFiat = !isFiat
         let (amount, _) = balance.get(tag: (isFiat ? "fiat"  : "btc"))
         content.limitTextField.text = amount
@@ -70,10 +84,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     @objc func nextClick(_ sender: UIButton) {
-        guard let amountText = content.limitTextField.text else { return }
-        guard let amount = Double(amountText.replacingOccurrences(of: ",", with: ".")) else { return }
-        let settings = getGAService().getSettings()!
-        let details = isFiat ? ["is_fiat": isFiat, "fiat": String(amount)] : ["is_fiat": isFiat, settings.denomination.rawValue: String(amount)]
+        guard amount != nil else { return }
+        let details = isFiat ? ["is_fiat": isFiat, "fiat": amount!] : ["is_fiat": isFiat, denomination.rawValue: amount!]
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()

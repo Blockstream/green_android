@@ -87,22 +87,22 @@ class ReceiveBtcViewController: KeyboardViewController {
         Guarantee().compactMap(on: bgq) {
             return wallet.getAddress()
         }.done { address in
-            let uri = getGdkNetwork(getNetwork()).liquid || self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
+            let uri = getGdkNetwork(getNetwork()).liquid || self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC() ?? 0)
             UIPasteboard.general.string = uri
             Toast.show(NSLocalizedString("id_address_copied_to_clipboard", comment: ""), timeout: Toast.SHORT)
         }.catch { _ in }
     }
 
     @objc func fiatSwitchButtonClick(_ sender: Any) {
-        let satoshi = getSatoshi()
-        let balance = Balance.convert(details: ["satoshi": satoshi])
+        guard let satoshi = getSatoshi() else { return }
+        guard let balance = Balance.convert(details: ["satoshi": satoshi]) else { return }
         if selectedType == TransactionType.BTC {
             selectedType = TransactionType.FIAT
-            content.amountTextfield.text = String(format: "%@", balance.get(tag: "fiat").0)
         } else {
             selectedType = TransactionType.BTC
-            content.amountTextfield.text = String(format: "%f", balance.get(tag: "btc").0)
         }
+        let tag = selectedType == TransactionType.BTC ? "btc" : "fiat"
+        content.amountTextfield.text = String(format: "%@", balance.get(tag: tag).0)
         reload()
     }
 
@@ -120,8 +120,9 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func updateEstimate() {
-        let satoshi = getSatoshi()
-        let (amount, denom) = Balance.convert(details: ["satoshi": satoshi]).get(tag: selectedType == TransactionType.BTC ? "fiat": "btc")
+        guard let satoshi = getSatoshi() else { return }
+        guard let balance = Balance.convert(details: ["satoshi": satoshi]) else { return }
+        let (amount, denom) = balance.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc")
         content.estimateLabel.text = "≈ \(amount) \(denom)"
     }
 
@@ -146,7 +147,7 @@ class ReceiveBtcViewController: KeyboardViewController {
                 uri = Bip21Helper.btcURIforAddress(address: address)
                 self.content.walletAddressLabel.text = address
             } else {
-                uri = Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
+                uri = Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC() ?? 0)
                 self.content.walletAddressLabel.text = uri
             }
             self.content.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: self.content.walletQRCode.frame)
@@ -173,25 +174,27 @@ class ReceiveBtcViewController: KeyboardViewController {
             if address.isEmpty {
                 throw GaError.GenericError
             }
-            let uri = self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC())
+            let uri = self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC() ?? 0)
             let activityViewController = UIActivityViewController(activityItems: [uri], applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = self.view
             self.present(activityViewController, animated: true, completion: nil)
         }.catch { _ in }
     }
 
-    func getSatoshi() -> UInt64 {
-        guard let amount = content.amountTextfield.text else { return 0 }
-        if amount.isEmpty || Double(amount) == nil {
-            return 0
-        }
+    func getSatoshi() -> UInt64? {
+        var amountText = content.amountTextfield.text!
+        amountText = amountText.replacingOccurrences(of: ",", with: ".")
+        amountText = amountText.isEmpty ? "0" : amountText
+        guard let number = Double(amountText) else { return nil }
+        if number < 0 { return nil }
         let denomination = getGAService().getSettings()!.denomination
         let key = selectedType == TransactionType.BTC ? denomination.rawValue : "fiat"
-        return Balance.convert(details: [key: amount]).satoshi
+        return Balance.convert(details: [key: amountText])?.satoshi
     }
 
-    func getBTC() -> Double {
-       return Double(getSatoshi()) / 100000000
+    func getBTC() -> Double? {
+        guard let satoshi = getSatoshi() else { return nil }
+        return Double(satoshi) / 100000000
     }
 
 }

@@ -155,7 +155,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         guard addressee.satoshi != 0 else { return }
         let tag = assetTag ?? "btc"
         let details = "btc" != tag ? ["satoshi": addressee.satoshi, "asset_info": asset!.encode()!] : ["satoshi": addressee.satoshi]
-        let (amount, _) = Balance.convert(details: details).get(tag: isFiat ? "fiat" : tag)
+        let (amount, _) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : tag)
         content.amountTextField.text = amount
     }
 
@@ -172,7 +172,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
     func reloadWalletBalance() {
         let tag = assetTag ?? "btc"
         let details = "btc" != tag ? ["satoshi": wallet!.balance[tag]!.satoshi, "asset_info": asset!.encode()!] : ["satoshi": wallet!.balance[tag]!.satoshi]
-        let (amount, denom) = Balance.convert(details: details).get(tag: isFiat ? "fiat" : tag)
+        let (amount, denom) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : tag)
         content.maxAmountLabel.text =  "\(amount) \(denom)"
     }
 
@@ -224,7 +224,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         let denominationBtc = getGAService().getSettings()!.denomination.rawValue
         let key = isFiat ? "fiat" : isBtc ? denominationBtc : assetTag ?? "btc"
         let details = !isBtc ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
-        return Balance.convert(details: details).satoshi
+        return Balance.convert(details: details)?.satoshi
     }
 
     func onSelect(_ tag: String) {
@@ -303,7 +303,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
             let feeSatVByte = Double(fee) / 1000.0
             let feeSatoshi = UInt64(feeSatVByte * Double(transaction.size))
 
-            let balance = Balance.convert(details: ["satoshi": feeSatoshi])
+            let balance = Balance.convert(details: ["satoshi": feeSatoshi])!
             let (amount, denom) = balance.get(tag: isFiat ? "fiat" : "btc")
             feeButton.feerateLabel.text =  "\(amount) \(denom) (\(feeSatVByte) satoshi / vbyte)"
         }

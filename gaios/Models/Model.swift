@@ -153,7 +153,7 @@ struct Transaction {
         let assetInfo = assets[defaultAsset] ?? AssetInfo(assetId: defaultAsset, name: "", precision: 0, ticker: "")
         let details = isBtc ? ["satoshi": satoshi] : ["satoshi": amounts[defaultAsset]!,
                                   "asset_info": assetInfo.encode()!]
-        let (value, ticker) = Balance.convert(details: details).get(tag: defaultAsset)
+        let (value, ticker) = Balance.convert(details: details)!.get(tag: defaultAsset)
         return String(format: "%@%@ %@",
                       type == "outgoing" || type == "redeposit" ? "-" : "",
                       value, ticker)
@@ -204,15 +204,15 @@ struct Balance: Codable {
     let assetInfo: AssetInfo?
     var asset: [String: String]?
 
-    static func convert(details: [String: Any]) -> Balance {
-        var res = try? getSession().convertAmount(input: details)
-        res?["asset_info"] = details["asset_info"]
-        var balance = try? JSONDecoder().decode(Balance.self, from: JSONSerialization.data(withJSONObject: res!, options: []))
+    static func convert(details: [String: Any]) -> Balance? {
+        guard var res = try? getSession().convertAmount(input: details) else { return nil}
+        res["asset_info"] = details["asset_info"]
+        var balance = try? JSONDecoder().decode(Balance.self, from: JSONSerialization.data(withJSONObject: res, options: []))
         if let assetInfo = balance?.assetInfo {
-            let value = res![assetInfo.assetId] as? String
+            let value = res[assetInfo.assetId] as? String
             balance?.asset = [assetInfo.assetId: value!]
         }
-        return balance!
+        return balance
     }
 
     func get(tag: String) -> (String, String) {

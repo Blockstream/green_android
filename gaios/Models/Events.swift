@@ -56,7 +56,7 @@ struct Event: EventProtocol, Equatable {
         if kindOf(TransactionEvent.self) {
             guard let txEvent = decode(TransactionEvent.self) else { return "" }
             let txType = txEvent.type == "incoming" ? NSLocalizedString("id_incoming", comment: "") : NSLocalizedString("id_outgoing", comment: "")
-            let (amount, denom) = Balance.convert(details: ["satoshi": txEvent.satoshi]).get(tag: "btc")
+            let (amount, denom) = Balance.convert(details: ["satoshi": txEvent.satoshi])!.get(tag: "btc")
             let walletsList = wallets.filter { txEvent.subAccounts.contains(Int($0.pointer)) }
             let txWalletName = wallets.isEmpty ? "" : walletsList[0].localizedName()
             let description = String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, "\(amount) \(denom)", txWalletName)

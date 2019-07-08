@@ -179,7 +179,7 @@ class TransactionsController: UITableViewController {
             let wallet = try getWallet(from: wallets, pointer: self.pointerWallet)
             self.presentingWallet = wallet
             guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
-            let balance = Balance.convert(details: ["satoshi": wallet.btc.satoshi])
+            let balance = Balance.convert(details: ["satoshi": wallet.btc.satoshi])!
             let (amount, denom) = balance.get(tag: "btc")
             view.balance.text = amount
             view.unit.text = denom
