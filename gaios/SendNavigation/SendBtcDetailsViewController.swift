@@ -73,18 +73,14 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
         if let oldFeeRate = oldFeeRate {
             feeEstimates[content.feeRateButtons.count - 1] = oldFeeRate + minFeeRate
-            var found = false
-            for index in 0..<content.feeRateButtons.count - 1 {
+            for index in (0..<content.feeRateButtons.count - 1).reversed() {
                 guard let feeEstimate = feeEstimates[index] else { break }
                 if oldFeeRate < feeEstimate {
-                    found = true
                     selectedFee = index
                     break
                 }
                 content.feeRateButtons[index]?.isEnabled = false
-            }
-            if !found {
-                selectedFee = content.feeRateButtons.count - 1
+                selectedFee = index
             }
         }
 
