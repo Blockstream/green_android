@@ -33,6 +33,9 @@
   <string name="id_amount">Amount</string>
   <string name="id_are_you_sure_you_want_to_view">Are you sure you want to view the transaction using %s?</string>
   <string name="id_asset">Asset</string>
+  <string name="id_asset_details">Asset Details</string>
+  <string name="id_asset_id">Asset ID</string>
+  <string name="id_asset_name">Asset Name</string>
   <string name="id_attempts_remaining_d">Attempts remaining: %d</string>
   <string name="id_auto_logout_timeout">Auto logout timeout</string>
   <string name="id_autolock_after">Autolock After</string>
@@ -64,6 +67,7 @@
   <string name="id_congratulations">Congratulations!</string>
   <string name="id_connect_through_a_proxy">Connect through a proxy</string>
   <string name="id_connect_with_tor">Connect with Tor</string>
+  <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
   <string name="id_connecting_to_tor_onion_nodes">Connecting to Tor (.onion) nodes allows maximum privacy and security. Press "OK" to continue.</string>
   <string name="id_continue">Continue</string>
   <string name="id_copy_to_clipboard">Copy To Clipboard</string>
@@ -93,6 +97,7 @@
   <string name="id_displays_the_progress_of_spv">Displays the progress of SPV synchronization</string>
   <string name="id_dispute_twofactor_reset">Dispute Two-Factor reset</string>
   <string name="id_disputed">Disputed</string>
+  <string name="id_domain">Domain</string>
   <string name="id_done">Done</string>
   <string name="id_dont_ask_me_again">Don\'t ask me again</string>
   <string name="id_dont_store_your_mnemonic_on">Don\'t store your mnemonic on your phone, computer, or any online services.</string>
@@ -126,6 +131,7 @@
   <string name="id_enter_your_email_address">Enter your email address</string>
   <string name="id_enter_your_s_wallet_mnemonic">Enter your %s wallet mnemonic</string>
   <string name="id_enter_your_wallet_mnemonic">Enter your wallet mnemonic</string>
+  <string name="id_entity">Entity</string>
   <string name="id_error">Error</string>
   <string name="id_error_logging_in_with_hardware">Error logging in with Hardware Wallet</string>
   <string name="id_error_nfc_tag_not_writable">Error: NFC tag not writable</string>
@@ -173,6 +179,7 @@
   <string name="id_information_not_available">Information not available.</string>
   <string name="id_insufficient_funds">Insufficient funds</string>
   <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
+  <string name="id_insufficient_lbtc_to_send_a">Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC</string>
   <string name="id_invalid_address">Invalid address</string>
   <string name="id_invalid_amount">Invalid amount</string>
   <string name="id_invalid_mnemonic">Invalid mnemonic</string>
@@ -188,6 +195,7 @@
   <string name="id_invalid_twofactor_code">Invalid Two-Factor code</string>
   <string name="id_invalid_url">Invalid URL</string>
   <string name="id_is_a_noncustodial">is a non-custodial</string>
+  <string name="id_issuer">Issuer</string>
   <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">Last ping: %1$d ms</string>
   <string name="id_later">LATER</string>
@@ -201,6 +209,7 @@
   <string name="id_logging_in">Logging in…</string>
   <string name="id_login_failed">Login Failed</string>
   <string name="id_login_options">Login options</string>
+  <string name="id_logout_and_switch">Logout and Switch</string>
   <string name="id_look_at_the_device_for_the">Look at the device for the number positions</string>
   <string name="id_low">Low</string>
   <string name="id_main_account">Main Account</string>
@@ -213,6 +222,7 @@
   <string name="id_mnemonic_not_available">Mnemonic not available</string>
   <string name="id_month">month</string>
   <string name="id_months">months</string>
+  <string name="id_multiple_assets">Multiple Assets</string>
   <string name="id_my_notes">MY NOTES</string>
   <string name="id_name">Name</string>
   <string name="id_network">NETWORK</string>
@@ -233,6 +243,8 @@
   <string name="id_no_peers_connected">No Peers Connected</string>
   <string name="id_no_pin_provided_exiting">No PIN provided, exiting.</string>
   <string name="id_no_recipients">No recipients</string>
+  <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
+  <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
   <string name="id_no_utxos_found">No UTXOs found</string>
   <string name="id_normal">Normal</string>
   <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
@@ -261,6 +273,7 @@
   <string name="id_pin_has_to_be_between_4_and_15">PIN has to be between 4 and 15 digits</string>
   <string name="id_pins_do_not_match_please_try">PINs do not match, please try again.</string>
   <string name="id_please_disable_biometric">Please disable biometric authentication before deleting PIN</string>
+  <string name="id_please_disconnect_your_ledger">Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN</string>
   <string name="id_please_enable_another">Please enable another authentication method to avoid losing access to your funds.</string>
   <string name="id_please_enable_camera">Please enable camera permissions to use the camera.</string>
   <string name="id_please_enable_pin">Please enable PIN authentication before adding or removing biometric authentication</string>
@@ -274,6 +287,7 @@
   <string name="id_please_select_the_checkbox">Please select the checkbox</string>
   <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Please tap card</string>
+  <string name="id_precision">Precision</string>
   <string name="id_privacy_policy">Privacy Policy</string>
   <string name="id_problem_with_key_1s">Problem with key %1$s</string>
   <string name="id_providing_an_email_enables">Providing an email enables notifications and transaction recovery.</string>
@@ -318,6 +332,7 @@
   <string name="id_second">second</string>
   <string name="id_seconds">seconds</string>
   <string name="id_security">SECURITY</string>
+  <string name="id_select_account">Select Account</string>
   <string name="id_select_asset">Select asset</string>
   <string name="id_select_network">Select network</string>
   <string name="id_select_word_number_d">Select word number %d</string>
@@ -362,6 +377,8 @@
   <string name="id_spv_unverified">SPV unverified</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">Sweep From Paper Wallet</string>
+  <string name="id_sweep_into_s">Sweep into %s</string>
+  <string name="id_switch_network">Switch Network</string>
   <string name="id_synchronize_spv_on_mobile">Synchronize SPV on mobile</string>
   <string name="id_system_message">System Message</string>
   <string name="id_tap_on_the_card_to_view">Tap on the card to view transactions.</string>
@@ -373,10 +390,11 @@
   <string name="id_the_camera_has_a_problem_you">The camera has a problem. You probably need to restart the device.</string>
   <string name="id_the_easier_safer_and_faster">the easier, safer and faster wallet</string>
   <string name="id_the_hardware_wallet_you_are">The hardware wallet you are using is not yet supported</string>
+  <string name="id_the_network_selected_on_the">The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
   <string name="id_the_password_cant_be_empty">The password can\'t be empty</string>
   <string name="id_the_recovery_key_below_will_not">The recovery key below will not be shown again. Please make a safe backup of it now to ensure you can always access your funds.</string>
   <string name="id_there_is_already_a_pin_set_for">There is already a PIN set for a %s wallet. Proceeding will not allow setting a PIN and login will require the 24 words mnemonic. You can disable PIN from settings or with 3 failed attempts.</string>
-  <string name="id_ticker">TICKER</string>
+  <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Time: %s</string>
   <string name="id_to">TO</string>
   <string name="id_tor_connectivity_disabled">Tor Connectivity Disabled!</string>
@@ -401,6 +419,7 @@
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Unable to contact the Green service. Please check your network connection and wait to be reconnected.</string>
   <string name="id_unconfirmed">Unconfirmed</string>
+  <string name="id_unknown">Unknown</string>
   <string name="id_unknown_bip21_parameter">Unknown bip21 parameter</string>
   <string name="id_unknown_custom">Unknown (Custom)</string>
   <string name="id_updated">updated</string>
@@ -430,6 +449,7 @@
   <string name="id_we_use_the_camera_to_scan_qr">We use the camera to scan QR codes</string>
   <string name="id_welcome">Welcome</string>
   <string name="id_welcome_to">Welcome to</string>
+  <string name="id_where_would_you_like_to_import">Where would you like to import the funds?</string>
   <string name="id_word_d_of_d">Word %d of %d</string>
   <string name="id_write_down_the_words">Write down the words</string>
   <string name="id_write_down_your_mnemonic_on">Write down your mnemonic on paper and store it somewhere safe.</string>
@@ -444,7 +464,6 @@
   <string name="id_you_have_received_s">You have received %s</string>
   <string name="id_you_must_first_log_out_before">You must first log out before logging in.</string>
   <string name="id_you_must_save_this_mnemonic_now">You MUST save this mnemonic NOW</string>
-  <string name="id_you_need_to_enable_the_proxy">You need to enable the proxy configuration (Orbot Socks5) first to enable Tor.</string>
   <string name="id_you_only_have_one_twofactor">You only have one Two-Factor authentication method enabled</string>
   <string name="id_you_will_need_to_reenter_your">You will need to re-enter your mnemonic to login again if you do not set up a PIN. Press "OK" to continue.</string>
   <string name="id_your_green_wallet_is_now_ready">Your Green wallet is now ready to use.</string>

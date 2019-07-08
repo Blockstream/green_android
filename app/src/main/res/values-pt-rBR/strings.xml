@@ -33,6 +33,9 @@
   <string name="id_amount">Quantidade</string>
   <string name="id_are_you_sure_you_want_to_view">Tem certeza que deseja visualizar a transação usando %s?</string>
   <string name="id_asset">Asset</string>
+  <string name="id_asset_details">Asset Details</string>
+  <string name="id_asset_id">Asset ID</string>
+  <string name="id_asset_name">Asset Name</string>
   <string name="id_attempts_remaining_d">Tentativas restantes: %d</string>
   <string name="id_auto_logout_timeout">Tempo de espera para encerrar a sessão automaticamente</string>
   <string name="id_autolock_after">Bloquear depois de</string>
@@ -64,6 +67,7 @@
   <string name="id_congratulations">Parabéns!</string>
   <string name="id_connect_through_a_proxy">Conectar-se através de um proxy</string>
   <string name="id_connect_with_tor">Conectar-se com Tor</string>
+  <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
   <string name="id_connecting_to_tor_onion_nodes">Conectar-se a nodes Tor (.onion) garante máxima privacidade e segurança. Pressione "OK" para continuar.</string>
   <string name="id_continue">Continuar</string>
   <string name="id_copy_to_clipboard">Copiar para a área de transferênca</string>
@@ -93,6 +97,7 @@
   <string name="id_displays_the_progress_of_spv">Mostra o progresso da sincronização SPV</string>
   <string name="id_dispute_twofactor_reset">Disputar reset da autenticação de dois fatores</string>
   <string name="id_disputed">Disputado</string>
+  <string name="id_domain">Domain</string>
   <string name="id_done">Feito</string>
   <string name="id_dont_ask_me_again">Não perguntar novamente</string>
   <string name="id_dont_store_your_mnemonic_on">Não armazene seu mnemônico em seu celular, computador, ou qualquer serviço online.</string>
@@ -126,6 +131,7 @@
   <string name="id_enter_your_email_address">Digite seu endereço de email</string>
   <string name="id_enter_your_s_wallet_mnemonic">Digite seu %s mnemônico de carteira</string>
   <string name="id_enter_your_wallet_mnemonic">Digite o mnemônico de sua carteira</string>
+  <string name="id_entity">Entity</string>
   <string name="id_error">Erro</string>
   <string name="id_error_logging_in_with_hardware">Erro durante o login com sua carteira de hardware</string>
   <string name="id_error_nfc_tag_not_writable">Erro: Tag NFC não gravável</string>
@@ -173,6 +179,7 @@
   <string name="id_information_not_available">Informação não disponível.</string>
   <string name="id_insufficient_funds">Fundos insuficientes</string>
   <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
+  <string name="id_insufficient_lbtc_to_send_a">Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC</string>
   <string name="id_invalid_address">Endereço inválido</string>
   <string name="id_invalid_amount">Quantidade inválida</string>
   <string name="id_invalid_mnemonic">Mnemônico inválido</string>
@@ -188,6 +195,7 @@
   <string name="id_invalid_twofactor_code">Código de autenticação inválido</string>
   <string name="id_invalid_url">URL inválida</string>
   <string name="id_is_a_noncustodial">é uma carteira não-custodial</string>
+  <string name="id_issuer">Issuer</string>
   <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">Último ping: %1$d ms</string>
   <string name="id_later">MAIS TARDE</string>
@@ -201,6 +209,7 @@
   <string name="id_logging_in">Entrando…</string>
   <string name="id_login_failed">Falha ao entrar</string>
   <string name="id_login_options">Opções de entrada</string>
+  <string name="id_logout_and_switch">Logout and Switch</string>
   <string name="id_look_at_the_device_for_the">Olhe no dispositivo para a posição dos números</string>
   <string name="id_low">Baixa</string>
   <string name="id_main_account">Conta Principal</string>
@@ -213,6 +222,7 @@
   <string name="id_mnemonic_not_available">Mnemônico não disponível</string>
   <string name="id_month">mês</string>
   <string name="id_months">meses</string>
+  <string name="id_multiple_assets">Multiple Assets</string>
   <string name="id_my_notes">MINHAS NOTAS</string>
   <string name="id_name">Nome</string>
   <string name="id_network">REDE</string>
@@ -233,6 +243,8 @@
   <string name="id_no_peers_connected">Sem peers conectados</string>
   <string name="id_no_pin_provided_exiting">Nenhum PIN fornecido, saindo.</string>
   <string name="id_no_recipients">Sem destinatários</string>
+  <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
+  <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
   <string name="id_no_utxos_found">Nenhum UTXO encontrado</string>
   <string name="id_normal">Normal</string>
   <string name="id_not_connected_connecting_in_ds_">Não conectado. Conectando em %ds …</string>
@@ -261,6 +273,7 @@
   <string name="id_pin_has_to_be_between_4_and_15">O PIN deve ter entre 4 e 15 dígitos</string>
   <string name="id_pins_do_not_match_please_try">Os PINs não coincidem, por favor, tente novamente.</string>
   <string name="id_please_disable_biometric">Por favor, desabilite a autenticação biométrica antes de remover o PIN</string>
+  <string name="id_please_disconnect_your_ledger">Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN</string>
   <string name="id_please_enable_another">Por favor, habilite outro método de autenticação para evitar perder acesso aos seus fundos.</string>
   <string name="id_please_enable_camera">Por favor, ative as permissões da câmera para utilizá-la.</string>
   <string name="id_please_enable_pin">Por favor, ative a autenticação por PIN antes de adicionar ou remover a autenticação biométrica</string>
@@ -274,6 +287,7 @@
   <string name="id_please_select_the_checkbox">Por favor, marque a caixa de marcação</string>
   <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Por favor, encoste o cartão</string>
+  <string name="id_precision">Precision</string>
   <string name="id_privacy_policy">Política de Privacidade</string>
   <string name="id_problem_with_key_1s">Problema com a chave %1$s</string>
   <string name="id_providing_an_email_enables">Fornecer um email ativa notificações e a recuperação de transações.</string>
@@ -318,6 +332,7 @@
   <string name="id_second">segundo</string>
   <string name="id_seconds">segundos</string>
   <string name="id_security">SEGURANÇA</string>
+  <string name="id_select_account">Select Account</string>
   <string name="id_select_asset">Select asset</string>
   <string name="id_select_network">Selecionar rede</string>
   <string name="id_select_word_number_d">Selecionar palavra de número %d</string>
@@ -362,6 +377,8 @@
   <string name="id_spv_unverified">SPV não verificado</string>
   <string name="id_sweep">Varrer</string>
   <string name="id_sweep_from_paper_wallet">Varrer Carteira de Papel</string>
+  <string name="id_sweep_into_s">Sweep into %s</string>
+  <string name="id_switch_network">Switch Network</string>
   <string name="id_synchronize_spv_on_mobile">Sincronizar SPV na rede móvel</string>
   <string name="id_system_message">Mensagem do Sistema</string>
   <string name="id_tap_on_the_card_to_view">Encoste o cartão para ver transações.</string>
@@ -373,10 +390,11 @@
   <string name="id_the_camera_has_a_problem_you">Problema com a câmera. Você provavelmente precisa reiniciar o dispositivo.</string>
   <string name="id_the_easier_safer_and_faster">a carteira mais fácil, segura e rápida</string>
   <string name="id_the_hardware_wallet_you_are">A carteira de hardware que você está utilizando ainda não é suportada</string>
+  <string name="id_the_network_selected_on_the">The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
   <string name="id_the_password_cant_be_empty">A senha não pode ficar em branco</string>
   <string name="id_the_recovery_key_below_will_not">A chave de recuperação abaixo não será mostrada novamente. Por favor mantenha uma cópia segura agora para se certificar de que você sempre terá acesso aos seus fundos.</string>
   <string name="id_there_is_already_a_pin_set_for">Já há um PIN configurado para a carteira %s. Preceder não permitirá a configuração de um novo PIN e será necessário o mnemônico de 24 palavras para entrar. Você pode desabilitar o PIN nas configurações ou com 3 tentativas falhas.</string>
-  <string name="id_ticker">TICKER</string>
+  <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Tempo: %s</string>
   <string name="id_to">PARA</string>
   <string name="id_tor_connectivity_disabled">Conectividade Tor Desabilitada!</string>
@@ -401,6 +419,7 @@
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Impossível contatar o serviço Green. Por favor, verifique sua conexão de rede e aguarde para ser reconectado.</string>
   <string name="id_unconfirmed">Não confirmada</string>
+  <string name="id_unknown">Unknown</string>
   <string name="id_unknown_bip21_parameter">Parâmetro bip21 desconhecido</string>
   <string name="id_unknown_custom">Desconhecido (Personalizado)</string>
   <string name="id_updated">atualizado</string>
@@ -430,6 +449,7 @@
   <string name="id_we_use_the_camera_to_scan_qr">Usamos a câmera para escanear códigos QR</string>
   <string name="id_welcome">Bem-vindo</string>
   <string name="id_welcome_to">Bem-vindo a</string>
+  <string name="id_where_would_you_like_to_import">Where would you like to import the funds?</string>
   <string name="id_word_d_of_d">Palavra %d de %d</string>
   <string name="id_write_down_the_words">Anote as palavras</string>
   <string name="id_write_down_your_mnemonic_on">Anote seu mnemônico em papel e guarde em local seguro.</string>
@@ -444,7 +464,6 @@
   <string name="id_you_have_received_s">Você recebeu %s</string>
   <string name="id_you_must_first_log_out_before">Você precisa sair antes de entrar.</string>
   <string name="id_you_must_save_this_mnemonic_now">Você DEVE salvar este mnemônico AGORA</string>
-  <string name="id_you_need_to_enable_the_proxy">Você precisa habilitar a configuração de proxy (Orbot Socks5) antes de habilitar o Tor.</string>
   <string name="id_you_only_have_one_twofactor">Você tem apenas um método de autenticação de dois fatores ativado</string>
   <string name="id_you_will_need_to_reenter_your">Você precisará redigitar seu mnemônico para entrar novamente se não configurar um PIN. Pressione "OK" para continuar.</string>
   <string name="id_your_green_wallet_is_now_ready">Sua carteira Green está pronta para uso agora.</string>

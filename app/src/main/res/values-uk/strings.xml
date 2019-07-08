@@ -33,6 +33,9 @@
   <string name="id_amount">Сума</string>
   <string name="id_are_you_sure_you_want_to_view">Ви впевнені, що бажаєте переглянути транзакцію за допомогою %s?</string>
   <string name="id_asset">Asset</string>
+  <string name="id_asset_details">Asset Details</string>
+  <string name="id_asset_id">Asset ID</string>
+  <string name="id_asset_name">Asset Name</string>
   <string name="id_attempts_remaining_d">Залишилося спроб: %d</string>
   <string name="id_auto_logout_timeout">Автоматичний вихід</string>
   <string name="id_autolock_after">Автоблокування</string>
@@ -64,6 +67,7 @@
   <string name="id_congratulations">Вітаємо!</string>
   <string name="id_connect_through_a_proxy">Встановити з’єднання через проксі-сервер</string>
   <string name="id_connect_with_tor">Встановити з’єднання з Tor</string>
+  <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
   <string name="id_connecting_to_tor_onion_nodes">Підключення до Tor (.onion) вузлів забезпечує максимальну конфіденційність і безпеку. Натисніть "OK", щоб продовжити.</string>
   <string name="id_continue">Продовжити</string>
   <string name="id_copy_to_clipboard">Скопіювати в буфер обміну</string>
@@ -93,6 +97,7 @@
   <string name="id_displays_the_progress_of_spv">Відображує хід синхронізації SPV</string>
   <string name="id_dispute_twofactor_reset">Оскаржити двофакторне відновлення</string>
   <string name="id_disputed">Оскаржено</string>
+  <string name="id_domain">Domain</string>
   <string name="id_done">Виконано</string>
   <string name="id_dont_ask_me_again">Більше не запитувати</string>
   <string name="id_dont_store_your_mnemonic_on">Не зберігайте вашу мнемонічну фразу на телефоні, комп\'ютері чи онлайн-сервiсi.</string>
@@ -126,6 +131,7 @@
   <string name="id_enter_your_email_address">Введіть вашу email адресу</string>
   <string name="id_enter_your_s_wallet_mnemonic">Введіть %s мнемонічну фразу вашого гаманця</string>
   <string name="id_enter_your_wallet_mnemonic">Введіть вашу мнемонічну фразу</string>
+  <string name="id_entity">Entity</string>
   <string name="id_error">Помилка</string>
   <string name="id_error_logging_in_with_hardware">Помилка при вході з апаратним гаманцем</string>
   <string name="id_error_nfc_tag_not_writable">неможливо створити NFC-тег</string>
@@ -173,6 +179,7 @@
   <string name="id_information_not_available">Інформація недоступна.</string>
   <string name="id_insufficient_funds">Недостатньо коштів</string>
   <string name="id_insufficient_lbtc_for_fees">Insufficient L-BTC for fees</string>
+  <string name="id_insufficient_lbtc_to_send_a">Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC</string>
   <string name="id_invalid_address">Неправильна адреса</string>
   <string name="id_invalid_amount">Неправильна сума</string>
   <string name="id_invalid_mnemonic">Неправильна мнемонічна фраза</string>
@@ -188,6 +195,7 @@
   <string name="id_invalid_twofactor_code">Неправильний двофакторний код</string>
   <string name="id_invalid_url">Неправильний URL</string>
   <string name="id_is_a_noncustodial">керується тільки власником</string>
+  <string name="id_issuer">Issuer</string>
   <string name="id_label">LABEL</string>
   <string name="id_last_ping_1d_ms">Останній пінг: %1$d мс</string>
   <string name="id_later">ПІЗНІШЕ</string>
@@ -201,6 +209,7 @@
   <string name="id_logging_in">Виконується вхід...</string>
   <string name="id_login_failed">Вхід неможливий</string>
   <string name="id_login_options">Варіанти входу</string>
+  <string name="id_logout_and_switch">Logout and Switch</string>
   <string name="id_look_at_the_device_for_the">Подивіться на розташування чисел на пристрої</string>
   <string name="id_low">Низький</string>
   <string name="id_main_account">Основний акаунт</string>
@@ -213,6 +222,7 @@
   <string name="id_mnemonic_not_available">Мнемонічна фраза недоступна</string>
   <string name="id_month">місяць</string>
   <string name="id_months">місяців</string>
+  <string name="id_multiple_assets">Multiple Assets</string>
   <string name="id_my_notes">МОЇ НОТАТКИ</string>
   <string name="id_name">Ім’я</string>
   <string name="id_network">МЕРЕЖА</string>
@@ -233,6 +243,8 @@
   <string name="id_no_peers_connected">Немає підключених вузлів</string>
   <string name="id_no_pin_provided_exiting">PIN-код відсутній, вихід.</string>
   <string name="id_no_recipients">Отримувачі відсутні</string>
+  <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
+  <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
   <string name="id_no_utxos_found">UTXO не знайдено</string>
   <string name="id_normal">Нормальний</string>
   <string name="id_not_connected_connecting_in_ds_">З’єднання відсутнє. З’єднання відбудеться через %d сек...</string>
@@ -261,6 +273,7 @@
   <string name="id_pin_has_to_be_between_4_and_15">PIN-код має містити від 4 до 15 символів</string>
   <string name="id_pins_do_not_match_please_try">PIN-коди не співпадають, спробуйте ще раз.</string>
   <string name="id_please_disable_biometric">Будь ласка, вимкніть біометричну аутентифікацію перед видаленням PIN-коду</string>
+  <string name="id_please_disconnect_your_ledger">Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN</string>
   <string name="id_please_enable_another">Будь ласка, підключіть ще один метод аутентифікації для запобігання втрати доступу до ваших коштів.</string>
   <string name="id_please_enable_camera">Увімкніть дозвіл для використання камери.</string>
   <string name="id_please_enable_pin">Будь ласка, увімкніть PIN-аутентифікацію перед додаванням чи видаленням біометричної аутентифікації</string>
@@ -274,6 +287,7 @@
   <string name="id_please_select_the_checkbox">Встановіть прапорець</string>
   <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Будь ласка, натисніть картку</string>
+  <string name="id_precision">Precision</string>
   <string name="id_privacy_policy">Політика конфіденційності</string>
   <string name="id_problem_with_key_1s">Проблема з ключем %1$s</string>
   <string name="id_providing_an_email_enables">Надання електронної адреси дозволяє отримувати повідомлення і відновлювати транзакції.</string>
@@ -318,6 +332,7 @@
   <string name="id_second">секунда</string>
   <string name="id_seconds">секунд</string>
   <string name="id_security">БЕЗПЕКА</string>
+  <string name="id_select_account">Select Account</string>
   <string name="id_select_asset">Select asset</string>
   <string name="id_select_network">Оберіть мережу</string>
   <string name="id_select_word_number_d">Виберіть слово номер %d</string>
@@ -362,6 +377,8 @@
   <string name="id_spv_unverified">SPV не веріфікована</string>
   <string name="id_sweep">Зробити свіп</string>
   <string name="id_sweep_from_paper_wallet">Свіп з паперового гаманця</string>
+  <string name="id_sweep_into_s">Sweep into %s</string>
+  <string name="id_switch_network">Switch Network</string>
   <string name="id_synchronize_spv_on_mobile">Синхронізуйте SPV на мобільному телефоні</string>
   <string name="id_system_message">Системне повідомлення</string>
   <string name="id_tap_on_the_card_to_view">Натисніть на картку для перегляду транзакцій. </string>
@@ -373,10 +390,11 @@
   <string name="id_the_camera_has_a_problem_you">Проблеми з камерою. Можливо, вам потрібно перезавантажити пристрій.</string>
   <string name="id_the_easier_safer_and_faster">простіший, безпечніший та більш швидкий гаманець</string>
   <string name="id_the_hardware_wallet_you_are">Апаратний гаманець, який ви використовуєте, ще не підтримується</string>
+  <string name="id_the_network_selected_on_the">The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
   <string name="id_the_password_cant_be_empty">Поле пароля не може залишатись порожнім</string>
   <string name="id_the_recovery_key_below_will_not">Ключ відновлення більше не буде показано. Виконайте резервне копіювання для того, щоб завжди мати доступ до власних коштів. </string>
   <string name="id_there_is_already_a_pin_set_for">PIN-код встановлено для %sгаманця. Якщо продовжити, не можна буде встановити PIN і для входу буде потрібно ввести мнемонічну фразу з 24 слів. Ви зможете вимкнути PIN-код в налаштуваннях або 3-кратним помилковим введенням.</string>
-  <string name="id_ticker">TICKER</string>
+  <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Час:%s</string>
   <string name="id_to">ДО</string>
   <string name="id_tor_connectivity_disabled">З\'єднання з Tor розірвано!</string>
@@ -401,6 +419,7 @@
   <string name="id_txid">TXID</string>
   <string name="id_unable_to_contact_the_green">Не вдалося зв\'язатися зі службою підтримки Green. Перевірте підключення до мережі і дочекайтеся повторного підключення.</string>
   <string name="id_unconfirmed">Не підтверджена</string>
+  <string name="id_unknown">Unknown</string>
   <string name="id_unknown_bip21_parameter">Невідомий параметр bip21</string>
   <string name="id_unknown_custom">Невідомий (спеціалізований)</string>
   <string name="id_updated">оновлений</string>
@@ -430,6 +449,7 @@
   <string name="id_we_use_the_camera_to_scan_qr">Ми використовуємо камеру для сканування QR-кодів</string>
   <string name="id_welcome">Ласкаво просимо</string>
   <string name="id_welcome_to">Ласкаво просимо до</string>
+  <string name="id_where_would_you_like_to_import">Where would you like to import the funds?</string>
   <string name="id_word_d_of_d">Слово %d з %d</string>
   <string name="id_write_down_the_words">Запишіть слова</string>
   <string name="id_write_down_your_mnemonic_on">Запишіть вашу мнемонічну фразу на папері і зберігайте його в безпечному місці.</string>
@@ -444,7 +464,6 @@
   <string name="id_you_have_received_s">Ви отримали %s</string>
   <string name="id_you_must_first_log_out_before">Перед тим, як увійти, здійсніть вихід.</string>
   <string name="id_you_must_save_this_mnemonic_now">Вам ПОТРІБНО зберегти цю мнемонічну фразу ЗАРАЗ</string>
-  <string name="id_you_need_to_enable_the_proxy">Потрібно увімкнути конфігурацію проксі (Orbot Socks5), щоб активувати Tor.</string>
   <string name="id_you_only_have_one_twofactor">У вас підключено лише один метод двофакторної аутентифікації</string>
   <string name="id_you_will_need_to_reenter_your">Якщо ви не встановите PIN-код, кожного разу, для входу, вам потрібно буде вводити вашу мнемонічну фразу. Натисність "OK" для продовження.</string>
   <string name="id_your_green_wallet_is_now_ready">Ваш Green-гаманець готовий для використання.</string>
