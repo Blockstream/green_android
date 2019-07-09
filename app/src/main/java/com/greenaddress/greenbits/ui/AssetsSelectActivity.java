@@ -34,7 +34,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
             final String accountName = getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
                 getModel().getCurrentSubaccount()).getNameWithDefault(getString(R.string.id_main_account));
             setTitle(accountName);
-        } else if (callingActivity.equals(SendAmountActivity.class.getName())) {
+        } else if (callingActivity.equals(ScanActivity.class.getName())) {
             setTitle(R.string.id_select_asset);
         }
 

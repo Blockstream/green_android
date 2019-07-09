@@ -17,12 +17,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.PinData;
@@ -216,6 +218,20 @@ public class GaService extends Service  {
         if (asFiat)
             return amount.get("fiat").asText() + (withUnit ? (" " + getFiatCurrency()) : "");
         return amount.get(getUnitKey()).asText() + (withUnit ? (" " + getBitcoinOrLiquidUnit()) : "");
+    }
+
+    public String getValueString(final long amount, final String asset, final AssetInfoData assetInfo, boolean withUnit) {
+        try {
+            final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset, "", 0, "", "");
+            final ObjectNode details = new ObjectMapper().createObjectNode();
+            details.put("satoshi", amount);
+            details.set("asset_info", assetInfoData.toObjectNode());
+            final ObjectNode converted = getSession().convert(details);
+            return converted.get(asset).asText() + (withUnit ? " " + assetInfoData.getTicker() : "");
+        } catch (final RuntimeException | IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            return "";
+        }
     }
 
     public boolean isWatchOnly() {

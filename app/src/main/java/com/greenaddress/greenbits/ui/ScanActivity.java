@@ -361,7 +361,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
     public void onInserted(final String scanned) {
         final GaService service = ((GreenAddressApplication) getApplication()).mService;
 
-        final Intent result = new Intent(this, SendAmountActivity.class);
+        final Intent result = new Intent();
         result.putExtra("internal_qr", true);
         final Integer subaccount = service.getModel().getCurrentSubaccount();
 
@@ -422,6 +422,11 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
                 cameraHandler.post(fetchAndDecodeRunnable);
                 return;
             }
+        }
+        if (mService.isLiquid()) {
+            result.setClass(this, AssetsSelectActivity.class);
+        } else {
+            result.setClass(this, SendAmountActivity.class);
         }
         // Open send activity
         startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);

@@ -50,7 +50,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private TextView mAccountBalance;
     private Button mNextButton;
     private Button mSendAllButton;
-    private LinearLayout mSendAllLayout;
 
     private FontFitEditText mAmountText;
     private Button mUnitButton;
@@ -91,7 +90,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mRecipientText = UI.find(this, R.id.addressText);
         mAccountBalance = UI.find(this, R.id.accountBalanceText);
 
-        mSendAllLayout = UI.find( this, R.id.sendAllLayout);
         mAmountText = UI.find(this, R.id.amountText);
         mUnitButton = UI.find(this, R.id.unitButton);
         mSelectAsset = UI.find(this, R.id.selectAsset);
@@ -103,7 +101,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         } catch (final Exception e) {
             e.printStackTrace();
         }
-        UI.hideIf( mService.isLiquid(), mSendAllLayout);
 
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener(this);
@@ -156,8 +153,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             if (node != null && node.asLong() != 0L) {
                 final long newSatoshi = node.asLong();
                 try {
-                    mCurrentAmount = getSession().convertSatoshi(newSatoshi);
-                    mAmountText.setText(mCurrentAmount.get(getBitcoinUnitClean()).asText());
+                    final String unit = mSelectedAsset.isEmpty() ||
+                                        mSelectedAsset == "btc" ? getBitcoinUnitClean() : mSelectedAsset;
+                    mAmountText.setText(convert(newSatoshi).get(isFiat() ? "fiat" : unit).asText());
                 } catch (final RuntimeException | IOException e) {
                     Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
                 }
@@ -242,6 +240,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final String label = assetInfo != null ? assetInfo.getName() : mSelectedAsset;
         mSelectAsset.setText("btc".equals(mSelectedAsset) ? getBitcoinOrLiquidUnit() : label);
         UI.showIf(!mService.isLiquid() || "btc".equals(mSelectedAsset), mUnitButton);
+        updateAccountBalance();
     }
 
     private int[] getBlockTargets() {
@@ -278,12 +277,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         final boolean isLiquid = mService.getNetwork().getLiquid();
-
-        // Setup balance
-        final GaService service = mService;
-        final BalanceData balanceData = service.getBalanceData(service.getModel().getCurrentSubaccount());
-        mAccountBalance.setText(service.getValueString(balanceData.toObjectNode(), false, true));
-
+        updateAccountBalance();
         mSendAllButton.setPressed(mSendAll);
         mSendAllButton.setSelected(mSendAll);
         mSendAllButton.setOnClickListener(this);
@@ -293,6 +287,18 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         // FIXME: Update fee estimates (also update them if notified)
+    }
+
+    void updateAccountBalance() {
+        // Setup balance
+        final Integer subAccount = mService.getModel().getCurrentSubaccount();
+        final String asset = mSelectedAsset != null && !mSelectedAsset.isEmpty() ? mSelectedAsset : "btc";
+        final BalanceData balanceData = mAssetsBalances.get(asset);
+        final Long satoshi = balanceData.getSatoshi();
+        if ("btc".equals(asset) )
+            mAccountBalance.setText(mService.getValueString(satoshi, false, true));
+        else
+            mAccountBalance.setText(mService.getValueString(satoshi, asset, balanceData.getAssetInfo(), true));
     }
 
     @Override
@@ -453,8 +459,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                     final long newSatoshi = addressee.get("satoshi").asLong();
                     // avoid updating view if value hasn't changed
                     if (mSendAll || (mCurrentAmount != null && mCurrentAmount.get("satoshi").asLong() != newSatoshi)) {
-                        mCurrentAmount = getSession().convertSatoshi(newSatoshi);
-                        mAmountText.setText(mCurrentAmount.get(isFiat() ? "fiat" : getBitcoinUnitClean()).asText());
+                        final String unit = mSelectedAsset.isEmpty() ||
+                                            mSelectedAsset == "btc" ? getBitcoinUnitClean() : mSelectedAsset;
+                        mAmountText.setText(convert(newSatoshi).get(isFiat() ? "fiat" : unit).asText());
                     }
                 } catch (final RuntimeException | IOException e) {
                     Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
@@ -468,6 +475,18 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             }
             UI.enableIf(error.isEmpty(), mNextButton);
         }
+    }
+
+    public ObjectNode convert(final long satoshi) throws RuntimeException, IOException {
+        final String asset = mSelectedAsset.isEmpty() ? "btc" : mSelectedAsset;
+        AssetInfoData assetInfo = new AssetInfoData(asset, "", 0, "", "");
+        if (mAssetsBalances.get(asset) != null && mAssetsBalances.get(asset).getAssetInfo() != null)
+            assetInfo = mAssetsBalances.get(asset).getAssetInfo();
+        final ObjectNode details = new ObjectMapper().createObjectNode();
+        details.put("satoshi", satoshi);
+        details.set("asset_info", assetInfo.toObjectNode());
+        mCurrentAmount = getSession().convert(details);
+        return mCurrentAmount;
     }
 
     private void updateFeeSummaries() {

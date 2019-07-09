@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.data.EntityData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
@@ -58,32 +59,21 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final String assetId = mAssetsIds.get(position);
         holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         final BalanceData balanceData = mAssets.get(assetId);
-        final AssetInfoData assetInfo = balanceData.getAssetInfo() !=
-                                        null ? balanceData.getAssetInfo() : new AssetInfoData(assetId, assetId, 0, "",
-                                                                                              "");
-        try {
-            final ObjectNode details = mObjectMapper.createObjectNode();
-            details.put("satoshi", balanceData.getSatoshi());
-            details.set("asset_info", assetInfo.toObjectNode());
-            final ObjectNode converted = getSession().convert(details);
-            final String amount = converted.get(assetId).asText();
-            holder.mAssetName.setText("btc".equals(assetId) ? "L-BTC" : assetInfo.getName());
-            if ("btc".equals(assetId) ) {
-                holder.mAssetValue.setText(mService.getValueString(converted,false,true));
-            } else {
-                holder.mAssetValue.setText(String.format("%s %s", amount, assetInfo.getTicker()));
-            }
-            if (assetInfo.getEntity() != null && assetInfo.getEntity().getDomain() != null &&
-                assetInfo.getEntity().getDomain().length() > 0) {
-                holder.mAssetDomain.setVisibility(View.VISIBLE);
-                holder.mAssetDomain.setText(assetInfo.getEntity().getDomain());
-            } else {
-                holder.mAssetDomain.setVisibility(View.GONE);
-            }
-
-        } catch (final Exception e) {
-            e.printStackTrace();
+        final long satoshi = balanceData.getSatoshi();
+        if ("btc".equals(assetId)) {
+            holder.mAssetValue.setText(mService.getValueString(satoshi, false, true));
+        } else {
+            holder.mAssetValue.setText(mService.getValueString(satoshi, assetId, balanceData.getAssetInfo(), true));
         }
+        final AssetInfoData assetInfo = balanceData.getAssetInfo();
+        final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
+        if (entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
+            holder.mAssetDomain.setVisibility(View.VISIBLE);
+            holder.mAssetDomain.setText(entity.getDomain());
+        } else {
+            holder.mAssetDomain.setVisibility(View.GONE);
+        }
+        holder.mAssetName.setText("btc".equals(assetId) ? "L-BTC" : assetInfo != null ? assetInfo.getName() : assetId);
     }
 
     @Override

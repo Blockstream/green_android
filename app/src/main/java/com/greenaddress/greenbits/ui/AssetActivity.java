@@ -95,16 +95,6 @@ public class AssetActivity extends LoggedActivity {
     }
 
     private void refresh() {
-        final String ticker = getAssetInfo().getTicker() == null ? "" : getAssetInfo().getTicker();
-        try {
-            final ObjectNode details = mObjectMapper.createObjectNode();
-            details.put("satoshi", mSatoshi);
-            details.set("asset_info",  getAssetInfo().toObjectNode());
-            final ObjectNode converted = getSession().convert(details);
-            final String amount = converted.get(mAssetId).asText();
-            mAssetBalanceText.setText(amount);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        mAssetBalanceText.setText(mService.getValueString(mSatoshi, mAssetId, getAssetInfo(), true));
     }
 }
