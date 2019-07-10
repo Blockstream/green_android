@@ -31,15 +31,19 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             navigationController?.setNavigationBarHidden(true, animated: true)
         }
         title = ""
-        getSubaccounts().done {[unowned self] wallets in
-            self.wallets = wallets
-            self.collectionView?.reloadData()
-        }.catch {_ in }
+        reloadData()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+
+    func reloadData() {
+        getSubaccounts().done {[unowned self] wallets in
+            self.wallets = wallets
+            self.collectionView?.reloadData()
+        }.catch {_ in }
     }
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -122,10 +126,35 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     @objc func addWallet(_ sender: Any?) {
-        let alert = UIAlertController(title: "", message: NSLocalizedString("id_new_accounts_functionality", comment: ""), preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in })
-        DispatchQueue.main.async {
-            self.present(alert, animated: true, completion: nil)
+        let alert = UIAlertController(title: NSLocalizedString("id_create_new_wallet", comment: ""), message: "", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = NSLocalizedString("id_name", comment: "")
+            textField.keyboardType = .asciiCapable
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_create", comment: ""), style: .default) { _ in
+            let textField = alert.textFields!.first
+            self.createWallet(name: textField!.text!)
+        })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func createWallet(name: String) {
+        let bgq = DispatchQueue.global(qos: .background)
+        let session = getGAService().getSession()
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try session.createSubaccount(details: ["name": name, "type": "2of2"])
+        }.compactMap(on: bgq) { call in
+            call.resolve(self)
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.reloadData()
+        }.catch { e in
+            Toast.show(e.localizedDescription)
         }
     }
 
