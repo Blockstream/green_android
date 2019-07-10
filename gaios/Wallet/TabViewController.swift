@@ -17,11 +17,15 @@ class TabViewController: UITabBarController {
 
     @objc func lockApplication(_ notification: NSNotification) {
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map {
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.map {
             getAppDelegate()!.lock()
         }.map(on: bgq) {
             try getSession().disconnect()
         }.ensure {
+            self.stopAnimating()
             getGAService().reset()
         }.catch { _ in
             print("disconnection error never happens")

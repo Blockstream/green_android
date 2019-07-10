@@ -288,19 +288,7 @@ class SettingsViewController: UIViewController {
 extension SettingsViewController {
 
     func logout() {
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map {
-            self.startAnimating()
-        }.map(on: bgq) {
-            try getSession().disconnect()
-        }.ensure {
-            self.stopAnimating()
-        }.done {
-            getGAService().reset()
-            getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
-        }.catch { _ in
-            print("disconnection error never happens")
-        }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
     }
 
     func setWatchOnly(username: String, password: String) {
