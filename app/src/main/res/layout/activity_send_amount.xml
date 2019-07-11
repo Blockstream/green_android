@@ -43,14 +43,24 @@
                 style="@style/SectionTitle"
                 android:text="@string/id_sending"/>
 
-            <TextView
-                android:id="@+id/selectAsset"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                style="@style/assetButton"
-                android:text="@string/id_select_asset"
-                />
+                android:layout_weight="1"
+                android:layout_marginEnd="20dp"
+                android:padding="10dp"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/assetName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/assetDomain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey_light"
+                    android:visibility="gone" />
+            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"

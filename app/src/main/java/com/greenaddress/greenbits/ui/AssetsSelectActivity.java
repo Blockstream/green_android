@@ -6,14 +6,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.ui.components.AssetsAdapter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
+import org.bitcoinj.core.AddressFormatException;
+
 import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
+import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
 
@@ -81,7 +89,45 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
     @Override
     public void onAssetSelected(final String assetId) {
-        super.onAssetSelected(assetId, mAssetsBalances.get(assetId) );
+        if (getIntent().hasExtra(INTENT_STRING_TX)) {
+            // Update transaction in send navigation flow
+            try {
+                final ObjectNode tx = updateTransaction(assetId);
+                final Intent intent = new Intent(this, SendAmountActivity.class);
+                intent.putExtra(INTENT_STRING_TX, tx.toString());
+                startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
+            } catch (final Exception e) {
+                Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            }
+            return;
+        }
+
+        // Nothing for btc
+        if ("btc".equals(assetId))
+            return;
+
+        // Open selected asset detail page
+        final Intent intent = new Intent(this, AssetActivity.class);
+        intent.putExtra("ASSET_ID", assetId)
+        .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
+        .putExtra("SATOSHI", mAssetsBalances.get(assetId).getSatoshi());
+        startActivity(intent);
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_BITCOIN_URL_SEND && resultCode == RESULT_OK) {
+            setResult(resultCode);
+            finishOnUiThread();
+        }
+    }
+
+    private ObjectNode updateTransaction(final String assetId) throws Exception {
+        final String tx = getIntent().getStringExtra(INTENT_STRING_TX);
+        final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
+        final ObjectNode addressee = (ObjectNode) txJson.get("addressees").get(0);
+        addressee.put("asset_tag", assetId);
+        return getSession().createTransactionRaw(txJson);
+    }
 }

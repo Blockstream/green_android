@@ -456,6 +456,15 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     @Override
     public void onAssetSelected(final String assetId) {
-        super.onAssetSelected(assetId, mAssetsBalances.get(assetId) );
+        // Nothing for btc
+        if ("btc".equals(assetId))
+            return;
+
+        // Open selected asset detail page
+        final Intent intent = new Intent(this, AssetActivity.class);
+        intent.putExtra("ASSET_ID", assetId)
+        .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
+        .putExtra("SATOSHI", mAssetsBalances.get(assetId).getSatoshi());
+        startActivity(intent);
     }
 }

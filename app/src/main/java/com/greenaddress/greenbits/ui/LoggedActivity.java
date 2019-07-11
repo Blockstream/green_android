@@ -13,6 +13,8 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import java.util.Observable;
 import java.util.Observer;
 
+import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
+
 public abstract class LoggedActivity extends GaActivity implements Observer {
 
     private boolean mChangingActivity = false;
@@ -80,24 +82,5 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
                 startActivity(new Intent(this, MnemonicActivity.class));
             finishOnUiThread();
         }
-    }
-
-    protected void onAssetSelected(final String assetId, final BalanceData balance) {
-        Log.d("ASSET", "selected " + assetId);
-        if (getCallingActivity() !=
-            null && getCallingActivity().getClassName().equals(TabbedMainActivity.class.getName()) ) {
-            if ("btc".equals(assetId))
-                return;
-            final Intent intent = new Intent(this, AssetActivity.class);
-            intent.putExtra("ASSET_ID", assetId)
-            .putExtra("ASSET_INFO", balance.getAssetInfo())
-            .putExtra("SATOSHI", balance.getSatoshi());
-            startActivity(intent);
-            return;
-        }
-        final Intent intent = getIntent();
-        intent.putExtra(PrefKeys.ASSET_SELECTED, assetId);
-        setResult(RESULT_OK, intent);
-        finish();
     }
 }

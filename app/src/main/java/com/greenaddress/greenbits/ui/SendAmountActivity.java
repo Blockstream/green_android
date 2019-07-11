@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.data.EntityData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
@@ -48,13 +49,12 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     private TextView mRecipientText;
     private TextView mAccountBalance;
+    private TextView mAssetName;
+    private TextView mAssetDomain;
     private Button mNextButton;
     private Button mSendAllButton;
-
     private FontFitEditText mAmountText;
     private Button mUnitButton;
-
-    private TextView mSelectAsset;
 
     private boolean mIsFiat = false;
     private ObjectNode mCurrentAmount; // output from GA_convert_amount
@@ -63,8 +63,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private int mSelectedFee;
     private long mMinFeeRate;
     private Long mVsize;
-    private String mSelectedAsset = "";
-    private Map<String, BalanceData> mAssetsBalances;
+    private String mSelectedAsset = "btc";
+    private BalanceData mAssetBalances;
 
     private static final int mButtonIds[] =
     { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
@@ -92,15 +92,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         mAmountText = UI.find(this, R.id.amountText);
         mUnitButton = UI.find(this, R.id.unitButton);
-        mSelectAsset = UI.find(this, R.id.selectAsset);
-
-        // Retrieve assets list
-        try {
-            mAssetsBalances = getModel().getCurrentAccountBalanceData();
-            updateAssetSelected();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        mAssetName = UI.find(this, R.id.assetName);
+        mAssetDomain = UI.find(this, R.id.assetDomain);
 
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener(this);
@@ -205,6 +198,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             throw new RuntimeException(e);
         }
 
+        // Retrieve assets list
+        updateAssetSelected();
+
         final View contentView = findViewById(android.R.id.content);
         UI.attachHideKeyboardListener(this, contentView);
 
@@ -221,26 +217,36 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
             isKeyboardOpen = (keypadHeight > screenHeight * 0.15); // 0.15 ratio is perhaps enough to determine keypad height.
         });
-
-        if (mService.isLiquid()) {
-            mSelectAsset.setOnClickListener(v -> startActivityForResult(
-                                                new Intent(this, AssetsSelectActivity.class),
-                                                REQUEST_SELECT_ASSET));
-        } else {
-            mSelectAsset.setVisibility(View.GONE);
-        }
     }
 
     private void updateAssetSelected() {
-        if (mSelectedAsset.isEmpty()) {
-            mSelectAsset.setText(getString(R.string.id_select_asset));
-            return;
+        try {
+            final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
+            mSelectedAsset = addressee.get("asset_tag").asText("btc");
+        } catch (final Exception e) {
+            // Asset not passed, default "btc"
         }
-        final AssetInfoData assetInfo = mAssetsBalances.get(mSelectedAsset).getAssetInfo();
+
+        mAssetBalances = getModel().getCurrentAccountBalanceData().get(mSelectedAsset);
+        final AssetInfoData assetInfo = mAssetBalances.getAssetInfo();
         final String label = assetInfo != null ? assetInfo.getName() : mSelectedAsset;
-        mSelectAsset.setText("btc".equals(mSelectedAsset) ? getBitcoinOrLiquidUnit() : label);
-        UI.showIf(!mService.isLiquid() || "btc".equals(mSelectedAsset), mUnitButton);
-        updateAccountBalance();
+        final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
+        mAssetName.setText("btc".equals(mSelectedAsset) ? getBitcoinOrLiquidUnit() : label);
+        if (assetInfo != null && entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
+            mAssetDomain.setVisibility(View.VISIBLE);
+            mAssetDomain.setText(entity.getDomain());
+        } else {
+            mAssetDomain.setVisibility(View.GONE);
+        }
+        UI.showIf(!isAsset(), mUnitButton);
+        UI.showIf(isAsset(), mAssetName);
+
+        final Long satoshi = mAssetBalances.getSatoshi();
+        if (!isAsset())
+            mAccountBalance.setText(mService.getValueString(satoshi, false, true));
+        else
+            mAccountBalance.setText(mService.getValueString(satoshi, mSelectedAsset,
+                                                            mAssetBalances.getAssetInfo(), true));
     }
 
     private int[] getBlockTargets() {
@@ -277,7 +283,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         final boolean isLiquid = mService.getNetwork().getLiquid();
-        updateAccountBalance();
         mSendAllButton.setPressed(mSendAll);
         mSendAllButton.setSelected(mSendAll);
         mSendAllButton.setOnClickListener(this);
@@ -287,18 +292,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         // FIXME: Update fee estimates (also update them if notified)
-    }
-
-    void updateAccountBalance() {
-        // Setup balance
-        final Integer subAccount = mService.getModel().getCurrentSubaccount();
-        final String asset = mSelectedAsset != null && !mSelectedAsset.isEmpty() ? mSelectedAsset : "btc";
-        final BalanceData balanceData = mAssetsBalances.get(asset);
-        final Long satoshi = balanceData.getSatoshi();
-        if ("btc".equals(asset) )
-            mAccountBalance.setText(mService.getValueString(satoshi, false, true));
-        else
-            mAccountBalance.setText(mService.getValueString(satoshi, asset, balanceData.getAssetInfo(), true));
     }
 
     @Override
@@ -423,13 +416,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             changed |= !satoshi.toString().equals(replacedValue == null ? "" : replacedValue.toString());
         }
 
-        if (caller == mSelectAsset) {
-            final JsonNode assetTag = addressee.get("asset_tag");
-            changed |= assetTag == null || !assetTag.asText().equals(mSelectedAsset);
-            addressee.put("asset_tag", mSelectedAsset);
-            updateAssetSelected();
-        }
-
         final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
         final JsonNode replacedValue = mTx.replace("fee_rate", fee_rate);
         changed |= !fee_rate.toString().equals(replacedValue == null ? "" : replacedValue.toString());
@@ -480,8 +466,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     public ObjectNode convert(final long satoshi) throws RuntimeException, IOException {
         final String asset = mSelectedAsset.isEmpty() ? "btc" : mSelectedAsset;
         AssetInfoData assetInfo = new AssetInfoData(asset, "", 0, "", "");
-        if (mAssetsBalances.get(asset) != null && mAssetsBalances.get(asset).getAssetInfo() != null)
-            assetInfo = mAssetsBalances.get(asset).getAssetInfo();
+        if (mAssetBalances != null && mAssetBalances.getAssetInfo() != null)
+            assetInfo = mAssetBalances.getAssetInfo();
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
         details.set("asset_info", assetInfo.toObjectNode());
@@ -516,13 +502,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         if (requestCode == REQUEST_BITCOIN_URL_SEND && resultCode == RESULT_OK) {
             setResult(resultCode);
             finishOnUiThread();
-        } else if (requestCode == REQUEST_SELECT_ASSET && resultCode == RESULT_OK) {
-            mSelectedAsset = data.getStringExtra(PrefKeys.ASSET_SELECTED);
-
-            // onTextChanged updates mCurrentAmount otherwise updateTransaction doesn't work
-            onTextChanged(null,0,0,0);
-
-            updateTransaction(mSelectAsset);
         }
     }
 
@@ -541,8 +520,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
         intent.putExtra("transaction", transactionData.toString());
-        intent.putExtra("asset_info", mAssetsBalances.get(
-                            mSelectedAsset.isEmpty() ? "btc" : mSelectedAsset).getAssetInfo());
+        intent.putExtra("asset_info", mAssetBalances.getAssetInfo());
         if (mService.getConnectionManager().isHW())
             intent.putExtra("hww", mService.getConnectionManager().getHWDeviceData().toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
@@ -578,7 +556,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         amount.put(key, value.isEmpty() ? "0" : value);
         if (isAsset()) {
             final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset, mSelectedAsset, 0, "", "");
-            final AssetInfoData assetInfo = mAssetsBalances.get(key).getAssetInfo();
+            final AssetInfoData assetInfo = mAssetBalances.getAssetInfo();
             amount.set("asset_info", (assetInfo == null ? assetInfoDefault : assetInfo).toObjectNode());
         }
         try {
