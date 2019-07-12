@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.GaService;
@@ -26,6 +25,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
 
     public interface OnAccountSelected {
         void onAccountSelected(int account);
+        void onNewSubaccount();
     }
 
     public AccountAdapter(final List<SubaccountData> subaccountList, final GaService service,
@@ -74,12 +74,8 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             holder.mAccountView.showAdd(false);
         } else {
             holder.mAccountView.showAdd(true);
-            // TODO when implementing account creation, filter account names with CharInputFilter
             holder.mAccountView.setOnClickListener( view -> {
-                new MaterialDialog.Builder(mActivity)
-                .content(mResources.getString(R.string.id_new_accounts_functionality))
-                .backgroundColor(mResources.getColor(R.color.buttonJungleGreen))
-                .build().show();
+                mOnAccountSelected.onNewSubaccount();
             });
         }
     }

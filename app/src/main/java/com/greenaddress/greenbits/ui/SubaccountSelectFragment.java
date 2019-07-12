@@ -1,13 +1,18 @@
 package com.greenaddress.greenbits.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.Model;
@@ -46,8 +51,6 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         mAccountsView.addItemDecoration(bottomOffsetDecoration);
 
-        mSubaccountList = getGAService().getModel().getSubaccountDataObservable().getSubaccountDataList();
-
         final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this,
                                                                   getResources(), getActivity());
         mAccountsView.setAdapter(accountsAdapter);
@@ -57,10 +60,11 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     }
 
     private void onUpdateSubaccounts(final SubaccountDataObservable observable) {
-        mSubaccountList = observable.getSubaccountDataList();
-        if (mSubaccountList == null)
+        final List<SubaccountData> list = observable.getSubaccountDataList();
+        if (list == null)
             return;
-
+        mSubaccountList.clear();
+        mSubaccountList.addAll(list);
         UI.showIf(mSubaccountList.size() == 1, UI.find(getGaActivity(), R.id.clickOnTheCard));
 
         getActivity().runOnUiThread(() -> mAccountsView.getAdapter().notifyDataSetChanged());
@@ -133,4 +137,23 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
         getGaActivity().overridePendingTransition(0,0);
     }
 
+    @Override
+    public void onNewSubaccount() {
+        final MaterialDialog dialog = UI.popup(getActivity(), R.string.id_add_new_account)
+                                      .input(getString(R.string.id_name), "", new MaterialDialog.InputCallback() {
+            @Override
+            public void onInput(@NonNull final MaterialDialog dialog, final CharSequence input) {
+                if (input.length() == 0)
+                    return;
+                try {
+                    GDKSession.getSession().createSubAccount(getActivity(), input.toString(), "2of2").resolve(null,
+                                                                                                              null);
+                    getGAService().getModel().getSubaccountDataObservable().refresh();
+                } catch (final Exception e) {
+                    Toast.makeText(getContext(), R.string.id_operation_failure, Toast.LENGTH_LONG).show();
+                }
+            }
+        }).build();
+        UI.showDialog(dialog);
+    }
 }

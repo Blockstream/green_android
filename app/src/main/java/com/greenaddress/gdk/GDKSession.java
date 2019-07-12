@@ -158,7 +158,7 @@ public class GDKSession {
         return mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts), new TypeReference<List<SubaccountData>>() {});
     }
 
-    public GDKTwoFactorCall createSubAccount(final Activity parent, final String name, final String type) {
+    public GDKTwoFactorCall createSubAccount(final Activity parent, final String name, final String type) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.set("name", new TextNode(name));
         details.set("type", new TextNode(type));
