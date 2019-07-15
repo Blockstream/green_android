@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.model.ToastObservable;
+import com.greenaddress.greenbits.GaService;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -52,15 +53,6 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         }
     }
 
-    private void toScreen(final Intent intent) {
-        if (!mChangingActivity) {
-            mChangingActivity = true;
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finishOnUiThread();
-        }
-    }
-
     public void logout() {
         if (mService == null || getModel() == null) {
             toFirst();
@@ -74,8 +66,17 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     public void toFirst() {
-        toScreen(new Intent(this, FirstScreenActivity.class));
-        finishOnUiThread();
+        if (!mChangingActivity) {
+            mChangingActivity = true;
+            final Intent intent = new Intent(this, FirstScreenActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            // No hardware wallet, jump to PIN or mnemonic entry
+            if (mService.cfgPin().getString("ident", null) != null)
+                startActivity(new Intent(this, PinActivity.class));
+            else
+                startActivity(new Intent(this, MnemonicActivity.class));
+            finishOnUiThread();
+        }
     }
 
 }
