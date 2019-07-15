@@ -291,7 +291,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/SectionTitle"
-                    android:text="@string/id_hash" />
+                    android:text="@string/id_transaction_id" />
 
                 <TextView
                     android:id="@+id/txHashText"
