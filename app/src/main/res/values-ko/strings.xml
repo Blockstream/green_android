@@ -67,7 +67,7 @@
   <string name="id_congratulations">축하합니다!</string>
   <string name="id_connect_through_a_proxy">프록시를 사용하여 연결하기</string>
   <string name="id_connect_with_tor">Tor를 사용하여 연결하기</string>
-  <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
+  <string name="id_connecting_to_a_trusted_node">Tor를 통해 신뢰하는 노드에 연결하려면 로그인 전, 설정에서 프록시를 활성화 하여야 하고 Socks5 프록시(안드로이드용 Orbot 앱)도 있어야 합니다.</string>
   <string name="id_connecting_to_tor_onion_nodes">Tor (.onion)에 연결하면 최고의 보안과 프라이버시를 가능케 합니다. 계속하시려면 "확인"을 눌러주세요.</string>
   <string name="id_continue">계속</string>
   <string name="id_copy_to_clipboard">클립보드에 복사</string>
@@ -131,7 +131,7 @@
   <string name="id_enter_your_email_address">이메일 주소를 입력하세요</string>
   <string name="id_enter_your_s_wallet_mnemonic">지갑 %s 니모닉(복원 코드)을 입력하세요</string>
   <string name="id_enter_your_wallet_mnemonic">지갑 니모닉(복원 코드)을 입력하세요</string>
-  <string name="id_entity">Entity</string>
+  <string name="id_entity">기관</string>
   <string name="id_error">오류</string>
   <string name="id_error_logging_in_with_hardware">하드웨어 지갑으로 로그인 시 오류 발생</string>
   <string name="id_error_nfc_tag_not_writable">오류: NFC 태그에 쓰기 불가능</string>
@@ -179,7 +179,7 @@
   <string name="id_information_not_available">해당 정보가 없습니다.</string>
   <string name="id_insufficient_funds">자산 부족</string>
   <string name="id_insufficient_lbtc_for_fees">수수료로 사용할 L-BTC 부족</string>
-  <string name="id_insufficient_lbtc_to_send_a">Insufficient L-BTC to send a transaction. In Liquid, L-BTC are needed to pay transaction fees. Generate an address to receive L-BTC</string>
+  <string name="id_insufficient_lbtc_to_send_a">L-BTC가 부족하여 거래를 전송할 수 없습니다. Liquid에서는 L-BTC를 사용하여 거래 수수료를 지불합니다. L-BTC를 받을 주소를 생성해 보세요.</string>
   <string name="id_invalid_address">유효하지 않은 주소</string>
   <string name="id_invalid_amount">유효하지 않은 액수</string>
   <string name="id_invalid_mnemonic">유효하지 않은 니모닉(복원 코드)</string>
@@ -222,7 +222,7 @@
   <string name="id_mnemonic_not_available">니모닉(복원 코드) 없음</string>
   <string name="id_month">달</string>
   <string name="id_months">달</string>
-  <string name="id_multiple_assets">Multiple Assets</string>
+  <string name="id_multiple_assets">여러 자산들</string>
   <string name="id_my_notes">내 메모</string>
   <string name="id_name">이름</string>
   <string name="id_network">네트워크</string>
@@ -243,8 +243,8 @@
   <string name="id_no_peers_connected">연결된 노드 없음</string>
   <string name="id_no_pin_provided_exiting">비밀번호 입력하지 않음. 앱을 종료하는 중...</string>
   <string name="id_no_recipients">수령인 없음</string>
-  <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
-  <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
+  <string name="id_no_registered_name_for_this">이 자산에 등록된 이름이 없습니다.</string>
+  <string name="id_no_registered_ticker_for_this">이 자산에 등록된 종목 코드가 없습니다.</string>
   <string name="id_no_utxos_found">UTXO 찾지 못함</string>
   <string name="id_normal">보통</string>
   <string name="id_not_connected_connecting_in_ds_">접속되지 않았습니다. 접속 시도 중 %d 초...</string>
@@ -273,7 +273,7 @@
   <string name="id_pin_has_to_be_between_4_and_15">비밀번호는 4 에서 15자리 사이 여야 합니다.</string>
   <string name="id_pins_do_not_match_please_try">비밀번호가 일치하지 않습니다.</string>
   <string name="id_please_disable_biometric">비밀번호를 지우기 전에 생체인증을 먼저 비활성화하세요.</string>
-  <string name="id_please_disconnect_your_ledger">Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN</string>
+  <string name="id_please_disconnect_your_ledger">Ledger Nano X를 휴대폰에서 분리하신 다음, 양쪽 버튼은 둘 다 길게 눌러 종료하세요. 종료 후 다시 연결한 다음 비밀번호를 입력하세요.</string>
   <string name="id_please_enable_another">자산에 대한 접근권한을 잃지 않도록 다른 방법도 활성화하세요.</string>
   <string name="id_please_enable_camera">카메라를 사용하기 위해 카메라에 대한 접근 권한을 활성화하세요.</string>
   <string name="id_please_enable_pin">생체인증을 더하기 전에 비밀번호를 활성화하세요.</string>
@@ -390,11 +390,11 @@
   <string name="id_the_camera_has_a_problem_you">카메라에 문제가 있습니다. 기기를 다시 시작하셔야 될 것 같습니다.</string>
   <string name="id_the_easier_safer_and_faster">더 쉽고, 더 안전하고, 더 빠른 지갑</string>
   <string name="id_the_hardware_wallet_you_are">지금 사용하시는 하드웨어 지갑은 아직 지원되지 않습니다.</string>
-  <string name="id_the_network_selected_on_the">The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
+  <string name="id_the_network_selected_on_the">Green 앱에서 선택한 네트워크는 하드웨어 지갑에서 선택한 네트워크랑 일치하지 않습니다. 두 기기에서 동일한 네트워크를 선택해 주세요.</string>
   <string name="id_the_password_cant_be_empty">비밀번호는 비워 둘 수 없습니다</string>
   <string name="id_the_recovery_key_below_will_not">밑의 복원 키는 다시 표시되지 않습니다. 자산을 잃어버리지 않도록 안전하게 보관해두세요.</string>
   <string name="id_there_is_already_a_pin_set_for">%s 지갑에는 비밀번호가 이미 설정되어 있습니다. 이대로 진행할 경우 비밀번호는 설정할 수 없으며 로그인을 위해서는 24개의 니모닉(복원 코드)이 필요합니다. 3번 로그인 실패를 하거나 설정에서 비밀번호를 해제하실 수 있습니다. </string>
-  <string name="id_ticker">Ticker</string>
+  <string name="id_ticker">종목 코드</string>
   <string name="id_time_s">시간: %s</string>
   <string name="id_to">받는 분</string>
   <string name="id_tor_connectivity_disabled">Tor 연결이 비활성화됐습니다!</string>
