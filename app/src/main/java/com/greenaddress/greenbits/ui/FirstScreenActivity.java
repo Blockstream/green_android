@@ -70,7 +70,8 @@ public class FirstScreenActivity extends LoginActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.preauth_menu, menu);
-        menu.findItem(R.id.watchonly_preference).setVisible(!mService.isLiquid());
+        if (mService != null)
+            menu.findItem(R.id.watchonly_preference).setVisible(!mService.isLiquid());
         return true;
     }
 

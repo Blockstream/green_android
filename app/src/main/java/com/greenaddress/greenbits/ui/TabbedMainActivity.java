@@ -192,7 +192,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     private void updateBottomNavigationView() {
         final MenuItem item = mNavigation.getMenu().findItem(R.id.navigation_notifications);
         runOnUiThread(() ->
-                      item.setIcon(mService.getModel().getEventDataObservable().hasEvents() ?
+                      item.setIcon(mService != null && mService.getModel().getEventDataObservable().hasEvents() ?
                                    R.drawable.bottom_navigation_notifications_2 :
                                    R.drawable.bottom_navigation_notifications)
                       );
