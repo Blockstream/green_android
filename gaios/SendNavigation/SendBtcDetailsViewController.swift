@@ -336,6 +336,12 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
                 Toast.show(String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(minFeeRate)))
                 return
             }
+            if let maxFee = self.feeEstimates[1] {
+                if number > Double(maxFee) / 1000 {
+                    Toast.show(String(format: NSLocalizedString("id_fee_rate_is_above_maximum", comment: ""), String(minFeeRate)))
+                    return
+                }
+            }
             let feeEstimate = UInt64(1000 * number)
             self.selectedFee = self.content.feeRateButtons.count - 1
             self.feeEstimates[self.content.feeRateButtons.count - 1] = feeEstimate
