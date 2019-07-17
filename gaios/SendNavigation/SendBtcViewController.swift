@@ -9,6 +9,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
     var wallet: WalletItem?
     var transaction: Transaction?
     var isSweep: Bool = false
+    private var isLiquid: Bool!
 
     @IBOutlet weak var textfield: UITextField!
     @IBOutlet weak var qrCodeReaderBackgroundView: QRCodeReaderView!
@@ -20,6 +21,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         if let wallet = wallet {
             self.title = isSweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), wallet.localizedName()) : NSLocalizedString("id_send_to", comment: "")
         }
+        isLiquid = getGdkNetwork(getNetwork()).liquid
         orLabel.text = NSLocalizedString("id_or", comment: "")
 
         textfield.delegate = self
@@ -30,7 +32,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         textfield.leftViewMode = .always
         textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
 
-        bottomButton.setTitle(NSLocalizedString("id_add_amount", comment: ""), for: .normal)
+        bottomButton.setTitle(isLiquid ? NSLocalizedString("id_select_asset", comment: "") : NSLocalizedString("id_add_amount", comment: ""), for: .normal)
 
         qrCodeReaderBackgroundView.delegate = self
     }
@@ -95,9 +97,13 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? SendBtcDetailsViewController {
-            nextController.wallet = wallet
-            nextController.transaction = sender as? Transaction
+        if let next = segue.destination as? SendBtcDetailsViewController {
+            next.wallet = wallet
+            next.transaction = sender as? Transaction
+        } else if let next = segue.destination as? AssetsListTableViewController {
+            next.isSend = true
+            next.wallet = wallet
+            next.transaction = sender as? Transaction
         }
     }
 
@@ -122,7 +128,11 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
             if !tx.error.isEmpty && tx.error != "id_invalid_amount" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-            self.performSegue(withIdentifier: "next", sender: tx)
+            if self.isLiquid {
+                self.performSegue(withIdentifier: "asset_select", sender: tx)
+            } else {
+                self.performSegue(withIdentifier: "next", sender: tx)
+            }
         }.catch { error in
             switch error {
             case TransactionError.invalid(let localizedDescription):

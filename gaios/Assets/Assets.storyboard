@@ -28,11 +28,20 @@
                     </navigationItem>
                     <connections>
                         <segue destination="o0F-xl-fvc" kind="presentation" identifier="asset" id="VwT-vD-ItA"/>
+                        <segue destination="Nbv-Qz-bOs" kind="show" identifier="asset_send" id="cTf-1m-5Rt"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bEf-pI-Cpe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="7513.04347826087" y="-1013.1696428571428"/>
+        </scene>
+        <!--SendBtcDetailsViewController-->
+        <scene sceneID="1l2-qA-pm5">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Send" referencedIdentifier="SendBtcDetailsViewController" id="Nbv-Qz-bOs" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4N4-gf-3eC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8193" y="-1391"/>
         </scene>
         <!--Asset Detail Table View Controller-->
         <scene sceneID="i4M-HS-QIL">

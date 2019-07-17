@@ -2,16 +2,17 @@ import Foundation
 import UIKit
 import PromiseKit
 
-class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
+class SendBtcDetailsViewController: UIViewController {
+
+    @IBOutlet var content: SendBtcDetailsView!
 
     var wallet: WalletItem?
     var transaction: Transaction!
+    var assetTag: String?
 
-    @IBOutlet var content: SendBtcDetailsView!
     private var feeLabel: UILabel = UILabel()
     private var uiErrorLabel: UIErrorLabel!
     private var isFiat = false
-    private var assetTag: String?
     private var txTask: TransactionTask?
 
     private var asset: AssetInfo? {
@@ -95,7 +96,6 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         content.recipientTitle.text = NSLocalizedString("id_recipient", comment: "").uppercased()
         content.sendingTitle.text = NSLocalizedString("id_sending", comment: "").uppercased()
         content.minerFeeTitle.text = NSLocalizedString("id_network_fee", comment: "").uppercased()
-        content.assetNameLabel.text = NSLocalizedString("id_select_asset", comment: "")
 
         // setup liquid view
         content.assetView.isHidden = !isLiquid
@@ -112,6 +112,10 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        content.assetNameLabel.text = assetTag == "btc" ? "L-BTC" : asset?.name
+        content.domainNameLabel.text = asset?.entity?.domain ?? ""
+        content.domainNameLabel.isHidden = asset?.entity?.domain.isEmpty ?? true
+        content.currencySwitch.isHidden = assetTag != "btc"
         content.amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         content.reviewButton.addTarget(self, action: #selector(reviewButtonClick(_:)), for: .touchUpInside)
         content.sendAllFundsButton.addTarget(self, action: #selector(sendAllFundsButtonClick(_:)), for: .touchUpInside)
@@ -121,8 +125,8 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
 
         let addressee = transaction.addressees.first!
         content.addressLabel.text = addressee.address
-        reloadAmount()
         reloadWalletBalance()
+        reloadAmount()
         reloadCurrencySwitch()
         updateReviewButton(false)
         updateFeeButtons()
@@ -185,7 +189,7 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
     }
 
     @objc func assetClick(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "assets", sender: self)
+        self.navigationController?.popViewController(animated: true)
     }
 
     @objc func currencySwitchClick(_ sender: UIButton) {
@@ -200,10 +204,6 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         if let nextController = segue.destination as? SendBTCConfirmationViewController {
             nextController.wallet = wallet
             nextController.transaction = transaction
-        } else if let nextController = segue.destination as? AssetsListTableViewController {
-            nextController.wallet = wallet
-            nextController.delegate = self
-            nextController.title = NSLocalizedString("id_select_asset", comment: "")
         }
     }
 
@@ -221,13 +221,6 @@ class SendBtcDetailsViewController: UIViewController, AssetsDelegate {
         let key = isFiat ? "fiat" : isBtc ? denominationBtc : assetTag ?? "btc"
         let details = !isBtc ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
         return Balance.convert(details: details)?.satoshi
-    }
-
-    func onSelect(_ tag: String) {
-        assetTag = tag
-        content.assetNameLabel.text = tag == "btc" ? "L-BTC" : asset?.name
-        content.currencySwitch.isHidden = tag != "btc"
-        reloadWalletBalance()
     }
 
     func updateTransaction() {
@@ -464,6 +457,7 @@ class SendBtcDetailsView: UIView {
     @IBOutlet weak var sendingTitle: UILabel!
     @IBOutlet weak var assetView: UIView!
     @IBOutlet weak var assetNameLabel: UILabel!
+    @IBOutlet weak var domainNameLabel: UILabel!
     @IBOutlet weak var assetClickableView: UIView!
 
     lazy var feeRateButtons = [fastFeeButton, mediumFeeButton, slowFeeButton, customFeeButton]

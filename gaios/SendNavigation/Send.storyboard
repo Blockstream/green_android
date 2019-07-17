@@ -124,11 +124,20 @@
                         <outlet property="qrCodeReaderBackgroundView" destination="v67-PB-604" id="eMQ-kw-qPa"/>
                         <outlet property="textfield" destination="XYC-B2-h2F" id="zr4-WZ-I7q"/>
                         <segue destination="a9U-A6-s7y" kind="show" identifier="next" id="djO-7m-iRI"/>
+                        <segue destination="Kbn-ut-MTd" kind="show" identifier="asset_select" id="Asm-Oj-DXy"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jZw-3q-uqv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1016.25" y="38.028169014084504"/>
+        </scene>
+        <!--AssetsListTableViewController-->
+        <scene sceneID="3nt-Gd-NeJ">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Assets" referencedIdentifier="AssetsListTableViewController" id="Kbn-ut-MTd" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dlO-1g-I8H" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2150" y="-423"/>
         </scene>
         <!--Send-->
         <scene sceneID="sEj-vQ-yYG">
@@ -146,30 +155,11 @@
                     <connections>
                         <outlet property="content" destination="phk-0c-HC0" id="oaS-er-HcV"/>
                         <segue destination="Agf-J9-aru" kind="show" identifier="next" id="082-hk-XXL"/>
-                        <segue destination="8r0-9y-XZE" kind="show" identifier="assets" id="8fV-fg-Xky"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wlU-78-7k6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2248" y="38"/>
-        </scene>
-        <!--Assets List Table View Controller-->
-        <scene sceneID="PZ8-bd-PJg">
-            <objects>
-                <tableViewController id="8r0-9y-XZE" customClass="AssetsListTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="ybG-gm-jje">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <connections>
-                            <outlet property="dataSource" destination="8r0-9y-XZE" id="55K-cP-svr"/>
-                            <outlet property="delegate" destination="8r0-9y-XZE" id="dhA-SN-SFq"/>
-                        </connections>
-                    </tableView>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cgq-rh-BTs" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2246" y="938"/>
         </scene>
         <!--Send-->
         <scene sceneID="90b-rI-MLu">

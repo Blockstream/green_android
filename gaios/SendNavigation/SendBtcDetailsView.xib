@@ -15,11 +15,12 @@
             <connections>
                 <outlet property="addressLabel" destination="K8H-DR-0sI" id="WAV-Gy-7z8"/>
                 <outlet property="amountTextField" destination="SLR-BI-duO" id="0Hd-PK-k2j"/>
-                <outlet property="assetClickableView" destination="MXS-ia-Jjy" id="M4f-cw-Ryz"/>
+                <outlet property="assetClickableView" destination="MXS-ia-Jjy" id="eY3-cY-6L5"/>
                 <outlet property="assetNameLabel" destination="SbH-EX-DhQ" id="MuA-bP-iJp"/>
                 <outlet property="assetView" destination="Ht4-0l-EtT" id="Ipe-1F-RAN"/>
                 <outlet property="currencySwitch" destination="Z3A-t3-m9U" id="S9j-XC-rbM"/>
                 <outlet property="customFeeButton" destination="yMc-yz-n6X" id="bHA-QR-Eb6"/>
+                <outlet property="domainNameLabel" destination="Aao-nM-RNP" id="fl6-qc-Fw1"/>
                 <outlet property="errorLabel" destination="lNz-yJ-d5S" id="W6E-Tw-tds"/>
                 <outlet property="fastFeeButton" destination="Vz2-Dh-1zQ" id="XeO-Mr-gGd"/>
                 <outlet property="maxAmountLabel" destination="43H-z7-rNJ" id="gfA-dG-aek"/>
@@ -94,30 +95,34 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MXS-ia-Jjy">
                                                     <rect key="frame" x="16" y="0.0" width="343" height="50"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select Asset" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SbH-EX-DhQ">
-                                                            <rect key="frame" x="16" y="8" width="271" height="34"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_right" translatesAutoresizingMaskIntoConstraints="NO" id="JcH-51-Qqt">
-                                                            <rect key="frame" x="303" y="13" width="24" height="24"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="height" constant="24" id="0Jr-1m-tBG"/>
-                                                                <constraint firstAttribute="width" constant="24" id="H8u-aC-ytY"/>
-                                                            </constraints>
-                                                        </imageView>
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="zbF-PK-1Rw">
+                                                            <rect key="frame" x="8" y="2" width="327" height="46"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Asset Name" textAlignment="natural" lineBreakMode="characterWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SbH-EX-DhQ">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="327" height="21"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="21" id="jmP-ZV-xU2"/>
+                                                                    </constraints>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="100000000000" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aao-nM-RNP">
+                                                                    <rect key="frame" x="0.0" y="21" width="327" height="25"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                                    <color key="textColor" name="customTitaniumLight"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                        </stackView>
                                                     </subviews>
-                                                    <color key="backgroundColor" name="customCardDark"/>
+                                                    <color key="backgroundColor" name="customModalBlueDark"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="bottom" secondItem="SbH-EX-DhQ" secondAttribute="bottom" constant="8" id="QZc-tf-CoS"/>
-                                                        <constraint firstItem="SbH-EX-DhQ" firstAttribute="leading" secondItem="MXS-ia-Jjy" secondAttribute="leading" constant="16" id="ShZ-UY-qTA"/>
-                                                        <constraint firstAttribute="trailing" secondItem="JcH-51-Qqt" secondAttribute="trailing" constant="16" id="W3f-xT-nyf"/>
-                                                        <constraint firstItem="JcH-51-Qqt" firstAttribute="leading" secondItem="SbH-EX-DhQ" secondAttribute="trailing" constant="16" id="aZd-k8-sxO"/>
-                                                        <constraint firstItem="SbH-EX-DhQ" firstAttribute="top" secondItem="MXS-ia-Jjy" secondAttribute="top" constant="8" id="cDZ-HC-n0c"/>
-                                                        <constraint firstItem="JcH-51-Qqt" firstAttribute="centerY" secondItem="MXS-ia-Jjy" secondAttribute="centerY" id="pE9-WO-szw"/>
+                                                        <constraint firstAttribute="trailing" secondItem="zbF-PK-1Rw" secondAttribute="trailing" constant="8" id="OKP-Al-Jp3"/>
+                                                        <constraint firstItem="zbF-PK-1Rw" firstAttribute="top" secondItem="MXS-ia-Jjy" secondAttribute="top" constant="2" id="m63-nQ-wNh"/>
+                                                        <constraint firstItem="zbF-PK-1Rw" firstAttribute="leading" secondItem="MXS-ia-Jjy" secondAttribute="leading" constant="8" id="mMH-aA-ESS"/>
                                                         <constraint firstAttribute="height" constant="50" id="uF1-pw-6Zz"/>
-                                                        <constraint firstItem="SbH-EX-DhQ" firstAttribute="centerY" secondItem="MXS-ia-Jjy" secondAttribute="centerY" id="wSa-4w-NqI"/>
+                                                        <constraint firstAttribute="bottom" secondItem="zbF-PK-1Rw" secondAttribute="bottom" constant="2" id="vgx-BQ-tG1"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -127,10 +132,10 @@
                                                             <real key="value" value="4"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
-                                                            <real key="value" value="4"/>
+                                                            <real key="value" value="0.29999999999999999"/>
                                                         </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                                                            <color key="value" name="customTitaniumDark"/>
+                                                        <userDefinedRuntimeAttribute type="size" keyPath="shadowOffset">
+                                                            <size key="value" width="0.0" height="2"/>
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
@@ -334,16 +339,15 @@
         </view>
     </objects>
     <resources>
-        <image name="arrow_right" width="25" height="25"/>
         <image name="user" width="66.5" height="66.5"/>
-        <namedColor name="customCardDark">
-            <color red="0.078431372549019607" green="0.11764705882352941" blue="0.15686274509803921" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <namedColor name="customLowerBar">
             <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="customModalBlueDark">
+            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

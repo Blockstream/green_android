@@ -2,14 +2,11 @@ import Foundation
 import UIKit
 import PromiseKit
 
-protocol AssetsDelegate: class {
-    func onSelect(_ tag: String)
-}
-
 class AssetsListTableViewController: UITableViewController {
 
     var wallet: WalletItem?
-    weak var delegate: AssetsDelegate?
+    var transaction: Transaction!
+    var isSend: Bool = false
 
     private var assets: [(key: String, value: Balance)] {
         get {
@@ -60,12 +57,12 @@ class AssetsListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tag = assets[indexPath.row].key
-        if delegate == nil {
-            if tag == "btc" { return }
-            return performSegue(withIdentifier: "asset", sender: tag)
+        if !isSend && tag == "btc" { return }
+        if isSend {
+            performSegue(withIdentifier: "asset_send", sender: tag)
+        } else {
+            performSegue(withIdentifier: "asset", sender: tag)
         }
-        delegate?.onSelect(tag)
-        navigationController?.popViewController(animated: true)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -73,7 +70,10 @@ class AssetsListTableViewController: UITableViewController {
             next.tag = sender as? String
             next.asset = wallet?.balance[next.tag]?.assetInfo
             next.satoshi = wallet?.balance[next.tag]?.satoshi
+        } else if let next = segue.destination as? SendBtcDetailsViewController {
+            next.wallet = wallet
+            next.assetTag = sender as? String
+            next.transaction = transaction
         }
     }
-
 }
