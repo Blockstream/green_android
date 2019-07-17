@@ -130,30 +130,33 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     mModel.getBalanceDataObservable(subaccount).refresh();
                     mModel.getReceiveAddressObservable(subaccount).refresh();
                     mModel.getTransactionDataObservable(subaccount).refresh();
-                    final TransactionData transactionData = mObjectMapper.convertValue(transaction,
-                                                                                       TransactionData.class);
+                    try {
+                        final TransactionData transactionData = mObjectMapper.convertValue(transaction,
+                                                                                           TransactionData.class);
 
-                    transactionData.setSubaccount(subaccount);
-                    transactionData.setSubaccounts(subaccounts);
-                    Log.d("OBSNTF", "transactionData " + transactionData);
-                    Integer description = null;
-                    if (subaccounts.size() > 1) {
-                        description = R.string.id_new_transaction_involving;
-                    } else if (transaction.get("type") != null) {
-                        if ("incoming".equals(transaction.get("type").asText())) {
-                            description = R.string.id_new_incoming_transaction_in;
-                        } else {
-                            description = R.string.id_new_outgoing_transaction_from;
+                        transactionData.setSubaccount(subaccount);
+                        transactionData.setSubaccounts(subaccounts);
+                        Log.d("OBSNTF", "transactionData " + transactionData);
+                        Integer description = null;
+                        if (subaccounts.size() > 1) {
+                            description = R.string.id_new_transaction_involving;
+                        } else if (transaction.get("type") != null) {
+                            if ("incoming".equals(transaction.get("type").asText())) {
+                                description = R.string.id_new_incoming_transaction_in;
+                            } else {
+                                description = R.string.id_new_outgoing_transaction_from;
+                            }
                         }
-                    }
 
-                    if (!eventPushed && description != null) {
-                        mModel.getEventDataObservable().pushEvent(new EventData(
-                                                                      R.string.id_new_transaction, description,
-                                                                      transactionData));
-                        eventPushed = true;
+                        if (!eventPushed && description != null) {
+                            mModel.getEventDataObservable().pushEvent(new EventData(
+                                                                          R.string.id_new_transaction, description,
+                                                                          transactionData));
+                            eventPushed = true;
+                        }
+                    } catch (final Exception e) {
+                        Log.e("NOTIF", e.getMessage());
                     }
-
                 }
                 break;
             }
