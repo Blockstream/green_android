@@ -19,11 +19,17 @@ class TransactionTableCell: UITableViewCell {
     }
 
     func setup(with transaction: Transaction) {
+        let assetTag = transaction.defaultAsset
         bumpFee.isHidden = !transaction.canRBF || isLiquid
-        amount.text = transaction.amount()
+        if transaction.type == "redeposit", let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
+            let (fee, denom) = balance.get(tag: "btc")
+            amount.text = "-\(fee) \(denom)"
+        } else {
+            amount.text = transaction.amount()
+        }
         selectionStyle = .none
         date.text = transaction.date()
-        let assetTag = transaction.defaultAsset
+
         let isAsset = !(assetTag == "btc")
         if !transaction.memo.isEmpty {
             address.text = transaction.memo
@@ -59,7 +65,7 @@ class TransactionTableCell: UITableViewCell {
     }
 
     func checkTransactionType(transaction: Transaction) {
-        if transaction.type == "incoming" {
+        if ["incoming", "redeposit"].contains(transaction.type) {
             amount.textColor = isLiquid ? UIColor.blueLight() : UIColor.customMatrixGreen()
             imageDirection.image = UIImage(named: isLiquid ? "tx_received" : "tx_received_mainnet")
         } else {
