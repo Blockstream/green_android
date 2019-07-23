@@ -65,12 +65,12 @@ class TransactionTableCell: UITableViewCell {
     }
 
     func checkTransactionType(transaction: Transaction) {
-        if ["incoming", "redeposit"].contains(transaction.type) {
+        if transaction.type == "incoming" {
             amount.textColor = isLiquid ? UIColor.blueLight() : UIColor.customMatrixGreen()
             imageDirection.image = UIImage(named: isLiquid ? "tx_received" : "tx_received_mainnet")
         } else {
             amount.textColor = UIColor.white
-            imageDirection.image = UIImage(named: "tx_send")
+            imageDirection.image = UIImage(named: transaction.type == "redeposit" ? "tx_received" : "tx_send")
         }
     }
 }
