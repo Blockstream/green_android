@@ -22,7 +22,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.slidingButton.buttonText = NSLocalizedString("id_slide_to_send", comment: "")
         uiErrorLabel = UIErrorLabel(self.view)
         content.textView.delegate = self
-        content.textView.text = NSLocalizedString("id_add_a_note", comment: "")
+        content.textView.text = NSLocalizedString("id_add_a_note_only_you_can_see_it", comment: "")
         content.textView.textColor = UIColor.customTitaniumLight()
         content.sendingTitle.text = NSLocalizedString("id_sending", comment: "")
         content.fromTitle.text = NSLocalizedString("id_from", comment: "")
@@ -102,7 +102,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
 
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = NSLocalizedString("id_add_a_note", comment: "")
+            textView.text = NSLocalizedString("id_add_a_note_only_you_can_see_it", comment: "")
             textView.textColor = UIColor.customTitaniumLight()
         } else {
             transaction.memo = textView.text

@@ -13,11 +13,12 @@
 "id_accept" = "ACEITAR";
 "id_account" = "CONTA";
 "id_action_canceled" = "Ação cancelada";
-"id_add_a_note" = "Adicionar uma nota…";
+"id_add_a_note_only_you_can_see_it" = "Add a note (only you can see it).";
 "id_add_amount" = "Inserir Quantidade";
 "id_add_custom_network_by_qr_code" = "Adicionar rede personalizada por código QR";
 "id_add_custom_network_by_url" = "Adicionar rede personalizada por URL";
 "id_add_new_account" = "Adicionar Nova Conta";
+"id_add_simple_account" = "Add Simple Account";
 "id_add_wallet" = "Adicionar Carteira";
 "id_additional_security" = "Segurança Adicional";
 "id_address" = "Endereço";
@@ -149,6 +150,7 @@
 "id_fee_rate_s" = "Taxa de transação: %@";
 "id_fee_s__s" = "Taxa: %@ / %@";
 "id_from" = "DE";
+"id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
 "id_generate_new_address" = "Gerar Novo Endereço";
 "id_get_code" = "Obter Código";
 "id_go_to_wallet" = "Ir para a Carteira";
@@ -246,6 +248,7 @@
 "id_no_registered_name_for_this" = "No registered name for this asset.";
 "id_no_registered_ticker_for_this" = "No registered ticker for this asset.";
 "id_no_utxos_found" = "Nenhum UTXO encontrado";
+"id_nonconfidential_addresses_not" = "Non-confidential addresses not supported";
 "id_normal" = "Normal";
 "id_not_connected_connecting_in_ds_" = "Não conectado. Conectando em %ds …";
 "id_notifications" = "Notificações";
@@ -359,6 +362,7 @@
 "id_share_address" = "Compartilhar Endereço";
 "id_show_fiat" = "Mostrar fiat";
 "id_signup_in_progress" = "Registro em progresso";
+"id_simple_accounts_allow_you_to" = "Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_simplified_payment_verification" = "A Verificação Simplificada de Pagamentos (SPV) verifica suas transações e balanço usando a rede Bitcoin, fora dos servidores da Green. Ativar aumenta os requisitos de banda e processamento.";
 "id_skip" = "PULAR";
 "id_skip_not_recommended" = "Pular (Não Recomendado)";
@@ -393,7 +397,9 @@
 "id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_password_cant_be_empty" = "A senha não pode ficar em branco";
 "id_the_recovery_key_below_will_not" = "A chave de recuperação abaixo não será mostrada novamente. Por favor mantenha uma cópia segura agora para se certificar de que você sempre terá acesso aos seus fundos.";
+"id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = "Já há um PIN configurado para a carteira %@. Preceder não permitirá a configuração de um novo PIN e será necessário o mnemônico de 24 palavras para entrar. Você pode desabilitar o PIN nas configurações ou com 3 tentativas falhas.";
+"id_this_transaction_spent" = "This transaction spent non-confidential funds.";
 "id_ticker" = "Ticker";
 "id_time_s" = "Tempo: %@";
 "id_to" = "PARA";
@@ -449,7 +455,7 @@
 "id_we_use_the_camera_to_scan_qr" = "Usamos a câmera para escanear códigos QR";
 "id_welcome" = "Bem-vindo";
 "id_welcome_to" = "Bem-vindo a";
-"id_where_would_you_like_to_import" = "Where would you like to import the funds?";
+"id_where_would_you_like_to" = "Where would you like to transfer the funds?";
 "id_word_d_of_d" = "Palavra %d de %d";
 "id_write_down_the_words" = "Anote as palavras";
 "id_write_down_your_mnemonic_on" = "Anote seu mnemônico em papel e guarde em local seguro.";

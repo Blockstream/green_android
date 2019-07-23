@@ -13,11 +13,12 @@
 "id_accept" = "수락";
 "id_account" = "계좌";
 "id_action_canceled" = "취소됨";
-"id_add_a_note" = "메모 더하기...";
+"id_add_a_note_only_you_can_see_it" = "Add a note (only you can see it).";
 "id_add_amount" = "금액 추가";
 "id_add_custom_network_by_qr_code" = "QR 코드로 사용자 지정 네트워크 추가";
 "id_add_custom_network_by_url" = "URL로 개인 네트워크 연결";
 "id_add_new_account" = "새로운 계좌 만들기";
+"id_add_simple_account" = "Add Simple Account";
 "id_add_wallet" = "지갑 추가";
 "id_additional_security" = "추가 보안기능";
 "id_address" = "주소";
@@ -149,6 +150,7 @@
 "id_fee_rate_s" = "수수료율: %@";
 "id_fee_s__s" = "수수료: %@ / %@ ";
 "id_from" = "보낸이";
+"id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
 "id_generate_new_address" = "새로운 주소 생성하기";
 "id_get_code" = "코드 받기";
 "id_go_to_wallet" = "지갑으로 가기";
@@ -246,6 +248,7 @@
 "id_no_registered_name_for_this" = "이 자산에 등록된 이름이 없습니다.";
 "id_no_registered_ticker_for_this" = "이 자산에 등록된 종목 코드가 없습니다.";
 "id_no_utxos_found" = "UTXO 찾지 못함";
+"id_nonconfidential_addresses_not" = "Non-confidential addresses not supported";
 "id_normal" = "보통";
 "id_not_connected_connecting_in_ds_" = "접속되지 않았습니다. 접속 시도 중 %d 초...";
 "id_notifications" = "알람";
@@ -359,6 +362,7 @@
 "id_share_address" = "주소 내보내기";
 "id_show_fiat" = "명목화폐 보기";
 "id_signup_in_progress" = "회원가입 진행 중";
+"id_simple_accounts_allow_you_to" = "Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_simplified_payment_verification" = "Simplified Payment Verification 은 Green 서버 대신 비트코인 네트워크를 활용하여 거래 및 잔액을 검증합니다. SPV 모드를 활성화 하면 더 많은 대역폭 및 프로세싱 파워가 요구됩니다.";
 "id_skip" = "넘기기";
 "id_skip_not_recommended" = "넘기기 (권장하지 않음)";
@@ -393,7 +397,9 @@
 "id_the_network_selected_on_the" = "Green 앱에서 선택한 네트워크는 하드웨어 지갑에서 선택한 네트워크랑 일치하지 않습니다. 두 기기에서 동일한 네트워크를 선택해 주세요.";
 "id_the_password_cant_be_empty" = "비밀번호는 비워 둘 수 없습니다";
 "id_the_recovery_key_below_will_not" = "밑의 복원 키는 다시 표시되지 않습니다. 자산을 잃어버리지 않도록 안전하게 보관해두세요.";
+"id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = "%@ 지갑에는 비밀번호가 이미 설정되어 있습니다. 이대로 진행할 경우 비밀번호는 설정할 수 없으며 로그인을 위해서는 24개의 니모닉(복원 코드)이 필요합니다. 3번 로그인 실패를 하거나 설정에서 비밀번호를 해제하실 수 있습니다. ";
+"id_this_transaction_spent" = "This transaction spent non-confidential funds.";
 "id_ticker" = "종목 코드";
 "id_time_s" = "시간: %@";
 "id_to" = "받는 분";
@@ -449,7 +455,7 @@
 "id_we_use_the_camera_to_scan_qr" = "Green은 카메라를 사용하여 QR 코드를 스캔합니다.";
 "id_welcome" = "안녕하세요";
 "id_welcome_to" = "환영합니다";
-"id_where_would_you_like_to_import" = "자산을 옮길곳을 정하세요";
+"id_where_would_you_like_to" = "Where would you like to transfer the funds?";
 "id_word_d_of_d" = "단어 %d 중 %d";
 "id_write_down_the_words" = "단어를 받아 쓰시기 바랍니다";
 "id_write_down_your_mnemonic_on" = "니모닉(복원 코드) 단어들을 종이에 적어 보관하세요.";

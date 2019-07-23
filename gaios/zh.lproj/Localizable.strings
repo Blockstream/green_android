@@ -13,11 +13,12 @@
 "id_accept" = "接受";
 "id_account" = "账户";
 "id_action_canceled" = "操作已取消";
-"id_add_a_note" = "添加一条笔记...";
+"id_add_a_note_only_you_can_see_it" = "Add a note (only you can see it).";
 "id_add_amount" = "添加金额";
 "id_add_custom_network_by_qr_code" = "通过二维码添加自定义网络";
 "id_add_custom_network_by_url" = "通过URL来添加自定义网络";
 "id_add_new_account" = "添加新账户";
+"id_add_simple_account" = "Add Simple Account";
 "id_add_wallet" = "添加钱包";
 "id_additional_security" = "附加安全性";
 "id_address" = "地址";
@@ -149,6 +150,7 @@
 "id_fee_rate_s" = "费率：%@";
 "id_fee_s__s" = "费用： %@ / %@";
 "id_from" = "来自";
+"id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
 "id_generate_new_address" = "创建新的地址";
 "id_get_code" = "获取代码";
 "id_go_to_wallet" = "前往钱包";
@@ -246,6 +248,7 @@
 "id_no_registered_name_for_this" = "该资产没有注册过名称。";
 "id_no_registered_ticker_for_this" = "该资产没有注册过资产代号。";
 "id_no_utxos_found" = "未找到UTXO";
+"id_nonconfidential_addresses_not" = "Non-confidential addresses not supported";
 "id_normal" = "正常";
 "id_not_connected_connecting_in_ds_" = "未连接。将在%d秒后重新连接...";
 "id_notifications" = "通知";
@@ -359,6 +362,7 @@
 "id_share_address" = "分享地址";
 "id_show_fiat" = "显示法币";
 "id_signup_in_progress" = "正在登录";
+"id_simple_accounts_allow_you_to" = "Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_simplified_payment_verification" = "简单付款验证（SPV）在Green服务器之外使用比特币网络来验证用户交易与余额。开启将增加带宽与处理要求。";
 "id_skip" = "跳过";
 "id_skip_not_recommended" = "跳过（不推荐）";
@@ -393,7 +397,9 @@
 "id_the_network_selected_on_the" = "在Green应用程序上选择的网络与在硬件钱包上选择的网络不同。请在两台设备上选择相同的网络。";
 "id_the_password_cant_be_empty" = "密码不能为空";
 "id_the_recovery_key_below_will_not" = "恢复密钥将不再显示。请立即创建该密钥的安全副本，以确保随时能够获得资金的访问权限。";
+"id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = "钱包%@已设置PIN。继续进行将无法设置PIN，登录需要24字助记词。可在设置中关闭PIN，或输入错误3次也可关闭PIN。";
+"id_this_transaction_spent" = "This transaction spent non-confidential funds.";
 "id_ticker" = "资产代号";
 "id_time_s" = "时间：%@";
 "id_to" = "发送至";
@@ -449,7 +455,7 @@
 "id_we_use_the_camera_to_scan_qr" = "请使用摄像头扫描二维码";
 "id_welcome" = "欢迎";
 "id_welcome_to" = "欢迎来到";
-"id_where_would_you_like_to_import" = "您想从哪里导入资金？";
+"id_where_would_you_like_to" = "Where would you like to transfer the funds?";
 "id_word_d_of_d" = "词语%d属于%d";
 "id_write_down_the_words" = "将单词写下";
 "id_write_down_your_mnemonic_on" = "将助记符记在纸上并储存在安全的地方。";

@@ -13,11 +13,12 @@
 "id_accept" = "ПРИЙНЯТИ";
 "id_account" = "АКАУНТ";
 "id_action_canceled" = "Дія скасована";
-"id_add_a_note" = "Додати примітку…";
+"id_add_a_note_only_you_can_see_it" = "Add a note (only you can see it).";
 "id_add_amount" = "Додати суму";
 "id_add_custom_network_by_qr_code" = "Додати нову мережу за допомогою QR-коду";
 "id_add_custom_network_by_url" = "Додати нову мережу за допомогою URL";
 "id_add_new_account" = "Додати новий акаунт";
+"id_add_simple_account" = "Add Simple Account";
 "id_add_wallet" = "Додати гаманець";
 "id_additional_security" = "Додаткова безпека";
 "id_address" = "Адреса";
@@ -149,6 +150,7 @@
 "id_fee_rate_s" = "Комісія: %@";
 "id_fee_s__s" = "Комісія всього: %@/%@";
 "id_from" = "ВІД";
+"id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
 "id_generate_new_address" = "Згенерувати нову адресу";
 "id_get_code" = "Отримати код";
 "id_go_to_wallet" = "Перейти до гаманця";
@@ -246,6 +248,7 @@
 "id_no_registered_name_for_this" = "No registered name for this asset.";
 "id_no_registered_ticker_for_this" = "No registered ticker for this asset.";
 "id_no_utxos_found" = "UTXO не знайдено";
+"id_nonconfidential_addresses_not" = "Non-confidential addresses not supported";
 "id_normal" = "Нормальний";
 "id_not_connected_connecting_in_ds_" = "З’єднання відсутнє. З’єднання відбудеться через %d сек...";
 "id_notifications" = "Повідомлення";
@@ -359,6 +362,7 @@
 "id_share_address" = "Поділитися адресою";
 "id_show_fiat" = "Показати фіат";
 "id_signup_in_progress" = "Реєстрація продовжується";
+"id_simple_accounts_allow_you_to" = "Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_simplified_payment_verification" = "Спрощена верифікація платежів SPV перевіряє ваші транзакції і баланс за допомогою мережі Біткоїн поза межами Green-серверів. Увімкнення підвищує системні вимоги до пропускної спроможності і обробки.";
 "id_skip" = "ПРОПУСТИТИ";
 "id_skip_not_recommended" = "Пропустити (не рекомендовано)";
@@ -393,7 +397,9 @@
 "id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_password_cant_be_empty" = "Поле пароля не може залишатись порожнім";
 "id_the_recovery_key_below_will_not" = "Ключ відновлення більше не буде показано. Виконайте резервне копіювання для того, щоб завжди мати доступ до власних коштів. ";
+"id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = "PIN-код встановлено для %@гаманця. Якщо продовжити, не можна буде встановити PIN і для входу буде потрібно ввести мнемонічну фразу з 24 слів. Ви зможете вимкнути PIN-код в налаштуваннях або 3-кратним помилковим введенням.";
+"id_this_transaction_spent" = "This transaction spent non-confidential funds.";
 "id_ticker" = "Ticker";
 "id_time_s" = "Час:%@";
 "id_to" = "ДО";
@@ -449,7 +455,7 @@
 "id_we_use_the_camera_to_scan_qr" = "Ми використовуємо камеру для сканування QR-кодів";
 "id_welcome" = "Ласкаво просимо";
 "id_welcome_to" = "Ласкаво просимо до";
-"id_where_would_you_like_to_import" = "Where would you like to import the funds?";
+"id_where_would_you_like_to" = "Where would you like to transfer the funds?";
 "id_word_d_of_d" = "Слово %d з %d";
 "id_write_down_the_words" = "Запишіть слова";
 "id_write_down_your_mnemonic_on" = "Запишіть вашу мнемонічну фразу на папері і зберігайте його в безпечному місці.";

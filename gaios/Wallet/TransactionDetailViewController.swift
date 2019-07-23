@@ -25,7 +25,7 @@ class TransactionDetailViewController: KeyboardViewController {
         } else if transaction.type == "incoming" {
             title = NSLocalizedString("id_received_on", comment: "")
         } else {
-            title = NSLocalizedString("id_sent_to", comment: "")
+            title = NSLocalizedString("id_sent", comment: "")
         }
         viewInExplorerButton.setTitle(NSLocalizedString("id_view_in_explorer", comment: ""), for: .normal)
         viewInExplorerButton.setGradient(true)

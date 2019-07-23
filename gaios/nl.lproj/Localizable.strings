@@ -13,11 +13,12 @@
 "id_accept" = "ACCEPTEREN";
 "id_account" = "ACCOUNT";
 "id_action_canceled" = "Actie geannuleerd";
-"id_add_a_note" = "Notitie toevoegen...";
+"id_add_a_note_only_you_can_see_it" = "Add a note (only you can see it).";
 "id_add_amount" = "Bedrag toevoegen";
 "id_add_custom_network_by_qr_code" = "Eigen netwerk toevoegen via QR-code";
 "id_add_custom_network_by_url" = "Eigen netwerk toevoegen via URL";
 "id_add_new_account" = "Nieuwe account toevoegen";
+"id_add_simple_account" = "Add Simple Account";
 "id_add_wallet" = "Wallet toevoegen";
 "id_additional_security" = "Aanvullende beveiliging";
 "id_address" = "Adres";
@@ -149,6 +150,7 @@
 "id_fee_rate_s" = "Tarief: %@";
 "id_fee_s__s" = "Tarief: %@ / %@";
 "id_from" = "VAN";
+"id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
 "id_generate_new_address" = "Genereer nieuw adres";
 "id_get_code" = "Verkrijg code";
 "id_go_to_wallet" = "Ga naar wallet";
@@ -246,6 +248,7 @@
 "id_no_registered_name_for_this" = "Geen geregistreerde naam voor deze asset.";
 "id_no_registered_ticker_for_this" = "Geen geregistreerde ticker voor deze asset.";
 "id_no_utxos_found" = "Geen UTXO's gevonden";
+"id_nonconfidential_addresses_not" = "Non-confidential addresses not supported";
 "id_normal" = "Normaal";
 "id_not_connected_connecting_in_ds_" = "Niet verbonden. Verbinden in %ds …";
 "id_notifications" = "Notificaties";
@@ -359,6 +362,7 @@
 "id_share_address" = "Adres delen";
 "id_show_fiat" = "Fiat tonen";
 "id_signup_in_progress" = "Aanmelding in behandeling";
+"id_simple_accounts_allow_you_to" = "Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_simplified_payment_verification" = "Simplified Payment Verification (SPV) verifieert je transacties en balans via het bitcoin-netwerk, zonder tussenkomst van servers van Green. Door dit in te schakelen wordt er meer bandbreedte en CPU verbruikt.";
 "id_skip" = "OVERSLAAN";
 "id_skip_not_recommended" = "Overslaan (wordt afgeraden)";
@@ -393,7 +397,9 @@
 "id_the_network_selected_on_the" = "Het geselecteerde netwerk op de Green-app verschilt van wat er is geselecteerd op de hardware wallet. Selecteer hetzelfde netwerk op beide apparaten.";
 "id_the_password_cant_be_empty" = "Het wachtwoord mag niet leeg zijn";
 "id_the_recovery_key_below_will_not" = "De onderstaande herstelsleutel zal niet opnieuw worden getoond. Maak er nu een veilige back-up van om te zorgen dat je altijd toegang hebt tot je bezittingen.";
+"id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = "Er is al een PIN ingesteld voor een %@ wallet. Als je doorgaat kan er geen PIN worden ingesteld en kun je je alleen aanmelden met de 24 woorden van de woordenlijst. Je kunt de PIN uitschakelen via de instellingen of door hem drie keer verkeerd in te voeren.";
+"id_this_transaction_spent" = "This transaction spent non-confidential funds.";
 "id_ticker" = "Ticker";
 "id_time_s" = "Tijd: %@";
 "id_to" = "NAAR";
@@ -449,7 +455,7 @@
 "id_we_use_the_camera_to_scan_qr" = "We gebruiken de camera om QR-codes te scannen";
 "id_welcome" = "Welkom";
 "id_welcome_to" = "Welkom bij";
-"id_where_would_you_like_to_import" = "Waar wil je de balans naar importeren?";
+"id_where_would_you_like_to" = "Where would you like to transfer the funds?";
 "id_word_d_of_d" = "Woord %d van %d";
 "id_write_down_the_words" = "Schrijf de woorden op";
 "id_write_down_your_mnemonic_on" = "Noteer je woordenlijst op papier en sla het ergens veilig op.";

@@ -77,7 +77,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             let satoshi = wallets.map { $0.btc.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
-            header.title.text = isSweep ? NSLocalizedString("id_where_would_you_like_to_import", comment: ""): NSLocalizedString("id_total_balance", comment: "")
+            header.title.text = isSweep ? NSLocalizedString("id_where_would_you_like_to", comment: ""): NSLocalizedString("id_total_balance", comment: "")
             let balance = Balance.convert(details: ["satoshi": satoshi])!
             let (amount, denom) = balance.get(tag: "btc")
             header.btcLabel.text = isSweep ? "" : "\(amount) \(denom)"
@@ -126,7 +126,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     @objc func addWallet(_ sender: Any?) {
-        let alert = UIAlertController(title: NSLocalizedString("id_create_new_wallet", comment: ""), message: "", preferredStyle: .alert)
+        let alert = UIAlertController(title: NSLocalizedString("id_add_simple_account", comment: ""), message: "id_simple_accounts_allow_you_to", preferredStyle: .alert)
         alert.addTextField { textField in
             textField.placeholder = NSLocalizedString("id_name", comment: "")
             textField.keyboardType = .asciiCapable

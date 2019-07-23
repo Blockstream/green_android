@@ -13,11 +13,12 @@
 "id_accept" = "ACCETTA";
 "id_account" = "ACCOUNT";
 "id_action_canceled" = "Azione annullata";
-"id_add_a_note" = "Aggiungi nota…";
+"id_add_a_note_only_you_can_see_it" = "Aggiungi una nota (solo tu puoi vederla).";
 "id_add_amount" = "Inserisci Importo";
 "id_add_custom_network_by_qr_code" = "Aggiungi un network custom con un QR Code";
 "id_add_custom_network_by_url" = "Aggiungi un network custom con un URL";
 "id_add_new_account" = "Aggiungi Nuovo Account";
+"id_add_simple_account" = "Aggiungi Account Semplice";
 "id_add_wallet" = "Aggiungi Wallet";
 "id_additional_security" = "Sicurezza Aggiuntiva";
 "id_address" = "Indirizzo";
@@ -149,6 +150,7 @@
 "id_fee_rate_s" = "Tasso di commissione: %@";
 "id_fee_s__s" = "Commissione: %@ / %@";
 "id_from" = "DA";
+"id_funds_received_in_this" = "Dei fondi ricevuti in questa transazione non sono confidenziali.";
 "id_generate_new_address" = "Genera Nuovo Indirizzo";
 "id_get_code" = "Ottieni Codice";
 "id_go_to_wallet" = "Vai al Wallet";
@@ -246,6 +248,7 @@
 "id_no_registered_name_for_this" = "Nessun nome registrato per questo asset.";
 "id_no_registered_ticker_for_this" = "Nessun simbolo registrato per questo asset.";
 "id_no_utxos_found" = "Nessun UTXO trovato";
+"id_nonconfidential_addresses_not" = "Indirizzi non confidenziali non supportati";
 "id_normal" = "Normale";
 "id_not_connected_connecting_in_ds_" = "Non connesso. Connessione in %ds …";
 "id_notifications" = "Notifiche";
@@ -359,6 +362,7 @@
 "id_share_address" = "Condividi Indirizzo";
 "id_show_fiat" = "Mostra valuta corrente";
 "id_signup_in_progress" = "Registrazione in corso";
+"id_simple_accounts_allow_you_to" = "Gli account semlici permettono di separare i tuoi fondi. Ogni account avrà i propri indirizzi di ricezione e muovere fondi fra account richiede una transazione.";
 "id_simplified_payment_verification" = "La Simplified Payment Verification verifica le tue transazioni e il tuo bilancio utilizzando la rete Bitcoin, al di fuori dei server di Green. L'abilitazione comporta maggiore utilizzo di banda e potenza di calcolo";
 "id_skip" = "SALTA";
 "id_skip_not_recommended" = "Salta (non raccomandato)";
@@ -393,7 +397,9 @@
 "id_the_network_selected_on_the" = "Il network selezionato nella Green app non corrisponde a quello selezionato nell'hardware wallet. Seleziona lo stesso su entrambi i dispositivi";
 "id_the_password_cant_be_empty" = "La password non può essere vuota";
 "id_the_recovery_key_below_will_not" = "La chiave qua sotto non verrà mostrata in futuro. Trascrivila e conservala adesso per assicurarti di poter sempre accedere ai tuoi fondi.";
+"id_the_transaction_contains" = "La transazione contiene fondi non confidenziali.";
 "id_there_is_already_a_pin_set_for" = "Esiste già un PIN per un wallet %@. Procedendo non potrai impostare un PIN e il login richiederà la mnemonica da 24 parole. Puoi disabilitare il PIN dalle impostazione o con 3 tentativi sbagliati.";
+"id_this_transaction_spent" = "Questa transazione ha speso fondi non confidenziali.";
 "id_ticker" = "Ticker";
 "id_time_s" = "Tempo: %@";
 "id_to" = "A";
@@ -449,7 +455,7 @@
 "id_we_use_the_camera_to_scan_qr" = "La fotocamera verrà utilizzata per scansionare codici QR";
 "id_welcome" = "Benvenuto";
 "id_welcome_to" = "Benvenuto in";
-"id_where_would_you_like_to_import" = "Dove vorresti importare i fondi?";
+"id_where_would_you_like_to" = "Dove vorresti trasferire i fondi?";
 "id_word_d_of_d" = "Parola %d di %d";
 "id_write_down_the_words" = "Annota le parole";
 "id_write_down_your_mnemonic_on" = "Prendi nota della tua mnemonica e conservala in un luogo sicuro.";
