@@ -39,27 +39,35 @@ extension UIColor {
     }
 
     class func cardLight() -> UIColor {
-        return UIColor.init(red: 0x0A / 255, green: 0x7C / 255, blue: 0x4A / 255, alpha: 1)
+        return UIColor.init(red: 0 / 255, green: 144 / 255, blue: 72 / 255, alpha: 1)
     }
 
     class func cardMedium() -> UIColor {
-        return UIColor.init(red: 0x21 / 255, green: 0x40 / 255, blue: 0x49 / 255, alpha: 1)
+        return UIColor.init(red: 28 / 255, green: 85 / 255, blue: 79 / 255, alpha: 1)
+    }
+
+    class func cardMediumDark() -> UIColor {
+        return UIColor.init(red: 40 / 255, green: 54 / 255, blue: 70 / 255, alpha: 1)
     }
 
     class func cardDark() -> UIColor {
-        return UIColor.init(red: 0x14 / 255, green: 0x1E / 255, blue: 0x28 / 255, alpha: 1)
+        return UIColor.init(red: 22 / 255, green: 30 / 255, blue: 39 / 255, alpha: 1)
     }
 
     class func cardBlueLight() -> UIColor {
-        return UIColor.init(red: 0x00 / 255, green: 0x90 / 255, blue: 0x90 / 255, alpha: 1)
+        return UIColor.init(red: 0 / 255, green: 144 / 255, blue: 144 / 255, alpha: 1)
     }
 
     class func cardBlueMedium() -> UIColor {
-        return UIColor.init(red: 0x23 / 255, green: 0x46 / 255, blue: 0x51 / 255, alpha: 1)
+        return UIColor.init(red: 30 / 255, green: 87 / 255, blue: 93 / 255, alpha: 1)
+    }
+
+    class func cardBlueMediumDark() -> UIColor {
+        return UIColor.init(red: 40 / 255, green: 54 / 255, blue: 70 / 255, alpha: 1)
     }
 
     class func cardBlueDark() -> UIColor {
-        return UIColor.init(red: 0x16 / 255, green: 0x1E / 255, blue: 0x27 / 255, alpha: 1)
+        return UIColor.init(red: 25 / 255, green: 34 / 255, blue: 39 / 255, alpha: 1)
     }
 
     class func blueLight() -> UIColor {

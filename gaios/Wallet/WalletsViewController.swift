@@ -9,6 +9,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     var wallet: WalletItem!
     weak var subaccountDelegate: SubaccountDelegate?
     private let cellId = "cell"
+    private let miniId = "mini"
     private let headerId = "header"
     private let footerId = "footer"
 
@@ -18,7 +19,9 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         let cellNib = UINib(nibName: "WalletCardView", bundle: nil)
         let headerNib = UINib(nibName: "HeaderWalletsCollection", bundle: nil)
         let footerNib = UINib(nibName: "FooterWalletsCollection", bundle: nil)
+        let walletMiniNib = UINib(nibName: "WalletMiniCollection", bundle: nil)
         collectionView.register(cellNib, forCellWithReuseIdentifier: cellId)
+        collectionView.register(walletMiniNib, forCellWithReuseIdentifier: miniId)
         collectionView.register(headerNib, forSupplementaryViewOfKind:
             UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
         collectionView.register(footerNib, forSupplementaryViewOfKind:
@@ -55,18 +58,25 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? WalletCardView else { fatalError("Fail to dequeue reusable cell") }
-        let wallet = wallets[indexPath.row]
+        if isSweep {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: miniId, for: indexPath) as? WalletMiniCollection else { fatalError("Fail to dequeue reusable cell") }
+            let wallet = wallets[indexPath.row]
+            cell.nameLabel.text = wallet.localizedName()
+            return cell
+        } else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? WalletCardView else { fatalError("Fail to dequeue reusable cell") }
+            let wallet = wallets[indexPath.row]
 
-        let balance = Balance.convert(details: ["satoshi": wallet.btc.satoshi])!
-        let (amount, denom) = balance.get(tag: "btc")
-        cell.balance.text = amount
-        cell.unit.text = denom
-        cell.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency) "
-        cell.walletName.text = wallet.localizedName()
-        let network = getGdkNetwork(getNetwork())
-        cell.networkImage.image = UIImage(named: network.icon!)
-        return cell
+            let balance = Balance.convert(details: ["satoshi": wallet.btc.satoshi])!
+            let (amount, denom) = balance.get(tag: "btc")
+            cell.balance.text = amount
+            cell.unit.text = denom
+            cell.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency) "
+            cell.walletName.text = wallet.localizedName()
+            let network = getGdkNetwork(getNetwork())
+            cell.networkImage.image = UIImage(named: network.icon!)
+            return cell
+        }
     }
 
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -112,7 +122,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let padding = 33
         let width = self.view.frame.width - CGFloat(padding)
-        return CGSize(width: width, height: 184)
+        return CGSize(width: width, height: isSweep ? 52 : 184)
     }
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
