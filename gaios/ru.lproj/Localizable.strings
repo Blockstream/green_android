@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "Настраиваемая сеть с таким именем уже существует";
 "id_d6_confirmations" = "%d/6 подтверждений";
 "id_d_asset_in_this_account" = "%d актив в этом аккаунте";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d активов в этом аккаунте";
 "id_date" = "Дата";
 "id_day" = "день";
@@ -142,6 +143,7 @@
 "id_fee" = "Комиссия";
 "id_fee_amount_size_fee_rate" = "Сумма комиссии, размер, комиссия";
 "id_fee_rate" = "Комиссия";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "Комиссия ниже минимальной принятой ставки";
 "id_fee_rate_must_be_at_least_s" = "Комиссия должна быть не менее %@ сатоши/vbyte.";
 "id_fee_rate_s" = "Комиссия: %@";

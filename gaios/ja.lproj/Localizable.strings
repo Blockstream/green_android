@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "この名前でのカスタムネットワークが既にあります。";
 "id_d6_confirmations" = "%d/6 検証";
 "id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "日時";
 "id_day" = "日";
@@ -142,6 +143,7 @@
 "id_fee" = "手数料";
 "id_fee_amount_size_fee_rate" = "手数料・サイズ・手数料率";
 "id_fee_rate" = "手数料率";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "手数料率が最小受諾料より低いです";
 "id_fee_rate_must_be_at_least_s" = "手数料率は最低 %@ satoshi/vbyte以上でなければなりません。";
 "id_fee_rate_s" = "手数料率: %@";

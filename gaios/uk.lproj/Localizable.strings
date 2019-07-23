@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "Спеціалізована мережа з такою назвою вже існує ";
 "id_d6_confirmations" = "%d/6 підтверджень";
 "id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "Дата";
 "id_day" = "день";
@@ -142,6 +143,7 @@
 "id_fee" = "Комісія";
 "id_fee_amount_size_fee_rate" = "Сума комісії, розмір, комісія";
 "id_fee_rate" = "Комісія";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "Комісія нижча за мінімально прийнятну";
 "id_fee_rate_must_be_at_least_s" = "Комісія не може бути меншою за %@ сатоші/vbyte.";
 "id_fee_rate_s" = "Комісія: %@";

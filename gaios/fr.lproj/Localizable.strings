@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "Il existe déjà un réseau personnalisé avec le même nom";
 "id_d6_confirmations" = "%d sur 6 confirmations";
 "id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "Date";
 "id_day" = "jour";
@@ -142,6 +143,7 @@
 "id_fee" = "Frais";
 "id_fee_amount_size_fee_rate" = "Montant des frais, taille, taux de frais";
 "id_fee_rate" = "Taux des frais";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "Les frais de transactions sont inférieurs au minimum accepté";
 "id_fee_rate_must_be_at_least_s" = "Le taux des frais doit être d'au moins %@ satoshi/vbyte.";
 "id_fee_rate_s" = "Taux de frais : %@";

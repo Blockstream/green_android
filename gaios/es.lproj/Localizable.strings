@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "Ya existe una red personalizada con este nombre";
 "id_d6_confirmations" = "%d/6 confirmaciones";
 "id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "Fecha";
 "id_day" = "día";
@@ -142,6 +143,7 @@
 "id_fee" = "Comisión";
 "id_fee_amount_size_fee_rate" = "Comisión, Tamaño, Comisión por vbyte";
 "id_fee_rate" = "Comisión por vbyte";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "La comisión por vbyte está por debajo del mínimo aceptado.";
 "id_fee_rate_must_be_at_least_s" = "La comisión por vbyte debe ser de al menos %@ satoshi/vbyte.";
 "id_fee_rate_s" = "Comisión por vbyte: %@";

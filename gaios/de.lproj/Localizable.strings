@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "Eigenes Netzwerk mit diesem Namen bereits vorhanden";
 "id_d6_confirmations" = "%d/6 Bestätigungen";
 "id_d_asset_in_this_account" = "%d Vermögen in diesem Konto";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d Vermögen in diesem Konto";
 "id_date" = "Datum";
 "id_day" = "Tag";
@@ -142,6 +143,7 @@
 "id_fee" = "Gebühr";
 "id_fee_amount_size_fee_rate" = "Gebührenbetrag, Größe, Gebührenrate";
 "id_fee_rate" = "Gebührensatz";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "Gebührenrate ist unterhalb der minimal akzteptierten Gebührenrate";
 "id_fee_rate_must_be_at_least_s" = "Gebührensatz sollte mindestens %@ satoshi/vbyte sein.";
 "id_fee_rate_s" = "Gebührensatz: %@";

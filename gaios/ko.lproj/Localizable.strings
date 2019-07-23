@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "이 이름을 가진 사용자 지정 네트워크는 이미 존재합니다";
 "id_d6_confirmations" = "%d/6 컨펌";
 "id_d_asset_in_this_account" = "이 계정에는 %d 자산이 있습니다";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "이 계정에는 %d 자산들이 있습니다";
 "id_date" = "날짜";
 "id_day" = "일";
@@ -142,6 +143,7 @@
 "id_fee" = "수수료";
 "id_fee_amount_size_fee_rate" = "수수료, 사이즈, 수수료율";
 "id_fee_rate" = "수수료율";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "수수료율이 최소 허용 수수료율보다 적습니다";
 "id_fee_rate_must_be_at_least_s" = "수수료율은 최소 %@ satoshi/vbyte 이상이어야 합니다.";
 "id_fee_rate_s" = "수수료율: %@";

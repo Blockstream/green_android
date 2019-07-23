@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "已存在同名的自定义网络";
 "id_d6_confirmations" = "已确认%d/6";
 "id_d_asset_in_this_account" = "此账户有%d的资产";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "此账户有%d的资产";
 "id_date" = "日期";
 "id_day" = "天";
@@ -142,6 +143,7 @@
 "id_fee" = "费用";
 "id_fee_amount_size_fee_rate" = "费用金额、大小、费率";
 "id_fee_rate" = "费率";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "费率低于可接受的最低费率";
 "id_fee_rate_must_be_at_least_s" = "费率至少为%@ satoshi/vbyte。";
 "id_fee_rate_s" = "费率：%@";

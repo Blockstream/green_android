@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "Er bestaat al een eigen netwerk met deze naam";
 "id_d6_confirmations" = "%d/6 bevestigingen";
 "id_d_asset_in_this_account" = "%d asset in deze account";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d assets in deze account";
 "id_date" = "Datum";
 "id_day" = "dag";
@@ -142,6 +143,7 @@
 "id_fee" = "Tarief";
 "id_fee_amount_size_fee_rate" = "Transactiekosten, grootte, tarief";
 "id_fee_rate" = "Tarief";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "Het tarief is lager dan het geaccepteerde minimum";
 "id_fee_rate_must_be_at_least_s" = "Het tarief moet minstens %@ satoshi/vbyte zijn.";
 "id_fee_rate_s" = "Tarief: %@";

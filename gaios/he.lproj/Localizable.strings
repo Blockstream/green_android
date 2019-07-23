@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "Custom network with this name already present";
 "id_d6_confirmations" = "%d/6 confirmations";
 "id_d_asset_in_this_account" = "%d asset in this account";
+"id_d_assets" = "%d assets";
 "id_d_assets_in_this_account" = "%d assets in this account";
 "id_date" = "Date";
 "id_day" = "day";
@@ -142,6 +143,7 @@
 "id_fee" = "Fee";
 "id_fee_amount_size_fee_rate" = "Fee Amount, Size, Fee Rate";
 "id_fee_rate" = "Fee rate";
+"id_fee_rate_is_above_maximum" = "Fee rate is above maximum accepted fee rate.";
 "id_fee_rate_is_below_minimum" = "Fee rate is below minimum accepted fee rate";
 "id_fee_rate_must_be_at_least_s" = "Fee rate must be at least %@ satoshi/vbyte.";
 "id_fee_rate_s" = "Fee rate: %@";

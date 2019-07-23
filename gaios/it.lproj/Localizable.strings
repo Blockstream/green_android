@@ -79,6 +79,7 @@
 "id_custom_network_with_this_name" = "Il network custom è già presente.";
 "id_d6_confirmations" = "%d/6 conferme";
 "id_d_asset_in_this_account" = "%d asset in questo account";
+"id_d_assets" = "%d asset";
 "id_d_assets_in_this_account" = "%d asset in questo account";
 "id_date" = "Data";
 "id_day" = "giorno";
@@ -142,6 +143,7 @@
 "id_fee" = "Commissione";
 "id_fee_amount_size_fee_rate" = "Commissioni totali, Dimensione Transazione, Tasso Commissioni";
 "id_fee_rate" = "Tasso commissione";
+"id_fee_rate_is_above_maximum" = "Tasso commissione maggiore del massimo consentito";
 "id_fee_rate_is_below_minimum" = "La commissione è inferiore al minimo accettato dalla rete";
 "id_fee_rate_must_be_at_least_s" = "Il tasso di commissione deve essere superiore a %@ satoshi/vbyte.";
 "id_fee_rate_s" = "Tasso di commissione: %@";
