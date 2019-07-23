@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">Eigenes Netzwerk mit diesem Namen bereits vorhanden</string>
   <string name="id_d6_confirmations">%d/6 Bestätigungen</string>
   <string name="id_d_asset_in_this_account">%d Vermögen in diesem Konto</string>
+  <string name="id_d_assets">%d assets</string>
   <string name="id_d_assets_in_this_account">%d Vermögen in diesem Konto</string>
   <string name="id_date">Datum</string>
   <string name="id_day">Tag</string>
@@ -144,6 +145,7 @@
   <string name="id_fee">Gebühr</string>
   <string name="id_fee_amount_size_fee_rate">Gebührenbetrag, Größe, Gebührenrate</string>
   <string name="id_fee_rate">Gebührensatz</string>
+  <string name="id_fee_rate_is_above_maximum">Fee rate is above maximum accepted fee rate.</string>
   <string name="id_fee_rate_is_below_minimum">Gebührenrate ist unterhalb der minimal akzteptierten Gebührenrate</string>
   <string name="id_fee_rate_must_be_at_least_s">Gebührensatz sollte mindestens %s satoshi/vbyte sein.</string>
   <string name="id_fee_rate_s">Gebührensatz: %s</string>

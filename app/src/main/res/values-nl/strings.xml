@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">Er bestaat al een eigen netwerk met deze naam</string>
   <string name="id_d6_confirmations">%d/6 bevestigingen</string>
   <string name="id_d_asset_in_this_account">%d asset in deze account</string>
+  <string name="id_d_assets">%d assets</string>
   <string name="id_d_assets_in_this_account">%d assets in deze account</string>
   <string name="id_date">Datum</string>
   <string name="id_day">dag</string>
@@ -144,6 +145,7 @@
   <string name="id_fee">Tarief</string>
   <string name="id_fee_amount_size_fee_rate">Transactiekosten, grootte, tarief</string>
   <string name="id_fee_rate">Tarief</string>
+  <string name="id_fee_rate_is_above_maximum">Fee rate is above maximum accepted fee rate.</string>
   <string name="id_fee_rate_is_below_minimum">Het tarief is lager dan het geaccepteerde minimum</string>
   <string name="id_fee_rate_must_be_at_least_s">Het tarief moet minstens %s satoshi/vbyte zijn.</string>
   <string name="id_fee_rate_s">Tarief: %s</string>

@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">Il existe déjà un réseau personnalisé avec le même nom</string>
   <string name="id_d6_confirmations">%d sur 6 confirmations</string>
   <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets">%d assets</string>
   <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">Date</string>
   <string name="id_day">jour</string>
@@ -144,6 +145,7 @@
   <string name="id_fee">Frais</string>
   <string name="id_fee_amount_size_fee_rate">Montant des frais, taille, taux de frais</string>
   <string name="id_fee_rate">Taux des frais</string>
+  <string name="id_fee_rate_is_above_maximum">Fee rate is above maximum accepted fee rate.</string>
   <string name="id_fee_rate_is_below_minimum">Les frais de transactions sont inférieurs au minimum accepté</string>
   <string name="id_fee_rate_must_be_at_least_s">Le taux des frais doit être d\'au moins %s satoshi/vbyte.</string>
   <string name="id_fee_rate_s">Taux de frais : %s</string>

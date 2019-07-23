@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">已存在同名的自定义网络</string>
   <string name="id_d6_confirmations">已确认%d/6</string>
   <string name="id_d_asset_in_this_account">此账户有%d的资产</string>
+  <string name="id_d_assets">%d assets</string>
   <string name="id_d_assets_in_this_account">此账户有%d的资产</string>
   <string name="id_date">日期</string>
   <string name="id_day">天</string>
@@ -144,6 +145,7 @@
   <string name="id_fee">费用</string>
   <string name="id_fee_amount_size_fee_rate">费用金额、大小、费率</string>
   <string name="id_fee_rate">费率</string>
+  <string name="id_fee_rate_is_above_maximum">Fee rate is above maximum accepted fee rate.</string>
   <string name="id_fee_rate_is_below_minimum">费率低于可接受的最低费率</string>
   <string name="id_fee_rate_must_be_at_least_s">费率至少为%s satoshi/vbyte。</string>
   <string name="id_fee_rate_s">费率：%s</string>

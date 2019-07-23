@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">Já existe uma rede personalizada com este nome</string>
   <string name="id_d6_confirmations">%d/6 confirmações</string>
   <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets">%d assets</string>
   <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">Data</string>
   <string name="id_day">dia</string>
@@ -144,6 +145,7 @@
   <string name="id_fee">Taxa de transação</string>
   <string name="id_fee_amount_size_fee_rate">Taxa total, Tamanho, Taxa de transação</string>
   <string name="id_fee_rate">Taxa de transação</string>
+  <string name="id_fee_rate_is_above_maximum">Fee rate is above maximum accepted fee rate.</string>
   <string name="id_fee_rate_is_below_minimum">A taxa de transação é menor que a mínima aceita</string>
   <string name="id_fee_rate_must_be_at_least_s">A taxa de transação deve ser no mínimo %s satoshi/vbyte.</string>
   <string name="id_fee_rate_s">Taxa de transação: %s</string>

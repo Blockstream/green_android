@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">Спеціалізована мережа з такою назвою вже існує </string>
   <string name="id_d6_confirmations">%d/6 підтверджень</string>
   <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets">%d assets</string>
   <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">Дата</string>
   <string name="id_day">день</string>
@@ -144,6 +145,7 @@
   <string name="id_fee">Комісія</string>
   <string name="id_fee_amount_size_fee_rate">Сума комісії, розмір, комісія</string>
   <string name="id_fee_rate">Комісія</string>
+  <string name="id_fee_rate_is_above_maximum">Fee rate is above maximum accepted fee rate.</string>
   <string name="id_fee_rate_is_below_minimum">Комісія нижча за мінімально прийнятну</string>
   <string name="id_fee_rate_must_be_at_least_s">Комісія не може бути меншою за %s сатоші/vbyte.</string>
   <string name="id_fee_rate_s">Комісія: %s</string>

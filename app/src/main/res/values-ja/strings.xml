@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">この名前でのカスタムネットワークが既にあります。</string>
   <string name="id_d6_confirmations">%d/6 検証</string>
   <string name="id_d_asset_in_this_account">%d asset in this account</string>
+  <string name="id_d_assets">%d assets</string>
   <string name="id_d_assets_in_this_account">%d assets in this account</string>
   <string name="id_date">日時</string>
   <string name="id_day">日</string>
@@ -144,6 +145,7 @@
   <string name="id_fee">手数料</string>
   <string name="id_fee_amount_size_fee_rate">手数料・サイズ・手数料率</string>
   <string name="id_fee_rate">手数料率</string>
+  <string name="id_fee_rate_is_above_maximum">Fee rate is above maximum accepted fee rate.</string>
   <string name="id_fee_rate_is_below_minimum">手数料率が最小受諾料より低いです</string>
   <string name="id_fee_rate_must_be_at_least_s">手数料率は最低 %s satoshi/vbyte以上でなければなりません。</string>
   <string name="id_fee_rate_s">手数料率: %s</string>

@@ -81,6 +81,7 @@
   <string name="id_custom_network_with_this_name">Il network custom è già presente.</string>
   <string name="id_d6_confirmations">%d/6 conferme</string>
   <string name="id_d_asset_in_this_account">%d asset in questo account</string>
+  <string name="id_d_assets">%d asset</string>
   <string name="id_d_assets_in_this_account">%d asset in questo account</string>
   <string name="id_date">Data</string>
   <string name="id_day">giorno</string>
@@ -144,6 +145,7 @@
   <string name="id_fee">Commissione</string>
   <string name="id_fee_amount_size_fee_rate">Commissioni totali, Dimensione Transazione, Tasso Commissioni</string>
   <string name="id_fee_rate">Tasso commissione</string>
+  <string name="id_fee_rate_is_above_maximum">Tasso commissione maggiore del massimo consentito</string>
   <string name="id_fee_rate_is_below_minimum">La commissione è inferiore al minimo accettato dalla rete</string>
   <string name="id_fee_rate_must_be_at_least_s">Il tasso di commissione deve essere superiore a %s satoshi/vbyte.</string>
   <string name="id_fee_rate_s">Tasso di commissione: %s</string>
