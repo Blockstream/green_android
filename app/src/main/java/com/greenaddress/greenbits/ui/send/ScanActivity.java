@@ -43,6 +43,8 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.ResultPointCallback;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
+
+import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SweepData;
@@ -54,7 +56,6 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import org.bitcoinj.core.AddressFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -370,10 +371,14 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         }
 
         scannerView.setIsResult(true);
-        onInserted(scanResult.getText());
+        try {
+            onInserted(scanResult.getText());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void onInserted(final String scanned) {
+    public void onInserted(final String scanned) throws Exception {
         final Model model = ((GreenAddressApplication) getApplication()).getModel();
 
         if (model == null)
@@ -401,7 +406,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             sweepData.setSubaccount(subaccount);
 
             try {
-                final ObjectNode transactionRaw = getSession().createTransactionRaw(sweepData);
+                final GDKTwoFactorCall call = getSession().createTransactionRaw(null, sweepData);
+                final ObjectNode transactionRaw = call.resolve(null, getConnectionManager().getHWResolver());
                 final String error = transactionRaw.get("error").asText();
                 if (error.isEmpty()) {
                     result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
@@ -435,13 +441,17 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 }
             }
             try {
+                final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, text, subaccount);
                 final ObjectNode transactionFromUri =
-                    getSession().createTransactionFromUri(text, subaccount);
+                    call.resolve(null, getConnectionManager().getHWResolver());
+                final String error = transactionFromUri.get("error").asText();
+                if ("id_invalid_address".equals(error)) {
+                    UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
+                    cameraHandler.post(fetchAndDecodeRunnable);
+                    return;
+                }
+
                 result.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
-            } catch (final AddressFormatException e) {
-                UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
-                cameraHandler.post(fetchAndDecodeRunnable);
-                return;
             } catch (final Exception e) {
                 if (e.getMessage() != null)
                     UI.toast(this, e.getMessage(), Toast.LENGTH_SHORT);
@@ -467,7 +477,11 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
 
     @Override
     public void onClick(final View view) {
-        onInserted(mAddressEditText.getText() == null ? "" : mAddressEditText.getText().toString());
+        try {
+            onInserted(mAddressEditText.getText() == null ? "" : mAddressEditText.getText().toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

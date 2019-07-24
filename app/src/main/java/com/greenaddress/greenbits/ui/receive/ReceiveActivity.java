@@ -101,6 +101,15 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
             UI.hide(UI.find(this, R.id.receivingIdLayout));
         }
 
+        String hwDeviceName = null;
+        if (getConnectionManager().getHWDeviceData() != null) {
+            hwDeviceName = getConnectionManager().getHWDeviceData().getDevice().getName();
+        }
+
+        // only show if we are on Liquid and we are using Ledger
+        UI.showIf(getNetwork().getLiquid() && "Ledger".equals(hwDeviceName),
+                  UI.find(this, R.id.assetWhitelistWarning));
+
         update(null, null);
     }
 

@@ -97,11 +97,6 @@ public class RequestLoginActivity extends LoginActivity {
         if (usb == null)
             return;
 
-        if (networkData.getLiquid()) {
-            showInstructions(R.string.id_hardware_wallet_support_for);
-            return;
-        }
-
         final ImageView hardwareIcon = UI.find(this, R.id.hardwareIcon);
         mVendorId = usb.getVendorId();
         Log.d(TAG, "Vendor: " + mVendorId + " Product: " + usb.getProductId());
@@ -159,7 +154,7 @@ public class RequestLoginActivity extends LoginActivity {
         Log.d(TAG, "Creating Trezor HW wallet");
         mHwWallet = new TrezorHWWallet(t, networkData);
 
-        mHwDeviceData = new HWDeviceData("Trezor", false, false);
+        mHwDeviceData = new HWDeviceData("Trezor", false, false, HWDeviceData.HWDeviceDataLiquidSupport.None);
         mHwResolver = new HardwareCodeResolver(mHwWallet);
 
         doLogin(this);
@@ -187,10 +182,6 @@ public class RequestLoginActivity extends LoginActivity {
     }
 
     private void onLedger(final boolean hasScreen) {
-        if (networkData.getLiquid()) {
-            showInstructions(R.string.id_hardware_wallet_support_for);
-            return;
-        }
         showInstructions(R.string.id_logging_in);
         final String pin = mPin;
         mPin = null;
@@ -215,14 +206,16 @@ public class RequestLoginActivity extends LoginActivity {
             try {
                 // This should only be supported by the Nano X
                 final BTChipDongle.BTChipApplication application = dongle.getApplication();
-                final boolean isMainnet = networkData.getMainnet();
-                final boolean bothMainnet = isMainnet && application.getName().equals("Bitcoin");
-                final boolean bothTestnet = !isMainnet && application.getName().equals("Bitcoin Test");
 
-                Log.d(TAG, "Ledger application:" + application.getName() + " network is mainnet:"+ isMainnet);
+                final boolean netMainnet = networkData.getMainnet();
+                final boolean netLiquid = networkData.getLiquid();
+                final boolean hwMainnet = !application.getName().contains("Test");
+                final boolean hwLiquid = application.getName().contains("Liquid");
 
-                if (!(bothMainnet || bothTestnet)) {
-                    // We using the wrong app, prompt the user to open the bitcoin app.
+                Log.d(TAG, "Ledger application:" + application.getName() + " network is mainnet:"+ netMainnet);
+
+                if (netMainnet != hwMainnet || netLiquid != hwLiquid) {
+                    // We using the wrong app, prompt the user to open the right app.
                     mUsb = null;
                     mInLedgerDashboard = true;
                     showInstructions(R.string.id_the_network_selected_on_the);
@@ -277,7 +270,7 @@ public class RequestLoginActivity extends LoginActivity {
         Log.d(TAG, "Creating Ledger HW wallet" + (havePin ? " with PIN" : ""));
         mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData);
 
-        mHwDeviceData = new HWDeviceData("Ledger", false, true);
+        mHwDeviceData = new HWDeviceData("Ledger", false, true, HWDeviceData.HWDeviceDataLiquidSupport.Lite);
         mHwResolver = new HardwareCodeResolver(mHwWallet);
 
         doLogin(this);

@@ -102,15 +102,12 @@ public class SubaccountAddFragment extends GAFragment {
     }
 
     private boolean hasAnyAASubaccount() {
-        try {
-            final List<SubaccountData> accounts = GDKSession.getSession().getSubAccounts();
-            for (final SubaccountData account: accounts) {
-                if (account.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]))
-                    return true;
-            }
-        } catch (final Exception e) {
-            e.printStackTrace();
+        final List<SubaccountData> accounts = getModel().getSubaccountsDataObservable().getSubaccountsDataList();
+        for (final SubaccountData account: accounts) {
+            if (account.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]))
+                return true;
         }
+
         return false;
     }
 }

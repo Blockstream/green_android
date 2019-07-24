@@ -2,31 +2,39 @@ package com.greenaddress.greenapi.model;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.greenaddress.gdk.CodeResolver;
+import com.greenaddress.gdk.GDKTwoFactorCall;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 import java.util.Observable;
 import java.util.Observer;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
-
 public class ReceiveAddressObservable extends Observable implements Observer {
     private String mReceiveAddress;
     private ListeningExecutorService mExecutor;
+    private CodeResolver mCodeResolver;
     private Integer mSubaccount;
 
     private ReceiveAddressObservable() {}
 
     public ReceiveAddressObservable(final ListeningExecutorService executor,
+                                    final CodeResolver codeResolver,
                                     final Integer subaccount) {
         mExecutor = executor;
+        mCodeResolver = codeResolver;
         mSubaccount = subaccount;
     }
 
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                final String address = getSession().getReceiveAddress(mSubaccount);
-                setReceiveAddress(address);
+                //final String address = getSession().getReceiveAddress(mSubaccount);
+                final GDKTwoFactorCall call = getSession().getReceiveAddress(null, mSubaccount);
+                final ObjectNode jsonResp = call.resolve(null, mCodeResolver);
+                setReceiveAddress(jsonResp.get("address").asText());
             } catch (Exception e) {
                 e.printStackTrace();
             }

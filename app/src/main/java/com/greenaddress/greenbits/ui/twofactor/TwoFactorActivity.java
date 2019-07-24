@@ -245,7 +245,7 @@ public class TwoFactorActivity extends LoggedActivity {
         mContinueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                //final Map<String, String> twoFacData = mService.make2FAData("proxy", proxyCode);
+                //final Map<String, String> twoFacData = make2FAData("proxy", proxyCode);
                 mContinueButton.setEnabled(false);
                 try {
                     enableTwoFactor("gauth", gauthUrl);

@@ -33,6 +33,13 @@ public class InputOutputData extends JSONData implements Serializable {
     private String txhash;
     private String serviceXpub;
     private List<Long> userPath;
+    private String commitment; // blinded value
+    private String abf; // asset blinding factor
+    private String vbf; // value blinding factor
+    private String assetId; // asset id for Liquid txs
+    private String publicKey; // the pubkey embedded into the blinded address we are sending to
+    private String ephKeypairSec; // our secret key used for the blinding
+    private String ephKeypairPub; // and the public key
 
     public String getAddress() {
         return address;
@@ -147,6 +154,94 @@ public class InputOutputData extends JSONData implements Serializable {
     public Integer getSubtype() { return subtype; }
 
     public void setSubtype(Integer subtype) { this.subtype = subtype; }
+
+    public String getCommitment() {
+        return commitment;
+    }
+
+    public void setCommitment(String commitment) {
+        this.commitment = commitment;
+    }
+
+    public String getAbf() {
+        return abf;
+    }
+
+    public void setAbf(String abf) {
+        this.abf = abf;
+    }
+
+    public String getVbf() {
+        return vbf;
+    }
+
+    public void setVbf(String vbf) {
+        this.vbf = vbf;
+    }
+
+    public String getAssetId() {
+        return assetId;
+    }
+
+    public void setAssetId(String assetId) {
+        this.assetId = assetId;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    @JsonIgnore
+    public byte[] getCommitmentBytes() {
+        return Wally.hex_to_bytes(commitment);
+    }
+
+    @JsonIgnore
+    public byte[] getAbfBytes() {
+        return Wally.hex_to_bytes(abf);
+    }
+
+    @JsonIgnore
+    public byte[] getVbfBytes() {
+        return Wally.hex_to_bytes(vbf);
+    }
+
+    @JsonIgnore
+    public byte[] getAssetIdBytes() {
+        return Wally.hex_to_bytes(assetId);
+    }
+
+    @JsonIgnore
+    public byte[] getRevertedAssetIdBytes() {
+        return reverseBytes(Wally.hex_to_bytes(assetId));
+    }
+
+    public String getEphKeypairSec() {
+        return ephKeypairSec;
+    }
+
+    @JsonIgnore
+    public byte[] getEphKeypairSecBytes() {
+        return Wally.hex_to_bytes(ephKeypairSec);
+    }
+
+    public String getEphKeypairPub() {
+        return ephKeypairPub;
+    }
+
+    @JsonIgnore
+    public byte[] getEphKeypairPubBytes() {
+        return Wally.hex_to_bytes(ephKeypairPub);
+    }
+
+    @JsonIgnore
+    public byte[] getPublicKeyBytes() {
+        return Wally.hex_to_bytes(publicKey);
+    }
 
     // FIXME: Put this somewhere common
     @JsonIgnore

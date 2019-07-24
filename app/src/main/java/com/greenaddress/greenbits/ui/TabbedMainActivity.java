@@ -26,6 +26,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
+
+import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.ConnectionMessageObservable;
 import com.greenaddress.greenapi.model.EventDataObservable;
@@ -37,8 +39,6 @@ import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.WatchOnlyPreferenceFragment;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.ui.transactions.MainFragment;
-
-import org.bitcoinj.core.AddressFormatException;
 
 import java.util.Arrays;
 import java.util.Observable;
@@ -117,15 +117,19 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         final String text = uri.toString();
         try {
             final int subaccount = getModel().getCurrentSubaccount();
-            final ObjectNode transactionFromUri = getSession().createTransactionFromUri(text, subaccount);
+            final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, text, subaccount);
+            final ObjectNode transactionFromUri = call.resolve(null, getConnectionManager().getHWResolver());
+            final String error = transactionFromUri.get("error").asText();
+            if ("id_invalid_address".equals(error)) {
+                UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
+                return;
+            }
+
             intent.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
-        } catch (final AddressFormatException e) {
-            e.printStackTrace();
-            UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
-            return;
         } catch (final Exception e) {
             e.printStackTrace();
-            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            if (e.getMessage() != null)
+                UI.toast(this, e.getMessage(), Toast.LENGTH_SHORT);
             return;
         }
         intent.putExtra("internal_qr", getIntent().getBooleanExtra("internal_qr", false));

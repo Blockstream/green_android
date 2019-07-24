@@ -23,7 +23,6 @@ import com.greenaddress.greenapi.data.JSONData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenapi.data.ReconnectHint;
-import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.data.TwoFactorDetailData;
@@ -33,6 +32,7 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 import org.bitcoinj.core.AddressFormatException;
 
 import java.util.ArrayList;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -126,38 +126,38 @@ public class GDKSession {
         GDK.login_watch_only(mNativeSession, username, password);
     }
 
-    public List<TransactionData> getTransactions(final int subAccount, final int first, final int count) throws Exception {
-        final ArrayNode txListObject = getTransactionsRaw(subAccount, first, count);
+    public List<TransactionData> parseTransactions(final ArrayNode txListObject) throws Exception {
+        //final ArrayNode txListObject = getTransactionsRaw(subAccount, first, count);
         final List<TransactionData> transactionDataPagedData =
                 mObjectMapper.readValue(mObjectMapper.treeAsTokens(txListObject),
                         new TypeReference<List<TransactionData>>() {});
         return transactionDataPagedData;
     }
 
-    public ArrayNode getTransactionsRaw(final int subAccount, final int first, final int count) throws Exception {
+    public JsonNode findTransactionRaw(final ArrayNode txListObject, final String txhash) throws Exception {
+        for (JsonNode node : txListObject) {
+            if (node.get("txhash").asText().equals(txhash))
+                return node;
+        }
+
+        return null;
+    }
+
+    public GDKTwoFactorCall getTransactionsRaw(final Activity parent, final int subAccount, final int first, final int count) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("first", first);
         details.put("count", count);
-        return (ArrayNode) GDK.get_transactions(mNativeSession, details);
-    }
-
-    public JsonNode getTransactionRaw(final int subAccount, final String txhash) throws Exception {
-        final ArrayNode array = getTransactionsRaw(subAccount, 0, 30);
-        for (JsonNode node : array ) {
-            if (node.get("txhash").asText().equals(txhash))
-                return node;
-        }
-        return null;
+        details.put("num_confs", 0);
+        return new GDKTwoFactorCall(parent, GDK.get_transactions(mNativeSession, details));
     }
 
     public void setWatchOnly(final String username, final String password) throws Exception {
         GDK.set_watch_only(mNativeSession, username, password);
     }
 
-    public List<SubaccountData> getSubAccounts() throws Exception {
-        final ArrayNode accounts = (ArrayNode) GDK.get_subaccounts(mNativeSession);
-        return mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts), new TypeReference<List<SubaccountData>>() {});
+    public GDKTwoFactorCall getSubAccounts(final Activity parent) {
+        return new GDKTwoFactorCall(parent, GDK.get_subaccounts(mNativeSession));
     }
 
     public GDKTwoFactorCall createSubAccount(final Activity parent, final String name, final String type) throws Exception {
@@ -174,18 +174,11 @@ public class GDKSession {
         return twoFactorConfigData;
     }
 
-    public Map<String, Long> getBalance(final Integer subAccount, final long confirmations) throws Exception {
+    public GDKTwoFactorCall getBalance(final Activity parent, final Integer subAccount, final long confirmations) {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
-        final ObjectNode balanceData = (ObjectNode) GDK.get_balance(mNativeSession, details);
-        final Map<String, Long> map = new HashMap<>();
-        final Iterator<String> iterator = balanceData.fieldNames();
-        while (iterator.hasNext()) {
-            final String key = iterator.next();
-            map.put(key, balanceData.get(key).asLong(0));
-        }
-        return map;
+        return new GDKTwoFactorCall(parent, GDK.get_balance(mNativeSession, details));
     }
 
     public Map<String, Bitmap> getAssetsIcons(final boolean refresh) throws Exception {
@@ -252,15 +245,15 @@ public class GDKSession {
         return convert(amount);
     }
 
-    public ObjectNode createTransactionRaw(final JSONData createTransactionData) throws Exception {
-        return (ObjectNode) GDK.create_transaction(mNativeSession, createTransactionData);
+    public GDKTwoFactorCall createTransactionRaw(final Activity parent, final JSONData createTransactionData) throws Exception {
+        return new GDKTwoFactorCall(parent, GDK.create_transaction(mNativeSession, createTransactionData));
     }
 
-    public ObjectNode createTransactionRaw(final ObjectNode tx) throws Exception {
-        return (ObjectNode) GDK.create_transaction(mNativeSession, tx);
+    public GDKTwoFactorCall createTransactionRaw(final Activity parent, final ObjectNode tx) throws Exception {
+        return new GDKTwoFactorCall(parent, GDK.create_transaction(mNativeSession, tx));
     }
 
-    public ObjectNode createTransactionFromUri(final String uri, final int subaccount) throws Exception {
+    public GDKTwoFactorCall createTransactionFromUri(final Activity parent, final String uri, final int subaccount) throws Exception {
         final ObjectNode tx = mObjectMapper.createObjectNode();
         tx.put("subaccount", subaccount);
         final ObjectNode address = mObjectMapper.createObjectNode();
@@ -268,12 +261,7 @@ public class GDKSession {
         final ArrayNode addressees = mObjectMapper.createArrayNode();
         addressees.add(address);
         tx.set("addressees", addressees);
-        final ObjectNode transaction = createTransactionRaw(tx);
-        final String error = transaction.get("error").asText();
-        if ("id_invalid_address".equals(error)) {
-            throw new AddressFormatException();
-        }
-        return transaction;
+        return createTransactionRaw(parent, tx);
     }
 
     public GDKTwoFactorCall signTransactionRaw(final Activity parent, final ObjectNode createTransactionData) throws Exception {
@@ -295,25 +283,11 @@ public class GDKSession {
         return mObjectMapper.treeToValue(feeEstimates, EstimatesData.class).getFees();
     }
 
-    public List<TransactionData> getUTXO(final long subAccount, final long confirmations) throws Exception {
+    public GDKTwoFactorCall getUTXO(final Activity parent, final long subAccount, final long confirmations) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
-        final ObjectNode unspentOutputs = (ObjectNode) GDK.get_unspent_outputs(mNativeSession, details);
-        if (unspentOutputs.has("btc")) {
-            // at the moment the returned json is different if calling get_unspent_outputs or
-            // get_transactions, since get_transactions is already updated for supporting assets and
-            // we don't need satoshi amount, this is an hack to not fail json parsing
-            ArrayNode arrayNode = (ArrayNode) unspentOutputs.get("btc");
-            for (int i = 0; i < arrayNode.size(); i++) {
-                ((ObjectNode) arrayNode.get(i)).remove("satoshi");
-            }
-            final List<TransactionData> transactionData = mObjectMapper.readValue(mObjectMapper.treeAsTokens(arrayNode), new TypeReference<List<TransactionData>>() {
-            });
-            return transactionData;
-        } else {
-            return new ArrayList<>();
-        }
+        return new GDKTwoFactorCall(parent, GDK.get_unspent_outputs(mNativeSession, details));
     }
 
     public Map<String, Object> getAvailableCurrencies() throws Exception {
@@ -346,11 +320,10 @@ public class GDKSession {
         GDK.register_network(name, networkJson);
     }
 
-    public String getReceiveAddress(final int subAccount) throws Exception {
+    public GDKTwoFactorCall getReceiveAddress(final Activity parent, final int subAccount) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
-        final ObjectNode receiveAddress = (ObjectNode) GDK.get_receive_address(mNativeSession, details);
-        return receiveAddress.get("address").asText();
+        return new GDKTwoFactorCall(parent, GDK.get_receive_address(mNativeSession, details));
     }
 
     public static boolean isEnabled() {

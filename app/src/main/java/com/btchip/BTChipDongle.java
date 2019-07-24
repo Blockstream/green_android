@@ -19,15 +19,19 @@
 
 package com.btchip;
 
+import com.blockstream.libwally.Wally;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.utils.BufferUtils;
 import com.btchip.utils.CoinFormatUtils;
 import com.btchip.utils.Dump;
 import com.btchip.utils.VarintUtils;
+import com.google.common.primitives.Longs;
+import com.greenaddress.greenapi.data.InputOutputData;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -217,6 +221,64 @@ public class BTChipDongle implements BTChipConstants {
 		@Override
 		public String toString() {
 			return String.format("Value %s trusted %b sequence %s segwit %b", Dump.dump(value), trusted, (sequence != null ? Dump.dump(sequence) : ""), segwit);
+		}
+	}
+
+	public class BTChipLiquidInput {
+		private byte[] value;
+		private byte[] sequence;
+
+		public BTChipLiquidInput(byte[] value, byte[] sequence) {
+			this.value = value;
+			this.sequence = sequence;
+		}
+
+		public byte[] getValue() {
+			return value;
+		}
+		public byte[] getSequence() {
+			return sequence;
+		}
+
+		@Override
+		public String toString() {
+			return String.format("Liquid Value %s sequence %s", Dump.dump(value), (sequence != null ? Dump.dump(sequence) : ""));
+		}
+	}
+
+	public class BTChipLiquidTrustedCommitments {
+		private byte[] value;
+
+		public BTChipLiquidTrustedCommitments(byte[] value) {
+			this.value = value;
+		}
+
+		public byte[] getValue() {
+			return value;
+		}
+
+		public byte[] getDataForFinalize() {
+			return Arrays.copyOfRange(value, 64, 207);
+		}
+
+		public byte[] getAbf() {
+			return Arrays.copyOfRange(value, 0, 32);
+		}
+
+		public byte[] getVbf() {
+			return Arrays.copyOfRange(value, 32, 64);
+		}
+
+		public byte[] getAssetCommitment() {
+			return Arrays.copyOfRange(value, 69, 69 + 33);
+		}
+
+		public byte[] getValueCommitment() {
+			return Arrays.copyOfRange(value, 69 + 33, 69 + 33 + 33);
+		}
+
+		public byte[] getFlags() {
+			return Arrays.copyOfRange(value, 64, 65);
 		}
 	}
 
@@ -436,6 +498,27 @@ public class BTChipDongle implements BTChipConstants {
 		return new BTChipPublicKey(publicKey, new String(address), chainCode);
 	}
 
+	public BTChipPublicKey getBlindingKey(final byte[] script) throws BTChipException {
+		byte response[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_BLINDING_KEY, (byte)0x00, (byte)0x00, script, OK);
+		byte blindingKey[] = new byte[65];
+		System.arraycopy(response, 0, blindingKey, 0, blindingKey.length);
+		return new BTChipPublicKey(blindingKey, null, null);
+	}
+
+	// TODO: use an ad-hoc return type
+	public BTChipPublicKey getBlindingNonce(final byte[] pubkey, final byte[] script) throws BTChipException {
+		byte data[] = new byte[65 + script.length];
+		System.arraycopy(pubkey, 0, data, 0, 65);
+		System.arraycopy(script, 0, data, 65, script.length);
+
+		byte response[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_NONCE, (byte)0x00, (byte)0x00, data, OK);
+
+		byte nonce[] = new byte[32];
+		System.arraycopy(response, 0, nonce, 0, nonce.length);
+
+		return new BTChipPublicKey(nonce, null, null);
+	}
+
 	public BTChipInput getTrustedInput(BitcoinTransaction transaction, long index, long sequence) throws BTChipException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		// Header
@@ -478,6 +561,10 @@ public class BTChipDongle implements BTChipConstants {
 		return new BTChipInput(value, sequence, trusted, segwit);
 	}
 
+	public BTChipLiquidInput createLiquidInput(byte[] value, byte[] sequence) {
+		return new BTChipLiquidInput(value, sequence);
+	}
+
 	public void startUntrustedTransaction(long txVersion, boolean newTransaction, long inputIndex, BTChipInput usedInputList[], byte[] redeemScript, boolean segwit) throws BTChipException {
 		// Start building a fake transaction with the passed inputs
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -503,6 +590,100 @@ public class BTChipDongle implements BTChipConstants {
 			exchangeApduSplit(BTCHIP_CLA, BTCHIP_INS_HASH_INPUT_START, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
 			currentIndex++;
 		}
+	}
+
+	public void startUntrustedLiquidTransaction(long txVersion, boolean newTransaction, long inputIndex, BTChipLiquidInput usedInputList[], byte[] redeemScript) throws BTChipException {
+		// Start building a fake transaction with the passed inputs
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+		BufferUtils.writeUint32LE(data, txVersion);
+		VarintUtils.write(data, usedInputList.length);
+		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_HASH_INPUT_START, (byte)0x00, (newTransaction ? (byte)0x06 : (byte)0x80), data.toByteArray(), OK);
+		// Loop for each input
+		long currentIndex = 0;
+		for (BTChipLiquidInput input : usedInputList) {
+			byte[] script = (currentIndex == inputIndex ? redeemScript : new byte[0]);
+			data = new ByteArrayOutputStream();
+			data.write((byte)0x03); // Liquid inputW
+			BufferUtils.writeBuffer(data, input.getValue());
+			VarintUtils.write(data, script.length);
+			exchangeApdu(BTCHIP_CLA, BTCHIP_INS_HASH_INPUT_START, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
+			data = new ByteArrayOutputStream();
+			BufferUtils.writeBuffer(data, script);
+			BufferUtils.writeBuffer(data, input.getSequence());
+			exchangeApduSplit(BTCHIP_CLA, BTCHIP_INS_HASH_INPUT_START, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
+			currentIndex++;
+		}
+	}
+
+	private byte[] foldListOfByteArray(List<byte[]> l) {
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+		for (byte[] arr : l) {
+			data.write(arr, 0, arr.length);
+		}
+
+		return data.toByteArray();
+	}
+
+	public void provideLiquidIssuanceInformation(final int numInputs) throws BTChipException {
+		// we can safely assume that we will never sign any issuance here
+		ByteArrayOutputStream data = new ByteArrayOutputStream(numInputs);
+		for (int i = 0; i < numInputs; i++) {
+			data.write(0x00);
+		}
+
+		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_ISSUANCE_INFORMATION, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
+	}
+
+	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> abfs, List<byte[]> vbfs, final long numInputs, List<InputOutputData> outputData) throws BTChipException {
+		ByteArrayOutputStream data;
+		List<BTChipLiquidTrustedCommitments> out = new ArrayList<>();
+
+		int i = 0;
+		for (InputOutputData output : outputData) {
+			// skip the fee output TODO: also skip the voluntarily unblinded outputs (currently unsupported by gdk)
+			if (output.getScript().length() == 0) {
+				out.add(null);
+				i++;
+				continue;
+			}
+
+			values.add(output.getSatoshi());
+
+			boolean last = false;
+			if (i == outputData.size() - 2) {
+				last = true;
+			}
+
+			data = new ByteArrayOutputStream();
+			data.write(output.getAssetIdBytes(), 0, 32);
+			BufferUtils.writeUint64BE(data, output.getSatoshi());
+			BufferUtils.writeUint32BE(data, i);
+
+			if (last) {
+				// get only the abf
+				ByteArrayOutputStream getAbfData = new ByteArrayOutputStream(4);
+				BufferUtils.writeUint32BE(getAbfData, i);
+				byte abfResponse[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR, (byte)0x01, (byte)0x00, getAbfData.toByteArray(), OK);
+				abfs.add(Arrays.copyOfRange(abfResponse, 0, 32));
+
+				// generate the last vbf based on the others
+				byte finalVbf[] = Wally.asset_final_vbf(Longs.toArray(values), numInputs, foldListOfByteArray(abfs), foldListOfByteArray(vbfs));
+				vbfs.add(finalVbf);
+				data.write(finalVbf, 0, 32);
+			}
+
+			byte response[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_COMMITMENTS, last ? (byte)0x02 : (byte)0x01, (byte)0x00, data.toByteArray(), OK);
+			out.add(new BTChipLiquidTrustedCommitments(response));
+
+			if (!last) {
+				abfs.add(Arrays.copyOfRange(response, 0, 32));
+				vbfs.add(Arrays.copyOfRange(response, 32, 64));
+			}
+
+			i++;
+		}
+
+		return out;
 	}
 
 	private BTChipOutput convertResponseToOutput(byte[] response) throws BTChipException {
@@ -614,8 +795,44 @@ public class BTChipDongle implements BTChipConstants {
 		return result;
 	}
 
+	public BTChipOutput finalizeInputLiquidFull(List<byte[]> data, final List<Integer> changePath, boolean skipChangeCheck) throws BTChipException {
+		BTChipOutput result = null;
+		byte[] response = null;
+
+		int count = 0;
+		for (byte[] packet : data) {
+			int blockLength = packet.length;
+
+			if (blockLength > 255) {
+				throw new BTChipException("Block too long");
+			}
+
+			byte[] apdu = new byte[blockLength + 5];
+			apdu[0] = BTCHIP_CLA;
+			apdu[1] = BTCHIP_INS_HASH_INPUT_FINALIZE_FULL;
+			apdu[2] = (count == (data.size() - 1) ? (byte)0x80 : (byte)0x00);
+			apdu[3] = (byte)0x00;
+			apdu[4] = (byte)(blockLength);
+			System.arraycopy(packet, 0, apdu, 5, blockLength);
+			response = exchangeCheck(apdu, OK);
+
+			count++;
+		}
+
+		result = convertResponseToOutput(response);
+
+		if (result == null) {
+			throw new BTChipException("Unsupported user confirmation method");
+		}
+		return result;
+	}
+
 	public BTChipOutput finalizeInputFull(byte[] data) throws BTChipException {
 		return finalizeInputFull(data, null, false);
+	}
+
+	public BTChipOutput finalizeLiquidInputFull(List<byte[]> data) throws BTChipException {
+		return finalizeInputLiquidFull(data, null, false);
 	}
 
 	public BTChipOutput finalizeInputFull(byte[] data, final List<Integer> changePath) throws BTChipException {
@@ -649,6 +866,20 @@ public class BTChipDongle implements BTChipConstants {
 		BufferUtils.writeBuffer(data, path);
 		data.write(pin.length());
 		BufferUtils.writeBuffer(data, pin.getBytes());
+		BufferUtils.writeUint32BE(data, lockTime);
+		data.write(sigHashType);
+		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_HASH_SIGN, (byte)0x00, (byte)0x00, data.toByteArray(), OK);
+		response[0] = (byte)0x30;
+		return response;
+	}
+
+	public byte[] untrustedLiquidHashSign(final List<Integer> privateKeyPath, long lockTime, byte sigHashType) throws BTChipException {
+		ByteArrayOutputStream data = new ByteArrayOutputStream();
+		byte path[] = pathToByteArray(privateKeyPath);
+		BufferUtils.writeBuffer(data, path);
+		//data.write(pin.length());
+		data.write((byte)0x00);
+		//BufferUtils.writeBuffer(data, pin.getBytes());
 		BufferUtils.writeUint32BE(data, lockTime);
 		data.write(sigHashType);
 		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_HASH_SIGN, (byte)0x00, (byte)0x00, data.toByteArray(), OK);

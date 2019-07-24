@@ -18,6 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.greenaddress.gdk.GDKSession.getSession;
+
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.EventDataObservable;
@@ -31,8 +36,6 @@ import com.greenaddress.greenbits.ui.transactions.TransactionActivity;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
-import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class NotificationsFragment extends GAPreferenceFragment implements Observer {
 
@@ -83,8 +86,12 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                     Log.d("TAG", "" + e.getValue());
                     try {
                         final TransactionData txData = (TransactionData) e.getValue();
+                        final GDKTwoFactorCall call =
+                            getSession().getTransactionsRaw(null, txData.getSubaccount(), 0, 30);
+                        ObjectNode txListObject = call.resolve(null, getConnectionManager().getHWResolver());
                         final JsonNode transactionRaw =
-                            getSession().getTransactionRaw(txData.getSubaccount(), txData.getTxhash());
+                            getSession().findTransactionRaw((ArrayNode) txListObject.get("transactions"),
+                                                            txData.getTxhash());
                         final ObjectMapper objectMapper = new ObjectMapper();
                         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                         final TransactionData fullTxData =

@@ -3,6 +3,8 @@ package com.greenaddress.greenapi.model;
 import android.util.SparseArray;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.greenaddress.gdk.CodeResolver;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
@@ -41,9 +43,11 @@ public class Model {
 
     private Model() {}
 
-    public Model(final ListeningExecutorService executor, final NetworkData networkData) {
+    public Model(final ListeningExecutorService executor, final CodeResolver codeResolver,
+                 final NetworkData networkData) {
         mAssetsObservable = new AssetsDataObservable(executor);
-        mSubaccountsDataObservable = new SubaccountsDataObservable(executor, mAssetsObservable, this);
+        mSubaccountsDataObservable =
+            new SubaccountsDataObservable(executor, mAssetsObservable, this, codeResolver);
         mEventDataObservable = new EventDataObservable();
         mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(executor, mEventDataObservable);
         mFeeObservable = new FeeObservable(executor);

@@ -23,6 +23,10 @@ public class HWDeviceRequiredData extends JSONData {
     private List<InputOutputData> transactionOutputs;
     private Map<String, String> signingTransactions;
 
+    private Map<String, String> address;
+
+    private List<BlindedScriptsData> blindedScripts;
+
     HWDeviceRequiredData() { }
 
     public String getAction() {
@@ -99,5 +103,21 @@ public class HWDeviceRequiredData extends JSONData {
 
     public void setSigningTransactions(final Map<String, String> signingTransactions) {
         this.signingTransactions = signingTransactions;
+    }
+
+    public Map<String, String> getAddress() {
+        return address;
+    }
+
+    public void setAddress(Map<String, String> address) {
+        this.address = address;
+    }
+
+    public List<BlindedScriptsData> getBlindedScripts() {
+        return blindedScripts;
+    }
+
+    public void setBlindedScripts(List<BlindedScriptsData> blindedScripts) {
+        this.blindedScripts = blindedScripts;
     }
 }

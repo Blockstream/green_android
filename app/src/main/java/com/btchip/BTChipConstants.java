@@ -33,6 +33,11 @@ public interface BTChipConstants {
     byte BTCHIP_INS_SET_KEYMAP = (byte)0x28;
     byte BTCHIP_INS_SET_COMM_PROTOCOL = (byte)0x2a;
     byte BTCHIP_INS_GET_WALLET_PUBLIC_KEY = (byte)0x40;
+    byte BTCHIP_INS_GET_LIQUID_BLINDING_KEY = (byte)0xE2;
+    byte BTCHIP_INS_GET_LIQUID_NONCE = (byte) 0xE4;
+    byte BTCHIP_INS_GET_LIQUID_COMMITMENTS = (byte) 0xE0;
+    byte BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR = (byte) 0xE8;
+    byte BTCHIP_INS_GET_LIQUID_ISSUANCE_INFORMATION = (byte) 0xE6;
     byte BTCHIP_INS_GET_TRUSTED_INPUT = (byte)0x42;
     byte BTCHIP_INS_HASH_INPUT_START = (byte)0x44;
     byte BTCHIP_INS_HASH_INPUT_FINALIZE = (byte)0x46;

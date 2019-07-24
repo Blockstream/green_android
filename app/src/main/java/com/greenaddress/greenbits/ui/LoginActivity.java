@@ -85,7 +85,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         // setup data observers
         final ConnectionManager connectionManager = getConnectionManager();
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
-        final Model model = new Model(getGAApp().getExecutor(), networkData);
+        final Model model = new Model(getGAApp().getExecutor(), connectionManager.getHWResolver(), networkData);
         final SharedPreferences preferences = getSharedPreferences(networkData.getNetwork(), MODE_PRIVATE);
         final int activeAccount =
             connectionManager.isLoginWithPin() ? preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;

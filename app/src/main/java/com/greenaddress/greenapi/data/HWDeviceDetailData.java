@@ -8,18 +8,22 @@ public class HWDeviceDetailData extends JSONData {
     private String name;
     private boolean supportsLowR;
     private boolean supportsArbitraryScripts;
+    private HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid;
 
     // Ctor for serialisation only
     public HWDeviceDetailData() {
         this.name = null;
         this.supportsLowR = false;
         this.supportsArbitraryScripts = false;
+        this.supportsLiquid = HWDeviceData.HWDeviceDataLiquidSupport.None;
     }
 
-    public HWDeviceDetailData(final String name, final boolean supportsLowR, final boolean supportsArbitraryScripts) {
+    public HWDeviceDetailData(final String name, final boolean supportsLowR, final boolean supportsArbitraryScripts,
+                              final HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid) {
         this.name = name;
         this.supportsLowR = supportsLowR;
         this.supportsArbitraryScripts = supportsArbitraryScripts;
+        this.supportsLiquid = supportsLiquid;
     }
 
     public String getName() {
@@ -44,5 +48,13 @@ public class HWDeviceDetailData extends JSONData {
 
     public void setSupportsLowR(final boolean supportsLowR) {
         this.supportsLowR = supportsLowR;
+    }
+
+    public HWDeviceData.HWDeviceDataLiquidSupport getSupportsLiquid() {
+        return supportsLiquid;
+    }
+
+    public void setSupportsLiquid(HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid) {
+        this.supportsLiquid = supportsLiquid;
     }
 }

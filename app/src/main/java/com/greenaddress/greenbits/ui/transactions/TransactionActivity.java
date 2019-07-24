@@ -22,7 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
@@ -388,14 +390,18 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final String txhash = mTxItem.getTxhash();
             final int subaccount = mTxItem.getSubaccount() ==
                                    null ? model.getCurrentSubaccount() : mTxItem.getSubaccount();
-            final JsonNode txToBump = getSession().getTransactionRaw(subaccount, txhash);
+            final GDKTwoFactorCall call = getSession().getTransactionsRaw(null, subaccount, 0, 30);
+            ObjectNode txListObject = call.resolve(null, getConnectionManager().getHWResolver());
+            final JsonNode txToBump = getSession().findTransactionRaw((ArrayNode) txListObject.get(
+                                                                          "transactions"), txhash);
             final JsonNode feeRate = txToBump.get("fee_rate");
             BumpTxData bumpTxData = new BumpTxData();
             bumpTxData.setPreviousTransaction(txToBump);
             bumpTxData.setFeeRate(feeRate.asLong());
             bumpTxData.setSubaccount(subaccount);
             Log.d(TAG,"createTransactionRaw(" + bumpTxData.toString() + ")");
-            final ObjectNode tx = getSession().createTransactionRaw(bumpTxData);
+            final GDKTwoFactorCall signCall = getSession().createTransactionRaw(null, bumpTxData);
+            final ObjectNode tx = signCall.resolve(null, getConnectionManager().getHWResolver());
             final Intent intent = new Intent(this, SendAmountActivity.class);
             intent.putExtra(INTENT_STRING_TX, tx.toString());
             stopLoading();

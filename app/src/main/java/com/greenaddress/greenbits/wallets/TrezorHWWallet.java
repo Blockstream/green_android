@@ -94,6 +94,13 @@ public class TrezorHWWallet extends HWWallet {
         }
     }
 
+    @Override
+    public LiquidHWResult signLiquidTransaction(GaActivity parent, ObjectNode tx, List<InputOutputData> inputs,
+                                                List<InputOutputData> outputs, Map<String, String> transactions,
+                                                List<String> addressTypes) {
+        return null;
+    }
+
     private List<String> signTransactionImpl(final GaActivity parent, final ObjectNode tx,
                                              final List<InputOutputData> inputs,
                                              final List<InputOutputData> outputs,
@@ -214,6 +221,16 @@ public class TrezorHWWallet extends HWWallet {
             Wally.bip32_key_free(k);
         }
         return cache.get(xpub58);
+    }
+
+    @Override
+    public String getBlindingKey(GaActivity parent, String scriptHex) {
+        return null;
+    }
+
+    @Override
+    public String getBlindingNonce(GaActivity parent, String pubkey, String scriptHex) {
+        return null;
     }
 
     private TrezorType.HDNodePathType makeHDNode(final TrezorType.HDNodeType node, final Integer pointer) {

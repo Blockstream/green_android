@@ -2,6 +2,7 @@ package com.greenaddress.greenapi.data;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionData extends JSONData implements Serializable {
     private Integer blockHeight;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -320,6 +322,11 @@ public class TransactionData extends JSONData implements Serializable {
 
     @JsonIgnore
     public String getFirstAsset() {
+        // unblinding failed
+        if (satoshi == null) {
+            return null;
+        }
+
         final Iterator<String> iter = satoshi.keySet().iterator();
         while (iter.hasNext()) {
             final String current = iter.next();

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
@@ -153,7 +154,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 // FIXME: If we didn't pass in the full transaction (with utxos)
                 // then this call will go to the server. So, we should do it in
                 // the background and display a wait icon until it returns
-                mTx = getSession().createTransactionRaw(txJson);
+                final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
+                mTx = call.resolve(null, getConnectionManager().getHWResolver());
             }
 
             final JsonNode node = mTx.get("satoshi");
@@ -439,7 +441,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         if (changed || caller == mRecipientText) {
             // Our tx has changed, so recreate it
             try {
-                mTx = getSession().createTransactionRaw(mTx);
+                final GDKTwoFactorCall call = getSession().createTransactionRaw(null, mTx);
+                mTx = call.resolve(null, getConnectionManager().getHWResolver());
             } catch (final Exception e) {
                 // FIXME: Toast and go back to main activity since we must be disconnected
                 throw new RuntimeException(e);

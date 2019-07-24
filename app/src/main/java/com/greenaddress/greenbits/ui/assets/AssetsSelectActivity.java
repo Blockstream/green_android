@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -134,6 +135,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
         final ObjectNode addressee = (ObjectNode) txJson.get("addressees").get(0);
         addressee.put("asset_tag", assetId);
-        return getSession().createTransactionRaw(txJson);
+        final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
+        return call.resolve(null, getConnectionManager().getHWResolver());
     }
 }

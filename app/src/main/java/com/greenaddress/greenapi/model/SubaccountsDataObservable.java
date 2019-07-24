@@ -3,17 +3,26 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListeningExecutorService;
+
+import com.greenaddress.gdk.CodeResolver;
+import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.SubaccountData;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class SubaccountsDataObservable extends Observable {
-    private List<SubaccountData> mSubaccountsData;
+    private List<SubaccountData> mSubaccountsData = new LinkedList<>();
     private ListeningExecutorService mExecutor;
+    private CodeResolver mCodeResolver;
+
     private SparseArray<TransactionDataObservable> mTransactionDataObservables;
     private SparseArray<TransactionDataObservable> mUTXODataObservables;
     private SparseArray<ReceiveAddressObservable> mReceiveAddressObservables;
@@ -23,9 +32,14 @@ public class SubaccountsDataObservable extends Observable {
 
     private AssetsDataObservable mAssetsDataObservable;
 
+    private final static ObjectMapper mObjectMapper = new ObjectMapper();
+
     SubaccountsDataObservable(final ListeningExecutorService executor,
-                              AssetsDataObservable assetsDataObservable, final Model model) {
+                              AssetsDataObservable assetsDataObservable, final Model model,
+                              final CodeResolver codeResolver) {
         mExecutor = executor;
+        mCodeResolver = codeResolver;
+
         mTransactionDataObservables = model.getTransactionDataObservables();
         mBalanceDataObservables = model.getBalanceDataObservables();
         mReceiveAddressObservables = model.getReceiveAddressObservables();
@@ -42,7 +56,11 @@ public class SubaccountsDataObservable extends Observable {
         // this call is syncronous, because other observables depends on this to be initialized
         try {
             final long millis=System.currentTimeMillis();
-            final List<SubaccountData> subAccounts = getSession().getSubAccounts();
+            final GDKTwoFactorCall call = getSession().getSubAccounts(null);
+            final ObjectNode accounts = call.resolve(null, mCodeResolver);
+            final List<SubaccountData> subAccounts =
+                mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts.get("subaccounts")),
+                                        new TypeReference<List<SubaccountData>>() {});
             for (SubaccountData subAccount : subAccounts) {
                 final int pointer = subAccount.getPointer();
                 initObservables(pointer);
@@ -57,14 +75,16 @@ public class SubaccountsDataObservable extends Observable {
     private void initObservables(int pointer) {
         if (mTransactionDataObservables.get(pointer) == null) {
             final TransactionDataObservable transactionDataObservable = new TransactionDataObservable(mExecutor,
+                                                                                                      mCodeResolver,
                                                                                                       mAssetsDataObservable,
-                                                                                                      pointer, false);
+                                                                                                      pointer,
+                                                                                                      false);
             mActiveAccountObservable.addObserver(transactionDataObservable);
             mBlockchainHeightObservable.addObserver(transactionDataObservable);
             mTransactionDataObservables.put(pointer, transactionDataObservable);
         }
         if (mBalanceDataObservables.get(pointer) == null) {
-            final BalanceDataObservable balanceDataObservable = new BalanceDataObservable(mExecutor,
+            final BalanceDataObservable balanceDataObservable = new BalanceDataObservable(mExecutor, mCodeResolver,
                                                                                           mAssetsDataObservable,
                                                                                           pointer);
             mBlockchainHeightObservable.addObserver(balanceDataObservable);
@@ -72,12 +92,13 @@ public class SubaccountsDataObservable extends Observable {
         }
         if (mReceiveAddressObservables.get(pointer) == null) {
             final ReceiveAddressObservable addressObservable =
-                new ReceiveAddressObservable(mExecutor, pointer);
+                new ReceiveAddressObservable(mExecutor, mCodeResolver, pointer);
             mReceiveAddressObservables.put(pointer, addressObservable);
             mActiveAccountObservable.addObserver(addressObservable);
         }
         if (mUTXODataObservables.get(pointer) == null) {
             final TransactionDataObservable utxoDataObservable = new TransactionDataObservable(mExecutor,
+                                                                                               mCodeResolver,
                                                                                                mAssetsDataObservable,
                                                                                                pointer, true);
             mBlockchainHeightObservable.addObserver(utxoDataObservable);
