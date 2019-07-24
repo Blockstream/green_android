@@ -35,6 +35,8 @@ class PinLoginViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         ScreenLocker.shared.stopObserving()
+        NotificationCenter.default.addObserver(self, selector: #selector(progress), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+
         content.cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in content.keyButton!.enumerated() {
@@ -54,11 +56,24 @@ class PinLoginViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         ScreenLocker.shared.startObserving()
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+
         if content == nil { return }
         content.cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in content.keyButton!.enumerated() {
             button.element.removeTarget(self, action: #selector(keyClick(sender:)), for: .touchUpInside)
+        }
+    }
+
+    @objc func progress(_ notification: NSNotification) {
+        do {
+            let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
+            let tor = try JSONDecoder().decode(Tor.self, from: json)
+            let text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
+        } catch {
+            print (error.localizedDescription)
         }
     }
 

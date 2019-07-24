@@ -25,6 +25,7 @@ class VerifyMnemonicsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(progress), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         for button in content.buttonsArray {
             button.addTarget(self, action: #selector(self.click), for: .touchUpInside)
         }
@@ -32,8 +33,20 @@ class VerifyMnemonicsViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
         for button in content.buttonsArray {
             button.removeTarget(self, action: #selector(self.click), for: .touchUpInside)
+        }
+    }
+
+    @objc func progress(_ notification: NSNotification) {
+        do {
+            let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
+            let tor = try JSONDecoder().decode(Tor.self, from: json)
+            let text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
+        } catch {
+            print (error.localizedDescription)
         }
     }
 

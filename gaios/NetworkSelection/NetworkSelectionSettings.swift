@@ -49,8 +49,6 @@ class NetworkSelectionSettings: UITableViewController {
         var errorMessage = ""
         if content.proxySwitch.isOn && ( socks5Hostname.isEmpty || socks5Port.isEmpty ) {
             errorMessage = NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: "")
-        } else if content.torSwitch.isOn && !content.proxySwitch.isOn {
-            errorMessage = NSLocalizedString("id_please_set_and_enable_socks5", comment: "")
         } else {
             // save network setup
             UserDefaults.standard.set(["network": selectedNetwork, "proxy": content.proxySwitch.isOn, "tor": content.torSwitch.isOn, "socks5_hostname": socks5Hostname, "socks5_port": socks5Port], forKey: "network_settings")

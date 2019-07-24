@@ -10,6 +10,7 @@ enum EventType: String {
     case AddressChanged = "address_changed"
     case Network = "network"
     case SystemMessage = "system_message"
+    case Tor = "tor"
 }
 
 struct Connection: Codable {
@@ -29,6 +30,17 @@ struct Connection: Codable {
     let limit: Bool?
 }
 
+struct Tor: Codable {
+    enum CodingKeys: String, CodingKey {
+        case tag
+        case summary
+        case progress
+    }
+    let tag: String
+    let summary: String
+    let progress: UInt32
+}
+
 class GreenAddressService {
 
     private var session: Session?
@@ -40,7 +52,9 @@ class GreenAddressService {
     var isWatchOnly: Bool = false
 
     public init() {
-        try! gdkInit(config: [:])
+        let url = try! FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true)
+        try? FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
+        try! gdkInit(config: ["datadir": url.path])
         session = try! Session(notificationCompletionHandler: newNotification)
     }
 
@@ -126,6 +140,8 @@ class GreenAddressService {
                     post(event: EventType.Network, data: data)
                 }
             } catch { break }
+        case .Tor:
+            post(event: .Tor, data: data)
         default:
             break
         }
