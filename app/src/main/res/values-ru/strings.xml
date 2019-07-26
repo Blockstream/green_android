@@ -15,11 +15,12 @@
   <string name="id_accept">ПРИНЯТЬ</string>
   <string name="id_account">АККАУНТ</string>
   <string name="id_action_canceled">Действие отменено</string>
-  <string name="id_add_a_note">Добавить заметку...</string>
+  <string name="id_add_a_note_only_you_can_see_it">Add a note (only you can see it).</string>
   <string name="id_add_amount">Добавить сумму</string>
   <string name="id_add_custom_network_by_qr_code">Добавить новую сеть с помощью QR-кода</string>
   <string name="id_add_custom_network_by_url">Добавить новую сеть, используя URL</string>
   <string name="id_add_new_account">Добавить новый аккаунт</string>
+  <string name="id_add_simple_account">Add Simple Account</string>
   <string name="id_add_wallet">Добавить Кошелек</string>
   <string name="id_additional_security">Дополнительная безопасность</string>
   <string name="id_address">Адрес</string>
@@ -151,6 +152,7 @@
   <string name="id_fee_rate_s">Комиссия: %s</string>
   <string name="id_fee_s__s">Комиссия всего: %s/%s</string>
   <string name="id_from">ОТ</string>
+  <string name="id_funds_received_in_this">Funds received in this transaction are not confidential.</string>
   <string name="id_generate_new_address">Сгенерировать новый адрес</string>
   <string name="id_get_code">Получить код</string>
   <string name="id_go_to_wallet">Перейти к кошельку</string>
@@ -248,6 +250,7 @@
   <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
   <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
   <string name="id_no_utxos_found">UTXO не обнаружен</string>
+  <string name="id_nonconfidential_addresses_not">Non-confidential addresses not supported</string>
   <string name="id_normal">Нормальный</string>
   <string name="id_not_connected_connecting_in_ds_">Нет соединения. Соединение произойдет через%d сек...</string>
   <string name="id_notifications">Уведомления</string>
@@ -361,6 +364,7 @@
   <string name="id_share_address">Поделиться адресом</string>
   <string name="id_show_fiat">Показать фиат</string>
   <string name="id_signup_in_progress">Регистрация продолжается</string>
+  <string name="id_simple_accounts_allow_you_to">Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_simplified_payment_verification">Упрощенная верификация платежей SPV проверяет ваши транзакции и баланс, используя сеть Биткоин, за пределами Green-серверов. Включение повышает системные требования к пропускной способности и обработке.</string>
   <string name="id_skip">ПРОПУСТИТЬ</string>
   <string name="id_skip_not_recommended">Пропустить (не рекоменлуется)</string>
@@ -395,7 +399,9 @@
   <string name="id_the_network_selected_on_the">The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
   <string name="id_the_password_cant_be_empty">Поле пароля не может быть пустым</string>
   <string name="id_the_recovery_key_below_will_not">Ключ восстановления больше не будет показан. Сделайте резервное копирование для того, чтобы всегда иметь доступ к своим средствам.</string>
+  <string name="id_the_transaction_contains">The transaction contains non-confidential funds.</string>
   <string name="id_there_is_already_a_pin_set_for">PIN-код установлен для %sкошелька.  В дальнейшем вы не сможете устанавливать PIN-код и логин, для входа потребуется мнемоническая фраза из 24 слов. Вы можете отключить PIN-код удалением его в настройках или 3-кратным ошибочным введением.</string>
+  <string name="id_this_transaction_spent">This transaction spent non-confidential funds.</string>
   <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Время:%s</string>
   <string name="id_to">ДО</string>
@@ -451,7 +457,7 @@
   <string name="id_we_use_the_camera_to_scan_qr">Мы используем камеру для сканирования QR-кодов</string>
   <string name="id_welcome">Приветствуем вас!</string>
   <string name="id_welcome_to">Добро пожаловать в</string>
-  <string name="id_where_would_you_like_to_import">Where would you like to import the funds?</string>
+  <string name="id_where_would_you_like_to">Where would you like to transfer the funds?</string>
   <string name="id_word_d_of_d">Слово %d из %d</string>
   <string name="id_write_down_the_words">Запишите слова</string>
   <string name="id_write_down_your_mnemonic_on">Запишите свою мнемоническую фразу на бумаге и храните ее в безопасном месте.</string>

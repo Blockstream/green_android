@@ -15,11 +15,12 @@
   <string name="id_accept">承諾</string>
   <string name="id_account">アカウント</string>
   <string name="id_action_canceled">キャンセルされました</string>
-  <string name="id_add_a_note">メモ</string>
+  <string name="id_add_a_note_only_you_can_see_it">Add a note (only you can see it).</string>
   <string name="id_add_amount">額を入力</string>
   <string name="id_add_custom_network_by_qr_code">QRコードでカスタムネットワークを追加する</string>
   <string name="id_add_custom_network_by_url">URLでカスタムネットワークを登録する</string>
   <string name="id_add_new_account">新規アカウントの追加</string>
+  <string name="id_add_simple_account">Add Simple Account</string>
   <string name="id_add_wallet">ウォレットを登録する</string>
   <string name="id_additional_security">セキュリティ対策の追加</string>
   <string name="id_address">アドレス</string>
@@ -151,6 +152,7 @@
   <string name="id_fee_rate_s">手数料率: %s</string>
   <string name="id_fee_s__s">手数料: %s / %s</string>
   <string name="id_from">送信者</string>
+  <string name="id_funds_received_in_this">Funds received in this transaction are not confidential.</string>
   <string name="id_generate_new_address">新しいアドレスを生成する</string>
   <string name="id_get_code">コードを貰う</string>
   <string name="id_go_to_wallet">ウォレットを確認</string>
@@ -248,6 +250,7 @@
   <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
   <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
   <string name="id_no_utxos_found">UTXOが見つかりません</string>
+  <string name="id_nonconfidential_addresses_not">Non-confidential addresses not supported</string>
   <string name="id_normal">正常</string>
   <string name="id_not_connected_connecting_in_ds_">接続が切れました。接続中…%d秒</string>
   <string name="id_notifications">告知事項</string>
@@ -361,6 +364,7 @@
   <string name="id_share_address">シェア・アドレス</string>
   <string name="id_show_fiat">法廷通貨表示</string>
   <string name="id_signup_in_progress">登録中です</string>
+  <string name="id_simple_accounts_allow_you_to">Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_simplified_payment_verification">Simplified Payment VerificationはGreenのサーバーではなくビットコインネットワークから貴方のトランザクションと残高を検証します。有効にする場合、帯域幅とプロセッシングの必要条件が高くなります。</string>
   <string name="id_skip">スキップ</string>
   <string name="id_skip_not_recommended">スキップ(推薦しません)</string>
@@ -395,7 +399,9 @@
   <string name="id_the_network_selected_on_the">The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
   <string name="id_the_password_cant_be_empty">パスワードが空欄です</string>
   <string name="id_the_recovery_key_below_will_not">下の復元キーは二度とご覧になられません。資金のアクセスの為にバックアップをお願いします。</string>
+  <string name="id_the_transaction_contains">The transaction contains non-confidential funds.</string>
   <string name="id_there_is_already_a_pin_set_for">%sウォレットには既にPINが設定されています。続ける場合、PINの設定は不可能でありログインするには24個のmnemonic単語が必要です。PINの無効化は設定、または、ログインを3回失敗した場合できます。</string>
+  <string name="id_this_transaction_spent">This transaction spent non-confidential funds.</string>
   <string name="id_ticker">Ticker</string>
   <string name="id_time_s">時間: %s</string>
   <string name="id_to">送り先</string>
@@ -451,7 +457,7 @@
   <string name="id_we_use_the_camera_to_scan_qr">カメラでQRコードをスキャンします。</string>
   <string name="id_welcome">ようこそ</string>
   <string name="id_welcome_to">ようこそ</string>
-  <string name="id_where_would_you_like_to_import">Where would you like to import the funds?</string>
+  <string name="id_where_would_you_like_to">Where would you like to transfer the funds?</string>
   <string name="id_word_d_of_d">単語 %d の %d</string>
   <string name="id_write_down_the_words">単語を書き下ろして下さい。</string>
   <string name="id_write_down_your_mnemonic_on">Mnemonic単語を別の紙に書き下ろして下さい。</string>

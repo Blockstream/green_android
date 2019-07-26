@@ -115,11 +115,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         // Set title: incoming, outgoing, redeposited
         final String title;
         if (mTxItem.type == TransactionItem.TYPE.OUT)
-            title = getString(R.string.id_outgoing);
+            title = getString(R.string.id_sent);
         else if (mTxItem.type == TransactionItem.TYPE.REDEPOSIT)
             title = getString(R.string.id_redeposited);
         else
-            title = getString(R.string.id_received_on);
+            title = getString(R.string.id_received);
         setTitle(title);
 
 

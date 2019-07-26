@@ -15,11 +15,12 @@
   <string name="id_accept">ACCEPTER</string>
   <string name="id_account">COMPTE</string>
   <string name="id_action_canceled">Action annulée</string>
-  <string name="id_add_a_note">Ajouter une note</string>
+  <string name="id_add_a_note_only_you_can_see_it">Add a note (only you can see it).</string>
   <string name="id_add_amount">Ajouter un montant</string>
   <string name="id_add_custom_network_by_qr_code">Ajouter un réseau à partir d\'un QR Code</string>
   <string name="id_add_custom_network_by_url">Ajouter un réseau à partir d\'une URL</string>
   <string name="id_add_new_account">Ajouter un nouveau compte</string>
+  <string name="id_add_simple_account">Add Simple Account</string>
   <string name="id_add_wallet">Ajouter un portefeuille</string>
   <string name="id_additional_security">Sécurité Supplémentaire</string>
   <string name="id_address">Adresses</string>
@@ -151,6 +152,7 @@
   <string name="id_fee_rate_s">Taux de frais : %s</string>
   <string name="id_fee_s__s">Frais : %s / %s</string>
   <string name="id_from">DE</string>
+  <string name="id_funds_received_in_this">Funds received in this transaction are not confidential.</string>
   <string name="id_generate_new_address">Générer une nouvelle adresse</string>
   <string name="id_get_code">Obtenir le code</string>
   <string name="id_go_to_wallet">Aller au portefeuille</string>
@@ -248,6 +250,7 @@
   <string name="id_no_registered_name_for_this">No registered name for this asset.</string>
   <string name="id_no_registered_ticker_for_this">No registered ticker for this asset.</string>
   <string name="id_no_utxos_found">Pas d\'UTXO trouvés</string>
+  <string name="id_nonconfidential_addresses_not">Non-confidential addresses not supported</string>
   <string name="id_normal">Normal</string>
   <string name="id_not_connected_connecting_in_ds_">Non connecté. Connexion dans %d s...</string>
   <string name="id_notifications">Notifications</string>
@@ -361,6 +364,7 @@
   <string name="id_share_address">Partager l\'adresse</string>
   <string name="id_show_fiat">Montrer FIAT</string>
   <string name="id_signup_in_progress">Inscription en cours</string>
+  <string name="id_simple_accounts_allow_you_to">Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_simplified_payment_verification">\nLa vérification de paiement simplifiée (SPV) vérifie vos transactions et votre solde en utilisant le réseau Bitcoin, en dehors des serveurs de Green. L\'activer augmente les besoins en bande passante et en puissance de calcul.</string>
   <string name="id_skip">PASSER</string>
   <string name="id_skip_not_recommended">Passer (non recommandé)</string>
@@ -395,7 +399,9 @@
   <string name="id_the_network_selected_on_the">The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.</string>
   <string name="id_the_password_cant_be_empty">Le mot de passe ne peut pas être vide</string>
   <string name="id_the_recovery_key_below_will_not">La clé de récupération ci-dessous ne sera plus affichée. Veuillez en faire une copie de sauvegarde dès maintenant pour garantir l\'accès permanent à vos fonds.</string>
+  <string name="id_the_transaction_contains">The transaction contains non-confidential funds.</string>
   <string name="id_there_is_already_a_pin_set_for">Un code PIN est déjà défini pour un portefeuille %s. Poursuivre ne permettra pas de redéfinir un code PIN, la connexion nécessitera le code mnémonique de 24 mots. Vous pouvez désactiver le code PIN à partir des paramètres ou après 3 tentatives infructueuses.</string>
+  <string name="id_this_transaction_spent">This transaction spent non-confidential funds.</string>
   <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Temps %s</string>
   <string name="id_to">À</string>
@@ -451,7 +457,7 @@
   <string name="id_we_use_the_camera_to_scan_qr">Nous utilisons l\'appareil photo pour scanner les codes QR</string>
   <string name="id_welcome">Bienvenue</string>
   <string name="id_welcome_to">Bienvenue sur</string>
-  <string name="id_where_would_you_like_to_import">Where would you like to import the funds?</string>
+  <string name="id_where_would_you_like_to">Where would you like to transfer the funds?</string>
   <string name="id_word_d_of_d">Mot %d de %d</string>
   <string name="id_write_down_the_words">Écrivez les mots</string>
   <string name="id_write_down_your_mnemonic_on">Notez votre code mnémonique sur une feuille de papier et rangez-le dans un endroit sûr.</string>
