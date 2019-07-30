@@ -25,15 +25,15 @@ class AssetTableCell: UITableViewCell {
     func configure(tag: String, asset: AssetInfo?, satoshi: UInt64, negative: Bool = false) {
         let assetInfo = asset ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
         let details = ["satoshi": satoshi, "asset_info": assetInfo.encode()!] as [String: Any]
-        let (amount, _) = Balance.convert(details: details)!.get(tag: tag)
-        configure(tag: tag, asset: assetInfo, amount: amount, negative: negative)
+        let (amount, denom) = Balance.convert(details: details)!.get(tag: tag)
+        configure(tag: tag, asset: assetInfo, amount: amount, denom: denom, negative: negative)
     }
 
-    func configure(tag: String, asset: AssetInfo, amount: String, negative: Bool) {
+    func configure(tag: String, asset: AssetInfo, amount: String, denom: String, negative: Bool) {
         configure()
         headerLabel.isHidden = true
         let isBtc = tag == "btc"
-        let ticker = isBtc ? "L-BTC" : asset.ticker ?? ""
+        let ticker = isBtc ? denom : asset.ticker ?? ""
         nameLabel.text = isBtc ? "L-BTC" : asset.name
         amountTickerLabel.text = "\(negative ? "-": "")\(amount) \(ticker)"
         domainLabel.text = asset.entity?.domain ?? ""
