@@ -20,6 +20,7 @@ class AssetsListTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = NSLocalizedString("id_select_asset", comment: "")
         let nib = UINib(nibName: "AssetTableCell", bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: "cell")
         tableView.tableFooterView = UIView()
