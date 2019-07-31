@@ -462,9 +462,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
+        BalanceData balance = mAssetsBalances.get(mTxItem.assetId);
         intent.putExtra("ASSET_ID", assetId)
-        .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
-        .putExtra("SATOSHI", mAssetsBalances.get(assetId).getSatoshi());
+        .putExtra("ASSET_INFO", mTxItem.assetInfo)
+        .putExtra("SATOSHI", balance != null ? balance.getSatoshi() : 0L);
         startActivity(intent);
     }
 }
