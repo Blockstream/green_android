@@ -23,6 +23,7 @@ public class BalanceData extends JSONData implements Serializable {
     private String fiatRate;
     private String mbtc;
     private String ubtc;
+    private String sats;
     private Long satoshi;
     private AssetInfoData assetInfo;
 
@@ -94,6 +95,10 @@ public class BalanceData extends JSONData implements Serializable {
     public void setUbtc(final String ubtc) {
         this.ubtc = ubtc;
     }
+
+    public String getSats() {return sats; }
+
+    public void setSats(final String sats) { this.sats = sats; }
 
     public Long getSatoshi() {
         return satoshi;

@@ -57,8 +57,8 @@ public abstract class UI {
     private static final String TAG = UI.class.getSimpleName();
 
     static final int INVALID_RESOURCE_ID = 0;
-    public static final String[] UNITS = {"BTC", "mBTC", "\u00B5BTC", "bits"};
-    public static final String[] LIQUID_UNITS = {"L-BTC", "mL-BTC", "\u00B5L-BTC"};
+    public static final String[] UNITS = {"BTC", "mBTC", "\u00B5BTC", "bits", "sats"};
+    public static final String[] LIQUID_UNITS = {"L-BTC", "L-mBTC", "L-\u00B5BTC", "L-bits", "L-sats"};
 
     private static Function<String, String> toUnitKeyFunc = new Function<String, String>() {
         @NullableDecl

@@ -187,11 +187,6 @@ public class GaService extends Service  {
         int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey()), 0);
 
         if (isLiquid()) {
-            if (index >= UI.LIQUID_UNITS.length) {
-                // if another client set bits on the liquid network (which should not be supported)
-                // we default to L-BTC, avoiding IndexOutOfBounds
-                index = 0;
-            }
             return UI.LIQUID_UNITS[index];
         } else {
             return UI.UNITS[index];
