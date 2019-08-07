@@ -429,7 +429,7 @@ extension SettingsViewController {
     }
 
     func showBitcoinDenomination() {
-        var list = [DenominationType.BTC.string, DenominationType.MilliBTC.string, DenominationType.MicroBTC.string]
+        var list = [DenominationType.BTC.string, DenominationType.MilliBTC.string, DenominationType.MicroBTC.string, DenominationType.Sats.string]
         if !isLiquid {
             list.append(DenominationType.Bits.string)
         }

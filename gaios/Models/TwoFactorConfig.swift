@@ -32,6 +32,7 @@ struct TwoFactorConfigLimits: Codable {
         case bits = "bits"
         case mbtc = "mbtc"
         case ubtc = "ubtc"
+        case sats = "sats"
     }
     let isFiat: Bool
     let fiat: String
@@ -39,6 +40,7 @@ struct TwoFactorConfigLimits: Codable {
     let bits: String
     let mbtc: String
     let ubtc: String
+    let sats: String
 
     func get<T>(_ key: CodingKeys) -> T? {
         let value = Mirror(reflecting: self).children.filter { $0.label == key.rawValue }.map { return $0.value as? T }

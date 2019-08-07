@@ -74,9 +74,10 @@ public enum DenominationType: String, CodingKey {
     case MilliBTC = "mbtc"
     case MicroBTC = "ubtc"
     case Bits = "bits"
+    case Sats = "sats"
 
-    static let denominationsBTC: [DenominationType: String] = [ .BTC: "BTC", .MilliBTC: "mBTC", .MicroBTC: "µBTC", .Bits: "bits"]
-    static let denominationsLBTC: [DenominationType: String] = [ .BTC: "L-BTC", .MilliBTC: "mL-BTC", .MicroBTC: "µL-BTC", .Bits: "L-bits"]
+    static let denominationsBTC: [DenominationType: String] = [ .BTC: "BTC", .MilliBTC: "mBTC", .MicroBTC: "µBTC", .Bits: "bits", .Sats: "sats"]
+    static let denominationsLBTC: [DenominationType: String] = [ .BTC: "L-BTC", .MilliBTC: "mL-BTC", .MicroBTC: "µL-BTC", .Bits: "L-bits", .Sats: "L-sats"]
 
     var string: String {
         let isLiquid = getGdkNetwork(getNetwork()).liquid
