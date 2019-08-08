@@ -57,25 +57,16 @@
         <!--Initial View Controller-->
         <scene sceneID="9Y1-6R-Bdc">
             <objects>
-                <viewController title="Initial View Controller" id="4ce-3b-8z0" customClass="InitialViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="all" sceneMemberID="viewController">
+                <viewController title="Initial View Controller" id="4ce-3b-8z0" customClass="InitialViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="soW-Tu-XRH" customClass="InitialView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="7hx-b0-XCa"/>
                     </view>
-                    <navigationItem key="navigationItem" id="r6N-ze-unT" propertyAccessControl="all">
-                        <barButtonItem key="backBarButtonItem" title=" " id="eop-z3-13f"/>
-                        <barButtonItem key="rightBarButtonItem" image="watch_only_v2" id="KmY-Ea-Vkz">
-                            <color key="tintColor" name="customTitaniumLight"/>
-                            <connections>
-                                <action selector="watchButtonClicked:" destination="4ce-3b-8z0" id="ECY-jl-5Wr"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="r6N-ze-unT"/>
                     <connections>
                         <outlet property="content" destination="soW-Tu-XRH" id="K8A-TV-iVr"/>
-                        <outlet property="watchOnlyButton" destination="KmY-Ea-Vkz" id="Gc9-hx-lmk"/>
                         <segue destination="o6l-5o-Ocm" kind="push" identifier="enterMnemonic" id="XPe-Xy-Qrf"/>
                         <segue destination="0c7-Wv-kP2" kind="modal" identifier="watchonly" id="FTn-9c-Qc3"/>
                         <segue destination="rMM-Df-D90" kind="push" identifier="pin" id="QEt-l0-XBh"/>
@@ -429,7 +420,6 @@
         <image name="logo_big" width="90" height="110"/>
         <image name="network_selected" width="18" height="18"/>
         <image name="qr" width="25" height="25"/>
-        <image name="watch_only_v2" width="48" height="48"/>
         <namedColor name="customModalBlueDark">
             <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -441,6 +431,6 @@
         </namedColor>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Onv-2S-vYj"/>
+        <segue reference="QEt-l0-XBh"/>
     </inferredMetricsTieBreakers>
 </document>

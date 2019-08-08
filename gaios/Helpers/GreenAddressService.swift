@@ -35,7 +35,7 @@ class GreenAddressService {
     private var settings: Settings?
     private var twoFactorReset: TwoFactorReset?
     private var events = [Event]()
-    static var restoreFromMnemonics = false
+    static var isTemporary = false
     var blockHeight: UInt32 = 0
     var isWatchOnly: Bool = false
 
@@ -50,6 +50,7 @@ class GreenAddressService {
         events = [Event]()
         blockHeight = 0
         isWatchOnly = false
+        GreenAddressService.isTemporary = false
     }
 
     func getSession() -> Session {

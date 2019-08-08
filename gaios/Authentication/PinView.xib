@@ -16,7 +16,6 @@
                 <outlet property="attempts" destination="MLg-nQ-uKb" id="Vfd-yf-yON"/>
                 <outlet property="cancelButton" destination="Xd3-9Y-iSc" id="q5e-xL-ohF"/>
                 <outlet property="deleteButton" destination="epD-8Y-3Ov" id="O54-qQ-cip"/>
-                <outlet property="skipButton" destination="3C1-6L-lV6" id="r1Z-7c-O35"/>
                 <outlet property="title" destination="CuH-Ql-ZF0" id="q1c-us-uom"/>
                 <outletCollection property="pinLabel" destination="ceX-yT-Zxl" collectionClass="NSMutableArray" id="gpF-qQ-oOS"/>
                 <outletCollection property="pinLabel" destination="buK-9b-oOi" collectionClass="NSMutableArray" id="Pc2-sD-tDv"/>
@@ -156,12 +155,6 @@
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3C1-6L-lV6">
-                    <rect key="frame" x="172.5" y="348" width="30" height="30"/>
-                    <state key="normal" title="Skip">
-                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    </state>
-                </button>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="olw-Wu-vjb" userLabel="Stack View Column">
                     <rect key="frame" x="0.0" y="407" width="375" height="240"/>
                     <subviews>
@@ -315,7 +308,6 @@
                 <constraint firstItem="MLg-nQ-uKb" firstAttribute="centerX" secondItem="wc8-LQ-8sz" secondAttribute="centerX" id="9St-M0-m5X"/>
                 <constraint firstItem="ydf-Bg-MF5" firstAttribute="centerY" secondItem="vI1-Oq-ikB" secondAttribute="centerY" id="9Xd-az-u4m"/>
                 <constraint firstItem="2gG-Wo-XLD" firstAttribute="bottom" secondItem="olw-Wu-vjb" secondAttribute="bottom" constant="20" id="9nI-TM-yAn"/>
-                <constraint firstItem="3C1-6L-lV6" firstAttribute="centerX" secondItem="2gG-Wo-XLD" secondAttribute="centerX" id="ACl-Pg-3oG"/>
                 <constraint firstItem="hGa-Vr-h1w" firstAttribute="leading" secondItem="j5W-1e-Qfg" secondAttribute="trailing" constant="16" id="Au5-cJ-ipM"/>
                 <constraint firstItem="2gG-Wo-XLD" firstAttribute="trailing" secondItem="CuH-Ql-ZF0" secondAttribute="trailing" constant="16" id="Ifq-6j-9lV"/>
                 <constraint firstItem="CuH-Ql-ZF0" firstAttribute="centerX" secondItem="wc8-LQ-8sz" secondAttribute="centerX" id="JYE-bm-OLF"/>
@@ -327,7 +319,6 @@
                 <constraint firstItem="ynJ-Df-nsW" firstAttribute="centerY" secondItem="ceX-yT-Zxl" secondAttribute="centerY" id="Rcu-Fh-rdm"/>
                 <constraint firstItem="2gG-Wo-XLD" firstAttribute="trailing" secondItem="GSb-8e-XQJ" secondAttribute="trailing" id="TVx-Nc-MEU"/>
                 <constraint firstItem="GSb-8e-XQJ" firstAttribute="leading" secondItem="2gG-Wo-XLD" secondAttribute="leading" id="Whi-XJ-EM7"/>
-                <constraint firstItem="GSb-8e-XQJ" firstAttribute="top" secondItem="3C1-6L-lV6" secondAttribute="bottom" constant="8" id="WpK-e9-L1r"/>
                 <constraint firstItem="olw-Wu-vjb" firstAttribute="top" secondItem="GSb-8e-XQJ" secondAttribute="bottom" constant="20" id="XIY-fg-Kdt"/>
                 <constraint firstItem="qhx-dm-cV5" firstAttribute="centerY" secondItem="ceX-yT-Zxl" secondAttribute="centerY" id="YTl-YL-BYf"/>
                 <constraint firstItem="2gG-Wo-XLD" firstAttribute="trailing" secondItem="olw-Wu-vjb" secondAttribute="trailing" id="aOu-xn-A6O"/>

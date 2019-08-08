@@ -15,6 +15,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
     var suggestions: KeyboardSuggestions?
     var mnemonic = [String](repeating: String(), count: 27)
     var qrCodeReader: QRCodeReaderView?
+    var isTemporary = false
     var isScannerVisible = false
     var isPasswordProtected = false {
         willSet {
@@ -152,8 +153,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            if isPinEnabled(network: getNetwork()) {
-                GreenAddressService.restoreFromMnemonics = true
+            if self.isTemporary {
+                GreenAddressService.isTemporary = true
                 appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
             } else {
                 self.performSegue(withIdentifier: "next", sender: self)

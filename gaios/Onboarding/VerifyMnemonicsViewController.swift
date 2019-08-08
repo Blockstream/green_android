@@ -89,12 +89,7 @@ class VerifyMnemonicsViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            if isPinEnabled(network: getNetwork()) {
-                GreenAddressService.restoreFromMnemonics = true
-                appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
-            } else {
-                self.performSegue(withIdentifier: "next", sender: self)
-            }
+            self.performSegue(withIdentifier: "next", sender: self)
         }.catch { error in
             let message: String
             if let err = error as? GaError, err != GaError.GenericError {

@@ -30,7 +30,6 @@ class PinLoginViewController: UIViewController {
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))
         content.title.text = NSLocalizedString("id_enter_pin", comment: "")
-        content.skipButton.isHidden = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -38,7 +37,6 @@ class PinLoginViewController: UIViewController {
         ScreenLocker.shared.stopObserving()
         content.cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
-        content.skipButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in content.keyButton!.enumerated() {
             button.element.addTarget(self, action: #selector(keyClick(sender:)), for: .touchUpInside)
         }
@@ -60,7 +58,6 @@ class PinLoginViewController: UIViewController {
         if content == nil { return }
         content.cancelButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
-        content.skipButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in content.keyButton!.enumerated() {
             button.element.removeTarget(self, action: #selector(keyClick(sender:)), for: .touchUpInside)
         }
@@ -88,7 +85,6 @@ class PinLoginViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done {
-            GreenAddressService.restoreFromMnemonics = false
             self.pinAttemptsPreference = 0
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in

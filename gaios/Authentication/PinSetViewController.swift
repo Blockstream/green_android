@@ -21,14 +21,12 @@ class PinSetViewController: UIViewController {
         navigationItem.setHidesBackButton(true, animated: false)
         content.cancelButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         content.deleteButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
-        content.skipButton.addTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in content.keyButton!.enumerated() {
             button.element.addTarget(self, action: #selector(keyClick(sender:)), for: .touchUpInside)
         }
         content.title.text = NSLocalizedString("id_create_a_pin_to_access_your", comment: "")
         content.attempts.text = NSLocalizedString("id_pins_do_not_match_please_try", comment: "")
         content.attempts.isHidden = true
-        content.skipButton.isHidden = false
         content.reload()
         reload()
     }
@@ -52,13 +50,6 @@ class PinSetViewController: UIViewController {
         } else if sender == content.cancelButton {
             pinCode = ""
             reload()
-        } else if sender == content.skipButton {
-            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("id_you_will_need_to_reenter_your", comment: ""), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
-                self.segue()
-            })
-            self.present(alert, animated: true, completion: nil)
         }
     }
 
@@ -80,7 +71,6 @@ class PinSetViewController: UIViewController {
         } else if pinConfirm.isEmpty {
             // switch from pin to confirm pin
             content.title.text = NSLocalizedString("id_verify_your_pin", comment: "")
-            content.skipButton.isHidden = true
             content.attempts.isHidden = true
             pinConfirm = pinCode
             pinCode = ""
@@ -88,7 +78,6 @@ class PinSetViewController: UIViewController {
         } else if pinConfirm != pinCode {
             // pin mismatch
             content.title.text = NSLocalizedString("id_set_a_new_pin", comment: "")
-            content.skipButton.isHidden = true
             content.attempts.isHidden = false
             pinCode = ""
             pinConfirm = ""

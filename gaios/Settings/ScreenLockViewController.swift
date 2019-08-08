@@ -37,7 +37,7 @@ class ScreenLockViewController: UIViewController {
     func updateValues() {
         content.helpLabel.text = ""
         let screenlock = getGAService().getSettings()!.getScreenLock()
-        if GreenAddressService.restoreFromMnemonics && isPinEnabled(network: getNetwork()) {
+        if GreenAddressService.isTemporary {
             content.bioSwitch.isOn = false
             content.bioSwitch.isEnabled = false
             content.pinSwitch.isOn = false

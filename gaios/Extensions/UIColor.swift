@@ -31,7 +31,7 @@ extension UIColor {
     }
 
     class func customModalDark() -> UIColor {
-        return UIColor(named: "customModalDark")!
+        return UIColor(named: "customModalBlueDark")!
     }
 
     class func customModalMedium() -> UIColor {

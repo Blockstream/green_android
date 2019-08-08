@@ -5,7 +5,6 @@ import PromiseKit
 @IBDesignable
 class PinView: UIView {
     @IBOutlet weak var attempts: UILabel!
-    @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet var keyButton: [UIButton]?
@@ -33,7 +32,6 @@ class PinView: UIView {
     }
 
     func reload() {
-        skipButton.setTitle(NSLocalizedString("id_skip", comment: ""), for: .normal)
         cancelButton.setTitle(NSLocalizedString("id_clear", comment: "").uppercased(), for: .normal)
         deleteButton.contentMode = .center
         deleteButton.imageView?.contentMode = .scaleAspectFill
