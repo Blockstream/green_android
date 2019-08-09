@@ -77,7 +77,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             // No hardware wallet, jump to PIN or mnemonic entry
             if (mService == null)
-                startActivity(new Intent(this, PinActivity.class));
+                startActivity(new Intent(this, FirstScreenActivity.class));
             else if (mService.cfgPin().getString("ident", null) != null)
                 startActivity(new Intent(this, PinActivity.class));
             else
