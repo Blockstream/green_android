@@ -131,8 +131,16 @@ struct Transaction {
         }
     }
 
+    static func sort<T>(_ dict: [String: T]) -> [(key: String, value: T)] {
+        var sorted = dict.filter { $0.key != "btc" }.sorted(by: {$0.0 < $1.0 })
+        if dict.contains(where: { $0.key == "btc" }) {
+            sorted.insert((key: "btc", value: dict["btc"]!), at: 0)
+        }
+        return Array(sorted)
+    }
+
     var defaultAsset: String {
-        return amounts.filter { $0.key != "btc" }.first?.key ?? "btc"
+        return Transaction.sort(amounts).filter { $0.key != "btc" }.first?.key ?? "btc"
     }
 
     var sendAll: Bool {

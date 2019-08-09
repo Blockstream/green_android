@@ -10,11 +10,7 @@ class AssetsListTableViewController: UITableViewController {
 
     private var assets: [(key: String, value: Balance)] {
         get {
-            var list = wallet!.balance
-            let btc = list.removeValue(forKey: "btc")
-            var sorted = list.sorted(by: {$0.0 < $1.0 })
-            sorted.insert((key: "btc", value: btc!), at: 0)
-            return Array(sorted)
+            return Transaction.sort(wallet!.balance)
         }
     }
 

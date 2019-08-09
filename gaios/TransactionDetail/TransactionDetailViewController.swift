@@ -30,27 +30,13 @@ class TransactionDetailViewController: KeyboardViewController {
 
     private var assets: [(key: String, value: AssetInfo)] {
         get {
-            guard transaction.assets.count > 0 else {return []}
-            var list = transaction.assets
-            let btc = list.removeValue(forKey: "btc")
-            var sorted = list.sorted(by: {$0.0 < $1.0 })
-            if btc != nil {
-                sorted.insert((key: "btc", value: btc!), at: 0)
-            }
-            return Array(sorted)
+            return Transaction.sort(transaction.assets)
         }
     }
 
     private var amounts: [(key: String, value: UInt64)] {
         get {
-            guard transaction.amounts.count > 0 else {return []}
-            var list = transaction.amounts
-            let btc = list.removeValue(forKey: "btc")
-            var sorted = list.sorted(by: {$0.0 < $1.0 })
-            if btc != nil {
-                sorted.insert((key: "btc", value: btc!), at: 0)
-            }
-            return Array(sorted)
+            return Transaction.sort(transaction.amounts)
         }
     }
 
