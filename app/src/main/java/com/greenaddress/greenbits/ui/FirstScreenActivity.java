@@ -34,11 +34,11 @@ public class FirstScreenActivity extends LoginActivity {
         final Button firstLogInButton = findViewById(R.id.firstLogInButton);
         firstLogInButton.setOnClickListener(v -> askConfirmation(
                                                 new Intent(this, MnemonicActivity.class),
-                                                R.string.id_green_only_supports_one_pin_for));
+                                                R.string.id_you_cannot_create_or_restore_a));
         final Button firstSignUpButton = findViewById(R.id.firstSignUpButton);
         firstSignUpButton.setOnClickListener(v -> askConfirmation(
                                                  new Intent(this, TermsActivity.class),
-                                                 R.string.id_green_only_supports_one_pin_for));
+                                                 R.string.id_you_cannot_create_or_restore_a));
 
         mSelectNetwork = UI.find(this, R.id.settingsButton);
         mSelectNetwork.setOnClickListener(v -> { startActivityForResult(new Intent(this, NetworkSettingsActivity.class),
@@ -59,9 +59,9 @@ public class FirstScreenActivity extends LoginActivity {
 
     private void askConfirmation(final Intent intent, final int message) {
         if (mService.hasPin()) {
-            UI.popup(this, R.string.id_warning)
-            .content(getString(message))
-            .onPositive((dialog, which) -> startActivity(intent)).build().show();
+            UI.popup(this, R.string.id_warning, R.string.id_ok)
+            .content(getString(message, mService.getNetwork().getName()))
+            .onPositive((dialog, which) -> {}).build().show();
         } else {
             startActivity(intent);
         }
@@ -71,7 +71,7 @@ public class FirstScreenActivity extends LoginActivity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.preauth_menu, menu);
         if (mService != null)
-            menu.findItem(R.id.watchonly_preference).setVisible(!mService.isLiquid());
+            menu.findItem(R.id.action_watchonly).setVisible(!mService.isLiquid());
         return true;
     }
 
@@ -82,8 +82,13 @@ public class FirstScreenActivity extends LoginActivity {
         // as you specify a parent activity in AndroidManifest.xml.
 
         switch (item.getItemId()) {
-        case R.id.watchonly_preference:
+        case R.id.action_watchonly:
             startActivity(new Intent(this, WatchOnlyLoginActivity.class));
+            return true;
+        case R.id.action_restore_temporary:
+            final Intent intent = new Intent(this, MnemonicActivity.class);
+            intent.putExtra(MnemonicActivity.TEMPORARY_MODE, true);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

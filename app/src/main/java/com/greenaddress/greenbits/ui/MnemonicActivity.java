@@ -44,6 +44,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     View.OnKeyListener, TextView.OnEditorActionListener {
 
     private static final String TAG = MnemonicActivity.class.getSimpleName();
+    public static final String TEMPORARY_MODE = "TEMPORANY_MODE";
 
     private static final int PINSAVE = 1337;
     private static final int QRSCANNER = 1338;
@@ -413,7 +414,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     protected void onLoginSuccess() {
         super.onLoginSuccess();
         if (getCallingActivity() == null) {
-            if (mService.hasPin()) {
+            if (getIntent().getBooleanExtra(TEMPORARY_MODE, false)) {
                 final Intent intent = new Intent(this, TabbedMainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

@@ -84,7 +84,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // PIN
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
-        if (mService.getConnectionManager().isLoginWithPin() || mService.isPinJustSaved() || !mService.hasPin()) {
+        if (mService.getConnectionManager().isLoginWithPin() || mService.isPinJustSaved()) {
             mPinPref.setChecked(mService.hasPin());
             mPinPref.setOnPreferenceClickListener(preference -> {
                 if (mService.warnIfOffline(getActivity())) {
