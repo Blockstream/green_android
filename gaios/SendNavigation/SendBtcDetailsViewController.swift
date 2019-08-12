@@ -8,7 +8,7 @@ class SendBtcDetailsViewController: UIViewController {
 
     var wallet: WalletItem?
     var transaction: Transaction!
-    var assetTag: String?
+    var assetTag: String = "btc"
 
     private var feeLabel: UILabel = UILabel()
     private var uiErrorLabel: UIErrorLabel!
@@ -16,8 +16,7 @@ class SendBtcDetailsViewController: UIViewController {
     private var txTask: TransactionTask?
 
     private var asset: AssetInfo? {
-        guard let tag = assetTag else { return nil }
-        return wallet?.balance[tag]?.assetInfo ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
+        return wallet?.balance[assetTag]?.assetInfo ?? AssetInfo(assetId: assetTag, name: assetTag, precision: 0, ticker: "")
     }
 
     private var oldFeeRate: UInt64? {
@@ -153,9 +152,8 @@ class SendBtcDetailsViewController: UIViewController {
         }
         guard let addressee = transaction.addressees.first else { return }
         guard addressee.satoshi != 0 else { return }
-        let tag = assetTag ?? "btc"
-        let details = "btc" != tag ? ["satoshi": addressee.satoshi, "asset_info": asset!.encode()!] : ["satoshi": addressee.satoshi]
-        let (amount, _) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : tag)
+        let details = "btc" != assetTag ? ["satoshi": addressee.satoshi, "asset_info": asset!.encode()!] : ["satoshi": addressee.satoshi]
+        let (amount, _) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : assetTag)
         content.amountTextField.text = amount
     }
 
@@ -170,9 +168,9 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func reloadWalletBalance() {
-        let tag = assetTag ?? "btc"
-        let details = "btc" != tag ? ["satoshi": wallet!.balance[tag]!.satoshi, "asset_info": asset!.encode()!] : ["satoshi": wallet!.balance[tag]!.satoshi]
-        let (amount, denom) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : tag)
+        let satoshi = wallet!.balance[assetTag]!.satoshi
+        let details = "btc" != assetTag ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
+        let (amount, denom) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : assetTag)
         content.maxAmountLabel.text =  "\(amount) \(denom)"
     }
 
@@ -216,10 +214,10 @@ class SendBtcDetailsViewController: UIViewController {
         amountText = amountText.replacingOccurrences(of: ",", with: ".")
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = (Double(amountText) != nil) ? amountText : "0"
-        let isBtc = assetTag ?? "btc" == "btc"
+        let isBtc = assetTag == "btc"
         let denominationBtc = getGAService().getSettings()!.denomination.rawValue
-        let key = isFiat ? "fiat" : isBtc ? denominationBtc : assetTag ?? "btc"
-        let details = !isBtc ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
+        let key = isFiat ? "fiat" : isBtc ? denominationBtc : assetTag
+        let details = "btc" != assetTag ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
         return Balance.convert(details: details)?.satoshi
     }
 
@@ -227,12 +225,6 @@ class SendBtcDetailsViewController: UIViewController {
         guard let feeEstimate = feeEstimates[selectedFee] else { return }
         transaction.sendAll = content.sendAllFundsButton.isSelected
         transaction.feeRate = feeEstimate
-
-        if isLiquid && assetTag == nil {
-            uiErrorLabel.text = NSLocalizedString("id_select_asset", comment: "")
-            uiErrorLabel.isHidden = false
-            return
-        }
 
         if !transaction.addresseesReadOnly {
             let satoshi = self.getSatoshi() ?? 0
