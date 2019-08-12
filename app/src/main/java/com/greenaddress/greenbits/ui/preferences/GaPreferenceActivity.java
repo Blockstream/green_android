@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.FirstScreenActivity;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.MnemonicActivity;
 import com.greenaddress.greenbits.ui.PinActivity;
 import com.greenaddress.greenbits.ui.UI;
@@ -86,14 +87,10 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     }
 
     protected void logout() {
-        final Intent intent = new Intent(this, FirstScreenActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        // No hardware wallet, jump to PIN or mnemonic entry
-        if (getGAApp().mService.cfgPin().getString("ident", null) != null)
-            startActivity(new Intent(this, PinActivity.class));
-        else
-            startActivity(new Intent(this, MnemonicActivity.class));
+        final Intent intent = GaActivity.createToFirstIntent(this, getGAApp().mService);
+        startActivity(intent);
     }
+
 
     public void toast(final int id) {
         UI.toast(this, id, Toast.LENGTH_LONG);

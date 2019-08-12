@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
@@ -73,15 +74,8 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     public void toFirst() {
         if (!mChangingActivity) {
             mChangingActivity = true;
-            final Intent intent = new Intent(this, FirstScreenActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            // No hardware wallet, jump to PIN or mnemonic entry
-            if (mService == null)
-                startActivity(new Intent(this, FirstScreenActivity.class));
-            else if (mService.cfgPin().getString("ident", null) != null)
-                startActivity(new Intent(this, PinActivity.class));
-            else
-                startActivity(new Intent(this, FirstScreenActivity.class));
+            final Intent intent = GaActivity.createToFirstIntent(this, mService);
+            startActivity(intent);
             finishOnUiThread();
         }
     }

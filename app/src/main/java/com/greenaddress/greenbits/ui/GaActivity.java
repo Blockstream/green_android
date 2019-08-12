@@ -299,4 +299,15 @@ public abstract class GaActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    static public Intent createToFirstIntent(final Context ctx, final GaService service) {
+        final Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        // No hardware wallet, jump to PIN or 1st entry
+        if (service != null && service.hasPin())
+            intent.setClass(ctx, PinActivity.class);
+        else
+            intent.setClass(ctx, FirstScreenActivity.class);
+        return intent;
+    }
 }

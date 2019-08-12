@@ -326,11 +326,12 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
             return;
         }
 
-        // No hardware wallet, jump to PIN or mnemonic entry
-        if (mService.cfgPin().getString("ident", null) != null)
+        // No hardware wallet, jump to PIN or 1st screen entry
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        if (mService != null && mService.hasPin())
             startActivityForResult(new Intent(this, PinActivity.class), 0);
         else
-            startActivityForResult(new Intent(this, MnemonicActivity.class), 0);
+            startActivityForResult(new Intent(this, FirstScreenActivity.class), 0);
     }
 
     private void showInstructions(final int resId) {
