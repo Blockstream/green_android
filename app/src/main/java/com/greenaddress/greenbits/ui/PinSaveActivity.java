@@ -28,7 +28,6 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
 
     static public Intent createIntent(final Context ctx, final String mnemonic) {
         final Intent intent = new Intent(ctx, PinSaveActivity.class);
-        intent.putExtra("skip_visible", true);
         intent.putExtra(NEW_PIN_MNEMONIC, mnemonic);
         return intent;
     }
@@ -110,9 +109,6 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         mTitleText = UI.find(this, R.id.name);
 
         mPinFragment = new PinFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putBoolean("skip_visible", getIntent().getBooleanExtra("skip_visible", false));
-        mPinFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
         .add(R.id.fragment_container, mPinFragment).commit();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -137,9 +133,6 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
     private void onSaveNonNativePin() {
         mTitleText.setText(R.string.id_verify_your_pin);
         mPinFragmentVerify = new PinFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putBoolean("skip_visible", false);
-        mPinFragmentVerify.setArguments(bundle);
         if (mNativeAuthCB != null)
             mNativeAuthCB.setVisibility(View.INVISIBLE);
         getSupportFragmentManager().beginTransaction()

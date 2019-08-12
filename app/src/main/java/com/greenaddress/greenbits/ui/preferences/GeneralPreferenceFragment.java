@@ -103,7 +103,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                     }).show();
                 } else {
                     final Intent savePin = PinSaveActivity.createIntent(getActivity(), mService.getMnemonic());
-                    savePin.putExtra("skip_visible", false);
                     startActivityForResult(savePin, PINSAVE);
                 }
                 return false;

@@ -22,15 +22,10 @@
         app:digitTextColor="@color/textColor"
         app:pinAccentColor="@color/textColor" />
 
-    <TextView
-        android:id="@+id/skipButton"
+    <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:gravity="center"
-        android:layout_weight="1"
-        android:textSize="16sp"
-        android:textColor="?attr/colorAccent"
-        android:text="@string/id_skip"/>
+        android:layout_weight="1"/>
 
     <android.inputmethodservice.KeyboardView
         android:id="@+id/keyboardView"

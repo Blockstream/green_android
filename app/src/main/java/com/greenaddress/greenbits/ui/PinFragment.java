@@ -23,9 +23,6 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
     private PinEntryView mPinEntryView;
     private TextView mPinLongText;
     private CircularButton mPinButton;
-    private TextView mSkipText;
-    private MaterialDialog mSkipDialog;
-    private final Runnable mDialogCB = () -> mSkipDialog = null;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -55,11 +52,6 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
             mPinButton = UI.mapClick(rootView, R.id.pinLoginButton, this);
         }
 
-        // SKIP
-        mSkipText = UI.mapClick(rootView, R.id.skipButton, this);
-        final boolean isOnBoarding = getArguments() == null ||  getArguments().getBoolean("skip_visible", false);
-        UI.showIf(isOnBoarding, mSkipText, View.INVISIBLE);
-
         // Load custom keyboard
         final KeyboardView kv = UI.find(rootView, R.id.keyboardView);
         kv.setKeyboard(new Keyboard(getActivity(), R.xml.keyboard));
@@ -72,8 +64,6 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
     public void onDestroyView() {
         super.onDestroyView();
         UI.unmapClick(mPinButton);
-        UI.unmapClick(mSkipText);
-        mSkipDialog = UI.hideDialog(mSkipDialog);
     }
 
     public void clear() {
@@ -104,15 +94,6 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
     public void onClick(final View v) {
         if (v == mPinButton)
             afterPinInserted();
-        else if (v == mSkipText) {
-            final GaActivity activity = getGaActivity();
-            mSkipDialog = UI.popup(activity, R.string.id_warning)
-                          .content(R.string.id_you_will_need_to_reenter_your)
-                          .onPositive((dlg, w) -> activity.goToTabbedMainActivity())
-                          .build();
-            UI.setDialogCloseHandler(mSkipDialog, mDialogCB);
-            mSkipDialog.show();
-        }
     }
 
     @Override

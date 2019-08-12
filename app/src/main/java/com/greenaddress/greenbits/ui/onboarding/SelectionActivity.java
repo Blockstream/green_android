@@ -88,7 +88,6 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
             startActivity(intent);
         } else {
             final Intent savePin = PinSaveActivity.createIntent(this, mMnemonic);
-            savePin.putExtra("skip_visible", true);
             startActivity(savePin);
         }
     }
