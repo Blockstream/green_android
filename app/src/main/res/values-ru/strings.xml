@@ -75,6 +75,7 @@
   <string name="id_create">Создать</string>
   <string name="id_create_a_pin_to_access_your">Создайте PIN-код для доступа к вашему кошельку</string>
   <string name="id_create_new_wallet">Создать новый кошелек</string>
+  <string name="id_create_temporary_wallet">Create temporary wallet</string>
   <string name="id_currency">Валюта</string>
   <string name="id_custom">Настраиваемый</string>
   <string name="id_custom_network_added_enable_it">Настраиваемая сеть добавлена, включите ее в сетевых настройках</string>
@@ -201,6 +202,7 @@
   <string name="id_is_a_noncustodial">управляется только владельцем</string>
   <string name="id_issuer">Issuer</string>
   <string name="id_label">LABEL</string>
+  <string name="id_last_attempt_if_failed_you_will">Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.</string>
   <string name="id_last_ping_1d_ms">Последний сигнал: %1$d мс</string>
   <string name="id_later">ПОЗЖЕ</string>
   <string name="id_ledger_dashboard_detected">Обнаружена панель Ledger, пожалуйста, откройте правильное приложение для доступа.</string>
@@ -323,6 +325,7 @@
   <string name="id_resetting_your_twofactor_takes">Перезагрузка вашей двухфакторной настройки займет как минимум 12 месяцев. Если вы уверены, что потеряли свой двухфакторный доступ, укажите новый адрес электронной почты ниже, чтобы произвести перезагрузку.</string>
   <string name="id_restore">Восстановить</string>
   <string name="id_restore_green_wallet">Восстановить Green-кошелек</string>
+  <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_reuse_androids_authentication">Использование аутентификации Android</string>
   <string name="id_review">Обзор</string>
   <string name="id_s_blocks_left">%s блоков осталось</string>
@@ -468,6 +471,7 @@
   <string name="id_you_are_not_connected_please">Вы не подключены, подождите</string>
   <string name="id_you_are_not_connected_to_the">Вы не подключены к Интернету. Подключитесь и повторите попытку.</string>
   <string name="id_you_are_now_connected">Соединение есть</string>
+  <string name="id_you_cannot_create_or_restore_a">You cannot create or restore a wallet on %s as you already have a PIN protected wallet.</string>
   <string name="id_you_have_control_on_your_funds">Ваши средства у вас под контролем.</string>
   <string name="id_you_have_received_s">Вы получили %s</string>
   <string name="id_you_must_first_log_out_before">Прежде, чем войти, произведите выход.</string>

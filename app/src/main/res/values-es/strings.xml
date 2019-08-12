@@ -75,6 +75,7 @@
   <string name="id_create">Crear</string>
   <string name="id_create_a_pin_to_access_your">Crear un PIN para acceder a tu cartera</string>
   <string name="id_create_new_wallet">Crear una nueva cartera</string>
+  <string name="id_create_temporary_wallet">Create temporary wallet</string>
   <string name="id_currency">Moneda</string>
   <string name="id_custom">Personalizar</string>
   <string name="id_custom_network_added_enable_it">Red personalizada agregada. Habilítala en configuración de red</string>
@@ -201,6 +202,7 @@
   <string name="id_is_a_noncustodial">es una cartera sin custodia</string>
   <string name="id_issuer">Issuer</string>
   <string name="id_label">LABEL</string>
+  <string name="id_last_attempt_if_failed_you_will">Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.</string>
   <string name="id_last_ping_1d_ms">Último pin: %1$d ms</string>
   <string name="id_later">LUEGO</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detectado. Abre la app correcta para acceder.</string>
@@ -323,6 +325,7 @@
   <string name="id_resetting_your_twofactor_takes">Reestablecer los dos factores lleva un mínimo de 12 meses. Si estás seguro de que has perdido los dos factores, completa abajo una nueva dirección de correo electrónico para recibir el reestablecimiento.</string>
   <string name="id_restore">Restablecer</string>
   <string name="id_restore_green_wallet">Restaurar el Green Wallet</string>
+  <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_reuse_androids_authentication">Reutilizar autenticación de Android</string>
   <string name="id_review">Reseña</string>
   <string name="id_s_blocks_left">%s bloques restantes</string>
@@ -468,6 +471,7 @@
   <string name="id_you_are_not_connected_please">No estás conectado. Espera.</string>
   <string name="id_you_are_not_connected_to_the">No estás conectado a Internet. Conéctate y reintenta.</string>
   <string name="id_you_are_now_connected">Ahora estás conectado</string>
+  <string name="id_you_cannot_create_or_restore_a">You cannot create or restore a wallet on %s as you already have a PIN protected wallet.</string>
   <string name="id_you_have_control_on_your_funds">Tienes control sobre tus fondos</string>
   <string name="id_you_have_received_s">Recibiste %s</string>
   <string name="id_you_must_first_log_out_before">Tienes que cerrar sesión antes de iniciar sesión.</string>

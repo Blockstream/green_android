@@ -75,6 +75,7 @@
   <string name="id_create">生成</string>
   <string name="id_create_a_pin_to_access_your">ウォレット接続の為のPINを生成する</string>
   <string name="id_create_new_wallet">新規ウォレットの生成</string>
+  <string name="id_create_temporary_wallet">Create temporary wallet</string>
   <string name="id_currency">貨幣</string>
   <string name="id_custom">カスタム</string>
   <string name="id_custom_network_added_enable_it">カスタムネットワーク登録完了、ネットワーク環境で利用する</string>
@@ -201,6 +202,7 @@
   <string name="id_is_a_noncustodial">保管されない</string>
   <string name="id_issuer">Issuer</string>
   <string name="id_label">LABEL</string>
+  <string name="id_last_attempt_if_failed_you_will">Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.</string>
   <string name="id_last_ping_1d_ms">最終Ping: %1$d ms</string>
   <string name="id_later">後</string>
   <string name="id_ledger_dashboard_detected">Ledgerダッシュボードを検知しました。正しいアプリを使ってアクセスして下さい。</string>
@@ -323,6 +325,7 @@
   <string name="id_resetting_your_twofactor_takes">2段階認証をリセットするには最低12ヶ月を要します。2段階認証に必要な情報を忘れたと確信する場合、リセットの為に新しいEメールアドレスをお知らせください。</string>
   <string name="id_restore">修復</string>
   <string name="id_restore_green_wallet">Greenウォレットの修復</string>
+  <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_reuse_androids_authentication">アンドロイドの認証を再利用する</string>
   <string name="id_review">レビュー</string>
   <string name="id_s_blocks_left">残り %s ブロック</string>
@@ -468,6 +471,7 @@
   <string name="id_you_are_not_connected_please">接続できません。しばらくお待ちください。</string>
   <string name="id_you_are_not_connected_to_the">インターネットに接続されていません。接続後お試しください。</string>
   <string name="id_you_are_now_connected">接続しました。</string>
+  <string name="id_you_cannot_create_or_restore_a">You cannot create or restore a wallet on %s as you already have a PIN protected wallet.</string>
   <string name="id_you_have_control_on_your_funds">資金は貴方によって完全に管理されます。</string>
   <string name="id_you_have_received_s">%s を受け取りました。</string>
   <string name="id_you_must_first_log_out_before">ログインする前にログアウトして下さい。</string>

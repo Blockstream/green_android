@@ -75,6 +75,7 @@
   <string name="id_create">Create</string>
   <string name="id_create_a_pin_to_access_your">Create a PIN to access your wallet</string>
   <string name="id_create_new_wallet">Create New Wallet</string>
+  <string name="id_create_temporary_wallet">Create temporary wallet</string>
   <string name="id_currency">Currency</string>
   <string name="id_custom">Custom</string>
   <string name="id_custom_network_added_enable_it">Custom network added, enable it in the network settings</string>
@@ -201,6 +202,7 @@
   <string name="id_is_a_noncustodial">is a non-custodial</string>
   <string name="id_issuer">Issuer</string>
   <string name="id_label">LABEL</string>
+  <string name="id_last_attempt_if_failed_you_will">Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.</string>
   <string name="id_last_ping_1d_ms">Last ping: %1$d ms</string>
   <string name="id_later">LATER</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detected, please open the correct app to access.</string>
@@ -323,6 +325,7 @@
   <string name="id_resetting_your_twofactor_takes">Resetting your Two-Factor takes 12 months minimum. If you are sure you have lost your Two-Factor, please provide a new email address below to receive the reset.</string>
   <string name="id_restore">Restore</string>
   <string name="id_restore_green_wallet">Restore Green Wallet</string>
+  <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_reuse_androids_authentication">Reuse Android\'s authentication</string>
   <string name="id_review">Review</string>
   <string name="id_s_blocks_left">%s blocks left</string>
@@ -468,6 +471,7 @@
   <string name="id_you_are_not_connected_please">You are not connected, please wait</string>
   <string name="id_you_are_not_connected_to_the">You are not connected to the internet. Please connect and retry.</string>
   <string name="id_you_are_now_connected">You are now connected</string>
+  <string name="id_you_cannot_create_or_restore_a">You cannot create or restore a wallet on %s as you already have a PIN protected wallet.</string>
   <string name="id_you_have_control_on_your_funds">You have control on your funds</string>
   <string name="id_you_have_received_s">You have received %s</string>
   <string name="id_you_must_first_log_out_before">You must first log out before logging in.</string>

@@ -75,6 +75,7 @@
   <string name="id_create">생성</string>
   <string name="id_create_a_pin_to_access_your">지갑을 사용하기 전 비밀번호를 설정하세요</string>
   <string name="id_create_new_wallet">새로운 지갑 생성</string>
+  <string name="id_create_temporary_wallet">Create temporary wallet</string>
   <string name="id_currency">통화</string>
   <string name="id_custom">사용자 지정</string>
   <string name="id_custom_network_added_enable_it">사용자 지정 네트워크 추가됨. 네트워크 설정에서 활성화하세요.</string>
@@ -124,7 +125,7 @@
   <string name="id_enter_a_valid_onion_or_ip">유효한 .onion 또는 IP 주소 입력 (.onion 추천)</string>
   <string name="id_enter_a_valid_username">유효한 사용자 명 입력</string>
   <string name="id_enter_an_address">주소 입력</string>
-  <string name="id_enter_an_address_or_sweep_paper">주소를 입력하거나 종이지갑을 sweep 하십시오.</string>
+  <string name="id_enter_an_address_or_sweep_paper">주소를 입력하거나 종이지갑을 sweep 하기</string>
   <string name="id_enter_new_email">새로운 이메일 입력</string>
   <string name="id_enter_phone_number">전화번호 입력</string>
   <string name="id_enter_pin">비밀번호 입력</string>
@@ -201,6 +202,7 @@
   <string name="id_is_a_noncustodial">자산을 맡겨 신뢰를 요구하지 않는 지갑입니다.</string>
   <string name="id_issuer">발행자</string>
   <string name="id_label">메모</string>
+  <string name="id_last_attempt_if_failed_you_will">Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.</string>
   <string name="id_last_ping_1d_ms">마지막 핑: %1$d ms</string>
   <string name="id_later">이후</string>
   <string name="id_ledger_dashboard_detected">Ledger 대시 보드가 감지되었습니다. 올바른 앱을 열어 사용하세요.</string>
@@ -323,6 +325,7 @@
   <string name="id_resetting_your_twofactor_takes">2FA 재설정에는 최소 12개월이 걸립니다. 2FA 인증방법을 잃어버린 것이 확실한 경우, 재설정을 하기 위해 새로운 이메일 주소를 보내주세요.</string>
   <string name="id_restore">복구</string>
   <string name="id_restore_green_wallet">Green Wallet 복원</string>
+  <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_reuse_androids_authentication">안드로이드 인증 재사용하기</string>
   <string name="id_review">검토</string>
   <string name="id_s_blocks_left">%s 블록 남음</string>
@@ -468,6 +471,7 @@
   <string name="id_you_are_not_connected_please">아직 연결 되지 않았습니다. 잠시만 기다려 주세요.</string>
   <string name="id_you_are_not_connected_to_the">인터넷에 연결되어 있지 않습니다. 연결하고 다시 시도해주세요.</string>
   <string name="id_you_are_now_connected">연결되었습니다.</string>
+  <string name="id_you_cannot_create_or_restore_a">You cannot create or restore a wallet on %s as you already have a PIN protected wallet.</string>
   <string name="id_you_have_control_on_your_funds">자산의 모든 권한을 가지고 계십니다. </string>
   <string name="id_you_have_received_s">%s를 받았습니다</string>
   <string name="id_you_must_first_log_out_before">로그인하기 전에 로그아웃을 먼저 해야 합니다.</string>
