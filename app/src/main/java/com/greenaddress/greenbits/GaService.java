@@ -44,6 +44,7 @@ import org.bitcoinj.core.Sha256Hash;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -203,6 +204,8 @@ public class GaService extends Service  {
     }
 
     public static String toUnitKey(final String unit) {
+        if (!Arrays.asList(UI.UNITS).contains(unit))
+            return UI.UNITS[0].toLowerCase(Locale.US);
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
     }
 
