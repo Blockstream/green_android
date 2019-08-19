@@ -79,18 +79,17 @@ public enum DenominationType: String, CodingKey {
     static let denominationsBTC: [DenominationType: String] = [ .BTC: "BTC", .MilliBTC: "mBTC", .MicroBTC: "µBTC", .Bits: "bits", .Sats: "sats"]
     static let denominationsLBTC: [DenominationType: String] = [ .BTC: "L-BTC", .MilliBTC: "L-mBTC", .MicroBTC: "L-µBTC", .Bits: "L-bits", .Sats: "L-sats"]
 
-    var string: String {
+    static var denominations: [DenominationType: String] {
         let isLiquid = getGdkNetwork(getNetwork()).liquid
-        let denominations = isLiquid ? DenominationType.denominationsLBTC : DenominationType.denominationsBTC
-        let denom = denominations.filter { $0.key == self }.first
-        return denom!.value
+        return isLiquid ? DenominationType.denominationsLBTC : DenominationType.denominationsBTC
+    }
+
+    var string: String {
+        return DenominationType.denominations.filter { $0.key == self }.first?.value ?? DenominationType.denominations[.BTC]!
     }
 
     static func from(_ string: String) -> DenominationType {
-        let isLiquid = getGdkNetwork(getNetwork()).liquid
-        let denominations = isLiquid ? DenominationType.denominationsLBTC : DenominationType.denominationsBTC
-        let denom = denominations.filter { $0.value == string }.first
-        return denom?.key ?? .BTC
+        return DenominationType.denominations.filter { $0.value == string }.first?.key ?? .BTC
     }
 }
 

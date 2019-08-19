@@ -429,10 +429,7 @@ extension SettingsViewController {
     }
 
     func showBitcoinDenomination() {
-        var list = [DenominationType.BTC.string, DenominationType.MilliBTC.string, DenominationType.MicroBTC.string, DenominationType.Sats.string]
-        if !isLiquid {
-            list.append(DenominationType.Bits.string)
-        }
+        let list = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats].map { DenominationType.denominations[$0]! }
         let settings = getGAService().getSettings()!
         let selected = settings.denomination.string
         let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
