@@ -115,9 +115,12 @@ public class TransactionItem implements Serializable {
 
         switch (txData.getType()) {
         case "outgoing":
+            // don't show outgoing btc amount if it's the tx fees
             type = TYPE.OUT;
             counterparty = txData.getAddressee();
-            mAssetBalances.remove("btc");
+            if (mAssetBalances.get("btc").getSatoshi() == fee) {
+                mAssetBalances.remove("btc");
+            }
             break;
         case "incoming":
             type = TYPE.IN;
@@ -125,7 +128,9 @@ public class TransactionItem implements Serializable {
         case "redeposit":
             // the amount is the fee
             type = TYPE.REDEPOSIT;
-            mAssetBalances.remove("btc");
+            if (mAssetBalances.keySet().size() > 1){
+                mAssetBalances.remove("btc");
+            }
             break;
         default:
             throw new ParseException("cannot parse type", 0);
