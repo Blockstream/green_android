@@ -340,6 +340,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 getActivity(), settings.toObjectNode());
             gdkTwoFactorCall.resolve(null, null);
             mService.getModel().getSettingsObservable().setSettings(settings);
+            mService.getModel().getSubaccountDataObservable().refresh();
             UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
         } catch (final Exception e) {
             e.printStackTrace();

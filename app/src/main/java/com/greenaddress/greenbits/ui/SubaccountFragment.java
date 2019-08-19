@@ -7,6 +7,8 @@ import android.widget.Toast;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
+import com.greenaddress.greenapi.model.SettingsObservable;
+import com.greenaddress.greenapi.model.SubaccountDataObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.ui.components.OnGdkListener;
 
@@ -24,6 +26,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     protected ReceiveAddressObservable mReceiveAddressObservable;
     protected TransactionDataObservable mTransactionDataObservable;
     protected ActiveAccountObservable mActiveAccountObservable;
+    protected SubaccountDataObservable mSubaccountObservable;
 
     protected boolean isPageSelected() {
         return false;
@@ -81,6 +84,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
         mBalanceDataObservable = getGAService().getModel().getBalanceDataObservable(subAccount);
         mReceiveAddressObservable = getGAService().getModel().getReceiveAddressObservable(subAccount);
         mTransactionDataObservable = getGAService().getModel().getTransactionDataObservable(subAccount);
+        mSubaccountObservable = getGAService().getModel().getSubaccountDataObservable();
     }
 
     public void attachObservers() {
@@ -90,6 +94,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
         mReceiveAddressObservable.addObserver(this);
         mTransactionDataObservable.addObserver(this);
         mActiveAccountObservable.addObserver(this);
+        mSubaccountObservable.addObserver(this);
     }
 
     public void detachObservers() {
@@ -99,6 +104,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
         mReceiveAddressObservable.deleteObserver(this);
         mTransactionDataObservable.deleteObserver(this);
         mActiveAccountObservable.deleteObserver(this);
+        mSubaccountObservable.deleteObserver(this);
     }
 
     public void onShareClicked() {}
@@ -126,6 +132,9 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
             setupObservers();
             attachObservers();
             onUpdateActiveSubaccount((ActiveAccountObservable) observable);
+        } else if (observable instanceof SubaccountDataObservable) {
+            onUpdateBalance(mBalanceDataObservable);
+            onUpdateTransactions(mTransactionDataObservable);
         }
     }
 
