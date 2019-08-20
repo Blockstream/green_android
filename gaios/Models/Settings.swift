@@ -99,6 +99,7 @@ public enum AutoLockType: Int {
     case twoMinutes = 2
     case fiveMinutes = 5
     case tenMinutes = 10
+    case sixtyMinutes = 60
 
     var string: String {
         let number = String(format: "%d", self.rawValue)
@@ -114,8 +115,10 @@ public enum AutoLockType: Int {
             return .twoMinutes
         case AutoLockType.fiveMinutes.string:
             return .fiveMinutes
+        case AutoLockType.sixtyMinutes.string:
+            return .sixtyMinutes
         default:
-            return tenMinutes
+            return .tenMinutes
         }
     }
 }
