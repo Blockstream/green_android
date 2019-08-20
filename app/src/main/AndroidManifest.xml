@@ -46,7 +46,7 @@
         android:supportsRtl="true"
         android:theme="@style/BitcoinTheme">
         <activity
-            android:name=".MnemonicActivity"
+            android:name=".authentication.MnemonicActivity"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:screenOrientation="portrait"
             android:label="@string/id_restore"
@@ -55,7 +55,7 @@
         <activity-alias
             android:name=".NFC"
             android:label="@string/app_name"
-            android:targetActivity=".MnemonicActivity">
+            android:targetActivity=".authentication.MnemonicActivity">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 
@@ -81,7 +81,7 @@
             />
 
         <activity
-            android:name=".PinActivity"
+            android:name=".authentication.PinActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden">
@@ -122,7 +122,7 @@
             android:windowSoftInputMode="stateVisible"
             />
         <activity
-            android:name=".FirstScreenActivity"
+            android:name=".authentication.FirstScreenActivity"
             android:screenOrientation="portrait"
             android:label="@string/app_name"
             />
@@ -148,7 +148,7 @@
             android:name=".monitor.NetworkMonitorActivity"
             android:label="@string/id_network_monitor" />
         <activity
-            android:name=".RequestLoginActivity"
+            android:name=".authentication.RequestLoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
@@ -188,7 +188,7 @@
             android:name=".FailHardActivity"
             />
         <activity
-            android:name=".WatchOnlyLoginActivity"
+            android:name=".authentication.WatchOnlyLoginActivity"
             android:screenOrientation="portrait"
             />
         <activity

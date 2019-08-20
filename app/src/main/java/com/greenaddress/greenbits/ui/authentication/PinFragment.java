@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits.ui;
+package com.greenaddress.greenbits.ui.authentication;
 
 import android.app.Activity;
 import android.inputmethodservice.Keyboard;
@@ -14,6 +14,10 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.greenaddress.greenbits.ui.CircularButton;
+import com.greenaddress.greenbits.ui.GAFragment;
+import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.PinEntryView;
 
 public class PinFragment extends GAFragment implements View.OnClickListener, KeyboardView.OnKeyboardActionListener {

@@ -91,7 +91,7 @@ public abstract class UI {
         d.setOnDismissListener(handler);
     }
 
-    static void setDialogCloseHandler(final Dialog d, final Runnable callback) {
+    public static void setDialogCloseHandler(final Dialog d, final Runnable callback) {
         setDialogCloseHandler(d, callback, false);
     }
 
@@ -115,7 +115,7 @@ public abstract class UI {
                e.getKeyCode() == KeyEvent.KEYCODE_ENTER;
     }
 
-    static TextView.OnEditorActionListener getListenerRunOnEnter(final Runnable r) {
+    public static TextView.OnEditorActionListener getListenerRunOnEnter(final Runnable r) {
         return (v, actionId, event) -> {
                    if (actionId == EditorInfo.IME_ACTION_DONE ||
                        actionId == EditorInfo.IME_ACTION_SEARCH ||
@@ -226,7 +226,7 @@ public abstract class UI {
 
     // Dummy TextWatcher for simple overrides
     public static class TextWatcher implements android.text.TextWatcher {
-        TextWatcher() { super(); }
+        public TextWatcher() { super(); }
         @Override
         public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) { }
         @Override
@@ -235,7 +235,7 @@ public abstract class UI {
         public void afterTextChanged(final Editable s) { }
     }
 
-    static < T extends View > T mapClick(final View parent, final int id, final View.OnClickListener fn) {
+    public static < T extends View > T mapClick(final View parent, final int id, final View.OnClickListener fn) {
         final T v = find(parent, id);
         if (v != null)
             v.setOnClickListener(fn);
@@ -254,7 +254,7 @@ public abstract class UI {
             v.setOnClickListener(null);
     }
 
-    static void mapEnterToPositive(final Dialog dialog, final int editId) {
+    public static void mapEnterToPositive(final Dialog dialog, final int editId) {
         final TextView edit = UI.find(dialog, editId);
         edit.setOnEditorActionListener(getListenerRunOnEnter(() -> {
             final MaterialDialog md = (MaterialDialog) dialog;
@@ -312,7 +312,7 @@ public abstract class UI {
             v.setVisibility(condition ? View.VISIBLE : hiddenViewState);
     }
 
-    static void showIf(final boolean condition, final View v) {
+    public static void showIf(final boolean condition, final View v) {
         showIf(condition, v, View.GONE);
     }
 
@@ -325,7 +325,7 @@ public abstract class UI {
     public static void hide(final View v) { showIf(false, v); }
 
     // Enable/Disable controls
-    static void enableIf(final boolean condition, final View v) {
+    public static void enableIf(final boolean condition, final View v) {
         v.setEnabled(condition);
     }
 

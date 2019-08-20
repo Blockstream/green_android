@@ -9,10 +9,8 @@ import android.widget.Toast;
 
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.ui.FirstScreenActivity;
+import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.GaActivity;
-import com.greenaddress.greenbits.ui.MnemonicActivity;
-import com.greenaddress.greenbits.ui.PinActivity;
 import com.greenaddress.greenbits.ui.UI;
 
 

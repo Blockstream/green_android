@@ -46,7 +46,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static android.app.Activity.RESULT_OK;
-import static com.greenaddress.greenbits.ui.FirstScreenActivity.NETWORK_SELECTOR_REQUEST;
+import static com.greenaddress.greenbits.ui.authentication.FirstScreenActivity.NETWORK_SELECTOR_REQUEST;
 
 public class GeneralPreferenceFragment extends GAPreferenceFragment implements Observer {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();

@@ -35,11 +35,11 @@ public final class CB {
         final Activity mActivity;
         final Button mEnabler;
 
-        Toast(final Activity activity) {
+        public Toast(final Activity activity) {
             this(activity, null);
         }
 
-        Toast(final Activity activity, final Button enabler) {
+        public Toast(final Activity activity, final Button enabler) {
             super();
             mActivity = activity;
             mEnabler = enabler;

@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits.ui;
+package com.greenaddress.greenbits.ui.authentication;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -14,6 +14,9 @@ import android.view.WindowManager;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.greenaddress.greenbits.KeyStoreAES;
+import com.greenaddress.greenbits.ui.LoginActivity;
+import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;

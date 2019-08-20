@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits.ui;
+package com.greenaddress.greenbits.ui.authentication;
 
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
@@ -10,6 +10,10 @@ import android.widget.TextView;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenbits.ui.CircularButton;
+import com.greenaddress.greenbits.ui.LoginActivity;
+import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Observer;

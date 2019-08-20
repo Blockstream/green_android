@@ -29,6 +29,8 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.ConnectionMessageObservable;
 import com.greenaddress.greenapi.model.EventDataObservable;
+import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
+import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
 import com.greenaddress.greenbits.ui.preferences.GeneralPreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.WatchOnlyPreferenceFragment;

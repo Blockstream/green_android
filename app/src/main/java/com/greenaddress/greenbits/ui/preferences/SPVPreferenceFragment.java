@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.greenaddress.greenbits.ui.MnemonicActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ScanForResultActivity;
 import com.greenaddress.greenbits.ui.UI;

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -25,8 +24,9 @@ import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
+import com.greenaddress.greenbits.ui.authentication.PinActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 /**
  * Base class for activities within the application.
@@ -139,7 +139,7 @@ public abstract class GaActivity extends AppCompatActivity {
 
     // Utility methods
 
-    void finishOnUiThread() {
+    protected void finishOnUiThread() {
         runOnUiThread(GaActivity.this::finish);
     }
 

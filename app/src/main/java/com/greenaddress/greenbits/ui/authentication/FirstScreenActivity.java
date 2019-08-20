@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits.ui;
+package com.greenaddress.greenbits.ui.authentication;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,11 @@ import android.widget.TextView;
 import android.widget.TextView.BufferType;
 
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.ui.LoginActivity;
+import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
+import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.ThemeUtils;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.onboarding.TermsActivity;
 
 public class FirstScreenActivity extends LoginActivity {

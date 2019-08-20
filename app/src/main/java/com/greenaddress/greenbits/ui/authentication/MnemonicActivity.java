@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits.ui;
+package com.greenaddress.greenbits.ui.authentication;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -37,6 +37,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.CryptoHelper;
+import com.greenaddress.greenbits.ui.CB;
+import com.greenaddress.greenbits.ui.LoginActivity;
+import com.greenaddress.greenbits.ui.MnemonicHelper;
+import com.greenaddress.greenbits.ui.PinSaveActivity;
+import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.ScanForResultActivity;
+import com.greenaddress.greenbits.ui.TabbedMainActivity;
+import com.greenaddress.greenbits.ui.UI;
 
 import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
 

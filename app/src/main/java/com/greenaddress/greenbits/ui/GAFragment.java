@@ -7,7 +7,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 
-abstract class GAFragment extends Fragment {
+public abstract class GAFragment extends Fragment {
     private GreenAddressApplication mApp;
 
     @Override

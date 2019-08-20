@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.KeyStoreAES;
+import com.greenaddress.greenbits.ui.authentication.PinFragment;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 
 public class PinSaveActivity extends GaActivity implements PinFragment.OnPinListener {
