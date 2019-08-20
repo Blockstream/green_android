@@ -457,6 +457,7 @@
   <string name="id_watchonly_disabled">Холодный кошелек отключен</string>
   <string name="id_watchonly_login">Логин холодного кошелька</string>
   <string name="id_watchonly_mode_can_be_activated">Режим холодного кошелька можно активировать в настройках после входа в систему с помощью PIN-кода, мнемонической фразы или аппаратного кошелька.</string>
+  <string name="id_watchonly_mode_cannot_be">Watch-only mode cannot be activated on Liquid as your funds are fully confidential.</string>
   <string name="id_we_use_the_camera_to_scan_qr">Мы используем камеру для сканирования QR-кодов</string>
   <string name="id_welcome">Приветствуем вас!</string>
   <string name="id_welcome_to">Добро пожаловать в</string>

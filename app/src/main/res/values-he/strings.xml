@@ -457,6 +457,7 @@
   <string name="id_watchonly_disabled">Watch-only disabled</string>
   <string name="id_watchonly_login">Watch-only login</string>
   <string name="id_watchonly_mode_can_be_activated">Watch-only mode can be activated from settings after logging in with your PIN, mnemonic, or hardware wallet.</string>
+  <string name="id_watchonly_mode_cannot_be">Watch-only mode cannot be activated on Liquid as your funds are fully confidential.</string>
   <string name="id_we_use_the_camera_to_scan_qr">We use the camera to scan QR codes</string>
   <string name="id_welcome">Welcome</string>
   <string name="id_welcome_to">Welcome to</string>

@@ -457,6 +457,7 @@
   <string name="id_watchonly_disabled">Watch-only已关闭</string>
   <string name="id_watchonly_login">Watch-only登录</string>
   <string name="id_watchonly_mode_can_be_activated">使用PIN、助记词或硬件钱包登录后，可在设置中开启watch-only模式。</string>
+  <string name="id_watchonly_mode_cannot_be">Watch-only mode cannot be activated on Liquid as your funds are fully confidential.</string>
   <string name="id_we_use_the_camera_to_scan_qr">请使用摄像头扫描二维码</string>
   <string name="id_welcome">欢迎</string>
   <string name="id_welcome_to">欢迎来到</string>

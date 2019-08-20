@@ -457,6 +457,7 @@
   <string name="id_watchonly_disabled">監視-Only無効</string>
   <string name="id_watchonly_login">監視-Onlyログイン</string>
   <string name="id_watchonly_mode_can_be_activated">監視-OnlyモードはPIN、mnemonic、又は、ハードウェア・ウォレットでログインした際、設定で有効にできます。</string>
+  <string name="id_watchonly_mode_cannot_be">Watch-only mode cannot be activated on Liquid as your funds are fully confidential.</string>
   <string name="id_we_use_the_camera_to_scan_qr">カメラでQRコードをスキャンします。</string>
   <string name="id_welcome">ようこそ</string>
   <string name="id_welcome_to">ようこそ</string>

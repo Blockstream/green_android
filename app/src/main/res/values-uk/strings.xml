@@ -457,6 +457,7 @@
   <string name="id_watchonly_disabled">Холодний гаманець відключено</string>
   <string name="id_watchonly_login">Логін холодного гаманця</string>
   <string name="id_watchonly_mode_can_be_activated">Режим холодного гаманця можна активувати в налаштуваннях після входу в систему за допомогою PIN-коду, мнемонічної фрази або апаратного гаманця.</string>
+  <string name="id_watchonly_mode_cannot_be">Watch-only mode cannot be activated on Liquid as your funds are fully confidential.</string>
   <string name="id_we_use_the_camera_to_scan_qr">Ми використовуємо камеру для сканування QR-кодів</string>
   <string name="id_welcome">Ласкаво просимо</string>
   <string name="id_welcome_to">Ласкаво просимо до</string>

@@ -457,6 +457,7 @@
   <string name="id_watchonly_disabled">조회전용 모드 비활성화</string>
   <string name="id_watchonly_login">조회전용 모드로 로그인하기</string>
   <string name="id_watchonly_mode_can_be_activated">조회전용모드는 비밀번호, 니모닉(복원 코드) 또는 하드웨어 지갑을 통해 로그인한 후 활성화시킬 수 있습니다.</string>
+  <string name="id_watchonly_mode_cannot_be">Watch-only mode cannot be activated on Liquid as your funds are fully confidential.</string>
   <string name="id_we_use_the_camera_to_scan_qr">Green은 카메라를 사용하여 QR 코드를 스캔합니다.</string>
   <string name="id_welcome">안녕하세요</string>
   <string name="id_welcome_to">환영합니다</string>
