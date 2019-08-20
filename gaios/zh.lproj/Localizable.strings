@@ -73,6 +73,7 @@
 "id_create" = "创建";
 "id_create_a_pin_to_access_your" = "创建一个新的PIN来接入你的钱包";
 "id_create_new_wallet" = "创建新钱包";
+"id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "币种";
 "id_custom" = "自定义";
 "id_custom_network_added_enable_it" = "已添加自定义网络，请在网络设置中启用这个网络";
@@ -199,6 +200,7 @@
 "id_is_a_noncustodial" = "是一个非托管的";
 "id_issuer" = "发行者";
 "id_label" = "标签";
+"id_last_attempt_if_failed_you_will" = "Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.";
 "id_last_ping_1d_ms" = "最后一次ping：%1$d ms";
 "id_later" = "稍后";
 "id_ledger_dashboard_detected" = "检测到Ledger Dashboard，请打开正确的应用来获取。";
@@ -321,6 +323,7 @@
 "id_resetting_your_twofactor_takes" = "重置双重验证需要等待最少12个月。如果确认已经丢失双重验证设备，请在下方输入新的邮件地址以接收重置邮件。";
 "id_restore" = "恢复";
 "id_restore_green_wallet" = "恢复Green钱包";
+"id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_reuse_androids_authentication" = "再次使用安卓的验证";
 "id_review" = "审查";
 "id_s_blocks_left" = "剩余%@个区块";
@@ -452,6 +455,7 @@
 "id_watchonly_disabled" = "Watch-only已关闭";
 "id_watchonly_login" = "Watch-only登录";
 "id_watchonly_mode_can_be_activated" = "使用PIN、助记词或硬件钱包登录后，可在设置中开启watch-only模式。";
+"id_watchonly_mode_cannot_be" = "Watch-only mode cannot be activated on Liquid as your funds are fully confidential.";
 "id_we_use_the_camera_to_scan_qr" = "请使用摄像头扫描二维码";
 "id_welcome" = "欢迎";
 "id_welcome_to" = "欢迎来到";
@@ -466,6 +470,7 @@
 "id_you_are_not_connected_please" = "未连接，请稍候";
 "id_you_are_not_connected_to_the" = "未连接到网络。请连接至网络并重试。";
 "id_you_are_now_connected" = "现已连接";
+"id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "你对自己的资金拥有完全的掌控";
 "id_you_have_received_s" = "您已接收 %@";
 "id_you_must_first_log_out_before" = "登录前必须先登出。";

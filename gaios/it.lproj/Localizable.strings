@@ -73,6 +73,7 @@
 "id_create" = "Crea";
 "id_create_a_pin_to_access_your" = "Crea un PIN per l'accesso al wallet";
 "id_create_new_wallet" = "Crea Nuovo Wallet";
+"id_create_temporary_wallet" = "Crea wallet temporaneamente";
 "id_currency" = "Valuta";
 "id_custom" = "Personalizzata";
 "id_custom_network_added_enable_it" = "Network custom aggiunto, abilitalo nelle Impostazioni di Network";
@@ -199,6 +200,7 @@
 "id_is_a_noncustodial" = "non è in custodia";
 "id_issuer" = "Emittente";
 "id_label" = "LABEL";
+"id_last_attempt_if_failed_you_will" = "Ultimo tentativo: in caso di fallimento dovrai rigenerare il tuo wallet utilizzando la mnemonica di 24 parole.";
 "id_last_ping_1d_ms" = "Ultimo ping: %1$d ms";
 "id_later" = "PIÙ TARDI";
 "id_ledger_dashboard_detected" = "Dashboard Ledger rilevata, avvia l'app corretta per accedere.";
@@ -321,6 +323,7 @@
 "id_resetting_your_twofactor_takes" = "Il reset dell' Autenticazione a Due Fattori richiede minimo 12 mesi. Se sei sicuro di aver perso l'accesso al tuo metodo di autenticazione, fornisci un indirizzo email per il reset.";
 "id_restore" = "Ripristina";
 "id_restore_green_wallet" = "Ripristina un Wallet Green";
+"id_restore_temporary_wallet" = "Ripristina wallet temporaneamente";
 "id_reuse_androids_authentication" = "Usa l'autenticazione Android";
 "id_review" = "Controlla";
 "id_s_blocks_left" = "%@ blocchi rimanenti";
@@ -452,6 +455,7 @@
 "id_watchonly_disabled" = "Watch-only disabilitato";
 "id_watchonly_login" = "Login Watch-only";
 "id_watchonly_mode_can_be_activated" = "La modalità Watch-only si abilita dalle impostazioni dopo aver effettuato un login con PIN, mnemonica o hardware wallet.";
+"id_watchonly_mode_cannot_be" = "La modalità watch-only non può essere attivata su Liquid poiché i tuoi fondi sono compeltamente confidenziali.";
 "id_we_use_the_camera_to_scan_qr" = "La fotocamera verrà utilizzata per scansionare codici QR";
 "id_welcome" = "Benvenuto";
 "id_welcome_to" = "Benvenuto in";
@@ -466,6 +470,7 @@
 "id_you_are_not_connected_please" = "Non sei connesso, attendi";
 "id_you_are_not_connected_to_the" = "Non sei connesso a internet. Connettiti e ritenta.";
 "id_you_are_now_connected" = "Ora sei connesso";
+"id_you_cannot_create_or_restore_a" = "Non puoi creare o rigenerare un wallet  %@ poichè esiste già un wallet protetto da PIN.";
 "id_you_have_control_on_your_funds" = "Hai tu il controllo dei tuoi fondi.";
 "id_you_have_received_s" = "Hai ricevuto %@";
 "id_you_must_first_log_out_before" = "Devi effettuare il logout prima di poter accedere.";

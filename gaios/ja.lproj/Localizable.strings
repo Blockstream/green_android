@@ -73,6 +73,7 @@
 "id_create" = "生成";
 "id_create_a_pin_to_access_your" = "ウォレット接続の為のPINを生成する";
 "id_create_new_wallet" = "新規ウォレットの生成";
+"id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "貨幣";
 "id_custom" = "カスタム";
 "id_custom_network_added_enable_it" = "カスタムネットワーク登録完了、ネットワーク環境で利用する";
@@ -199,6 +200,7 @@
 "id_is_a_noncustodial" = "保管されない";
 "id_issuer" = "Issuer";
 "id_label" = "LABEL";
+"id_last_attempt_if_failed_you_will" = "Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.";
 "id_last_ping_1d_ms" = "最終Ping: %1$d ms";
 "id_later" = "後";
 "id_ledger_dashboard_detected" = "Ledgerダッシュボードを検知しました。正しいアプリを使ってアクセスして下さい。";
@@ -321,6 +323,7 @@
 "id_resetting_your_twofactor_takes" = "2段階認証をリセットするには最低12ヶ月を要します。2段階認証に必要な情報を忘れたと確信する場合、リセットの為に新しいEメールアドレスをお知らせください。";
 "id_restore" = "修復";
 "id_restore_green_wallet" = "Greenウォレットの修復";
+"id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_reuse_androids_authentication" = "アンドロイドの認証を再利用する";
 "id_review" = "レビュー";
 "id_s_blocks_left" = "残り %@ ブロック";
@@ -452,6 +455,7 @@
 "id_watchonly_disabled" = "監視-Only無効";
 "id_watchonly_login" = "監視-Onlyログイン";
 "id_watchonly_mode_can_be_activated" = "監視-OnlyモードはPIN、mnemonic、又は、ハードウェア・ウォレットでログインした際、設定で有効にできます。";
+"id_watchonly_mode_cannot_be" = "Watch-only mode cannot be activated on Liquid as your funds are fully confidential.";
 "id_we_use_the_camera_to_scan_qr" = "カメラでQRコードをスキャンします。";
 "id_welcome" = "ようこそ";
 "id_welcome_to" = "ようこそ";
@@ -466,6 +470,7 @@
 "id_you_are_not_connected_please" = "接続できません。しばらくお待ちください。";
 "id_you_are_not_connected_to_the" = "インターネットに接続されていません。接続後お試しください。";
 "id_you_are_now_connected" = "接続しました。";
+"id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "資金は貴方によって完全に管理されます。";
 "id_you_have_received_s" = "%@ を受け取りました。";
 "id_you_must_first_log_out_before" = "ログインする前にログアウトして下さい。";

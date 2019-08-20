@@ -73,6 +73,7 @@
 "id_create" = "생성";
 "id_create_a_pin_to_access_your" = "지갑을 사용하기 전 비밀번호를 설정하세요";
 "id_create_new_wallet" = "새로운 지갑 생성";
+"id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "통화";
 "id_custom" = "사용자 지정";
 "id_custom_network_added_enable_it" = "사용자 지정 네트워크 추가됨. 네트워크 설정에서 활성화하세요.";
@@ -122,7 +123,7 @@
 "id_enter_a_valid_onion_or_ip" = "유효한 .onion 또는 IP 주소 입력 (.onion 추천)";
 "id_enter_a_valid_username" = "유효한 사용자 명 입력";
 "id_enter_an_address" = "주소 입력";
-"id_enter_an_address_or_sweep_paper" = "주소를 입력하거나 종이지갑을 sweep 하십시오.";
+"id_enter_an_address_or_sweep_paper" = "주소를 입력하거나 종이지갑을 sweep 하기";
 "id_enter_new_email" = "새로운 이메일 입력";
 "id_enter_phone_number" = "전화번호 입력";
 "id_enter_pin" = "비밀번호 입력";
@@ -199,6 +200,7 @@
 "id_is_a_noncustodial" = "자산을 맡겨 신뢰를 요구하지 않는 지갑입니다.";
 "id_issuer" = "발행자";
 "id_label" = "메모";
+"id_last_attempt_if_failed_you_will" = "Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.";
 "id_last_ping_1d_ms" = "마지막 핑: %1$d ms";
 "id_later" = "이후";
 "id_ledger_dashboard_detected" = "Ledger 대시 보드가 감지되었습니다. 올바른 앱을 열어 사용하세요.";
@@ -321,6 +323,7 @@
 "id_resetting_your_twofactor_takes" = "2FA 재설정에는 최소 12개월이 걸립니다. 2FA 인증방법을 잃어버린 것이 확실한 경우, 재설정을 하기 위해 새로운 이메일 주소를 보내주세요.";
 "id_restore" = "복구";
 "id_restore_green_wallet" = "Green Wallet 복원";
+"id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_reuse_androids_authentication" = "안드로이드 인증 재사용하기";
 "id_review" = "검토";
 "id_s_blocks_left" = "%@ 블록 남음";
@@ -452,6 +455,7 @@
 "id_watchonly_disabled" = "조회전용 모드 비활성화";
 "id_watchonly_login" = "조회전용 모드로 로그인하기";
 "id_watchonly_mode_can_be_activated" = "조회전용모드는 비밀번호, 니모닉(복원 코드) 또는 하드웨어 지갑을 통해 로그인한 후 활성화시킬 수 있습니다.";
+"id_watchonly_mode_cannot_be" = "Watch-only mode cannot be activated on Liquid as your funds are fully confidential.";
 "id_we_use_the_camera_to_scan_qr" = "Green은 카메라를 사용하여 QR 코드를 스캔합니다.";
 "id_welcome" = "안녕하세요";
 "id_welcome_to" = "환영합니다";
@@ -466,6 +470,7 @@
 "id_you_are_not_connected_please" = "아직 연결 되지 않았습니다. 잠시만 기다려 주세요.";
 "id_you_are_not_connected_to_the" = "인터넷에 연결되어 있지 않습니다. 연결하고 다시 시도해주세요.";
 "id_you_are_now_connected" = "연결되었습니다.";
+"id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "자산의 모든 권한을 가지고 계십니다. ";
 "id_you_have_received_s" = "%@를 받았습니다";
 "id_you_must_first_log_out_before" = "로그인하기 전에 로그아웃을 먼저 해야 합니다.";

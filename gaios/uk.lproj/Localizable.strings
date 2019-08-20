@@ -73,6 +73,7 @@
 "id_create" = "Створити";
 "id_create_a_pin_to_access_your" = "Створіть PIN-код для доступу до вашого гаманця";
 "id_create_new_wallet" = "Створити новий гаманець";
+"id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "Валюта";
 "id_custom" = "Спеціалізовані";
 "id_custom_network_added_enable_it" = "Спеціалізовану мережу додано, увімкніть її у налаштуваннях мережі";
@@ -199,6 +200,7 @@
 "id_is_a_noncustodial" = "керується тільки власником";
 "id_issuer" = "Issuer";
 "id_label" = "LABEL";
+"id_last_attempt_if_failed_you_will" = "Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.";
 "id_last_ping_1d_ms" = "Останній пінг: %1$d мс";
 "id_later" = "ПІЗНІШЕ";
 "id_ledger_dashboard_detected" = "Знайдена панель Ledger, будь ласка, відкрийте правильний додаток для доступу.";
@@ -321,6 +323,7 @@
 "id_resetting_your_twofactor_takes" = "Скидання двофакторки триватиме мінімум 12 місяців. Якщо ви впевнені, що втратили свою двофакторку,  вкажіть нову адресу електронної пошти нижче, щоб здійснити перезавантаження.";
 "id_restore" = "Відновити";
 "id_restore_green_wallet" = "Відновити Green-гаманець";
+"id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_reuse_androids_authentication" = "Повторне використання аутентифікації Android";
 "id_review" = "Огляд";
 "id_s_blocks_left" = "%@ блоків залишилось";
@@ -452,6 +455,7 @@
 "id_watchonly_disabled" = "Холодний гаманець відключено";
 "id_watchonly_login" = "Логін холодного гаманця";
 "id_watchonly_mode_can_be_activated" = "Режим холодного гаманця можна активувати в налаштуваннях після входу в систему за допомогою PIN-коду, мнемонічної фрази або апаратного гаманця.";
+"id_watchonly_mode_cannot_be" = "Watch-only mode cannot be activated on Liquid as your funds are fully confidential.";
 "id_we_use_the_camera_to_scan_qr" = "Ми використовуємо камеру для сканування QR-кодів";
 "id_welcome" = "Ласкаво просимо";
 "id_welcome_to" = "Ласкаво просимо до";
@@ -466,6 +470,7 @@
 "id_you_are_not_connected_please" = "Ви не підключені, будь ласка, зачекайте";
 "id_you_are_not_connected_to_the" = "Ви не підключені до мережі Інтернет. Підключіться і повторіть спробу.";
 "id_you_are_now_connected" = "З'єднання є";
+"id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "Ваші кошти у вас під контролем";
 "id_you_have_received_s" = "Ви отримали %@";
 "id_you_must_first_log_out_before" = "Перед тим, як увійти, здійсніть вихід.";

@@ -73,6 +73,7 @@
 "id_create" = "Aanmaken";
 "id_create_a_pin_to_access_your" = "Kies een PIN voor toegang tot wallet";
 "id_create_new_wallet" = "Nieuwe wallet aanmaken";
+"id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "Valuta";
 "id_custom" = "Aanpassen";
 "id_custom_network_added_enable_it" = "Eigen netwerk toegevoegd, inschakelen is mogelijk via de netwerkinstellingen";
@@ -199,6 +200,7 @@
 "id_is_a_noncustodial" = "is een zelf-management";
 "id_issuer" = "Uitgever";
 "id_label" = "LABEL";
+"id_last_attempt_if_failed_you_will" = "Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.";
 "id_last_ping_1d_ms" = "Laatste ping: %1$d ms";
 "id_later" = "LATER";
 "id_ledger_dashboard_detected" = "Ledger Dashboard gedetecteerd. Open de juiste app voor toegang.";
@@ -321,6 +323,7 @@
 "id_resetting_your_twofactor_takes" = "Het resetten van de tweetrapsauthenticatie duurt minimaal 12 maanden. Als je er zeker van bent dat je je tweetrapsauthenticatie bent kwijtgeraakt, vul dan hieronder een nieuw e-mailadres in om de reset te ontvangen.";
 "id_restore" = "Herstellen";
 "id_restore_green_wallet" = "Green Wallet herstellen";
+"id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_reuse_androids_authentication" = "Gebruik de authenticatie van Android";
 "id_review" = "Overzicht";
 "id_s_blocks_left" = "%@ blocks te gaan";
@@ -452,6 +455,7 @@
 "id_watchonly_disabled" = "Watch-only uitgeschakeld";
 "id_watchonly_login" = "Aanmelden Watch-only";
 "id_watchonly_mode_can_be_activated" = "Watch-only-modus kan worden geactiveerd vanuit de instellingen na aanmelding met je PIN, woordenlijst, of hardware wallet.";
+"id_watchonly_mode_cannot_be" = "Watch-only mode cannot be activated on Liquid as your funds are fully confidential.";
 "id_we_use_the_camera_to_scan_qr" = "We gebruiken de camera om QR-codes te scannen";
 "id_welcome" = "Welkom";
 "id_welcome_to" = "Welkom bij";
@@ -466,6 +470,7 @@
 "id_you_are_not_connected_please" = "Een moment, je bent niet verbonden";
 "id_you_are_not_connected_to_the" = "Je bent niet verbonden met het internet. Maak verbinding en probeer het opnieuw.";
 "id_you_are_now_connected" = "Je bent nu verbonden";
+"id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "Je hebt toegang tot je balans";
 "id_you_have_received_s" = "Je hebt %@ ontvangen";
 "id_you_must_first_log_out_before" = "Je moet je afmelden voor je je kunt aanmelden.";

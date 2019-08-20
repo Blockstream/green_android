@@ -73,6 +73,7 @@
 "id_create" = "Create";
 "id_create_a_pin_to_access_your" = "Create a PIN to access your wallet";
 "id_create_new_wallet" = "Create New Wallet";
+"id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "Currency";
 "id_custom" = "Custom";
 "id_custom_network_added_enable_it" = "Custom network added, enable it in the network settings";
@@ -199,6 +200,7 @@
 "id_is_a_noncustodial" = "is a non-custodial";
 "id_issuer" = "Issuer";
 "id_label" = "LABEL";
+"id_last_attempt_if_failed_you_will" = "Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.";
 "id_last_ping_1d_ms" = "Last ping: %1$d ms";
 "id_later" = "LATER";
 "id_ledger_dashboard_detected" = "Ledger Dashboard detected, please open the correct app to access.";
@@ -321,6 +323,7 @@
 "id_resetting_your_twofactor_takes" = "Resetting your Two-Factor takes 12 months minimum. If you are sure you have lost your Two-Factor, please provide a new email address below to receive the reset.";
 "id_restore" = "Restore";
 "id_restore_green_wallet" = "Restore Green Wallet";
+"id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_reuse_androids_authentication" = "Reuse Android's authentication";
 "id_review" = "Review";
 "id_s_blocks_left" = "%@ blocks left";
@@ -452,6 +455,7 @@
 "id_watchonly_disabled" = "Watch-only disabled";
 "id_watchonly_login" = "Watch-only login";
 "id_watchonly_mode_can_be_activated" = "Watch-only mode can be activated from settings after logging in with your PIN, mnemonic, or hardware wallet.";
+"id_watchonly_mode_cannot_be" = "Watch-only mode cannot be activated on Liquid as your funds are fully confidential.";
 "id_we_use_the_camera_to_scan_qr" = "We use the camera to scan QR codes";
 "id_welcome" = "Welcome";
 "id_welcome_to" = "Welcome to";
@@ -466,6 +470,7 @@
 "id_you_are_not_connected_please" = "You are not connected, please wait";
 "id_you_are_not_connected_to_the" = "You are not connected to the internet. Please connect and retry.";
 "id_you_are_now_connected" = "You are now connected";
+"id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "You have control on your funds";
 "id_you_have_received_s" = "You have received %@";
 "id_you_must_first_log_out_before" = "You must first log out before logging in.";
