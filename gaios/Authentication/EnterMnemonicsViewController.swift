@@ -74,15 +74,17 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
     }
 
     func suggestionWasTapped(suggestion: String) {
-        mnemonic[currIndexPath!.row + currIndexPath!.section * 3] = suggestion
-        mnemonicWords.reloadItems(at: [currIndexPath!])
+        if let currIndexPath = currIndexPath {
+            mnemonic[currIndexPath.row + currIndexPath.section * 3] = suggestion
+            mnemonicWords.reloadItems(at: [currIndexPath])
 
-        let nextRow = (currIndexPath!.row + 1) % 3
-        let nextSection = nextRow == 0 ? (currIndexPath!.section + 1) % (isPasswordProtected ? 9 : 8) : currIndexPath!.section
-        let nextIndexPath = IndexPath(row: nextRow, section: nextSection)
-        if let cell = mnemonicWords.cellForItem(at: nextIndexPath) as? MnemonicWordCell {
-            mnemonicWords.selectItem(at: nextIndexPath, animated: false, scrollPosition: UICollectionView.ScrollPosition.centeredVertically)
-            cell.wordText.becomeFirstResponder()
+            let nextRow = (currIndexPath.row + 1) % 3
+            let nextSection = nextRow == 0 ? (currIndexPath.section + 1) % (isPasswordProtected ? 9 : 8) : currIndexPath.section
+            let nextIndexPath = IndexPath(row: nextRow, section: nextSection)
+            if let cell = mnemonicWords.cellForItem(at: nextIndexPath) as? MnemonicWordCell {
+                mnemonicWords.selectItem(at: nextIndexPath, animated: false, scrollPosition: UICollectionView.ScrollPosition.centeredVertically)
+                cell.wordText.becomeFirstResponder()
+            }
         }
     }
 
@@ -290,16 +292,17 @@ extension EnterMnemonicsViewController: MnemonicWordCellDelegate {
 
     func collectionView(valueChangedIn textField: UITextField, from cell: MnemonicWordCell) {
         let text = textField.text?.isEmpty ?? true ? String() : textField.text!
+    
+        currIndexPath = mnemonicWords.indexPath(for: cell)
+        if currIndexPath == nil {
+            return
+        }
 
         // pass focus to next item for valid words of length > 3
         if text.count > 3 && WL.contains(text) {
             suggestionWasTapped(suggestion: text)
         }
 
-        currIndexPath = mnemonicWords.indexPath(for: cell)
-        if currIndexPath == nil {
-            return
-        }
         mnemonic[currIndexPath!.row + currIndexPath!.section * 3] = text
 
         checkTextfield(textField: textField)
