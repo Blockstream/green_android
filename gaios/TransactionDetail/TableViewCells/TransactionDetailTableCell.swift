@@ -17,11 +17,9 @@ class TransactionDetailTableCell: UITableViewCell {
         switch cellType {
         case .fee:
             titleLabel.text = NSLocalizedString("id_fee", comment: "")
-            let feeSatVByte = Double(transaction.fee) / 1000.0
-            let feeSatoshi = UInt64(feeSatVByte * Double(transaction.size))
-            if let balance = Balance.convert(details: ["satoshi": feeSatoshi]) {
+            if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
                 let (amount, denom) = balance.get(tag: "btc")
-                detailLabel.text  =  "\(amount) \(denom) (\(feeSatVByte) satoshi / vbyte)"
+                detailLabel.text = "\(amount) \(denom) \(String(format: "( %.2f sat / vbyte )", Double(transaction.feeRate) / 1000))"
             }
         case .amount:
             let receivedText = transaction.type == "incoming" ? NSLocalizedString("id_received", comment: "") : NSLocalizedString("id_sent", comment: "")
