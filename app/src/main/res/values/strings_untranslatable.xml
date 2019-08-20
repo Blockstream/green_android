@@ -33,6 +33,7 @@
         <item>2</item>
         <item>5</item>
         <item>10</item>
+        <item>60</item>
     </string-array>
 
     <plurals name="blocks" translatable="false">
