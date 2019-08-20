@@ -33,7 +33,7 @@ class TransactionTableCell: UITableViewCell {
     func setup(with transaction: Transaction) {
         let assetTag = transaction.defaultAsset
         bumpFee.isHidden = !transaction.canRBF || isLiquid
-        multipleAssets = transaction.assets.count > 1
+        multipleAssets = transaction.amounts.count > 1
         isIncoming = transaction.type == "incoming"
         isRedeposit = transaction.type == "redeposit"
         if isRedeposit, let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
