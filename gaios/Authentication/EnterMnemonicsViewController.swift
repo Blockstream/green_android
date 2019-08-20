@@ -292,7 +292,7 @@ extension EnterMnemonicsViewController: MnemonicWordCellDelegate {
 
     func collectionView(valueChangedIn textField: UITextField, from cell: MnemonicWordCell) {
         let text = textField.text?.isEmpty ?? true ? String() : textField.text!
-    
+
         currIndexPath = mnemonicWords.indexPath(for: cell)
         if currIndexPath == nil {
             return
