@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenbits.GaService;
 
 import java.text.DateFormat;
@@ -55,7 +56,8 @@ public class ListTransactionsAdapter extends
         if (assetsNumber > 1) {
             holder.textValue.setText(mActivity.getString(R.string.id_d_assets,assetsNumber));
         } else {
-            holder.textValue.setText(txItem.getAmountWithUnit(mService));
+            final String assetId = txItem.mAssetBalances.keySet().toArray(new String[txItem.mAssetBalances.size()])[0];
+            holder.textValue.setText(txItem.getAmountWithUnit(mService, assetId));
         }
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
@@ -92,9 +94,12 @@ public class ListTransactionsAdapter extends
         if (TextUtils.isEmpty(txItem.memo)) {
             if (mService.isLiquid() && assetsNumber > 1)
                 message = mActivity.getString(R.string.id_multiple_assets);
-            else if (mService.isLiquid() && txItem.isAsset && txItem.assetInfo != null)
-                message = txItem.assetInfo.getEntity().getDomain();
-            else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
+            else if (mService.isLiquid() && txItem.isAsset) {
+                final String assetId =
+                    txItem.mAssetBalances.keySet().toArray(new String[txItem.mAssetBalances.size()])[0];
+                final AssetInfoData assetInfo = txItem.mAssetBalances.get(assetId).getAssetInfo();
+                message = assetInfo != null ? assetInfo.getEntity().getDomain() : assetId;
+            } else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(
                                             R.string.id_redeposited),
                                         txItem.isAsset ? mActivity.getString(R.string.id_asset) : "");

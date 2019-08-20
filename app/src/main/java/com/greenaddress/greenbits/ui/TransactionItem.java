@@ -37,7 +37,6 @@ public class TransactionItem implements Serializable {
     public final TYPE type;
     private final int currentBlock;
     private final Integer blockHeight;
-    public final long satoshi;
     public String counterparty;
     public final JSONMap receivedOnEp;
     public final boolean replaceable;
@@ -56,8 +55,6 @@ public class TransactionItem implements Serializable {
     public final List<TransactionData> eps;
     public final Integer subaccount;
     public final boolean isAsset;
-    public final String assetId;
-    public final AssetInfoData assetInfo;
 
     public Map<String, BalanceData> mAssetBalances;
 
@@ -98,9 +95,6 @@ public class TransactionItem implements Serializable {
         blockHeight = txData.getBlockHeight();
         counterparty = "";
         this.subaccount = subaccount;
-        assetId = txData.getFirstAsset() == null ? "btc" : txData.getFirstAsset();
-        assetInfo = txData.getAssetInfo() == null ? null : txData.getAssetInfo().get(assetId);
-        satoshi = txData.getSatoshi().get(assetId);
         isAsset = txData.isAsset();
 
         mAssetBalances = new HashMap<>();
@@ -128,7 +122,7 @@ public class TransactionItem implements Serializable {
         case "redeposit":
             // the amount is the fee
             type = TYPE.REDEPOSIT;
-            if (mAssetBalances.keySet().size() > 1){
+            if (mAssetBalances.keySet().size() > 1) {
                 mAssetBalances.remove("btc");
             }
             break;
@@ -162,26 +156,22 @@ public class TransactionItem implements Serializable {
                       txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 
-    public String getAssetTicker(final GaService service) {
-        return "btc".equals(assetId) ? service.getBitcoinOrLiquidUnit() : assetInfo != null &&
-               assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
-    }
-
-    private AssetInfoData getAssetInfo() {
-        final AssetInfoData assetInfoDefault = new AssetInfoData(assetId, assetId, 0, "", "");
-        return assetInfo == null ? assetInfoDefault : assetInfo;
-    }
-
-    public String getAmountWithUnit(final GaService service) {
+    public String getAmountWithUnit(final GaService service, final String assetId) {
         try {
+            AssetInfoData assetInfo = mAssetBalances.get(assetId).getAssetInfo();
+            if (assetInfo == null)
+                assetInfo = new AssetInfoData(assetId, assetId, 0, "", "");
+
             final ObjectNode details = mObjectMapper.createObjectNode();
-            details.put("satoshi", satoshi);
+            details.put("satoshi", mAssetBalances.get(assetId).getSatoshi());
             if (isAsset)
-                details.set("asset_info", getAssetInfo().toObjectNode());
+                details.set("asset_info", assetInfo.toObjectNode());
             final ObjectNode converted = getSession().convert(details);
             final String amount = converted.get(isAsset ? assetId : service.getUnitKey()).asText();
-            return String.format("%s%s %s", type == TYPE.OUT ? "-" : "", amount,
-                                 isAsset ? getAssetTicker(service) : service.getBitcoinOrLiquidUnit());
+            final String denom =
+                isAsset ? (assetInfo.getTicker() !=
+                           null ? assetInfo.getTicker() : "") : service.getBitcoinOrLiquidUnit();
+            return String.format("%s%s %s", type == TYPE.OUT || type == TYPE.REDEPOSIT ? "-" : "", amount, denom);
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
             return "";

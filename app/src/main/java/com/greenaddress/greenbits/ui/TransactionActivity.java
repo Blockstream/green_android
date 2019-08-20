@@ -61,7 +61,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private ImageView mStatusIcon;
 
     private TransactionItem mTxItem;
-    private Map<String, BalanceData> mAssetsBalances;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_transaction; }
@@ -93,16 +92,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         mTxItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
         final boolean isWatchOnly = mService.isWatchOnly();
-
-        try {
-            mAssetsBalances = getModel().getCurrentAccountBalanceData();
-        } catch (final Exception e) {
-            e.printStackTrace();
-            UI.toast(this, R.string.id_you_are_not_connected, Toast.LENGTH_LONG);
-            setResult(Activity.RESULT_CANCELED);
-            finishOnUiThread();
-            return;
-        }
 
         // Set txid
         final TextView hashText = UI.find(this, R.id.txHashText);
@@ -148,7 +137,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         String btc;
         String fiat;
         try {
-            final ObjectNode amount = getSession().convertSatoshi(mTxItem.satoshi);
+            final ObjectNode amount = getSession().convertSatoshi(mTxItem.mAssetBalances.get("btc").getSatoshi());
             btc = mService.getValueString(amount, false, true);
             fiat = mService.getValueString(amount, true, true);
         } catch (final RuntimeException | IOException e) {
@@ -462,9 +451,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        BalanceData balance = mAssetsBalances.get(mTxItem.assetId);
+        BalanceData balance = mTxItem.mAssetBalances.get(assetId);
         intent.putExtra("ASSET_ID", assetId)
-        .putExtra("ASSET_INFO", mTxItem.assetInfo)
+        .putExtra("ASSET_INFO", balance.getAssetInfo())
         .putExtra("SATOSHI", balance != null ? balance.getSatoshi() : 0L);
         startActivity(intent);
     }
