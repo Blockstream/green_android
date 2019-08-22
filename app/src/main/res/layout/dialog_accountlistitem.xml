@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <com.greenaddress.greenbits.ui.FontAwesomeTextView
+        <com.greenaddress.greenbits.ui.components.FontAwesomeTextView
             android:id="@+id/mainBalanceUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.greenaddress.greenbits.ui.MainFragment"
+    tools:context="com.greenaddress.greenbits.ui.transactions.MainFragment"
     android:background="@color/windowBackground">
 
     <android.support.design.widget.AppBarLayout
@@ -21,7 +21,7 @@
             app:contentScrim="@android:color/transparent"
             app:layout_scrollFlags="scroll">
 
-            <com.greenaddress.greenbits.ui.components.AccountView
+            <com.greenaddress.greenbits.ui.accounts.AccountView
                 android:id="@+id/accountView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

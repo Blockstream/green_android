@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenbits.ui.CircularButton;
+import com.greenaddress.greenbits.ui.components.CircularButton;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;

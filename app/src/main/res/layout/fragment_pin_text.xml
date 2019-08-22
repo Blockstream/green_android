@@ -40,7 +40,7 @@
             <requestFocus/>
         </android.support.design.widget.TextInputLayout>
 
-        <com.greenaddress.greenbits.ui.CircularButton
+        <com.greenaddress.greenbits.ui.components.CircularButton
             android:id="@+id/pinLoginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

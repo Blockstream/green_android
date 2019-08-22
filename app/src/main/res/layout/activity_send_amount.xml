@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.greenaddress.greenbits.ui.SendAmountActivity">
+    tools:context="com.greenaddress.greenbits.ui.send.SendAmountActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -68,7 +68,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp">
 
-                <com.greenaddress.greenbits.ui.FontFitEditText
+                <com.greenaddress.greenbits.ui.components.FontFitEditText
                     android:id="@+id/amountText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -146,28 +146,28 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.greenaddress.greenbits.ui.FeeButtonView
+                <com.greenaddress.greenbits.ui.send.FeeButtonView
                     android:id="@+id/fastButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     />
 
-                <com.greenaddress.greenbits.ui.FeeButtonView
+                <com.greenaddress.greenbits.ui.send.FeeButtonView
                     android:id="@+id/mediumButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     />
 
-                <com.greenaddress.greenbits.ui.FeeButtonView
+                <com.greenaddress.greenbits.ui.send.FeeButtonView
                     android:id="@+id/slowButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     />
 
-                <com.greenaddress.greenbits.ui.FeeButtonView
+                <com.greenaddress.greenbits.ui.send.FeeButtonView
                     android:id="@+id/customButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

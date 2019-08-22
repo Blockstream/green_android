@@ -1,7 +1,6 @@
 package com.greenaddress.greenapi;
 
 import com.blockstream.libwally.Wally;
-import com.greenaddress.greenbits.ui.MnemonicHelper;
 
 import java.security.SecureRandom;
 

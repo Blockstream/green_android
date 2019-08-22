@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.greenaddress.greenbits.ui.ReceiveFragment">
+    tools:context="com.greenaddress.greenbits.ui.receive.ReceiveFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -70,7 +70,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp">
 
-                    <com.greenaddress.greenbits.ui.FontFitEditText
+                    <com.greenaddress.greenbits.ui.components.FontFitEditText
                         android:id="@+id/amountEditText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

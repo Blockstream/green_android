@@ -26,6 +26,8 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.PinActivity;
+import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity;
+import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 
 /**
@@ -47,7 +49,7 @@ public abstract class GaActivity extends AppCompatActivity {
     // onCreateWithService() is called. Once assigned it does not
     // change so may be read from background threads.
     private boolean mResumed;
-    protected GaService mService;
+    public GaService mService;
     protected ProgressBarHandler mProgressBarHandler;
     private SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();
 
@@ -139,7 +141,7 @@ public abstract class GaActivity extends AppCompatActivity {
 
     // Utility methods
 
-    protected void finishOnUiThread() {
+    public void finishOnUiThread() {
         runOnUiThread(GaActivity.this::finish);
     }
 

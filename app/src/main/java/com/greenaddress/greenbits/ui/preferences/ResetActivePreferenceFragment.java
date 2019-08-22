@@ -8,7 +8,7 @@ import android.support.v7.preference.Preference;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.TwoFactorActivity;
+import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 import com.greenaddress.greenbits.ui.UI;
 
 import static android.app.Activity.RESULT_OK;

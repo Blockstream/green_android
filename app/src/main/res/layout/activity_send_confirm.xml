@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.greenaddress.greenbits.ui.SendConfirmActivity">
+    tools:context="com.greenaddress.greenbits.ui.send.SendConfirmActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -154,7 +154,7 @@
         android:background="@color/primaryDark"
         android:padding="16dp">
 
-        <com.greenaddress.greenbits.ui.components.SwipeButton
+        <com.greenaddress.greenbits.ui.send.SwipeButton
             android:id="@+id/swipeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

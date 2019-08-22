@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context="com.greenaddress.greenbits.ui.AssetActivity">
+    tools:context="com.greenaddress.greenbits.ui.assets.AssetActivity">
 
     <ScrollView
         android:layout_width="fill_parent"

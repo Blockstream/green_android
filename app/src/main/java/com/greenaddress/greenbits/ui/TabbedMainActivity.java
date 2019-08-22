@@ -31,9 +31,12 @@ import com.greenaddress.greenapi.model.ConnectionMessageObservable;
 import com.greenaddress.greenapi.model.EventDataObservable;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
+import com.greenaddress.greenbits.ui.notifications.NotificationsFragment;
 import com.greenaddress.greenbits.ui.preferences.GeneralPreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.WatchOnlyPreferenceFragment;
+import com.greenaddress.greenbits.ui.send.SendAmountActivity;
+import com.greenaddress.greenbits.ui.transactions.MainFragment;
 
 import org.bitcoinj.core.AddressFormatException;
 
@@ -41,7 +44,7 @@ import java.util.Arrays;
 import java.util.Observable;
 import java.util.Observer;
 
-import static com.greenaddress.greenbits.ui.ScanActivity.INTENT_STRING_TX;
+import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
 public class TabbedMainActivity extends LoggedActivity implements Observer,

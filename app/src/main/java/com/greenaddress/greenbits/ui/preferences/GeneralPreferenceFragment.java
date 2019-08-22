@@ -33,11 +33,11 @@ import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
-import com.greenaddress.greenbits.ui.PinSaveActivity;
-import com.greenaddress.greenbits.ui.PopupCodeResolver;
-import com.greenaddress.greenbits.ui.PopupMethodResolver;
+import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
+import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
+import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.TwoFactorActivity;
+import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 

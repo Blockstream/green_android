@@ -5,6 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.greenaddress.greenbits.ui.ReceiveActivity">
+    tools:context="com.greenaddress.greenbits.ui.receive.ReceiveActivity">
 
 </android.support.constraint.ConstraintLayout>

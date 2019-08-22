@@ -172,7 +172,7 @@ public abstract class UI {
         return null;
     }
 
-    static Map<String, String> getTwoFactorLookup(final Resources res) {
+    public static Map<String, String> getTwoFactorLookup(final Resources res) {
         final List<String> localized = Arrays.asList(res.getStringArray(R.array.twoFactorChoices));
         final List<String> methods = Arrays.asList(res.getStringArray(R.array.twoFactorMethods));
         final Map<String, String> map = new HashMap<>();
@@ -276,7 +276,7 @@ public abstract class UI {
     }
 
     // Keyboard hiding taken from https://stackoverflow.com/a/11656129
-    static void attachHideKeyboardListener(final Activity activity, final View view) {
+    public static void attachHideKeyboardListener(final Activity activity, final View view) {
         if (idsToNotReplace.contains(view.getId()))
             return;
         // Set up touch listener for non-text box views to hide keyboard.
@@ -318,7 +318,7 @@ public abstract class UI {
 
     public static void show(final View v) { showIf(true, v); }
 
-    static void hideIf(final boolean condition, final View v) {
+    public static void hideIf(final boolean condition, final View v) {
         showIf(!condition, v);
     }
 

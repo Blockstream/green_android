@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.blockstream.libwally.Wally;
 import com.greenaddress.greenbits.ui.BuildConfig;
-import com.greenaddress.greenbits.ui.MnemonicHelper;
+import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ThemeUtils;
 import com.greenaddress.greenbits.ui.UI;

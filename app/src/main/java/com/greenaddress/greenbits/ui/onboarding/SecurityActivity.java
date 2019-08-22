@@ -17,7 +17,7 @@ import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.TwoFactorActivity;
+import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 import com.greenaddress.greenbits.ui.UI;
 
 import java.util.Arrays;

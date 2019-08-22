@@ -17,7 +17,6 @@ import com.blockstream.libwally.Wally;
 import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.ui.LoginActivity;
-import com.greenaddress.greenbits.ui.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.UI;

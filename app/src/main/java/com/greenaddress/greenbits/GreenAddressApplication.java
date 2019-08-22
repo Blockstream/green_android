@@ -20,7 +20,7 @@ import com.greenaddress.gdk.JSONConverterImpl;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenbits.ui.FailHardActivity;
-import com.greenaddress.greenbits.ui.MnemonicHelper;
+import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.crypto.MnemonicCode;
