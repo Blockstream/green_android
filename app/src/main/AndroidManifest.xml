@@ -145,9 +145,6 @@
             android:label="@string/id_qr_scanner"
             />
         <activity
-            android:name=".monitor.NetworkMonitorActivity"
-            android:label="@string/id_network_monitor" />
-        <activity
             android:name=".authentication.RequestLoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
