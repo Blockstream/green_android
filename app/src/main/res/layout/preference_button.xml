@@ -1,7 +1,0 @@
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/preference_button"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/material_button_border_red"
-    android:text="@string/id_log_out"
-    android:textColor="@color/red" />
