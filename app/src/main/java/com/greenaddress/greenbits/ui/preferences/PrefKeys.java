@@ -8,6 +8,8 @@ public class PrefKeys {
     public static final String PRICING = "pricing";
     public static final String UNIT = "unit";
     public static final String WATCH_ONLY_LOGIN = "watch_only_login";
+    public static final String WATCH_ONLY_USERNAME = "watch_only_username";
+    public static final String WATCH_ONLY_PASSWORD = "watch_only_password";
     public static final String SWITCH_NETWORK = "switch_network";
     public static final String REQUIRED_NUM_BLOCKS = "required_num_blocks";
     public static final String DEFAULT_FEERATE_SATBYTE = "default_feerate_satbyte";
@@ -29,7 +31,6 @@ public class PrefKeys {
     public static final String SPV_MOBILE_SYNC_ENABLED = "spv_mobile_sync_enabled";
     public static final String SPV_SYNCRONIZATION = "spv_synchronization";
     public static final String VERIFIED_HASH_ = "verified_hash_";
-    public static final String WATCH_ONLY_USERNAME = "watch_only_username";
     public static final String TWO_FAC_LIMITS = "twoFacLimits";
     public static final String TWO_FAC_N_LOCKTIME_EMAILS = "twoFacNLocktimeEmails";
     public static final String SEND_NLOCKTIME = "send_nlocktime";
