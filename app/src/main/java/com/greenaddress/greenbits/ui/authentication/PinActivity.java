@@ -237,7 +237,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             final String pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15);
             login(pin);
         } catch (final KeyStoreException | InvalidKeyException e) {
-            KeyStoreAES.showAuthenticationScreen(this);
+            KeyStoreAES.showAuthenticationScreen(this, mService.getNetwork().getName());
         } catch (final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException |
                  CertificateException | UnrecoverableKeyException | IOException |
                  NoSuchAlgorithmException | NoSuchPaddingException e) {

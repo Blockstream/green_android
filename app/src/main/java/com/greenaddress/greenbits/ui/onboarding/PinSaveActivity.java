@@ -92,7 +92,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         try {
             setPin(KeyStoreAES.tryEncrypt(mService), true);
         } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
-            KeyStoreAES.showAuthenticationScreen(this);
+            KeyStoreAES.showAuthenticationScreen(this, "");
         } catch (final KeyStoreAES.KeyInvalidated e) {
             toast(getString(R.string.id_problem_with_key_1s, e.getMessage()));
         }

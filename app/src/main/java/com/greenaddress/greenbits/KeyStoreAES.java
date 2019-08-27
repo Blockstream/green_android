@@ -13,6 +13,8 @@ import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Base64;
 
 import com.greenaddress.greenapi.CryptoHelper;
+import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
 
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -130,9 +132,12 @@ public class KeyStoreAES {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void showAuthenticationScreen(final Activity act) {
+    public static void showAuthenticationScreen(final Activity act, final String network) {
         final KeyguardManager keyguardManager = (KeyguardManager) act.getSystemService(Context.KEYGUARD_SERVICE);
-        final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(null, null);
+        final boolean isSaveActivity = (act instanceof PinSaveActivity);
+        final String authTitle = !isSaveActivity ? String.format("Blockstream Green " + act.getString(R.string.id_log_in)) : "";
+        final String authDesc= !isSaveActivity ? String.format("Log in into your " + network + " wallet") : "";
+        final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(authTitle, authDesc);
         if (intent != null) {
             act.startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
         }
