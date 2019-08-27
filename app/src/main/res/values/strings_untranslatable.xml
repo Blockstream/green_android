@@ -15,6 +15,7 @@
     <string name="doubleNewLine" translatable="false">\\n\\n</string>
     <string name="default123" translatable="false">123</string>
     <string name="notification_format_string" translatable="false">%s</string>
+    <string name="id_blockstream_green" translatable="false">Blockstream Green</string>
 
     <string-array name="twoFactorMethods" translatable="false">
         <item>email</item>

@@ -358,7 +358,7 @@
   <string name="id_set_a_new_pin">Imposta un nuovo PIN</string>
   <string name="id_set_custom_fee_rate">Imposta commissione personalizzata</string>
   <string name="id_set_twofactor_threshold">Imposta limite per autenticazione a due fattori</string>
-  <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
+  <string name="id_set_up_a_passcode_for_your_ios">Imposta un codice per il tuo device iOS per impostare un PIN per Blockstream Green</string>
   <string name="id_set_up_pgp_key_for">Fornisci una chiave PGP per le comunicazioni</string>
   <string name="id_set_up_twofactor_authentication">Imposta Autenticazione a Due Fattori</string>
   <string name="id_set_up_watchonly">Imposta watch-only</string>
@@ -387,6 +387,7 @@
   <string name="id_spv_notifications">Notifiche SPV</string>
   <string name="id_spv_reset_and_restarted">SPV riavviato</string>
   <string name="id_spv_synchronization">Sincronizzazione SPV</string>
+  <string name="id_spv_synchronization_using_tor">La sincronizzazione SPV via Tor richiede l\' URL onion di un nodo di fiducia</string>
   <string name="id_spv_unverified">Non verificata da SPV</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">Trasferisci Tutto da un Paper Wallet</string>
@@ -452,6 +453,7 @@
   <string name="id_wallet_creation_failed">Creazione wallet fallita</string>
   <string name="id_wallets">Wallets</string>
   <string name="id_warning">Attenzione!</string>
+  <string name="id_warning_no_trusted_node_set">Attenzione: trusted node non impostato!</string>
   <string name="id_warning_nononion_address">Attenzione: Rilevato indirizzo non-.onion!</string>
   <string name="id_warning_resetting_twofactor">ATTENZIONE: resettare il Secondo Fattore bloccherà il tuo wallet</string>
   <string name="id_warning_there_is_already_a">ATTENZIONE: Esiste già una richiesta per resettare il Secondo Fattore sul tuo wallet. Se richiedi di resettarlo con un nuovo indirizzo email, il tuo wallet diventerà contestato e potrebbe diventare permanentemente non-disponibile.</string>
@@ -486,6 +488,7 @@
   <string name="id_you_only_have_one_twofactor">Hai attivato un solo metodo di autenticazione a due fattori</string>
   <string name="id_you_will_need_to_reenter_your">Se non imposti un PIN dovrai utilizzare la mnemonica per accedere. Premi "OK" per continuare.</string>
   <string name="id_your_green_wallet_is_now_ready">Il tuo wallet Green è ora pronto all\'uso.</string>
+  <string name="id_your_ios_device_might_not_be">Il tuo device iOS potrebbe essere non supportato</string>
   <string name="id_your_notifications_will_be">Vedrai qui le tue notifiche.</string>
   <string name="id_your_pin_or_your_mnemonic_will">Sarà necessario inserire il PIN o la mnemonica per accedere al wallet</string>
   <string name="id_your_s_sent_to_s_has_been">I tuoi %s inviati a %s sono stati confermati</string>

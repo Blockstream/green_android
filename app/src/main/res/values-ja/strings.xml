@@ -387,6 +387,7 @@
   <string name="id_spv_notifications">SPV告知事項</string>
   <string name="id_spv_reset_and_restarted">SPVがリセットされ再始動されました</string>
   <string name="id_spv_synchronization">SPVシンクロナイゼーション</string>
+  <string name="id_spv_synchronization_using_tor">SPV synchronization using Tor requires a trusted node onion URL</string>
   <string name="id_spv_unverified">SPV非検証済み</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">ペーパーウォレットをSweepする</string>
@@ -452,6 +453,7 @@
   <string name="id_wallet_creation_failed">Wallet creation failed</string>
   <string name="id_wallets">ウォレット</string>
   <string name="id_warning">注意!</string>
+  <string name="id_warning_no_trusted_node_set">Warning: No trusted node set!</string>
   <string name="id_warning_nononion_address">注意: .onionではないアドレスが検知されました。</string>
   <string name="id_warning_resetting_twofactor">注意: 2段階認証を再設定する場合、ウォレットをロックすることになります。</string>
   <string name="id_warning_there_is_already_a">警告: 2段階認証を再設定する要請が既にありました。新しいEメールアドレスで再要請する場合、紛争プロセスに進むことになり、ウォレットが永久的に使えない状態になる可能性があります。</string>
@@ -486,6 +488,7 @@
   <string name="id_you_only_have_one_twofactor">2段階認証の一つだけ設定されています。</string>
   <string name="id_you_will_need_to_reenter_your">PINを設定しない場合、ログインするにはもう一度mnemonicを入力しなければなりません。続けるには"OK"を押してください。 </string>
   <string name="id_your_green_wallet_is_now_ready">Green ウォレットを使用できます。</string>
+  <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>
   <string name="id_your_notifications_will_be">告示情報はこちらから確認できます。</string>
   <string name="id_your_pin_or_your_mnemonic_will">ウォレットにアクセスするにはPINもしくはmnemonicが必要です。</string>
   <string name="id_your_s_sent_to_s_has_been">%sに送金した%s が検証されました。</string>

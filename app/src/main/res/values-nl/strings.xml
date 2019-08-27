@@ -387,6 +387,7 @@
   <string name="id_spv_notifications">SPV-notificaties</string>
   <string name="id_spv_reset_and_restarted">SPV gereset en opnieuw gestart</string>
   <string name="id_spv_synchronization">SPV-synchronisatie</string>
+  <string name="id_spv_synchronization_using_tor">SPV synchronization using Tor requires a trusted node onion URL</string>
   <string name="id_spv_unverified">SPV niet geverifieerd</string>
   <string name="id_sweep">Opvegen</string>
   <string name="id_sweep_from_paper_wallet">Opvegen van papieren wallet</string>
@@ -452,6 +453,7 @@
   <string name="id_wallet_creation_failed">Wallet-creatie mislukt</string>
   <string name="id_wallets">Wallets</string>
   <string name="id_warning">Waarschuwing!</string>
+  <string name="id_warning_no_trusted_node_set">Warning: No trusted node set!</string>
   <string name="id_warning_nononion_address">Waarschuwing: geen -.onion-adres gedetecteerd!</string>
   <string name="id_warning_resetting_twofactor">WAARSCHUWING: het resetten van tweetrapsauthenticatie vergrendelt je wallet</string>
   <string name="id_warning_there_is_already_a">WAARSCHUWING: er is al een verzoek gaande om je tweetrapsauthenticatie te resetten. Als je het nu aanvraagt met een nieuw e-mailadres, ontstaat er een dispuut en wordt je wallet waarschijnlijk permanent onbeschikbaar.</string>
@@ -486,6 +488,7 @@
   <string name="id_you_only_have_one_twofactor">Je hebt slechts één tweetrapsauthenticatiemethode ingesteld</string>
   <string name="id_you_will_need_to_reenter_your">Je zal je woordenlijst opnieuw moeten invoeren om je weer aan te melden als je geen PIN instelt. Druk op "OK" om door te gaan.</string>
   <string name="id_your_green_wallet_is_now_ready">Green Wallet is nu klaar voor gebruik.</string>
+  <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>
   <string name="id_your_notifications_will_be">Je notificaties verschijnen hier.</string>
   <string name="id_your_pin_or_your_mnemonic_will">Je PIN of woordenlijst zijn nodig om toegang te krijgen tot de wallet.</string>
   <string name="id_your_s_sent_to_s_has_been">Je %s (verstuurd naar %s) is bevestigd</string>
