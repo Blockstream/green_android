@@ -67,7 +67,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     public void toFirst() {
         if (!mChangingActivity) {
             mChangingActivity = true;
-            final Intent intent = GaActivity.createToFirstIntent(this, mService);
+            final Intent intent = GaActivity.createToFirstIntent(this);
             startActivity(intent);
             finishOnUiThread();
         }

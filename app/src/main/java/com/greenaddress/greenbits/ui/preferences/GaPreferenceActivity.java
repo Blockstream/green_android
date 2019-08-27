@@ -86,7 +86,7 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     }
 
     protected void logout() {
-        final Intent intent = GaActivity.createToFirstIntent(this, getGAApp().mService);
+        final Intent intent = GaActivity.createToFirstIntent(this);
         startActivity(intent);
     }
 
