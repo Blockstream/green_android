@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
@@ -36,41 +37,25 @@ public class FirstScreenActivity extends LoginActivity {
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
         setTitle("");
 
-        final Button firstLogInButton = findViewById(R.id.firstLogInButton);
-        firstLogInButton.setOnClickListener(v -> askConfirmation(
-                                                new Intent(this, MnemonicActivity.class),
-                                                R.string.id_you_cannot_create_or_restore_a));
-        final Button firstSignUpButton = findViewById(R.id.firstSignUpButton);
-        firstSignUpButton.setOnClickListener(v -> askConfirmation(
-                                                 new Intent(this, TermsActivity.class),
-                                                 R.string.id_you_cannot_create_or_restore_a));
+        final Button loginButton = findViewById(R.id.loginButton);
+        final Button restoreButton = findViewById(R.id.restoreButton);
+        if (mService.hasPin()) {
+            restoreButton.setVisibility(View.GONE);
+        }
+        restoreButton.setOnClickListener(v -> startActivity(new Intent(this, MnemonicActivity.class)));
+        loginButton.setText(mService.hasPin() ? R.string.id_log_in : R.string.id_create_new_wallet);
+        Intent loginButtonIntent = mService.hasPin() ?
+                                   new Intent(this, PinActivity.class) :
+                                   new Intent(this, TermsActivity.class);
+        loginButton.setOnClickListener(v -> startActivity(loginButtonIntent));
+
 
         mSelectNetwork = UI.find(this, R.id.settingsButton);
         mSelectNetwork.setOnClickListener(v -> { startActivityForResult(new Intent(this, NetworkSettingsActivity.class),
                                                                         NETWORK_SELECTOR_REQUEST); });
 
-        mWalletDetected = UI.find( this, R.id.walletDetected);
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(UI.getColoredString(getString(R.string.id_a_wallet_is_detected_on_this),
-                                           getResources().getColor(R.color.grey_light)));
-
-        final int accentColor = mService.getNetwork().getLiquid() ? R.color.liquidGradientLight : R.color.green;
-        builder.append(" ");
-        builder.append(UI.getColoredString(getString(R.string.id_log_in),
-                                           getResources().getColor(accentColor)));
-        mWalletDetected.setText(builder, BufferType.SPANNABLE);
-        mWalletDetected.setOnClickListener(v -> startActivity(new Intent(this, PinActivity.class)));
     }
 
-    private void askConfirmation(final Intent intent, final int message) {
-        if (mService.hasPin()) {
-            UI.popup(this, R.string.id_warning, R.string.id_ok)
-            .content(getString(message, mService.getNetwork().getName()))
-            .onPositive((dialog, which) -> {}).build().show();
-        } else {
-            startActivity(intent);
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {

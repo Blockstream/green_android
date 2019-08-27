@@ -52,19 +52,18 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/firstSignUpButton"
+                android:id="@+id/loginButton"
                 style="@style/gradientButton"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/id_create_new_wallet" />
+                android:layout_gravity="center_horizontal" />
 
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="16dp" />
 
             <Button
-                android:id="@+id/firstLogInButton"
+                android:id="@+id/restoreButton"
                 style="@style/borderButton"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -73,18 +72,6 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="16dp" />
-
-            <TextView
-                android:id="@+id/walletDetected"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="12dp"
-                android:textSize="12sp"
-                android:gravity="center_horizontal" />
-
-            <View
-                android:layout_width="match_parent"
                 android:layout_height="16dp" />
 
         </LinearLayout>
