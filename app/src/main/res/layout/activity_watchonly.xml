@@ -74,7 +74,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/id_remember_username"
+                    android:text="@string/id_remember_me"
                     android:textColor="@color/textColor"/>
 
                 <androidx.appcompat.widget.SwitchCompat

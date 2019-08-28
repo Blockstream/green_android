@@ -44,6 +44,7 @@
   <string name="id_bitcoin_denomination">Деноминация биткоина</string>
   <string name="id_bitcoin_wallet">Биткоин-кошелек</string>
   <string name="id_block">блок</string>
+  <string name="id_block_d">Block %d</string>
   <string name="id_block_height_1d">Высота блока: %1$d</string>
   <string name="id_blocks">блоки</string>
   <string name="id_blocks_confirmed">подтвержденные блоки</string>
@@ -69,6 +70,7 @@
   <string name="id_connect_through_a_proxy">Установить соединение через прокси-сервер</string>
   <string name="id_connect_with_tor">Установить соединение с Tor</string>
   <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
+  <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Подключение к Tor (.onion) узлам обеспечивает максимальную конфиденциальность и безопасность. Нажмите "OK" для продолжения.</string>
   <string name="id_continue">Продолжить</string>
   <string name="id_copy_to_clipboard">Скопировать в буфер обмена</string>
@@ -209,6 +211,7 @@
   <string name="id_lets_get_you_set_up">Давайте произведем настройку.</string>
   <string name="id_loading_transactions">Идет загрузка транзакций...</string>
   <string name="id_log_in">Войти</string>
+  <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
   <string name="id_log_in_using_mnemonic">Войти с использованием мнемонической фразы</string>
   <string name="id_log_in_via_watchonly_to_receive">Войдите с помощью холодного кошелька, чтобы получить средства и проверить баланс.</string>
   <string name="id_log_out">Выйти</string>
@@ -312,7 +315,7 @@
   <string name="id_redeposited">Внесенный повторно</string>
   <string name="id_reference_exchange_rate">Обменный курс</string>
   <string name="id_refresh">Обновление</string>
-  <string name="id_remember_username">Запомнить имя пользователя</string>
+  <string name="id_remember_me">Remember me</string>
   <string name="id_remove_custom_network">Удалить настраиваемую сеть</string>
   <string name="id_replaceable">заменяемый</string>
   <string name="id_request_amount">ЗАПРОСИТЬ СУММУ</string>
@@ -355,6 +358,7 @@
   <string name="id_set_a_new_pin">Установить новый PIN-код </string>
   <string name="id_set_custom_fee_rate">Установить размер комиссии</string>
   <string name="id_set_twofactor_threshold">Установить двухфакторный порог</string>
+  <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_pgp_key_for">Установить PGP-ключ для связи</string>
   <string name="id_set_up_twofactor_authentication">Установить двухфакторную аутентификацию</string>
   <string name="id_set_up_watchonly">Настроить холодный кошелек</string>
@@ -409,6 +413,8 @@
   <string name="id_time_s">Время:%s</string>
   <string name="id_to">ДО</string>
   <string name="id_tor_connectivity_disabled">Соединение с Tor разорвано!</string>
+  <string name="id_tor_is_connected">Tor is connected</string>
+  <string name="id_tor_status">Tor status</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor будет использовать %1$s и будет работать только в том случае, если вы используете прокси Orbot или включен Tor</string>
   <string name="id_total_assets">Общая сумма активов</string>
   <string name="id_total_balance">Итоговый баланс</string>
@@ -448,10 +454,10 @@
   <string name="id_warning">Внимание!</string>
   <string name="id_warning_nononion_address">Внимание! Адрес не содержит .onion!</string>
   <string name="id_warning_resetting_twofactor">ВНИМАНИЕ: перезагрузка двухфакторной аутентификации заблокирует ваш кошелек</string>
-  <string name="id_warning_the_username_will_be">Внимание: имя пользователя будет сохранено на этом устройстве</string>
   <string name="id_warning_there_is_already_a">ВНИМАНИЕ: Поступил запрос на двухфакторную аутентификацию вашего кошелька. Если вы повторите запрос с нового адреса электронной почты, ваш кошелек станет оспариваемым и, вероятно, недоступным для вас навсегда.</string>
   <string name="id_warning_wallet_locked_by">ВНИМАНИЕ: Кошелек заблокирован. Обратитесь в службу поддержки за дополнительной информацией.</string>
   <string name="id_warning_wallet_locked_for">ВНИМАНИЕ: Кошелек заблокирован до двухфакторного сброса через %d дней. Обратитесь в службу поддержки за дополнительной информацией.</string>
+  <string name="id_warning_watchonly_credentials">Warning: Watch-only credentials will be saved on your device</string>
   <string name="id_warning_you_need_a_positive">Внимание! Вам нужен положительный баланс L-BTC, чтобы иметь возможность отправлять транзакции.</string>
   <string name="id_watchonly">Холодный кошелек</string>
   <string name="id_watchonly_disabled">Холодный кошелек отключен</string>
@@ -486,5 +492,5 @@
   <string name="id_your_transactions_will_be_shown">Ваши транзакции будут показаны здесь.</string>
   <string name="id_your_twofactor_threshold_is_s">Ваш двухфакторный лимит расходов составляет %s.</string>
   <string name="id_your_wallet_is_not_yet_fully">Ваш кошелек не защищен.\nПожалуйста, включите двухфакторную аутентификацию.</string>
-  <string name="id_your_watchonly_username_will_be">Имя пользователя вашего холодного кошелька будет храниться в незашифрованном виде на этом устройстве. Если ваше устройство будет взломано, третьи стороны смогут наблюдать за вашими транзакциями. Нажмите «ОК», чтобы продолжить.</string>
+  <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
 </resources>

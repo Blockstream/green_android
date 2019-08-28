@@ -44,6 +44,7 @@
   <string name="id_bitcoin_denomination">Denominação de Bitcoin</string>
   <string name="id_bitcoin_wallet">Carteira de Bitcoin.</string>
   <string name="id_block">bloco</string>
+  <string name="id_block_d">Block %d</string>
   <string name="id_block_height_1d">Altura do bloco: %1$d</string>
   <string name="id_blocks">blocos</string>
   <string name="id_blocks_confirmed">blocos confirmados</string>
@@ -69,6 +70,7 @@
   <string name="id_connect_through_a_proxy">Conectar-se através de um proxy</string>
   <string name="id_connect_with_tor">Conectar-se com Tor</string>
   <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
+  <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Conectar-se a nodes Tor (.onion) garante máxima privacidade e segurança. Pressione "OK" para continuar.</string>
   <string name="id_continue">Continuar</string>
   <string name="id_copy_to_clipboard">Copiar para a área de transferênca</string>
@@ -209,6 +211,7 @@
   <string name="id_lets_get_you_set_up">Vamos preparar sua carteira.</string>
   <string name="id_loading_transactions">Carregando transações…</string>
   <string name="id_log_in">Entrar</string>
+  <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
   <string name="id_log_in_using_mnemonic">Entrar usando mnemônico</string>
   <string name="id_log_in_via_watchonly_to_receive">Entrar em modo somente leitura para receber fundos e verificar o saldo.</string>
   <string name="id_log_out">Sair</string>
@@ -312,7 +315,7 @@
   <string name="id_redeposited">Depositado novamente</string>
   <string name="id_reference_exchange_rate">Taxa de conversão de referência</string>
   <string name="id_refresh">Atualizar</string>
-  <string name="id_remember_username">Lembrar nome de usuário</string>
+  <string name="id_remember_me">Remember me</string>
   <string name="id_remove_custom_network">Remover rede personalizada</string>
   <string name="id_replaceable">substituível</string>
   <string name="id_request_amount">SOLICITAR MONTANTE</string>
@@ -355,6 +358,7 @@
   <string name="id_set_a_new_pin">Configurar novo PIN</string>
   <string name="id_set_custom_fee_rate">Configurar taxa personalizada</string>
   <string name="id_set_twofactor_threshold">Configurar patamar da autenticação de dois fatores</string>
+  <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_pgp_key_for">Configurar chave PGP para comunicação</string>
   <string name="id_set_up_twofactor_authentication">Configurar autenticação de dois fatores</string>
   <string name="id_set_up_watchonly">Configurar modo somente leitura</string>
@@ -409,6 +413,8 @@
   <string name="id_time_s">Tempo: %s</string>
   <string name="id_to">PARA</string>
   <string name="id_tor_connectivity_disabled">Conectividade Tor Desabilitada!</string>
+  <string name="id_tor_is_connected">Tor is connected</string>
+  <string name="id_tor_status">Tor status</string>
   <string name="id_tor_will_use_1s_and_only_work">A rede Tor vai utilizar %1$s e somente funcionará se seu proxy é habilitado para Orbot ou Tor</string>
   <string name="id_total_assets">Ativos Totais</string>
   <string name="id_total_balance">Saldo Total</string>
@@ -448,10 +454,10 @@
   <string name="id_warning">Aviso!</string>
   <string name="id_warning_nononion_address">Aviso: endereço não .onion detectado!</string>
   <string name="id_warning_resetting_twofactor">AVISO: Resetar a autenticação de dois fatores bloqueará sua carteira.</string>
-  <string name="id_warning_the_username_will_be">Aviso: O nome de usuário será salvo no seu dispositivo</string>
   <string name="id_warning_there_is_already_a">AVISO: Já há um pedido para resetar a autenticação de dois fatores para sua carteira. Se você pedir novamente agora com um novo endereço de email, sua carteira entrará em modo "disputada" e provavelmente ficará indisponível para você.</string>
   <string name="id_warning_wallet_locked_by">AVISO: Carteira bloqueada por disputa da autenticação de dois fatores. Contate o suporte para mais informações.</string>
   <string name="id_warning_wallet_locked_for">AVISO: Carteira bloqueada para reset da autenticação de dois fatores em %d dias. Contate o suporte para mais informações.</string>
+  <string name="id_warning_watchonly_credentials">Warning: Watch-only credentials will be saved on your device</string>
   <string name="id_warning_you_need_a_positive">Warning! You need a positive L-BTC balance to be able to send transactions.</string>
   <string name="id_watchonly">Somente leitura</string>
   <string name="id_watchonly_disabled">Modo somente leitura desabilitado</string>
@@ -486,5 +492,5 @@
   <string name="id_your_transactions_will_be_shown">Suas transações serão mostradas aqui.</string>
   <string name="id_your_twofactor_threshold_is_s">Seu patamar da autenticação de dois fatores é %s.</string>
   <string name="id_your_wallet_is_not_yet_fully">Sua carteira não está completamente segura.\nPor favor, ative a autenticação de dois fatores.</string>
-  <string name="id_your_watchonly_username_will_be">Seu nome de usuário será armazenado sem encriptação neste dispositivo. Se seu dispositivo for comprometido suas transações poderão ser observadas por terceiros. Pressione "OK" para continuar.</string>
+  <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
 </resources>

@@ -44,6 +44,7 @@
   <string name="id_bitcoin_denomination">Denominación de Bitcoin</string>
   <string name="id_bitcoin_wallet">Cartera Bitcoin.</string>
   <string name="id_block">bloque</string>
+  <string name="id_block_d">Block %d</string>
   <string name="id_block_height_1d">Altura del bloque: %1$d</string>
   <string name="id_blocks">bloques</string>
   <string name="id_blocks_confirmed">bloques confirmados</string>
@@ -69,6 +70,7 @@
   <string name="id_connect_through_a_proxy">Conectarse a través de un proxy</string>
   <string name="id_connect_with_tor">Conectarse con Tor</string>
   <string name="id_connecting_to_a_trusted_node">La conexión a un nódulo confiable a través de Tor requiere activar la configuración del proxy en la app antes de iniciar sesión y un proxy de Socks5 (app Orbot para Android)</string>
+  <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Conectarse a los nodos de Tor (.onion) garantiza máxima privacidad y seguridad. Pulsa "Aceptar" para continuar.</string>
   <string name="id_continue">Continuar</string>
   <string name="id_copy_to_clipboard">Copiar al portapapeles</string>
@@ -209,6 +211,7 @@
   <string name="id_lets_get_you_set_up">Empecemos.</string>
   <string name="id_loading_transactions">Cargando transacciones...</string>
   <string name="id_log_in">Iniciar sesión</string>
+  <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
   <string name="id_log_in_using_mnemonic">Iniciar sesión con Frase de Recuperación</string>
   <string name="id_log_in_via_watchonly_to_receive">Inicia sesión en modo de solo lectura para recibir fondos y consultar el saldo.</string>
   <string name="id_log_out">Cerrar sesión</string>
@@ -312,7 +315,7 @@
   <string name="id_redeposited">Redepositado</string>
   <string name="id_reference_exchange_rate">Tasa de cambio de referencia</string>
   <string name="id_refresh">Actualizar</string>
-  <string name="id_remember_username">Recordar nombre de usuario</string>
+  <string name="id_remember_me">Remember me</string>
   <string name="id_remove_custom_network">Eliminar red personalizada</string>
   <string name="id_replaceable">reemplazable</string>
   <string name="id_request_amount">SOLICITAR MONTO</string>
@@ -355,6 +358,7 @@
   <string name="id_set_a_new_pin">Establecer un nuevo PIN</string>
   <string name="id_set_custom_fee_rate">Establecer comisión por vbyte personalizada</string>
   <string name="id_set_twofactor_threshold">Configurar el umbral de dos factores</string>
+  <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_pgp_key_for">Configurar la clave PGP para las comunicaciones</string>
   <string name="id_set_up_twofactor_authentication">Configurar la autenticación de dos factores</string>
   <string name="id_set_up_watchonly">Configurar el modo de solo lectura</string>
@@ -409,6 +413,8 @@
   <string name="id_time_s">Tiempo: %s</string>
   <string name="id_to">A</string>
   <string name="id_tor_connectivity_disabled">¡Conectividad Tor deshabilitada!</string>
+  <string name="id_tor_is_connected">Tor is connected</string>
+  <string name="id_tor_status">Tor status</string>
   <string name="id_tor_will_use_1s_and_only_work">Tor usará %1$s y solo funcionará si tu proxy está habilitado para Orbot o Tor</string>
   <string name="id_total_assets">Activos totales</string>
   <string name="id_total_balance">Saldo total</string>
@@ -448,10 +454,10 @@
   <string name="id_warning">¡Advertencia!</string>
   <string name="id_warning_nononion_address">Advertencia: no se detectó dirección .onion</string>
   <string name="id_warning_resetting_twofactor">ADVERTENCIA: al restablecer la autenticación de dos factores, se bloqueará tu cartera</string>
-  <string name="id_warning_the_username_will_be">Advertencia: el nombre de usuario se guardará en tu dispositivo</string>
   <string name="id_warning_there_is_already_a">ADVERTENCIA: Ya hay una solicitud para restablecer la autenticación de dos factores en tu cartera. Si envías una nueva solicitud desde otra dirección de correo electrónico ahora, tu cartera quedará impugnada y es posible que pierdas el acceso a ella de forma permanente.</string>
   <string name="id_warning_wallet_locked_by">ADVERTENCIA: cartera bloqueada por disputa de dos factores. Contacta a soporte técnico para obtener más información.</string>
   <string name="id_warning_wallet_locked_for">ADVERTENCIA: cartera bloqueada por restablecimiento de dos factores en %d días. Contacta a soporte técnico para obtener más información.</string>
+  <string name="id_warning_watchonly_credentials">Warning: Watch-only credentials will be saved on your device</string>
   <string name="id_warning_you_need_a_positive">¡Advertencia! Necesitas un saldo positivo de L-BTC para poder enviar transacciones.</string>
   <string name="id_watchonly">Solo lectura</string>
   <string name="id_watchonly_disabled">Modo de solo lectura deshabilitado</string>
@@ -486,5 +492,5 @@
   <string name="id_your_transactions_will_be_shown">Tus transacciones aparecerán aquí.</string>
   <string name="id_your_twofactor_threshold_is_s">Tu umbral de dos factores es %s.</string>
   <string name="id_your_wallet_is_not_yet_fully">Tu cartera aún no está completamente protegida.\nHabilita la autenticación de dos factores.</string>
-  <string name="id_your_watchonly_username_will_be">Tu nombre de usuario para el modo de solo lectura se almacenará sin cifrar en este dispositivo. Si tu dispositivo está en riesgo, es posible que un tercero pueda visualizar tus transacciones. Presiona "OK" para continuar.</string>
+  <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
 </resources>

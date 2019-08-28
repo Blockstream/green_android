@@ -61,8 +61,8 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
                 return;
             }
 
-            UI.popup(WatchOnlyLoginActivity.this, R.string.id_warning_the_username_will_be)
-            .content(R.string.id_your_watchonly_username_will_be)
+            UI.popup(WatchOnlyLoginActivity.this, R.string.id_warning_watchonly_credentials)
+            .content(R.string.id_your_watchonly_username_and)
             .canceledOnTouchOutside(false)
             .onNegative((dlg, which) -> mRememberSwitch.setChecked(false))
             .onPositive((dlg, which) -> mRememberSwitch.setChecked(true)).build().show();
