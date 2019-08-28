@@ -99,17 +99,12 @@ class SettingsViewController: UIViewController {
             subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_disabled" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .network,
             type: .WatchOnly)
-        let logout = SettingsItem(
-            title: String(format: NSLocalizedString("id_s_network", comment: ""), getNetwork()).localizedCapitalized,
-            subtitle: NSLocalizedString("id_log_out", comment: ""),
-            section: .network,
-            type: .Logout)
         if isWatchOnly || isResetActive {
-            return [switchNetwork, logout]
+            return [switchNetwork]
         } else if isLiquid {
-            return [switchNetwork, setupPin, logout]
+            return [switchNetwork, setupPin]
         }
-        return [switchNetwork, setupPin, watchOnly, logout]
+        return [switchNetwork, setupPin, watchOnly]
     }
 
     func getAccount() -> [SettingsItem] {
@@ -259,7 +254,12 @@ class SettingsViewController: UIViewController {
             subtitle: "",
             section: .about,
             type: .PrivacyPolicy)
-        return [version, termOfUse, privacyPolicy]
+        let logout = SettingsItem(
+            title: String(format: NSLocalizedString("id_s_network", comment: ""), getNetwork()).localizedCapitalized,
+            subtitle: NSLocalizedString("id_log_out", comment: ""),
+            section: .network,
+            type: .Logout)
+        return [version, termOfUse, privacyPolicy, logout]
     }
 
     func getSettings() -> [SettingsItem] {

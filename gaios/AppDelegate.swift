@@ -57,11 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func lock() {
         window?.endEditing(true)
-        if isPinEnabled(network: getNetwork()) {
-            instantiateViewControllerAsRoot(storyboard: "Main", identifier: "PinLoginNavigationController")
-        } else {
-            instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
-        }
+        instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
     }
 
     func setupAppearance() {
