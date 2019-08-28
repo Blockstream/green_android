@@ -293,9 +293,9 @@
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3 attempts remaining" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MLg-nQ-uKb">
-                    <rect key="frame" x="132" y="182.5" width="111.5" height="13.5"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3 attempts remaining" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="6" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MLg-nQ-uKb">
+                    <rect key="frame" x="38.5" y="182.5" width="298" height="14.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <color key="textColor" red="0.91764705882352937" green="0.32156862745098036" blue="0.38431372549019605" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -309,6 +309,7 @@
                 <constraint firstItem="ydf-Bg-MF5" firstAttribute="centerY" secondItem="vI1-Oq-ikB" secondAttribute="centerY" id="9Xd-az-u4m"/>
                 <constraint firstItem="2gG-Wo-XLD" firstAttribute="bottom" secondItem="olw-Wu-vjb" secondAttribute="bottom" constant="20" id="9nI-TM-yAn"/>
                 <constraint firstItem="hGa-Vr-h1w" firstAttribute="leading" secondItem="j5W-1e-Qfg" secondAttribute="trailing" constant="16" id="Au5-cJ-ipM"/>
+                <constraint firstItem="MLg-nQ-uKb" firstAttribute="trailing" secondItem="ynJ-Df-nsW" secondAttribute="trailing" id="GR5-Ra-acM"/>
                 <constraint firstItem="2gG-Wo-XLD" firstAttribute="trailing" secondItem="CuH-Ql-ZF0" secondAttribute="trailing" constant="16" id="Ifq-6j-9lV"/>
                 <constraint firstItem="CuH-Ql-ZF0" firstAttribute="centerX" secondItem="wc8-LQ-8sz" secondAttribute="centerX" id="JYE-bm-OLF"/>
                 <constraint firstItem="MLg-nQ-uKb" firstAttribute="top" secondItem="qhx-dm-cV5" secondAttribute="bottom" constant="30" id="Kao-pR-SkP"/>
@@ -329,6 +330,7 @@
                 <constraint firstItem="ydf-Bg-MF5" firstAttribute="leading" secondItem="ODb-nd-fQj" secondAttribute="trailing" constant="16" id="dex-BE-YrN"/>
                 <constraint firstItem="j5W-1e-Qfg" firstAttribute="centerY" secondItem="vI1-Oq-ikB" secondAttribute="centerY" id="eOa-xS-P7Q"/>
                 <constraint firstItem="vI1-Oq-ikB" firstAttribute="top" secondItem="ceX-yT-Zxl" secondAttribute="bottom" constant="5" id="f45-By-bQA"/>
+                <constraint firstItem="MLg-nQ-uKb" firstAttribute="leading" secondItem="ceX-yT-Zxl" secondAttribute="leading" id="gMU-Yi-gFS"/>
                 <constraint firstItem="UfZ-nZ-W3C" firstAttribute="centerY" secondItem="vI1-Oq-ikB" secondAttribute="centerY" id="k6F-GY-H97"/>
                 <constraint firstItem="UJU-Y9-vp1" firstAttribute="centerY" secondItem="ceX-yT-Zxl" secondAttribute="centerY" id="po4-XO-69v"/>
                 <constraint firstItem="5Tb-Ip-23F" firstAttribute="centerY" secondItem="ceX-yT-Zxl" secondAttribute="centerY" id="pwi-Nu-Yi7"/>
@@ -340,6 +342,7 @@
                 <constraint firstItem="ceX-yT-Zxl" firstAttribute="top" secondItem="CuH-Ql-ZF0" secondAttribute="bottom" constant="70" id="yqN-U0-9lD"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="2gG-Wo-XLD"/>
+            <point key="canvasLocation" x="138.40000000000001" y="154.27286356821591"/>
         </view>
     </objects>
     <resources>

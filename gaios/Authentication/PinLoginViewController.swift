@@ -120,7 +120,11 @@ class PinLoginViewController: UIViewController {
     }
 
     func updateAttemptsLabel() {
-        content.attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinAttemptsPreference)
+        if MAXATTEMPTS - pinAttemptsPreference == 1 {
+            content.attempts.text = NSLocalizedString("id_last_attempt_if_failed_you_will", comment: "")
+        } else {
+            content.attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinAttemptsPreference)
+        }
         content.attempts.isHidden = pinAttemptsPreference == 0
     }
 
