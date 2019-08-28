@@ -53,8 +53,8 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
         mRememberSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             if (!isChecked) {
-                mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, "").apply();
-                mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_PASSWORD, "").apply();
+                mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, "")
+                .putString(PrefKeys.WATCH_ONLY_PASSWORD, "").apply();
                 mUsernameText.setText("");
                 mPasswordText.setText("");
                 return;
@@ -108,10 +108,10 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
         mUsernameText.setEnabled(false);
         mPasswordText.setEnabled(false);
         mRememberSwitch.setEnabled(false);
-        final String usr = !mRememberSwitch.isChecked() ? "" : UI.getText(mUsernameText);
-        final String pswd = !mRememberSwitch.isChecked() ? "" : UI.getText(mPasswordText);
-        mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, usr).apply();
-        mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_PASSWORD, pswd).apply();
+        final String usr = mRememberSwitch.isChecked() ? UI.getText(mUsernameText) : "";
+        final String pswd = mRememberSwitch.isChecked() ? UI.getText(mPasswordText) : "";
+        mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, usr)
+        .putString(PrefKeys.WATCH_ONLY_PASSWORD, pswd).apply();
     }
 
     private void onLoginStop() {
