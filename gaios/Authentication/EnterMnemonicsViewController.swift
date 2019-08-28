@@ -85,6 +85,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
             if let cell = mnemonicWords.cellForItem(at: nextIndexPath) as? MnemonicWordCell {
                 mnemonicWords.selectItem(at: nextIndexPath, animated: false, scrollPosition: UICollectionView.ScrollPosition.centeredVertically)
                 cell.wordText.becomeFirstResponder()
+                suggestions?.isHidden = true
             }
         }
     }
@@ -299,11 +300,6 @@ extension EnterMnemonicsViewController: MnemonicWordCellDelegate {
             return
         }
 
-        // pass focus to next item for valid words of length > 3
-        if text.count > 3 && WL.contains(text) {
-            suggestionWasTapped(suggestion: text)
-        }
-
         mnemonic[currIndexPath!.row + currIndexPath!.section * 3] = text
 
         checkTextfield(textField: textField)
@@ -312,6 +308,12 @@ extension EnterMnemonicsViewController: MnemonicWordCellDelegate {
         } else {
             suggestions!.isHidden = true
         }
+
+        // pass focus to next item for valid words of length > 3
+        if text.count > 3 && WL.contains(text) {
+            suggestionWasTapped(suggestion: text)
+        }
+
         let foundEmpty = mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24).contains(where: { $0.isEmpty })
         updateDoneButton(!foundEmpty)
     }
