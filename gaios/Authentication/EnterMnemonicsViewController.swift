@@ -184,8 +184,10 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
     }
 
     func checkTextfield(textField: UITextField) {
-        let suggestions = getSuggestions(prefix: textField.text!)
-        textField.textColor = suggestions.isEmpty ? UIColor.errorRed() : UIColor.white
+        if let text = textField.text {
+            let suggestions = getSuggestions(prefix: text)
+            textField.textColor = !suggestions.contains(text) ? UIColor.errorRed() : UIColor.white
+        }
     }
 
     @IBAction func startQRScan(_ sender: UIBarButtonItem) {
