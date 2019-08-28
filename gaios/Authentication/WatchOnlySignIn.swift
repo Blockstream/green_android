@@ -12,6 +12,14 @@ class WatchOnlySignIn: KeyboardViewController {
             UserDefaults.standard.set(newValue, forKey: getNetwork() + "_username")
         }
     }
+    var password: String? {
+        get {
+            return UserDefaults.standard.string(forKey: getNetwork() + "_password")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_password")
+        }
+    }
     @IBOutlet var content: WatchOnlySignInView!
     var buttonConstraint: NSLayoutConstraint?
     private var network = getGdkNetwork(getNetwork())
@@ -22,7 +30,7 @@ class WatchOnlySignIn: KeyboardViewController {
         content.networkLogoImageView.image = UIImage(named: logoName!)
         content.networkNameLabel.text = network.name
         content.titlelabel.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
-        content.rememberTitle.text = NSLocalizedString("id_remember_username", comment: "")
+        content.rememberTitle.text = NSLocalizedString("id_remember_me", comment: "")
         content.warningLabel.text = NSLocalizedString("id_watchonly_mode_can_be_activated", comment: "")
         content.cancelButton.addTarget(self, action: #selector(WatchOnlySignIn.dismissModal), for: .touchUpInside)
         content.rememberSwitch.addTarget(self, action: #selector(rememberSwitch), for: .valueChanged)
@@ -37,9 +45,12 @@ class WatchOnlySignIn: KeyboardViewController {
         content.passwordTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: height))
         content.usernameTextField.leftViewMode = .always
         content.passwordTextField.leftViewMode = .always
-        if username != nil {
-            content.usernameTextField.text = username!
+        if let username = username {
+            content.usernameTextField.text = username
             content.rememberSwitch.isOn = true
+        }
+        if let password = password {
+            content.passwordTextField.text = password
         }
         if UIScreen.main.nativeBounds.height <= 1136 {
             content.titlelabel.font = UIFont(name: content.titlelabel.font.fontName, size: 22)
@@ -52,7 +63,7 @@ class WatchOnlySignIn: KeyboardViewController {
 
     @objc func rememberSwitch(_ sender: UISwitch) {
         if sender.isOn {
-            let alert = UIAlertController(title: NSLocalizedString("id_warning_the_username_will_be", comment: ""), message: NSLocalizedString("id_your_watchonly_username_will_be", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("id_warning_watchonly_credentials", comment: ""), message: NSLocalizedString("id_your_watchonly_username_and", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
                 sender.isOn = false
             })
@@ -64,6 +75,9 @@ class WatchOnlySignIn: KeyboardViewController {
             }
         } else {
             self.username = nil
+            self.password = nil
+            content.usernameTextField.text = ""
+            content.passwordTextField.text = ""
         }
     }
 
@@ -105,17 +119,24 @@ class WatchOnlySignIn: KeyboardViewController {
         }.compactMap(on: bgq) {
             try appDelegate.connect()
         }.compactMap {
-            let username = self.content.usernameTextField.text
-            let password = self.content.passwordTextField.text
-            if self.content!.rememberSwitch.isOn {
-                self.username = username
+            if let username = self.content.usernameTextField.text,
+                let password = self.content.passwordTextField.text {
+                return (username, password)
+            } else {
+                return (nil, nil)
             }
-            return (username!, password!)
         }.compactMap(on: bgq) { (username, password) in
-            try getSession().loginWatchOnly(username: username!, password: password!)
+            try getSession().loginWatchOnly(username: username ?? "",
+                                            password: password ?? "")
         }.ensure {
             self.stopAnimating()
         }.done {
+            if self.content!.rememberSwitch.isOn,
+                let username = self.content.usernameTextField.text,
+                let password = self.content.passwordTextField.text {
+                self.username = username
+                self.password = password
+            }
             getGAService().isWatchOnly = true
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
