@@ -60,7 +60,7 @@ public class ListTransactionsAdapter extends
         if (assetsNumber > 1) {
             holder.textValue.setText(mActivity.getString(R.string.id_d_assets,assetsNumber));
         } else {
-            final String assetId = txItem.mAssetBalances.keySet().toArray(new String[txItem.mAssetBalances.size()])[0];
+            final String assetId = txItem.mAssetBalances.keySet().toArray(new String[0])[0];
             holder.textValue.setText(txItem.getAmountWithUnit(mService, assetId));
         }
         // Hide question mark if we know this tx is verified
@@ -100,7 +100,7 @@ public class ListTransactionsAdapter extends
                 message = mActivity.getString(R.string.id_multiple_assets);
             else if (mService.isLiquid() && txItem.isAsset) {
                 final String assetId =
-                    txItem.mAssetBalances.keySet().toArray(new String[txItem.mAssetBalances.size()])[0];
+                    txItem.mAssetBalances.keySet().toArray(new String[0])[0];
                 final AssetInfoData assetInfo = txItem.mAssetBalances.get(assetId).getAssetInfo();
                 message = assetInfo != null ? assetInfo.getEntity().getDomain() : assetId;
             } else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)

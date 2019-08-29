@@ -505,8 +505,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final List<String> values = observable.getAvailableCurrenciesAsList();
         final List<String> formatted =
             observable.getAvailableCurrenciesAsFormattedList(getString(R.string.id_s_from_s));
-        final String[] valuesArr = values.toArray(new String[values.size()]);
-        final String[] formattedArr = formatted.toArray(new String[formatted.size()]);
+        final String[] valuesArr = values.toArray(new String[0]);
+        final String[] formattedArr = formatted.toArray(new String[0]);
         mPriceSourcePref.setEntries(formattedArr);
         mPriceSourcePref.setEntryValues(valuesArr);
     }
