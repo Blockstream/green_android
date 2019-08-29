@@ -73,7 +73,8 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         if (code == GDK.GA_NOT_AUTHORIZED) {
             if (counter < 3) {
                 editor.putInt("counter", counter);
-                message = getString(R.string.id_invalid_pin_you_have_1d, 3 - counter);
+                message = (counter == 2) ? getString(R.string.id_last_attempt_if_failed_you_will) :
+                          getString(R.string.id_invalid_pin_you_have_1d, 3 - counter);
             } else {
                 message = getString(R.string.id_invalid_pin_you_dont_have_any);
                 editor.clear();
