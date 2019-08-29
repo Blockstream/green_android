@@ -64,7 +64,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
     private Button mOkButton;
     private Switch mEncryptedSwitch;
-    private final MultiAutoCompleteTextView mWordEditTexts[] = new MultiAutoCompleteTextView[ENCRYPTED_MNEMONIC_LENGTH];
+    private final MultiAutoCompleteTextView[] mWordEditTexts = new MultiAutoCompleteTextView[ENCRYPTED_MNEMONIC_LENGTH];
     private ArrayAdapter<String> mWordsAdapter;
 
     final private MultiAutoCompleteTextView.Tokenizer mTokenizer = new MultiAutoCompleteTextView.Tokenizer() {
@@ -199,7 +199,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             return;
         }
 
-        final String words[] = mnemonic.split(" ");
+        final String[] words = mnemonic.split(" ");
         mEncryptedSwitch.setChecked(words.length == ENCRYPTED_MNEMONIC_LENGTH);
         onClick(mEncryptedSwitch);
         for (int i  = 0; i < words.length; ++i) {
@@ -210,7 +210,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
 
     private int checkValid(final String mnemonic) {
-        final String words[] = mnemonic.split(" ");
+        final String[] words = mnemonic.split(" ");
 
         //validate hex_seed
         if (isHexSeed(words[0])) {

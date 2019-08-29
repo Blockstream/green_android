@@ -136,7 +136,7 @@ public class BTChipHWWallet extends HWWallet {
     private List<byte[]> signSW(final GaActivity parent, final ObjectNode tx,
                                 final List<InputOutputData> inputs,
                                 final List<InputOutputData> outputs) throws BTChipException {
-        final BTChipDongle.BTChipInput hwInputs[] = new BTChipDongle.BTChipInput[inputs.size()];
+        final BTChipDongle.BTChipInput[] hwInputs = new BTChipDongle.BTChipInput[inputs.size()];
 
         for (int i = 0; i < hwInputs.length; ++i) {
             final InputOutputData in = inputs.get(i);
@@ -146,7 +146,7 @@ public class BTChipHWWallet extends HWWallet {
         // Prepare the pseudo transaction
         // Provide the first script instead of a null script to initialize the P2SH confirmation logic
         final long version = tx.get("transaction_version").asLong();
-        final byte script0[] = Wally.hex_to_bytes(inputs.get(0).getPrevoutScript());
+        final byte[] script0 = Wally.hex_to_bytes(inputs.get(0).getPrevoutScript());
         mDongle.startUntrustedTransaction(version, true, 0, hwInputs, script0, true);
 
         if (mDongle.supportScreen()) {
@@ -157,7 +157,7 @@ public class BTChipHWWallet extends HWWallet {
         final long locktime = tx.get("transaction_locktime").asLong();
 
         // Sign each input
-        final BTChipDongle.BTChipInput singleInput[] = new BTChipDongle.BTChipInput[1];
+        final BTChipDongle.BTChipInput[] singleInput = new BTChipDongle.BTChipInput[1];
         final List<byte[]> sigs = new ArrayList<>(hwInputs.length);
 
         for (int i = 0; i < hwInputs.length; ++i) {
@@ -165,7 +165,7 @@ public class BTChipHWWallet extends HWWallet {
             if (in.getAddressType().equals("p2sh"))
                 continue; // sign segwit only
             singleInput[0] = hwInputs[i];
-            final byte script[] = Wally.hex_to_bytes(in.getPrevoutScript());
+            final byte[] script = Wally.hex_to_bytes(in.getPrevoutScript());
             mDongle.startUntrustedTransaction(version, false, 0, singleInput, script, true);
             sigs.add(mDongle.untrustedHashSign(in.getUserPathAsInts(),"0", locktime, SIGHASH_ALL));
         }
@@ -177,7 +177,7 @@ public class BTChipHWWallet extends HWWallet {
                                    final List<InputOutputData> outputs,
                                    final Map<String, String> transactions) throws BTChipException {
 
-        final BTChipDongle.BTChipInput hwInputs[] = new BTChipDongle.BTChipInput[inputs.size()];
+        final BTChipDongle.BTChipInput[] hwInputs = new BTChipDongle.BTChipInput[inputs.size()];
 
         if (!mDongle.supportScreen()) {
             for (int i = 0; i < hwInputs.length; ++i) {
@@ -204,7 +204,7 @@ public class BTChipHWWallet extends HWWallet {
 
         for (int i = 0; i < hwInputs.length; ++i) {
             final InputOutputData in = inputs.get(i);
-            final byte script[] = Wally.hex_to_bytes(in.getPrevoutScript());
+            final byte[] script = Wally.hex_to_bytes(in.getPrevoutScript());
 
             mDongle.startUntrustedTransaction(version, i == 0, i, hwInputs, script, false);
             if (mDongle.supportScreen()) {
@@ -223,7 +223,7 @@ public class BTChipHWWallet extends HWWallet {
         putVarInt(os, outputs.size());
         for (final InputOutputData out : outputs) {
             BufferUtils.writeUint64LE(os, out.getSatoshi()); // int64ToByteStreamLE in bitcoinj
-            final byte script[] = Wally.hex_to_bytes(out.getScript());
+            final byte[] script = Wally.hex_to_bytes(out.getScript());
             putVarInt(os, script.length).write(script, 0, script.length);
         }
         return os.toByteArray();

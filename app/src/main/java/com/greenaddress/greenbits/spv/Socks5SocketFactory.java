@@ -120,7 +120,7 @@ public class Socks5SocketFactory extends SocketFactory {
         }
 
         byte[] getConnectCmd() {
-            final byte host[] = mTarget.getHostName().getBytes();
+            final byte[] host = mTarget.getHostName().getBytes();
             final byte[] data = new byte[7 + host.length];
             data[0] = (byte) 5;
             data[1] = (byte) CMD_CONNECT;

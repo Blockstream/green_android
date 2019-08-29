@@ -67,10 +67,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private String mSelectedAsset = "btc";
     private BalanceData mAssetBalances;
 
-    private static final int mButtonIds[] =
-    { R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton };
-    private static final int mFeeButtonsText[] =
-    { R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom };
+    private static final int[] mButtonIds =
+            {R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton};
+    private static final int[] mFeeButtonsText =
+            {R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom};
     private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
 
     @Override

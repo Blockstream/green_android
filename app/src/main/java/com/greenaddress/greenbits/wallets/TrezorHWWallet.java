@@ -65,11 +65,11 @@ public class TrezorHWWallet extends HWWallet {
             final TrezorMessage.MessageSignature ms = (TrezorMessage.MessageSignature)m;
             final byte[] expanded = ms.getSignature().toByteArray();
             // Convert sig to DER encoding
-            final byte compact[] = new byte[64];
+            final byte[] compact = new byte[64];
             System.arraycopy(expanded, 1, compact, 0, 32);
             System.arraycopy(expanded, 33, compact, 32, 32);
 
-            final byte der[] = new byte[Wally.EC_SIGNATURE_DER_MAX_LEN];
+            final byte[] der = new byte[Wally.EC_SIGNATURE_DER_MAX_LEN];
             final int len = Wally.ec_sig_to_der(compact, der);
             return Wally.hex_from_bytes(Arrays.copyOf(der, len));
         }
