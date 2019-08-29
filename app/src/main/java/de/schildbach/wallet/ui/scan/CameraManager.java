@@ -40,7 +40,6 @@ import java.util.List;
 /**
  * @author Andreas Schildbach
  */
-@SuppressWarnings("deprecation")
 public final class CameraManager {
     private static final int MIN_FRAME_SIZE = 240;
     private static final int MAX_FRAME_SIZE = 600;

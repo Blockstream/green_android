@@ -31,11 +31,10 @@ public class ClipboardEditText extends androidx.appcompat.widget.AppCompatEditTe
         final boolean result = super.onTextContextMenuItem(id);
         switch (id) {
         case android.R.id.cut:
+        case android.R.id.copy:
             break;
         case android.R.id.paste:
             Toast.makeText(context, R.string.id_be_aware_other_apps_can_read_or, Toast.LENGTH_LONG).show();
-            break;
-        case android.R.id.copy:
             break;
         }
         return result;

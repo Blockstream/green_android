@@ -56,7 +56,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
 
     @Override
     public void onBindViewHolder(final Item holder, final int position) {
-        Log.d(this.getClass().getName(),"Update position " + String.valueOf(position));
+        Log.d(this.getClass().getName(),"Update position " + position);
         final int pointer = mSubaccountList.get(position).getPointer();
         holder.mName.setText(mSubaccountList.get(position).getName());
 

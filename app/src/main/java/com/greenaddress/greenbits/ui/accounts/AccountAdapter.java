@@ -48,7 +48,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
     @Override
     public void onBindViewHolder(final Item holder, final int position) {
         Log.d(this.getClass().getName(),
-              "Update position " + String.valueOf(position) + " of " + mSubaccountList.size());
+              "Update position " + position + " of " + mSubaccountList.size());
         holder.mAccountView.hideActions();
         if (position < mSubaccountList.size()) {
             // Set click listener

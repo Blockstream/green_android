@@ -49,7 +49,6 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
         case "testnet":
             return TestNet3Params.get();
         case "regtest":
-            return RegTestParams.get();
         case "localtest":
             return RegTestParams.get();
         default:
@@ -59,10 +58,9 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
 
     @JsonIgnore
     public static NetworkData find(final String networkName, final List<NetworkData> list) {
-        for (NetworkData n : list) {
+        for (NetworkData n : list)
             if (n.getNetwork().equals(networkName))
                 return n;
-        }
         return null;
     }
 

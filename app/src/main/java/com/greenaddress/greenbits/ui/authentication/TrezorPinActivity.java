@@ -38,7 +38,7 @@ public class TrezorPinActivity extends GaActivity {
             final int ii = i;
             buttons[i].setOnClickListener(view -> {
                 if (value.length() < 9) {
-                    value.append(String.valueOf(ii+1));
+                    value.append((ii + 1));
                     textView.setText(String.format("%s *",textView.getText()));
                 }
                 view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
