@@ -3,18 +3,18 @@ package com.greenaddress.greenbits.ui.onboarding;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Random;
 import java.util.Set;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class SelectionActivity extends LoginActivity implements View.OnClickListener {
     private String mMnemonic;

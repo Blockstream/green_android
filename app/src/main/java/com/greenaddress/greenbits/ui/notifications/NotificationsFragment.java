@@ -3,36 +3,38 @@ package com.greenaddress.greenbits.ui.notifications;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceScreen;
-import androidx.appcompat.view.ContextThemeWrapper;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceScreen;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.EventDataObservable;
+import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
-import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.transactions.TransactionActivity;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.preferences.GAPreferenceFragment;
+import com.greenaddress.greenbits.ui.transactions.TransactionActivity;
 import com.greenaddress.greenbits.ui.transactions.TransactionItem;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class NotificationsFragment extends GAPreferenceFragment implements Observer {
 

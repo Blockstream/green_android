@@ -37,14 +37,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.CryptoHelper;
+import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.LoginActivity;
-import com.greenaddress.greenapi.MnemonicHelper;
-import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ScanForResultActivity;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
 
 import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
 

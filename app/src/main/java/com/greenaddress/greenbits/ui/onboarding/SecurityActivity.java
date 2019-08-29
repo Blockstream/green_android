@@ -3,8 +3,6 @@ package com.greenaddress.greenbits.ui.onboarding;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,12 +11,15 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 
 import java.util.Arrays;
 import java.util.HashSet;

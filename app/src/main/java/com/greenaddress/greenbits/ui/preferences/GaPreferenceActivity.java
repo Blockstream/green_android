@@ -3,15 +3,16 @@ package com.greenaddress.greenbits.ui.preferences;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import androidx.appcompat.app.ActionBar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 
 
 // Our GaPreferenceActivity derived classes aren't exported publicly, so the

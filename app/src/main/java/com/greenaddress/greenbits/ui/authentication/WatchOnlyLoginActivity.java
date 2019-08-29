@@ -1,19 +1,20 @@
 package com.greenaddress.greenbits.ui.authentication;
 
 import android.os.Bundle;
-import androidx.appcompat.widget.SwitchCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.SwitchCompat;
+
 import com.blockstream.libgreenaddress.GDK;
 import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenbits.ui.components.CircularButton;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.components.CircularButton;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Observer;

@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
+
 import androidx.fragment.app.Fragment;
 
 import com.greenaddress.greenapi.model.Model;

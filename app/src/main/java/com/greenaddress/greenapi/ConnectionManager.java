@@ -5,13 +5,14 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.greenaddress.gdk.CodeResolver;
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.ui.BuildConfig;
 
 import java.util.Locale;
 import java.util.Observable;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class ConnectionManager extends Observable {
     public static final String TAG = "STATE";

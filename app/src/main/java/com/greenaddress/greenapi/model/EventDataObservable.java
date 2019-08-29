@@ -3,7 +3,6 @@ package com.greenaddress.greenapi.model;
 import android.text.TextUtils;
 import android.util.Log;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class EventDataObservable extends Observable implements Observer {
     private List<EventData> mEventDataList = new ArrayList<>();

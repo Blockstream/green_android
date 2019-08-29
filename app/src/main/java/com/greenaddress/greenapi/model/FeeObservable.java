@@ -3,11 +3,12 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import static com.greenaddress.gdk.GDKSession.getSession;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class FeeObservable extends Observable {
     private List<Long> fees;

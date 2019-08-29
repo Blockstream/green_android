@@ -2,14 +2,15 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 
 import static android.app.Activity.RESULT_OK;
 

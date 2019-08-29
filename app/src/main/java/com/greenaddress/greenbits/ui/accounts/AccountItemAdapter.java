@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui.accounts;
 
 import android.graphics.drawable.BitmapDrawable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,12 +9,14 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.ui.components.FontAwesomeTextView;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.components.FontAwesomeTextView;
 
 import java.util.ArrayList;
 

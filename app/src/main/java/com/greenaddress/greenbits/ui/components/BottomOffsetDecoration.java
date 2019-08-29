@@ -1,8 +1,9 @@
 package com.greenaddress.greenbits.ui.components;
 
 import android.graphics.Rect;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class BottomOffsetDecoration extends RecyclerView.ItemDecoration {
     private int mBottomOffset;

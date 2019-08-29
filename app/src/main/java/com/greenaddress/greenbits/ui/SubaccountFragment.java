@@ -7,7 +7,6 @@ import android.widget.Toast;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
-import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.SubaccountDataObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.ui.components.OnGdkListener;

@@ -3,9 +3,10 @@ package com.greenaddress.greenbits.ui.components;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.view.View;
+
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
 
 import com.greenaddress.greenbits.ui.R;
 

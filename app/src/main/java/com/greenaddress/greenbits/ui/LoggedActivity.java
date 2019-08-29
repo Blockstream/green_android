@@ -1,20 +1,13 @@
 package com.greenaddress.greenbits.ui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.model.ToastObservable;
-import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Observable;
 import java.util.Observer;
-
-import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public abstract class LoggedActivity extends GaActivity implements Observer {
 

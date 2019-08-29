@@ -3,14 +3,14 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import static com.greenaddress.gdk.GDKSession.getSession;
-
 import com.greenaddress.greenapi.data.TransactionData;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class TransactionDataObservable extends Observable implements Observer {
     private List<TransactionData> mTransactionDataList = new ArrayList<>();

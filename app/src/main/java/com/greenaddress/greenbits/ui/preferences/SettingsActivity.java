@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+
 import androidx.fragment.app.Fragment;
 
 public class SettingsActivity extends GaPreferenceActivity {

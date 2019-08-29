@@ -3,12 +3,13 @@ package com.greenaddress.greenbits.ui.send;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
-import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.cardview.widget.CardView;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,11 +22,11 @@ import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
-import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
-import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
+import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
+import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 
 import java.io.IOException;
 import java.util.ArrayList;

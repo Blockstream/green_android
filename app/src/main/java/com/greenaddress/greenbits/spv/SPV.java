@@ -8,11 +8,12 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.Builder;
 import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.Builder;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;

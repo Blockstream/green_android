@@ -8,19 +8,20 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.IBinder;
-import androidx.multidex.MultiDexApplication;
 import android.util.Log;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import androidx.multidex.MultiDexApplication;
+
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.JSONConverterImpl;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.GAException;
-import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenapi.MnemonicHelper;
+import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.crypto.MnemonicCode;

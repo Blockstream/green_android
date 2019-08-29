@@ -5,7 +5,6 @@ import android.util.Pair;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import static com.greenaddress.gdk.GDKSession.getSession;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class AvailableCurrenciesObservable extends Observable {
     private Map<String, Object> availableCurrencies;

@@ -26,10 +26,10 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EntityData;
 import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.ui.components.FontFitEditText;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.components.FontFitEditText;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.io.IOException;
@@ -37,8 +37,8 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
-import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
+import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
 
 public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
     private static final String TAG = SendAmountActivity.class.getSimpleName();

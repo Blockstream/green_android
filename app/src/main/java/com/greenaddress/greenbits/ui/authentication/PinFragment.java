@@ -14,10 +14,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import com.greenaddress.greenbits.ui.components.CircularButton;
 import com.greenaddress.greenbits.ui.GAFragment;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.components.CircularButton;
 
 public class PinFragment extends GAFragment implements View.OnClickListener, KeyboardView.OnKeyboardActionListener {
 

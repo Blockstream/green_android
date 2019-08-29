@@ -2,9 +2,10 @@ package com.greenaddress.greenbits.ui.twofactor;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 import android.text.InputType;
 import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.SettableFuture;

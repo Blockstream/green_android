@@ -3,10 +3,11 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
-import static com.greenaddress.gdk.GDKSession.getSession;
 
 import java.util.Observable;
 import java.util.Observer;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class ReceiveAddressObservable extends Observable implements Observer {
     private String mReceiveAddress;

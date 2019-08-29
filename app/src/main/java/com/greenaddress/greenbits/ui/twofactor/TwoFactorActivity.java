@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.data.TwoFactorDetailData;
@@ -30,6 +29,8 @@ import com.greenaddress.greenbits.ui.UI;
 import java.util.Formatter;
 import java.util.Locale;
 import java.util.Map;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class TwoFactorActivity extends LoggedActivity {
 

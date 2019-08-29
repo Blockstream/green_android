@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.preferences;
 
 import android.os.Bundle;
+
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 

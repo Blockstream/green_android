@@ -4,11 +4,12 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import static com.greenaddress.gdk.GDKSession.getSession;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 
 import java.io.IOException;
 import java.util.Observable;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class TwoFactorConfigDataObservable extends Observable {
     private TwoFactorConfigData mTwoFactorConfigData;
