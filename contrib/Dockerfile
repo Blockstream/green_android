@@ -1,4 +1,4 @@
-FROM debian:buster@sha256:903779f30a7ee46937bfb21406f125d5fdace4178074e1cc71c49039ebf7f48f
+FROM debian:buster@sha256:2f04d3d33b6027bb74ecc81397abe780649ec89f1a2af18d7022737d0482cefe
 COPY buster_deps.sh /deps.sh
 RUN /deps.sh && rm /deps.sh
 VOLUME /ga

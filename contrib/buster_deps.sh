@@ -26,8 +26,8 @@ unzip -qq ${SDK_FILENAME} && rm ${SDK_FILENAME}
 
 #FIXME: avoid installing emulator
 yes | /opt/tools/bin/sdkmanager "tools" "platform-tools"
-yes | /opt/tools/bin/sdkmanager "build-tools;28.0.3"
-yes | /opt/tools/bin/sdkmanager "platforms;android-28"
+yes | /opt/tools/bin/sdkmanager "build-tools;29.0.2"
+yes | /opt/tools/bin/sdkmanager "platforms;android-29"
 yes | /opt/tools/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository"
 apt-get -yqq autoremove && apt-get -yqq clean
 rm -rf /var/lib/apt/lists/* /var/cache/* /tmp/*
