@@ -2,8 +2,8 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.preference.Preference;
+import androidx.core.content.ContextCompat;
+import androidx.preference.Preference;
 
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoggedActivity;

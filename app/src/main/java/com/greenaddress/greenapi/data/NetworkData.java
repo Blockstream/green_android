@@ -1,6 +1,6 @@
 package com.greenaddress.greenapi.data;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.annotation.JsonIgnore;

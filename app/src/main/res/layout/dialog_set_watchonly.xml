@@ -26,12 +26,12 @@
         android:textColor="@color/whiteSecondary"
         android:textSize="20sp" />
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:passwordToggleEnabled="true">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/input_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,6 +39,6 @@
             android:inputType="textPassword"
             android:imeOptions="flagNoPersonalizedLearning"
             android:importantForAccessibility="no" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

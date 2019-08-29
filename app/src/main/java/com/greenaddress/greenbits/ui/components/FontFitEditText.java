@@ -9,7 +9,7 @@ import android.util.TypedValue;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-public class FontFitEditText extends android.support.v7.widget.AppCompatEditText {
+public class FontFitEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     //Attributes
     private Paint mTestPaint;

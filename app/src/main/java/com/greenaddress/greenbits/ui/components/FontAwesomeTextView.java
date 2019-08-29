@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 
-public class FontAwesomeTextView extends android.support.v7.widget.AppCompatTextView {
+public class FontAwesomeTextView extends androidx.appcompat.widget.AppCompatTextView {
 
     private Typeface mDefaultTypeface;
     private static Typeface mAwesomeTypeface;

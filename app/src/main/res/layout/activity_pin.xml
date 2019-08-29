@@ -10,13 +10,13 @@
               android:paddingTop="@dimen/activity_vertical_margin"
               tools:context="com.greenaddress.greenbits.ui.authentication.PinActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:background="@android:color/transparent">
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:layout_width="fill_parent"

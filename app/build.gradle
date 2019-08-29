@@ -34,18 +34,18 @@ android {
         exclude 'com/mysql/jdbc/configs/maxPerformance.properties'
         exclude 'com/mysql/jdbc/configs/solarisMaxPerformance.properties'
     }
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 321
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
         versionName "3.2.1"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     flavorDimensions 'normal'
     buildTypes {
@@ -110,18 +110,18 @@ configurations {
 dependencies {
     implementation project(':bitcoinj:core')
 
-    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     // force material-dialogs to use latest support libs
-    implementation 'com.android.support:support-v13:28.0.0'
-    implementation 'com.android.support:support-annotations:28.0.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:design:28.0.0'
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
-    implementation 'com.android.support:gridlayout-v7:28.0.0'
-    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.takisoft.fix:preference-v7:28.0.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     implementation 'com.google.zxing:core:3.3.2'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
@@ -130,8 +130,8 @@ dependencies {
     // used to redirect bitcoinj logging to android in debug builds, enable manually
     // debugApi 'com.noveogroup.android:android-logger:1.3.6'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 
 }
 

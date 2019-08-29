@@ -2,7 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.util.TypedValue;
 
 import com.greenaddress.greenapi.data.NetworkData;

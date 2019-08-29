@@ -42,7 +42,7 @@
 
 
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:padding="@dimen/sections_padding"
             android:id="@+id/networksRecyclerView"
             android:layout_width="match_parent"
@@ -70,11 +70,11 @@
             android:text="@string/id_proxy_settings"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/socks5Host"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -86,13 +86,13 @@
                 android:imeOptions="flagNoPersonalizedLearning"
                 android:importantForAccessibility="no" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/socks5Port"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
                 android:imeOptions="flagNoPersonalizedLearning"
                 android:importantForAccessibility="no" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 

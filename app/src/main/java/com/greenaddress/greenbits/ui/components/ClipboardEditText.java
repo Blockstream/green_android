@@ -7,7 +7,7 @@ import android.widget.Toast;
 import com.greenaddress.greenbits.ui.R;
 
 
-public class ClipboardEditText extends android.support.v7.widget.AppCompatEditText {
+public class ClipboardEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     private final Context context;
 

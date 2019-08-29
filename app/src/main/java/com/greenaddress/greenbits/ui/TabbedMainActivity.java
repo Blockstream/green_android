@@ -8,14 +8,14 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -137,7 +137,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
                                       R.id.placeSnackBar), R.string.id_you_are_not_connected,
                                   Snackbar.LENGTH_INDEFINITE);
         final View snackbarView = mSnackbar.getView();
-        final TextView textView = snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        final TextView textView = snackbarView.findViewById(R.id.snackbar_text);
         textView.setTextColor(Color.RED);
         mSnackbar.setAction(R.string.id_try_now, v -> getSession().reconnectNow());
 
@@ -271,7 +271,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         if (mSnackbar != null && cmo != null) {
             runOnUiThread(() -> {
                 if (cmo.isOffline()) {
-                    final TextView text = mSnackbar.getView().findViewById(android.support.design.R.id.snackbar_text);
+                    final TextView text = mSnackbar.getView().findViewById(R.id.snackbar_text);
                     text.setText(cmo.getMessage(getResources()));
                     mSnackbar.show();
                 } else {

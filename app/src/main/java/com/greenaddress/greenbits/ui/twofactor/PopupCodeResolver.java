@@ -2,7 +2,7 @@ package com.greenaddress.greenbits.ui.twofactor;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.text.InputType;
 import android.util.Log;
 
