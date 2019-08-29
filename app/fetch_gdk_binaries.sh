@@ -27,9 +27,9 @@ if [ -d "${APP_ROOT}/app" ]; then
     APP_ROOT="${APP_ROOT}/app"
 fi
 
-ONCEFLAG=${APP_ROOT}/src/main/jniLibs/$SHA256.done
+JNILIBSDIR=${APP_ROOT}/src/main/jniLibs
 
-if [ -f $ONCEFLAG ]; then
+if [ -d $JNILIBSDIR ]; then
     exit 0
 fi
 
@@ -51,4 +51,3 @@ mv ${NAME}/java/com/blockstream/ ${GDK_JAVA_DIR}
 # Cleanup
 rm -fr $NAME
 
-touch $ONCEFLAG
