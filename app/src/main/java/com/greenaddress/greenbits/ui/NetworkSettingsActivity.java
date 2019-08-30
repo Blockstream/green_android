@@ -225,10 +225,6 @@ public class NetworkSettingsActivity extends GaActivity implements Observer {
             UI.toast(this, R.string.id_socks5_proxy_and_port_must_be, Toast.LENGTH_LONG);
             return;
         }
-        if (mSwitchTor.isChecked() && (socksHost.isEmpty() || !mSwitchProxy.isChecked())) {
-            UI.toast(this, R.string.id_please_set_and_enable_socks5, Toast.LENGTH_LONG);
-            return;
-        }
 
         if (socksHost.startsWith("{")) {
             try {

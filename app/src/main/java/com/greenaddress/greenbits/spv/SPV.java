@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat.Builder;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -478,7 +479,7 @@ public class SPV {
 
         final int port = uri.getPort() == -1 ? mService.getNetworkParameters().getPort() : uri.getPort();
 
-        if (!mService.isProxyEnabled())
+        if (!mService.isProxyEnabled() && !mService.getTorEnabled())
             return new PeerAddress(mService.getNetworkParameters(), InetAddress.getByName(host), port);
 
         return new PeerAddress(mService.getNetworkParameters(), host, port) {
@@ -564,11 +565,28 @@ public class SPV {
                 System.setProperty("user.home", mService.getFilesDir().toString());
 
                 Log.d(TAG, "Creating peer group");
-                if (!mService.isProxyEnabled())
+                if (!mService.isProxyEnabled() && !mService.getTorEnabled()) {
                     mPeerGroup = new PeerGroup(mService.getNetworkParameters(), mBlockChain);
-                else {
-                    final String proxyHost = mService.getProxyHost();
-                    final String proxyPort = mService.getProxyPort();
+                } else {
+                    String proxyHost, proxyPort;
+                    if (!mService.isProxyEnabled()) {
+                        if (GDKSession.getSession() == null || GDKSession.getSession().getTorSocks5() == null) {
+                            throw new URISyntaxException("", "null session or TorSocks5");
+                        }
+
+                        final String fullUrl = GDKSession.getSession().getTorSocks5().replaceFirst("socks5://", "");
+                        if (fullUrl.split(":").length != 2) {
+                            throw new URISyntaxException(
+                                      GDKSession.getSession().getTorSocks5(), "Invalid Tor SOCKS5 string");
+                        }
+
+                        proxyHost = fullUrl.split(":")[0];
+                        proxyPort = fullUrl.split(":")[1];
+                    } else {
+                        proxyHost = mService.getProxyHost();
+                        proxyPort = mService.getProxyPort();
+                    }
+
                     final Socks5SocketFactory sf = new Socks5SocketFactory(proxyHost, proxyPort);
                     final BlockingClientManager bcm = new BlockingClientManager(sf);
                     bcm.setConnectTimeoutMillis(60000);
@@ -594,7 +612,7 @@ public class SPV {
                 for (final String address: addresses)
                     addPeer(address, mService.getNetworkParameters());
 
-                if (addresses.isEmpty() && !mService.isProxyEnabled() &&
+                if (addresses.isEmpty() && !mService.isProxyEnabled() && !mService.getTorEnabled() &&
                     mService.getNetworkParameters().getDnsSeeds() != null) {
                     // Blank w/o proxy: Use the built in resolving via DNS
                     mPeerGroup.addPeerDiscovery(new DnsDiscovery(mService.getNetworkParameters()));

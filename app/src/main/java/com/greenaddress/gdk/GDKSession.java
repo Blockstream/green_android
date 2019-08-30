@@ -111,6 +111,10 @@ public class GDKSession {
         GDK.login_with_pin(mNativeSession, pin, pinData);
     }
 
+    public String getTorSocks5() {
+        return GDK.get_tor_socks5(mNativeSession);
+    }
+
     public String getWatchOnlyUsername() {
         return GDK.get_watch_only_username(mNativeSession);
     }

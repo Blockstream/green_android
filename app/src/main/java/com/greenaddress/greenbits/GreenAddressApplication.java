@@ -74,6 +74,7 @@ public class GreenAddressApplication extends MultiDexApplication {
 
         // GDK initialization parameters
         final ObjectNode details = (new ObjectMapper()).createObjectNode();
+        details.put("datadir", getFilesDir().getAbsolutePath());
         try {
             GDK.init(new JSONConverterImpl(), details);
         } catch (Exception e) {
