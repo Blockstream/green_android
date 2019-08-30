@@ -36,6 +36,8 @@ public class GreenAddressApplication extends MultiDexApplication {
     public GaService mService;
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
 
+    private static Context sNotificationContext;
+
     private void failHard(final String title, final String message) {
         final Intent fail = new Intent(this, FailHardActivity.class);
         fail.putExtra("errorTitle", title);
@@ -47,12 +49,22 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager nm = getSystemService(NotificationManager.class);
+
             NotificationChannel nc = new NotificationChannel("spv_channel", getString(R.string.id_spv_notifications),
                                                              NotificationManager.IMPORTANCE_LOW);
             nc.setDescription(getString(R.string.id_displays_the_progress_of_spv));
-            NotificationManager nm = getSystemService(NotificationManager.class);
             nm.createNotificationChannel(nc);
+
+            NotificationChannel tor_nc = new NotificationChannel("tor_channel", "Tor Status",
+                    NotificationManager.IMPORTANCE_LOW);
+            tor_nc.setDescription("Displays the progress of Tor initialization");
+            nm.createNotificationChannel(tor_nc);
         }
+    }
+
+    public static Context getNotificationContext() {
+        return sNotificationContext;
     }
 
     @Override
@@ -83,6 +95,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
 
         createNotificationChannel();
+        sNotificationContext = this.getApplicationContext();
 
         // Provide bitcoinj with Mnemonics. These are used if we need to create a fake
         // wallet during SPV_SYNCRONIZATION syncing to prevent an exception.

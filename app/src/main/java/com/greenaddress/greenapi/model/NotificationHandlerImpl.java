@@ -1,5 +1,7 @@
 package com.greenaddress.greenapi.model;
 
+import android.app.NotificationManager;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import com.blockstream.libgreenaddress.GDK;
@@ -14,6 +16,7 @@ import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.LinkedList;
@@ -22,7 +25,11 @@ import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 public class NotificationHandlerImpl implements GDK.NotificationHandler {
+    private static final int TOR_NOTIFICATION_ID = 0x42;
+
     private Model mModel;
     private GaService mService;
     private Queue<Object> mTemp = new LinkedList<>();
@@ -43,8 +50,47 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         mTemp.clear();
     }
 
+    private synchronized void handleTorProgressNotification(final ObjectNode data) {
+        final JsonNode torJson = data.get("tor");
+        if (torJson == null) {
+            return;
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(
+            GreenAddressApplication.getNotificationContext(), "tor_channel")
+                                             .setContentTitle("Tor status")
+                                             .setContentText(torJson.get("summary").asText("Tor is starting..."))
+                                             .setOngoing(true)
+                                             .setOnlyAlertOnce(true)
+                                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                             .setSmallIcon(R.drawable.ic_home)
+                                             .setTimeoutAfter(10000); // just in case we get stuck
+
+        NotificationManager notificationManager =
+            (NotificationManager) GreenAddressApplication.getNotificationContext().getSystemService(NOTIFICATION_SERVICE);
+        if (torJson.get("progress").asInt(0) == 100) {
+            builder.setContentText("Tor is connected");
+            builder.setOngoing(false); // allow to swipe away
+            builder.setOnlyAlertOnce(false); // alert the user that we are connected
+            builder.setProgress(0, 0, false); // disable progress
+            builder.setTimeoutAfter(5000); // don't want to bother the user for too long
+        } else {
+            builder.setProgress(100, torJson.get("progress").asInt(0), false);
+        }
+
+        notificationManager.notify(TOR_NOTIFICATION_ID, builder.build()); // create or replace the old one
+    }
+
     @Override
     public synchronized void onNewNotification(final Object session, final Object jsonObject) {
+        if (jsonObject instanceof ObjectNode) {
+            final ObjectNode json = (ObjectNode) jsonObject;
+
+            if (json.get("event") != null && json.get("event").asText().equals("tor")) {
+                handleTorProgressNotification(json);
+            }
+        }
+
         if (mModel == null) {
             mTemp.add(jsonObject);
         } else {
