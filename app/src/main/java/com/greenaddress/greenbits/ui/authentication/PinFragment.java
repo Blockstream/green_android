@@ -6,6 +6,7 @@ import android.inputmethodservice.KeyboardView;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
+import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,6 +116,7 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
             editable = mPinLongText.getEditableText();
             view = mPinLongText;
         }
+        view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
         if (primaryCode >= 0 && primaryCode <= 9)
             editable.append(String.valueOf(primaryCode));
         else if (primaryCode == -2)

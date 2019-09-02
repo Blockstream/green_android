@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui.authentication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.HapticFeedbackConstants;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -40,6 +41,7 @@ public class TrezorPinActivity extends GaActivity {
                     value.append(String.valueOf(ii+1));
                     textView.setText(String.format("%s *",textView.getText()));
                 }
+                view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
             });
         }
         final ImageView button = UI.find(this, R.id.eraseButton);
