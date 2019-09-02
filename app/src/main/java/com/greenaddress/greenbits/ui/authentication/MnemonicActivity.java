@@ -359,7 +359,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         case QRSCANNER:
             if (data != null && data.getStringExtra(ScanForResultActivity.INTENT_EXTRA_RESULT) != null) {
                 setMnemonic(data.getStringExtra(ScanForResultActivity.INTENT_EXTRA_RESULT));
-                enableLogin();
+                doLogin();
             }
             break;
         }
