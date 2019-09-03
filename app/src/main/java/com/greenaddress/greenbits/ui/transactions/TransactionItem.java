@@ -158,23 +158,34 @@ public class TransactionItem implements Serializable {
 
     public String getAmountWithUnit(final GaService service, final String assetId) {
         try {
+            if (type == TYPE.REDEPOSIT) {
+                final String feeAmount = amountToString(fee, service.getUnitKey(), null);
+                return String.format("-%s %s", feeAmount, service.getBitcoinOrLiquidUnit());
+            }
+
             AssetInfoData assetInfo = mAssetBalances.get(assetId).getAssetInfo();
             if (assetInfo == null)
                 assetInfo = new AssetInfoData(assetId, assetId, 0, "", "");
-
-            final ObjectNode details = mObjectMapper.createObjectNode();
-            details.put("satoshi", mAssetBalances.get(assetId).getSatoshi());
-            if (isAsset)
-                details.set("asset_info", assetInfo.toObjectNode());
-            final ObjectNode converted = getSession().convert(details);
-            final String amount = converted.get(isAsset ? assetId : service.getUnitKey()).asText();
+            final String amount = amountToString(mAssetBalances.get(assetId).getSatoshi(),
+                                                 isAsset ? assetId : service.getUnitKey(),
+                                                 isAsset ? assetInfo.toObjectNode() : null);
             final String denom =
                 isAsset ? (assetInfo.getTicker() !=
                            null ? assetInfo.getTicker() : "") : service.getBitcoinOrLiquidUnit();
-            return String.format("%s%s %s", type == TYPE.OUT || type == TYPE.REDEPOSIT ? "-" : "", amount, denom);
+            return String.format("%s%s %s", type == TYPE.OUT ? "-" : "", amount, denom);
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
             return "";
         }
+    }
+
+    private String amountToString(long satoshiAmount, String assetId, ObjectNode assetInfo) throws IOException {
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("satoshi", satoshiAmount);
+        if (assetInfo != null) {
+            details.set("asset_info", assetInfo);
+        }
+        final ObjectNode converted = getSession().convert(details);
+        return converted.get(assetId).asText();
     }
 }
