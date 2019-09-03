@@ -399,8 +399,8 @@ public class SPV {
             if (mNotifyManager == null) {
                 mNotifyManager = (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
                 mNotificationBuilder = new NotificationCompat.Builder(mService, "spv_channel");
-                mNotificationBuilder.setContentTitle("Green SPV_SYNCRONIZATION Sync")
-                .setSmallIcon(R.drawable.ic_refresh);
+                mNotificationBuilder.setContentTitle("SPV Synchronization")
+                .setSmallIcon(R.drawable.ic_home);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                     mNotificationBuilder.setContentIntent(getNotificationIntent());
             }
@@ -442,7 +442,8 @@ public class SPV {
                         @Override
                         protected void progress(final double percent, final int blocksSoFar, final Date date) {
                             //Log.d(TAG, "progress: " + Var("percent", percent));
-                            mNotificationBuilder.setContentText("Sync in progress...");
+                            String progressString = String.format("Block %d", getSPVHeight());
+                            mNotificationBuilder.setContentText(progressString);
                             updateNotification(100, (int) percent);
                         }
 
