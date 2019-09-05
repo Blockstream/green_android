@@ -41,6 +41,8 @@ public class TwoFactorActivity extends LoggedActivity {
     private TextView mPromptText;
     private EditText mPrefix;
 
+    private boolean settingEmail; // setting email without enabling 2FA
+
     private TwoFactorConfigData twoFactorConfigData;
 
     private void setView(final int layoutId, final int viewId) {
@@ -81,6 +83,7 @@ public class TwoFactorActivity extends LoggedActivity {
         final Map<String, String> mLocalizedMap = UI.getTwoFactorLookup(getResources());
         mMethodName = getIntent().getStringExtra("method");
         mMethod = mMethodName.toLowerCase(Locale.US);
+        settingEmail = getIntent().getBooleanExtra("settingEmail", false);
         final boolean mEnable = getIntent().getBooleanExtra("enable", true);
         twoFactorConfigData = mService.getModel().getTwoFactorConfigDataObservable().getTwoFactorConfigData();
         setTitle(getString(mEnable ? R.string.id_1s_twofactor_set_up : R.string.id_delete_s_twofactor,
@@ -159,7 +162,12 @@ public class TwoFactorActivity extends LoggedActivity {
                 if (details.isEmpty())
                     return;
                 UI.disable(mContinueButton);
-                enableTwoFactor("email", details);
+                if (settingEmail) {
+                    setEmail(details);
+                } else {
+                    enableTwoFactor("email", details);
+                }
+
             }
         });
     }
@@ -277,6 +285,29 @@ public class TwoFactorActivity extends LoggedActivity {
             return !stripped.startsWith("00") && stripped.matches("\\d+?");
         }
         return false;
+    }
+
+    public void setEmail(String data) {
+        mService.getExecutor().execute(() -> {
+            try {
+                final TwoFactorDetailData twoFactorDetail = new TwoFactorDetailData();
+                twoFactorDetail.setData(data);
+                twoFactorDetail.setEnabled(false);
+                twoFactorDetail.setConfirmed(true);
+                final GDKTwoFactorCall twoFactorCall =
+                    getSession().changeSettingsTwoFactor(this, "email", twoFactorDetail);
+                twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
+                UI.toast(this, "Email set", Toast.LENGTH_LONG);
+                setEnableDisableResult(false);
+                try {
+                    mService.getModel().getTwoFactorConfigDataObservable().refresh();
+                } catch (final Exception ignore) { }
+            } catch (final Exception e) {
+                e.printStackTrace();
+                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+            }
+            finishOnUiThread();
+        });
     }
 
     public void enableTwoFactor(final String method, final String data) {

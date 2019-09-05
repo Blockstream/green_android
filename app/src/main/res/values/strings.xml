@@ -357,6 +357,7 @@
   <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Set a new PIN</string>
   <string name="id_set_custom_fee_rate">Set custom fee rate</string>
+  <string name="id_set_recovery_email">Set recovery email</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_pgp_key_for">Set up PGP key for communications</string>
