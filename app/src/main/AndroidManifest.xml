@@ -250,6 +250,11 @@
             android:screenOrientation="portrait"
             android:label="@string/id_asset"
             />
+        <activity
+            android:name=".preferences.DisplayMnemonicActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/id_mnemonic"
+            />
 
     </application>
 

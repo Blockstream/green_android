@@ -57,8 +57,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     private static final int PINSAVE = 1337;
     private static final int QRSCANNER = 1338;
     private static final int CAMERA_PERMISSION = 150;
-    private static final int MNEMONIC_LENGTH = 24;
-    private static final int ENCRYPTED_MNEMONIC_LENGTH = 27;
+    public static final int MNEMONIC_LENGTH = 24;
+    public static final int ENCRYPTED_MNEMONIC_LENGTH = 27;
 
     private final Object mWordList = Wally.bip39_get_wordlist("en");
 
