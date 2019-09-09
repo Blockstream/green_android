@@ -134,7 +134,7 @@ class PinLoginViewController: UIViewController {
     @objc func keyClick(sender: UIButton) {
         pinCode += (sender.titleLabel?.text)!
         reload()
-        if pinCode.count < 6 {
+        guard pinCode.count == 6 else {
             return
         }
         let network = getNetwork()
