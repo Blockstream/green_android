@@ -5,16 +5,30 @@ import Security
 class AuthenticationTypeHandler {
     public enum AuthError: Error, Equatable {
         case CanceledByUser
-        case ServiceNotAvailable
-        case Unknown(desc: String)
+        case ServiceNotAvailable(_ desc: String)
+        case NotSupported
+        case PasscodeNotSet
+        case SecurityError(_ desc: String)
+        case KeychainError(_ status: OSStatus)
 
         var localizedDescription: String {
             get {
                 switch self {
-                case .Unknown(let desc):
+                case .KeychainError(let status):
+                    if #available(iOS 11.3, *) {
+                        let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
+                        return "Operation failed: \(status) \(text))"
+                    } else {
+                        return "Operation failed: \(status). Check the error message through https://osstatus.com."
+                    }
+                case .ServiceNotAvailable(let desc), .SecurityError(let desc):
                     return desc
-                default:
-                    return ""
+                case .NotSupported:
+                    return NSLocalizedString("id_your_ios_device_might_not_be", comment: "")
+                case .PasscodeNotSet:
+                    return NSLocalizedString("id_set_up_a_passcode_for_your_ios", comment: "")
+                case .CanceledByUser:
+                    return NSLocalizedString("id_action_canceled", comment: "")
                 }
             }
         }
@@ -46,6 +60,10 @@ class AuthenticationTypeHandler {
         return biometryType == LABiometryType.faceID || biometryType == LABiometryType.touchID
     }
 
+    static func supportsPasscodeAuthentication() -> Bool {
+        return LAContext().canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
+    }
+
     fileprivate static func describeKeychainError(_ status: OSStatus) -> OSStatus {
         if status != errSecSuccess && status != errSecDuplicateItem {
             if #available(iOS 11.3, *) {
@@ -64,21 +82,23 @@ class AuthenticationTypeHandler {
         return status
     }
 
-    fileprivate static func describeSecurityError(_ error: Unmanaged<CFError>) {
+    fileprivate static func describeSecurityError(_ error: Unmanaged<CFError>) -> String {
         let err = CFErrorCopyDescription(error.takeRetainedValue())
-        NSLog("Operation failed: \(String(describing: err))")
+        let errorString = String(describing: err)
+        NSLog("Operation failed: \(errorString)")
 #if DEBUG
         NSLog("Stacktrace: \(Thread.callStackSymbols)")
 #endif
+        return errorString
     }
 
     fileprivate static func callWrapper(fun call: @autoclosure () -> Int32) -> OSStatus {
         return describeKeychainError(call())
     }
 
-    fileprivate static func getACL() -> SecAccessControl? {
+    fileprivate static func getACL() throws -> SecAccessControl {
         guard #available(iOS 11.3, *) else {
-            return nil
+            throw AuthError.NotSupported
         }
         var error: Unmanaged<CFError>?
         let access = SecAccessControlCreateWithFlags(nil,
@@ -87,16 +107,18 @@ class AuthenticationTypeHandler {
                                                       SecAccessControlCreateFlags.privateKeyUsage],
                                                      &error)
         guard error == nil else {
-            describeSecurityError(error!)
-            return nil
+            throw AuthError.SecurityError(describeSecurityError(error!))
         }
-        return access
+        guard access != nil else {
+            let text = "Operation failed: Access control not supported."
+            NSLog(text)
+            throw AuthError.ServiceNotAvailable(text)
+        }
+        return access!
     }
 
-    static func generateBiometricPrivateKey(network: String) -> Bool {
-        guard let acl = getACL() else {
-            return false
-        }
+    static func generateBiometricPrivateKey(network: String) throws {
+        let acl = try getACL()
 
         let privateKeyLabel = AuthKeyBiometricPrivateKeyPathPrefix + String.random(length: PrivateKeyPathSize) + network
         let params: [CFString: Any] = [kSecAttrKeyType: ECCKeyType,
@@ -109,16 +131,13 @@ class AuthenticationTypeHandler {
         var error: Unmanaged<CFError>?
         _ = SecKeyCreateRandomKey(params as CFDictionary, &error)
         guard error == nil else {
-            describeSecurityError(error!)
-            return false
+            throw AuthError.SecurityError(describeSecurityError(error!))
         }
 
         UserDefaults.standard.set(privateKeyLabel, forKey: "AuthKeyBiometricPrivateKey" + network)
-
-        return true
     }
 
-    fileprivate static func getPrivateKey(forNetwork: String) -> SecKey? {
+    fileprivate static func getPrivateKey(forNetwork: String) throws -> SecKey {
         let privateKeyLabel = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
         let q: [CFString: Any] = [kSecClass: kSecClassKey,
                                   kSecAttrKeyType: ECCKeyType,
@@ -128,67 +147,61 @@ class AuthenticationTypeHandler {
                                   kSecUseOperationPrompt: "Unlock Green"]
 
         var privateKey: CFTypeRef?
-        let status = SecItemCopyMatching(q as CFDictionary, &privateKey)
+        let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &privateKey))
         guard status == errSecSuccess else {
-            _ = describeKeychainError(status)
-            return nil
+            throw AuthError.KeychainError(status)
         }
         return (privateKey as! SecKey)
     }
 
-    fileprivate static func getPublicKey(forNetwork: String) -> SecKey? {
-        let privateKey = getPrivateKey(forNetwork: forNetwork)
-        guard privateKey != nil else {
-            return nil
+    fileprivate static func getPublicKey(forNetwork: String) throws -> SecKey {
+        let privateKey = try getPrivateKey(forNetwork: forNetwork)
+        guard let pubkey = SecKeyCopyPublicKey(privateKey) else {
+            let text = "Operation failed: key does not contain a public key."
+            NSLog(text)
+            throw AuthError.ServiceNotAvailable(text)
         }
-        return SecKeyCopyPublicKey(privateKey!)
+        return pubkey
     }
 
-    fileprivate static func decrypt(base64Encoded: Data, forNetwork: String) throws -> String? {
-        let privateKey = getPrivateKey(forNetwork: forNetwork)
-        guard privateKey != nil else {
-            return nil
-        }
+    fileprivate static func decrypt(base64Encoded: Data, forNetwork: String) throws -> String {
+        let privateKey = try getPrivateKey(forNetwork: forNetwork)
 
-        let canDecrypt = SecKeyIsAlgorithmSupported(privateKey!, SecKeyOperationType.decrypt, ECCEncryptionType)
+        let canDecrypt = SecKeyIsAlgorithmSupported(privateKey, SecKeyOperationType.decrypt, ECCEncryptionType)
         guard canDecrypt else {
             NSLog("Operation failed: Decryption algorithm not supported.")
 #if DEBUG
             NSLog("Stacktrace: \(Thread.callStackSymbols)")
 #endif
-            return nil
+            throw AuthError.ServiceNotAvailable("Operation failed: Decryption algorithm not supported.")
         }
 
         var error: Unmanaged<CFError>?
-        let decrypted = SecKeyCreateDecryptedData(privateKey!, ECCEncryptionType, base64Encoded as CFData, &error)
+        let decrypted = SecKeyCreateDecryptedData(privateKey, ECCEncryptionType, base64Encoded as CFData, &error)
         guard error == nil else {
-            describeSecurityError(error!)
+            _ = describeSecurityError(error!)
             throw AuthError.CanceledByUser
         }
-        return String(data: decrypted! as Data, encoding: .utf8)
+        return String(data: decrypted! as Data, encoding: .utf8)!
     }
 
-    fileprivate static func encrypt(plaintext: String, forNetwork: String) -> String? {
-        let publicKey = getPublicKey(forNetwork: forNetwork)
-        guard publicKey != nil else {
-            return nil
-        }
+    fileprivate static func encrypt(plaintext: String, forNetwork: String) throws -> String {
+        let publicKey = try getPublicKey(forNetwork: forNetwork)
 
-        let canEncrypt = SecKeyIsAlgorithmSupported(publicKey!, SecKeyOperationType.encrypt, ECCEncryptionType)
+        let canEncrypt = SecKeyIsAlgorithmSupported(publicKey, SecKeyOperationType.encrypt, ECCEncryptionType)
         guard canEncrypt else {
             NSLog("Operation failed: Encryption algorithm not supported.")
 #if DEBUG
             NSLog("Stacktrace: \(Thread.callStackSymbols)")
 #endif
-            return nil
+            throw AuthError.ServiceNotAvailable("Operation failed: Encryption algorithm not supported.")
         }
 
         var error: Unmanaged<CFError>?
         let data = plaintext.data(using: .utf8, allowLossyConversion: false)
-        let encrypted = SecKeyCreateEncryptedData(publicKey!, ECCEncryptionType, data! as CFData, &error)
+        let encrypted = SecKeyCreateEncryptedData(publicKey, ECCEncryptionType, data! as CFData, &error)
         guard error == nil else {
-            describeSecurityError(error!)
-            return nil
+            throw AuthError.SecurityError(describeSecurityError(error!))
         }
 
         return (encrypted! as Data).base64EncodedString()
@@ -208,58 +221,56 @@ class AuthenticationTypeHandler {
     }
 
     fileprivate static func set(method: String, data: [String: Any], forNetwork: String) throws {
-        let data = try? JSONSerialization.data(withJSONObject: data)
-        guard data != nil else {
-            throw AuthError.ServiceNotAvailable
+        if !supportsPasscodeAuthentication() {
+            throw AuthError.PasscodeNotSet
+        }
+        guard let data = try? JSONSerialization.data(withJSONObject: data) else {
+            throw AuthError.ServiceNotAvailable("Operation failed: Invalid json on serialization.")
         }
         let q = queryFor(method: method, forNetwork: forNetwork)
-        let qAdd = q.merging([kSecValueData: data!]) { (current, _) in current }
+        let qAdd = q.merging([kSecValueData: data]) { (current, _) in current }
         var status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
         if status == errSecDuplicateItem {
             status = callWrapper(fun: SecItemDelete(q as CFDictionary))
             status = callWrapper(fun: SecItemAdd(qAdd as CFDictionary, nil))
-        } else if status != errSecSuccess {
-            throw AuthError.Unknown(desc: "UnknownSecStatusCode: \(status)")
+        }
+        if status != errSecSuccess {
+            throw AuthError.KeychainError(status)
         }
     }
 
-    fileprivate static func get_(method: String, forNetwork: String) -> [String: Any]? {
+    fileprivate static func get_(method: String, forNetwork: String) throws -> [String: Any] {
         let q = queryForData(method: method, forNetwork: forNetwork)
         var result: CFTypeRef?
         let status = callWrapper(fun: SecItemCopyMatching(q as CFDictionary, &result))
         guard status == errSecSuccess, result != nil, let resultData = result as? Data else {
-            return nil
+            throw AuthError.KeychainError(status)
         }
-        let data = try? JSONSerialization.jsonObject(with: resultData, options: [])
-        guard data != nil else {
-            return nil
+        guard let data = try? JSONSerialization.jsonObject(with: resultData, options: []) as? [String: Any] else {
+            throw AuthError.ServiceNotAvailable("Operation failed: Invalid json on serialization.")
         }
-        return (data! as? [String: Any])
+        return data
     }
 
-    fileprivate static func get(method: String, toDecrypt: Bool, forNetwork: String) throws -> [String: Any]? {
-        guard let data = get_(method: method, forNetwork: forNetwork) else {
-            return nil
-        }
+    fileprivate static func get(method: String, toDecrypt: Bool, forNetwork: String) throws -> [String: Any] {
+        let data = try get_(method: method, forNetwork: forNetwork)
         var extended = data
         if toDecrypt {
             precondition(method == AuthKeyBiometric)
             let encryptedBiometric = data["encrypted_biometric"] as? String
-            guard let decoded = Data(base64Encoded: encryptedBiometric!),
-                let plaintext = try decrypt(base64Encoded: decoded, forNetwork: forNetwork) else {
-                    return nil
-            }
+            let decoded = Data(base64Encoded: encryptedBiometric!)
+            let plaintext = try decrypt(base64Encoded: decoded!, forNetwork: forNetwork)
             extended["plaintext_biometric"] = plaintext
         }
         return extended
     }
 
-    static func getAuth(method: String, forNetwork: String) throws -> [String: Any]? {
+    static func getAuth(method: String, forNetwork: String) throws -> [String: Any] {
         return try get(method: method, toDecrypt: method == AuthKeyBiometric, forNetwork: forNetwork)
     }
 
     static func findAuth(method: String, forNetwork: String) -> Bool {
-        return get_(method: method, forNetwork: forNetwork) != nil
+        return (try? get_(method: method, forNetwork: forNetwork)) != nil
     }
 
     static func removePrivateKey(forNetwork: String) {
@@ -278,9 +289,7 @@ class AuthenticationTypeHandler {
     }
 
     static func addBiometryType(data: [String: Any], extraData: String, forNetwork: String) throws {
-        guard let encrypted = encrypt(plaintext: extraData, forNetwork: forNetwork) else {
-            throw AuthError.ServiceNotAvailable
-        }
+        let encrypted = try encrypt(plaintext: extraData, forNetwork: forNetwork)
         var extended = data
         extended["encrypted_biometric"] = encrypted
         try set(method: AuthKeyBiometric, data: extended, forNetwork: forNetwork)

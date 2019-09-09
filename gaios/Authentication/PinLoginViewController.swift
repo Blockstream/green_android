@@ -90,8 +90,11 @@ class PinLoginViewController: UIViewController {
         }.catch { error in
             var message = NSLocalizedString("id_login_failed", comment: "")
             if let authError = error as? AuthenticationTypeHandler.AuthError {
-                if authError == AuthenticationTypeHandler.AuthError.CanceledByUser {
+                switch authError {
+                case .CanceledByUser:
                     return
+                default:
+                    message = authError.localizedDescription
                 }
             } else if let error = error as? GaError {
                 switch error {

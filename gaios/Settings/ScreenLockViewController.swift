@@ -5,6 +5,7 @@ import UIKit
 class ScreenLockViewController: UIViewController {
 
     @IBOutlet var content: ScreenLockView!
+    var network = { return getNetwork() }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -78,59 +79,95 @@ class ScreenLockViewController: UIViewController {
         }
     }
 
-    func verifyAuth(message: String, _ sender: UISwitch) {
+    func onBioAuthError(message: String, _ sender: UISwitch) {
+        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in })
+        alert.addAction(UIAlertAction(title: "Erase", style: .destructive) { _ in
+            removeBioKeychainData()
+            AuthenticationTypeHandler.removePrivateKey(forNetwork: self.network)
+            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.network)
+        })
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    func onAuthError(message: String, _ sender: UISwitch) {
         let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    private func enable(_ sender: UISwitch ) {
+        // Enable Pin authentication
+        if sender == content.pinSwitch {
+            self.performSegue(withIdentifier: "restorePin", sender: nil)
+            return
+        }
+        // Enable Bio authentication
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            startAnimating()
+            return Guarantee()
+        }.map(on: bgq) {
+            if UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + self.network) == nil {
+                try AuthenticationTypeHandler.generateBiometricPrivateKey(network: self.network)
+            }
+        }.compactMap(on: bgq) {
+            let password = String.random(length: 14)
+            let deviceid = String.random(length: 14)
+            let mnemonics = try getSession().getMnemonicPassphrase(password: "")
+            return (try getSession().setPin(mnemonic: mnemonics, pin: password, device: deviceid), password) as? ([String: Any], String)
+        }.map { (data: [String: Any], password: String) -> Void in
+            try AuthenticationTypeHandler.addBiometryType(data: data, extraData: password, forNetwork: self.network)
+        }.ensure {
+            self.stopAnimating()
+        }.catch { error in
             sender.setOn(!sender.isOn, animated: true)
+            if let err = error as? GaError, err != GaError.GenericError {
+                self.onAuthError(message: NSLocalizedString("id_you_are_not_connected_to_the", comment: ""), sender)
+            } else if let err = error as? AuthenticationTypeHandler.AuthError {
+                self.onBioAuthError(message: err.localizedDescription, sender)
+            } else if !error.localizedDescription.isEmpty {
+                self.onAuthError(message: NSLocalizedString(error.localizedDescription, comment: ""), sender)
+            } else {
+                self.onAuthError(message: NSLocalizedString("id_operation_failure", comment: ""), sender)
+            }
+        }
+    }
+
+    private func disable(_ sender: UISwitch) {
+        if sender == content.pinSwitch {
+            // Disable auth key Bio before removing auth key Pin
+            if AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: self.network) {
+                onAuthError(message: NSLocalizedString("id_please_disable_biometric", comment: ""), sender)
+                sender.setOn(!sender.isOn, animated: true)
+            }
+        }
+        onAuthRemoval(sender) {
+            if sender == self.content.pinSwitch {
+                removePinKeychainData()
+            } else {
+                removeBioKeychainData()
+            }
         }
     }
 
     @objc func click(_ sender: UISwitch) {
         if sender == content.bioSwitch {
-            if !AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: getNetwork()) {
-                verifyAuth(message: NSLocalizedString("id_please_enable_pin", comment: ""), sender)
-            } else if !sender.isOn {
-                onAuthRemoval(sender) {
-                    removeBioKeychainData()
-                }
-            } else {
-                let bgq = DispatchQueue.global(qos: .background)
-                firstly {
-                    startAnimating()
-                    return Guarantee()
-                }.map(on: bgq) {
-                    let network = getNetwork()
-                    if UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + network) == nil {
-                        _ = AuthenticationTypeHandler.generateBiometricPrivateKey(network: network)
-                    }
-                }.compactMap(on: bgq) {
-                    let password = String.random(length: 14)
-                    let deviceid = String.random(length: 14)
-                    let mnemonics = try getSession().getMnemonicPassphrase(password: "")
-                    return (try getSession().setPin(mnemonic: mnemonics, pin: password, device: deviceid), password) as? ([String: Any], String)
-                }.done { (data: [String: Any], password: String) -> Void in
-                    try AuthenticationTypeHandler.addBiometryType(data: data, extraData: password, forNetwork: getNetwork())
-                }.catch { error in
-                    let errorMessage = error.localizedDescription.isEmpty ? "id_operation_failure" : error.localizedDescription
-                    Toast.show(NSLocalizedString(errorMessage, comment: ""), timeout: Toast.SHORT)
-                }.finally {
-                    self.stopAnimating()
-                }
+            // An auth key pin should be set before updating bio auth
+            if !AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: self.network) {
+                onAuthError(message: NSLocalizedString("id_please_enable_pin", comment: ""), sender)
+                sender.setOn(false, animated: true)
+                return
             }
-        } else if sender == content.pinSwitch {
-            if sender.isOn {
-                self.performSegue(withIdentifier: "restorePin", sender: nil)
-            } else {
-                if AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: getNetwork()) {
-                    verifyAuth(message: NSLocalizedString("id_please_disable_biometric", comment: ""), sender)
-                } else {
-                    onAuthRemoval(sender) {
-                        removePinKeychainData()
-                    }
-                }
-            }
+        }
+        if sender.isOn {
+            enable(sender)
+        } else {
+            disable(sender)
         }
     }
 

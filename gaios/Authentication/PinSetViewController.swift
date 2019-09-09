@@ -105,12 +105,19 @@ class PinSetViewController: UIViewController {
         }.done {
             self.segue()
         }.catch { error in
+            let message: String
             if let err = error as? GaError, err != GaError.GenericError {
-                Toast.show(NSLocalizedString("id_you_are_not_connected_to_the", comment: ""), timeout: Toast.SHORT)
+                message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+            } else if let err = error as? AuthenticationTypeHandler.AuthError {
+                message = err.localizedDescription
+            } else if !error.localizedDescription.isEmpty {
+                message = NSLocalizedString(error.localizedDescription, comment: "")
             } else {
-                let errorMessage = error.localizedDescription.isEmpty ? "id_operation_failure" : error.localizedDescription
-                Toast.show(NSLocalizedString(errorMessage, comment: ""), timeout: Toast.SHORT)
+                message = NSLocalizedString("id_operation_failure", comment: "")
             }
+            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in })
+            self.present(alert, animated: true, completion: nil)
         }
     }
 }
