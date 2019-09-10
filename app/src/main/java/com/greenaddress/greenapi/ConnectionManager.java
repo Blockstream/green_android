@@ -193,8 +193,8 @@ public class ConnectionManager extends Observable {
     public void loginWatchOnly(final String username, final String password) {
         login(null,null, null,null,username, password);
     }
-    public void loginWithMnemonic(final String mnenonic, final String mnemonicPassword) {
-        login(mnenonic, mnemonicPassword, null, null, null, null);
+    public void loginWithMnemonic(final String mnemonic, final String mnemonicPassword) {
+        login(mnemonic, mnemonicPassword, null, null, null, null);
     }
     public void login(final String mnenonic, final String mnemonicPassword,
                       final String pin, final PinData pinData,
