@@ -109,6 +109,21 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         if (!newValue) {
             mSPVSyncOnMobile.setChecked(false);
             mService.setSPVSyncOnMobileEnabledAsync(false);
+        } else if ((mService.getTorEnabled() || mService.isProxyEnabled()) &&
+                   (mService.getSPVTrustedPeers() == null || mService.getSPVTrustedPeers().isEmpty())) {
+            if (getActivity() == null) {
+                return true;
+            }
+
+            final MaterialDialog.Builder builder = UI.popup(
+                getActivity(),
+                R.string.id_warning_no_trusted_node_set,
+                android.R.string.ok)
+                                                   .content(R.string.id_spv_synchronization_using_tor)
+                                                   .cancelable(false)
+                                                   .onAny((dialog,
+                                                           which) -> getPreferenceManager().showDialog(mTrustedPeer));
+            getActivity().runOnUiThread(builder::show);
         }
         return true;
     }
@@ -147,9 +162,9 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
         if (peers.toLowerCase(Locale.US).contains(".onion")) {
             // Tor address
-            if (!mService.isProxyEnabled()) {
+            if (!mService.getTorEnabled()) {
                 UI.popup(getActivity(), R.string.id_tor_connectivity_disabled, android.R.string.ok)
-                .content(R.string.id_connecting_to_a_trusted_node).build().show();
+                .content(R.string.id_onion_addresses_require_tor).build().show();
                 return false;
             }
             setTrustedPeers(peers);

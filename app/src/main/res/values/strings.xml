@@ -268,6 +268,7 @@
   <string name="id_on_average">on average</string>
   <string name="id_one_attempt_remaining">One attempt remaining</string>
   <string name="id_one_network_must_be_selected">One network must be selected. Selecting Bitcoin by default</string>
+  <string name="id_onion_addresses_require_tor">Onion addresses require Tor connectivity. Enable it in the network settings.</string>
   <string name="id_only_connect_to_trusted_nodes">Only connect to trusted node(s) for SPV</string>
   <string name="id_only_this_time">Only this time</string>
   <string name="id_operation_failure">Operation failure</string>
