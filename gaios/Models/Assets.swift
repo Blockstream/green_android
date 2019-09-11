@@ -37,9 +37,13 @@ struct AssetInfo: Codable {
 func refreshAssets() -> Promise<[String: AssetInfo]?> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) { _ in
-        try getSession().refreshAssets(params: ["icons": true, "assets": true])
+        try getSession().refreshAssets(params: ["icons": true, "assets": false])
     }.compactMap(on: bgq) { data in
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
+        guard var assetsData = data["assets"] as? [String: Any] else { return nil }
+        if let modIndex = assetsData.keys.firstIndex(of: "last_modified") {
+            assetsData.remove(at: modIndex)
+        }
+        let jsonData = try JSONSerialization.data(withJSONObject: assetsData)
         return try! JSONDecoder().decode([String: AssetInfo].self, from: jsonData)
     }
 }

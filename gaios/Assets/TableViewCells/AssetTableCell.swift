@@ -7,6 +7,7 @@ class AssetTableCell: UITableViewCell {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var domainLabel: UILabel!
     @IBOutlet weak var amountTickerLabel: UILabel!
+    @IBOutlet weak var assetIconImageView: UIImageView!
 
     override func prepareForReuse() {
         headerLabel.text = ""
@@ -14,6 +15,7 @@ class AssetTableCell: UITableViewCell {
         nameLabel.text = ""
         domainLabel.text = ""
         amountTickerLabel.text = ""
+        assetIconImageView.image = nil
     }
 
     func configure(tag: String, asset: AssetInfo?, satoshi: UInt64, negative: Bool = false, isTransaction: Bool = false) {
@@ -32,5 +34,6 @@ class AssetTableCell: UITableViewCell {
         amountTickerLabel.text = "\(negative ? "-": "")\(amount) \(ticker)"
         domainLabel.text = asset.entity?.domain ?? ""
         domainLabel.isHidden = asset.entity?.domain.isEmpty ?? true
+        assetIconImageView.image = AssetIcon.loadAssetIcon(with: asset.assetId)
     }
 }

@@ -14,7 +14,6 @@ class SendBtcDetailsViewController: UIViewController {
     private var uiErrorLabel: UIErrorLabel!
     private var isFiat = false
     private var txTask: TransactionTask?
-
     private var asset: AssetInfo? {
         return wallet?.balance[assetTag]?.assetInfo ?? AssetInfo(assetId: assetTag, name: assetTag, precision: 0, ticker: "")
     }
@@ -111,6 +110,9 @@ class SendBtcDetailsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if isLiquid {
+            content.assetIconImageView.image = AssetIcon.loadAssetIcon(with: asset?.assetId)
+        }
         content.assetNameLabel.text = assetTag == "btc" ? "L-BTC" : asset?.name
         content.domainNameLabel.text = asset?.entity?.domain ?? ""
         content.domainNameLabel.isHidden = asset?.entity?.domain.isEmpty ?? true
@@ -216,8 +218,8 @@ class SendBtcDetailsViewController: UIViewController {
         amountText = (Double(amountText) != nil) ? amountText : "0"
         let isBtc = assetTag == "btc"
         let denominationBtc = getGAService().getSettings()!.denomination.rawValue
-        let key = isFiat ? "fiat" : isBtc ? denominationBtc : assetTag
-        let details = "btc" != assetTag ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
+        let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetTag)
+        let details: [String: Any] = "btc" != assetTag ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
         return Balance.convert(details: details)?.satoshi
     }
 
@@ -445,6 +447,7 @@ class SendBtcDetailsView: UIView {
     @IBOutlet weak var assetNameLabel: UILabel!
     @IBOutlet weak var domainNameLabel: UILabel!
     @IBOutlet weak var assetClickableView: UIView!
+    @IBOutlet weak var assetIconImageView: UIImageView!
 
     lazy var feeRateButtons = [fastFeeButton, mediumFeeButton, slowFeeButton, customFeeButton]
 
