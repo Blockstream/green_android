@@ -42,6 +42,7 @@
 "id_bitcoin_denomination" = "Unité affichée";
 "id_bitcoin_wallet" = "Portefeuille Bitcoin.";
 "id_block" = "bloc";
+"id_block_d" = "Block %d";
 "id_block_height_1d" = "Hauteur du bloc : %1$d";
 "id_blocks" = "blocs";
 "id_blocks_confirmed" = "blocs confirmés";
@@ -67,6 +68,7 @@
 "id_connect_through_a_proxy" = "Connectez-vous via un proxy";
 "id_connect_with_tor" = "Connectez-vous avec Tor";
 "id_connecting_to_a_trusted_node" = "Pour vous connecter à un nœud approuvé par Tor, vous devez d'abord activer les paramètres de proxy dans l'application et utiliser un proxy Socks5 (application Orbot pour Android).";
+"id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Connectez-vous à des nœuds sur le réseau Tor (.onion) et bénéficiez du maximum de confidentialité et de sécurité. Appuyez sur \"OK\" pour continuer. ";
 "id_continue" = "Continuer";
 "id_copy_to_clipboard" = "Copié dans le presse-papier";
@@ -207,6 +209,7 @@
 "id_lets_get_you_set_up" = "Préparons votre installation.";
 "id_loading_transactions" = "Chargement des transactions...";
 "id_log_in" = "Se connecter";
+"id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
 "id_log_in_using_mnemonic" = "Se connecter avec le mnémonique";
 "id_log_in_via_watchonly_to_receive" = "Connectez-vous via Watch-only pour recevoir des fonds et vérifier votre solde.";
 "id_log_out" = "Déconnectez-vous";
@@ -310,7 +313,7 @@
 "id_redeposited" = "Redéposé";
 "id_reference_exchange_rate" = "Taux de change de référence";
 "id_refresh" = "Rafraîchir";
-"id_remember_username" = "Se souvenir de mon nom d'utilisateur";
+"id_remember_me" = "Remember me";
 "id_remove_custom_network" = "Retirer le réseau personnalisé";
 "id_replaceable" = "Remplaçable";
 "id_request_amount" = "MONTANT DE LA DEMANDE";
@@ -353,6 +356,7 @@
 "id_set_a_new_pin" = "Définir un nouveau PIN";
 "id_set_custom_fee_rate" = "Fixer le taux des frais";
 "id_set_twofactor_threshold" = "Définir le seuil à Double Facteur";
+"id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_pgp_key_for" = "Configurer la clé PGP pour les communications";
 "id_set_up_twofactor_authentication" = "Activer un deuxième facteur d'authentification";
 "id_set_up_watchonly" = "Mettre en place le mode watch-only";
@@ -381,6 +385,7 @@
 "id_spv_notifications" = "Notifications SPV";
 "id_spv_reset_and_restarted" = "SPV réinitialisé et relancé";
 "id_spv_synchronization" = "Synchronization du SPV";
+"id_spv_synchronization_using_tor" = "SPV synchronization using Tor requires a trusted node onion URL";
 "id_spv_unverified" = "SPV non vérifié";
 "id_sweep" = "Balayer";
 "id_sweep_from_paper_wallet" = "Balayer depuis le Paper Wallet";
@@ -407,6 +412,8 @@
 "id_time_s" = "Temps %@";
 "id_to" = "À";
 "id_tor_connectivity_disabled" = "Connexion Tor désactivée !";
+"id_tor_is_connected" = "Tor is connected";
+"id_tor_status" = "Tor status";
 "id_tor_will_use_1s_and_only_work" = "Tor utilisera %1$@ et ne fonctionnera qu'avec le proxy Orbot ou si Tor est activé";
 "id_total_assets" = "Total des actifs";
 "id_total_balance" = "Solde total";
@@ -444,12 +451,13 @@
 "id_wallet_creation_failed" = "La création du portefeuille a échoué";
 "id_wallets" = "Portefeuilles";
 "id_warning" = "Attention !";
+"id_warning_no_trusted_node_set" = "Warning: No trusted node set!";
 "id_warning_nononion_address" = "Attention : détection d'adresses autres que .onion !";
 "id_warning_resetting_twofactor" = "ATTENTION : réinitialiser le deuxième facteur d'authentification va verrouiller votre portefeuille";
-"id_warning_the_username_will_be" = "Attention : le nom d'utilisateur va être sauvegardé sur cet appareil";
 "id_warning_there_is_already_a" = "AVERTISSEMENT: il existe déjà une demande de réinitialisation du deuxième facteur d'authentification pour votre portefeuille. Si vous faites une demande avec une nouvelle adresse email, votre portefeuille sera considéré comme contesté et probablement bloqué de manière permanente.";
 "id_warning_wallet_locked_by" = "ATTENTION : portefeuille verrouillé suite à une contestation sur le deuxième facteur. Contactez le support pour plus d'informations.";
 "id_warning_wallet_locked_for" = "ATTENTION : portefeuille verrouillé pour réinitialisation du deuxième facteur dans %d jours. Contactez le support pour plus d'informations.";
+"id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
 "id_warning_you_need_a_positive" = "Attention! Vous devez avoir un solde positif de L-BTC pour pouvoir envoyer des transactions.";
 "id_watchonly" = "Watch-only";
 "id_watchonly_disabled" = "Watch-only désactivé";
@@ -478,10 +486,11 @@
 "id_you_only_have_one_twofactor" = "Vous n'avez activé qu'une seule méthode d'authentification à double facteurs";
 "id_you_will_need_to_reenter_your" = "Vous devrez ressaisir votre code mnémonique pour vous reconnecter si vous ne configurez pas de code PIN. Appuyez sur \"OK\" pour continuer.";
 "id_your_green_wallet_is_now_ready" = "Votre portefeuille Green est prêt à être utilisé.";
+"id_your_ios_device_might_not_be" = "Your iOS device might not be supported";
 "id_your_notifications_will_be" = "Vous verrez les notifications ici";
 "id_your_pin_or_your_mnemonic_will" = "Vos codes PIN et mnémonique seront demandés pour accéder au portefeuille.";
 "id_your_s_sent_to_s_has_been" = "Votre envoi de %@ à %@ a été confirmé";
 "id_your_transactions_will_be_shown" = "Vos transactions seront affichées ici.";
 "id_your_twofactor_threshold_is_s" = "Votre seuil Double-Facteur est de %@";
 "id_your_wallet_is_not_yet_fully" = "Votre portefeuille n'est pas complètement sécurisé.\nVeuillez activer un deuxième facteur d'authentification.";
-"id_your_watchonly_username_will_be" = "Votre nom d'utilisateur watch-only sera enregistré en clair sur cet appareil. Si votre appareil était compromis, un tiers pourrait être en mesure de voir vos transactions. Appuyez sur \"OK\" pour continuer.";
+"id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";

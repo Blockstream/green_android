@@ -42,6 +42,7 @@
 "id_bitcoin_denomination" = "Bitcoin-waardevertoning";
 "id_bitcoin_wallet" = "Bitcoin-wallet";
 "id_block" = "block";
+"id_block_d" = "Block %d";
 "id_block_height_1d" = "Block-hoogte: %1$d";
 "id_blocks" = "blocks";
 "id_blocks_confirmed" = "blocks bevestigd";
@@ -67,6 +68,7 @@
 "id_connect_through_a_proxy" = "Via proxy verbinden";
 "id_connect_with_tor" = "Met Tor verbinden";
 "id_connecting_to_a_trusted_node" = "Om met een vertrouwde node via Tor te verbinden, moet je eerst de proxyinstellingen in de app en een Socks5-proxy instellen (Orbot-app voor Android)";
+"id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Door te verbinden met Tor (.onion) nodes, verzeker je jezelf van maximale privacy en veiligheid. Druk op \"OK\" om door te gaan.";
 "id_continue" = "Doorgaan";
 "id_copy_to_clipboard" = "Naar klembord kopiëren";
@@ -207,6 +209,7 @@
 "id_lets_get_you_set_up" = "We gaan alles instellen.";
 "id_loading_transactions" = "Transacties laden…";
 "id_log_in" = "Aanmelden";
+"id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
 "id_log_in_using_mnemonic" = "Aanmelden met woordenlijst";
 "id_log_in_via_watchonly_to_receive" = "Meld je aan via watch-only om transacties te ontvangen en je balans in te zien.";
 "id_log_out" = "Afmelden";
@@ -310,7 +313,7 @@
 "id_redeposited" = "Opnieuw gestort";
 "id_reference_exchange_rate" = "Standaard wisselkoers";
 "id_refresh" = "Vernieuwen";
-"id_remember_username" = "Onthoud mijn gebruikersnaam";
+"id_remember_me" = "Remember me";
 "id_remove_custom_network" = "Eigen netwerk verwijderen";
 "id_replaceable" = "vervangbaar";
 "id_request_amount" = "VERZOCHTE BEDRAG";
@@ -353,6 +356,7 @@
 "id_set_a_new_pin" = "Kies een nieuwe PIN";
 "id_set_custom_fee_rate" = "Aangepast transactietarief instellen";
 "id_set_twofactor_threshold" = "Limiet tweetrapsauthenticatie instellen";
+"id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_pgp_key_for" = "PGP-sleutel voor communicatie instellen";
 "id_set_up_twofactor_authentication" = "Tweetrapsauthenticatie instellen";
 "id_set_up_watchonly" = "Watch-only instellen";
@@ -381,6 +385,7 @@
 "id_spv_notifications" = "SPV-notificaties";
 "id_spv_reset_and_restarted" = "SPV gereset en opnieuw gestart";
 "id_spv_synchronization" = "SPV-synchronisatie";
+"id_spv_synchronization_using_tor" = "SPV synchronization using Tor requires a trusted node onion URL";
 "id_spv_unverified" = "SPV niet geverifieerd";
 "id_sweep" = "Opvegen";
 "id_sweep_from_paper_wallet" = "Opvegen van papieren wallet";
@@ -407,6 +412,8 @@
 "id_time_s" = "Tijd: %@";
 "id_to" = "NAAR";
 "id_tor_connectivity_disabled" = "Tor-connectiviteit uitgeschakeld!";
+"id_tor_is_connected" = "Tor is connected";
+"id_tor_status" = "Tor status";
 "id_tor_will_use_1s_and_only_work" = "Tor maakt gebruik van %1$@ en werkt alleen als je proxy Orbot of Tor ondersteunt";
 "id_total_assets" = "Totale assets";
 "id_total_balance" = "Totale balans";
@@ -444,12 +451,13 @@
 "id_wallet_creation_failed" = "Wallet-creatie mislukt";
 "id_wallets" = "Wallets";
 "id_warning" = "Waarschuwing!";
+"id_warning_no_trusted_node_set" = "Warning: No trusted node set!";
 "id_warning_nononion_address" = "Waarschuwing: geen -.onion-adres gedetecteerd!";
 "id_warning_resetting_twofactor" = "WAARSCHUWING: het resetten van tweetrapsauthenticatie vergrendelt je wallet";
-"id_warning_the_username_will_be" = "Waarschuwing: de gebruikersnaam wordt opgeslagen op je apparaat";
 "id_warning_there_is_already_a" = "WAARSCHUWING: er is al een verzoek gaande om je tweetrapsauthenticatie te resetten. Als je het nu aanvraagt met een nieuw e-mailadres, ontstaat er een dispuut en wordt je wallet waarschijnlijk permanent onbeschikbaar.";
 "id_warning_wallet_locked_by" = "WAARSCHUWING: wallet vergrendeld door dispuut tweetrapsauthenticatie. Neem contact op met onze klantendienst voor meer informatie.";
 "id_warning_wallet_locked_for" = "WAARSCHUWING: wallet vergrendeld voor resetten tweetrapsauthenticatie in %d dagen. Neem contact op met onze klantendienst voor meer informatie.";
+"id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
 "id_warning_you_need_a_positive" = "Waarschuwing! Je hebt een positieve L-BTC-balans nodig om transacties te versturen.";
 "id_watchonly" = "Watch-only";
 "id_watchonly_disabled" = "Watch-only uitgeschakeld";
@@ -478,10 +486,11 @@
 "id_you_only_have_one_twofactor" = "Je hebt slechts één tweetrapsauthenticatiemethode ingesteld";
 "id_you_will_need_to_reenter_your" = "Je zal je woordenlijst opnieuw moeten invoeren om je weer aan te melden als je geen PIN instelt. Druk op \"OK\" om door te gaan.";
 "id_your_green_wallet_is_now_ready" = "Green Wallet is nu klaar voor gebruik.";
+"id_your_ios_device_might_not_be" = "Your iOS device might not be supported";
 "id_your_notifications_will_be" = "Je notificaties verschijnen hier.";
 "id_your_pin_or_your_mnemonic_will" = "Je PIN of woordenlijst zijn nodig om toegang te krijgen tot de wallet.";
 "id_your_s_sent_to_s_has_been" = "Je %@ (verstuurd naar %@) is bevestigd";
 "id_your_transactions_will_be_shown" = "Je transacties verschijnen hier.";
 "id_your_twofactor_threshold_is_s" = "Je limiet voor tweetrapsauthenticatie is %@.";
 "id_your_wallet_is_not_yet_fully" = "Je wallet is nog niet volledig beveiligd.\nSchakel tweetrapsauthenticatie in.";
-"id_your_watchonly_username_will_be" = "Je gebruikersnaam voor watch-only zal onversleuteld worden opgeslagen op dit apparaat. Als je apparaat wordt gecompromitteerd, kunnen derden misschien je transacties bekijken. Druk op \"OK\" om door te gaan.";
+"id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";

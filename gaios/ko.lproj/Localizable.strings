@@ -42,6 +42,7 @@
 "id_bitcoin_denomination" = "비트코인 단위명";
 "id_bitcoin_wallet" = "비트코인 지갑.";
 "id_block" = "블록";
+"id_block_d" = "Block %d";
 "id_block_height_1d" = "블록 높이: %1$d";
 "id_blocks" = "블록";
 "id_blocks_confirmed" = "컨펌된 블록";
@@ -67,6 +68,7 @@
 "id_connect_through_a_proxy" = "프록시를 사용하여 연결하기";
 "id_connect_with_tor" = "Tor를 사용하여 연결하기";
 "id_connecting_to_a_trusted_node" = "Tor를 통해 신뢰하는 노드에 연결하려면 로그인 전, 설정에서 프록시를 활성화 하여야 하고 Socks5 프록시(안드로이드용 Orbot 앱)도 있어야 합니다.";
+"id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Tor (.onion)에 연결하면 최고의 보안과 프라이버시를 가능케 합니다. 계속하시려면 \"확인\"을 눌러주세요.";
 "id_continue" = "계속";
 "id_copy_to_clipboard" = "클립보드에 복사";
@@ -207,6 +209,7 @@
 "id_lets_get_you_set_up" = "새로운 지갑을 만들어 볼까요?";
 "id_loading_transactions" = "거래 로딩중...";
 "id_log_in" = "로그인";
+"id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
 "id_log_in_using_mnemonic" = "니모닉(복원 코드)을 사용하여 로그인하기";
 "id_log_in_via_watchonly_to_receive" = "보기전용으로 로그인하여 자산을 수령하고 잔액을 조회하세요.";
 "id_log_out" = "로그아웃";
@@ -310,7 +313,7 @@
 "id_redeposited" = "재예치됨";
 "id_reference_exchange_rate" = "기준 환율";
 "id_refresh" = "새로고침";
-"id_remember_username" = "사용자 명 기억하기";
+"id_remember_me" = "Remember me";
 "id_remove_custom_network" = "사용자 지정 네트워크 제거";
 "id_replaceable" = "대체가능";
 "id_request_amount" = "금액 요청하기";
@@ -353,6 +356,7 @@
 "id_set_a_new_pin" = "새로운 비밀번호 설정";
 "id_set_custom_fee_rate" = "사용자 지정 수수료 설정";
 "id_set_twofactor_threshold" = "2FA 한도 정하기";
+"id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_pgp_key_for" = "커뮤니케이션을 위해 PGP 키 설정하기";
 "id_set_up_twofactor_authentication" = "2FA 설정하기";
 "id_set_up_watchonly" = "조회전용 모드 설정";
@@ -381,6 +385,7 @@
 "id_spv_notifications" = "SPV 알람";
 "id_spv_reset_and_restarted" = "SPV가 초기화되고 재시작 되었습니다.";
 "id_spv_synchronization" = "SPV 동기화";
+"id_spv_synchronization_using_tor" = "SPV synchronization using Tor requires a trusted node onion URL";
 "id_spv_unverified" = "SPV 검증되지 않음";
 "id_sweep" = "Sweep";
 "id_sweep_from_paper_wallet" = "종이 지갑에서 자산 Sweep 하기";
@@ -407,6 +412,8 @@
 "id_time_s" = "시간: %@";
 "id_to" = "받는 분";
 "id_tor_connectivity_disabled" = "Tor 연결이 비활성화됐습니다!";
+"id_tor_is_connected" = "Tor is connected";
+"id_tor_status" = "Tor status";
 "id_tor_will_use_1s_and_only_work" = "Tor는 %1$@를(을) 사용하고 있고 프록시가 Orbot이거나 Tor이 활성화되어있어야 작동합니다.";
 "id_total_assets" = "총자산";
 "id_total_balance" = "총잔액";
@@ -444,12 +451,13 @@
 "id_wallet_creation_failed" = "지갑 생성 실패";
 "id_wallets" = "지갑";
 "id_warning" = "경고!";
+"id_warning_no_trusted_node_set" = "Warning: No trusted node set!";
 "id_warning_nononion_address" = "경고: .onion이 아닌 주소 탐지";
 "id_warning_resetting_twofactor" = "경고: 2FA 재설정은 지갑을 잠금 시킵니다.";
-"id_warning_the_username_will_be" = "경고: 이 사용자 명은 기기에 저장됩니다.";
 "id_warning_there_is_already_a" = "경고: 2FA 재설정 요청이 이미 되어 있습니다. 만약 새로운 이메일 주소로 요청하시면 지갑은 분쟁 상태로 전환되며 영원히 이용하실 수 없게 될 가능성이 높습니다.";
 "id_warning_wallet_locked_by" = "경고: 지갑은 2FA 분쟁으로 잠금 상태입니다. 자세한 내용은 고객센터에 문의해주시길 바랍니다.";
 "id_warning_wallet_locked_for" = "경고: 지갑은 %d일 안에 있을 2FA 재설정으로 잠금 상태입니다. 자세한 내용은 고객센터에 문의해주시길 바랍니다.";
+"id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
 "id_warning_you_need_a_positive" = "경고! L-BTC 잔액이 남아있어야 거래를 보낼 수 있습니다.";
 "id_watchonly" = "조회전용";
 "id_watchonly_disabled" = "조회전용 모드 비활성화";
@@ -478,10 +486,11 @@
 "id_you_only_have_one_twofactor" = "2FA 설정을 한 가지만 하였습니다.";
 "id_you_will_need_to_reenter_your" = "비밀번호를 설정하지 않으시면 니모닉(복원 코드)을 사용하여 로그인 하여야 합니다. 계속하시려면 \"확인\"을 눌러주세요.";
 "id_your_green_wallet_is_now_ready" = "이제 Green 지갑을 사용하실 수 있습니다";
+"id_your_ios_device_might_not_be" = "Your iOS device might not be supported";
 "id_your_notifications_will_be" = "알람은 여기에 표시됩니다.";
 "id_your_pin_or_your_mnemonic_will" = "지갑을 사용하기 위해서는 비밀번호 또는 니모닉(복원 코드)이 필요합니다.";
 "id_your_s_sent_to_s_has_been" = "%@으로 보낸 거래 %@가 컨펌되었습니다.";
 "id_your_transactions_will_be_shown" = "거래 내역은 여기에 표시됩니다.";
 "id_your_twofactor_threshold_is_s" = "지갑의 2FA 한도는 %@입니다.";
 "id_your_wallet_is_not_yet_fully" = "지갑의 보안이 낮습니다.\n2FA를 설정해주세요.";
-"id_your_watchonly_username_will_be" = "조회전용 사용자 명은 이 기기에 암호화되지 않은 상태로 저장됩니다. 만일 이 기기가 해킹당할 시에는 제3자로부터 거래가 감시될 수 있습니다. 계속하시려면 \"확인\"을 눌러 주세요.";
+"id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";

@@ -42,6 +42,7 @@
 "id_bitcoin_denomination" = "Denominazione in bitcoin";
 "id_bitcoin_wallet" = "Il wallet Bitcoin.";
 "id_block" = "blocco";
+"id_block_d" = "Blocco %d";
 "id_block_height_1d" = "%1$dAltezza blocchi: ";
 "id_blocks" = "blocchi";
 "id_blocks_confirmed" = "blocchi confermati";
@@ -67,6 +68,7 @@
 "id_connect_through_a_proxy" = "Connettiti tramite proxy";
 "id_connect_with_tor" = "Connettiti con Tor";
 "id_connecting_to_a_trusted_node" = "Per connettersi ad un nodo di fiducia tramite Tor, bisogna abilitare i setting di proxy dell'app ed una proxy Socks5 (es. Orbot per Android), prima di effettuare il log in.";
+"id_connecting_to_peers" = "Connessione ai peer...";
 "id_connecting_to_tor_onion_nodes" = "Connettersi a nodi Tor (.onion) garantisce massima privacy e sicurezza. Premi \"OK\" per continuare.";
 "id_continue" = "Continua";
 "id_copy_to_clipboard" = "Copia in Clipboard";
@@ -207,6 +209,7 @@
 "id_lets_get_you_set_up" = "Impostiamo il tuo wallet.";
 "id_loading_transactions" = "Caricamento transazioni...";
 "id_log_in" = "Accedi";
+"id_log_in_into_your_s_wallet" = "Accedi al tuo %@ wallet";
 "id_log_in_using_mnemonic" = "Accedi usando la mnemonica";
 "id_log_in_via_watchonly_to_receive" = "Accedi in modalità Watch-only per ricevere fondi e controllare il tuo bilancio.";
 "id_log_out" = "Log out";
@@ -310,7 +313,7 @@
 "id_redeposited" = "Rideposito";
 "id_reference_exchange_rate" = "Tasso di cambio di riferimento";
 "id_refresh" = "Aggiorna";
-"id_remember_username" = "Ricorda l'username";
+"id_remember_me" = "Ricordati di me";
 "id_remove_custom_network" = "Rimuovi il network custom";
 "id_replaceable" = "rimpiazzabile";
 "id_request_amount" = "RICHIEDI IMPORTO";
@@ -353,6 +356,7 @@
 "id_set_a_new_pin" = "Imposta un nuovo PIN";
 "id_set_custom_fee_rate" = "Imposta commissione personalizzata";
 "id_set_twofactor_threshold" = "Imposta limite per autenticazione a due fattori";
+"id_set_up_a_passcode_for_your_ios" = "Imposta un codice per il tuo device iOS per impostare un PIN per Blockstream Green";
 "id_set_up_pgp_key_for" = "Fornisci una chiave PGP per le comunicazioni";
 "id_set_up_twofactor_authentication" = "Imposta Autenticazione a Due Fattori";
 "id_set_up_watchonly" = "Imposta watch-only";
@@ -381,6 +385,7 @@
 "id_spv_notifications" = "Notifiche SPV";
 "id_spv_reset_and_restarted" = "SPV riavviato";
 "id_spv_synchronization" = "Sincronizzazione SPV";
+"id_spv_synchronization_using_tor" = "La sincronizzazione SPV via Tor richiede l' URL onion di un nodo di fiducia";
 "id_spv_unverified" = "Non verificata da SPV";
 "id_sweep" = "Sweep";
 "id_sweep_from_paper_wallet" = "Trasferisci Tutto da un Paper Wallet";
@@ -407,6 +412,8 @@
 "id_time_s" = "Tempo: %@";
 "id_to" = "A";
 "id_tor_connectivity_disabled" = "Connessione Tor Disabilitata!";
+"id_tor_is_connected" = "Tor è connesso";
+"id_tor_status" = "Status di Tor";
 "id_tor_will_use_1s_and_only_work" = "Tor userà %1$@ e funzionerà solo se hai una proxy Orbot o Tor abilitata.";
 "id_total_assets" = "Totale disponibile";
 "id_total_balance" = "Bilancio Totale";
@@ -444,12 +451,13 @@
 "id_wallet_creation_failed" = "Creazione wallet fallita";
 "id_wallets" = "Wallets";
 "id_warning" = "Attenzione!";
+"id_warning_no_trusted_node_set" = "Attenzione: trusted node non impostato!";
 "id_warning_nononion_address" = "Attenzione: Rilevato indirizzo non-.onion!";
 "id_warning_resetting_twofactor" = "ATTENZIONE: resettare il Secondo Fattore bloccherà il tuo wallet";
-"id_warning_the_username_will_be" = "Attenzione: L'username verrà salvato sul tuo dispositivo";
 "id_warning_there_is_already_a" = "ATTENZIONE: Esiste già una richiesta per resettare il Secondo Fattore sul tuo wallet. Se richiedi di resettarlo con un nuovo indirizzo email, il tuo wallet diventerà contestato e potrebbe diventare permanentemente non-disponibile.";
 "id_warning_wallet_locked_by" = "ATTENZIONE: Wallet bloccato da contestazione del Secondo Fattore. Contatta il supporto per maggiori informazioni.";
 "id_warning_wallet_locked_for" = "ATTENZIONE: Wallet bloccato, reset Secondo Fattore fra %d giorni. Contatta il supporto per maggiori informazioni.";
+"id_warning_watchonly_credentials" = "Attenzione: le credenziali Watch-only verranno salvate su questo dispositivo";
 "id_warning_you_need_a_positive" = "Attenzione! Per inviare transazioni è richiesto un bilancio positivo di L-BTC";
 "id_watchonly" = "Watch-only";
 "id_watchonly_disabled" = "Watch-only disabilitato";
@@ -478,10 +486,11 @@
 "id_you_only_have_one_twofactor" = "Hai attivato un solo metodo di autenticazione a due fattori";
 "id_you_will_need_to_reenter_your" = "Se non imposti un PIN dovrai utilizzare la mnemonica per accedere. Premi \"OK\" per continuare.";
 "id_your_green_wallet_is_now_ready" = "Il tuo wallet Green è ora pronto all'uso.";
+"id_your_ios_device_might_not_be" = "Il tuo device iOS potrebbe essere non supportato";
 "id_your_notifications_will_be" = "Vedrai qui le tue notifiche.";
 "id_your_pin_or_your_mnemonic_will" = "Sarà necessario inserire il PIN o la mnemonica per accedere al wallet";
 "id_your_s_sent_to_s_has_been" = "I tuoi %@ inviati a %@ sono stati confermati";
 "id_your_transactions_will_be_shown" = "Le tue transazioni saranno elencate qui.";
 "id_your_twofactor_threshold_is_s" = "Il tuo limite per il Secondo Fattore è %@.";
 "id_your_wallet_is_not_yet_fully" = "Il tuo wallet non è ancora in totale sicurezza.\nAbilita l'Autenticazione a Due Fattori.";
-"id_your_watchonly_username_will_be" = "Il tuo username per la modalità watch-only verrà salvato sul dispositivo. Se il dispositivo è compromesso le tue transazioni potranno essere osservate da una terza parte. Premi \"OK\" per continuare.";
+"id_your_watchonly_username_and" = "I tuoi username e password per watch-only verranno salvati in chiaro su questo dispositivo. Se il tuo device è compromesso terze parti possono avere accesso alle tue transazioni. Premi OK per continuare.";

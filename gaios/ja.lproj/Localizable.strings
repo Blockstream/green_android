@@ -42,6 +42,7 @@
 "id_bitcoin_denomination" = "ビットコイン単位";
 "id_bitcoin_wallet" = "ビットコイン・ウォレット";
 "id_block" = "ブロック";
+"id_block_d" = "Block %d";
 "id_block_height_1d" = "ブロック高: %1$d";
 "id_blocks" = "ブロック";
 "id_blocks_confirmed" = "検証済みブロック";
@@ -67,6 +68,7 @@
 "id_connect_through_a_proxy" = "プロキシを使って接続する";
 "id_connect_with_tor" = "Torを使って接続する";
 "id_connecting_to_a_trusted_node" = "Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)";
+"id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Tor(.onion)ノードに接続することで最高のセキュリティとプライバシーを保証します。このまま進めるには \"OK\" を押してください。";
 "id_continue" = "進める";
 "id_copy_to_clipboard" = "クリップボードにコピーする";
@@ -207,6 +209,7 @@
 "id_lets_get_you_set_up" = "設定してみましょう。";
 "id_loading_transactions" = "トランザクションを読み込んでいます…";
 "id_log_in" = "ログイン";
+"id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
 "id_log_in_using_mnemonic" = "Mnemonicを使ってログインする。";
 "id_log_in_via_watchonly_to_receive" = "資金の受け取り、または残高確認の為に監視-Onlyでログインする";
 "id_log_out" = "ログアウト";
@@ -310,7 +313,7 @@
 "id_redeposited" = "再お預け";
 "id_reference_exchange_rate" = "取引レート参照先";
 "id_refresh" = "リフレッシュ";
-"id_remember_username" = "ユーザーネームを記憶する";
+"id_remember_me" = "Remember me";
 "id_remove_custom_network" = "カスタム・ネットワークを削除";
 "id_replaceable" = "代替可能";
 "id_request_amount" = "要請額";
@@ -353,6 +356,7 @@
 "id_set_a_new_pin" = "新しいPINの設定";
 "id_set_custom_fee_rate" = "カスタム手数料の設定";
 "id_set_twofactor_threshold" = "Set Two-Factor threshold";
+"id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_pgp_key_for" = "コミュニケーションの為にPGPキーを設定する";
 "id_set_up_twofactor_authentication" = "2段階認証を設定する";
 "id_set_up_watchonly" = "監視-Onlyの設定";
@@ -381,6 +385,7 @@
 "id_spv_notifications" = "SPV告知事項";
 "id_spv_reset_and_restarted" = "SPVがリセットされ再始動されました";
 "id_spv_synchronization" = "SPVシンクロナイゼーション";
+"id_spv_synchronization_using_tor" = "SPV synchronization using Tor requires a trusted node onion URL";
 "id_spv_unverified" = "SPV非検証済み";
 "id_sweep" = "Sweep";
 "id_sweep_from_paper_wallet" = "ペーパーウォレットをSweepする";
@@ -407,6 +412,8 @@
 "id_time_s" = "時間: %@";
 "id_to" = "送り先";
 "id_tor_connectivity_disabled" = "Tor未接続";
+"id_tor_is_connected" = "Tor is connected";
+"id_tor_status" = "Tor status";
 "id_tor_will_use_1s_and_only_work" = "Torは%1$@のみ使用します。ProxyがOrbot又はTor利用可能である必要があります。";
 "id_total_assets" = "総資産";
 "id_total_balance" = "残高";
@@ -444,12 +451,13 @@
 "id_wallet_creation_failed" = "Wallet creation failed";
 "id_wallets" = "ウォレット";
 "id_warning" = "注意!";
+"id_warning_no_trusted_node_set" = "Warning: No trusted node set!";
 "id_warning_nononion_address" = "注意: .onionではないアドレスが検知されました。";
 "id_warning_resetting_twofactor" = "注意: 2段階認証を再設定する場合、ウォレットをロックすることになります。";
-"id_warning_the_username_will_be" = "注意: ユーザーネームがデバイスに保存されることになります。";
 "id_warning_there_is_already_a" = "警告: 2段階認証を再設定する要請が既にありました。新しいEメールアドレスで再要請する場合、紛争プロセスに進むことになり、ウォレットが永久的に使えない状態になる可能性があります。";
 "id_warning_wallet_locked_by" = "注意: ウォレットが2段階認証の紛争中です。サポートにお問い合わせして下さい。";
 "id_warning_wallet_locked_for" = "注意: ウォレットが2段階認証の再設定の為、%d 日後ロックされます。より詳しい情報はカスタマーサポートにお問い合わせ下さい。";
+"id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
 "id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
 "id_watchonly" = "監視-Only";
 "id_watchonly_disabled" = "監視-Only無効";
@@ -478,10 +486,11 @@
 "id_you_only_have_one_twofactor" = "2段階認証の一つだけ設定されています。";
 "id_you_will_need_to_reenter_your" = "PINを設定しない場合、ログインするにはもう一度mnemonicを入力しなければなりません。続けるには\"OK\"を押してください。 ";
 "id_your_green_wallet_is_now_ready" = "Green ウォレットを使用できます。";
+"id_your_ios_device_might_not_be" = "Your iOS device might not be supported";
 "id_your_notifications_will_be" = "告示情報はこちらから確認できます。";
 "id_your_pin_or_your_mnemonic_will" = "ウォレットにアクセスするにはPINもしくはmnemonicが必要です。";
 "id_your_s_sent_to_s_has_been" = "%@に送金した%@ が検証されました。";
 "id_your_transactions_will_be_shown" = "トランザクションはこちらから確認できます。";
 "id_your_twofactor_threshold_is_s" = "Your Two-Factor threshold is %@.";
 "id_your_wallet_is_not_yet_fully" = "ウォレットが安全ではありません。\n2段階認証を設定してください。";
-"id_your_watchonly_username_will_be" = "監視-Onlyユーザーネームはこのデバイスに暗号化されずに保存されます。デバイスが危殆化される場合、貴方のトランザクションは第三者によって監視される可能性が生じます。続けるには\"OK\" を押してください。";
+"id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";

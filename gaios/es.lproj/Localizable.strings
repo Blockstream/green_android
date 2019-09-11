@@ -42,6 +42,7 @@
 "id_bitcoin_denomination" = "Denominación de Bitcoin";
 "id_bitcoin_wallet" = "Cartera Bitcoin.";
 "id_block" = "bloque";
+"id_block_d" = "Block %d";
 "id_block_height_1d" = "Altura del bloque: %1$d";
 "id_blocks" = "bloques";
 "id_blocks_confirmed" = "bloques confirmados";
@@ -67,6 +68,7 @@
 "id_connect_through_a_proxy" = "Conectarse a través de un proxy";
 "id_connect_with_tor" = "Conectarse con Tor";
 "id_connecting_to_a_trusted_node" = "La conexión a un nódulo confiable a través de Tor requiere activar la configuración del proxy en la app antes de iniciar sesión y un proxy de Socks5 (app Orbot para Android)";
+"id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Conectarse a los nodos de Tor (.onion) garantiza máxima privacidad y seguridad. Pulsa \"Aceptar\" para continuar.";
 "id_continue" = "Continuar";
 "id_copy_to_clipboard" = "Copiar al portapapeles";
@@ -207,6 +209,7 @@
 "id_lets_get_you_set_up" = "Empecemos.";
 "id_loading_transactions" = "Cargando transacciones...";
 "id_log_in" = "Iniciar sesión";
+"id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
 "id_log_in_using_mnemonic" = "Iniciar sesión con Frase de Recuperación";
 "id_log_in_via_watchonly_to_receive" = "Inicia sesión en modo de solo lectura para recibir fondos y consultar el saldo.";
 "id_log_out" = "Cerrar sesión";
@@ -310,7 +313,7 @@
 "id_redeposited" = "Redepositado";
 "id_reference_exchange_rate" = "Tasa de cambio de referencia";
 "id_refresh" = "Actualizar";
-"id_remember_username" = "Recordar nombre de usuario";
+"id_remember_me" = "Remember me";
 "id_remove_custom_network" = "Eliminar red personalizada";
 "id_replaceable" = "reemplazable";
 "id_request_amount" = "SOLICITAR MONTO";
@@ -353,6 +356,7 @@
 "id_set_a_new_pin" = "Establecer un nuevo PIN";
 "id_set_custom_fee_rate" = "Establecer comisión por vbyte personalizada";
 "id_set_twofactor_threshold" = "Configurar el umbral de dos factores";
+"id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_pgp_key_for" = "Configurar la clave PGP para las comunicaciones";
 "id_set_up_twofactor_authentication" = "Configurar la autenticación de dos factores";
 "id_set_up_watchonly" = "Configurar el modo de solo lectura";
@@ -381,6 +385,7 @@
 "id_spv_notifications" = "Notificaciones de SPV";
 "id_spv_reset_and_restarted" = "Se ha reestablecido y reiniciado la SPV";
 "id_spv_synchronization" = "Sincronización de SPV";
+"id_spv_synchronization_using_tor" = "SPV synchronization using Tor requires a trusted node onion URL";
 "id_spv_unverified" = "SPV no verificada";
 "id_sweep" = "Barrer";
 "id_sweep_from_paper_wallet" = "Barrer fondos desde una cartera de papel";
@@ -407,6 +412,8 @@
 "id_time_s" = "Tiempo: %@";
 "id_to" = "A";
 "id_tor_connectivity_disabled" = "¡Conectividad Tor deshabilitada!";
+"id_tor_is_connected" = "Tor is connected";
+"id_tor_status" = "Tor status";
 "id_tor_will_use_1s_and_only_work" = "Tor usará %1$@ y solo funcionará si tu proxy está habilitado para Orbot o Tor";
 "id_total_assets" = "Activos totales";
 "id_total_balance" = "Saldo total";
@@ -444,12 +451,13 @@
 "id_wallet_creation_failed" = "Imposible crear la cartera";
 "id_wallets" = "Carteras";
 "id_warning" = "¡Advertencia!";
+"id_warning_no_trusted_node_set" = "Warning: No trusted node set!";
 "id_warning_nononion_address" = "Advertencia: no se detectó dirección .onion";
 "id_warning_resetting_twofactor" = "ADVERTENCIA: al restablecer la autenticación de dos factores, se bloqueará tu cartera";
-"id_warning_the_username_will_be" = "Advertencia: el nombre de usuario se guardará en tu dispositivo";
 "id_warning_there_is_already_a" = "ADVERTENCIA: Ya hay una solicitud para restablecer la autenticación de dos factores en tu cartera. Si envías una nueva solicitud desde otra dirección de correo electrónico ahora, tu cartera quedará impugnada y es posible que pierdas el acceso a ella de forma permanente.";
 "id_warning_wallet_locked_by" = "ADVERTENCIA: cartera bloqueada por disputa de dos factores. Contacta a soporte técnico para obtener más información.";
 "id_warning_wallet_locked_for" = "ADVERTENCIA: cartera bloqueada por restablecimiento de dos factores en %d días. Contacta a soporte técnico para obtener más información.";
+"id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
 "id_warning_you_need_a_positive" = "¡Advertencia! Necesitas un saldo positivo de L-BTC para poder enviar transacciones.";
 "id_watchonly" = "Solo lectura";
 "id_watchonly_disabled" = "Modo de solo lectura deshabilitado";
@@ -478,10 +486,11 @@
 "id_you_only_have_one_twofactor" = "Solo tienes un método de autenticación de dos factores habilitado";
 "id_you_will_need_to_reenter_your" = "Tendrás que volver a ingresar tu Frase de Recuperación para iniciar sesión si no estableces un PIN. Presiona \"OK\" para continuar.";
 "id_your_green_wallet_is_now_ready" = "Tu Green Wallet está lista para usarse.";
+"id_your_ios_device_might_not_be" = "Your iOS device might not be supported";
 "id_your_notifications_will_be" = "Tus notificaciones aparecerán aquí.";
 "id_your_pin_or_your_mnemonic_will" = "Necesitarás tu PIN o Frase de Recuperación para acceder a tu cartera.";
 "id_your_s_sent_to_s_has_been" = "Tu %@ enviado a %@ fue confirmado";
 "id_your_transactions_will_be_shown" = "Tus transacciones aparecerán aquí.";
 "id_your_twofactor_threshold_is_s" = "Tu umbral de dos factores es %@.";
 "id_your_wallet_is_not_yet_fully" = "Tu cartera aún no está completamente protegida.\nHabilita la autenticación de dos factores.";
-"id_your_watchonly_username_will_be" = "Tu nombre de usuario para el modo de solo lectura se almacenará sin cifrar en este dispositivo. Si tu dispositivo está en riesgo, es posible que un tercero pueda visualizar tus transacciones. Presiona \"OK\" para continuar.";
+"id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";
