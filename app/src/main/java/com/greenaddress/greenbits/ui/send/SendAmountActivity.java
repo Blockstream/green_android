@@ -84,6 +84,15 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final int[] mBlockTargets = getBlockTargets();
         final GaService service = mService;
 
+        final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
+
+        if (isSweep) {
+            final int account = mService.getModel().getActiveAccountObservable().getActiveAccount();
+            final String accountName = mService.getSubaccountData(account).getName();
+            setTitle(String.format(getString(R.string.id_sweep_into_s),
+                                   accountName.equals("") ? getString(R.string.id_main_account) : accountName));
+        }
+
         // Create UI views
         setContentView(R.layout.activity_send_amount);
         UI.preventScreenshots(this);
@@ -522,6 +531,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final Intent intent = new Intent(this, SendConfirmActivity.class);
         intent.putExtra("transaction", transactionData.toString());
         intent.putExtra("asset_info", mAssetBalances.getAssetInfo());
+        intent.putExtra(PrefKeys.SWEEP, true);
         if (mService.getConnectionManager().isHW())
             intent.putExtra("hww", mService.getConnectionManager().getHWDeviceData().toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);

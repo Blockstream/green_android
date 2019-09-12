@@ -107,6 +107,11 @@
         android:summary="@string/id_enable_spv_and_modify_spv"/>
 
     <Preference
+        android:key="sweep"
+        android:title="@string/id_sweep"
+        android:summary="@string/id_sweep_from_paper_wallet"/>
+
+    <Preference
         android:key="network_monitor"
         android:title="@string/id_network_monitor" />
 

@@ -256,6 +256,12 @@
             android:label="@string/id_mnemonic"
             />
 
+        <activity
+            android:name=".accounts.SweepSelectActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/id_sweep"
+            />
+
     </application>
 
 </manifest>

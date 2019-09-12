@@ -25,6 +25,7 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 
@@ -47,6 +48,16 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             toFirst();
             return;
         }
+
+        final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
+
+        if (isSweep) {
+            final int account = mService.getModel().getActiveAccountObservable().getActiveAccount();
+            final String accountName = mService.getSubaccountData(account).getName();
+            setTitle(String.format(getString(R.string.id_sweep_into_s),
+                                   accountName.equals("") ? getString(R.string.id_main_account) : accountName));
+        }
+
         try {
 
             final String hwwJson = getIntent().getStringExtra("hww");

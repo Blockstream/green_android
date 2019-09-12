@@ -35,6 +35,7 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.accounts.SweepSelectActivity;
 import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
@@ -68,6 +69,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private Preference mSendLocktimePref;
     private Preference mTwoFactorRequestResetPref;
     private Preference mMemonicPref;
+    private Preference mSweepPref;
     private ListPreference mTimeoutPref;
     private PreferenceCategory mAccountTitle;
     private Preference mSPV;
@@ -273,6 +275,16 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mSPV.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SettingsActivity.class);
             intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, SPVPreferenceFragment.class.getName() );
+            startActivity(intent);
+            return false;
+        });
+
+        // sweep from paper wallet
+        mSweepPref = find(PrefKeys.SWEEP);
+        if (mService.isLiquid())
+            mSweepPref.setVisible(false);
+        mSweepPref.setOnPreferenceClickListener(preference -> {
+            final Intent intent = new Intent(getActivity(), SweepSelectActivity.class);
             startActivity(intent);
             return false;
         });

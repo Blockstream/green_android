@@ -51,6 +51,7 @@ import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import org.bitcoinj.core.AddressFormatException;
 import org.slf4j.Logger;
@@ -75,6 +76,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
 
     private final CameraManager cameraManager = new CameraManager();
 
+    private boolean isSweep;
     private View contentView;
     private de.schildbach.wallet.ui.scan.ScannerView scannerView;
     private TextureView previewView;
@@ -99,6 +101,11 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
 
+        isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
+
+        if (isSweep)
+            setTitle(R.string.id_sweep);
+
         // Stick to the orientation the activity was started with. We cannot declare this in the
         // AndroidManifest.xml, because it's not allowed in combination with the windowIsTranslucent=true
         // theme attribute.
@@ -119,7 +126,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
 
         mAddressEditText = UI.find(this, R.id.addressEdit);
         mAddressEditText.setHint(
-            mService.isWatchOnly() ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
+            isSweep ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
 
         UI.find(this, R.id.nextButton).setEnabled(false);
 
@@ -369,7 +376,8 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
         result.putExtra("internal_qr", true);
         final Integer subaccount = service.getModel().getCurrentSubaccount();
 
-        if (service.isWatchOnly()) {
+        if (isSweep) {
+            result.putExtra(PrefKeys.SWEEP, true);
             // See if the address is a private key, and if so, sweep it
             final Long feeRate = service.getFeeEstimates().get(0);
             final String receiveAddress =
