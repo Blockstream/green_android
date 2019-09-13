@@ -52,6 +52,7 @@ public class TwoFactorActivity extends LoggedActivity {
         switch (mMethod) {
         case "reset":
             mContinueButton.setText(R.string.id_request_twofactor_reset);
+            mPromptText.setText(R.string.id_resetting_your_twofactor_takes);
             break;
         case "dispute":
             mContinueButton.setText(R.string.id_dispute_twofactor_reset);
