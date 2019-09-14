@@ -403,6 +403,9 @@ public class GaService extends Service  {
         if (mModel.getBlockchainHeightObservable().getHeight() == null) {
             return;
         }
+        if (isLiquid()) {
+            mModel.getAssetsObservable().refresh();
+        }
 
         mConnectionManager.goPostLogin();
 

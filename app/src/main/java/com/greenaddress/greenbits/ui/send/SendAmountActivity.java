@@ -16,6 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,12 +32,15 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
 import com.greenaddress.greenbits.ui.components.FontFitEditText;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
@@ -50,8 +56,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     private TextView mRecipientText;
     private TextView mAccountBalance;
-    private TextView mAssetName;
-    private TextView mAssetDomain;
     private Button mNextButton;
     private Button mSendAllButton;
     private FontFitEditText mAmountText;
@@ -103,8 +107,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         mAmountText = UI.find(this, R.id.amountText);
         mUnitButton = UI.find(this, R.id.unitButton);
-        mAssetName = UI.find(this, R.id.assetName);
-        mAssetDomain = UI.find(this, R.id.assetDomain);
 
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener(this);
@@ -240,17 +242,19 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         mAssetBalances = getModel().getCurrentAccountBalanceData().get(mSelectedAsset);
         final AssetInfoData assetInfo = mAssetBalances.getAssetInfo();
-        final String label = assetInfo != null ? assetInfo.getName() : mSelectedAsset;
-        final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
-        mAssetName.setText("btc".equals(mSelectedAsset) ? getBitcoinOrLiquidUnit() : label);
-        if (assetInfo != null && entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
-            mAssetDomain.setVisibility(View.VISIBLE);
-            mAssetDomain.setText(entity.getDomain());
-        } else {
-            mAssetDomain.setVisibility(View.GONE);
-        }
+        final BalanceData balance = new BalanceData();
+        balance.setSatoshi(mAssetBalances.getSatoshi());
+        balance.setAssetInfo(assetInfo !=
+                             null ? assetInfo : new AssetInfoData(mSelectedAsset, mSelectedAsset, 0, "", ""));
+        final Map<String, BalanceData> balances = new HashMap<>();
+        balances.put(mSelectedAsset, balance);
+        final RecyclerView assetsList = findViewById(R.id.assetsList);
+        assetsList.setLayoutManager(new LinearLayoutManager(this));
+        final AssetsAdapter adapter = new AssetsAdapter(balances, mService, null);
+        assetsList.setAdapter(adapter);
         UI.showIf(!isAsset(), mUnitButton);
-        UI.showIf(isAsset(), mAssetName);
+        UI.showIf(!isAsset(), mAccountBalance);
+        UI.showIf(isAsset(), assetsList);
 
         final Long satoshi = mAssetBalances.getSatoshi();
         if (!isAsset())

@@ -18,36 +18,44 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@color/buttonJungleGreen"
-        >
+        android:gravity="center_vertical"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/assetIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="8dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:layout_weight="1"
-            android:layout_marginEnd="20dp"
-            android:padding="10dp"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/assetName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                />
+                android:textColor="@color/white"
+                android:textSize="16sp" />
             <TextView
                 android:id="@+id/assetDomain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/grey_light"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/assetValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:padding="10dp"
-            />
+            android:layout_margin="8dp"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
     </LinearLayout>
 

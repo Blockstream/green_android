@@ -1,6 +1,9 @@
 package com.greenaddress.gdk;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 import com.blockstream.libgreenaddress.GDK;
@@ -182,6 +185,25 @@ public class GDKSession {
             map.put(key,b);
         }
         return map;
+    }
+
+    public Map<String, Bitmap> getAssetsIcons() throws RuntimeException {
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("icons", true);
+        details.put("assets", false);
+        final ObjectNode data = (ObjectNode) GDK.refresh_assets(mNativeSession, details);
+        final ObjectNode iconsData = (ObjectNode) data.get("icons");
+        if (iconsData.has("last_modified"))
+            iconsData.remove("last_modified");
+        final Map<String, Bitmap> icons = new HashMap<>();
+        final Iterator<String> iterator = iconsData.fieldNames();
+        while (iterator.hasNext()) {
+            final String key = iterator.next();
+            final byte[] decodedString = Base64.decode(iconsData.get(key).asText(), Base64.DEFAULT);
+            final Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            icons.put(key, decodedByte);
+        }
+        return icons;
     }
 
     public BalanceData convertBalance(final BalanceData balanceData) throws IOException, RuntimeException {

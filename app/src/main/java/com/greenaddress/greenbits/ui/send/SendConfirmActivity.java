@@ -10,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,12 +20,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
@@ -31,6 +35,8 @@ import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
@@ -112,31 +118,19 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final JsonNode assetTag = address.get("asset_tag");
         if (mService.isLiquid()) {
             sendAmount.setVisibility(View.GONE);
-            UI.find(this, R.id.amountWordSending).setVisibility(View.GONE); // hide the little "Amount" above the card
-
-            final CardView assetCardview = findViewById(R.id.txAssetCard);
-            final TextView txAssetText = assetCardview.findViewById(R.id.assetName);
-            final TextView txAssetValue = assetCardview.findViewById(R.id.assetValue);
+            UI.find(this, R.id.amountWordSending).setVisibility(View.GONE);
             final String asset = assetTag.asText();
-            final AssetInfoData assetInfo = mAssetInfo !=
-                                            null ? mAssetInfo : new AssetInfoData(asset, asset, 0, "", "");
-            final ObjectMapper mapper = new ObjectMapper();
-            final ObjectNode convert = mapper.createObjectNode();
-            convert.set("asset_info", assetInfo.toObjectNode());
-            convert.put("satoshi", address.get("satoshi").asLong());
-            try {
-                final ObjectNode converted = getSession().convert(convert);
-                final String value =
-                    "btc".equals(asset) ? mService.getValueString(converted,false,
-                                                                  false) : converted.get(asset).asText();
-                final String ticker = assetInfo.getTicker() != null ? assetInfo.getTicker() : "";
-                txAssetText.setText("btc".equals(asset) ? mService.getBitcoinOrLiquidUnit() : assetInfo.getName());
-                txAssetValue.setText(String.format("%s %s", value,
-                                                   "btc".equals(asset) ? mService.getBitcoinOrLiquidUnit() : ticker));
-                assetCardview.setVisibility(View.VISIBLE);
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
+            final BalanceData balance = new BalanceData();
+            balance.setSatoshi(address.get("satoshi").asLong());
+            balance.setAssetInfo(mAssetInfo !=
+                                 null ? mAssetInfo : new AssetInfoData(asset, asset, 0, "", ""));
+            final Map<String, BalanceData> balances = new HashMap<>();
+            balances.put(asset, balance);
+            final RecyclerView assetsList = findViewById(R.id.assetsList);
+            assetsList.setLayoutManager(new LinearLayoutManager(this));
+            final AssetsAdapter adapter = new AssetsAdapter(balances, mService, null);
+            assetsList.setAdapter(adapter);
+            assetsList.setVisibility(View.VISIBLE);
         } else {
             sendAmount.setText(getFormatAmount(amount));
         }

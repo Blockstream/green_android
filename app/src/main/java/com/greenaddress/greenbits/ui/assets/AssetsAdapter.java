@@ -1,8 +1,14 @@
 package com.greenaddress.greenbits.ui.assets;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +22,7 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,23 +62,35 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     @Override
     public void onBindViewHolder(final Item holder, final int position) {
         final String assetId = mAssetsIds.get(position);
-        holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
+        final boolean isBTC = "btc".equals(assetId);
         final BalanceData balanceData = mAssets.get(assetId);
         final long satoshi = balanceData.getSatoshi();
-        if ("btc".equals(assetId)) {
+        if (mOnAccountSelected != null)
+            holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
+        if (isBTC) {
+            holder.mAssetName.setText("L-BTC");
             holder.mAssetValue.setText(mService.getValueString(satoshi, false, true));
-        } else {
-            holder.mAssetValue.setText(mService.getValueString(satoshi, assetId, balanceData.getAssetInfo(), true));
-        }
-        final AssetInfoData assetInfo = balanceData.getAssetInfo();
-        final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
-        if (entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
-            holder.mAssetDomain.setVisibility(View.VISIBLE);
-            holder.mAssetDomain.setText(entity.getDomain());
-        } else {
             holder.mAssetDomain.setVisibility(View.GONE);
+        } else {
+            final AssetInfoData assetInfo = balanceData.getAssetInfo();
+            holder.mAssetName.setText(assetInfo != null ? assetInfo.getName() : assetId);
+            holder.mAssetValue.setText(mService.getValueString(satoshi, assetId, balanceData.getAssetInfo(), true));
+            final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
+            if (entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
+                holder.mAssetDomain.setVisibility(View.VISIBLE);
+                holder.mAssetDomain.setText(entity.getDomain());
+            } else {
+                holder.mAssetDomain.setVisibility(View.GONE);
+            }
         }
-        holder.mAssetName.setText("btc".equals(assetId) ? "L-BTC" : assetInfo != null ? assetInfo.getName() : assetId);
+        // Get l-btc & asset icon from asset icon map
+        final Map<String, Bitmap> icons =  mService.getModel().getAssetsObservable().getAssetsIcons();
+        final String asset = isBTC ? mService.getNetwork().getPolicyAsset() : assetId;
+        if (icons.containsKey(asset)) {
+            holder.mAssetIcon.setImageBitmap(icons.get(asset));
+        } else {
+            holder.mAssetIcon.setImageResource(R.drawable.ic_generic_asset_icon);
+        }
     }
 
     @Override
@@ -85,6 +104,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final TextView mAssetName;
         final TextView mAssetDomain;
         final TextView mAssetValue;
+        final ImageView mAssetIcon;
 
         Item(final View v) {
             super(v);
@@ -92,6 +112,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             mAssetName = v.findViewById(R.id.assetName);
             mAssetDomain = v.findViewById(R.id.assetDomain);
             mAssetValue = v.findViewById(R.id.assetValue);
+            mAssetIcon = v.findViewById(R.id.assetIcon);
         }
     }
 }

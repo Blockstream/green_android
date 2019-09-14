@@ -7,6 +7,7 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -14,6 +15,7 @@ public class Model {
     private SubaccountDataObservable mSubaccountDataObservable;
     private TwoFactorConfigDataObservable mTwoFactorConfigDataObservable;
     private EventDataObservable mEventDataObservable;
+    private AssetsDataObservable mAssetsObservable;
     private SparseArray<TransactionDataObservable> mTransactionDataObservables = new SparseArray<>();
     private SparseArray<TransactionDataObservable> mUTXODataObservables = new SparseArray<>();
     private SparseArray<ReceiveAddressObservable> mReceiveAddressObservables = new SparseArray<>();
@@ -36,6 +38,7 @@ public class Model {
         mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(executor, mEventDataObservable);
         mFeeObservable = new FeeObservable(executor);
         mAvailableCurrenciesObservable = new AvailableCurrenciesObservable(executor);
+        mAssetsObservable = new AssetsDataObservable(executor);
     }
 
     public SubaccountDataObservable getSubaccountDataObservable() {
@@ -142,5 +145,9 @@ public class Model {
 
     public Map<String, BalanceData> getCurrentAccountBalanceData() {
         return getBalanceDataObservable(getCurrentSubaccount()).getBalanceData();
+    }
+
+    public AssetsDataObservable getAssetsObservable() {
+        return mAssetsObservable;
     }
 }
