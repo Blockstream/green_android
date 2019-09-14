@@ -99,7 +99,10 @@ android {
 
 afterEvaluate {
   android.applicationVariants.all { variant ->
-    variant.javaCompiler.dependsOn(fetchdepstask)
+      def folder = new File('./app/src/main/jniLibs')
+      if (!folder.exists()) {
+          variant.javaCompiler.dependsOn(fetchdepstask)
+      }
   }
 }
 

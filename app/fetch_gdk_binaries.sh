@@ -28,11 +28,6 @@ if [ -d "${APP_ROOT}/app" ]; then
 fi
 
 JNILIBSDIR=${APP_ROOT}/src/main/jniLibs
-
-if [ -d $JNILIBSDIR ]; then
-    exit 0
-fi
-
 GDK_JAVA_DIR="${APP_ROOT}/src/main/java/com/blockstream"
 
 # Clean up any previous install
