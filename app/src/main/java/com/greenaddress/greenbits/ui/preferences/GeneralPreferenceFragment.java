@@ -540,9 +540,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private void attachObservers() {
-        mService.getModel().getAvailableCurrenciesObservable().addObserver(this);
-        mService.getModel().getSettingsObservable().addObserver(this);
-        mService.getModel().getTwoFactorConfigDataObservable().addObserver( this);
+        if (mService != null && mService.getModel() != null) {
+            mService.getModel().getAvailableCurrenciesObservable().addObserver(this);
+            mService.getModel().getSettingsObservable().addObserver(this);
+            mService.getModel().getTwoFactorConfigDataObservable().addObserver( this);
+        }
     }
     private void detachObservers() {
         mService.getModel().getAvailableCurrenciesObservable().deleteObserver(this);
