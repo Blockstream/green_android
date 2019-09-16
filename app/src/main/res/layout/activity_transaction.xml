@@ -36,16 +36,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/activity_vertical_margin"
-                android:layout_marginEnd="@dimen/activity_vertical_margin"
-                >
+                android:layout_marginEnd="@dimen/activity_vertical_margin">
+
                 <TextView
                     android:id="@+id/txUnconfirmedText"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:textSize="18sp"
-                    android:layout_centerVertical="true"
-                    />
+                    android:layout_centerVertical="true" />
+
                 <ImageView
                     android:id="@+id/status_icon"
                     android:layout_width="wrap_content"
@@ -53,7 +53,8 @@
                     android:paddingStart="@dimen/activity_vertical_margin"
                     android:layout_toRightOf="@id/txUnconfirmedText"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_done"/>
+                    android:src="@drawable/ic_done" />
+
                 <TextView
                     android:id="@+id/status_spv_unverified"
                     android:layout_width="wrap_content"
@@ -61,8 +62,8 @@
                     android:text="@string/id_spv_unverified"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:textColor="@color/red"
-                    />
+                    android:textColor="@color/red" />
+
                 <TextView
                     android:id="@+id/status_increase_fee"
                     android:layout_width="wrap_content"
@@ -82,69 +83,12 @@
                     android:paddingBottom="4dp"
                     android:paddingTop="4dp"
                     android:drawablePadding="4dp"
-                    android:drawableEnd="@drawable/ic_bump_fee"
-                    />
-
+                    android:drawableEnd="@drawable/ic_bump_fee" />
 
             </RelativeLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/activity_vertical_margin"
-                android:paddingEnd="@dimen/activity_vertical_margin">
-
-
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/activity_vertical_margin" />
-
-                <TextView
-                    android:id="@+id/txDoubleSpentByTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_double_spend_by" />
-
-                <TextView
-                    android:id="@+id/txDoubleSpentByText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
-                    android:textIsSelectable="true" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/txRecipientReceiverView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingStart="@dimen/activity_vertical_margin"
-                android:paddingEnd="@dimen/activity_vertical_margin">
-
-                <TextView
-                    android:id="@+id/txRecipientTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_recipient" />
-
-                <TextView
-                    android:id="@+id/txRecipientText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/textColor"
-                    android:textIsSelectable="true" />
-
-
-            </LinearLayout>
-
-
-            <LinearLayout
+                android:id="@+id/amountView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -168,18 +112,27 @@
                     android:id="@+id/assetsList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scrollbars="vertical"
-                    />
+                    android:scrollbars="vertical" />
 
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/activity_vertical_margin" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/feeView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/SectionTitle"
-                    android:text="@string/id_fee_amount_size_fee_rate" />
+                    android:text="@string/id_fee" />
 
                 <TextView
                     android:id="@+id/txFeeInfoText"
@@ -191,36 +144,33 @@
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/activity_vertical_margin" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/txRecipientReceiverView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/activity_vertical_margin"
+                android:paddingEnd="@dimen/activity_vertical_margin">
 
                 <TextView
-                    android:id="@+id/txReceivedOnTitle"
+                    android:id="@+id/txRecipientTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     style="@style/SectionTitle"
-                    android:text="@string/id_received_on" />
+                    android:text="@string/id_recipient" />
 
                 <TextView
-                    android:id="@+id/txReceivedOnText"
-                    android:layout_width="match_parent"
+                    android:id="@+id/txRecipientText"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:background="?attr/themeCardview"
-                    android:height="40dp"
-                    android:paddingStart="15dp"
-                    android:textColor="@color/white"
-                    />
-
+                    android:textColor="@color/textColor"
+                    android:textIsSelectable="true" />
 
                 <View
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/activity_vertical_margin" />
-
-                <TextView
-                    android:id="@+id/txUnconfirmedEstimatedBlocks"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/SectionTitle"
-                    android:text="@string/id_estimated_blocks_until" />
 
             </LinearLayout>
 
@@ -230,10 +180,6 @@
                 android:orientation="vertical"
                 android:paddingStart="@dimen/activity_vertical_margin"
                 android:paddingEnd="@dimen/activity_vertical_margin">
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/activity_vertical_margin" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -310,6 +256,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/id_view_in_explorer"
-        android:layout_margin="@dimen/activity_vertical_margin"/>
+        android:layout_margin="@dimen/activity_vertical_margin" />
 
 </LinearLayout>

@@ -53,7 +53,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
 
-    private TextView mEstimatedBlocks;
     private TextView mMemoTitle;
     private TextView mMemoSave;
     private TextView mMemoText;
@@ -85,15 +84,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mMemoTitle = UI.find(this, R.id.txMemoTitle);
         mMemoSave = UI.find(this, R.id.txMemoSave);
         mMemoText = UI.find(this, R.id.txMemoText);
-        mEstimatedBlocks = UI.find(this, R.id.txUnconfirmedEstimatedBlocks);
         mExplorerButton = UI.find(this, R.id.txExplorer);
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
         mStatusIncreaseFee = UI.find(this, R.id.status_increase_fee);
         mStatusSPVUnverified = UI.find(this, R.id.status_spv_unverified);
         mStatusIcon = UI.find(this, R.id.status_icon);
-
-        final TextView doubleSpentByText = UI.find(this, R.id.txDoubleSpentByText);
-        final TextView doubleSpentByTitle = UI.find(this, R.id.txDoubleSpentByTitle);
 
         mTxItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
         final boolean isWatchOnly = mService.isWatchOnly();
@@ -115,7 +110,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         else
             title = getString(R.string.id_received);
         setTitle(title);
-
 
         final String confirmations;
         final int confirmationsColor;
@@ -171,7 +165,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Set fees
         showFeeInfo(mTxItem.fee, mTxItem.vSize, mTxItem.feeRate);
-        UI.hide(mEstimatedBlocks);
         UI.hide(mStatusIncreaseFee);
         if (mTxItem.type == TransactionItem.TYPE.OUT || mTxItem.type == TransactionItem.TYPE.REDEPOSIT ||
             mTxItem.isSpent) {
@@ -203,27 +196,19 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                     res = TextUtils.concat(res, Html.fromHtml(link));
                 }
             }
-            doubleSpentByText.setText(res);
         }
         final boolean showDoubleSpent = mTxItem.doubleSpentBy != null || !mTxItem.replacedHashes.isEmpty();
-        UI.showIf(showDoubleSpent, doubleSpentByText);
-        UI.showIf(showDoubleSpent, doubleSpentByTitle);
 
         // Set recipient / received on
-        final TextView receivedOnText = UI.find(this, R.id.txReceivedOnText);
-        final TextView receivedOnTitle = UI.find(this, R.id.txReceivedOnTitle);
         final TextView recipientText = UI.find(this, R.id.txRecipientText);
         final TextView recipientTitle = UI.find(this, R.id.txRecipientTitle);
         if (!TextUtils.isEmpty(mTxItem.counterparty)) {
             recipientText.setText(mTxItem.counterparty);
-            UI.hide(receivedOnText);
-            UI.hide(receivedOnTitle);
         }
 
         final String name = mService.getModel().getSubaccountDataObservable().
                             getSubaccountDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.
                                                                                                           id_main_account));
-        receivedOnText.setText(name);
 
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.REDEPOSIT, UI.find(this, R.id.txRecipientReceiverView));
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientText);
@@ -279,29 +264,14 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             btcFee = "";
         }
-        feeText.setText(String.format("%s, %s vbytes, %s", btcFee,
-                                      String.valueOf(vSize), UI.getFeeRateString(feeRate)));
+        feeText.setText(String.format("%s (%s)", btcFee, UI.getFeeRateString(feeRate)));
     }
 
     private void showUnconfirmed() {
-        final List<Long> estimates = mService.getFeeEstimates();
-        int block = 1;
-        while (block < estimates.size()) {
-            if (mTxItem.feeRate >= estimates.get(block)) {
-                break;
-            }
-            ++block;
-        }
-
-        UI.show(mEstimatedBlocks);
-        mEstimatedBlocks.setText(getString(R.string.id_estimated_blocks_until, block));
 
         if (mService.isWatchOnly() || mService.isLiquid() || !mTxItem.replaceable ||
             mService.getModel().isTwoFAReset())
             return; // FIXME: Implement RBF for elements
-
-        // Allow RBF if it might decrease the number of blocks until confirmation
-        final boolean allowRbf = block > 1 || mService.getNetwork().alwaysAllowRBF();
 
         if (!mService.isLiquid()) {
             UI.show(mStatusIncreaseFee);
