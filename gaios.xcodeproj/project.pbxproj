@@ -194,6 +194,8 @@
 		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
+		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
+		207C121823303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -804,6 +806,7 @@
 				"pt-BR",
 				zh,
 				uk,
+				vi,
 			);
 			mainGroup = 676FCF131F9D0CF800354E93;
 			productRefGroup = 676FCF1D1F9D0CF800354E93 /* Products */;
@@ -1130,6 +1133,7 @@
 				8192BB9521EF536000B04185 /* pt-BR */,
 				8192BB9721EF616100B04185 /* zh */,
 				8192BB9921EF616F00B04185 /* uk */,
+				207C121723303BFC002F80FC /* vi */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -1150,6 +1154,7 @@
 				8192BB9621EF536000B04185 /* pt-BR */,
 				8192BB9821EF616100B04185 /* zh */,
 				8192BB9A21EF616F00B04185 /* uk */,
+				207C121823303BFC002F80FC /* vi */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

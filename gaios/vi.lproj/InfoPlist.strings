@@ -1,0 +1,2 @@
+NSFaceIDUsageDescription = "Green sử dụng xác thực sinh trắc để cho phép vào ví dễ dàng";
+NSCameraUsageDescription = "Chúng tôi dùng camera để quét mã QR";
