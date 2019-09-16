@@ -66,6 +66,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private Long mVsize;
     private String mSelectedAsset = "btc";
     private BalanceData mAssetBalances;
+    private boolean isSweep;
 
     private static final int[] mButtonIds =
     {R.id.fastButton, R.id.mediumButton, R.id.slowButton, R.id.customButton};
@@ -84,7 +85,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final int[] mBlockTargets = getBlockTargets();
         final GaService service = mService;
 
-        final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
+        isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
 
         if (isSweep) {
             final int account = mService.getModel().getActiveAccountObservable().getActiveAccount();
@@ -531,7 +532,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final Intent intent = new Intent(this, SendConfirmActivity.class);
         intent.putExtra("transaction", transactionData.toString());
         intent.putExtra("asset_info", mAssetBalances.getAssetInfo());
-        intent.putExtra(PrefKeys.SWEEP, true);
+        intent.putExtra(PrefKeys.SWEEP, isSweep);
         if (mService.getConnectionManager().isHW())
             intent.putExtra("hww", mService.getConnectionManager().getHWDeviceData().toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);

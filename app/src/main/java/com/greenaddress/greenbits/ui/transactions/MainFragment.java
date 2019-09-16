@@ -30,6 +30,7 @@ import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.components.OnGdkListener;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 
@@ -282,6 +283,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                 .build().show();
             } else {
                 final Intent intent = new Intent(getActivity(), ScanActivity.class);
+                intent.putExtra(PrefKeys.SWEEP, getGAService().isWatchOnly());
                 getActivity().startActivity(intent);
             }
         } else if (view.getId() == R.id.selectSubaccount) {
