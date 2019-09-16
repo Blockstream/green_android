@@ -489,7 +489,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         final View view = getCurrentFocus();
         if (!(view instanceof TextView))
             return;
-        final View next = view.focusSearch(View.FOCUS_DOWN);
+        final View next = view.focusSearch(View.FOCUS_FORWARD);
         if (next != null)
             next.requestFocus();
     }
