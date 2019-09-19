@@ -10,6 +10,7 @@
   <string name="id_4_hours">~ 4 Hours</string>
   <string name="id_5_seconds_minimum">5 seconds minimum</string>
   <string name="id_a_new_transaction_has_just">A new transaction has just arrived in your wallet.</string>
+  <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">A wallet is detected on this device:</string>
   <string name="id_about">ABOUT</string>
   <string name="id_accept">ACCEPT</string>

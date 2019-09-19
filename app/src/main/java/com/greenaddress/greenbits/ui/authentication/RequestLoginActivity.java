@@ -25,6 +25,7 @@ import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
+import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -333,7 +334,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
 
         // No hardware wallet, jump to PIN or 1st screen entry
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        if (mService != null && mService.hasPin())
+        if (mService != null && AuthenticationHandler.hasPin(this))
             startActivityForResult(new Intent(this, PinActivity.class), 0);
         else
             startActivityForResult(new Intent(this, FirstScreenActivity.class), 0);

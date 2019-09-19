@@ -1,0 +1,12 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:key="pin_auth"
+        android:title="@string/id_setup_pin" />
+
+    <SwitchPreference
+        android:key="native_auth"
+        android:title="@string/id_use_android_screen_lock_to_log" />
+
+    <PreferenceCategory />
+</PreferenceScreen>

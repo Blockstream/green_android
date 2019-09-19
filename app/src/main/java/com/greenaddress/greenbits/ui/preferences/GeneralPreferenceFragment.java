@@ -57,7 +57,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     public static final int REQUEST_ENABLE_2FA = 2031;
     private static final int REQUEST_2FA = 101;
 
-    private SwitchPreference mPinPref;
+    private Preference mPinPref;
     private Preference mWatchOnlyLogin;
     private ListPreference mUnitPref;
     private ListPreference mPriceSourcePref;
@@ -86,35 +86,18 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             return;
         }
 
-        // PIN
+        // Pin submenu
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
-        if (mService.getConnectionManager().isLoginWithPin() || mService.isPinJustSaved()) {
-            mPinPref.setChecked(mService.hasPin());
-            mPinPref.setOnPreferenceClickListener(preference -> {
-                if (mService.warnIfOffline(getActivity())) {
-                    return false;
-                }
-                if (mPinPref.isChecked() == mService.hasPin())
-                    return false;
-                if (mService.hasPin()) {
-                    UI.popup(getActivity(), R.string.id_warning)
-                    .content(R.string.id_deleting_your_pin_will_remove)
-                    .cancelable(false)
-                    .onNegative((dlg, which) -> mPinPref.setChecked(true))
-                    .onPositive((dlg, which) -> {
-                        mService.cfgPin().edit().clear().commit();
-                        mPinPref.setChecked(false);
-                    }).show();
-                } else {
-                    final Intent savePin = PinSaveActivity.createIntent(getActivity(), mService.getMnemonic());
-                    startActivityForResult(savePin, PINSAVE);
-                }
-                return false;
-            });
-        } else {
+        if (!mService.getConnectionManager().isLoginWithPin() && !mService.isPinJustSaved()) {
             mPinPref.setEnabled(false);
             mPinPref.setSummary(getString(R.string.id_green_only_supports_one_pin_per));
         }
+        mPinPref.setOnPreferenceClickListener(preference -> {
+            final Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, PinPreferenceFragment.class.getName() );
+            startActivity(intent);
+            return false;
+        });
 
         // Watch-Only Login
         mWatchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
@@ -560,7 +543,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         if (mService == null || mService.getModel() == null)
             return;
         initSummaries();
-        mPinPref.setChecked(mService.hasPin());
         attachObservers();
         updatesVisibilities();
     }

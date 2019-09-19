@@ -104,11 +104,6 @@ public class GaService extends Service  {
         mConnectionManager.disconnect();
     }
 
-    public boolean hasPin() {
-        final String ident = cfgPin().getString("ident", null);
-        return ident != null;
-    }
-
     public boolean warnIfOffline(final Activity activity) {
         if(getConnectionManager().isOffline()) {
             UI.toast(activity, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
@@ -275,10 +270,6 @@ public class GaService extends Service  {
 
     public SharedPreferences cfg() {
         return getSharedPreferences(getNetwork().getNetwork(), MODE_PRIVATE);
-    }
-
-    public SharedPreferences cfgPin() {
-        return getSharedPreferences(getNetwork().getNetwork() + "_pin", MODE_PRIVATE);
     }
 
     public SharedPreferences.Editor cfgEdit() { return cfg().edit(); }
@@ -468,14 +459,10 @@ public class GaService extends Service  {
         return mModel.getFeeObservable().getFees();
     }
 
-    public ListenableFuture<Void> setPin(final String mnemonic, final String pin) {
+    public ListenableFuture<Void> setPin(final String mnemonic, final String pin, final SharedPreferences preferences) {
         return mExecutor.submit(() -> {
             final PinData pinData = getSession().setPin(mnemonic, pin, "default");
-            cfgPin().edit().putString("ident", pinData.getPinIdentifier())
-                    .putString("encrypted", pinData.getEncryptedGB())
-                    .putInt("counter", 0)
-                    .putBoolean("is_six_digit", pin.length() == 6)
-                    .apply();
+            AuthenticationHandler.setPin(pinData, pin.length() == 6, preferences);
             setPinJustSaved(true);
             return null;
         });

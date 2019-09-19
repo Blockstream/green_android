@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
@@ -38,12 +39,12 @@ public class FirstScreenActivity extends LoginActivity {
 
         final Button loginButton = findViewById(R.id.loginButton);
         final Button restoreButton = findViewById(R.id.restoreButton);
-        if (mService.hasPin()) {
+        if (AuthenticationHandler.hasPin(this)) {
             restoreButton.setVisibility(View.GONE);
         }
         restoreButton.setOnClickListener(v -> startActivity(new Intent(this, MnemonicActivity.class)));
-        loginButton.setText(mService.hasPin() ? R.string.id_log_in : R.string.id_create_new_wallet);
-        Intent loginButtonIntent = mService.hasPin() ?
+        loginButton.setText(AuthenticationHandler.hasPin(this) ? R.string.id_log_in : R.string.id_create_new_wallet);
+        Intent loginButtonIntent = AuthenticationHandler.hasPin(this) ?
                                    new Intent(this, PinActivity.class) :
                                    new Intent(this, InfoActivity.class);
         loginButton.setOnClickListener(v -> startActivity(loginButtonIntent));
@@ -98,7 +99,7 @@ public class FirstScreenActivity extends LoginActivity {
 
     public void onSelectNetwork() {
         mSelectNetwork.setText(mService.getNetwork().getName());
-        UI.showIf(mService.hasPin(), mWalletDetected);
+        UI.showIf(AuthenticationHandler.hasPin(this), mWalletDetected);
         invalidateOptionsMenu();
 
         // Recreate the activity to load the new theme if necessary

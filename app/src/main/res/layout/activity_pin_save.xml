@@ -19,15 +19,6 @@
         android:text="@string/id_create_a_pin_to_access_your"
         android:textSize="20sp" />
 
-    <CheckBox
-        android:id="@+id/useNativeAuthentication"
-        android:layout_width="wrap_content"
-        android:textColor="@color/textColor"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone"
-        android:text="@string/id_use_android_screen_lock_to_log" />
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

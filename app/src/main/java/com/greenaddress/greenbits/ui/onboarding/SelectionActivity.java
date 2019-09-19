@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
@@ -83,7 +84,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         super.onLoginSuccess();
         stopLoading();
         mService.resetSignUp();
-        if (mService.hasPin()) {
+        if (AuthenticationHandler.hasPin(this)) {
             final Intent intent = new Intent(this, TabbedMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

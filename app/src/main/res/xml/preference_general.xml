@@ -7,9 +7,9 @@
         android:layout="@layout/preference_category_green"
         />
 
-    <SwitchPreference
+    <Preference
         android:key="delete_or_configure_pin"
-        android:title="@string/id_pin" />
+        android:title="@string/id_setup_pin" />
 
     <Preference
         android:key="watch_only_login"

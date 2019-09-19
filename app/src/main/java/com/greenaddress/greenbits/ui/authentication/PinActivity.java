@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui.authentication;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Network;
 import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProperties;
@@ -14,6 +15,9 @@ import android.view.WindowManager;
 import androidx.appcompat.widget.Toolbar;
 
 import com.blockstream.libgreenaddress.GDK;
+import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.data.PinData;
+import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.KeyStoreAES;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -40,6 +44,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     private static final int ACTIVITY_REQUEST_CODE = 1;
     private PinFragment mPinFragment;
+    private SharedPreferences mPin;
 
     private void login(final String pin) {
 
@@ -57,8 +62,8 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         if (mPinFragment != null)
             mPinFragment.setEnabled(false);
 
-        loginWithPin(pin);
-
+        final PinData pinData = PinData.fromPreferenceValues(mPin);
+        loginWithPin(pin, pinData);
     }
 
     @Override
@@ -66,9 +71,8 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         super.onLoginFailure();
         stopLoading();
         final String message;
-        final SharedPreferences prefs = mService.cfgPin();
-        final int counter = prefs.getInt("counter", 0) + 1;
-        final SharedPreferences.Editor editor = prefs.edit();
+        final int counter = mPin.getInt("counter", 0) + 1;
+        final SharedPreferences.Editor editor = mPin.edit();
         final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
         final int code = getCode(lastLoginException);
         if (code == GDK.GA_NOT_AUTHORIZED) {
@@ -105,24 +109,19 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 mPinFragment.setEnabled(true);
             }
         });
-
     }
 
     @Override
     protected void onLoginSuccess() {
         super.onLoginSuccess();
         stopLoading();
-        mService.cfgPin().edit().putInt("counter", 0).apply();
+        mPin.edit().putInt("counter", 0).apply();
     }
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
 
-        final SharedPreferences prefs = mService.cfgPin();
-
-        final String ident = prefs.getString("ident", null);
-
-        if (ident == null) {
+        if (!AuthenticationHandler.hasPin(this)) {
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
             return;
@@ -135,11 +134,19 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         setSupportActionBar(toolbar);
         setTitleBackTransparent();
 
-        if (isNativePin()) {
-            tryDecrypt();
-            return;
-        }
+        if (AuthenticationHandler.getNativeAuth(this) != null)
+            onNativeAuth();
+        else if (AuthenticationHandler.getPinAuth(this) != null)
+            onPinAuth();
+    }
 
+    private void onNativeAuth() {
+        mPin = AuthenticationHandler.getNativeAuth(this);
+        tryDecrypt();
+    }
+
+    private void onPinAuth() {
+        mPin = AuthenticationHandler.getPinAuth(this);
         mPinFragment = new PinFragment();
         final Bundle bundle = new Bundle();
         bundle.putBoolean("is_six_digit", isSixDigit());
@@ -151,13 +158,11 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         if (requestCode == ACTIVITY_REQUEST_CODE) {
             // Challenge completed, proceed with using cipher
             if (resultCode == RESULT_OK) {
-                tryDecrypt();
+                onNativeAuth();
             } else {
                 // The user canceled or didn’t complete the lock screen
-                // operation. Go back to the initial login screen to allow
-                // them to enter mnemonics.
-                startActivity(new Intent(this, FirstScreenActivity.class));
-                finish();
+                // operation. Fallback to manual pin.
+                onPinAuth();
             }
         }
     }
@@ -210,25 +215,20 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
     }
 
     public boolean isSixDigit() {
-        return mService.cfgPin().getBoolean("is_six_digit", false);
-    }
-
-    private boolean isNativePin() {
-        return !TextUtils.isEmpty(mService.cfgPin().getString("native", null));
+        return AuthenticationHandler.getPinAuth(this).getBoolean("is_six_digit", false);
     }
 
 
     @TargetApi(Build.VERSION_CODES.M)
     private void tryDecrypt() {
-
-        final SharedPreferences prefs = mService.cfgPin();
-        final String nativePIN = prefs.getString("native", null);
-        final String nativeIV = prefs.getString("nativeiv", null);
+        final NetworkData network = mService.getNetwork();
+        final String nativePIN = mPin.getString("native", null);
+        final String nativeIV = mPin.getString("nativeiv", null);
 
         try {
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
-            SecretKey secretKey = (SecretKey) keyStore.getKey(KeyStoreAES.getKeyName(mService), null);
+            SecretKey secretKey = (SecretKey) keyStore.getKey(KeyStoreAES.getKeyName(network.getNetwork()), null);
             if (secretKey == null) {
                 // support old native authentication
                 secretKey = (SecretKey) keyStore.getKey(KeyStoreAES.KEYSTORE_KEY, null);
@@ -239,12 +239,24 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             final String pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15);
             login(pin);
         } catch (final KeyStoreException | InvalidKeyException e) {
-            KeyStoreAES.showAuthenticationScreen(this, mService.getNetwork().getName());
+            try {
+                KeyStoreAES.showAuthenticationScreen(this, network.getName());
+            } catch (final Exception exception) {
+                UI.popup(this, R.string.id_warning, R.string.id_continue)
+                .content(R.string.id_set_up_a_screen_lock_for_your)
+                .onAny((dlg, which) -> {
+                    AuthenticationHandler.clean(this, AuthenticationHandler.getNativeAuth(this));
+                    onPinAuth();
+                    onResumeWithService();
+                }).show();
+            }
         } catch (final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException |
                  CertificateException | UnrecoverableKeyException | IOException |
                  NoSuchAlgorithmException | NoSuchPaddingException e) {
-            // TODO: add exception message
-            throw new RuntimeException(e);
+            UI.popup(this, R.string.id_warning, R.string.id_continue)
+            .content(e.getLocalizedMessage())
+            .onAny((dlg, which) -> { onPinAuth(); onResumeWithService(); })
+            .show();
         }
     }
 

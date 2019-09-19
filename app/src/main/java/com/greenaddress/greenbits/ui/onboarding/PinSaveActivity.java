@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui.onboarding;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.KeyStoreAES;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -21,13 +23,11 @@ import com.greenaddress.greenbits.ui.authentication.PinFragment;
 
 public class PinSaveActivity extends GaActivity implements PinFragment.OnPinListener {
 
-    private static final int ACTIVITY_REQUEST_CODE = 1;
     private static final String NEW_PIN_MNEMONIC = "com.greenaddress.greenbits.NewPinMnemonic";
 
     private PinFragment mPinFragment;
     private PinFragment mPinFragmentVerify;
     private TextView mTitleText;
-    private CheckBox mNativeAuthCB;
 
     static public Intent createIntent(final Context ctx, final String mnemonic) {
         final Intent intent = new Intent(ctx, PinSaveActivity.class);
@@ -35,7 +35,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         return intent;
     }
 
-    private void setPin(final String pin, final boolean isNative) {
+    private void setPin(final String pin) {
 
         if (pin.length() < 4) {
             shortToast(R.string.id_pin_has_to_be_between_4_and_15);
@@ -45,24 +45,15 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         mPinFragment.setEnabled(false);
         startLoading();
 
-        Intent intent = new Intent(this, SecurityActivity.class);
+        final Intent intent = new Intent(this, SecurityActivity.class);
         intent.putExtra("from_onboarding",true);
 
         final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
-        Futures.addCallback(mService.setPin(mnemonic, pin),
+        Futures.addCallback(mService.setPin(mnemonic, pin, AuthenticationHandler.getNewAuth(this)),
                             new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 setResult(RESULT_OK);
-                if (!isNative && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    // The user has set a non-native PIN.
-                    // In case they already had a native PIN they are overriding,
-                    // blank the native value so future logins don't detect it.
-                    // FIXME: Requiring M or higher is required because otherwise this crashes @ android < 21
-                    // and native is not available before M anyway
-                    // java.lang.VerifyError: com/greenaddress/greenbits/KeyStoreAES
-                    KeyStoreAES.wipePIN(mService);
-                }
                 stopLoading();
                 startActivity(intent);
             }
@@ -72,30 +63,10 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
                 runOnUiThread(() -> {
                     stopLoading();
                     mPinFragment.setEnabled(true);
+                    UI.popup(PinSaveActivity.this, R.string.id_warning).content(t.getLocalizedMessage()).show();
                 });
             }
         }, mService.getExecutor());
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-
-        if (requestCode == ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK &&
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Challenge completed, proceed with using cipher
-            tryEncrypt();
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    private void tryEncrypt() {
-        try {
-            setPin(KeyStoreAES.tryEncrypt(mService), true);
-        } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
-            KeyStoreAES.showAuthenticationScreen(this, "");
-        } catch (final KeyStoreAES.KeyInvalidated e) {
-            toast(getString(R.string.id_problem_with_key_1s, e.getMessage()));
-        }
     }
 
     @Override
@@ -115,29 +86,11 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         getSupportFragmentManager().beginTransaction()
         .add(R.id.fragment_container, mPinFragment).commit();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                KeyStoreAES.createKey(true, mService);
-
-                mNativeAuthCB = UI.find(this, R.id.useNativeAuthentication);
-                UI.show(mNativeAuthCB);
-                mNativeAuthCB.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-                    if (isChecked)
-                        tryEncrypt();
-                });
-
-            } catch (final RuntimeException e) {
-                // lock not set, simply don't show native options
-            }
-        }
     }
 
     private void onSaveNonNativePin() {
         mTitleText.setText(R.string.id_verify_your_pin);
         mPinFragmentVerify = new PinFragment();
-        if (mNativeAuthCB != null)
-            mNativeAuthCB.setVisibility(View.INVISIBLE);
         getSupportFragmentManager().beginTransaction()
         .replace(R.id.fragment_container, mPinFragmentVerify).commit();
     }
@@ -149,7 +102,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
             return;
         }
         if (mPinFragment.getPin().equals(pin)) {
-            setPin(pin, false);
+            setPin(pin);
             return;
         }
         mPinFragmentVerify.clear();

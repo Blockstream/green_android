@@ -14,6 +14,8 @@ public class PrefKeys {
     public static final String DEFAULT_FEERATE_SATBYTE = "default_feerate_satbyte";
     public static final String MNEMONIC_PASSPHRASE = "mnemonic_passphrase";
     public static final String DELETE_OR_CONFIGURE_PIN = "delete_or_configure_pin";
+    public static final String PIN_AUTH = "pin_auth";
+    public static final String NATIVE_AUTH = "native_auth";
     public static final String ALTIMEOUT = "altimeout";
     public static final String VERSION = "version";
     public static final String LOGOUT = "logout";

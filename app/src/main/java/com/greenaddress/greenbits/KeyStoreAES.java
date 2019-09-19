@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyPermanentlyInvalidatedException;
@@ -39,17 +40,17 @@ public class KeyStoreAES {
 
     public static final String KEYSTORE_KEY = "NativeAndroidAuth";
     private static final int SECONDS_AUTH_VALID = 5;
-    private static final int ACTIVITY_REQUEST_CODE = 1;
+    public static final int ACTIVITY_REQUEST_CODE = 1;
 
-    private static String getKeyName(final GaService service, final boolean temporary) {
-        return KEYSTORE_KEY + "_" + service.getNetwork().getNetwork() + (temporary ? "temp" : "");
+    private static String getKeyName(final String network, final boolean temporary) {
+        return KEYSTORE_KEY + "_" + network + (temporary ? "temp" : "");
     }
-    public static String getKeyName(final GaService service) {
-        return getKeyName(service, false);
+    public static String getKeyName(final String network) {
+        return getKeyName(network, false);
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    public static void createKey(final boolean deleteImmediately, final GaService service) {
+    public static void createKey(final boolean deleteImmediately, final String network) {
 
         KeyStore keyStore = null;
         try {
@@ -58,7 +59,7 @@ public class KeyStoreAES {
             final KeyGenerator keyGenerator = KeyGenerator.getInstance(
                     KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
 
-            keyGenerator.init(new KeyGenParameterSpec.Builder(getKeyName(service, deleteImmediately),
+            keyGenerator.init(new KeyGenParameterSpec.Builder(getKeyName(network, deleteImmediately),
                     KeyProperties.PURPOSE_ENCRYPT
                             | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
@@ -76,25 +77,24 @@ public class KeyStoreAES {
         } finally {
             if (deleteImmediately && keyStore != null) {
                 try {
-                    keyStore.deleteEntry(getKeyName(service, true));
+                    keyStore.deleteEntry(getKeyName(network, true));
                 } catch (final KeyStoreException e) {
                 }
             }
         }
     }
 
-
     public static class  RequiresAuthenticationScreen extends RuntimeException {}
     public static class  KeyInvalidated extends RuntimeException {}
 
     @TargetApi(Build.VERSION_CODES.M)
-    public static String tryEncrypt(final GaService gaService) {
-        createKey(false, gaService);
+    public static String tryEncrypt(final String network, final SharedPreferences preferences) {
+        createKey(false, network);
         final byte[] fakePin = CryptoHelper.randomBytes(32);
         try {
             final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
             keyStore.load(null);
-            final SecretKey secretKey = (SecretKey) keyStore.getKey(getKeyName(gaService), null);
+            final SecretKey secretKey = (SecretKey) keyStore.getKey(getKeyName(network), null);
             final Cipher cipher = Cipher.getInstance(
                     android.security.keystore.KeyProperties.KEY_ALGORITHM_AES + '/'
                             + android.security.keystore.KeyProperties.BLOCK_MODE_CBC + '/'
@@ -104,7 +104,7 @@ public class KeyStoreAES {
 
             final byte[] encryptedPIN = cipher.doFinal(fakePin);
             final byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
-            setPINConfig(gaService, Base64.encodeToString(encryptedPIN, Base64.NO_WRAP),
+            setPINConfig(preferences, Base64.encodeToString(encryptedPIN, Base64.NO_WRAP),
                          Base64.encodeToString(iv, Base64.NO_WRAP));
             return Base64.encodeToString(fakePin, Base64.NO_WRAP).substring(0, 15);
         } catch (final UserNotAuthenticatedException e) {
@@ -118,28 +118,35 @@ public class KeyStoreAES {
         }
     }
 
-    private static void setPINConfig(final GaService gaService,
+    private static void setPINConfig(final SharedPreferences preferences,
                                      final String encryptedPIN, final String iv) {
-        gaService.cfgPin().edit()
+        preferences.edit()
                  .putString("native", encryptedPIN)
                  .putString("nativeiv", iv)
                  .apply();
     }
 
-    public static void wipePIN(final GaService gaService) {
-        // FIXME: Should we wipe the keystore value?
-        setPINConfig(gaService, "", "");
+    public static void wipePIN(final SharedPreferences preferences, final String network) {
+        try {
+            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            keyStore.load(null);
+            keyStore.deleteEntry(getKeyName(network, false));
+        } catch (final CertificateException | IOException | NoSuchAlgorithmException | KeyStoreException e) {
+            e.printStackTrace();
+        } finally {
+            setPINConfig(preferences, "", "");
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void showAuthenticationScreen(final Activity act, final String network) {
+    public static void showAuthenticationScreen(final Activity act, final String network) throws RuntimeException {
         final KeyguardManager keyguardManager = (KeyguardManager) act.getSystemService(Context.KEYGUARD_SERVICE);
         final boolean isSaveActivity = (act instanceof PinSaveActivity);
         final String authTitle = !isSaveActivity ? act.getString(R.string.id_blockstream_green) : "";
         final String authDesc = !isSaveActivity ? act.getString(R.string.id_log_in_into_your_s_wallet, network) : "";
         final Intent intent = keyguardManager.createConfirmDeviceCredentialIntent(authTitle, authDesc);
-        if (intent != null) {
-            act.startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
-        }
+        if (intent == null)
+            throw new RuntimeException();
+        act.startActivityForResult(intent, ACTIVITY_REQUEST_CODE);
     }
 }
