@@ -40,6 +40,7 @@ import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -160,8 +161,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Set date/time
         final TextView dateText = UI.find(this, R.id.txDateText);
-        final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm, MMM dd, yyyy", Locale.US);
-        dateText.setText(timeFormat.format(mTxItem.date));
+        final String date = mTxItem.getLocalizedDate(DateFormat.LONG);
+        dateText.setText(date);
 
         // Set fees
         showFeeInfo(mTxItem.fee, mTxItem.vSize, mTxItem.feeRate);

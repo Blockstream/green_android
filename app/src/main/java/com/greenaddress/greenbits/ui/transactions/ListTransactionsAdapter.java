@@ -75,7 +75,7 @@ public class ListTransactionsAdapter extends
 
         if (txItem.doubleSpentBy == null) {
             holder.textWhen.setTextColor(ContextCompat.getColor(mActivity, R.color.tertiaryTextColor));
-            holder.textWhen.setText(getTxTime(txItem));
+            holder.textWhen.setText(txItem.getLocalizedDate(DateFormat.MEDIUM));
         } else {
             switch (txItem.doubleSpentBy) {
             case "malleability":
@@ -165,28 +165,6 @@ public class ListTransactionsAdapter extends
             transactionActivity.putExtra("TRANSACTION", txItem);
             mActivity.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
         });
-    }
-
-    @NonNull
-    private String getTxTime(TransactionItem txItem) {
-        final SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.US);
-        final DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault());
-        final Date txDate = txItem.date;
-        final Date now = new Date();
-        final String formatTxDate = dateFormatter.format(txDate);
-        final String formatNow = dateFormatter.format(now);
-
-        if (formatNow.equals(formatTxDate)) {
-            return TimeAgo.fromNow(txDate.getTime(), mActivity);  //eg "7 minutes ago"
-        } else {
-            if (yearFormat.format(txDate).equals(yearFormat.format(now))) {
-                int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NO_YEAR;
-                String monthAndDayText = DateUtils.formatDateTime(mActivity, txDate.getTime(), flags);
-                return monthAndDayText;  //eg "October 29"
-            } else {
-                return formatTxDate; //eg "January 29, 2017"
-            }
-        }
     }
 
 

@@ -15,11 +15,13 @@ import org.bitcoinj.core.Sha256Hash;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
@@ -72,6 +74,11 @@ public class TransactionItem implements Serializable {
         if (blockHeight != null)
             return currentBlock - blockHeight + 1;
         return 0;
+    }
+
+    public String getLocalizedDate(final int style) {
+        final Locale l = Locale.getDefault();
+        return DateFormat.getDateInstance(style, l).format(this.date);
     }
 
     public boolean hasEnoughConfirmations() {
