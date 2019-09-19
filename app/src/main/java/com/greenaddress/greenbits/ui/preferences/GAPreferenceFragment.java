@@ -2,16 +2,21 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
 
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class GAPreferenceFragment extends PreferenceFragmentCompat {
     private static final String TAG = GAPreferenceFragment.class.getSimpleName();
@@ -42,7 +47,7 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
         preference.setOnPreferenceChangeListener(onPreferenceChanged);
         // Trigger the listener immediately with the preference's
         // current value.
-        final String currentVal = mService.cfg().getString(preference.getKey(), "");
+        final String currentVal = cfg().getString(preference.getKey(), "");
         onPreferenceChanged.onPreferenceChange(preference, currentVal);
     }
 
@@ -69,5 +74,14 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
     protected boolean openURI(final String uri) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(uri)));
         return false;
+    }
+
+    public SharedPreferences cfg() {
+        return getContext().getSharedPreferences(network(), MODE_PRIVATE);
+    }
+
+    public String network() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext()).getString(PrefKeys.NETWORK_ID_ACTIVE,
+                                                                                     "mainnet");
     }
 }

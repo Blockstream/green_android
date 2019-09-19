@@ -195,7 +195,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 }
             }
 
-            final String defaultFeerate = service.cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
+            final String defaultFeerate = cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
             final boolean isBump = mTx.get("previous_transaction") != null;
             if (isBump) {
                 mFeeEstimates[3] = getOldFeeRate(mTx) + mMinFeeRate;

@@ -32,6 +32,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -254,7 +255,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             settings.setAltimeout(altimeout);
             setTimeoutSummary(null);
             mService.getExecutor().execute(() -> updateSettings(settings));
-            mService.cfgEdit().putString(PrefKeys.ALTIMEOUT, newValue.toString()); // need to save this, for scheduleDisconnect
+            cfg().edit().putString(PrefKeys.ALTIMEOUT, newValue.toString()).apply(); // need to save this, for scheduleDisconnect
             mService.rescheduleDisconnect();
             return true;
         });
@@ -353,7 +354,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private String getDefaultFeeRate() {
         final Long minFeeRateKB = mService.getModel().getFeeObservable().getFees().get(0);
         final String minFeeRateText = String.valueOf(minFeeRateKB / 1000.0);
-        return mService.cfg().getString( PrefKeys.DEFAULT_FEERATE_SATBYTE, minFeeRateText);
+        return cfg().getString( PrefKeys.DEFAULT_FEERATE_SATBYTE, minFeeRateText);
     }
 
     private boolean onWatchOnlyLoginClicked() {
@@ -438,7 +439,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                     UI.toast(getActivity(), getString(R.string.id_fee_rate_must_be_at_least_s,
                                                       String.format("%.2f",(minFeeRateKB/1000.0) )), Toast.LENGTH_LONG);
                 } else {
-                    mService.cfg().edit().putString(PrefKeys.DEFAULT_FEERATE_SATBYTE, enteredFeeRate).apply();
+                    cfg().edit().putString(PrefKeys.DEFAULT_FEERATE_SATBYTE, enteredFeeRate).apply();
                     setFeeRateSummary();
                 }
             } catch (final Exception e) {

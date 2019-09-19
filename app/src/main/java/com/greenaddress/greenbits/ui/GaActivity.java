@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.Futures;
@@ -30,6 +32,7 @@ import com.greenaddress.greenbits.ui.authentication.PinActivity;
 import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity;
 import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 /**
  * Base class for activities within the application.
@@ -313,5 +316,13 @@ public abstract class GaActivity extends AppCompatActivity {
         // Logout to first screen
         intent.setClass(ctx, FirstScreenActivity.class);
         return intent;
+    }
+
+    public SharedPreferences cfg() {
+        return getSharedPreferences(network(), MODE_PRIVATE);
+    }
+
+    public String network() {
+        return PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
     }
 }

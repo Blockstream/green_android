@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.authentication;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.preference.PreferenceManager;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.greenaddress.greenapi.ConnectionManager;
@@ -45,8 +47,8 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
         listener = UI.getListenerRunOnEnter(this::onLoginButtonClicked);
         mPasswordText.setOnEditorActionListener(listener);
 
-        final String username = mService.cfg().getString(PrefKeys.WATCH_ONLY_USERNAME, "");
-        final String password =  mService.cfg().getString(PrefKeys.WATCH_ONLY_PASSWORD, "");
+        final String username = cfg().getString(PrefKeys.WATCH_ONLY_USERNAME, "");
+        final String password = cfg().getString(PrefKeys.WATCH_ONLY_PASSWORD, "");
         final boolean hasCredentials = !username.isEmpty();
         mUsernameText.setText(username);
         mPasswordText.setText(password);
@@ -54,7 +56,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
         mRememberSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             if (!isChecked) {
-                mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, "")
+                cfg().edit().putString(PrefKeys.WATCH_ONLY_USERNAME, "")
                 .putString(PrefKeys.WATCH_ONLY_PASSWORD, "").apply();
                 mUsernameText.setText("");
                 mPasswordText.setText("");
@@ -111,7 +113,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
         mRememberSwitch.setEnabled(false);
         final String usr = mRememberSwitch.isChecked() ? UI.getText(mUsernameText) : "";
         final String pswd = mRememberSwitch.isChecked() ? UI.getText(mPasswordText) : "";
-        mService.cfgEdit().putString(PrefKeys.WATCH_ONLY_USERNAME, usr)
+        cfg().edit().putString(PrefKeys.WATCH_ONLY_USERNAME, usr)
         .putString(PrefKeys.WATCH_ONLY_PASSWORD, pswd).apply();
     }
 

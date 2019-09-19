@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.transactions;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -381,22 +383,22 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
             final String stripped = domain.startsWith("www.") ? domain.substring(4) : domain;
             final Uri uri = Uri.parse(TextUtils.concat(url, identifier).toString());
-            final boolean dontAskAgain = mService.cfg().getBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, false);
+            final boolean dontAskAgain = cfg().getBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, false);
             if (dontAskAgain) {
                 startActivity(new Intent(Intent.ACTION_VIEW, uri));
             } else {
                 new MaterialDialog.Builder(this)
                 .checkBoxPromptRes(R.string.id_dont_ask_me_again, false,
                                    (buttonView,
-                                    isChecked) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL,
-                                                                                isChecked).apply())
+                                    isChecked) -> cfg().edit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL,
+                                                                          isChecked).apply())
                 .content(getString(R.string.id_are_you_sure_you_want_to_view, stripped))
                 .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                 .positiveText(android.R.string.ok)
                 .negativeText(android.R.string.cancel)
                 .cancelable(false)
-                .onNegative((dialog, which) -> mService.cfgEdit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL,
-                                                                             false).apply())
+                .onNegative((dialog, which) -> cfg().edit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL,
+                                                                       false).apply())
                 .onPositive((dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, uri)))
                 .build().show();
             }

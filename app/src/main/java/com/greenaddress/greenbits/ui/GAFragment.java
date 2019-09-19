@@ -1,12 +1,17 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public abstract class GAFragment extends Fragment {
     private GreenAddressApplication mApp;
@@ -40,5 +45,14 @@ public abstract class GAFragment extends Fragment {
 
     protected Model getModel() {
         return mApp.mService.getModel();
+    }
+
+    public SharedPreferences cfg() {
+        return getContext().getSharedPreferences(network(), MODE_PRIVATE);
+    }
+
+    public String network() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext()).getString(PrefKeys.NETWORK_ID_ACTIVE,
+                                                                                     "mainnet");
     }
 }

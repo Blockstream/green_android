@@ -18,6 +18,7 @@ import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SubaccountDataObservable;
 import com.greenaddress.greenbits.ui.GAFragment;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -135,7 +136,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     public void onAccountSelected(final int subaccount) {
         getGAService().getModel().getActiveAccountObservable().setActiveAccount(subaccount);
         if (getGAService().getConnectionManager().isLoginWithPin()) {
-            getGAService().cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
+            cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
         }
         getGaActivity().finish();
         getGaActivity().overridePendingTransition(0,0);
