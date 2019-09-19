@@ -72,7 +72,7 @@
 
     <Preference
         android:key="set_nlocktime_email"
-        android:title="@string/id_set_recovery_email" />
+        android:title="@string/id_set_an_email_for_recovery" />
 
     <Preference
         android:key="send_nlocktime"
