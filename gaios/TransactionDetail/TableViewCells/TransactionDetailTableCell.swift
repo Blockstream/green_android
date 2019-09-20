@@ -3,7 +3,7 @@ import UIKit
 class TransactionDetailTableCell: UITableViewCell {
 
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var detailLabel: UILabel!
+    @IBOutlet weak var detailLabel: CopyableLabel!
     @IBOutlet weak var titleLabelHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var notesImageView: UIImageView!
 
