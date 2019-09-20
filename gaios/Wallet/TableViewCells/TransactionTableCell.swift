@@ -45,7 +45,7 @@ class TransactionTableCell: UITableViewCell {
             amount.text = transaction.amount()
         }
         selectionStyle = .none
-        date.text = transaction.date()
+        date.text = transaction.date(dateStyle: .medium, timeStyle: .none)
 
         let isAsset = !(assetTag == "btc")
         if !transaction.memo.isEmpty {

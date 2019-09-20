@@ -178,7 +178,7 @@ extension TransactionDetailViewController: UITableViewDelegate, UITableViewDataS
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if let headerCell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailHeaderCell") as? TransactionDetailHeaderCell {
-            headerCell.configure(with: transaction.date())
+            headerCell.configure(with: transaction.date(dateStyle: .long, timeStyle: .short))
             return headerCell
         }
         return UIView()

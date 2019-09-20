@@ -175,12 +175,9 @@ struct Transaction {
         return out[0]
     }
 
-    func date() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .short
+    func date(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
         let date = Date.dateFromString(dateString: createdAt)
-        return Date.dayMonthYear(date: date)
+        return Date.stringFromDate(date: date, dateStyle: dateStyle, timeStyle: timeStyle)
     }
 }
 
