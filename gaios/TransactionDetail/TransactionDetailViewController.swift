@@ -55,6 +55,8 @@ class TransactionDetailViewController: KeyboardViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
         transactionDetailTableView.reloadData()
+        let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonTapped))
+        navigationItem.rightBarButtonItem = shareButton
     }
 
     func configureViewAndCells() {
@@ -128,10 +130,23 @@ class TransactionDetailViewController: KeyboardViewController {
         }
     }
 
-    @IBAction func viewInExplorerClicked(_ sender: Any) {
+    func urlForTx() -> URL? {
         let currentNetwork = getNetwork().lowercased()
         let network = getGdkNetwork(currentNetwork)
-        guard let url: URL = URL(string: network.txExplorerUrl + self.transaction.hash) else { return }
+        return URL(string: network.txExplorerUrl + self.transaction.hash)
+    }
+
+    @IBAction func shareButtonTapped(_ sender: UIButton) {
+        if let url = urlForTx() {
+            let tx: [Any] = [url]
+            let shareVC = UIActivityViewController(activityItems: tx, applicationActivities: nil)
+            shareVC.popoverPresentationController?.sourceView = sender
+            self.present(shareVC, animated: true, completion: nil)
+        }
+    }
+
+    @IBAction func viewInExplorerClicked(_ sender: Any) {
+        guard let url: URL = urlForTx() else { return }
         let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!
         if viewInExplorerPreference {
             UIApplication.shared.open(url, options: [:])
