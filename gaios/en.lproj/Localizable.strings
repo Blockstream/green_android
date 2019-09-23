@@ -322,6 +322,7 @@
 "id_request_sent" = "Request Sent";
 "id_request_twofactor_reset" = "Request Two-Factor reset";
 "id_requested_fee_rate_too_low" = "Requested fee rate too low";
+"id_reset" = "Reset";
 "id_reset_spv" = "Reset SPV";
 "id_resetting_your_twofactor_takes" = "Resetting your Two-Factor takes 12 months minimum. If you are sure you have lost your Two-Factor, please provide a new email address below to receive the reset.";
 "id_restore" = "Restore";
@@ -376,6 +377,7 @@
 "id_slide_to_send" = "Slide to Send";
 "id_slow" = "Slow";
 "id_sms" = "SMS";
+"id_snnreset_this_setting_and_then" = "%@.\n\nReset this setting and then re-activate it.";
 "id_socks5_hostname" = "Socks5 Hostname";
 "id_socks5_port" = "Socks5 Port";
 "id_socks5_proxy_and_port_must_be" = "SOCKS5 proxy and port must be set";
@@ -392,6 +394,7 @@
 "id_sweep_into_s" = "Sweep into %@";
 "id_switch_network" = "Switch Network";
 "id_synchronize_spv_on_mobile" = "Synchronize SPV on mobile";
+"id_syou_need_ton1_reset_greens" = "%@.You need to:\n1. Reset Green's Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.";
 "id_system_message" = "System Message";
 "id_tap_on_the_card_to_view" = "Tap on the card to view transactions.";
 "id_tap_to_restart_the_simplified" = "Tap to restart the Simplified Payment Verification";

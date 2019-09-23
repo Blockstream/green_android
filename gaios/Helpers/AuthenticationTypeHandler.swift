@@ -82,9 +82,9 @@ class AuthenticationTypeHandler {
         return status
     }
 
-    fileprivate static func describeSecurityError(_ error: Unmanaged<CFError>) -> String {
-        let err = CFErrorCopyDescription(error.takeRetainedValue())
-        let errorString = String(describing: err)
+    fileprivate static func describeSecurityError(_ error: CFError) -> String {
+        let err = CFErrorCopyDescription(error)
+        let errorString = String(describing: err!)
         NSLog("Operation failed: \(errorString)")
 #if DEBUG
         NSLog("Stacktrace: \(Thread.callStackSymbols)")
@@ -107,7 +107,7 @@ class AuthenticationTypeHandler {
                                                       SecAccessControlCreateFlags.privateKeyUsage],
                                                      &error)
         guard error == nil else {
-            throw AuthError.SecurityError(describeSecurityError(error!))
+            throw AuthError.SecurityError(describeSecurityError(error!.takeRetainedValue()))
         }
         guard access != nil else {
             let text = "Operation failed: Access control not supported."
@@ -131,7 +131,7 @@ class AuthenticationTypeHandler {
         var error: Unmanaged<CFError>?
         _ = SecKeyCreateRandomKey(params as CFDictionary, &error)
         guard error == nil else {
-            throw AuthError.SecurityError(describeSecurityError(error!))
+            throw AuthError.SecurityError(describeSecurityError(error!.takeRetainedValue()))
         }
 
         UserDefaults.standard.set(privateKeyLabel, forKey: "AuthKeyBiometricPrivateKey" + network)
@@ -139,6 +139,9 @@ class AuthenticationTypeHandler {
 
     fileprivate static func getPrivateKey(forNetwork: String) throws -> SecKey {
         let privateKeyLabel = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
+        guard privateKeyLabel != nil else {
+            throw AuthError.ServiceNotAvailable("Operation failed: Key not found.")
+        }
         let q: [CFString: Any] = [kSecClass: kSecClassKey,
                                   kSecAttrKeyType: ECCKeyType,
                                   kSecAttrKeySizeInBits: ECCKeySizeInBits,
@@ -179,8 +182,12 @@ class AuthenticationTypeHandler {
         var error: Unmanaged<CFError>?
         let decrypted = SecKeyCreateDecryptedData(privateKey, ECCEncryptionType, base64Encoded as CFData, &error)
         guard error == nil else {
-            _ = describeSecurityError(error!)
-            throw AuthError.CanceledByUser
+            let cfError = error!.takeRetainedValue()
+            if CFErrorGetCode(cfError) == -2 {
+                throw AuthError.CanceledByUser
+            } else {
+                throw AuthError.SecurityError(describeSecurityError(cfError))
+            }
         }
         return String(data: decrypted! as Data, encoding: .utf8)!
     }
@@ -201,7 +208,7 @@ class AuthenticationTypeHandler {
         let data = plaintext.data(using: .utf8, allowLossyConversion: false)
         let encrypted = SecKeyCreateEncryptedData(publicKey, ECCEncryptionType, data! as CFData, &error)
         guard error == nil else {
-            throw AuthError.SecurityError(describeSecurityError(error!))
+            throw AuthError.SecurityError(describeSecurityError(error!.takeRetainedValue()))
         }
 
         return (encrypted! as Data).base64EncodedString()
@@ -273,14 +280,20 @@ class AuthenticationTypeHandler {
         return (try? get_(method: method, forNetwork: forNetwork)) != nil
     }
 
-    static func removePrivateKey(forNetwork: String) {
+    static func removePrivateKey(forNetwork: String) throws {
         let privateKeyLabel = UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + forNetwork)
+        guard privateKeyLabel != nil else {
+            throw AuthError.ServiceNotAvailable("Operation failed: Key not found.")
+        }
         let q: [CFString: Any] = [kSecClass: kSecClassKey,
                                   kSecAttrKeyType: ECCKeyType,
                                   kSecAttrKeySizeInBits: ECCKeySizeInBits,
                                   kSecAttrLabel: privateKeyLabel!,
                                   kSecReturnRef: true]
-        _ = callWrapper(fun: SecItemDelete(q as CFDictionary))
+        let status = callWrapper(fun: SecItemDelete(q as CFDictionary))
+        if status != errSecSuccess {
+            throw AuthError.KeychainError(status)
+        }
     }
 
     static func removeAuth(method: String, forNetwork: String) -> Bool {

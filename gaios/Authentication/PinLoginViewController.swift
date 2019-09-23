@@ -6,8 +6,9 @@ import PromiseKit
 class PinLoginViewController: UIViewController {
 
     @IBOutlet var content: PinView!
-    var pinCode = ""
+    private var pinCode = ""
     private let MAXATTEMPTS = 3
+    private var network = { return getNetwork() }()
 
     var pinAttemptsPreference: Int {
         get {
@@ -20,11 +21,10 @@ class PinLoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let network = getGdkNetwork(getNetwork())
         let navigationBarHeight: CGFloat =  navigationController!.navigationBar.frame.height
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: navigationBarHeight, height: navigationBarHeight))
         imageView.contentMode = .scaleAspectFit
-        let imageName = network.liquid ? "btc_liquid_title" : network.icon
+        let imageName = getGdkNetwork(network).liquid ? "btc_liquid_title" : getGdkNetwork(network).icon
         imageView.image = UIImage(named: imageName!)
         navigationItem.titleView = imageView
         navigationItem.setHidesBackButton(true, animated: false)
@@ -45,7 +45,6 @@ class PinLoginViewController: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        let network = getNetwork()
         let bioAuth = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
         if bioAuth {
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, network: network, withPIN: nil)
@@ -93,6 +92,9 @@ class PinLoginViewController: UIViewController {
                 switch authError {
                 case .CanceledByUser:
                     return
+                case .SecurityError, .KeychainError:
+                    self.onBioAuthError(authError.localizedDescription)
+                    return
                 default:
                     message = authError.localizedDescription
                 }
@@ -119,6 +121,20 @@ class PinLoginViewController: UIViewController {
             self.updateAttemptsLabel()
             self.reload()
             Toast.show(message, timeout: Toast.SHORT)
+        }
+    }
+
+    func onBioAuthError(_ message: String) {
+        let text = String(format: NSLocalizedString("id_syou_need_ton1_reset_greens", comment: ""), message)
+        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: text, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .default) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_reset", comment: ""), style: .destructive) { _ in
+            removeBioKeychainData()
+            try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.network)
+            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.network)
+        })
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
         }
     }
 
