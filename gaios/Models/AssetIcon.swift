@@ -22,7 +22,8 @@ class AssetIcon {
         guard let id = id, let appDir = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory,
                                                                FileManager.SearchPathDomainMask.userDomainMask,
                                                                true).first else { return UIImage(named: "default_asset_icon") }
-        let iconPath = URL.init(fileURLWithPath: appDir).appendingPathComponent("icons/\(id).png")
+        let assetId = "btc" == id ? getGdkNetwork(getNetwork()).policyAsset! : id
+        let iconPath = URL.init(fileURLWithPath: appDir).appendingPathComponent("icons/\(assetId).png")
         guard let image = UIImage(contentsOfFile: iconPath.path) else { return UIImage(named: "default_asset_icon") }
         return image
     }

@@ -34,6 +34,6 @@ class AssetTableCell: UITableViewCell {
         amountTickerLabel.text = "\(negative ? "-": "")\(amount) \(ticker)"
         domainLabel.text = asset.entity?.domain ?? ""
         domainLabel.isHidden = asset.entity?.domain.isEmpty ?? true
-        assetIconImageView.image = AssetIcon.loadAssetIcon(with: asset.assetId)
+        assetIconImageView.image = AssetIcon.loadAssetIcon(with: tag)
     }
 }

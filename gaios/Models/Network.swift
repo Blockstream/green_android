@@ -10,6 +10,7 @@ struct GdkNetwork: Codable {
         case development
         case txExplorerUrl = "tx_explorer_url"
         case icon
+        case policyAsset = "policy_asset"
     }
 
     let name: String
@@ -18,6 +19,7 @@ struct GdkNetwork: Codable {
     let development: Bool
     let txExplorerUrl: String
     var icon: String?
+    var policyAsset: String?
 }
 
 func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {
