@@ -47,6 +47,7 @@
 "id_blocks" = "blocchi";
 "id_blocks_confirmed" = "blocchi confermati";
 "id_btchip_is_not_set_up_please_set" = "BTChip non è impostato. Per favore  impostalo usando l'applicazione desktop per riuscire ad usarlo.";
+"id_by_proceeding_to_the_next_steps" = "Procedendo al passaggio successivo accetti i %@";
 "id_call" = "Telefonata";
 "id_camera_problem" = "Problema con la fotocamera";
 "id_cancel" = "Annulla";
@@ -71,7 +72,10 @@
 "id_connecting_to_peers" = "Connessione ai peer...";
 "id_connecting_to_tor_onion_nodes" = "Connettersi a nodi Tor (.onion) garantisce massima privacy e sicurezza. Premi \"OK\" per continuare.";
 "id_continue" = "Continua";
+"id_copy_details" = "Copia i dettagli";
+"id_copy_raw_transaction" = "Copia raw transaction";
 "id_copy_to_clipboard" = "Copia in Clipboard";
+"id_copy_transaction_id" = "Copia ID di transazione";
 "id_create" = "Crea";
 "id_create_a_pin_to_access_your" = "Crea un PIN per l'accesso al wallet";
 "id_create_new_wallet" = "Crea Nuovo Wallet";
@@ -322,6 +326,7 @@
 "id_request_sent" = "Richiesta Inviata";
 "id_request_twofactor_reset" = "Richiedi reset del Secondo Fattore";
 "id_requested_fee_rate_too_low" = "Tasso di commissione richiesto troppo basso";
+"id_reset" = "Reset";
 "id_reset_spv" = "Riavvia SPV";
 "id_resetting_your_twofactor_takes" = "Il reset dell' Autenticazione a Due Fattori richiede minimo 12 mesi. Se sei sicuro di aver perso l'accesso al tuo metodo di autenticazione, fornisci un indirizzo email per il reset.";
 "id_restore" = "Ripristina";
@@ -354,6 +359,7 @@
 "id_sent" = "Inviato";
 "id_sent_to" = "Inviato a";
 "id_set_a_new_pin" = "Imposta un nuovo PIN";
+"id_set_an_email_for_recovery" = "Imposta email per il recupero";
 "id_set_custom_fee_rate" = "Imposta commissione personalizzata";
 "id_set_twofactor_threshold" = "Imposta limite per autenticazione a due fattori";
 "id_set_up_a_passcode_for_your_ios" = "Imposta un codice per il tuo device iOS per impostare un PIN per Blockstream Green";
@@ -376,6 +382,7 @@
 "id_slide_to_send" = "Scorri per Inviare";
 "id_slow" = "Lento";
 "id_sms" = "SMS";
+"id_snnreset_this_setting_and_then" = "%@.\n\nReset questa impostazione e successivamente riattivala.";
 "id_socks5_hostname" = "Socks5 Hostname";
 "id_socks5_port" = "Socks5 Port";
 "id_socks5_proxy_and_port_must_be" = "SOCKS5 proxy e porta devono essere specificati";
@@ -392,6 +399,7 @@
 "id_sweep_into_s" = "Sweep verso %@";
 "id_switch_network" = "Cambio Network";
 "id_synchronize_spv_on_mobile" = "Abilita Sincronizzazione SPV mobile";
+"id_syou_need_ton1_reset_greens" = "%@.Devi:\n1. Effettuare il Reset del login con Face/TouchID di Green,\n2. Effettuare Log in col PIN,\n3. Riattivare il login con Face/TouchID dalle impostazioni di Green.";
 "id_system_message" = "Messaggio di Sistema";
 "id_tap_on_the_card_to_view" = "Tocca la scheda per vedere le transazioni.";
 "id_tap_to_restart_the_simplified" = "Premi per re-inizializzare la Simplified Payment Verification (SPV)";
@@ -425,6 +433,7 @@
 "id_transaction_details" = "Dettagli transazione";
 "id_transaction_id" = "ID Transazione";
 "id_transaction_sent" = "Transazione Inviata";
+"id_transactions" = "Transazioni";
 "id_try_now" = "Prova ora";
 "id_two_factor_authentication" = "AUTENTICAZIONE A DUE FATTORI";
 "id_twofactor" = "AUTENTICAZIONE A DUE FATTORI";

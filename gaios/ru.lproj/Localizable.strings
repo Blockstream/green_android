@@ -47,6 +47,7 @@
 "id_blocks" = "блоки";
 "id_blocks_confirmed" = "подтвержденные блоки";
 "id_btchip_is_not_set_up_please_set" = "BTChip не установлен. Для того, чтобы использовать BTChip, пожалуйста, установите десктоп-приложение.";
+"id_by_proceeding_to_the_next_steps" = "By proceeding to the next steps you agree to the %@";
 "id_call" = "Звонок";
 "id_camera_problem" = "Проблема с камерой";
 "id_cancel" = "Отменить";
@@ -71,7 +72,10 @@
 "id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Подключение к Tor (.onion) узлам обеспечивает максимальную конфиденциальность и безопасность. Нажмите \"OK\" для продолжения.";
 "id_continue" = "Продолжить";
+"id_copy_details" = "Copy details";
+"id_copy_raw_transaction" = "Copy raw transaction";
 "id_copy_to_clipboard" = "Скопировать в буфер обмена";
+"id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "Создать";
 "id_create_a_pin_to_access_your" = "Создайте PIN-код для доступа к вашему кошельку";
 "id_create_new_wallet" = "Создать новый кошелек";
@@ -322,6 +326,7 @@
 "id_request_sent" = "Запрос отправлен";
 "id_request_twofactor_reset" = "Запрос двухфакторного сброса";
 "id_requested_fee_rate_too_low" = "Запрашиваемая комиссия слишком низкая";
+"id_reset" = "Reset";
 "id_reset_spv" = "Сбросить SPV";
 "id_resetting_your_twofactor_takes" = "Перезагрузка вашей двухфакторной настройки займет как минимум 12 месяцев. Если вы уверены, что потеряли свой двухфакторный доступ, укажите новый адрес электронной почты ниже, чтобы произвести перезагрузку.";
 "id_restore" = "Восстановить";
@@ -354,6 +359,7 @@
 "id_sent" = "Отправлено";
 "id_sent_to" = "Отправить на";
 "id_set_a_new_pin" = "Установить новый PIN-код ";
+"id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "Установить размер комиссии";
 "id_set_twofactor_threshold" = "Установить двухфакторный порог";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
@@ -376,6 +382,7 @@
 "id_slide_to_send" = "Смахните, чтобы отправить";
 "id_slow" = "Медленно";
 "id_sms" = "СМС";
+"id_snnreset_this_setting_and_then" = "%@.\n\nReset this setting and then re-activate it.";
 "id_socks5_hostname" = "Имя узла Socks5";
 "id_socks5_port" = "Порт Socks5";
 "id_socks5_proxy_and_port_must_be" = "SOCKS5 прокси и порт должны быть настроены";
@@ -392,6 +399,7 @@
 "id_sweep_into_s" = "Sweep into %@";
 "id_switch_network" = "Switch Network";
 "id_synchronize_spv_on_mobile" = "Синхронизируйте SPV на мобильном телефоне";
+"id_syou_need_ton1_reset_greens" = "%@.You need to:\n1. Reset Green's Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.";
 "id_system_message" = "Системное сообщение";
 "id_tap_on_the_card_to_view" = "Нажать на карточку для просмотра транзакций.";
 "id_tap_to_restart_the_simplified" = "Нажмите, чтобы перезапустить Simplified Payment Verification";
@@ -425,6 +433,7 @@
 "id_transaction_details" = "Детали транзакции";
 "id_transaction_id" = " ID транзакции";
 "id_transaction_sent" = "Транзакция отправлена";
+"id_transactions" = "Transactions";
 "id_try_now" = "Попробовать сейчас";
 "id_two_factor_authentication" = "ДВУХФАКТОРНАЯ АУТЕНТИФИКАЦИЯ";
 "id_twofactor" = "ДВУХФАКТОРНАЯ АУТЕНТИФИКАЦИЯ";

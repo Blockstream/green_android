@@ -47,6 +47,7 @@
 "id_blocks" = "khối";
 "id_blocks_confirmed" = "khối đã xác nhận";
 "id_btchip_is_not_set_up_please_set" = "BTChip chưa được cài đặt. Làm ơn cài đặt nó bằng cách dùng phần mềm trên máy tính để có thể sử dụng.";
+"id_by_proceeding_to_the_next_steps" = "By proceeding to the next steps you agree to the %@";
 "id_call" = "Gọi";
 "id_camera_problem" = "Camera có vấn đề";
 "id_cancel" = "Hủy";
@@ -71,7 +72,10 @@
 "id_connecting_to_peers" = "Đang nối với các nốt mạng khác...";
 "id_connecting_to_tor_onion_nodes" = "Đang nối tới nốt mạng Tor( có tên miền .onion)  cho phép bảo mật và quyền riêng tư tối đa. Ấn \"OK\" để tiếp tục.";
 "id_continue" = "Tiếp tục";
+"id_copy_details" = "Copy details";
+"id_copy_raw_transaction" = "Copy raw transaction";
 "id_copy_to_clipboard" = "Sao chép vào clipboard";
+"id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "Tạo";
 "id_create_a_pin_to_access_your" = "Tạo mã PIN để vào ví của bạn";
 "id_create_new_wallet" = "Tạo một ví mới";
@@ -322,6 +326,7 @@
 "id_request_sent" = "Yêu cầu đã được gửi";
 "id_request_twofactor_reset" = "Yêu cầu cài lại xác thực 2 lớp";
 "id_requested_fee_rate_too_low" = "Yêu cầu tỉ lệ phí quá thấp";
+"id_reset" = "Reset";
 "id_reset_spv" = "Cài lại xác minh thanh toán đơn giản SPV";
 "id_resetting_your_twofactor_takes" = "Việc cài lại xác minh 2 bước cần ít nhất 12 tháng. Nếu bạn chắc là bạn đã mất xác thực 2 bước, làm ơn cung cấp địa chỉ email mới để nhận link cài lại.";
 "id_restore" = "Khôi phục";
@@ -354,6 +359,7 @@
 "id_sent" = "Gửi";
 "id_sent_to" = "Gửi đến";
 "id_set_a_new_pin" = "Cài đặt mã PIN";
+"id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "Đặt phí tùy biến";
 "id_set_twofactor_threshold" = "Đặt ngưỡng xác thực 2 lớp";
 "id_set_up_a_passcode_for_your_ios" = "Thiết lập mật mã cho thiết bị iOS của bạn để đặt mã PIN cho ví Blockstream Green";
@@ -376,6 +382,7 @@
 "id_slide_to_send" = "Trượt để gửi";
 "id_slow" = "Chậm";
 "id_sms" = "Tin nhắn SMS";
+"id_snnreset_this_setting_and_then" = "%@.\n\nReset this setting and then re-activate it.";
 "id_socks5_hostname" = "Tên của Socks5";
 "id_socks5_port" = "Cổng Socks5";
 "id_socks5_proxy_and_port_must_be" = "Proxy SOCKS5 và cổng phải được cài đặt";
@@ -392,6 +399,7 @@
 "id_sweep_into_s" = "Quẹt vào  %@";
 "id_switch_network" = "Chuyển đổi mạng";
 "id_synchronize_spv_on_mobile" = "Đồng bộ SPV trên di động";
+"id_syou_need_ton1_reset_greens" = "%@.You need to:\n1. Reset Green's Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.";
 "id_system_message" = "Thông tin hệ thống";
 "id_tap_on_the_card_to_view" = "Chạm và thẻ để xem các giao dịch";
 "id_tap_to_restart_the_simplified" = "Chamj để khởi động lại Xác minh thanh toán đơn giản SPV";
@@ -425,6 +433,7 @@
 "id_transaction_details" = "Chi tiết của giao dịch";
 "id_transaction_id" = "Số ID giao dịch";
 "id_transaction_sent" = "Giao địch đã gửi đi";
+"id_transactions" = "Transactions";
 "id_try_now" = "Thử bây giờ";
 "id_two_factor_authentication" = "XÁC THỰC 2 LỚP";
 "id_twofactor" = "XÁC THỰC 2 LỚP";

@@ -47,6 +47,7 @@
 "id_blocks" = "Blöcke";
 "id_blocks_confirmed" = "Blöcke bestätigt";
 "id_btchip_is_not_set_up_please_set" = "BTChip ist noch nicht eingerichtet. Bitte richten Sie es mit einer Desktop Anwendung ein um es benutzen zu können.";
+"id_by_proceeding_to_the_next_steps" = "By proceeding to the next steps you agree to the %@";
 "id_call" = "Anruf";
 "id_camera_problem" = "Kamera Problem";
 "id_cancel" = "Abbrechen";
@@ -71,7 +72,10 @@
 "id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Das Verbinden mit Tor (.onion) Nodes erlaubt fuer maximale Privatsphäre und Sicherheit. Klicken Sie \"OK\" um fortzufahren.";
 "id_continue" = "Fortfahren";
+"id_copy_details" = "Copy details";
+"id_copy_raw_transaction" = "Copy raw transaction";
 "id_copy_to_clipboard" = "In die Zwischenablage kopieren";
+"id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "Erstellen";
 "id_create_a_pin_to_access_your" = "PIN für die Wallet generieren";
 "id_create_new_wallet" = "Neue Wallet generieren";
@@ -322,6 +326,7 @@
 "id_request_sent" = "Anfrage verschickt";
 "id_request_twofactor_reset" = "Zwei-Faktor Rücksetzung anfragen";
 "id_requested_fee_rate_too_low" = "Angefragte Gebührenrate zu niedrig";
+"id_reset" = "Reset";
 "id_reset_spv" = "SPV rücksetzen";
 "id_resetting_your_twofactor_takes" = "Das Zurücksetzen der Zwei-Faktor Authentifizierung benötgt mindestens 12 Monate. Falls Sie sicher sind, dass Sie ihre Zwei-Faktor Authentifizierung verloren haben, tragen Sie unten ihre neue Email Adresse ein, um dies zurückzusetzen.";
 "id_restore" = "Wiederherstellen";
@@ -354,6 +359,7 @@
 "id_sent" = "Gesendet";
 "id_sent_to" = "Versendet an";
 "id_set_a_new_pin" = "Neue PIN setzen";
+"id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "Eigene Gebührenrate setzen";
 "id_set_twofactor_threshold" = "Zwei-Faktor Limit setzen";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
@@ -376,6 +382,7 @@
 "id_slide_to_send" = "Schieben um zu Senden";
 "id_slow" = "Langsam";
 "id_sms" = "SMS";
+"id_snnreset_this_setting_and_then" = "%@.\n\nReset this setting and then re-activate it.";
 "id_socks5_hostname" = "Socks5 Hostname";
 "id_socks5_port" = "Socks5 Port";
 "id_socks5_proxy_and_port_must_be" = "SOCKS5 Proxy und Port muss gesetzt werden";
@@ -392,6 +399,7 @@
 "id_sweep_into_s" = "Nach %@ fegen";
 "id_switch_network" = "Netzwerk wechseln";
 "id_synchronize_spv_on_mobile" = "SPV auf dem Mobiltelefon synchronisieren";
+"id_syou_need_ton1_reset_greens" = "%@.You need to:\n1. Reset Green's Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.";
 "id_system_message" = "Systemnachrichten";
 "id_tap_on_the_card_to_view" = "Tippen Sie auf die Karte um die Transaktionen zu sehen.";
 "id_tap_to_restart_the_simplified" = "Klicken Sie um die Simplified Payment Verification neu zu starten";
@@ -425,6 +433,7 @@
 "id_transaction_details" = "Transaktionsdetails";
 "id_transaction_id" = "Transkations ID";
 "id_transaction_sent" = "Transaktion versandt";
+"id_transactions" = "Transactions";
 "id_try_now" = "Jetzt versuchen";
 "id_two_factor_authentication" = "ZWEI-FAKTOR AUTHENTIFIZIERUNG";
 "id_twofactor" = "ZWEI-FAKTOR";

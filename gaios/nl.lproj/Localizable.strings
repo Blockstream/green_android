@@ -47,6 +47,7 @@
 "id_blocks" = "blocks";
 "id_blocks_confirmed" = "blocks bevestigd";
 "id_btchip_is_not_set_up_please_set" = "BTChip is niet ingesteld. Stel hem in met een desktop-client om hem te kunnen gebruiken.";
+"id_by_proceeding_to_the_next_steps" = "By proceeding to the next steps you agree to the %@";
 "id_call" = "Bellen";
 "id_camera_problem" = "Probleem met camera";
 "id_cancel" = "Annuleren";
@@ -71,7 +72,10 @@
 "id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Door te verbinden met Tor (.onion) nodes, verzeker je jezelf van maximale privacy en veiligheid. Druk op \"OK\" om door te gaan.";
 "id_continue" = "Doorgaan";
+"id_copy_details" = "Copy details";
+"id_copy_raw_transaction" = "Copy raw transaction";
 "id_copy_to_clipboard" = "Naar klembord kopiëren";
+"id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "Aanmaken";
 "id_create_a_pin_to_access_your" = "Kies een PIN voor toegang tot wallet";
 "id_create_new_wallet" = "Nieuwe wallet aanmaken";
@@ -322,6 +326,7 @@
 "id_request_sent" = "Verzoek verzonden";
 "id_request_twofactor_reset" = "Verzoek resetten tweetrapsauthenticatie";
 "id_requested_fee_rate_too_low" = "Verzochte tarief te laag";
+"id_reset" = "Reset";
 "id_reset_spv" = "SPV resetten";
 "id_resetting_your_twofactor_takes" = "Het resetten van de tweetrapsauthenticatie duurt minimaal 12 maanden. Als je er zeker van bent dat je je tweetrapsauthenticatie bent kwijtgeraakt, vul dan hieronder een nieuw e-mailadres in om de reset te ontvangen.";
 "id_restore" = "Herstellen";
@@ -354,6 +359,7 @@
 "id_sent" = "Verzonden";
 "id_sent_to" = "Verzonden naar";
 "id_set_a_new_pin" = "Kies een nieuwe PIN";
+"id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "Aangepast transactietarief instellen";
 "id_set_twofactor_threshold" = "Limiet tweetrapsauthenticatie instellen";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
@@ -376,6 +382,7 @@
 "id_slide_to_send" = "Sleep om te verzenden";
 "id_slow" = "Traag";
 "id_sms" = "SMS";
+"id_snnreset_this_setting_and_then" = "%@.\n\nReset this setting and then re-activate it.";
 "id_socks5_hostname" = "Socks5 Hostname";
 "id_socks5_port" = "Socks5 Port";
 "id_socks5_proxy_and_port_must_be" = "SOCKS5 proxy en port moet worden ingesteld";
@@ -392,6 +399,7 @@
 "id_sweep_into_s" = "Opvegen naar %@";
 "id_switch_network" = "Netwerk wisselen";
 "id_synchronize_spv_on_mobile" = "Synchroniseer SPV op mobiel";
+"id_syou_need_ton1_reset_greens" = "%@.You need to:\n1. Reset Green's Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.";
 "id_system_message" = "Systeembericht";
 "id_tap_on_the_card_to_view" = "Tik op de kaart om de transacties in te zien.";
 "id_tap_to_restart_the_simplified" = "Tik om Simplified Payment Verification te herstarten";
@@ -425,6 +433,7 @@
 "id_transaction_details" = "Details transactie";
 "id_transaction_id" = "Transactie-ID";
 "id_transaction_sent" = "Transactie verzonden";
+"id_transactions" = "Transactions";
 "id_try_now" = "Nu proberen";
 "id_two_factor_authentication" = "TWEETRAPSAUTHENTICATIE";
 "id_twofactor" = "TWEETRAPSAUTHENTICATIE";
