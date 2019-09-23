@@ -29,13 +29,14 @@ public class TermsActivity extends LoginActivity implements View.OnClickListener
 
         final TextView termsText = UI.find(this, R.id.termsText);
         final String link =
-            String.format("<a href=\"https://greenaddress.it/tos/\">%s</a>", getString(R.string.id_terms_of_service));
+            String.format("<a href=\"https://blockstream.com/green/terms/\">%s</a>",
+                          getString(R.string.id_terms_of_service));
         termsText.setText(Html.fromHtml(link));
         termsText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 final Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://greenaddress.it/tos/"));
+                intent.setData(Uri.parse("https://blockstream.com/green/terms/"));
                 startActivity(intent);
             }
         });

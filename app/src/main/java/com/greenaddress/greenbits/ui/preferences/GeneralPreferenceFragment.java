@@ -300,11 +300,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Terms of service
         final Preference termsOfUse = find(PrefKeys.TERMS_OF_USE);
-        termsOfUse.setOnPreferenceClickListener(preference -> openURI("https://greenaddress.it/tos.html"));
+        termsOfUse.setOnPreferenceClickListener(preference -> openURI("https://blockstream.com/green/terms/"));
 
         // Privacy policy
         final Preference privacyPolicy = find(PrefKeys.PRIVACY_POLICY);
-        privacyPolicy.setOnPreferenceClickListener(preference -> openURI("https://greenaddress.it/privacy.html"));
+        privacyPolicy.setOnPreferenceClickListener(preference -> openURI("https://blockstream.com/green/privacy/"));
 
         // Version
         final Preference version = find(PrefKeys.VERSION);
