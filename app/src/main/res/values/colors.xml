@@ -10,6 +10,7 @@
     <color name="liquidLight">#76dfd1</color>
     <color name="liquidDark">#46beae</color>
     <color name="liquidButtonsBg">#00706A</color>
+    <color name="btcButtonBg">#FFFCC538</color>
 
     <color name="liquidGradientLight">#009090</color>
     <color name="liquidGradientMedium">#234651</color>

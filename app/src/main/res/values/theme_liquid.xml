@@ -1,7 +1,8 @@
 <resources>
     <style name="LiquidTheme" parent="AppTheme">
         <item name="themeCardview">@drawable/cardview_liquid</item>
-        <item name="themeIcon">@drawable/ic_liquid_no_string</item>
+        <item name="themeIcon">@drawable/ic_liquid</item>
+        <item name="themeIconNoPadding">@drawable/ic_liquid_no_padding</item>
 
         <item name="colorAccent">@color/liquidDark</item>
         <item name="materialButton">@drawable/material_button_liquid</item>

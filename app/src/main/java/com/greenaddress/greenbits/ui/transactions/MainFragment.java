@@ -1,17 +1,16 @@
 package com.greenaddress.greenbits.ui.transactions;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -26,6 +25,7 @@ import com.greenaddress.greenbits.ui.SubaccountFragment;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.AccountView;
 import com.greenaddress.greenbits.ui.accounts.SubaccountSelectActivity;
+import com.greenaddress.greenbits.ui.accounts.SwitchNetworkFragment;
 import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
@@ -43,6 +43,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observer;
 
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 
@@ -56,6 +63,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     private ListTransactionsAdapter mTransactionsAdapter;
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
     private TextView mAssetsSelection;
+    private TextView mSwitchNetwork;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -103,6 +111,15 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         mAssetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(),
                                                                                    AssetsSelectActivity.class),
                                                                         REQUEST_SELECT_ASSET));
+        mSwitchNetwork = UI.find(mView, R.id.switchNetwork);
+        mSwitchNetwork.setOnClickListener(v -> showDialog());
+
+        mSwitchNetwork.setText(getGAService().getNetwork().getName());
+        mSwitchNetwork.setTextColor(getResources().getColor(R.color.white));
+
+        final Drawable arrow = getContext().getResources().getDrawable(R.drawable.ic_expand_more_24dp);
+        mSwitchNetwork.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null);
+
         return mView;
     }
 
@@ -170,6 +187,16 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
+    }
+
+    private void showDialog() {
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = SwitchNetworkFragment.newInstance();
+        newFragment.show(ft, "dialog");
     }
 
     private void showTxView(final boolean doShowTxList) {

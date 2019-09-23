@@ -59,7 +59,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
     private SwitchPreference mPinPref;
     private Preference mWatchOnlyLogin;
-    private Preference mSwitchNetwork;
     private ListPreference mUnitPref;
     private ListPreference mPriceSourcePref;
     private ListPreference mTxPriorityPref;
@@ -133,10 +132,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             logout();
             return false;
         });
-
-        // Switch network
-        mSwitchNetwork = find(PrefKeys.SWITCH_NETWORK);
-        mSwitchNetwork.setOnPreferenceClickListener((preference) -> onSwitchNetworkClicked());
 
         // Bitcoin denomination
         mUnitPref = find(PrefKeys.UNIT);
@@ -407,12 +402,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             }
         }).build();
         UI.showDialog(dialog);
-        return false;
-    }
-
-    private boolean onSwitchNetworkClicked() {
-        startActivityForResult(new Intent(getActivity(), NetworkSettingsActivity.class),
-                               NETWORK_SELECTOR_REQUEST);
         return false;
     }
 

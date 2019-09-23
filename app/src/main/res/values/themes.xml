@@ -2,6 +2,7 @@
     <!-- Themes attr references -->
     <attr name="themeCardview" format="reference"/>
     <attr name="themeIcon" format="reference"/>
+    <attr name="themeIconNoPadding" format="reference"/>
 
     <attr name="materialButton" format="reference"/>
     <attr name="materialButtonKeyboard" format="reference"/>

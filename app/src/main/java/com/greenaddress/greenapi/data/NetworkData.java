@@ -107,12 +107,12 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
         if (network.equals("mainnet"))
             return R.drawable.ic_btc;
         if (network.equals("testnet"))
-            return R.drawable.ic_btc_testnet;
+            return R.drawable.ic_testnet_btc;
         if (network.equals("localtest-liquid"))
-            return R.drawable.ic_liquid_no_string;
+            return R.drawable.ic_liquid;
         if (network.equals("liquid"))
-            return R.drawable.ic_liquid_no_string;
-        return R.drawable.ic_btc_testnet;
+            return R.drawable.ic_liquid;
+        return R.drawable.ic_testnet_btc;
     }
 
     public String getPolicyAsset() {

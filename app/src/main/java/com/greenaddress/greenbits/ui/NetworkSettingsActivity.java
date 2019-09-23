@@ -23,106 +23,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenbits.ui.accounts.NetworkSwitchListener;
+import com.greenaddress.greenbits.ui.accounts.SwitchNetworkAdapter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-public class NetworkSettingsActivity extends GaActivity implements Observer {
-
-    class NetworksViewAdapter extends RecyclerView.Adapter<NetworksViewAdapter.ViewHolder> {
-
-        private final List<NetworkData> mData;
-        private int mSelectedItem;
-
-        NetworksViewAdapter(final Context context, final List<NetworkData> data, final NetworkData selectedItem) {
-            mData = data;
-            mSelectedItem = data.indexOf(selectedItem);
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-            final LinearLayout ll = new LinearLayout(NetworkSettingsActivity.this);
-            final RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(
-                RecyclerView.LayoutParams.MATCH_PARENT,
-                RecyclerView.LayoutParams.WRAP_CONTENT);
-            ll.setPadding(8, 8, 8, 8);
-            ll.setLayoutParams(layoutParams);
-            return new ViewHolder(ll);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
-            final NetworkData networkData = mData.get(position);
-            holder.setText(networkData.getName());
-            holder.setIcon(networkData.getIcon());
-            holder.setSelected(position == mSelectedItem);
-            holder.itemView.setOnClickListener(view -> {
-                mSelectedItem = holder.getAdapterPosition();
-                notifyItemRangeChanged(0, mData.size());
-                initProxy();
-                initTor(mData.get(position));
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mData.size();
-        }
-
-        public NetworkData getSelected() {
-            return mData.get( mSelectedItem );
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            private final Button mButton;
-
-            ViewHolder(final View itemView) {
-                super(itemView);
-                mButton = new Button(new ContextThemeWrapper(NetworkSettingsActivity.this, R.style.selectionButton));
-                mButton.setPadding(12, 12, 12, 12);
-                mButton.setBackgroundResource(
-                    mService.isLiquid() ? R.drawable.material_button_selection_liquid : R.drawable.material_button_selection);
-
-                final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-                mButton.setTextSize(16);
-                mButton.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-                mButton.setLayoutParams(layoutParams);
-
-                mButton.setClickable(false);
-                final LinearLayout linearLayout=(LinearLayout)itemView;
-
-                linearLayout.addView(mButton);
-            }
-
-            public void setText(final String text) {
-                mButton.setText(text);
-            }
-
-            public void setIcon(final int resource) {
-                final Drawable top = getResources().getDrawable(resource);
-                mButton.setCompoundDrawablesWithIntrinsicBounds(top, null, null, null);
-            }
-
-            public void setSelected(final boolean selected) {
-                if (selected) {
-                    mButton.setPressed(true);
-                } else {
-                    mButton.setPressed(false);
-                }
-            }
-        }
-    }
+public class NetworkSettingsActivity extends GaActivity implements Observer, NetworkSwitchListener {
 
     private LinearLayout mProxySection;
     private Switch mSwitchTor;
     private Switch mSwitchProxy;
     private EditText mSocks5Host;
     private EditText mSocks5Port;
-    private NetworksViewAdapter mNetworksViewAdapter;
+    private SwitchNetworkAdapter mSwitchNetworkAdapter;
 
     private boolean mIsLoggedIn = false;
 
@@ -141,8 +57,9 @@ public class NetworkSettingsActivity extends GaActivity implements Observer {
 
         final List<NetworkData> networks = GDKSession.getNetworks();
 
-        mNetworksViewAdapter = new NetworksViewAdapter(this, networks, mService.getNetwork());
-        recyclerView.setAdapter(mNetworksViewAdapter);
+        mSwitchNetworkAdapter = new SwitchNetworkAdapter(this, networks, mService.getNetwork(),
+                                                         mService.isLiquid(), this);
+        recyclerView.setAdapter(mSwitchNetworkAdapter);
 
         final View closeButton = UI.find(this, R.id.close_network_settings);
         closeButton.setOnClickListener(this::onCloseClick);
@@ -150,7 +67,7 @@ public class NetworkSettingsActivity extends GaActivity implements Observer {
         mSwitchProxy.setOnCheckedChangeListener(this::onProxyChange);
         initProxy();
         mSwitchTor.setOnCheckedChangeListener(this::onTorChange);
-        initTor(mNetworksViewAdapter.getSelected());
+        initTor(mSwitchNetworkAdapter.getSelected());
 
         final Button selectButton = UI.find(this, R.id.selectNetworkButton);
         selectButton.setOnClickListener(this::onClick);
@@ -215,7 +132,7 @@ public class NetworkSettingsActivity extends GaActivity implements Observer {
     }
 
     private void onClick(final View view) {
-        final NetworkData selectedNetwork = mNetworksViewAdapter.getSelected();
+        final NetworkData selectedNetwork = mSwitchNetworkAdapter.getSelected();
         String networkName = selectedNetwork.getNetwork();
         final String socksHost = UI.getText(mSocks5Host);
         final String socksPort = UI.getText(mSocks5Port);
@@ -249,12 +166,12 @@ public class NetworkSettingsActivity extends GaActivity implements Observer {
     }
 
     private SharedPreferences getPrefOfSelected() {
-        return getSharedPreferences(mNetworksViewAdapter.getSelected().getNetwork(), MODE_PRIVATE);
+        return getSharedPreferences(mSwitchNetworkAdapter.getSelected().getNetwork(), MODE_PRIVATE);
     }
 
     private void initProxy() {
         final boolean isProxyEnabled = getPrefOfSelected().getBoolean(PrefKeys.PROXY_ENABLED, false);
-        Log.d("NETDLG", "initProxy " + mNetworksViewAdapter.getSelected().getNetwork() + " " + isProxyEnabled);
+        Log.d("NETDLG", "initProxy " + mSwitchNetworkAdapter.getSelected().getNetwork() + " " + isProxyEnabled);
         mSocks5Host.setText(getPrefOfSelected().getString(PrefKeys.PROXY_HOST,""));
         mSocks5Port.setText(getPrefOfSelected().getString(PrefKeys.PROXY_PORT,""));
         mSwitchProxy.setChecked(isProxyEnabled);
@@ -262,7 +179,7 @@ public class NetworkSettingsActivity extends GaActivity implements Observer {
     }
 
     private void onProxyChange(final CompoundButton compoundButton, final boolean b) {
-        Log.d("NETDLG", "onProxyChange " + mNetworksViewAdapter.getSelected().getNetwork() + " " + b);
+        Log.d("NETDLG", "onProxyChange " + mSwitchNetworkAdapter.getSelected().getNetwork() + " " + b);
         getPrefOfSelected().edit().putBoolean(PrefKeys.PROXY_ENABLED, b).apply();
         mService.getConnectionManager().setProxyEnabled(b);
         mProxySection.setVisibility(b ? View.VISIBLE : View.GONE);
@@ -270,14 +187,20 @@ public class NetworkSettingsActivity extends GaActivity implements Observer {
 
     private void initTor(final NetworkData selectedNetwork) {
         final boolean torChecked = getPrefOfSelected().getBoolean(PrefKeys.TOR_ENABLED, false);
-        Log.d("NETDLG", "initTor " + mNetworksViewAdapter.getSelected().getNetwork() + " " + torChecked);
+        Log.d("NETDLG", "initTor " + mSwitchNetworkAdapter.getSelected().getNetwork() + " " + torChecked);
         mSwitchTor.setChecked(torChecked);
         mSwitchTor.setEnabled(!TextUtils.isEmpty(selectedNetwork.getWampOnionUrl()));
     }
 
     private void onTorChange(final CompoundButton compoundButton, final boolean b) {
-        Log.d("NETDLG", "onTorChange " + mNetworksViewAdapter.getSelected().getNetwork() + " " + b);
+        Log.d("NETDLG", "onTorChange " + mSwitchNetworkAdapter.getSelected().getNetwork() + " " + b);
         getPrefOfSelected().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
         mService.getConnectionManager().setTorEnabled(b);
+    }
+
+    @Override
+    public void onNetworkClick(final NetworkData networkData) {
+        initProxy();
+        initTor(networkData);
     }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="1dp">
+
+    <Button
+        android:id="@+id/switchNetworkButton"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="16sp"
+        android:textAlignment="textStart"
+        android:padding="8dp"
+        style="@style/selectionButton"
+        android:clickable="false"
+        android:background="?attr/materialButtonSelection"
+        android:drawablePadding="10dp"
+        android:paddingLeft="0dp"
+        />
+
+</LinearLayout>

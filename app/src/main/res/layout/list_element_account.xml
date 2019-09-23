@@ -36,31 +36,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/networkImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="?attr/themeIcon"
-                    android:layout_gravity="center_vertical"
-                    android:background="@color/hide"
-                    />
-
-                <Space
-                    android:layout_width="@dimen/card_padding"
-                    android:layout_height="match_parent" />
-
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="0dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:textColor="@color/white"
-                    android:padding="@dimen/card_padding"
-                    android:text="name"
+                    android:ellipsize="end"
                     android:gravity="center_vertical"
-                    android:textSize="20sp"/>
+                    android:maxLines="1"
+                    android:padding="@dimen/card_padding"
+                    android:paddingStart="0dp"
+                    android:text="name"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
 
                 <ImageButton
                     android:id="@+id/selectSubaccount"

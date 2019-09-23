@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class SweepAdapter extends RecyclerView.Adapter<SweepAdapter.Item> {
 
         public Item(final View itemView) {
             super(itemView);
-            mSubaccountTextView = itemView.findViewById(R.id.subaccount_title);
+            mSubaccountTextView = UI.find(itemView, R.id.subaccount_title);
         }
     }
 }

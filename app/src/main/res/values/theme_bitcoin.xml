@@ -2,6 +2,8 @@
     <style name="BitcoinTheme" parent="AppTheme">
         <item name="themeCardview">@drawable/cardview</item>
         <item name="themeIcon">@drawable/ic_btc</item>
+        <item name="themeIconNoPadding">@drawable/ic_btc_no_padding</item>
+
 
         <item name="drawableSendReceiveIcColor">@color/colorAccent</item>
         <item name="sendReceiveBtnBg">@color/buttonJungleGreen</item>
