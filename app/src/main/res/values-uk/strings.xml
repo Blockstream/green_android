@@ -49,6 +49,7 @@
   <string name="id_blocks">блоки</string>
   <string name="id_blocks_confirmed">підтверджені блоки</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip не налаштовано. Для налаштування, будь ласка, встановіть програму за допомогою десктоп-клієнта.</string>
+  <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">Дзвінок</string>
   <string name="id_camera_problem">Проблема з камерою</string>
   <string name="id_cancel">Відмінити</string>
@@ -73,7 +74,10 @@
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Підключення до Tor (.onion) вузлів забезпечує максимальну конфіденційність і безпеку. Натисніть "OK", щоб продовжити.</string>
   <string name="id_continue">Продовжити</string>
+  <string name="id_copy_details">Copy details</string>
+  <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Скопіювати в буфер обміну</string>
+  <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_create">Створити</string>
   <string name="id_create_a_pin_to_access_your">Створіть PIN-код для доступу до вашого гаманця</string>
   <string name="id_create_new_wallet">Створити новий гаманець</string>
@@ -324,6 +328,7 @@
   <string name="id_request_sent">Запит надіслано</string>
   <string name="id_request_twofactor_reset">Запит двофакторного скидання</string>
   <string name="id_requested_fee_rate_too_low">Комісія занадто низька</string>
+  <string name="id_reset">Reset</string>
   <string name="id_reset_spv">Скинути SPV</string>
   <string name="id_resetting_your_twofactor_takes">Скидання двофакторки триватиме мінімум 12 місяців. Якщо ви впевнені, що втратили свою двофакторку,  вкажіть нову адресу електронної пошти нижче, щоб здійснити перезавантаження.</string>
   <string name="id_restore">Відновити</string>
@@ -356,6 +361,7 @@
   <string name="id_sent">Sent</string>
   <string name="id_sent_to">Відправити на</string>
   <string name="id_set_a_new_pin">Встановити новий PIN-код</string>
+  <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">Встановити розмір комісії</string>
   <string name="id_set_twofactor_threshold">Встановити двофакторний поріг</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
@@ -378,6 +384,7 @@
   <string name="id_slide_to_send">Проведіть пальцем, щоб відправити</string>
   <string name="id_slow">Повільно</string>
   <string name="id_sms">СМС</string>
+  <string name="id_snnreset_this_setting_and_then">%s.\n\nReset this setting and then re-activate it.</string>
   <string name="id_socks5_hostname">Ім\'я хоста Socks5</string>
   <string name="id_socks5_port">Порт Socks5</string>
   <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
@@ -394,6 +401,7 @@
   <string name="id_sweep_into_s">Sweep into %s</string>
   <string name="id_switch_network">Switch Network</string>
   <string name="id_synchronize_spv_on_mobile">Синхронізуйте SPV на мобільному телефоні</string>
+  <string name="id_syou_need_ton1_reset_greens">%s.You need to:\n1. Reset Green\'s Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.</string>
   <string name="id_system_message">Системне повідомлення</string>
   <string name="id_tap_on_the_card_to_view">Натисніть на картку для перегляду транзакцій. </string>
   <string name="id_tap_to_restart_the_simplified">Торкніться, щоб перезапустити Спрощену Верифікацію Оплати (SPV)</string>
@@ -427,6 +435,7 @@
   <string name="id_transaction_details">Деталі транзакції</string>
   <string name="id_transaction_id">ID транзакції</string>
   <string name="id_transaction_sent">Транзакцію здійснено</string>
+  <string name="id_transactions">Transactions</string>
   <string name="id_try_now">Спробувати зараз</string>
   <string name="id_two_factor_authentication">ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ</string>
   <string name="id_twofactor">ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ</string>

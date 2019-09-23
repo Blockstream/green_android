@@ -49,6 +49,7 @@
   <string name="id_blocks">blocks</string>
   <string name="id_blocks_confirmed">blocks confirmed</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip is not set up. Please set it up using a desktop client to be able to use it.</string>
+  <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">Call</string>
   <string name="id_camera_problem">Camera problem</string>
   <string name="id_cancel">Cancel</string>
@@ -73,7 +74,10 @@
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Connecting to Tor (.onion) nodes allows maximum privacy and security. Press "OK" to continue.</string>
   <string name="id_continue">Continue</string>
+  <string name="id_copy_details">Copy details</string>
+  <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Copy To Clipboard</string>
+  <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_create">Create</string>
   <string name="id_create_a_pin_to_access_your">Create a PIN to access your wallet</string>
   <string name="id_create_new_wallet">Create New Wallet</string>
@@ -324,6 +328,7 @@
   <string name="id_request_sent">Request Sent</string>
   <string name="id_request_twofactor_reset">Request Two-Factor reset</string>
   <string name="id_requested_fee_rate_too_low">Requested fee rate too low</string>
+  <string name="id_reset">Reset</string>
   <string name="id_reset_spv">Reset SPV</string>
   <string name="id_resetting_your_twofactor_takes">Resetting your Two-Factor takes 12 months minimum. If you are sure you have lost your Two-Factor, please provide a new email address below to receive the reset.</string>
   <string name="id_restore">Restore</string>
@@ -356,8 +361,8 @@
   <string name="id_sent">Sent</string>
   <string name="id_sent_to">Sent to</string>
   <string name="id_set_a_new_pin">Set a new PIN</string>
-  <string name="id_set_custom_fee_rate">Set custom fee rate</string>
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
+  <string name="id_set_custom_fee_rate">Set custom fee rate</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_pgp_key_for">Set up PGP key for communications</string>
@@ -379,6 +384,7 @@
   <string name="id_slide_to_send">Slide to Send</string>
   <string name="id_slow">Slow</string>
   <string name="id_sms">SMS</string>
+  <string name="id_snnreset_this_setting_and_then">%s.\n\nReset this setting and then re-activate it.</string>
   <string name="id_socks5_hostname">Socks5 Hostname</string>
   <string name="id_socks5_port">Socks5 Port</string>
   <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
@@ -395,6 +401,7 @@
   <string name="id_sweep_into_s">Sweep into %s</string>
   <string name="id_switch_network">Switch Network</string>
   <string name="id_synchronize_spv_on_mobile">Synchronize SPV on mobile</string>
+  <string name="id_syou_need_ton1_reset_greens">%s.You need to:\n1. Reset Green\'s Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.</string>
   <string name="id_system_message">System Message</string>
   <string name="id_tap_on_the_card_to_view">Tap on the card to view transactions.</string>
   <string name="id_tap_to_restart_the_simplified">Tap to restart the Simplified Payment Verification</string>
@@ -428,6 +435,7 @@
   <string name="id_transaction_details">Transaction details</string>
   <string name="id_transaction_id">Transaction ID</string>
   <string name="id_transaction_sent">Transaction Sent</string>
+  <string name="id_transactions">Transactions</string>
   <string name="id_try_now">Try now</string>
   <string name="id_two_factor_authentication">TWO FACTOR AUTHENTICATION</string>
   <string name="id_twofactor">TWO-FACTOR</string>

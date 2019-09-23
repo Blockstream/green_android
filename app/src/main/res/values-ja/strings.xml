@@ -49,6 +49,7 @@
   <string name="id_blocks">ブロック</string>
   <string name="id_blocks_confirmed">検証済みブロック</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChipが設定されていません。デスクトップ・クライアントを利用し設定を終えてからもう一度お試しください。</string>
+  <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">通話する</string>
   <string name="id_camera_problem">カメラ問題</string>
   <string name="id_cancel">キャンセル</string>
@@ -73,7 +74,10 @@
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Tor(.onion)ノードに接続することで最高のセキュリティとプライバシーを保証します。このまま進めるには "OK" を押してください。</string>
   <string name="id_continue">進める</string>
+  <string name="id_copy_details">Copy details</string>
+  <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">クリップボードにコピーする</string>
+  <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_create">生成</string>
   <string name="id_create_a_pin_to_access_your">ウォレット接続の為のPINを生成する</string>
   <string name="id_create_new_wallet">新規ウォレットの生成</string>
@@ -324,6 +328,7 @@
   <string name="id_request_sent">要請済み</string>
   <string name="id_request_twofactor_reset">2段階認証のリセットを要請する</string>
   <string name="id_requested_fee_rate_too_low">要請された手数料が低過ぎます。</string>
+  <string name="id_reset">Reset</string>
   <string name="id_reset_spv">SPVリセット</string>
   <string name="id_resetting_your_twofactor_takes">2段階認証をリセットするには最低12ヶ月を要します。2段階認証に必要な情報を忘れたと確信する場合、リセットの為に新しいEメールアドレスをお知らせください。</string>
   <string name="id_restore">修復</string>
@@ -356,6 +361,7 @@
   <string name="id_sent">Sent</string>
   <string name="id_sent_to">送り先</string>
   <string name="id_set_a_new_pin">新しいPINの設定</string>
+  <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">カスタム手数料の設定</string>
   <string name="id_set_twofactor_threshold">Set Two-Factor threshold</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
@@ -378,6 +384,7 @@
   <string name="id_slide_to_send">スライドして送金する</string>
   <string name="id_slow">遅く</string>
   <string name="id_sms">SMS</string>
+  <string name="id_snnreset_this_setting_and_then">%s.\n\nReset this setting and then re-activate it.</string>
   <string name="id_socks5_hostname">Socks5ホストネーム</string>
   <string name="id_socks5_port">Socks5ポート</string>
   <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy and port must be set</string>
@@ -394,6 +401,7 @@
   <string name="id_sweep_into_s">Sweep into %s</string>
   <string name="id_switch_network">Switch Network</string>
   <string name="id_synchronize_spv_on_mobile">モバイルでSPVをシンクロする</string>
+  <string name="id_syou_need_ton1_reset_greens">%s.You need to:\n1. Reset Green\'s Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.</string>
   <string name="id_system_message">システムメッセージ</string>
   <string name="id_tap_on_the_card_to_view">トランザクション確認にはカードをタップして下さい。</string>
   <string name="id_tap_to_restart_the_simplified">SPVをリスタートする</string>
@@ -427,6 +435,7 @@
   <string name="id_transaction_details">トランザクション詳細</string>
   <string name="id_transaction_id">トランザクションID</string>
   <string name="id_transaction_sent">トランザクション送信完了</string>
+  <string name="id_transactions">Transactions</string>
   <string name="id_try_now">試す</string>
   <string name="id_two_factor_authentication">2段階認証</string>
   <string name="id_twofactor">2段階認証</string>

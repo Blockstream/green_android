@@ -49,6 +49,7 @@
   <string name="id_blocks">区块</string>
   <string name="id_blocks_confirmed">区块确认</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip尚未设置。请先使用电脑客户端进行设置后方可使用。</string>
+  <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">呼叫</string>
   <string name="id_camera_problem">摄像头问题</string>
   <string name="id_cancel">取消</string>
@@ -73,7 +74,10 @@
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">连接至Tor (.onion)节点将使得隐私及安全性能最大化。点击"OK"继续。</string>
   <string name="id_continue">继续</string>
+  <string name="id_copy_details">Copy details</string>
+  <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">复制到剪贴板</string>
+  <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_create">创建</string>
   <string name="id_create_a_pin_to_access_your">创建一个新的PIN来接入你的钱包</string>
   <string name="id_create_new_wallet">创建新钱包</string>
@@ -324,6 +328,7 @@
   <string name="id_request_sent">请求已发送</string>
   <string name="id_request_twofactor_reset">请求重置双重验证</string>
   <string name="id_requested_fee_rate_too_low">请求费率太低</string>
+  <string name="id_reset">Reset</string>
   <string name="id_reset_spv">重置SPV</string>
   <string name="id_resetting_your_twofactor_takes">重置双重验证需要等待最少12个月。如果确认已经丢失双重验证设备，请在下方输入新的邮件地址以接收重置邮件。</string>
   <string name="id_restore">恢复</string>
@@ -356,6 +361,7 @@
   <string name="id_sent">已发送</string>
   <string name="id_sent_to">发送至</string>
   <string name="id_set_a_new_pin">设置一个新的PIN</string>
+  <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">设置自定义费率</string>
   <string name="id_set_twofactor_threshold">设置双验证阈值</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
@@ -378,6 +384,7 @@
   <string name="id_slide_to_send">滑动来发送</string>
   <string name="id_slow">缓慢</string>
   <string name="id_sms">短信</string>
+  <string name="id_snnreset_this_setting_and_then">%s.\n\nReset this setting and then re-activate it.</string>
   <string name="id_socks5_hostname">Socks5主机名</string>
   <string name="id_socks5_port">Socks5端口</string>
   <string name="id_socks5_proxy_and_port_must_be">必须设置SOCKS5代理和端口</string>
@@ -394,6 +401,7 @@
   <string name="id_sweep_into_s">已扫描%s</string>
   <string name="id_switch_network">更换网络</string>
   <string name="id_synchronize_spv_on_mobile">在手机上同步SPV</string>
+  <string name="id_syou_need_ton1_reset_greens">%s.You need to:\n1. Reset Green\'s Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.</string>
   <string name="id_system_message">系统消息</string>
   <string name="id_tap_on_the_card_to_view">点击卡片以查看交易。</string>
   <string name="id_tap_to_restart_the_simplified">点击以重启简单付款认证</string>
@@ -427,6 +435,7 @@
   <string name="id_transaction_details">交易细节</string>
   <string name="id_transaction_id">交易ID</string>
   <string name="id_transaction_sent">交易已发送</string>
+  <string name="id_transactions">Transactions</string>
   <string name="id_try_now">立即尝试</string>
   <string name="id_two_factor_authentication">双重验证</string>
   <string name="id_twofactor">双重验证</string>

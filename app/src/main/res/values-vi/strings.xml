@@ -49,6 +49,7 @@
   <string name="id_blocks">khối</string>
   <string name="id_blocks_confirmed">khối đã xác nhận</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip chưa được cài đặt. Làm ơn cài đặt nó bằng cách dùng phần mềm trên máy tính để có thể sử dụng.</string>
+  <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">Gọi</string>
   <string name="id_camera_problem">Camera có vấn đề</string>
   <string name="id_cancel">Hủy</string>
@@ -73,7 +74,10 @@
   <string name="id_connecting_to_peers">Đang nối với các nốt mạng khác...</string>
   <string name="id_connecting_to_tor_onion_nodes">Đang nối tới nốt mạng Tor( có tên miền .onion)  cho phép bảo mật và quyền riêng tư tối đa. Ấn "OK" để tiếp tục.</string>
   <string name="id_continue">Tiếp tục</string>
+  <string name="id_copy_details">Copy details</string>
+  <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Sao chép vào clipboard</string>
+  <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_create">Tạo</string>
   <string name="id_create_a_pin_to_access_your">Tạo mã PIN để vào ví của bạn</string>
   <string name="id_create_new_wallet">Tạo một ví mới</string>
@@ -324,6 +328,7 @@
   <string name="id_request_sent">Yêu cầu đã được gửi</string>
   <string name="id_request_twofactor_reset">Yêu cầu cài lại xác thực 2 lớp</string>
   <string name="id_requested_fee_rate_too_low">Yêu cầu tỉ lệ phí quá thấp</string>
+  <string name="id_reset">Reset</string>
   <string name="id_reset_spv">Cài lại xác minh thanh toán đơn giản SPV</string>
   <string name="id_resetting_your_twofactor_takes">Việc cài lại xác minh 2 bước cần ít nhất 12 tháng. Nếu bạn chắc là bạn đã mất xác thực 2 bước, làm ơn cung cấp địa chỉ email mới để nhận link cài lại.</string>
   <string name="id_restore">Khôi phục</string>
@@ -356,6 +361,7 @@
   <string name="id_sent">Gửi</string>
   <string name="id_sent_to">Gửi đến</string>
   <string name="id_set_a_new_pin">Cài đặt mã PIN</string>
+  <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">Đặt phí tùy biến</string>
   <string name="id_set_twofactor_threshold">Đặt ngưỡng xác thực 2 lớp</string>
   <string name="id_set_up_a_passcode_for_your_ios">Thiết lập mật mã cho thiết bị iOS của bạn để đặt mã PIN cho ví Blockstream Green</string>
@@ -378,6 +384,7 @@
   <string name="id_slide_to_send">Trượt để gửi</string>
   <string name="id_slow">Chậm</string>
   <string name="id_sms">Tin nhắn SMS</string>
+  <string name="id_snnreset_this_setting_and_then">%s.\n\nReset this setting and then re-activate it.</string>
   <string name="id_socks5_hostname">Tên của Socks5</string>
   <string name="id_socks5_port">Cổng Socks5</string>
   <string name="id_socks5_proxy_and_port_must_be">Proxy SOCKS5 và cổng phải được cài đặt</string>
@@ -394,6 +401,7 @@
   <string name="id_sweep_into_s">Quẹt vào  %s</string>
   <string name="id_switch_network">Chuyển đổi mạng</string>
   <string name="id_synchronize_spv_on_mobile">Đồng bộ SPV trên di động</string>
+  <string name="id_syou_need_ton1_reset_greens">%s.You need to:\n1. Reset Green\'s Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.</string>
   <string name="id_system_message">Thông tin hệ thống</string>
   <string name="id_tap_on_the_card_to_view">Chạm và thẻ để xem các giao dịch</string>
   <string name="id_tap_to_restart_the_simplified">Chamj để khởi động lại Xác minh thanh toán đơn giản SPV</string>
@@ -427,6 +435,7 @@
   <string name="id_transaction_details">Chi tiết của giao dịch</string>
   <string name="id_transaction_id">Số ID giao dịch</string>
   <string name="id_transaction_sent">Giao địch đã gửi đi</string>
+  <string name="id_transactions">Transactions</string>
   <string name="id_try_now">Thử bây giờ</string>
   <string name="id_two_factor_authentication">XÁC THỰC 2 LỚP</string>
   <string name="id_twofactor">XÁC THỰC 2 LỚP</string>

@@ -49,6 +49,7 @@
   <string name="id_blocks">블록</string>
   <string name="id_blocks_confirmed">컨펌된 블록</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip이 설치되지 않았습니다. 데스크톱 프로그램을 사용하여 설치하시기 바랍니다.</string>
+  <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">전화</string>
   <string name="id_camera_problem">카메라 문제</string>
   <string name="id_cancel">취소</string>
@@ -73,7 +74,10 @@
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Tor (.onion)에 연결하면 최고의 보안과 프라이버시를 가능케 합니다. 계속하시려면 "확인"을 눌러주세요.</string>
   <string name="id_continue">계속</string>
+  <string name="id_copy_details">Copy details</string>
+  <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">클립보드에 복사</string>
+  <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_create">생성</string>
   <string name="id_create_a_pin_to_access_your">지갑을 사용하기 전 비밀번호를 설정하세요</string>
   <string name="id_create_new_wallet">새로운 지갑 생성</string>
@@ -324,6 +328,7 @@
   <string name="id_request_sent">요청 보냄</string>
   <string name="id_request_twofactor_reset">2FA 새로고침 요청하기</string>
   <string name="id_requested_fee_rate_too_low">요청한 수수료는 너무 낮습니다</string>
+  <string name="id_reset">Reset</string>
   <string name="id_reset_spv">SPV 새로고침</string>
   <string name="id_resetting_your_twofactor_takes">2FA 재설정에는 최소 12개월이 걸립니다. 2FA 인증방법을 잃어버린 것이 확실한 경우, 재설정을 하기 위해 새로운 이메일 주소를 보내주세요.</string>
   <string name="id_restore">복구</string>
@@ -353,9 +358,10 @@
   <string name="id_send_to">수령인</string>
   <string name="id_sending">보내는 중</string>
   <string name="id_sending_request">요청 보내는 중...</string>
-  <string name="id_sent">전송 완료&lt;br&gt;</string>
+  <string name="id_sent">전송 완료</string>
   <string name="id_sent_to">수령인</string>
   <string name="id_set_a_new_pin">새로운 비밀번호 설정</string>
+  <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">사용자 지정 수수료 설정</string>
   <string name="id_set_twofactor_threshold">2FA 한도 정하기</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
@@ -378,6 +384,7 @@
   <string name="id_slide_to_send">밀어서 보내기</string>
   <string name="id_slow">느리게</string>
   <string name="id_sms">문자</string>
+  <string name="id_snnreset_this_setting_and_then">%s.\n\nReset this setting and then re-activate it.</string>
   <string name="id_socks5_hostname">Socks5 호스트 명</string>
   <string name="id_socks5_port">Socks5 포트</string>
   <string name="id_socks5_proxy_and_port_must_be">SOCKS5 프록시와 포트를 설정하여야 합니다</string>
@@ -394,6 +401,7 @@
   <string name="id_sweep_into_s">%s로 자산 sweep 하기</string>
   <string name="id_switch_network">네트워크 전환</string>
   <string name="id_synchronize_spv_on_mobile">모바일 기기에서 SPV 연동하기</string>
+  <string name="id_syou_need_ton1_reset_greens">%s.You need to:\n1. Reset Green\'s Face/TouchID login,\n2. Log in with PIN,\n3. Re-activate Face/TouchID from Green Settings.</string>
   <string name="id_system_message">시스템 메시지</string>
   <string name="id_tap_on_the_card_to_view">카드를 터치하여 거래를 확인하세요</string>
   <string name="id_tap_to_restart_the_simplified">터치하여 Simplified Payment Verification을 다시 시작하세요</string>
@@ -427,6 +435,7 @@
   <string name="id_transaction_details">상세 거래 내역</string>
   <string name="id_transaction_id">거래 ID</string>
   <string name="id_transaction_sent">거래 보냄</string>
+  <string name="id_transactions">Transactions</string>
   <string name="id_try_now">지금 시도하기</string>
   <string name="id_two_factor_authentication">2FA </string>
   <string name="id_twofactor">2FA</string>

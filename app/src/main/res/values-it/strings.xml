@@ -49,6 +49,7 @@
   <string name="id_blocks">blocchi</string>
   <string name="id_blocks_confirmed">blocchi confermati</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip non è impostato. Per favore  impostalo usando l\'applicazione desktop per riuscire ad usarlo.</string>
+  <string name="id_by_proceeding_to_the_next_steps">Procedendo al passaggio successivo accetti i %s</string>
   <string name="id_call">Telefonata</string>
   <string name="id_camera_problem">Problema con la fotocamera</string>
   <string name="id_cancel">Annulla</string>
@@ -73,7 +74,10 @@
   <string name="id_connecting_to_peers">Connessione ai peer...</string>
   <string name="id_connecting_to_tor_onion_nodes">Connettersi a nodi Tor (.onion) garantisce massima privacy e sicurezza. Premi "OK" per continuare.</string>
   <string name="id_continue">Continua</string>
+  <string name="id_copy_details">Copia i dettagli</string>
+  <string name="id_copy_raw_transaction">Copia raw transaction</string>
   <string name="id_copy_to_clipboard">Copia in Clipboard</string>
+  <string name="id_copy_transaction_id">Copia ID di transazione</string>
   <string name="id_create">Crea</string>
   <string name="id_create_a_pin_to_access_your">Crea un PIN per l\'accesso al wallet</string>
   <string name="id_create_new_wallet">Crea Nuovo Wallet</string>
@@ -324,6 +328,7 @@
   <string name="id_request_sent">Richiesta Inviata</string>
   <string name="id_request_twofactor_reset">Richiedi reset del Secondo Fattore</string>
   <string name="id_requested_fee_rate_too_low">Tasso di commissione richiesto troppo basso</string>
+  <string name="id_reset">Reset</string>
   <string name="id_reset_spv">Riavvia SPV</string>
   <string name="id_resetting_your_twofactor_takes">Il reset dell\' Autenticazione a Due Fattori richiede minimo 12 mesi. Se sei sicuro di aver perso l\'accesso al tuo metodo di autenticazione, fornisci un indirizzo email per il reset.</string>
   <string name="id_restore">Ripristina</string>
@@ -356,6 +361,7 @@
   <string name="id_sent">Inviato</string>
   <string name="id_sent_to">Inviato a</string>
   <string name="id_set_a_new_pin">Imposta un nuovo PIN</string>
+  <string name="id_set_an_email_for_recovery">Imposta email per il recupero</string>
   <string name="id_set_custom_fee_rate">Imposta commissione personalizzata</string>
   <string name="id_set_twofactor_threshold">Imposta limite per autenticazione a due fattori</string>
   <string name="id_set_up_a_passcode_for_your_ios">Imposta un codice per il tuo device iOS per impostare un PIN per Blockstream Green</string>
@@ -378,6 +384,7 @@
   <string name="id_slide_to_send">Scorri per Inviare</string>
   <string name="id_slow">Lento</string>
   <string name="id_sms">SMS</string>
+  <string name="id_snnreset_this_setting_and_then">%s.\n\nReset questa impostazione e successivamente riattivala.</string>
   <string name="id_socks5_hostname">Socks5 Hostname</string>
   <string name="id_socks5_port">Socks5 Port</string>
   <string name="id_socks5_proxy_and_port_must_be">SOCKS5 proxy e porta devono essere specificati</string>
@@ -394,6 +401,7 @@
   <string name="id_sweep_into_s">Sweep verso %s</string>
   <string name="id_switch_network">Cambio Network</string>
   <string name="id_synchronize_spv_on_mobile">Abilita Sincronizzazione SPV mobile</string>
+  <string name="id_syou_need_ton1_reset_greens">%s.Devi:\n1. Effettuare il Reset del login con Face/TouchID di Green,\n2. Effettuare Log in col PIN,\n3. Riattivare il login con Face/TouchID dalle impostazioni di Green.</string>
   <string name="id_system_message">Messaggio di Sistema</string>
   <string name="id_tap_on_the_card_to_view">Tocca la scheda per vedere le transazioni.</string>
   <string name="id_tap_to_restart_the_simplified">Premi per re-inizializzare la Simplified Payment Verification (SPV)</string>
@@ -427,6 +435,7 @@
   <string name="id_transaction_details">Dettagli transazione</string>
   <string name="id_transaction_id">ID Transazione</string>
   <string name="id_transaction_sent">Transazione Inviata</string>
+  <string name="id_transactions">Transazioni</string>
   <string name="id_try_now">Prova ora</string>
   <string name="id_two_factor_authentication">AUTENTICAZIONE A DUE FATTORI</string>
   <string name="id_twofactor">AUTENTICAZIONE A DUE FATTORI</string>
