@@ -162,7 +162,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         // Set date/time
         final TextView dateText = UI.find(this, R.id.txDateText);
         final String date = mTxItem.getLocalizedDate(DateFormat.LONG);
-        dateText.setText(date);
+        final String time = mTxItem.getLocalizedTime(DateFormat.SHORT);
+        dateText.setText(date + ", " + time);
 
         // Set fees
         showFeeInfo(mTxItem.fee, mTxItem.vSize, mTxItem.feeRate);

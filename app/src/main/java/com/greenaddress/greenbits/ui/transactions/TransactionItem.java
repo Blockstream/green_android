@@ -76,9 +76,12 @@ public class TransactionItem implements Serializable {
         return 0;
     }
 
+    public String getLocalizedTime(final int style) {
+        return DateFormat.getTimeInstance(style).format(this.date);
+    }
+
     public String getLocalizedDate(final int style) {
-        final Locale l = Locale.getDefault();
-        return DateFormat.getDateInstance(style, l).format(this.date);
+        return DateFormat.getDateInstance(style).format(this.date);
     }
 
     public boolean hasEnoughConfirmations() {
