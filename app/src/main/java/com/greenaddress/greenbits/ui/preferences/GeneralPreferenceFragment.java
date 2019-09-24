@@ -150,7 +150,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             if (!newValue.equals(settings.getUnit())) {
                 settings.setUnit(newValue.toString());
                 setUnitSummary(null);
-                mService.getExecutor().execute(() -> updateSettings(settings));
+                mService.getExecutor().execute(() -> {
+                    updateSettings(settings);
+                    final TwoFactorConfigDataObservable twoFaData =
+                        mService.getModel().getTwoFactorConfigDataObservable();
+                    if (twoFaData.getTwoFactorConfigData() != null) {
+                        setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
+                    }
+                });
                 return true;
             }
             return false;
