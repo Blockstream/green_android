@@ -13,8 +13,6 @@ class AssetIcon {
             } catch {
                 print(error.localizedDescription)
             }
-        } else {
-            return
         }
     }
 

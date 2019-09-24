@@ -22,7 +22,6 @@ class TransactionDetailViewController: KeyboardViewController {
 
     var wallet: WalletItem!
     var transaction: Transaction!
-    var icons: [String: String?]?
 
     private var cellTypes = TransactionDetailCellType.allCases
     private var isLiquid: Bool = false
