@@ -16,6 +16,9 @@ class InitialViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        let backItem = UIBarButtonItem()
+        backItem.title = " "
+        navigationItem.backBarButtonItem = backItem
         content.restoreButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         content.networkButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         reload()

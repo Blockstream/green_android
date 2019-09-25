@@ -40,7 +40,6 @@
 		0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */; };
 		0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */; };
 		0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */; };
-		0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86920E56F4400F6AAAB /* TOSViewController.swift */; };
 		0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */; };
 		0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */; };
 		09B761AD212280C800989B1D /* bip21Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AC212280C800989B1D /* bip21Helper.swift */; };
@@ -126,7 +125,6 @@
 		81E9B80221C92EF7004D87B6 /* WalletCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81E9B80121C92EF7004D87B6 /* WalletCardView.xib */; };
 		81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81E9B80321C94525004D87B6 /* WalletFullCardView.xib */; };
 		81E9B80621C946CE004D87B6 /* WalletFullCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E9B80521C946CE004D87B6 /* WalletFullCardView.swift */; };
-		81EFB1E1222070E0001CE5AE /* TOSView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81EFB1E0222070E0001CE5AE /* TOSView.xib */; };
 		81EFB1E3222075D3001CE5AE /* InstructionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81EFB1E2222075D3001CE5AE /* InstructionView.xib */; };
 		81EFB1E522207CE7001CE5AE /* CreateWalletView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81EFB1E422207CE7001CE5AE /* CreateWalletView.xib */; };
 		81EFB1E9222082C3001CE5AE /* VerifyMnemonicsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81EFB1E8222082C3001CE5AE /* VerifyMnemonicsView.xib */; };
@@ -190,7 +188,6 @@
 		0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveBtcViewController.swift; sourceTree = "<group>"; };
 		0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetailsViewController.swift; sourceTree = "<group>"; };
 		0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBTCConfirmationViewController.swift; sourceTree = "<group>"; };
-		0992F86920E56F4400F6AAAB /* TOSViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOSViewController.swift; sourceTree = "<group>"; };
 		0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLoginViewController.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
 		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
@@ -313,7 +310,6 @@
 		81E9B80121C92EF7004D87B6 /* WalletCardView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletCardView.xib; sourceTree = "<group>"; };
 		81E9B80321C94525004D87B6 /* WalletFullCardView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletFullCardView.xib; sourceTree = "<group>"; };
 		81E9B80521C946CE004D87B6 /* WalletFullCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletFullCardView.swift; sourceTree = "<group>"; };
-		81EFB1E0222070E0001CE5AE /* TOSView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TOSView.xib; sourceTree = "<group>"; };
 		81EFB1E2222075D3001CE5AE /* InstructionView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = InstructionView.xib; sourceTree = "<group>"; };
 		81EFB1E422207CE7001CE5AE /* CreateWalletView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CreateWalletView.xib; sourceTree = "<group>"; };
 		81EFB1E8222082C3001CE5AE /* VerifyMnemonicsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VerifyMnemonicsView.xib; sourceTree = "<group>"; };
@@ -557,8 +553,6 @@
 			isa = PBXGroup;
 			children = (
 				81522EB7226F15B3009C297C /* Onboarding.storyboard */,
-				81EFB1E0222070E0001CE5AE /* TOSView.xib */,
-				0992F86920E56F4400F6AAAB /* TOSViewController.swift */,
 				81EFB1E2222075D3001CE5AE /* InstructionView.xib */,
 				0926C14B211912AE0008F94A /* InstructionViewController.swift */,
 				81EFB1E422207CE7001CE5AE /* CreateWalletView.xib */,
@@ -870,7 +864,6 @@
 				817A6307222461280054FC60 /* SendBtcDetailsView.xib in Resources */,
 				6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */,
 				81286119222212DB005598D3 /* SetGauthView.xib in Resources */,
-				81EFB1E1222070E0001CE5AE /* TOSView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -990,7 +983,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0933A599210716EC00C43838 /* GreenAddress.swift in Sources */,
-				0992F86A20E56F4400F6AAAB /* TOSViewController.swift in Sources */,
 				81923A33228084FF0097BEA8 /* AssetsListTableViewController.swift in Sources */,
 				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
 				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,
