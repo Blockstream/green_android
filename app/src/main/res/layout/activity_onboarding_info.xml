@@ -107,12 +107,29 @@
                 android:layout_height="match_parent"
                 android:gravity="bottom">
 
-                <Button
-                    android:id="@+id/continueButton"
-                    style="@style/nextButton"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/id_next" />
+                    android:orientation="vertical"
+                    android:background="@color/buttonJungleGreen"
+                    android:paddingTop="16dp">
+
+                    <TextView
+                        android:id="@+id/tosByProceedingText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/white"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"/>
+
+                    <Button
+                        android:id="@+id/continueButton"
+                        style="@style/nextButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_continue" />
+                </LinearLayout>
 
             </RelativeLayout>
 

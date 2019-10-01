@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.TextView.BufferType;
 
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.LoginActivity;
@@ -16,7 +15,7 @@ import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ThemeUtils;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.onboarding.TermsActivity;
+import com.greenaddress.greenbits.ui.onboarding.InfoActivity;
 
 public class FirstScreenActivity extends LoginActivity {
 
@@ -46,7 +45,7 @@ public class FirstScreenActivity extends LoginActivity {
         loginButton.setText(mService.hasPin() ? R.string.id_log_in : R.string.id_create_new_wallet);
         Intent loginButtonIntent = mService.hasPin() ?
                                    new Intent(this, PinActivity.class) :
-                                   new Intent(this, TermsActivity.class);
+                                   new Intent(this, InfoActivity.class);
         loginButton.setOnClickListener(v -> startActivity(loginButtonIntent));
 
 
