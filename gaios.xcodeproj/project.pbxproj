@@ -58,19 +58,24 @@
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
+		6D1674FA234C0E2200C4749D /* NetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D1674F8234C0E2200C4749D /* NetworkSelection.storyboard */; };
 		6D2A613623302694008C518A /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2A613523302694008C518A /* UIImage.swift */; };
 		6D2A629223359FB3008C518A /* AssetIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2A629123359FB3008C518A /* AssetIcon.swift */; };
 		6D565ECF22C2E44F00C20786 /* TransactionDetailHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ECE22C2E44F00C20786 /* TransactionDetailHeaderCell.swift */; };
 		6D565ED122C2E50900C20786 /* TransactionStatusTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ED022C2E50900C20786 /* TransactionStatusTableCell.swift */; };
 		6D565ED322C2E53E00C20786 /* TransactionDetailTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ED222C2E53E00C20786 /* TransactionDetailTableCell.swift */; };
 		6D707ECA229DAA830038CCA8 /* NetworkSelectionTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D707EC8229DAA830038CCA8 /* NetworkSelectionTableCell.swift */; };
-		6D707ED8229DBC340038CCA8 /* NetworkSelectionSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D707ED7229DBC330038CCA8 /* NetworkSelectionSettingsView.xib */; };
+		6D7176BA234FF2B3001E1538 /* NetworkSelectionSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D7176B9234FF2B2001E1538 /* NetworkSelectionSettingsView.xib */; };
 		6D7B5F9322E6852D00DE049D /* WalletMiniCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7B5F9122E6852D00DE049D /* WalletMiniCollection.swift */; };
 		6D7B5F9422E6852D00DE049D /* WalletMiniCollection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D7B5F9222E6852D00DE049D /* WalletMiniCollection.xib */; };
 		6D8099CF22FA235A0069A69F /* TransactionDetail.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D8099CE22FA235A0069A69F /* TransactionDetail.storyboard */; };
 		6D8099D222FA24200069A69F /* NotesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8099D122FA24200069A69F /* NotesViewController.swift */; };
 		6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D8099D723021CEF0069A69F /* PopoverMenu.storyboard */; };
 		6D8099DB23021D0F0069A69F /* PopoverMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8099DA23021D0F0069A69F /* PopoverMenuViewController.swift */; };
+		6D97046E2344146300839598 /* ModalAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D97046D2344146300839598 /* ModalAnimator.swift */; };
+		6D970470234418A600839598 /* ModalPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D97046F234418A600839598 /* ModalPresentationController.swift */; };
+		6D9704722344229100839598 /* ModalTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9704712344229100839598 /* ModalTransitioningDelegate.swift */; };
+		6DC4D155234D2040008207AF /* NetworkSelectionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DC4D154234D2040008207AF /* NetworkSelectionSettingsView.swift */; };
 		6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DD813B222BC58A7002DCC8B /* Assets.storyboard */; };
 		6DD813B522BC6218002DCC8B /* AssetDetailHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD813B422BC6218002DCC8B /* AssetDetailHeaderCell.swift */; };
 		6DD813B722BDA4F2002DCC8B /* AssetDetailTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD813B622BDA4F2002DCC8B /* AssetDetailTableCell.swift */; };
@@ -219,19 +224,24 @@
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
+		6D1674F9234C0E2200C4749D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = gaios/Base.lproj/NetworkSelection.storyboard; sourceTree = SOURCE_ROOT; };
 		6D2A613523302694008C518A /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		6D2A629123359FB3008C518A /* AssetIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIcon.swift; sourceTree = "<group>"; };
 		6D565ECE22C2E44F00C20786 /* TransactionDetailHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailHeaderCell.swift; sourceTree = "<group>"; };
 		6D565ED022C2E50900C20786 /* TransactionStatusTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionStatusTableCell.swift; sourceTree = "<group>"; };
 		6D565ED222C2E53E00C20786 /* TransactionDetailTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailTableCell.swift; sourceTree = "<group>"; };
 		6D707EC8229DAA830038CCA8 /* NetworkSelectionTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionTableCell.swift; sourceTree = "<group>"; };
-		6D707ED7229DBC330038CCA8 /* NetworkSelectionSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NetworkSelectionSettingsView.xib; sourceTree = "<group>"; };
+		6D7176B9234FF2B2001E1538 /* NetworkSelectionSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NetworkSelectionSettingsView.xib; sourceTree = "<group>"; };
 		6D7B5F9122E6852D00DE049D /* WalletMiniCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletMiniCollection.swift; sourceTree = "<group>"; };
 		6D7B5F9222E6852D00DE049D /* WalletMiniCollection.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WalletMiniCollection.xib; sourceTree = "<group>"; };
 		6D8099CE22FA235A0069A69F /* TransactionDetail.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TransactionDetail.storyboard; sourceTree = "<group>"; };
 		6D8099D122FA24200069A69F /* NotesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesViewController.swift; sourceTree = "<group>"; };
 		6D8099D723021CEF0069A69F /* PopoverMenu.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopoverMenu.storyboard; sourceTree = "<group>"; };
 		6D8099DA23021D0F0069A69F /* PopoverMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuViewController.swift; sourceTree = "<group>"; };
+		6D97046D2344146300839598 /* ModalAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalAnimator.swift; sourceTree = "<group>"; };
+		6D97046F234418A600839598 /* ModalPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPresentationController.swift; sourceTree = "<group>"; };
+		6D9704712344229100839598 /* ModalTransitioningDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTransitioningDelegate.swift; sourceTree = "<group>"; };
+		6DC4D154234D2040008207AF /* NetworkSelectionSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkSelectionSettingsView.swift; sourceTree = "<group>"; };
 		6DD813B222BC58A7002DCC8B /* Assets.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Assets.storyboard; sourceTree = "<group>"; };
 		6DD813B422BC6218002DCC8B /* AssetDetailHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailHeaderCell.swift; sourceTree = "<group>"; };
 		6DD813B622BDA4F2002DCC8B /* AssetDetailTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailTableCell.swift; sourceTree = "<group>"; };
@@ -416,6 +426,7 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
+				6D97046C2344141E00839598 /* ModalPresentation */,
 				81073D7A21E8B27700E08F86 /* Localizable.strings */,
 				8187B47E21E9026900235A35 /* InfoPlist.strings */,
 				81A3B53E2244AE8C0091B6BC /* Authentication */,
@@ -482,9 +493,11 @@
 		6D707ED3229DB95F0038CCA8 /* NetworkSelection */ = {
 			isa = PBXGroup;
 			children = (
+				6D1674F8234C0E2200C4749D /* NetworkSelection.storyboard */,
 				6D707EC7229DAA650038CCA8 /* TableViewCells */,
 				0926C1492117978B0008F94A /* NetworkSelectionSettings.swift */,
-				6D707ED7229DBC330038CCA8 /* NetworkSelectionSettingsView.xib */,
+				6DC4D154234D2040008207AF /* NetworkSelectionSettingsView.swift */,
+				6D7176B9234FF2B2001E1538 /* NetworkSelectionSettingsView.xib */,
 			);
 			path = NetworkSelection;
 			sourceTree = "<group>";
@@ -507,6 +520,16 @@
 				6D8099DA23021D0F0069A69F /* PopoverMenuViewController.swift */,
 			);
 			path = Menu;
+			sourceTree = "<group>";
+		};
+		6D97046C2344141E00839598 /* ModalPresentation */ = {
+			isa = PBXGroup;
+			children = (
+				6D97046D2344146300839598 /* ModalAnimator.swift */,
+				6D97046F234418A600839598 /* ModalPresentationController.swift */,
+				6D9704712344229100839598 /* ModalTransitioningDelegate.swift */,
+			);
+			path = ModalPresentation;
 			sourceTree = "<group>";
 		};
 		6DD813B022BC585C002DCC8B /* Assets */ = {
@@ -827,6 +850,7 @@
 			files = (
 				81522EB8226F15B3009C297C /* Onboarding.storyboard in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
+				6D1674FA234C0E2200C4749D /* NetworkSelection.storyboard in Resources */,
 				81ACC4AF22733533004B1E92 /* Settings.storyboard in Resources */,
 				676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */,
 				67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */,
@@ -834,6 +858,7 @@
 				81286117222212C7005598D3 /* SetPhoneView.xib in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				81E9B80221C92EF7004D87B6 /* WalletCardView.xib in Resources */,
+				6D7176BA234FF2B3001E1538 /* NetworkSelectionSettingsView.xib in Resources */,
 				6D8099CF22FA235A0069A69F /* TransactionDetail.storyboard in Resources */,
 				811B963A21F5FC9500DE02CB /* HeaderWalletsCollection.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
@@ -847,7 +872,6 @@
 				81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */,
 				818C740D2224395B00B0F794 /* PinView.xib in Resources */,
 				81286115222212B5005598D3 /* SetEmailView.xib in Resources */,
-				6D707ED8229DBC340038CCA8 /* NetworkSelectionSettingsView.xib in Resources */,
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
 				8128612722242E86005598D3 /* WatchOnlySignInView.xib in Resources */,
 				676FCF271F9D0CF800354E93 /* Main.storyboard in Resources */,
@@ -989,6 +1013,7 @@
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
+				6D9704722344229100839598 /* ModalTransitioningDelegate.swift in Sources */,
 				81C602A522A553D3004E26E1 /* Assets.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				6D8099D222FA24200069A69F /* NotesViewController.swift in Sources */,
@@ -1035,6 +1060,7 @@
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
+				6D97046E2344146300839598 /* ModalAnimator.swift in Sources */,
 				FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,
 				FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */,
@@ -1056,9 +1082,11 @@
 				6D7B5F9322E6852D00DE049D /* WalletMiniCollection.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
+				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
 				81E9B80021C92DB1004D87B6 /* WalletCardView.swift in Sources */,
 				81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */,
 				092D05B321277E2E00B9B7CD /* Date.swift in Sources */,
+				6DC4D155234D2040008207AF /* NetworkSelectionSettingsView.swift in Sources */,
 				81923A35228089BE0097BEA8 /* AssetTableCell.swift in Sources */,
 				FF29CA7422374ED20035F95A /* UIViewController.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
@@ -1115,6 +1143,14 @@
 				676FCF2B1F9D0CF800354E93 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		6D1674F8234C0E2200C4749D /* NetworkSelection.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6D1674F9234C0E2200C4749D /* Base */,
+			);
+			name = NetworkSelection.storyboard;
 			sourceTree = "<group>";
 		};
 		81073D7A21E8B27700E08F86 /* Localizable.strings */ = {

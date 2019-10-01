@@ -5,23 +5,37 @@ import PromiseKit
 class TabViewController: UITabBarController {
 
     private static let AUTOLOCK = "autolock"
+    private static let PINLOCK = "pinlock"
     let snackbar = SnackBarNetwork()
     private var startTime = DispatchTime.now()
     private var endTime = DispatchTime.now()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(self.lockApplication(_:)), name: NSNotification.Name(rawValue: TabViewController.AUTOLOCK), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateConnection), name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(lockApplication),
+                                               name: NSNotification.Name(rawValue: TabViewController.AUTOLOCK),
+                                               object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(lockApplication),
+                                               name: NSNotification.Name(rawValue: TabViewController.PINLOCK),
+                                               object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateConnection),
+                                               name: NSNotification.Name(rawValue: EventType.Network.rawValue),
+                                               object: nil)
     }
 
     @objc func lockApplication(_ notification: NSNotification) {
+        var pin = false
+        if notification.name == NSNotification.Name(rawValue: TabViewController.PINLOCK) {
+            if let userInfo = notification.userInfo as? [String: Bool] {
+                pin = userInfo["pin"] ?? false
+            }
+        }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()
             return Guarantee()
         }.map {
-            getAppDelegate()!.lock()
+            getAppDelegate()!.lock(with: pin)
         }.map(on: bgq) {
             try getSession().disconnect()
         }.ensure {

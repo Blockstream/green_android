@@ -3,7 +3,6 @@ import UIKit
 class NetworkSelectionTableCell: UITableViewCell {
 
     @IBOutlet weak var logoImageView: UIImageView!
-    @IBOutlet weak var logoWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var networkNameLabel: UILabel!
     @IBOutlet weak var cardView: UIView!
     @IBOutlet weak var indicatorImageView: UIImageView!
@@ -14,7 +13,6 @@ class NetworkSelectionTableCell: UITableViewCell {
 
     override func prepareForReuse() {
         logoImageView.image = nil
-        logoWidthConstraint.constant = 24
         networkNameLabel.text = ""
     }
 
@@ -27,9 +25,9 @@ class NetworkSelectionTableCell: UITableViewCell {
         cardView.borderColor = selected ? UIColor.customMatrixGreen() : UIColor.customModalMedium()
         let indicatorImageName = selected ? "network_selected" : "network_deselected"
         indicatorImageView.image = UIImage(named: indicatorImageName)
-        let logoName = network.liquid ? "btc_liquid_title" : network.icon
-        logoImageView.image = UIImage(named: logoName!)
-        logoWidthConstraint.constant = network.liquid ? 52 : 24
+        if let iconName = network.icon {
+            logoImageView.image = UIImage(named: iconName)
+        }
         networkNameLabel.text = network.name
         selectionStyle = .none
     }

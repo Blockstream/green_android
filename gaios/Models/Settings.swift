@@ -16,7 +16,6 @@ enum SettingsType: String, Codable {
     case SetupPin
     case WatchOnly
     case Logout
-    case SwitchNetwork
     case BitcoinDenomination = "unit"
     case ReferenceExchangeRate = "pricing"
     case SetupTwoFactor

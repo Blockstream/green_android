@@ -15,7 +15,6 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var sweepLabel: UILabel!
     @IBOutlet weak var receiveLabel: UILabel!
     @IBOutlet weak var stackButton: UIButton!
-    @IBOutlet weak var networkImage: UIImageView!
     @IBOutlet weak var sendImage: UIImageView!
     @IBOutlet weak var sweepImage: UIImageView!
     @IBOutlet weak var receiveImage: UIImageView!
@@ -24,6 +23,9 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var assetsLabel: UILabel!
     @IBOutlet weak var assetsView: UIView!
     @IBOutlet weak var assetsHeight: NSLayoutConstraint!
+    @IBOutlet weak var networkSelectorStackView: UIStackView!
+    @IBOutlet weak var networkIconImageView: UIImageView!
+    @IBOutlet weak var networkTitleLabel: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()

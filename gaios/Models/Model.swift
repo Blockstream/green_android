@@ -340,8 +340,11 @@ func getFeeEstimates() -> [UInt64]? {
     return estimates == nil ? nil : estimates!["fees"] as? [UInt64]
 }
 
-func getUserNetworkSettings() -> [String: Any]? {
-    return UserDefaults.standard.value(forKey: "network_settings") as? [String: Any]
+func getUserNetworkSettings() -> [String: Any] {
+    if let settings = UserDefaults.standard.value(forKey: "network_settings") as? [String: Any] {
+        return settings
+    }
+    return [:]
 }
 
 func removeKeychainData() {

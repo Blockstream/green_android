@@ -15,7 +15,7 @@ func getSession() -> Session {
 
 func getNetwork() -> String {
     let defaults = getUserNetworkSettings()
-    return (defaults?["network"] as? String ?? "Mainnet").lowercased()
+    return (defaults["network"] as? String ?? "Mainnet").lowercased()
 }
 
 @UIApplicationMain
@@ -41,11 +41,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func connect() throws {
         let networkSettings = getUserNetworkSettings()
-        let networkName = ((networkSettings?["network"] as? String) ?? "mainnet").lowercased()
-        let useProxy = networkSettings?["proxy"] as? Bool ?? false
-        let socks5Hostname = useProxy ? networkSettings?["socks5_hostname"] as? String ?? "" : ""
-        let socks5Port = useProxy ? networkSettings?["socks5_port"] as? String ?? "" : ""
-        let useTor = networkSettings?["tor"] as? Bool ?? false
+        let networkName = ((networkSettings["network"] as? String) ?? "mainnet").lowercased()
+        let useProxy = networkSettings["proxy"] as? Bool ?? false
+        let socks5Hostname = useProxy ? networkSettings["socks5_hostname"] as? String ?? "" : ""
+        let socks5Port = useProxy ? networkSettings["socks5_port"] as? String ?? "" : ""
+        let useTor = networkSettings["tor"] as? Bool ?? false
         let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
         let netParams: [String: Any] = ["name": networkName, "use_tor": useTor, "proxy": proxyURI]
         try getSession().connect(netParams: netParams)
@@ -55,8 +55,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         try! getSession().disconnect()
     }
 
-    func lock() {
+    func lock(with pin: Bool) {
         window?.endEditing(true)
+        if pin {
+            if isPinEnabled(network: getNetwork()) {
+                instantiateViewControllerAsRoot(storyboard: "Main", identifier: "PinLoginNavigationController")
+                return
+            }
+        }
         instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
     }
 
@@ -88,7 +94,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         AppDelegate.getService().reset()
 
         // Set screen lock
-        lock()
+        lock(with: false)
         ScreenLockWindow.shared.setup()
         ScreenLocker.shared.startObserving()
         return true

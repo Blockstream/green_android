@@ -100,8 +100,7 @@ class InitialViewController: UIViewController {
             next.isTemporary = tempRestore
         }
         if let networkSelector = segue.destination as? NetworkSelectionSettings {
-            networkSelector.saveTitle = NSLocalizedString("id_save", comment: "")
-            networkSelector.onSave = {
+            networkSelector.onSelection = {
                 let network = getNetwork()
                 onFirstInitialization(network: network)
                 self.reload()

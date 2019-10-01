@@ -15,6 +15,8 @@ class TransactionsController: UITableViewController {
     var isSweep: Bool = false
     let pointerKey = String(format: "%@_wallet_pointer", getNetwork())
 
+    private var modalTransitioningDelegate = ModalTransitioningDelegate()
+
     lazy var noTransactionsLabel: UILabel = {
         let noTransactionsLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 100, y: self.tableView.tableHeaderView!.frame.height, width: 200, height: self.view.frame.size.height - self.tableView.tableHeaderView!.frame.height))
         noTransactionsLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
@@ -162,6 +164,7 @@ class TransactionsController: UITableViewController {
         view.sweepView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sweepFromWallet)))
         view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.wallets)))
         view.assetsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.showAssets)))
+        view.networkSelectorStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.switchNetwork)))
         return view
     }
 
@@ -186,8 +189,9 @@ class TransactionsController: UITableViewController {
                 view.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency)"
                 view.unit.text = denom
             }
+            view.networkTitleLabel.text = network.name
             view.walletName.text = self.presentingWallet!.localizedName()
-            view.networkImage.image = UIImage(named: network.icon!)
+            view.networkIconImageView.image = UIImage(named: network.icon!)
             view.assetsLabel.text = String(format: NSLocalizedString(wallet.balance.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.balance.count)
             if twoFactorReset.isResetActive {
                 view.actionsView.isHidden = true
@@ -203,6 +207,10 @@ class TransactionsController: UITableViewController {
     @objc func showAssets(_ sender: UIButton) {
         guard presentingWallet?.balance != nil else { return }
         self.performSegue(withIdentifier: "assets", sender: self)
+    }
+
+    @objc func switchNetwork() {
+        self.performSegue(withIdentifier: "switch_network", sender: self)
     }
 
     @objc func wallets(_ sender: UIButton) {
@@ -249,7 +257,16 @@ class TransactionsController: UITableViewController {
         } else if let nextController = segue.destination as? AssetsListTableViewController {
             nextController.wallet = presentingWallet
             nextController.title = presentingWallet!.localizedName()
+        } else if let networkSelector = segue.destination as? NetworkSelectionSettings {
+            networkSelector.transitioningDelegate = modalTransitioningDelegate
+            networkSelector.modalPresentationStyle = .custom
+            networkSelector.onSelection = networkDidChange
+            networkSelector.isLanding = false
         }
+    }
+
+    func networkDidChange() {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "pinlock"), object: nil, userInfo: ["pin": true])
     }
 }
 

@@ -84,11 +84,6 @@ class SettingsViewController: UIViewController {
     }
 
     func getNetworks() -> [SettingsItem] {
-        let switchNetwork = SettingsItem(
-            title: String(format: NSLocalizedString("id_switch_network", comment: ""), getNetwork()).localizedCapitalized,
-            subtitle: "",
-            section: .network,
-            type: .SwitchNetwork)
         let setupPin = SettingsItem(
             title: String(format: NSLocalizedString(AuthenticationTypeHandler.supportsBiometricAuthentication() ? "id_setup_pin_and_s" : "id_setup_pin", comment: ""), NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "")),
             subtitle: "",
@@ -99,12 +94,10 @@ class SettingsViewController: UIViewController {
             subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_disabled" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .network,
             type: .WatchOnly)
-        if isWatchOnly || isResetActive {
-            return [switchNetwork]
-        } else if isLiquid {
-            return [switchNetwork, setupPin]
+        if isLiquid {
+            return [setupPin]
         }
-        return [switchNetwork, setupPin, watchOnly]
+        return [setupPin, watchOnly]
     }
 
     func getAccount() -> [SettingsItem] {
@@ -511,15 +504,6 @@ extension SettingsViewController {
         if let controller = segue.destination as? WalletsViewController {
             controller.isSweep = true
         }
-
-        if let controller = segue.destination as? NetworkSelectionSettings {
-            controller.saveTitle = NSLocalizedString("id_logout_and_switch", comment: "")
-            controller.onSave = {
-                let network = getNetwork()
-                onFirstInitialization(network: network)
-                self.logout()
-            }
-        }
     }
 }
 
@@ -560,7 +544,6 @@ extension SettingsViewController: UITableViewDelegate {
         case .BitcoinDenomination: showBitcoinDenomination()
         case .SetupPin: performSegue(withIdentifier: "screenLock", sender: nil)
         case .Logout: logout()
-        case .SwitchNetwork: performSegue(withIdentifier: "network", sender: nil)
         case .WatchOnly: showWatchOnly()
         case .ReferenceExchangeRate: performSegue(withIdentifier: "currency", sender: nil)
         case .SetupTwoFactor: performSegue(withIdentifier: "setupTwoFactor", sender: nil)
