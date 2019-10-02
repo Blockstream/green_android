@@ -456,7 +456,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
 
     @Override
     public void onClick(final View view) {
-        onInserted(mAddressEditText.getText().toString());
+        onInserted(mAddressEditText.getText() == null ? "" : mAddressEditText.getText().toString());
     }
 
 
