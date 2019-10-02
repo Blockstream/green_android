@@ -10,35 +10,46 @@ import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.greenaddress.greenbits.ui.R;
 
 public class ProgressBarHandler {
-    private ProgressBar mProgressBar;
+    final private ProgressBar mProgressBar;
     private TransitionDrawable mTransStartLoading;
     private TransitionDrawable mTransStopLoading;
-    private static int DEFAULT_DURATION = 300;
+    final private FrameLayout fl;
+    final private static int DEFAULT_DURATION = 300;
 
     public ProgressBarHandler(final Context context) {
         mProgressBar = setup(context);
 
+        fl = new FrameLayout(context);
+        fl.setClickable(true);
+        fl.setFocusable(true);
         final RelativeLayout rl = new RelativeLayout(context);
+        rl.setLayoutParams(new ViewGroup.LayoutParams(
+                               ViewGroup.LayoutParams.MATCH_PARENT,
+                               ViewGroup.LayoutParams.MATCH_PARENT));
+        fl.addView(rl);
         rl.setGravity(Gravity.CENTER);
         rl.addView(mProgressBar);
-        ((Activity)context).addContentView(rl, new ViewGroup.LayoutParams(
+        ((Activity)context).addContentView(fl, new ViewGroup.LayoutParams(
                                                ViewGroup.LayoutParams.MATCH_PARENT,
                                                ViewGroup.LayoutParams.MATCH_PARENT));
         stop();
     }
 
     public void start() {
+        fl.setVisibility(View.VISIBLE);
         mProgressBar.setVisibility(View.VISIBLE);
         mTransStartLoading.startTransition(DEFAULT_DURATION);
     }
 
     public void stop() {
+        fl.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.INVISIBLE);
         mTransStopLoading.startTransition(DEFAULT_DURATION);
     }

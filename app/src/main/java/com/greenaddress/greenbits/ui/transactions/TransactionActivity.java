@@ -411,10 +411,12 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final ObjectNode tx = getSession().createTransactionRaw(bumpTxData);
             final Intent intent = new Intent(this, SendAmountActivity.class);
             intent.putExtra(INTENT_STRING_TX, tx.toString());
+            stopLoading();
             startActivity(intent);
             finish();
         } catch (Exception e) {
             UI.toast(this,e.getMessage(), Toast.LENGTH_LONG);
+            stopLoading();
             Log.e(TAG,e.getMessage());
             e.printStackTrace();
         }

@@ -79,6 +79,7 @@ public class MessagesActivity extends LoggedActivity
                     }
                     //FIXME put this inside the try block when testing with real system messages
                     mService.getModel().getEventDataObservable().remove(mCurrentEvent);
+                    stopLoading();
                     finishOnUiThread();
                 });
             } else {

@@ -64,6 +64,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
     @Override
     protected void onLoginFailure() {
         super.onLoginFailure();
+        stopLoading();
         final String message;
         final SharedPreferences prefs = mService.cfgPin();
         final int counter = prefs.getInt("counter", 0) + 1;
@@ -110,6 +111,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
     @Override
     protected void onLoginSuccess() {
         super.onLoginSuccess();
+        stopLoading();
         mService.cfgPin().edit().putInt("counter", 0).apply();
     }
 

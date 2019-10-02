@@ -421,6 +421,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     @Override
     protected void onLoginSuccess() {
         super.onLoginSuccess();
+        stopLoading();
         if (getCallingActivity() == null) {
             if (getIntent().getBooleanExtra(TEMPORARY_MODE, false)) {
                 final Intent intent = new Intent(this, TabbedMainActivity.class);
@@ -448,6 +449,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
         }
 
+        stopLoading();
         enableLogin();
     }
 

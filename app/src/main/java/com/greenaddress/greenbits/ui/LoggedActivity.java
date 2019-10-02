@@ -59,8 +59,10 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         }
         mService.getConnectionManager().deleteObserver(this);
         mService.getExecutor().execute(() -> {
+            startLoading();
             mService.disconnect();
             toFirst();
+            stopLoading();
         });
     }
 

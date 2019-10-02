@@ -191,7 +191,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
                 }
                 UI.toast(activity, R.string.id_transaction_sent, Toast.LENGTH_LONG);
                 mService.getModel().getBalanceDataObservable(mTxJson.get("subaccount").asInt()).refresh();
-
+                stopLoading();
                 activity.setResult(Activity.RESULT_OK);
                 activity.finishOnUiThread();
             } catch (final Exception e) {
