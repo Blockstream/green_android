@@ -159,4 +159,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
     @Override
     public void onPinBackPressed() {}
 
+    @Override
+    public void onBackPressed() {}
+
 }
