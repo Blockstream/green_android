@@ -44,6 +44,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
@@ -66,6 +67,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private ImageView mStatusIcon;
 
     private TransactionItem mTxItem;
+    private Map<String, BalanceData> mAssetsBalances;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_transaction; }
@@ -93,6 +95,12 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         mTxItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
         final boolean isWatchOnly = mService.isWatchOnly();
+
+        try {
+            mAssetsBalances = getModel().getCurrentAccountBalanceData();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
 
         // Set txid
         final TextView hashText = UI.find(this, R.id.txHashText);
@@ -425,12 +433,12 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     @Override
     public void onAssetSelected(final String assetId) {
         // Nothing for btc
-        if ("btc".equals(assetId))
+        if ("btc".equals(assetId) || mAssetsBalances == null)
             return;
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        BalanceData balance = mTxItem.mAssetBalances.get(assetId);
+        BalanceData balance = mAssetsBalances.get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", balance.getAssetInfo())
         .putExtra("SATOSHI", balance != null ? balance.getSatoshi() : 0L);
