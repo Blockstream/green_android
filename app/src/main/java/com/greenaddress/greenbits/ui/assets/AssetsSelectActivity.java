@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
@@ -34,6 +35,9 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
             toFirst();
             return;
         }
+
+        UI.preventScreenshots(this);
+
         setTitleBackTransparent();
         setContentView(R.layout.activity_assets_selection);
 

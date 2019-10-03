@@ -8,6 +8,7 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.ThemeUtils;
 
 import java.io.IOException;
@@ -29,6 +30,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
             toFirst();
             return;
         }
+
+        UI.preventScreenshots(this);
 
         SubaccountSelectFragment fragment = new SubaccountSelectFragment();
         getSupportFragmentManager().beginTransaction()
