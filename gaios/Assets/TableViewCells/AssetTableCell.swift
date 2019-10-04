@@ -35,5 +35,6 @@ class AssetTableCell: UITableViewCell {
         domainLabel.text = asset.entity?.domain ?? ""
         domainLabel.isHidden = asset.entity?.domain.isEmpty ?? true
         assetIconImageView.image = AssetIcon.loadAssetIcon(with: tag)
+        self.backgroundColor = UIColor.customTitaniumDark()
     }
 }

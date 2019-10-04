@@ -31,6 +31,7 @@ class TransactionTableCell: UITableViewCell {
     }
 
     func setup(with transaction: Transaction) {
+        self.backgroundColor = UIColor.customTitaniumDark()
         let assetTag = transaction.defaultAsset
         bumpFee.isHidden = !transaction.canRBF || isLiquid
         multipleAssets = transaction.amounts.count > 1
