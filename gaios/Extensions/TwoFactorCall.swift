@@ -10,12 +10,12 @@ enum TwoFactorCallError: Error {
 
 extension TwoFactorCall {
 
-    func resolve(_ sender: UIViewController) -> Promise<[String: Any]> {
+    func resolve(_ sender: UIViewController, connected: @escaping() -> Bool = { true }) -> Promise<[String: Any]> {
         func step() -> Promise<[String: Any]> {
             return Guarantee().map {
                 try self.getStatus()!
             }.then { json in
-                try self.resolving(sender: sender, json: json).map { _ in json }
+                try self.resolving(sender: sender, json: json, connected: connected).map { _ in json }
             }.then { json -> Promise<[String: Any]> in
                 guard let status = json["status"] as? String else { throw GaError.GenericError }
                 if status == "done" {
@@ -28,7 +28,7 @@ extension TwoFactorCall {
         return step()
     }
 
-    func resolving(sender: UIViewController, json: [String: Any]) throws -> Promise<Void> {
+    private func resolving(sender: UIViewController, json: [String: Any], connected: @escaping() -> Bool = { true }) throws -> Promise<Void> {
         guard let status = json["status"] as? String else { throw GaError.GenericError }
         switch status {
         case "done":
@@ -46,6 +46,7 @@ extension TwoFactorCall {
                     .map { sender.stopAnimating() }
                     .then { popup.method(methods) }
                     .map { method in sender.startAnimating(); return method }
+                    .then { code in self.waitConnection(connected).map { return code} }
                     .then { method in
                         try self.requestCode(method: method)
                     }
@@ -59,12 +60,29 @@ extension TwoFactorCall {
                 .map { sender.stopAnimating() }
                 .then { popup.code(method) }
                 .map { code in sender.startAnimating(); return code }
+                .then { code in self.waitConnection(connected).map { return code} }
                 .then { code in
                     return try self.resolveCode(code: code)
                 }
         default:
             return Guarantee().asVoid()
         }
+    }
+
+    func waitConnection(_ connected: @escaping() -> Bool = { true }) -> Promise<Void> {
+        var attempts = 0
+        func attempt() -> Promise<Void> {
+            attempts += 1
+            return Guarantee().map {
+                if !connected() {
+                    throw GaError.TimeoutError
+                }
+            }.recover { error -> Promise<Void> in
+                guard attempts < 3 else { throw error }
+                return after(DispatchTimeInterval.seconds(3)).then(on: nil, attempt)
+            }
+        }
+        return attempt()
     }
 }
 

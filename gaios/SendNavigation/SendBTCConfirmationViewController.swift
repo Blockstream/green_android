@@ -11,9 +11,12 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     @IBOutlet var content: SendBTCConfirmationView!
     private var uiErrorLabel: UIErrorLabel!
     private var isFiat = false
+    private var connected = true
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(updateConnection), name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
+
         tabBarController?.tabBar.isHidden = true
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         title = NSLocalizedString("id_send", comment: "")
@@ -56,6 +59,15 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         content.currencyButton.removeTarget(self, action: #selector(click(_:)), for: .touchUpInside)
+    }
+
+    @objc func updateConnection(_ notification: NSNotification) {
+        guard let connected = notification.userInfo?["connected"] as? Bool else { return }
+        self.connected = connected
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
     }
 
     func reload() {
@@ -119,7 +131,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }.then(on: bgq) {
             signTransaction(transaction: self.transaction)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve(self, connected: {
+                return self.connected })
         }.map(on: bgq) { resultDict in
             let result = resultDict["result"] as? [String: Any]
             if self.transaction.isSweep {
@@ -130,7 +143,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
                 return try getSession().sendTransaction(details: result!)
             }
         }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
-            call?.resolve(self) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
+            call?.resolve(self, connected: {
+                return self.connected }) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
