@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:visibility="gone"
-        android:text="@string/id_reuse_androids_authentication" />
+        android:text="@string/id_use_android_screen_lock_to_log" />
 
     <FrameLayout
         android:id="@+id/fragment_container"
