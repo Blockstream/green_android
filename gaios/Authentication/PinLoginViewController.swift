@@ -70,7 +70,10 @@ class PinLoginViewController: UIViewController {
         do {
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(Tor.self, from: json)
-            let text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            if tor.progress == 100 {
+                text = NSLocalizedString("id_logging_in", comment: "")
+            }
             NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
         } catch {
             print (error.localizedDescription)
