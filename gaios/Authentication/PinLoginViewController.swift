@@ -24,7 +24,7 @@ class PinLoginViewController: UIViewController {
         let navigationBarHeight: CGFloat =  navigationController!.navigationBar.frame.height
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: navigationBarHeight, height: navigationBarHeight))
         imageView.contentMode = .scaleAspectFit
-        let imageName = getGdkNetwork(network).liquid ? "btc_liquid_title" : getGdkNetwork(network).icon
+        let imageName = getGdkNetwork(network).liquid ? "btc_liquid" : getGdkNetwork(network).icon
         imageView.image = UIImage(named: imageName!)
         navigationItem.titleView = imageView
         navigationItem.setHidesBackButton(true, animated: false)

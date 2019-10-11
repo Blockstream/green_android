@@ -26,7 +26,7 @@ class WatchOnlySignIn: KeyboardViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let logoName = network.liquid ? "btc_liquid_title" : network.icon
+        let logoName = network.liquid ? "btc_liquid" : network.icon
         content.networkLogoImageView.image = UIImage(named: logoName!)
         content.networkNameLabel.text = network.name
         content.titlelabel.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
