@@ -52,8 +52,10 @@ class TransactionsController: UITableViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(self.onNewTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.onNewBlock(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
         loadWallet()
-        loadTransactions()
-        _ = getIcons()
+        refreshAssets()
+            .map { _ in self.loadTransactions() }
+            .map { _ in getIcons() }
+            .catch { _ in }
     }
 
     override func viewDidAppear(_ animated: Bool) {

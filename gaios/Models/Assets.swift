@@ -37,7 +37,7 @@ struct AssetInfo: Codable {
 func refreshAssets() -> Promise<[String: AssetInfo]?> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) { _ in
-        try getSession().refreshAssets(params: ["icons": true, "assets": false])
+        try getSession().refreshAssets(params: ["icons": false, "assets": true])
     }.compactMap(on: bgq) { data in
         guard var assetsData = data["assets"] as? [String: Any] else { return nil }
         if let modIndex = assetsData.keys.firstIndex(of: "last_modified") {
