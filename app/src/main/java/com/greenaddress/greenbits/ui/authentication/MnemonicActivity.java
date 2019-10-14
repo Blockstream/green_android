@@ -289,8 +289,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             final MaterialDialog d = UI.popup(MnemonicActivity.this, "Encryption passphrase")
                                      .customView(v, true)
                                      .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
-                                     .onPositive((dlg, w) -> fn.set(UI.getText(passEdit)))
-                                     .onNegative((dlg, w) -> enableLogin())
+                                     .onPositive((dlg, w) -> {dlg.dismiss(); fn.set(UI.getText(passEdit));})
+                                     .onNegative((dlg, w) -> {dlg.dismiss(); enableLogin();})
                                      .build();
             UI.mapEnterToPositive(d, R.id.passphraseValue);
             UI.showDialog(d);
