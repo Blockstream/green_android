@@ -266,6 +266,7 @@
 "id_on_average" = "on average";
 "id_one_attempt_remaining" = "One attempt remaining";
 "id_one_network_must_be_selected" = "One network must be selected. Selecting Bitcoin by default";
+"id_onion_addresses_require_tor" = "Onion addresses require Tor connectivity. Enable it in the network settings.";
 "id_only_connect_to_trusted_nodes" = "Only connect to trusted node(s) for SPV";
 "id_only_this_time" = "Only this time";
 "id_operation_failure" = "Operation failure";
@@ -332,7 +333,6 @@
 "id_restore" = "Restore";
 "id_restore_green_wallet" = "Restore Green Wallet";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
-"id_reuse_androids_authentication" = "Reuse Android's authentication";
 "id_review" = "Review";
 "id_s_blocks_left" = "%@ blocks left";
 "id_s_from_s" = "%@ from %@";
@@ -363,6 +363,7 @@
 "id_set_custom_fee_rate" = "Set custom fee rate";
 "id_set_twofactor_threshold" = "Set Two-Factor threshold";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
+"id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
 "id_set_up_pgp_key_for" = "Set up PGP key for communications";
 "id_set_up_twofactor_authentication" = "Set up Two-Factor authentication";
 "id_set_up_watchonly" = "Set up watch-only";
@@ -407,6 +408,7 @@
 "id_terms_of_service" = "Terms of service";
 "id_terms_of_use" = "Terms of Use";
 "id_thank_you_for_downloading_green" = "Thank you for downloading Green! Please leave us a review when you get a chance";
+"id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "The camera has a problem. You probably need to restart the device.";
 "id_the_easier_safer_and_faster" = "the easier, safer and faster wallet";
 "id_the_hardware_wallet_you_are" = "The hardware wallet you are using is not yet supported";
@@ -448,6 +450,7 @@
 "id_unknown_bip21_parameter" = "Unknown bip21 parameter";
 "id_unknown_custom" = "Unknown (Custom)";
 "id_updated" = "updated";
+"id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_user_not_found_or_invalid" = "User not found or invalid password";
 "id_username" = "Username";
 "id_username_not_available" = "Username not available";

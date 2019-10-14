@@ -266,6 +266,7 @@
 "id_on_average" = "평균적";
 "id_one_attempt_remaining" = "시도 한번 남음";
 "id_one_network_must_be_selected" = "하나의 네트워크만 선택해야 합니다. 기존값대로 비트코인을 선택합니다.";
+"id_onion_addresses_require_tor" = "Onion addresses require Tor connectivity. Enable it in the network settings.";
 "id_only_connect_to_trusted_nodes" = "SPV를 사용할때는 신뢰하는 노드[들]에게만 연결하세요.";
 "id_only_this_time" = "이번 만";
 "id_operation_failure" = "작동 실패";
@@ -332,7 +333,6 @@
 "id_restore" = "복구";
 "id_restore_green_wallet" = "Green Wallet 복원";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
-"id_reuse_androids_authentication" = "안드로이드 인증 재사용하기";
 "id_review" = "검토";
 "id_s_blocks_left" = "%@ 블록 남음";
 "id_s_from_s" = "%@ 데이터 %@에서 가져옴";
@@ -363,6 +363,7 @@
 "id_set_custom_fee_rate" = "사용자 지정 수수료 설정";
 "id_set_twofactor_threshold" = "2FA 한도 정하기";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
+"id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
 "id_set_up_pgp_key_for" = "커뮤니케이션을 위해 PGP 키 설정하기";
 "id_set_up_twofactor_authentication" = "2FA 설정하기";
 "id_set_up_watchonly" = "조회전용 모드 설정";
@@ -407,6 +408,7 @@
 "id_terms_of_service" = "서비스 약관";
 "id_terms_of_use" = "이용약관";
 "id_thank_you_for_downloading_green" = "Green을 다운로드 해주셔서 감사합니다! 시간 되시면 리뷰를 남겨주세요.";
+"id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "카메라에 문제가 있습니다. 기기를 다시 시작하셔야 될 것 같습니다.";
 "id_the_easier_safer_and_faster" = "더 쉽고, 더 안전하고, 더 빠른 지갑";
 "id_the_hardware_wallet_you_are" = "지금 사용하시는 하드웨어 지갑은 아직 지원되지 않습니다.";
@@ -448,6 +450,7 @@
 "id_unknown_bip21_parameter" = "알 수 없는 bip21 매개 변수";
 "id_unknown_custom" = "알려지지 않음 (사용자 지정)";
 "id_updated" = "업데이트됨";
+"id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_user_not_found_or_invalid" = "잘못된 비밀번호 또는 사용자 찾지 못함";
 "id_username" = "사용자 명";
 "id_username_not_available" = "사용자 명 사용 불가능";

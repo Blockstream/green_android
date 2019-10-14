@@ -266,6 +266,7 @@
 "id_on_average" = "en moyenne";
 "id_one_attempt_remaining" = "Un essai restant";
 "id_one_network_must_be_selected" = "Un réseau doit être sélectionné. Sélection de Bitcoin par défaut.";
+"id_onion_addresses_require_tor" = "Onion addresses require Tor connectivity. Enable it in the network settings.";
 "id_only_connect_to_trusted_nodes" = "Connectez-vous uniquement au(x) nœud(s) de confiance pour SPV";
 "id_only_this_time" = "Seulement cette fois";
 "id_operation_failure" = "Échec de l'opération";
@@ -332,7 +333,6 @@
 "id_restore" = "Restaurer";
 "id_restore_green_wallet" = "Restaurer un portefeuille Green";
 "id_restore_temporary_wallet" = "Restaurer le portefeuille temporaire";
-"id_reuse_androids_authentication" = "Réutiliser l'authentification Android";
 "id_review" = "Vérifier";
 "id_s_blocks_left" = "%@ blocs restant";
 "id_s_from_s" = "%@ de %@";
@@ -363,6 +363,7 @@
 "id_set_custom_fee_rate" = "Fixer le taux des frais";
 "id_set_twofactor_threshold" = "Définir le seuil à Double Facteur";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
+"id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
 "id_set_up_pgp_key_for" = "Configurer la clé PGP pour les communications";
 "id_set_up_twofactor_authentication" = "Activer un deuxième facteur d'authentification";
 "id_set_up_watchonly" = "Mettre en place le mode watch-only";
@@ -407,6 +408,7 @@
 "id_terms_of_service" = "Conditions d'utilisation";
 "id_terms_of_use" = "Conditions d'utilisation";
 "id_thank_you_for_downloading_green" = "Merci d'avoir téléchargé Green ! Donnez-nous votre avis à l'occasion";
+"id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "L'appareil photo a un problème. Vous devrez peut-être redémarrer votre appareil.";
 "id_the_easier_safer_and_faster" = "le portefeuille le plus sûr, le plus rapide et le plus simple d'utilisation";
 "id_the_hardware_wallet_you_are" = "Le hardware wallet que vous utilisez n'est pas encore pris en charge.";
@@ -448,6 +450,7 @@
 "id_unknown_bip21_parameter" = "Paramètre BIP21 inconnu";
 "id_unknown_custom" = "Inconnu (personnalisé)";
 "id_updated" = "à jour";
+"id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_user_not_found_or_invalid" = "Utilisateur non trouvé ou mot de passe invalide";
 "id_username" = "Nom d'utilisateur";
 "id_username_not_available" = "Nom d'utilisateur indisponible";

@@ -266,6 +266,7 @@
 "id_on_average" = "trung bình";
 "id_one_attempt_remaining" = "Một lần thử còn lại";
 "id_one_network_must_be_selected" = "Một mạng phải được chọn. Hiện đang chọn Bitcoin là mặc định.";
+"id_onion_addresses_require_tor" = "Onion addresses require Tor connectivity. Enable it in the network settings.";
 "id_only_connect_to_trusted_nodes" = "Chỉ nối với nốt mạng tin tưởng cho việc xác nhận thanh toán đơn giản (SPV )";
 "id_only_this_time" = "Chỉ lúc này thôi";
 "id_operation_failure" = "Lỗi hoạt động";
@@ -332,7 +333,6 @@
 "id_restore" = "Khôi phục";
 "id_restore_green_wallet" = "Khôi phục ví Green";
 "id_restore_temporary_wallet" = "Khôi phục ví tạm thời";
-"id_reuse_androids_authentication" = "Dùng lại xác thực của Android";
 "id_review" = "Xem lại";
 "id_s_blocks_left" = "còn lại %@ khối ";
 "id_s_from_s" = "%@ từ %@";
@@ -363,6 +363,7 @@
 "id_set_custom_fee_rate" = "Đặt phí tùy biến";
 "id_set_twofactor_threshold" = "Đặt ngưỡng xác thực 2 lớp";
 "id_set_up_a_passcode_for_your_ios" = "Thiết lập mật mã cho thiết bị iOS của bạn để đặt mã PIN cho ví Blockstream Green";
+"id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
 "id_set_up_pgp_key_for" = "Cài đặt khóa PGP để trao đổi thông tin";
 "id_set_up_twofactor_authentication" = "Cài đặt xác thực 2 lớp";
 "id_set_up_watchonly" = "Cài đặt ví chỉ xem";
@@ -407,6 +408,7 @@
 "id_terms_of_service" = "Điều khoản dịch vụ";
 "id_terms_of_use" = "Điều khoản sử dụng";
 "id_thank_you_for_downloading_green" = "Cảm ơn bạn đã tải xuống ví Green! Làm ơn để lại xem xét đánh giá của bạn khi bạn có cơ hội";
+"id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "Camera có vấn đề. Bạn có lẽ cần khởi động lại thiết bị.";
 "id_the_easier_safer_and_faster" = "Ví dễ hơn, an toàn hơn và nhanh hơn";
 "id_the_hardware_wallet_you_are" = "VÍ cứng bạn không được hổ trợ";
@@ -448,6 +450,7 @@
 "id_unknown_bip21_parameter" = "Không biết thông số BIP21";
 "id_unknown_custom" = "Không biết( tùy biến)";
 "id_updated" = "đã cập nhật";
+"id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_user_not_found_or_invalid" = "Người dùng không tìm thấy hoặc sai mật khẩu";
 "id_username" = "Tên người dùng";
 "id_username_not_available" = "Tên người dùng không sẵn có";

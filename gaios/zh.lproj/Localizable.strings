@@ -266,6 +266,7 @@
 "id_on_average" = "平均";
 "id_one_attempt_remaining" = "还可再试一次";
 "id_one_network_must_be_selected" = "必须选择一个网络。默认选择比特币";
+"id_onion_addresses_require_tor" = "Onion addresses require Tor connectivity. Enable it in the network settings.";
 "id_only_connect_to_trusted_nodes" = "SPV请仅连接至受信任的节点";
 "id_only_this_time" = "只有本次";
 "id_operation_failure" = "运行失败";
@@ -332,7 +333,6 @@
 "id_restore" = "恢复";
 "id_restore_green_wallet" = "恢复Green钱包";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
-"id_reuse_androids_authentication" = "再次使用安卓的验证";
 "id_review" = "审查";
 "id_s_blocks_left" = "剩余%@个区块";
 "id_s_from_s" = "%@来自%@";
@@ -363,6 +363,7 @@
 "id_set_custom_fee_rate" = "设置自定义费率";
 "id_set_twofactor_threshold" = "设置双验证阈值";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
+"id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
 "id_set_up_pgp_key_for" = "设置PGP密钥以进行沟通";
 "id_set_up_twofactor_authentication" = "设置双重验证";
 "id_set_up_watchonly" = "设置watch-only";
@@ -407,6 +408,7 @@
 "id_terms_of_service" = "服务协议";
 "id_terms_of_use" = "用户协议";
 "id_thank_you_for_downloading_green" = "感谢下载Green！有空请给我们打分评价";
+"id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "摄像头出现故障，可能需要重启设备。";
 "id_the_easier_safer_and_faster" = "更易用、更安全、更快捷的钱包";
 "id_the_hardware_wallet_you_are" = "你所使用的硬件钱包还不支持";
@@ -448,6 +450,7 @@
 "id_unknown_bip21_parameter" = "未知bip21参数";
 "id_unknown_custom" = "未知（自定义）";
 "id_updated" = "已更新";
+"id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_user_not_found_or_invalid" = "用户不存在或密码错误";
 "id_username" = "用户名";
 "id_username_not_available" = "用户名不可用";

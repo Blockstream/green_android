@@ -266,6 +266,7 @@
 "id_on_average" = "в среднем";
 "id_one_attempt_remaining" = "Осталась одна попытка";
 "id_one_network_must_be_selected" = "Необходимо выбрать одну из сетей. Биткоин установлен по умолчанию";
+"id_onion_addresses_require_tor" = "Onion addresses require Tor connectivity. Enable it in the network settings.";
 "id_only_connect_to_trusted_nodes" = "Соединять только с проверенными узлом(ами) для SPV";
 "id_only_this_time" = "Только в этот раз";
 "id_operation_failure" = "Сбой в работе";
@@ -332,7 +333,6 @@
 "id_restore" = "Восстановить";
 "id_restore_green_wallet" = "Восстановить Green-кошелек";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
-"id_reuse_androids_authentication" = "Использование аутентификации Android";
 "id_review" = "Обзор";
 "id_s_blocks_left" = "%@ блоков осталось";
 "id_s_from_s" = "%@от %@";
@@ -363,6 +363,7 @@
 "id_set_custom_fee_rate" = "Установить размер комиссии";
 "id_set_twofactor_threshold" = "Установить двухфакторный порог";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
+"id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
 "id_set_up_pgp_key_for" = "Установить PGP-ключ для связи";
 "id_set_up_twofactor_authentication" = "Установить двухфакторную аутентификацию";
 "id_set_up_watchonly" = "Настроить холодный кошелек";
@@ -407,6 +408,7 @@
 "id_terms_of_service" = "Условия обслуживания";
 "id_terms_of_use" = "Условия использования";
 "id_thank_you_for_downloading_green" = "Благодарим вас за загрузку кошелька Green! Пожалуйста, оставьте нам свой отзыв, если у вас будет такая возможность";
+"id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "Проблемы с камерой. Возможно, вам необходимо перезапустить устройство.";
 "id_the_easier_safer_and_faster" = "более простой, безопасный и быстрый кошелек";
 "id_the_hardware_wallet_you_are" = "Используемый вами аппаратный кошелек еще не поддерживается";
@@ -448,6 +450,7 @@
 "id_unknown_bip21_parameter" = "Неизвестный параметр bip21";
 "id_unknown_custom" = "Неизвестный (настраиваемый)";
 "id_updated" = "обновленный";
+"id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_user_not_found_or_invalid" = "Пользователь не найден или неверный пароль";
 "id_username" = "Имя пользователя";
 "id_username_not_available" = "Имя пользователя недоступно";

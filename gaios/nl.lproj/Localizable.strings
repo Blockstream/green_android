@@ -266,6 +266,7 @@
 "id_on_average" = "gemiddeld";
 "id_one_attempt_remaining" = "Nog één poging te gaan";
 "id_one_network_must_be_selected" = "Er moet één netwerk worden geselecteerd. Standaard is dit bitcoin.";
+"id_onion_addresses_require_tor" = "Onion addresses require Tor connectivity. Enable it in the network settings.";
 "id_only_connect_to_trusted_nodes" = "Alleen verbinden met vertrouwde node(s) voor SPV";
 "id_only_this_time" = "Alleen dit keer";
 "id_operation_failure" = "Mislukte operatie";
@@ -332,7 +333,6 @@
 "id_restore" = "Herstellen";
 "id_restore_green_wallet" = "Green Wallet herstellen";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
-"id_reuse_androids_authentication" = "Gebruik de authenticatie van Android";
 "id_review" = "Overzicht";
 "id_s_blocks_left" = "%@ blocks te gaan";
 "id_s_from_s" = "%@ van %@";
@@ -363,6 +363,7 @@
 "id_set_custom_fee_rate" = "Aangepast transactietarief instellen";
 "id_set_twofactor_threshold" = "Limiet tweetrapsauthenticatie instellen";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
+"id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
 "id_set_up_pgp_key_for" = "PGP-sleutel voor communicatie instellen";
 "id_set_up_twofactor_authentication" = "Tweetrapsauthenticatie instellen";
 "id_set_up_watchonly" = "Watch-only instellen";
@@ -407,6 +408,7 @@
 "id_terms_of_service" = "Dienstvoorwaarden";
 "id_terms_of_use" = "Gebruiksvoorwaarden";
 "id_thank_you_for_downloading_green" = "Bedankt voor het downloaden van Green! We zouden een beoordeling op prijs stellen.";
+"id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "Er zijn problemen met de camera. Het is wellicht nodig om het apparaat opnieuw te starten.";
 "id_the_easier_safer_and_faster" = "de simpelere, veiligere, en snellere wallet";
 "id_the_hardware_wallet_you_are" = "De hardware wallet die je gebruikt wordt niet ondersteund";
@@ -448,6 +450,7 @@
 "id_unknown_bip21_parameter" = "Onbekende bip21-parameter";
 "id_unknown_custom" = "Onbekend (aangepast)";
 "id_updated" = "bijgewerkt";
+"id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_user_not_found_or_invalid" = "Gebruiker niet gevonden of wachtwoord ongeldig";
 "id_username" = "Gebruikersnaam";
 "id_username_not_available" = "Gebruikersnaam niet beschikbaar";

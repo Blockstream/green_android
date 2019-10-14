@@ -266,6 +266,7 @@
 "id_on_average" = "on average";
 "id_one_attempt_remaining" = "Залишилась одна спроба";
 "id_one_network_must_be_selected" = "Виберіть одну з мереж. За початковими налаштуваннями встановлено Біткоїн";
+"id_onion_addresses_require_tor" = "Onion addresses require Tor connectivity. Enable it in the network settings.";
 "id_only_connect_to_trusted_nodes" = "З’єднувати лише з перевіреними нодами для SPV";
 "id_only_this_time" = "Лише цього разу";
 "id_operation_failure" = "Збій у роботі";
@@ -332,7 +333,6 @@
 "id_restore" = "Відновити";
 "id_restore_green_wallet" = "Відновити Green-гаманець";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
-"id_reuse_androids_authentication" = "Повторне використання аутентифікації Android";
 "id_review" = "Огляд";
 "id_s_blocks_left" = "%@ блоків залишилось";
 "id_s_from_s" = "%@ від %@";
@@ -363,6 +363,7 @@
 "id_set_custom_fee_rate" = "Встановити розмір комісії";
 "id_set_twofactor_threshold" = "Встановити двофакторний поріг";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
+"id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
 "id_set_up_pgp_key_for" = "Встановити PGP-ключ для зв'язку";
 "id_set_up_twofactor_authentication" = "Встановити двофакторну аутентифікацію";
 "id_set_up_watchonly" = "Налаштувати холодний гаманець";
@@ -407,6 +408,7 @@
 "id_terms_of_service" = "Умови надання послуг";
 "id_terms_of_use" = "Умови використання";
 "id_thank_you_for_downloading_green" = "Дякуємо вам за завантаження гаманця Green! Будь ласка, залиште свій відгук, якщо у вас буде така можливість";
+"id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "Проблеми з камерою. Можливо, вам потрібно перезавантажити пристрій.";
 "id_the_easier_safer_and_faster" = "простіший, безпечніший та більш швидкий гаманець";
 "id_the_hardware_wallet_you_are" = "Апаратний гаманець, який ви використовуєте, ще не підтримується";
@@ -448,6 +450,7 @@
 "id_unknown_bip21_parameter" = "Невідомий параметр bip21";
 "id_unknown_custom" = "Невідомий (спеціалізований)";
 "id_updated" = "оновлений";
+"id_use_android_screen_lock_to_log" = "Use Android screen lock to log in";
 "id_user_not_found_or_invalid" = "Користувача не знайдено або неправильний пароль";
 "id_username" = "Ім'я користувача";
 "id_username_not_available" = "Ім'я користувача недоступне";
