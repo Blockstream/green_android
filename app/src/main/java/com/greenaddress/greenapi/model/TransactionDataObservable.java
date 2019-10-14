@@ -22,14 +22,16 @@ public class TransactionDataObservable extends Observable implements Observer {
     private boolean mExecutedOnce = false;
 
     private static final int TX_PER_PAGE = 15;
-    private TransactionDataObservable() {}
 
     public TransactionDataObservable(final ListeningExecutorService executor,
+                                     final AssetsDataObservable assetsDataObservable,
                                      final Integer subaccount, final boolean UTXOOnly) {
         mExecutor = executor;
         mSubaccount = subaccount;
         mUTXOOnly = UTXOOnly;
         // this is not initialized by default but by visiting the account detail page
+
+        assetsDataObservable.addObserver((observable, o) -> this.refresh(true));
     }
 
     public void refresh() {
@@ -72,6 +74,7 @@ public class TransactionDataObservable extends Observable implements Observer {
     public Integer getSubaccount() {
         return mSubaccount;
     }
+
     public void setTransactionDataList(final List<TransactionData> transactionData) {
         Log.d("OBS",
               "pageLoaded:" + mPageLoaded + " set" + (mUTXOOnly ? "UTXO" : "Transaction") + "DataList(" +  mSubaccount + ", " + transactionData +

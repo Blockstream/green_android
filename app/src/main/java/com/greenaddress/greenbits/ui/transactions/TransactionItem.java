@@ -175,7 +175,7 @@ public class TransactionItem implements Serializable {
 
             AssetInfoData assetInfo = mAssetBalances.get(assetId).getAssetInfo();
             if (assetInfo == null)
-                assetInfo = new AssetInfoData(assetId, assetId, 0, "", "");
+                assetInfo = new AssetInfoData(assetId);
             final String amount = amountToString(mAssetBalances.get(assetId).getSatoshi(),
                                                  isAsset ? assetId : service.getUnitKey(),
                                                  isAsset ? assetInfo.toObjectNode() : null);

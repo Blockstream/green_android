@@ -245,7 +245,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final BalanceData balance = new BalanceData();
         balance.setSatoshi(mAssetBalances.getSatoshi());
         balance.setAssetInfo(assetInfo !=
-                             null ? assetInfo : new AssetInfoData(mSelectedAsset, mSelectedAsset, 0, "", ""));
+                             null ? assetInfo : new AssetInfoData(mSelectedAsset));
         final Map<String, BalanceData> balances = new HashMap<>();
         balances.put(mSelectedAsset, balance);
         final RecyclerView assetsList = findViewById(R.id.assetsList);
@@ -480,7 +480,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     public ObjectNode convert(final long satoshi) throws RuntimeException, IOException {
         final String asset = mSelectedAsset.isEmpty() ? "btc" : mSelectedAsset;
-        AssetInfoData assetInfo = new AssetInfoData(asset, "", 0, "", "");
+        AssetInfoData assetInfo = new AssetInfoData(asset);
         if (mAssetBalances != null && mAssetBalances.getAssetInfo() != null)
             assetInfo = mAssetBalances.getAssetInfo();
         final ObjectNode details = new ObjectMapper().createObjectNode();
@@ -571,7 +571,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final ObjectNode amount = mapper.createObjectNode();
         amount.put(key, value.isEmpty() ? "0" : value);
         if (isAsset()) {
-            final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset, mSelectedAsset, 0, "", "");
+            final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
             final AssetInfoData assetInfo = mAssetBalances.getAssetInfo();
             amount.set("asset_info", (assetInfo == null ? assetInfoDefault : assetInfo).toObjectNode());
         }

@@ -250,6 +250,7 @@
             android:screenOrientation="portrait"
             android:label="@string/id_asset"
             />
+        <activity android:name=".assets.RegistryErrorActivity"  android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".preferences.DisplayMnemonicActivity"
             android:screenOrientation="portrait"

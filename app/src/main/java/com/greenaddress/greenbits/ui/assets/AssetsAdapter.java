@@ -1,10 +1,8 @@
 package com.greenaddress.greenbits.ui.assets;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +20,6 @@ import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +61,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final String assetId = mAssetsIds.get(position);
         final boolean isBTC = "btc".equals(assetId);
         final BalanceData balanceData = mAssets.get(assetId);
+        final AssetInfoData assetInfo = balanceData.getAssetInfo();
         final long satoshi = balanceData.getSatoshi();
         if (mOnAccountSelected != null)
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
@@ -72,7 +70,6 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             holder.mAssetValue.setText(mService.getValueString(satoshi, false, true));
             holder.mAssetDomain.setVisibility(View.GONE);
         } else {
-            final AssetInfoData assetInfo = balanceData.getAssetInfo();
             holder.mAssetName.setText(assetInfo != null ? assetInfo.getName() : assetId);
             holder.mAssetValue.setText(mService.getValueString(satoshi, assetId, balanceData.getAssetInfo(), true));
             final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;

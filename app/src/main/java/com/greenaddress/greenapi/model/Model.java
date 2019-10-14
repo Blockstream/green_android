@@ -33,12 +33,12 @@ public class Model {
     private Model() {}
 
     public Model(final ListeningExecutorService executor) {
-        mSubaccountDataObservable = new SubaccountDataObservable(executor, this);
+        mAssetsObservable = new AssetsDataObservable(executor);
+        mSubaccountDataObservable = new SubaccountDataObservable(executor, mAssetsObservable, this);
         mEventDataObservable = new EventDataObservable();
         mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(executor, mEventDataObservable);
         mFeeObservable = new FeeObservable(executor);
         mAvailableCurrenciesObservable = new AvailableCurrenciesObservable(executor);
-        mAssetsObservable = new AssetsDataObservable(executor);
     }
 
     public SubaccountDataObservable getSubaccountDataObservable() {

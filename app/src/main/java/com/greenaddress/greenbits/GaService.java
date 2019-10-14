@@ -30,12 +30,15 @@ import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.SubaccountData;
+import com.greenaddress.greenapi.model.AssetsDataObservable;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
+import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import org.bitcoinj.core.NetworkParameters;
@@ -220,7 +223,7 @@ public class GaService extends Service  {
 
     public String getValueString(final long amount, final String asset, final AssetInfoData assetInfo, boolean withUnit) {
         try {
-            final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset, "", 0, "", "");
+            final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset);
             final ObjectNode details = new ObjectMapper().createObjectNode();
             details.put("satoshi", amount);
             details.set("asset_info", assetInfoData.toObjectNode());
@@ -404,6 +407,20 @@ public class GaService extends Service  {
             return;
         }
         if (isLiquid()) {
+            mModel.getAssetsObservable().addObserver((observable, o) -> {
+                AssetsDataObservable assetsDataObservable = (AssetsDataObservable) observable;
+
+                if (assetsDataObservable.isAssetsLoaded() || assetsDataObservable.isShownErrorPopup()) {
+                    return;
+                }
+
+                final Intent intent = new Intent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setClass(this, RegistryErrorActivity.class);
+                startActivity(intent);
+
+                assetsDataObservable.setShownErrorPopup();
+            });
             mModel.getAssetsObservable().refresh();
         }
 

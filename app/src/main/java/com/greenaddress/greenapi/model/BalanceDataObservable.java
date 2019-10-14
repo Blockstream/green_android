@@ -16,12 +16,13 @@ public class BalanceDataObservable extends Observable implements Observer {
     private ListeningExecutorService mExecutor;
     private Integer mSubaccount;
 
-    private BalanceDataObservable() {}
-
     public BalanceDataObservable(final ListeningExecutorService executor,
+                                 final AssetsDataObservable assetsDataObservable,
                                  final Integer subaccount) {
         mExecutor = executor;
         mSubaccount = subaccount;
+
+        assetsDataObservable.addObserver((observable, o) -> this.refresh());
     }
 
     public void refresh() {

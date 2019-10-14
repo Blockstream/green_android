@@ -22,8 +22,10 @@ public class SubaccountDataObservable extends Observable {
     private ActiveAccountObservable mActiveAccountObservable;
     private BlockchainHeightObservable mBlockchainHeightObservable;
 
+    private AssetsDataObservable mAssetsDataObservable;
+
     SubaccountDataObservable(final ListeningExecutorService executor,
-                             final Model model) {
+                             AssetsDataObservable assetsDataObservable, final Model model) {
         mExecutor = executor;
         mTransactionDataObservables = model.getTransactionDataObservables();
         mBalanceDataObservables = model.getBalanceDataObservables();
@@ -31,6 +33,9 @@ public class SubaccountDataObservable extends Observable {
         mActiveAccountObservable = model.getActiveAccountObservable();
         mBlockchainHeightObservable = model.getBlockchainHeightObservable();
         mUTXODataObservables = model.getUTXODataObservables();
+
+        mAssetsDataObservable = assetsDataObservable;
+
         refresh();
     }
 
@@ -54,13 +59,16 @@ public class SubaccountDataObservable extends Observable {
     private void initObservables(int pointer) {
         if (mTransactionDataObservables.get(pointer) == null) {
             final TransactionDataObservable transactionDataObservable = new TransactionDataObservable(mExecutor,
+                                                                                                      mAssetsDataObservable,
                                                                                                       pointer, false);
             mActiveAccountObservable.addObserver(transactionDataObservable);
             mBlockchainHeightObservable.addObserver(transactionDataObservable);
             mTransactionDataObservables.put(pointer, transactionDataObservable);
         }
         if (mBalanceDataObservables.get(pointer) == null) {
-            final BalanceDataObservable balanceDataObservable = new BalanceDataObservable(mExecutor, pointer);
+            final BalanceDataObservable balanceDataObservable = new BalanceDataObservable(mExecutor,
+                                                                                          mAssetsDataObservable,
+                                                                                          pointer);
             mBlockchainHeightObservable.addObserver(balanceDataObservable);
             mBalanceDataObservables.put(pointer, balanceDataObservable);
         }
@@ -72,6 +80,7 @@ public class SubaccountDataObservable extends Observable {
         }
         if (mUTXODataObservables.get(pointer) == null) {
             final TransactionDataObservable utxoDataObservable = new TransactionDataObservable(mExecutor,
+                                                                                               mAssetsDataObservable,
                                                                                                pointer, true);
             mBlockchainHeightObservable.addObserver(utxoDataObservable);
             mUTXODataObservables.put(pointer, utxoDataObservable);

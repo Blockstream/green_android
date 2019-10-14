@@ -191,10 +191,11 @@ public class GDKSession {
         return map;
     }
 
-    public Map<String, Bitmap> getAssetsIcons() throws RuntimeException {
+    public Map<String, Bitmap> getAssetsIcons(final int cacheAge) throws RuntimeException {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("icons", true);
-        details.put("assets", false);
+        details.put("assets", true); // internally refresh assets too
+        details.put("age", cacheAge);
         final ObjectNode data = (ObjectNode) GDK.refresh_assets(mNativeSession, details);
         final ObjectNode iconsData = (ObjectNode) data.get("icons");
         if (iconsData.has("last_modified"))

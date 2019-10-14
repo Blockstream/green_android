@@ -20,6 +20,14 @@ public class AssetInfoData extends JSONData implements Serializable {
 
     public AssetInfoData() {}
 
+    public AssetInfoData(final String assetId) {
+        this.assetId = assetId;
+        this.name = assetId;
+        this.precision = 0;
+        this.ticker = "";
+        this.entity = new EntityData("");
+    }
+
     public AssetInfoData(final String assetId, final String name, final Integer precision, final String ticker,
                          final String domain) {
         this.assetId = assetId;

@@ -123,7 +123,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             final BalanceData balance = new BalanceData();
             balance.setSatoshi(address.get("satoshi").asLong());
             balance.setAssetInfo(mAssetInfo !=
-                                 null ? mAssetInfo : new AssetInfoData(asset, asset, 0, "", ""));
+                                 null ? mAssetInfo : new AssetInfoData(asset));
             final Map<String, BalanceData> balances = new HashMap<>();
             balances.put(asset, balance);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
