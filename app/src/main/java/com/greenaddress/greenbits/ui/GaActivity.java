@@ -226,10 +226,14 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     public void startLoading() {
+        startLoading("");
+    }
+
+    public void startLoading(final String label) {
         runOnUiThread(() -> {
             if (mProgressBarHandler == null)
                 mProgressBarHandler = new ProgressBarHandler(GaActivity.this);
-            mProgressBarHandler.start();
+            mProgressBarHandler.start(label);
         });
     }
 

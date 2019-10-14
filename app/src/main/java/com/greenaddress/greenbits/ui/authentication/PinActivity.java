@@ -53,7 +53,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             return;
         }
 
-        startLoading();
+        startLoading(getString(R.string.id_logging_in));
         if (mPinFragment != null)
             mPinFragment.setEnabled(false);
 
