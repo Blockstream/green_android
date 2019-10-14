@@ -13,7 +13,6 @@
         android:padding="8dp"
         style="@style/selectionButton"
         android:clickable="false"
-        android:background="?attr/materialButtonSelection"
         android:drawablePadding="10dp"
         android:paddingLeft="0dp"
         />

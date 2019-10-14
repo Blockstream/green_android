@@ -14,6 +14,8 @@
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="android:colorButtonNormal">@color/accent</item>
         <item name="android:itemBackground">@color/buttonJungleGreen</item>
+        <item name="materialFeeButtonSelected">@drawable/fee_button_selected</item>
+        <item name="materialFeeButtonUnSelected">@drawable/fee_button_unselected</item>
     </style>
 
     <style name="gradientButton" parent="AppTheme.Button">
@@ -29,6 +31,10 @@
     <style name="selectionButton" parent="AppTheme.Button">
         <item name="android:background">?attr/materialButtonSelection</item>
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="qrBg" parent="AppTheme.Base">
+        <item name="android:background">?attr/qrBg</item>
     </style>
 
     <style name="currencyButton" parent="AppTheme.Button">
@@ -47,5 +53,9 @@
 
     <style name="pinKeyboardView">
         <item name="android:keyBackground">?attr/materialButtonKeyboard</item>
+    </style>
+
+    <style name="materialFeeButtonSelected">
+        <item name="android:background">?attr/materialFeeButtonSelected</item>
     </style>
 </resources>

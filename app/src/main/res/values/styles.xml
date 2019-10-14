@@ -45,7 +45,6 @@
         <item name="materialButtonSelection">@drawable/material_button_selection</item>
         <item name="materialFeeButtonSelected">@drawable/fee_button_selected</item>
         <item name="materialFeeButtonUnSelected">@drawable/fee_button_unselected</item>
-
         <item name="qrBg">@drawable/ic_qr_bg</item>
 
         <!-- You can also set colorControlNormal, colorControlActivated
@@ -91,6 +90,10 @@
     <style name="selectionButton" parent="AppTheme.Button">
         <item name="android:background">@drawable/material_button_selection</item>
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="qrBg" parent="AppTheme.Base">
+        <item name="android:background">@drawable/ic_qr_bg</item>
     </style>
 
     <style name="currencyButton" parent="AppTheme.Button">
@@ -150,4 +153,7 @@
 
     </style>
 
+    <style name="materialFeeButtonSelected">
+        <item name="android:background">@drawable/fee_button_selected</item>
+    </style>
 </resources>

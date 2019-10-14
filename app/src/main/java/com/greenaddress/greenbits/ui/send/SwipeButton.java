@@ -206,6 +206,8 @@ public class SwipeButton extends RelativeLayout {
 
                 if (trailingDrawable != null) {
                     layer.setBackground(trailingDrawable);
+                } else if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    layer.setBackgroundResource(R.color.colorAccent);
                 } else {
                     layer.setBackground(typedArray.getDrawable(R.styleable.SwipeButton_button_background));
                 }
@@ -272,12 +274,16 @@ public class SwipeButton extends RelativeLayout {
                     (int) innerTextRightPadding,
                     (int) innerTextBottomPadding);
 
-            Drawable buttonBackground = typedArray.getDrawable(R.styleable.SwipeButton_button_background);
-
-            if (buttonBackground != null) {
-                swipeButtonInner.setBackground(buttonBackground);
+            if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                layer.setBackgroundResource(R.color.colorAccent);
             } else {
-                swipeButtonInner.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_button));
+                Drawable buttonBackground = typedArray.getDrawable(R.styleable.SwipeButton_button_background);
+
+                if (buttonBackground != null) {
+                    swipeButtonInner.setBackground(buttonBackground);
+                } else {
+                    swipeButtonInner.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_button));
+                }
             }
 
             buttonLeftPadding = typedArray.getDimension(R.styleable.SwipeButton_button_left_padding, 0);

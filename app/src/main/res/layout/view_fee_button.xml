@@ -2,7 +2,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/materialFeeButtonSelected">
+    style="@style/materialFeeButtonSelected">
 
     <TextView
         android:id="@+id/title"
