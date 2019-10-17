@@ -12,7 +12,6 @@
 		0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14B211912AE0008F94A /* InstructionViewController.swift */; };
 		092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */; };
 		092C7BD520D599D700F90DF2 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BD420D599D700F90DF2 /* UIView.swift */; };
-		092D05B321277E2E00B9B7CD /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D05B221277E2E00B9B7CD /* Date.swift */; };
 		092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D47F420EA2570005720F3 /* NotificationsViewController.swift */; };
 		092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 092D47F620EA28ED005720F3 /* TransactionTableCell.xib */; };
 		092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D47F820EA2907005720F3 /* TransactionTableCell.swift */; };
@@ -165,7 +164,6 @@
 		0926C14B211912AE0008F94A /* InstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionViewController.swift; sourceTree = "<group>"; };
 		092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEmailViewController.swift; sourceTree = "<group>"; };
 		092C7BD420D599D700F90DF2 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
-		092D05B221277E2E00B9B7CD /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		092D47F420EA2570005720F3 /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
 		092D47F620EA28ED005720F3 /* TransactionTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionTableCell.xib; sourceTree = "<group>"; };
 		092D47F820EA2907005720F3 /* TransactionTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionTableCell.swift; sourceTree = "<group>"; };
@@ -707,7 +705,6 @@
 			children = (
 				81310C442189D10F00563B91 /* TwoFactorCall.swift */,
 				09DA612520E73A2300C3EA03 /* String.swift */,
-				092D05B221277E2E00B9B7CD /* Date.swift */,
 				092C7BD420D599D700F90DF2 /* UIView.swift */,
 				0926C14721178FEE0008F94A /* UITextField.swift */,
 				092E1EAF20CF993700362253 /* UIColor.swift */,
@@ -1085,7 +1082,6 @@
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
 				81E9B80021C92DB1004D87B6 /* WalletCardView.swift in Sources */,
 				81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */,
-				092D05B321277E2E00B9B7CD /* Date.swift in Sources */,
 				6DC4D155234D2040008207AF /* NetworkSelectionSettingsView.swift in Sources */,
 				81923A35228089BE0097BEA8 /* AssetTableCell.swift in Sources */,
 				FF29CA7422374ED20035F95A /* UIViewController.swift in Sources */,

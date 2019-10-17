@@ -176,8 +176,13 @@ struct Transaction {
     }
 
     func date(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
-        let date = Date.dateFromString(dateString: createdAt)
-        return Date.stringFromDate(date: date, dateStyle: dateStyle, timeStyle: timeStyle)
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
+        guard let date = dateFormatter.date(from: createdAt) else {
+            return createdAt
+        }
+        return DateFormatter.localizedString(from: date, dateStyle: dateStyle, timeStyle: timeStyle)
     }
 }
 
