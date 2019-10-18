@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import PromiseKit
-import NVActivityIndicatorView
 
 enum TwoFactorCallError: Error {
     case failure(localizedDescription: String)

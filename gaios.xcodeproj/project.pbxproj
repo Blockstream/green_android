@@ -58,6 +58,7 @@
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
 		6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6770BF6D235E50D400BDB7DA /* GreenAddress.swift */; };
+		6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D12C952236760A600A51F1F /* ProgressIndicator.xib */; };
 		6D1674FA234C0E2200C4749D /* NetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D1674F8234C0E2200C4749D /* NetworkSelection.storyboard */; };
 		6D2A613623302694008C518A /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2A613523302694008C518A /* UIImage.swift */; };
 		6D2A629223359FB3008C518A /* AssetIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2A629123359FB3008C518A /* AssetIcon.swift */; };
@@ -75,6 +76,7 @@
 		6D97046E2344146300839598 /* ModalAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D97046D2344146300839598 /* ModalAnimator.swift */; };
 		6D970470234418A600839598 /* ModalPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D97046F234418A600839598 /* ModalPresentationController.swift */; };
 		6D9704722344229100839598 /* ModalTransitioningDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D9704712344229100839598 /* ModalTransitioningDelegate.swift */; };
+		6DAB5F97235A244B007637CF /* ProgressIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAB5F96235A244B007637CF /* ProgressIndicator.swift */; };
 		6DC4D155234D2040008207AF /* NetworkSelectionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DC4D154234D2040008207AF /* NetworkSelectionSettingsView.swift */; };
 		6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DD813B222BC58A7002DCC8B /* Assets.storyboard */; };
 		6DD813B522BC6218002DCC8B /* AssetDetailHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD813B422BC6218002DCC8B /* AssetDetailHeaderCell.swift */; };
@@ -137,7 +139,6 @@
 		81F74BA52278857800A397C9 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F74BA42278857800A397C9 /* Network.swift */; };
 		DA1B20D8E5ACCEB5E7E154C4 /* Pods_gaiosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */; };
 		FF29CA7222374E8B0035F95A /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7122374E8B0035F95A /* URL.swift */; };
-		FF29CA7422374ED20035F95A /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7322374ED20035F95A /* UIViewController.swift */; };
 		FF29CA7622374F1A0035F95A /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7522374F1A0035F95A /* UIButton.swift */; };
 		FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF29CA7722374F8D0035F95A /* UILabel.swift */; };
 /* End PBXBuildFile section */
@@ -239,6 +240,7 @@
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		6770BF6D235E50D400BDB7DA /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = "gdk-iphone/share/gdk/GreenAddress.swift"; sourceTree = SOURCE_ROOT; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
+		6D12C952236760A600A51F1F /* ProgressIndicator.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicator.xib; sourceTree = "<group>"; };
 		6D1674F9234C0E2200C4749D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = gaios/Base.lproj/NetworkSelection.storyboard; sourceTree = SOURCE_ROOT; };
 		6D2A613523302694008C518A /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		6D2A629123359FB3008C518A /* AssetIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIcon.swift; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 		6D97046D2344146300839598 /* ModalAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalAnimator.swift; sourceTree = "<group>"; };
 		6D97046F234418A600839598 /* ModalPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPresentationController.swift; sourceTree = "<group>"; };
 		6D9704712344229100839598 /* ModalTransitioningDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalTransitioningDelegate.swift; sourceTree = "<group>"; };
+		6DAB5F96235A244B007637CF /* ProgressIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressIndicator.swift; sourceTree = "<group>"; };
 		6DC4D154234D2040008207AF /* NetworkSelectionSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkSelectionSettingsView.swift; sourceTree = "<group>"; };
 		6DD813B222BC58A7002DCC8B /* Assets.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Assets.storyboard; sourceTree = "<group>"; };
 		6DD813B422BC6218002DCC8B /* AssetDetailHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailHeaderCell.swift; sourceTree = "<group>"; };
@@ -343,7 +346,6 @@
 		B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaiosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF29CA7122374E8B0035F95A /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
-		FF29CA7322374ED20035F95A /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		FF29CA7522374F1A0035F95A /* UIButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
 		FF29CA7722374F8D0035F95A /* UILabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -388,6 +390,8 @@
 				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
 				811ED52A21BFCE4D0033A4A1 /* GreenAddressService.swift */,
 				81C208A22201ED6A00F4BC1F /* Toast+SnackBar.swift */,
+				6D12C952236760A600A51F1F /* ProgressIndicator.xib */,
+				6DAB5F96235A244B007637CF /* ProgressIndicator.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -728,7 +732,6 @@
 				0926C14721178FEE0008F94A /* UITextField.swift */,
 				092E1EAF20CF993700362253 /* UIColor.swift */,
 				FF29CA7122374E8B0035F95A /* URL.swift */,
-				FF29CA7322374ED20035F95A /* UIViewController.swift */,
 				FF29CA7522374F1A0035F95A /* UIButton.swift */,
 				FF29CA7722374F8D0035F95A /* UILabel.swift */,
 				6D2A613523302694008C518A /* UIImage.swift */,
@@ -866,6 +869,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81522EB8226F15B3009C297C /* Onboarding.storyboard in Resources */,
+				6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				6D1674FA234C0E2200C4749D /* NetworkSelection.storyboard in Resources */,
 				81ACC4AF22733533004B1E92 /* Settings.storyboard in Resources */,
@@ -1003,12 +1007,10 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1082,6 +1084,7 @@
 				FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
 				0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */,
+				6DAB5F97235A244B007637CF /* ProgressIndicator.swift in Sources */,
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
@@ -1104,7 +1107,6 @@
 				81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */,
 				6DC4D155234D2040008207AF /* NetworkSelectionSettingsView.swift in Sources */,
 				81923A35228089BE0097BEA8 /* AssetTableCell.swift in Sources */,
-				FF29CA7422374ED20035F95A /* UIViewController.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
 				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
 				098192832176D05500D8434F /* EventWindow.swift in Sources */,

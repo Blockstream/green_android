@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import NVActivityIndicatorView
 import PromiseKit
 
 enum PinMode {
@@ -93,7 +92,7 @@ class PinSetViewController: UIViewController {
         let network = getNetwork()
 
         firstly {
-            startAnimating(message: "")
+            self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
             let mnemonics = try getSession().getMnemonicPassphrase(password: "")

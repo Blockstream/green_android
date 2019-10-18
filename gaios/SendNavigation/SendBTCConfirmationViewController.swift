@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import NVActivityIndicatorView
 import PromiseKit
 
 class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDelegate, UITextViewDelegate {

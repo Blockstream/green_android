@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import NVActivityIndicatorView
 import PromiseKit
 
 class VerifyMnemonicsViewController: UIViewController {
@@ -40,13 +39,14 @@ class VerifyMnemonicsViewController: UIViewController {
     }
 
     @objc func progress(_ notification: NSNotification) {
-        do {
+        Guarantee().map { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(Tor.self, from: json)
-            let text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
-            NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
-        } catch {
-            print(error.localizedDescription)
+            return tor.progress
+        }.done { progress in
+            self.progressIndicator?.message = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
+        }.catch { err in
+            print(err.localizedDescription)
         }
     }
 

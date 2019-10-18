@@ -1,4 +1,3 @@
-import NVActivityIndicatorView
 import PromiseKit
 import UIKit
 
@@ -118,7 +117,7 @@ class ScreenLockViewController: UIViewController {
         }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
-            startAnimating()
+            self.startAnimating()
             return Guarantee()
         }.map(on: bgq) {
             if UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + self.network) == nil {

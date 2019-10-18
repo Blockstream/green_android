@@ -2,7 +2,6 @@ import Foundation
 import PromiseKit
 import UIKit
 import AVFoundation
-import NVActivityIndicatorView
 
 class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
 
@@ -112,7 +111,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         let subaccount = self.wallet!.pointer
         let feeRate: UInt64 = settings.customFeeRate ?? UInt64(1000)
 
-        startAnimating(type: NVActivityIndicatorType.ballRotateChase)
+        self.startAnimating()
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap { [unowned self] _ -> [String: Any] in
             if self.isSweep {

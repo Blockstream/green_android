@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import NVActivityIndicatorView
 import PromiseKit
 
 class WatchOnlySignIn: KeyboardViewController {
@@ -55,6 +54,7 @@ class WatchOnlySignIn: KeyboardViewController {
         if UIScreen.main.nativeBounds.height <= 1136 {
             content.titlelabel.font = UIFont(name: content.titlelabel.font.fontName, size: 22)
         }
+        progressIndicator?.message = NSLocalizedString("id_logging_in", comment: "")
     }
 
     @objc func dismissModal() {
@@ -92,13 +92,18 @@ class WatchOnlySignIn: KeyboardViewController {
     }
 
     @objc func progress(_ notification: NSNotification) {
-        do {
+        Guarantee().map { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(Tor.self, from: json)
-            let text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
-            NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
-        } catch {
-            print(error.localizedDescription)
+            return tor.progress
+        }.done { progress in
+            var text = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
+            if progress == 100 {
+                text = NSLocalizedString("id_logging_in", comment: "")
+            }
+            self.progressIndicator?.message = text
+        }.catch { err in
+            print(err.localizedDescription)
         }
     }
 
@@ -133,7 +138,7 @@ class WatchOnlySignIn: KeyboardViewController {
 
         firstly {
             dismissKeyboard()
-            self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+            self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate.disconnect()

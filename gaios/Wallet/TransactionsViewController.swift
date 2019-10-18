@@ -29,7 +29,6 @@ class TransactionsController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         let nib = UINib(nibName: "TransactionTableCell", bundle: nil)
         tableView.delegate = self
         tableView.dataSource = self
@@ -43,6 +42,7 @@ class TransactionsController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
         tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
     }
 
@@ -51,17 +51,17 @@ class TransactionsController: UITableViewController {
         navigationController?.setNavigationBarHidden(true, animated: true)
         NotificationCenter.default.addObserver(self, selector: #selector(self.onNewTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.onNewBlock(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
-        loadWallet()
-        refreshAssets()
-            .map { _ in self.loadTransactions() }
-            .map { _ in getIcons() }
-            .catch { _ in }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard let controller = self.tabBarController as? TabViewController else { return }
         controller.snackbar.isHidden = false
+        loadWallet()
+        refreshAssets()
+            .map { _ in self.loadTransactions() }
+            .map { _ in getIcons() }
+            .catch { _ in }
     }
 
     override func viewWillDisappear(_ animated: Bool) {

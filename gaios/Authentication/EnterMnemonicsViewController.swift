@@ -1,5 +1,4 @@
 import UIKit
-import NVActivityIndicatorView
 import PromiseKit
 
 class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate {
@@ -27,7 +26,6 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         title = NSLocalizedString("id_enter_your_wallet_mnemonic", comment: "")
         doneButton.setTitle(NSLocalizedString("id_restore", comment: ""), for: .normal)
         passwordProtectedLabel.text = NSLocalizedString("id_password_protected", comment: "")
@@ -60,13 +58,14 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
     }
 
     @objc func progress(_ notification: NSNotification) {
-        do {
+        Guarantee().map { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(Tor.self, from: json)
-            let text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
-            NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
-        } catch {
-            print(error.localizedDescription)
+            return tor.progress
+        }.done { progress in
+            self.progressIndicator?.message = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
+        }.catch { err in
+            print(err.localizedDescription)
         }
     }
 

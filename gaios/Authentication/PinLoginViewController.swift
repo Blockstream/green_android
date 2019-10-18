@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import NVActivityIndicatorView
 import PromiseKit
 
 class PinLoginViewController: UIViewController {
@@ -30,6 +29,7 @@ class PinLoginViewController: UIViewController {
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))
         content.title.text = NSLocalizedString("id_enter_pin", comment: "")
+        progressIndicator?.message = NSLocalizedString("id_logging_in", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -67,16 +67,18 @@ class PinLoginViewController: UIViewController {
     }
 
     @objc func progress(_ notification: NSNotification) {
-        do {
+        Guarantee().map { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(Tor.self, from: json)
-            var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
-            if tor.progress == 100 {
+            return tor.progress
+        }.done { progress in
+            var text = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
+            if progress == 100 {
                 text = NSLocalizedString("id_logging_in", comment: "")
             }
-            NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
-        } catch {
-            print(error.localizedDescription)
+            self.progressIndicator?.message = text
+        }.catch { err in
+            print(err.localizedDescription)
         }
     }
 
@@ -122,7 +124,6 @@ class PinLoginViewController: UIViewController {
                     if withPIN != nil {
                         self.pinAttemptsPreference += 1
                         if self.pinAttemptsPreference == self.MAXATTEMPTS {
-                            self.stopAnimating()
                             removeKeychainData()
                             self.pinAttemptsPreference = 0
                             appDelegate.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")

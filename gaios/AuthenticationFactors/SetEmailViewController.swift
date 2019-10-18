@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import NVActivityIndicatorView
 import PromiseKit
 
 class SetEmailViewController: KeyboardViewController {
@@ -27,7 +26,7 @@ class SetEmailViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         guard let text = content.textField.text else { return }
         firstly {
-            startAnimating()
+            self.startAnimating()
             return Guarantee()
         }.compactMap {
             TwoFactorConfigItem(enabled: true, confirmed: true, data: text)
