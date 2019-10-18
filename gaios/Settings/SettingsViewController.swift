@@ -97,7 +97,7 @@ class SettingsViewController: UIViewController {
         if isLiquid {
             return [setupPin]
         }
-        return [setupPin, watchOnly]
+        return !isWatchOnly && !isResetActive ? [setupPin, watchOnly] : []
     }
 
     func getAccount() -> [SettingsItem] {
