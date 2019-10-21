@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class FooterWalletsCollection: UICollectionViewCell {
+class AccountsFooterCollection: UICollectionViewCell {
 
     @IBOutlet weak var networkImage: UIImageView!
     @IBOutlet weak var message: UILabel!

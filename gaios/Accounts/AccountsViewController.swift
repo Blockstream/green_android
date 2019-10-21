@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-class WalletsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class AccountsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var isSweep: Bool = false
     weak var subaccountDelegate: SubaccountDelegate?
@@ -16,10 +16,10 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         guard let collectionView = self.collectionView else { return }
-        let cellNib = UINib(nibName: "WalletCardView", bundle: nil)
-        let headerNib = UINib(nibName: "HeaderWalletsCollection", bundle: nil)
-        let footerNib = UINib(nibName: "FooterWalletsCollection", bundle: nil)
-        let walletMiniNib = UINib(nibName: "WalletMiniCollection", bundle: nil)
+        let cellNib = UINib(nibName: "AccountCardView", bundle: nil)
+        let headerNib = UINib(nibName: "AccountsHeaderCollection", bundle: nil)
+        let footerNib = UINib(nibName: "AccountsFooterCollection", bundle: nil)
+        let walletMiniNib = UINib(nibName: "AccountMiniCollection", bundle: nil)
         collectionView.register(cellNib, forCellWithReuseIdentifier: cellId)
         collectionView.register(walletMiniNib, forCellWithReuseIdentifier: miniId)
         collectionView.register(headerNib, forSupplementaryViewOfKind:
@@ -37,7 +37,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(isSweep, animated: true)
+        navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
     func reloadData() {
@@ -67,12 +67,12 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if isSweep {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: miniId, for: indexPath) as? WalletMiniCollection else { fatalError("Fail to dequeue reusable cell") }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: miniId, for: indexPath) as? AccountMiniCollection else { fatalError("Fail to dequeue reusable cell") }
             let wallet = wallets[indexPath.row]
             cell.nameLabel.text = wallet.localizedName()
             return cell
         } else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? WalletCardView else { fatalError("Fail to dequeue reusable cell") }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? AccountCardView else { fatalError("Fail to dequeue reusable cell") }
             let wallet = wallets[indexPath.row]
 
             if let balance = Balance.convert(details: ["satoshi": wallet.btc]) {
@@ -92,7 +92,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         switch kind {
         case UICollectionView.elementKindSectionHeader:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
-                headerId, for: indexPath) as? HeaderWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
+                headerId, for: indexPath) as? AccountsHeaderCollection else { fatalError("Fail to dequeue reusable cell") }
             let satoshi = wallets.map { $0.btc }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
@@ -103,10 +103,13 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
                 header.fiatLabel.text = isSweep ? "" : "\(balance.fiat) \(balance.fiatCurrency)"
             }
             header.equalsLabel.isHidden = isSweep
+            header.dismissButton.isHidden = isSweep
+            header.dismissButton.addTarget(self, action: #selector(dismissModal), for: .touchUpInside)
+            header.bringSubviewToFront(header.stackView)
             return header
         case UICollectionView.elementKindSectionFooter:
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
-            footerId, for: indexPath) as? FooterWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
+            footerId, for: indexPath) as? AccountsFooterCollection else { fatalError("Fail to dequeue reusable cell") }
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addWallet))
             footer.addGestureRecognizer(tapGestureRecognizer)
             footer.isUserInteractionEnabled = true
@@ -118,8 +121,12 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         }
     }
 
+    @objc func dismissModal() {
+        dismiss(animated: true, completion: nil)
+    }
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.size.width, height: 95)
+        return CGSize(width: collectionView.frame.size.width, height: isSweep ? 95 : 130)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
@@ -141,7 +148,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         if isSweep {
             performSegue(withIdentifier: "sweep", sender: nil)
         } else {
-            navigationController?.popViewController(animated: false)
+            dismissModal()
         }
     }
 

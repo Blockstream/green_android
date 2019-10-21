@@ -39,7 +39,7 @@ class TransactionsController: UITableViewController {
         tableView.register(nib, forCellReuseIdentifier: "TransactionTableCell")
         tableView.allowsSelection = true
         tableView.isUserInteractionEnabled = true
-        tableView.tableHeaderView = getWalletCardView()
+        tableView.tableHeaderView = getAccountCardView()
         tableView.bounces = true
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
@@ -50,7 +50,7 @@ class TransactionsController: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: true)
+        navigationController?.setNavigationBarHidden(true, animated: false)
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
         assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
@@ -65,7 +65,7 @@ class TransactionsController: UITableViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.setNavigationBarHidden(false, animated: false)
         if let token = transactionToken {
             NotificationCenter.default.removeObserver(token)
         }
@@ -185,7 +185,7 @@ class TransactionsController: UITableViewController {
         }
     }
 
-    func getWalletCardView() -> WalletFullCardView? {
+    func getAccountCardView() -> WalletFullCardView? {
         let view: WalletFullCardView = ((Bundle.main.loadNibNamed("WalletFullCardView", owner: self, options: nil)![0] as? WalletFullCardView)!)
         view.receiveView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.receiveToWallet)))
         view.sendView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sendfromWallet)))
@@ -256,7 +256,7 @@ class TransactionsController: UITableViewController {
         } else if let nextController = segue.destination as? TransactionDetailViewController {
             nextController.transaction = sender as? Transaction
             nextController.wallet = presentingWallet
-        } else if let nextController = segue.destination as? WalletsViewController {
+        } else if let nextController = segue.destination as? AccountsViewController {
             nextController.subaccountDelegate = self
         } else if let nextController = segue.destination as? AssetsListTableViewController {
             nextController.wallet = presentingWallet

@@ -37,7 +37,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_big" translatesAutoresizingMaskIntoConstraints="NO" id="eOt-9F-YzE">
-                                <rect key="frame" x="115" y="229" width="90" height="110"/>
+                                <rect key="frame" x="70" y="174" width="180" height="220"/>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" name="customTitaniumDark"/>

@@ -1,6 +1,6 @@
 import UIKit
 
-class WalletMiniCollection: UICollectionViewCell {
+class AccountMiniCollection: UICollectionViewCell {
 
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var bgView: UIView!

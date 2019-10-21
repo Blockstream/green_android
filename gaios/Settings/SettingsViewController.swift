@@ -501,7 +501,7 @@ extension SettingsViewController {
             controller.isHiddenWalletButton = true
         }
 
-        if let controller = segue.destination as? WalletsViewController {
+        if let controller = segue.destination as? AccountsViewController {
             controller.isSweep = true
         }
     }

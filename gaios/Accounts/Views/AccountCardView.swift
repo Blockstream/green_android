@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-class WalletCardView: UICollectionViewCell {
+class AccountCardView: UICollectionViewCell {
 
     @IBOutlet weak var balance: UILabel!
     @IBOutlet weak var balanceFiat: UILabel!
