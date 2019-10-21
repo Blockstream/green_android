@@ -25,12 +25,14 @@ if [ ! -d gdk ]; then
     git clone https://github.com/Blockstream/gdk.git
 fi
 
-cd gdk
-git fetch origin -t
-git checkout release_0.0.21
-rm -rf build-*
-./tools/build.sh --$TARGET static --lto=true
-cd ..
+if [ ! -d gdk-iphone ]; then
+    cd gdk
+    git fetch origin -t
+    git checkout release_0.0.22
+    rm -rf build-*
+    ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone
+    cd ..
+fi
 
 if [ ! -d Pods ]; then
     pod install
