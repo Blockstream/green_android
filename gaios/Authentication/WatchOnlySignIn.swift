@@ -98,7 +98,7 @@ class WatchOnlySignIn: KeyboardViewController {
             let text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
             NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
         } catch {
-            print (error.localizedDescription)
+            print(error.localizedDescription)
         }
     }
 

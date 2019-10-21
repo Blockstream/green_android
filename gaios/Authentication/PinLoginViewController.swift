@@ -76,7 +76,7 @@ class PinLoginViewController: UIViewController {
             }
             NVActivityIndicatorPresenter.sharedInstance.setMessage(text)
         } catch {
-            print (error.localizedDescription)
+            print(error.localizedDescription)
         }
     }
 
