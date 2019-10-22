@@ -7,7 +7,7 @@ build_release_iphone:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --iphone static
+    - ./tools/build.sh --update-cocoapods --iphone static
 
 build_tag_release_export:
   when: manual
@@ -22,7 +22,7 @@ build_tag_release_export:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --sign-and-export --iphone static
+    - ./tools/build.sh --sign-and-export --update-cocoapods --iphone static
 
 #package_release:
 #  tags:

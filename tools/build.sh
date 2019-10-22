@@ -10,22 +10,22 @@ fi
 
 SIGN_EXPORT=0
 
-TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim,sign-and-export -- "$@"`
+TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim,sign-and-export,update-cocoapods -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case $1 in
         --iphone) DEVICE=iphoneos; TARGET=iphone; shift ;;
         --iphonesim) DEVICE=iphonesim; TARGET=iphonesim; shift ;;
         --sign-and-export) SIGN_EXPORT=1; shift ;;
+        --update-cocoapods) UPDATE_COCOAPODS=1; shift ;;
         -- ) break ;;
     esac
 done
 
-if [ ! -d gdk ]; then
-    git clone https://github.com/Blockstream/gdk.git
-fi
-
 if [ ! -d gdk-iphone ]; then
+    if [ ! -d gdk ]; then
+        git clone https://github.com/Blockstream/gdk.git
+    fi
     cd gdk
     git fetch origin -t
     git checkout release_0.0.22
@@ -34,8 +34,15 @@ if [ ! -d gdk-iphone ]; then
     cd ..
 fi
 
+export GEM_HOME=$HOME/.gem
+export PATH=$GEM_HOME/bin:$PATH
+
+if [[ "$UPDATE_COCOAPODS" -eq 1 ]]; then
+    gem install cocoapods --user-install
+fi
+
 if [ ! -d Pods ]; then
-    pod install
+    $(which pod) install
 fi
 
 # Call linter
