@@ -17,6 +17,7 @@ public class RegistryErrorActivity extends Activity {
         UI.popup(this, R.string.id_warning, android.R.string.ok)
         .content(R.string.id_the_asset_registry_is_currently)
         .onAny((dialog, which) -> finish())
+        .canceledOnTouchOutside(false)
         .positiveColor(getResources().getColor(R.color.liquidDark))
         .negativeColor(getResources().getColor(R.color.liquidDark))
         .build()
