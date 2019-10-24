@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -21,7 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SwitchNetworkFragment extends DialogFragment implements NetworkSwitchListener {
+public class SwitchNetworkFragment extends BottomSheetDialogFragment implements NetworkSwitchListener {
 
     public static SwitchNetworkFragment newInstance() {
         return new SwitchNetworkFragment();
@@ -32,7 +33,6 @@ public class SwitchNetworkFragment extends DialogFragment implements NetworkSwit
         super.onStart();
         getDialog().getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         getDialog().getWindow().setGravity(Gravity.BOTTOM);
-        getDialog().getWindow().setBackgroundDrawableResource(R.color.primaryDark);
     }
 
     @Override

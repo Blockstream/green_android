@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/primaryDark">
 
     <View
         android:layout_width="wrap_content"
-        android:layout_height="5dp"
-        />
+        android:layout_height="20dp" />
 
     <TextView
         android:text="@string/id_select_network"
@@ -14,12 +14,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="25sp"
+        android:textColor="@color/secondaryTextColor"
         />
 
     <View
         android:layout_width="wrap_content"
-        android:layout_height="5dp"
-        />
+        android:layout_height="15dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/switch_network_recycler"
@@ -29,8 +29,7 @@
 
     <View
         android:layout_width="wrap_content"
-        android:layout_height="5dp"
+        android:layout_height="20dp"
         />
-
 
 </LinearLayout>
