@@ -258,6 +258,12 @@
             />
 
         <activity
+            android:name=".accounts.SubaccountAddActivity"
+            android:screenOrientation="portrait"
+            android:noHistory="true">
+        </activity>
+
+        <activity
             android:name=".accounts.SweepSelectActivity"
             android:screenOrientation="portrait"
             android:label="@string/id_sweep"

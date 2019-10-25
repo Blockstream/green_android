@@ -1,12 +1,11 @@
 package com.greenaddress.greenbits.ui.accounts;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
@@ -34,6 +33,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     private TextView mTotalAmountFiat;
     private RecyclerView mRecyclerView;
     private final List<SubaccountData> mSubaccountList = new ArrayList<>();
+    private static final int REQUEST_CREATE_SUBACCOUNT = 101;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -74,6 +74,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     public void attachObservers() {
         final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();
         final SubaccountsDataObservable subaccountObservable = getModel().getSubaccountsDataObservable();
+        subaccountObservable.addObserver(this);
         for (final SubaccountData o : subaccountObservable.getSubaccountsDataList()) {
             getModel().getBalanceDataObservable(o.getPointer()).addObserver(this);
         }
@@ -85,6 +86,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     public void detachObservers() {
         final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();
         final SubaccountsDataObservable subaccountObservable = getModel().getSubaccountsDataObservable();
+        subaccountObservable.deleteObserver(this);
         for (final SubaccountData o : subaccountObservable.getSubaccountsDataList()) {
             final Observable obsBalance = getModel().getBalanceDataObservable(o.getPointer());
             if (obsBalance != null)
@@ -149,25 +151,14 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
 
     @Override
     public void onNewSubaccount() {
-        final MaterialDialog dialog = UI.popup(this, R.string.id_standard_account)
-                                      .content(R.string.id_standard_accounts_allow_you_to)
-                                      .input(getString(R.string.id_name), "", new MaterialDialog.InputCallback() {
-            @Override
-            public void onInput(final MaterialDialog dialog, final CharSequence input) {
-                if (input.length() == 0)
-                    return;
-                try {
-                    GDKSession.getSession().createSubAccount(SubaccountSelectActivity.this,
-                                                             input.toString(), "2of2").resolve(null,
-                                                                                               null);
-                    getModel().getSubaccountsDataObservable().refresh();
-                } catch (final Exception e) {
-                    runOnUiThread(() -> { UI.toast(SubaccountSelectActivity.this, R.string.id_operation_failure,
-                                                   Toast.LENGTH_LONG); });
-                }
-            }
-        }).build();
-        UI.showDialog(dialog);
+        startActivityForResult(new Intent(this, SubaccountAddActivity.class), REQUEST_CREATE_SUBACCOUNT);
     }
 
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CREATE_SUBACCOUNT) {
+            getModel().getSubaccountsDataObservable().refresh();
+        }
+    }
 }

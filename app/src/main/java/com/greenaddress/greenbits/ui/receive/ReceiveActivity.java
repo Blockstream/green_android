@@ -23,15 +23,21 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.accounts.SubaccountPopup;
 
 import java.util.Locale;
 import java.util.Observable;
 
+import androidx.fragment.app.FragmentTransaction;
+
 import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
+import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.AUTHORIZED_ACCOUNT;
 
 public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
@@ -67,9 +73,34 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         mUnitButton.setPressed(!mIsFiat);
         mUnitButton.setSelected(!mIsFiat);
 
-        UI.attachHideKeyboardListener(this, UI.find(this, R.id.content));
+        final int subaccount = getModel().getCurrentSubaccount();
+        final SubaccountData subaccountData = getModel().getSubaccountsData(subaccount);
 
+        UI.attachHideKeyboardListener(this, UI.find(this, R.id.content));
         UI.hideIf(getNetwork().getLiquid(), UI.find(this, R.id.amountLayout));
+        final TextView receivingIdValue = UI.find(this, R.id.receivingIdValue);
+
+        if (subaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT])) {
+            final String receivingID = subaccountData.getReceivingId();
+            receivingIdValue.setText(receivingID);
+            receivingIdValue.setOnClickListener(
+                v -> onCopyClicked("auth_code", receivingID, R.string.id_address_copied_to_clipboard));
+
+            UI.find(this, R.id.copy).setOnClickListener(
+                v -> onCopyClicked("auth_code", receivingID, R.string.id_address_copied_to_clipboard)); // FIXME fix string
+
+            UI.find(this, R.id.receivingIdTitle).setOnClickListener(v -> {
+                final SubaccountPopup s = SubaccountPopup.getInstance(getString(R.string.id_account_id),
+                                                                      getString(
+                                                                          R.string.id_provide_this_id_to_an_asset));
+                final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack(null);
+                s.show(ft, "dialog");
+            });
+        } else {
+            UI.hide(UI.find(this, R.id.receivingIdLayout));
+        }
+
         update(null, null);
     }
 
@@ -175,13 +206,13 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         startActivity(intent);
     }
 
-    public void onCopyClicked() {
-        if (TextUtils.isEmpty(mCurrentAddress))
+    public void onCopyClicked(final String label, final String data, final int toast) {
+        if (data == null || data.isEmpty())
             return;
 
         final ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        cm.setPrimaryClip(ClipData.newPlainText("address", UI.getText(mAddressText)));
-        UI.toast(this, R.string.id_address_copied_to_clipboard, Toast.LENGTH_LONG);
+        cm.setPrimaryClip(ClipData.newPlainText(label, data));
+        UI.toast(this, toast, Toast.LENGTH_LONG);
     }
 
     public void onNewAddressClicked() {
@@ -197,7 +228,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         return getAddressUri(mCurrentAddress, mCurrentAmount);
     }
     private String getAddressUri(final String address, final ObjectNode amount) {
-        String qrCodeText;
+        final String qrCodeText;
         if (amount == null || amount.get("satoshi").asLong() == 0 || TextUtils.isEmpty(address)) {
             qrCodeText = address;
         } else {
@@ -237,9 +268,22 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
                 final BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), bitmap);
                 bitmapDrawable.setFilterBitmap(false);
                 mAddressImage.setImageDrawable(bitmapDrawable);
-                mAddressImage.setOnClickListener((final View v) -> onCopyClicked());
-                mAddressText.setOnClickListener((final View v) -> onCopyClicked());
+                mAddressImage.setOnClickListener((final View v) -> onCopyClicked("address", UI.getText(
+                                                                                     mAddressText),
+                                                                                 R.string.id_address_copied_to_clipboard));
+                mAddressText.setOnClickListener((final View v) -> onCopyClicked("address", UI.getText(mAddressText),
+                                                                                R.string.id_address_copied_to_clipboard));
             }
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }

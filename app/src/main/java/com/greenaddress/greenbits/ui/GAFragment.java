@@ -13,7 +13,7 @@ import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 public abstract class GAFragment extends Fragment {
-    private GreenAddressApplication mApp;
+    protected GreenAddressApplication mApp;
 
     @Override
     public void onAttach(final Context context) {
