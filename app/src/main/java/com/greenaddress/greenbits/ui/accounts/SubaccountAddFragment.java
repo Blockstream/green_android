@@ -82,9 +82,9 @@ public class SubaccountAddFragment extends GAFragment {
         final TextView[] labels = {UI.find(rootView, R.id.simpleAccountLabel), UI.find(rootView,
                                                                                        R.id.authorizedAccountLabel)};
         final String[] titles = {getString(R.string.id_standard_account), getString(
-                                     R.string.id_authorized_assets_account)};
+                                     R.string.id_liquid_securities_account)};
         final String[] descriptions = { getString(R.string.id_standard_accounts_allow_you_to),
-                                        String.format("%s\n\n%s", getString(R.string.id_allows_you_to_receive_and_send),
+                                        String.format("%s\n\n%s", getString(R.string.id_liquid_securities_accounts_are),
                                                       getString(R.string.id_twofactor_protection_does_not))};
         for (int i = 0; i < labels.length; i++) {
             final String title = titles[i];
@@ -108,7 +108,7 @@ public class SubaccountAddFragment extends GAFragment {
                 if (account.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]))
                     return true;
             }
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return false;

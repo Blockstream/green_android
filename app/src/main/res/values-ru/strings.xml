@@ -36,7 +36,6 @@
   <string name="id_advanced_network_settings">Расширенные настройки сети</string>
   <string name="id_all">Все</string>
   <string name="id_allows_you_to_quickly_check">Позволяет быстро проверить ваш баланс, получить средства или смести бумажный кошелек. Вы не можете отправлять средства в режиме холодного кошелька.</string>
-  <string name="id_allows_you_to_receive_and_send">Позволяет получать и отправлять цифровые активы, требующие авторизации эмитента для перевода. Авторизуемые активы могут быть ограничены для зачисления на другие типы учетных записей.</string>
   <string name="id_always">Всегда</string>
   <string name="id_amount">Сумма</string>
   <string name="id_are_you_sure_you_want_to_view">Вы уверены, что хотите просмотреть транзакцию, используя %s?</string>
@@ -45,9 +44,6 @@
   <string name="id_asset_id">ID токена</string>
   <string name="id_asset_name">Наименование токена</string>
   <string name="id_attempts_remaining_d">Осталось попыток: %d</string>
-  <string name="id_authorized_assets">Авторизуемые активы</string>
-  <string name="id_authorized_assets_account">Учетная запись авторизуемых активов</string>
-  <string name="id_authorized_assets_account_is">Учетная запись авторизуемых активов доступна только в Liquid.</string>
   <string name="id_auto_logout_timeout">Автоматический выход</string>
   <string name="id_autolock_after">Автоматическая блокировка</string>
   <string name="id_be_aware_other_apps_can_read_or">Помните, что другие приложения могут читать или изменять буфер обмена</string>
@@ -77,6 +73,7 @@
   <string name="id_confidential">Конфиденциально</string>
   <string name="id_confirm_code">Подтвердите код</string>
   <string name="id_confirm_passphrase">Подтвердите кодовую фразу</string>
+  <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
   <string name="id_confirmation_in_d_blocks">Подтверждение в %d блоках</string>
   <string name="id_congratulations">Поздравляем!</string>
   <string name="id_connect_through_a_proxy">Установить соединение через прокси-сервер</string>
@@ -181,6 +178,7 @@
   <string name="id_generate_new_address">Сгенерировать новый адрес</string>
   <string name="id_get_code">Получить код</string>
   <string name="id_go_to_account">Go to Account</string>
+  <string name="id_go_to_receive_to_get_your">Go to Receive to get your Account ID.</string>
   <string name="id_go_to_wallet">Перейти к кошельку</string>
   <string name="id_google_auth">Google Auth</string>
   <string name="id_google_authenticator">Google Authenticator</string>
@@ -232,8 +230,13 @@
   <string name="id_last_ping_1d_ms">Последний сигнал: %1$d мс</string>
   <string name="id_later">ПОЗЖЕ</string>
   <string name="id_learn_more_about_s">Learn more about %s.</string>
+  <string name="id_ledger_currently_supports_a">Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC</string>
   <string name="id_ledger_dashboard_detected">Обнаружена панель Ledger, пожалуйста, откройте правильное приложение для доступа.</string>
   <string name="id_lets_get_you_set_up">Давайте произведем настройку.</string>
+  <string name="id_liquid_securities">Liquid Securities</string>
+  <string name="id_liquid_securities_account">Liquid Securities Account</string>
+  <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
+  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.</string>
   <string name="id_loading_transactions">Идет загрузка транзакций...</string>
   <string name="id_log_in">Войти</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -328,7 +331,7 @@
   <string name="id_precision">Precision</string>
   <string name="id_privacy_policy">Политика конфиденциальности</string>
   <string name="id_problem_with_key_1s">Проблема с ключом %1$s</string>
-  <string name="id_provide_this_id_to_an_asset">Предоставьте этот идентификатор эмитенту актива для получения авторизации на отправку и получение авторизуемого актива</string>
+  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive Liquid Securities.</string>
   <string name="id_providing_an_email_enables">Предоставление электронной почты позволяет получать уведомления и восстанавливать транзакции.</string>
   <string name="id_proxy_settings">НАСТРОЙКИ ПРОКСИ-СЕРВЕРА</string>
   <string name="id_qr_scanner">QR-сканер</string>
@@ -484,7 +487,7 @@
   <string name="id_twofactor">ДВУХФАКТОРНАЯ АУТЕНТИФИКАЦИЯ</string>
   <string name="id_twofactor_authentication">Двухфакторная аутентификация</string>
   <string name="id_twofactor_authentication_expiry">Two-Factor authentication expiry</string>
-  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.</string>
+  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.</string>
   <string name="id_twofactor_reset_in_progress">Выполняется двухфакторный сброс, ваш кошелек заблокирован.</string>
   <string name="id_twofactor_settings">Двухфакторные настройки</string>
   <string name="id_twofactor_threshold">Двухфакторный порог</string>
@@ -544,7 +547,6 @@
   <string name="id_you_must_first_log_out_before">Прежде, чем войти, произведите выход.</string>
   <string name="id_you_must_save_this_mnemonic_now">Вы ДОЛЖНЫ сохранить эту мнемоническую фразу СЕЙЧАС</string>
   <string name="id_you_only_have_one_twofactor">У вас включен только один метод двухфакторной аутентификации</string>
-  <string name="id_you_will_find_the_account_id_in">You will find the Account ID in the receive screen.</string>
   <string name="id_you_will_need_to_reenter_your">Если вы не установите PIN-код, каждый раз, чтобы войти, вам придется вводить вашу мнемоническую фразу. Нажмите "OK" для продолжения.</string>
   <string name="id_your_green_wallet_is_now_ready">Ваш Green-кошелек готов к использованию.</string>
   <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>

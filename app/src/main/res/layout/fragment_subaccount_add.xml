@@ -109,7 +109,7 @@
             android:id="@+id/authorizedAccountTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/id_authorized_assets_account"
+            android:text="@string/id_liquid_securities_account"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"

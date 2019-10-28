@@ -59,7 +59,7 @@ public class SubaccountReviewFragment extends GAFragment {
         });
 
         if (accountType == AUTHORIZED_ACCOUNT) {
-            textInputEditText.setText(getResources().getText(R.string.id_authorized_assets_account));
+            textInputEditText.setText(getResources().getText(R.string.id_liquid_securities_account));
             textInputEditText.setEnabled(false);
             button.setEnabled(true);
         } else {
@@ -70,14 +70,14 @@ public class SubaccountReviewFragment extends GAFragment {
             UI.find(rootView, R.id.receivingIdValue).setVisibility(View.GONE);
         }
 
-        final int[] accounts = {R.string.id_standard_account, R.string.id_authorized_assets_account};
+        final int[] accounts = {R.string.id_standard_account, R.string.id_liquid_securities_account};
         final TextView accountTypeValue = UI.find(rootView, R.id.accountTypeValue);
         accountTypeValue.setText(getString(accounts[accountType]));
 
         final String[] titles = {getString(R.string.id_standard_account), getString(
-                                     R.string.id_authorized_assets_account)};
+                                     R.string.id_liquid_securities_account)};
         final String[] descriptions = { getString(R.string.id_standard_accounts_allow_you_to),
-                                        String.format("%s\n\n%s", getString(R.string.id_allows_you_to_receive_and_send),
+                                        String.format("%s\n\n%s", getString(R.string.id_liquid_securities_accounts_are),
                                                       getString(R.string.id_twofactor_protection_does_not))};
         UI.find(rootView, R.id.accountTypeTitle).setOnClickListener(v -> {
             final SubaccountPopup s = SubaccountPopup.getInstance(titles[accountType], descriptions[accountType]);
@@ -88,7 +88,7 @@ public class SubaccountReviewFragment extends GAFragment {
         UI.find(rootView, R.id.receivingIdTitle).setOnClickListener( v -> {
             final SubaccountPopup s =
                 SubaccountPopup.getInstance(getString(R.string.id_account_id),
-                                            getString(R.string.id_provide_this_id_to_an_asset));
+                                            getString(R.string.id_provide_this_id_to_the_issuer));
             final FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.addToBackStack(null);
             s.show(ft, "dialog");

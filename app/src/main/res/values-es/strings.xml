@@ -36,7 +36,6 @@
   <string name="id_advanced_network_settings">Opciones avanzadas de red\n</string>
   <string name="id_all">Todos</string>
   <string name="id_allows_you_to_quickly_check">Te permite revisar rápidamente el saldo, recibir fondos o barrer fondos a carteras de papel. Con el modo de solo lectura, no podrás enviar fondos.</string>
-  <string name="id_allows_you_to_receive_and_send">Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.</string>
   <string name="id_always">Siempre</string>
   <string name="id_amount">Cantidad</string>
   <string name="id_are_you_sure_you_want_to_view">¿Está seguro de que quiere visualizar la transacción con %s?</string>
@@ -45,9 +44,6 @@
   <string name="id_asset_id">Identificación del activo</string>
   <string name="id_asset_name">Nombre del activo</string>
   <string name="id_attempts_remaining_d">Intentos restantes: %d</string>
-  <string name="id_authorized_assets">Authorized Assets</string>
-  <string name="id_authorized_assets_account">Authorized Assets Account</string>
-  <string name="id_authorized_assets_account_is">Authorized assets account is only available on Liquid.</string>
   <string name="id_auto_logout_timeout">Tiempo de espera para cierre de sesión automático</string>
   <string name="id_autolock_after">Bloquear automáticamente después de</string>
   <string name="id_be_aware_other_apps_can_read_or">Ten en cuenta que otras apps pueden leer o cambiar el portapapeles</string>
@@ -77,6 +73,7 @@
   <string name="id_confidential">Confidencial</string>
   <string name="id_confirm_code">Confirmar el código</string>
   <string name="id_confirm_passphrase">Confirmar la frase de seguridad</string>
+  <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
   <string name="id_confirmation_in_d_blocks">Confirmación en %d bloques</string>
   <string name="id_congratulations">¡Felicidades!</string>
   <string name="id_connect_through_a_proxy">Conectarse a través de un proxy</string>
@@ -181,6 +178,7 @@
   <string name="id_generate_new_address">Generar Dirección Nueva</string>
   <string name="id_get_code">Conseguir Código</string>
   <string name="id_go_to_account">Go to Account</string>
+  <string name="id_go_to_receive_to_get_your">Go to Receive to get your Account ID.</string>
   <string name="id_go_to_wallet">Ir a Cartera</string>
   <string name="id_google_auth">Google Auth</string>
   <string name="id_google_authenticator">Google Authenticator</string>
@@ -232,8 +230,13 @@
   <string name="id_last_ping_1d_ms">Último pin: %1$d ms</string>
   <string name="id_later">LUEGO</string>
   <string name="id_learn_more_about_s">Learn more about %s.</string>
+  <string name="id_ledger_currently_supports_a">Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detectado. Abre la app correcta para acceder.</string>
   <string name="id_lets_get_you_set_up">Empecemos.</string>
+  <string name="id_liquid_securities">Liquid Securities</string>
+  <string name="id_liquid_securities_account">Liquid Securities Account</string>
+  <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
+  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.</string>
   <string name="id_loading_transactions">Cargando transacciones...</string>
   <string name="id_log_in">Iniciar sesión</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -328,7 +331,7 @@
   <string name="id_precision">Precisión</string>
   <string name="id_privacy_policy">Política de privacidad</string>
   <string name="id_problem_with_key_1s">Problema con clave %1$s</string>
-  <string name="id_provide_this_id_to_an_asset">Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.</string>
+  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive Liquid Securities.</string>
   <string name="id_providing_an_email_enables">Proporcionar un correo electrónico habilita las notificaciones y la recuperación de transacciones.</string>
   <string name="id_proxy_settings">CONFIGURACIÓN DEL PROXY</string>
   <string name="id_qr_scanner">Escáner QR</string>
@@ -484,7 +487,7 @@
   <string name="id_twofactor">DOS FACTORES</string>
   <string name="id_twofactor_authentication">Autenticación de dos factores</string>
   <string name="id_twofactor_authentication_expiry">Two-Factor authentication expiry</string>
-  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.</string>
+  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.</string>
   <string name="id_twofactor_reset_in_progress">Restablecimiento de la autenticación de dos factores en curso. Su cartera se encuentra bloqueada.</string>
   <string name="id_twofactor_settings">Configuración de dos factores</string>
   <string name="id_twofactor_threshold">Umbral de dos factores</string>
@@ -544,7 +547,6 @@
   <string name="id_you_must_first_log_out_before">Tienes que cerrar sesión antes de iniciar sesión.</string>
   <string name="id_you_must_save_this_mnemonic_now">DEBES guardar la Frase de Recuperación AHORA.</string>
   <string name="id_you_only_have_one_twofactor">Solo tienes un método de autenticación de dos factores habilitado</string>
-  <string name="id_you_will_find_the_account_id_in">You will find the Account ID in the receive screen.</string>
   <string name="id_you_will_need_to_reenter_your">Tendrás que volver a ingresar tu Frase de Recuperación para iniciar sesión si no estableces un PIN. Presiona "OK" para continuar.</string>
   <string name="id_your_green_wallet_is_now_ready">Tu Green Wallet está lista para usarse.</string>
   <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>

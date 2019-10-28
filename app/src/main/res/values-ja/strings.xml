@@ -36,7 +36,6 @@
   <string name="id_advanced_network_settings">ネットワーク詳細設定</string>
   <string name="id_all">全て</string>
   <string name="id_allows_you_to_quickly_check">残高の確認、資金の受け取り、また、ペーパーウォレットの読み取りができます。読み取りモードでは資金の送金はできません。</string>
-  <string name="id_allows_you_to_receive_and_send">Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.</string>
   <string name="id_always">いつも</string>
   <string name="id_amount">額</string>
   <string name="id_are_you_sure_you_want_to_view">%sを利用してトランザクションを確認しますか？</string>
@@ -45,9 +44,6 @@
   <string name="id_asset_id">Asset ID</string>
   <string name="id_asset_name">Asset Name</string>
   <string name="id_attempts_remaining_d">残り: %d 回</string>
-  <string name="id_authorized_assets">Authorized Assets</string>
-  <string name="id_authorized_assets_account">Authorized Assets Account</string>
-  <string name="id_authorized_assets_account_is">Authorized assets account is only available on Liquid.</string>
   <string name="id_auto_logout_timeout">自動ログアウト時間</string>
   <string name="id_autolock_after">オートロック制限</string>
   <string name="id_be_aware_other_apps_can_read_or">他のアプリがクリップボードを読み取り、変更可能ですので注意してください。</string>
@@ -77,6 +73,7 @@
   <string name="id_confidential">Confidential</string>
   <string name="id_confirm_code">コードを確認</string>
   <string name="id_confirm_passphrase">Confirm passphrase</string>
+  <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
   <string name="id_confirmation_in_d_blocks">Confirmation in %d blocks</string>
   <string name="id_congratulations">おめでとうございます。</string>
   <string name="id_connect_through_a_proxy">プロキシを使って接続する</string>
@@ -181,6 +178,7 @@
   <string name="id_generate_new_address">新しいアドレスを生成する</string>
   <string name="id_get_code">コードを貰う</string>
   <string name="id_go_to_account">Go to Account</string>
+  <string name="id_go_to_receive_to_get_your">Go to Receive to get your Account ID.</string>
   <string name="id_go_to_wallet">ウォレットを確認</string>
   <string name="id_google_auth">グーグル認証</string>
   <string name="id_google_authenticator">グーグル認証</string>
@@ -232,8 +230,13 @@
   <string name="id_last_ping_1d_ms">最終Ping: %1$d ms</string>
   <string name="id_later">後</string>
   <string name="id_learn_more_about_s">Learn more about %s.</string>
+  <string name="id_ledger_currently_supports_a">Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC</string>
   <string name="id_ledger_dashboard_detected">Ledgerダッシュボードを検知しました。正しいアプリを使ってアクセスして下さい。</string>
   <string name="id_lets_get_you_set_up">設定してみましょう。</string>
+  <string name="id_liquid_securities">Liquid Securities</string>
+  <string name="id_liquid_securities_account">Liquid Securities Account</string>
+  <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
+  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.</string>
   <string name="id_loading_transactions">トランザクションを読み込んでいます…</string>
   <string name="id_log_in">ログイン</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -328,7 +331,7 @@
   <string name="id_precision">Precision</string>
   <string name="id_privacy_policy">プライバシー政策</string>
   <string name="id_problem_with_key_1s">キー%1$s の問題</string>
-  <string name="id_provide_this_id_to_an_asset">Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.</string>
+  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive Liquid Securities.</string>
   <string name="id_providing_an_email_enables">Eメールを入力すると告知事項を受け取ることができ、また、トランザクション・リカバリーもできます。</string>
   <string name="id_proxy_settings">プロキシー設定</string>
   <string name="id_qr_scanner">QRスキャナー</string>
@@ -484,7 +487,7 @@
   <string name="id_twofactor">2段階認証</string>
   <string name="id_twofactor_authentication">2段階認証</string>
   <string name="id_twofactor_authentication_expiry">Two-Factor authentication expiry</string>
-  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.</string>
+  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.</string>
   <string name="id_twofactor_reset_in_progress">2段階認証を再設定しています、ウォレットは現在ロックされています。</string>
   <string name="id_twofactor_settings">2段階認証設定</string>
   <string name="id_twofactor_threshold">Two-Factor threshold</string>
@@ -544,7 +547,6 @@
   <string name="id_you_must_first_log_out_before">ログインする前にログアウトして下さい。</string>
   <string name="id_you_must_save_this_mnemonic_now">このMnemonicを直ちに保存して下さい</string>
   <string name="id_you_only_have_one_twofactor">2段階認証の一つだけ設定されています。</string>
-  <string name="id_you_will_find_the_account_id_in">You will find the Account ID in the receive screen.</string>
   <string name="id_you_will_need_to_reenter_your">PINを設定しない場合、ログインするにはもう一度mnemonicを入力しなければなりません。続けるには"OK"を押してください。 </string>
   <string name="id_your_green_wallet_is_now_ready">Green ウォレットを使用できます。</string>
   <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>
