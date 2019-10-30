@@ -8,12 +8,12 @@ protocol SubaccountDelegate: class {
 
 class TransactionsController: UITableViewController {
 
-    var pointerWallet: UInt32 = 0
-    var presentingWallet: WalletItem?
-    var txs: [Transactions] = []
-    var fetchTxs: Promise<Void>?
-    var isSweep: Bool = false
-    let pointerKey = String(format: "%@_wallet_pointer", getNetwork())
+    private var presentingWallet: WalletItem?
+    private var txs: [Transactions] = []
+    private var fetchTxs: Promise<Void>?
+    private var isSweep: Bool = false
+    private let pointerKey = String(format: "%@_wallet_pointer", getNetwork())
+    private var pointerWallet: UInt32 { UInt32(UserDefaults.standard.integer(forKey: pointerKey)) }
 
     private var blockToken: NSObjectProtocol?
     private var transactionToken: NSObjectProtocol?
@@ -283,7 +283,6 @@ extension TransactionsController: UITableViewDataSourcePrefetching {
 
 extension TransactionsController: SubaccountDelegate {
     func onChange(_ pointer: UInt32) {
-        self.pointerWallet = pointer
         UserDefaults.standard.set(Int(pointer), forKey: pointerKey)
         UserDefaults.standard.synchronize()
     }
