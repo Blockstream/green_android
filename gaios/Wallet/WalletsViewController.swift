@@ -43,10 +43,20 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     func reloadData() {
-        getSubaccounts().done {[unowned self] wallets in
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then(on: bgq) {
+            getSubaccounts()
+        }.ensure {
+            self.stopAnimating()
+        }.done { wallets in
             self.wallets = wallets
             self.collectionView?.reloadData()
-        }.catch {_ in }
+        }.catch { err in
+            print(err.localizedDescription)
+        }
     }
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
