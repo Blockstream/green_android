@@ -184,9 +184,6 @@ class TransactionsController: UITableViewController {
     }
 
     func loadWallet() {
-        pointerWallet = UInt32(UserDefaults.standard.integer(forKey: pointerKey))
-        guard let twoFactorReset = getGAService().getTwoFactorReset() else { return }
-        let network = getGdkNetwork(getNetwork())
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -194,26 +191,11 @@ class TransactionsController: UITableViewController {
             getSubaccounts()
         }.ensure {
             self.stopAnimating()
-        }.done { wallets in
-            let wallet = try getWallet(from: wallets, pointer: self.pointerWallet)
+        }.done { wallet in
+            self.onChange(wallet.pointer)
             self.presentingWallet = wallet
-            guard let view = self.tableView.tableHeaderView as? WalletFullCardView else { return }
-            if let balance = Balance.convert(details: ["satoshi": wallet.btc.satoshi]) {
-                let (amount, denom) = balance.get(tag: "btc")
-                view.balance.text = amount
-                view.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency)"
-                view.unit.text = denom
-            }
-            view.networkTitleLabel.text = network.name
-            view.walletName.text = self.presentingWallet!.localizedName()
-            view.networkIconImageView.image = UIImage(named: network.icon!)
-            view.assetsLabel.text = String(format: NSLocalizedString(wallet.balance.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.balance.count)
-            if twoFactorReset.isResetActive {
-                view.actionsView.isHidden = true
-            } else if getGAService().isWatchOnly {
-                view.sendView.isHidden = true
-                view.sweepView.isHidden = false
-            }
+            let view = self.tableView.tableHeaderView as? WalletFullCardView
+            view?.setup(with: wallet)
         }.catch { err in
             print(err.localizedDescription)
         }

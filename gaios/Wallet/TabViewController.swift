@@ -21,7 +21,9 @@ class TabViewController: UITabBarController {
         networkToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
         Assets.shared.refresh().done { (_, _) in
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, userInfo: nil)
-        }.catch { _ in }
+        }.catch { err in
+            print(err.localizedDescription)
+        }
     }
 
     func lockApplication(_ notification: Notification) {
