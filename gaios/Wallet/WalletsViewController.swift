@@ -30,16 +30,14 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if !isSweep {
-            navigationController?.setNavigationBarHidden(true, animated: true)
-        }
+        navigationController?.setNavigationBarHidden(!isSweep, animated: true)
         title = ""
         reloadData()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.setNavigationBarHidden(isSweep, animated: true)
     }
 
     func reloadData() {
