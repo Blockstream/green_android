@@ -4,10 +4,10 @@ import PromiseKit
 
 class WalletsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
-    var wallets = [WalletItem]()
     var isSweep: Bool = false
-    var wallet: WalletItem!
     weak var subaccountDelegate: SubaccountDelegate?
+    private var wallets = [WalletItem]()
+    private var wallet: WalletItem!
     private let cellId = "cell"
     private let miniId = "mini"
     private let headerId = "header"
