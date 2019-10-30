@@ -103,6 +103,8 @@ class VerifyMnemonicsViewController: UIViewController {
             try getSession().login(mnemonic: mnemonics)
         }.then(on: bgq) { call in
             call.resolve(self)
+        }.then { _ in
+            Registry.shared.refresh().recover { _ in Guarantee() }
         }.ensure {
             self.stopAnimating()
         }.done { _ in

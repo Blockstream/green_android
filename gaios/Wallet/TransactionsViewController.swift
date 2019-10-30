@@ -98,7 +98,11 @@ class TransactionsController: UITableViewController {
     }
 
     func onAssetsUpdated(_ notification: Notification) {
-        self.handleRefresh()
+        Registry.shared.cache().done { _ in
+            self.reload()
+        }.catch { err in
+            print(err.localizedDescription)
+        }
     }
 
     func onNewTransaction(_ notification: Notification) {
@@ -160,7 +164,7 @@ class TransactionsController: UITableViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            Assets.shared.refresh()
+            Registry.shared.cache()
         }.then(on: bgq) { _ -> Promise<Void> in
             when(fulfilled: [self.loadWallet(), self.loadTransactions()])
         }.ensure {
@@ -207,7 +211,7 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func showAssets(_ sender: UIButton) {
-        guard presentingWallet?.balance != nil else { return }
+        guard presentingWallet?.satoshi != nil else { return }
         self.performSegue(withIdentifier: "assets", sender: self)
     }
 
@@ -220,7 +224,7 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
-        if getGdkNetwork(getNetwork()).liquid && presentingWallet?.btc.satoshi == 0 {
+        if getGdkNetwork(getNetwork()).liquid && presentingWallet?.btc == 0 {
             let message = NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "")
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })

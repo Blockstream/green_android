@@ -22,9 +22,10 @@ class TransactionDetailTableCell: UITableViewCell {
                 detailLabel.text = "\(amount) \(denom) \(String(format: "( %.2f sat / vbyte )", Double(transaction.feeRate) / 1000))"
             }
         case .amount:
-            let receivedText = transaction.type == "incoming" ? NSLocalizedString("id_received", comment: "") : NSLocalizedString("id_sent", comment: "")
-            titleLabel.text = String(format: "%@ %@", NSLocalizedString("id_amount", comment: ""), receivedText)
-            detailLabel.text = String(format: "%@", transaction.amount())
+            if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+                let (amount, denom) = balance.get(tag: "btc")
+                detailLabel.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", amount, denom)
+            }
         case .notes:
             notesImageView.isHidden = false
             titleLabel.text = NSLocalizedString("id_my_notes", comment: "").localizedCapitalized

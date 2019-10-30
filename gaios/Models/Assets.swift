@@ -34,10 +34,15 @@ struct AssetInfo: Codable {
     }
 }
 
-class Assets {
-    public static let shared = Assets()
-    var info = [String: AssetInfo]()
-    var icons = [String: String]()
+class Registry: Codable {
+    static let shared = Registry(infos: [:], icons: [:])
+    var infos: [String: AssetInfo]
+    var icons: [String: String]
+
+    init(infos: [String: AssetInfo], icons: [String: String]) {
+        self.infos = infos
+        self.icons = icons
+    }
 
     func image(for key: String?) -> UIImage? {
         let id = "btc" == key ? getGdkNetwork(getNetwork()).policyAsset! : key
@@ -48,24 +53,27 @@ class Assets {
         return UIImage(named: "default_asset_icon")
     }
 
-    func refresh() -> Promise<([String: AssetInfo], [String: String])> {
+    func cache() -> Promise<Void> {
+        return refresh(refresh: false)
+    }
+
+    func refresh(refresh: Bool = true) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Promise().compactMap(on: bgq) { _ in
-            try getSession().refreshAssets(params: ["icons": true, "assets": true])
-        }.compactMap(on: bgq) { data in
-            guard var assetsData = data["assets"] as? [String: Any] else { return nil }
-            if let modIndex = assetsData.keys.firstIndex(of: "last_modified") {
-                assetsData.remove(at: modIndex)
+            try getSession().refreshAssets(params: ["icons": true, "assets": true, "refresh": refresh])
+        }.map { data in
+            var infosData = data["assets"] as? [String: Any]
+            var iconsData = data["icons"] as? [String: String]
+            if let modIndex = infosData?.keys.firstIndex(of: "last_modified") {
+                infosData?.remove(at: modIndex)
             }
-            guard var iconsData = data["icons"] as? [String: String] else { return nil }
-            if let modIndex = iconsData.keys.firstIndex(of: "last_modified") {
-                iconsData.remove(at: modIndex)
+            if let modIndex = iconsData?.keys.firstIndex(of: "last_modified") {
+                iconsData?.remove(at: modIndex)
             }
-            let jsonAssets = try JSONSerialization.data(withJSONObject: assetsData)
-            let jsonIcons = try JSONSerialization.data(withJSONObject: iconsData)
-            self.info = try! JSONDecoder().decode([String: AssetInfo].self, from: jsonAssets)
-            self.icons = try! JSONDecoder().decode([String: String].self, from: jsonIcons)
-            return (self.info, self.icons)
+            let infosSer = try? JSONSerialization.data(withJSONObject: infosData ?? [:])
+            let infos = try? JSONDecoder().decode([String: AssetInfo].self, from: infosSer ?? Data())
+            self.infos = infos ?? [:]
+            self.icons = iconsData ?? [:]
         }
     }
 }

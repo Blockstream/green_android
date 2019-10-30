@@ -8,9 +8,9 @@ class AssetsListTableViewController: UITableViewController {
     var transaction: Transaction!
     var isSend: Bool = false
 
-    private var assets: [(key: String, value: Balance)] {
+    private var assets: [(key: String, value: UInt64)] {
         get {
-            return Transaction.sort(wallet!.balance)
+            return Transaction.sort(wallet!.satoshi)
         }
     }
 
@@ -27,9 +27,6 @@ class AssetsListTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(onAssetsUpdated), name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
-        if !wallet!.balance.isEmpty {
-            return tableView.reloadData()
-        }
         reloadData()
     }
 
@@ -39,7 +36,11 @@ class AssetsListTableViewController: UITableViewController {
     }
 
     @objc func onAssetsUpdated(_ notification: NSNotification) {
-        self.reloadData()
+        Registry.shared.cache().done {
+            self.tableView.reloadData()
+        }.catch { err in
+            print(err.localizedDescription)
+        }
     }
 
     func reloadData() {
@@ -47,12 +48,16 @@ class AssetsListTableViewController: UITableViewController {
             self.startAnimating()
             return Guarantee()
         }.then {
+            Registry.shared.cache()
+        }.then { _ in
             self.wallet!.getBalance()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
             self.tableView.reloadData()
-        }.catch { _ in }
+        }.catch { err in
+            print(err.localizedDescription)
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -65,9 +70,10 @@ class AssetsListTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? AssetTableCell else { fatalError("Fail to dequeue reusable cell") }
         let tag = assets[indexPath.row].key
-        let asset = assets[indexPath.row].value.assetInfo
-        let satoshi = assets[indexPath.row].value.satoshi
-        cell.configure(tag: tag, asset: asset, satoshi: satoshi)
+        let info = Registry.shared.infos[tag]
+        let icon = Registry.shared.image(for: tag)
+        let satoshi = assets[indexPath.row].value
+        cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi)
         return cell
     }
 
@@ -84,8 +90,8 @@ class AssetsListTableViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let next = segue.destination as? AssetDetailTableViewController {
             next.tag = sender as? String
-            next.asset = wallet?.balance[next.tag]?.assetInfo
-            next.satoshi = wallet?.balance[next.tag]?.satoshi
+            next.asset = Registry.shared.infos[next.tag]
+            next.satoshi = wallet?.satoshi[next.tag]
         } else if let next = segue.destination as? SendBtcDetailsViewController {
             next.wallet = wallet
             next.assetTag = sender as? String ?? "btc"

@@ -75,7 +75,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? WalletCardView else { fatalError("Fail to dequeue reusable cell") }
             let wallet = wallets[indexPath.row]
 
-            let balance = Balance.convert(details: ["satoshi": wallet.btc.satoshi])!
+            let balance = Balance.convert(details: ["satoshi": wallet.btc])!
             let (amount, denom) = balance.get(tag: "btc")
             cell.balance.text = amount
             cell.unit.text = denom
@@ -92,7 +92,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
         case UICollectionView.elementKindSectionHeader:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier:
                 headerId, for: indexPath) as? HeaderWalletsCollection else { fatalError("Fail to dequeue reusable cell") }
-            let satoshi = wallets.map { $0.btc.satoshi }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
+            let satoshi = wallets.map { $0.btc }.reduce(0) { (accumulation: UInt64, nextValue: UInt64) -> UInt64 in
                 return accumulation + nextValue
             }
             header.title.text = isSweep ? NSLocalizedString("id_where_would_you_like_to", comment: ""): NSLocalizedString("id_total_balance", comment: "")

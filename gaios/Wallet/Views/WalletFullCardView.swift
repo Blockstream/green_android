@@ -65,7 +65,7 @@ class WalletFullCardView: UIView {
     }
 
     func setup(with wallet: WalletItem) {
-        if let converted = Balance.convert(details: ["satoshi": wallet.btc.satoshi]) {
+        if let converted = Balance.convert(details: ["satoshi": wallet.btc]) {
             let (amount, denom) = converted.get(tag: "btc")
             let (fiat, currency) = converted.get(tag: "fiat")
             balance.text = amount
@@ -75,7 +75,7 @@ class WalletFullCardView: UIView {
         networkTitleLabel.text = network.name
         walletName.text = wallet.localizedName()
         networkIconImageView.image = UIImage(named: network.icon!)
-        assetsLabel.text = String(format: NSLocalizedString(wallet.balance.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.balance.count)
+        assetsLabel.text = String(format: NSLocalizedString(wallet.satoshi.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.satoshi.count)
         if getGAService().getTwoFactorReset()?.isResetActive ?? false {
             actionsView.isHidden = true
         } else if getGAService().isWatchOnly {

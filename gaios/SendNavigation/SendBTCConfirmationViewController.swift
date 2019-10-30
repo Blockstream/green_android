@@ -79,14 +79,21 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         let isLiquid = getGdkNetwork(getNetwork()).liquid
         if isLiquid {
             let tag = addressee.assetTag ?? "btc"
-            let asset = wallet?.balance[tag]?.assetInfo
-            content.assetTableCell?.configure(tag: tag, asset: asset, satoshi: addressee.satoshi)
-            let (amount, denom) = Balance.convert(details: ["satoshi": transaction.fee])!.get(tag: "btc")
+            let info = Registry.shared.infos[tag]
+            let icon = Registry.shared.image(for: tag)
+            content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: addressee.satoshi)
+        }
+        if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
+            let (amount, denom) = balance.get(tag: "btc")
             content.assetsFeeLabel.text = "\(amount) \(denom)"
-        } else {
-            content.amountText.text = Balance.convert(details: ["satoshi": addressee.satoshi])!.get(tag: isFiat ? "fiat" : "btc").0
-            let (amount, denom) = Balance.convert(details: ["satoshi": addressee.satoshi + transaction.fee])!.get(tag: isFiat ? "fiat" : "btc")
-            content.feeLabel.text = "\(amount) \(denom)"
+        }
+        if let balance = Balance.convert(details: ["satoshi": addressee.satoshi]) {
+            let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
+            content.amountText.text = amount
+        }
+        if let balance = Balance.convert(details: ["satoshi": addressee.satoshi + transaction.fee]) {
+            let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
+            content.feeLabel.text = amount
         }
     }
 

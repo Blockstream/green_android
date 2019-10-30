@@ -19,11 +19,6 @@ class TabViewController: UITabBarController {
         autolockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: TabViewController.AUTOLOCK), object: nil, queue: .main, using: lockApplication)
         pinlockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: TabViewController.PINLOCK), object: nil, queue: .main, using: lockApplication)
         networkToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
-        Assets.shared.refresh().done { (_, _) in
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, userInfo: nil)
-        }.catch { err in
-            print(err.localizedDescription)
-        }
     }
 
     func lockApplication(_ notification: Notification) {

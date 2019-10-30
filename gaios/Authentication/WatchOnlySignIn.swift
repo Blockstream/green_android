@@ -158,6 +158,8 @@ class WatchOnlySignIn: KeyboardViewController {
         }.compactMap(on: bgq) { (username, password) in
             try getSession().loginWatchOnly(username: username ?? "",
                                             password: password ?? "")
+        }.then { _ in
+            Registry.shared.refresh().recover { _ in Guarantee() }
         }.ensure {
             self.stopAnimating()
         }.done {

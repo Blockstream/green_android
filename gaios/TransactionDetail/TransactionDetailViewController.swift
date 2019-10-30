@@ -28,12 +28,6 @@ class TransactionDetailViewController: KeyboardViewController {
     private var isIncoming: Bool = false
     private var isRedeposit: Bool = false
 
-    private var assets: [(key: String, value: AssetInfo)] {
-        get {
-            return Transaction.sort(transaction.assets)
-        }
-    }
-
     private var amounts: [(key: String, value: UInt64)] {
         get {
             return Transaction.sort(transaction.amounts)
@@ -84,7 +78,7 @@ class TransactionDetailViewController: KeyboardViewController {
             } else {
                 cellTypes.insert(.asset, at: 1)
             }
-            _ = isRedeposit || assets.count > 0 ?
+            _ = isRedeposit || amounts.count > 0 ?
                 cellTypes.remove(at: cellTypes.firstIndex(of: .amount)!) :
                 cellTypes.remove(at: cellTypes.firstIndex(of: .fee)!)
         }
@@ -124,7 +118,7 @@ class TransactionDetailViewController: KeyboardViewController {
             next.wallet = wallet
         } else if let next = segue.destination as? AssetDetailTableViewController {
             next.tag = sender as? String
-            if let asset = transaction.assets[next.tag] {
+            if let asset = Registry.shared.infos[next.tag] {
                 next.asset = asset
             } else {
                 next.asset = AssetInfo(assetId: next.tag,
@@ -132,7 +126,7 @@ class TransactionDetailViewController: KeyboardViewController {
                                        precision: 0,
                                        ticker: NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
             }
-            next.satoshi = wallet?.balance[next.tag]?.satoshi
+            next.satoshi = wallet?.satoshi[next.tag]
         } else if let next = segue.destination as? NotesViewController {
             next.transaction = sender as? Transaction
             next.updateTransaction = { transaction in
@@ -231,8 +225,9 @@ extension TransactionDetailViewController: UITableViewDelegate, UITableViewDataS
         case .asset:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "AssetTableCell") as? AssetTableCell,
                 let amount = isIncoming ? amounts[indexPath.row - 1] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
-                let asset = transaction.assets[amount.key]
-                cell.configure(tag: amount.key, asset: asset, satoshi: transaction.amounts[amount.key] ?? 0)
+                let info = Registry.shared.infos[amount.key]
+                let icon = Registry.shared.image(for: amount.key)
+                cell.configure(tag: amount.key, info: info, icon: icon, satoshi: transaction.amounts[amount.key] ?? 0)
                 return cell
             }
         case .amount, .txident, .fee, .recipient, .wallet, .notes:

@@ -14,8 +14,9 @@ class SendBtcDetailsViewController: UIViewController {
     private var uiErrorLabel: UIErrorLabel!
     private var isFiat = false
     private var txTask: TransactionTask?
+
     private var asset: AssetInfo? {
-        return wallet?.balance[assetTag]?.assetInfo ?? AssetInfo(assetId: assetTag, name: assetTag, precision: 0, ticker: "")
+        return Registry.shared.infos[assetTag] ?? AssetInfo(assetId: assetTag, name: assetTag, precision: 0, ticker: "")
     }
 
     private var oldFeeRate: UInt64? {
@@ -111,7 +112,7 @@ class SendBtcDetailsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if isLiquid {
-            content.assetIconImageView.image = Assets.shared.image(for: asset?.assetId)
+            content.assetIconImageView.image = Registry.shared.image(for: asset?.assetId)
         }
         content.assetNameLabel.text = assetTag == "btc" ? "L-BTC" : asset?.name
         content.domainNameLabel.text = asset?.entity?.domain ?? ""
@@ -170,7 +171,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func reloadWalletBalance() {
-        let satoshi = wallet!.balance[assetTag]!.satoshi
+        let satoshi = wallet!.satoshi[assetTag]!
         let details = "btc" != assetTag ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
         let (amount, denom) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : assetTag)
         content.maxAmountLabel.text =  "\(amount) \(denom)"

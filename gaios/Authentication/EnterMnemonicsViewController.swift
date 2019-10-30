@@ -171,6 +171,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         }.compactMap(on: bgq) {
             let resolver = try getSession().login(mnemonic: $0.0, password: $0.1)
             _ = try DummyResolve(call: resolver)
+        }.then { _ in
+            Registry.shared.refresh().recover { _ in Guarantee() }
         }.ensure {
             self.stopAnimating()
         }.done { _ in

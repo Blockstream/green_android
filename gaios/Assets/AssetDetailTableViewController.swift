@@ -77,7 +77,11 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
     }
 
     func onAssetsUpdated(_ notification: Notification) {
-        self.tableView.reloadData()
+        Registry.shared.cache().done { _ in
+            self.tableView.reloadData()
+        }.catch { err in
+            print(err.localizedDescription)
+        }
     }
 
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

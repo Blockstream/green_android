@@ -121,16 +121,6 @@ struct Transaction {
         }
     }
 
-    var assets: [String: AssetInfo] {
-        get {
-            let assets = get("asset_info") as [String: Any]? ?? [:]
-            return assets.mapValues { value -> AssetInfo in
-                let json = try! JSONSerialization.data(withJSONObject: value, options: [])
-                return try! JSONDecoder().decode(AssetInfo.self, from: json)
-            }
-        }
-    }
-
     static func sort<T>(_ dict: [String: T]) -> [(key: String, value: T)] {
         var sorted = dict.filter { $0.key != "btc" }.sorted(by: {$0.0 < $1.0 })
         if dict.contains(where: { $0.key == "btc" }) {
@@ -154,17 +144,6 @@ struct Transaction {
 
     var type: String {
         get { return get("type") ?? String() }
-    }
-
-    func amount() -> String {
-        let isBtc = "btc" == defaultAsset
-        let assetInfo = assets[defaultAsset] ?? AssetInfo(assetId: defaultAsset, name: "", precision: 0, ticker: "")
-        let details = isBtc ? ["satoshi": satoshi] : ["satoshi": amounts[defaultAsset]!,
-                                  "asset_info": assetInfo.encode()!]
-        let (value, ticker) = Balance.convert(details: details)!.get(tag: defaultAsset)
-        return String(format: "%@%@ %@",
-                      type == "outgoing" || type == "redeposit" ? "-" : "",
-                      value, ticker)
     }
 
     func address() -> String? {
@@ -250,7 +229,7 @@ class WalletItem: Codable {
         case receiveAddress
         case receivingId = "receiving_id"
         case type
-        case balance
+        case satoshi
     }
 
     private let name: String
@@ -258,8 +237,8 @@ class WalletItem: Codable {
     var receiveAddress: String?
     let receivingId: String
     let type: String
-    var balance: [String: Balance]
-    var btc: Balance { get { return balance["btc"]! }}
+    var satoshi: [String: UInt64]
+    var btc: UInt64 { get { return satoshi["btc"]! }}
 
     func localizedName() -> String {
         return pointer == 0 ? NSLocalizedString("id_main_account", comment: "") : name
@@ -278,14 +257,13 @@ class WalletItem: Codable {
         return receiveAddress ?? String()
     }
 
-    func getBalance() -> Promise<[String: Balance]> {
+    func getBalance() -> Promise<[String: UInt64]> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
-            try getSession().getBalance(details: ["subaccount": self.pointer, "num_confs": 0])
-        }.compactMap(on: bgq) { data in
-            let jsonData = try JSONSerialization.data(withJSONObject: data)
-            self.balance = try JSONDecoder().decode([String: Balance].self, from: jsonData)
-            return self.balance
+            try getSession().getBalance(details: ["subaccount": self.pointer, "num_confs": 0]) as? [String: UInt64]
+        }.compactMap { satoshi in
+            self.satoshi = satoshi
+            return satoshi
         }
     }
 }

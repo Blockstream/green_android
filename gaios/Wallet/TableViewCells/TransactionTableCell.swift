@@ -42,8 +42,19 @@ class TransactionTableCell: UITableViewCell {
             amount.text = "-\(fee) \(denom)"
         } else if multipleAssets && isIncoming {
             amount.text = NSLocalizedString("id_multiple_assets", comment: "")
+        } else if "btc" == transaction.defaultAsset {
+            if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+                let (value, denom) = balance.get(tag: "btc")
+                amount.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", value, denom)
+            }
         } else {
-            amount.text = transaction.amount()
+            let asset = transaction.defaultAsset
+            let info = Registry.shared.infos[asset] ?? AssetInfo(assetId: asset, name: "", precision: 0, ticker: "")
+            let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
+            if let balance = Balance.convert(details: details) {
+                let (value, ticker) = balance.get(tag: transaction.defaultAsset)
+                amount.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", value, ticker)
+            }
         }
         selectionStyle = .none
         date.text = transaction.date(dateStyle: .medium, timeStyle: .none)
@@ -51,10 +62,10 @@ class TransactionTableCell: UITableViewCell {
         let isAsset = !(assetTag == "btc")
         if !transaction.memo.isEmpty {
             address.text = transaction.memo
-        } else if isAsset && transaction.assets[assetTag]?.entity?.domain != nil {
+        } else if isAsset && Registry.shared.infos[assetTag]?.entity?.domain != nil {
             address.text = multipleAssets && isIncoming ?
                 NSLocalizedString("id_multiple_assets", comment: "") :
-                transaction.assets[assetTag]?.entity?.domain ?? ""
+                Registry.shared.infos[assetTag]?.entity?.domain ?? ""
         } else if isRedeposit {
             address.text = String(format: "%@ %@", NSLocalizedString("id_redeposited", comment: ""),
                                   isAsset ? NSLocalizedString("id_asset", comment: "") : "")
