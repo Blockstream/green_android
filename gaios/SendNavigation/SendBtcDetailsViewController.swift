@@ -111,7 +111,7 @@ class SendBtcDetailsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if isLiquid {
-            content.assetIconImageView.image = AssetIcon.loadAssetIcon(with: asset?.assetId)
+            content.assetIconImageView.image = Assets.shared.image(for: asset?.assetId)
         }
         content.assetNameLabel.text = assetTag == "btc" ? "L-BTC" : asset?.name
         content.domainNameLabel.text = asset?.entity?.domain ?? ""

@@ -61,7 +61,6 @@
 		6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D12C952236760A600A51F1F /* ProgressIndicator.xib */; };
 		6D1674FA234C0E2200C4749D /* NetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D1674F8234C0E2200C4749D /* NetworkSelection.storyboard */; };
 		6D2A613623302694008C518A /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2A613523302694008C518A /* UIImage.swift */; };
-		6D2A629223359FB3008C518A /* AssetIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2A629123359FB3008C518A /* AssetIcon.swift */; };
 		6D565ECF22C2E44F00C20786 /* TransactionDetailHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ECE22C2E44F00C20786 /* TransactionDetailHeaderCell.swift */; };
 		6D565ED122C2E50900C20786 /* TransactionStatusTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ED022C2E50900C20786 /* TransactionStatusTableCell.swift */; };
 		6D565ED322C2E53E00C20786 /* TransactionDetailTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ED222C2E53E00C20786 /* TransactionDetailTableCell.swift */; };
@@ -243,7 +242,6 @@
 		6D12C952236760A600A51F1F /* ProgressIndicator.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicator.xib; sourceTree = "<group>"; };
 		6D1674F9234C0E2200C4749D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = gaios/Base.lproj/NetworkSelection.storyboard; sourceTree = SOURCE_ROOT; };
 		6D2A613523302694008C518A /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
-		6D2A629123359FB3008C518A /* AssetIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetIcon.swift; sourceTree = "<group>"; };
 		6D565ECE22C2E44F00C20786 /* TransactionDetailHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailHeaderCell.swift; sourceTree = "<group>"; };
 		6D565ED022C2E50900C20786 /* TransactionStatusTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionStatusTableCell.swift; sourceTree = "<group>"; };
 		6D565ED222C2E53E00C20786 /* TransactionDetailTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailTableCell.swift; sourceTree = "<group>"; };
@@ -667,7 +665,6 @@
 				81D94CF021B93905003B03F9 /* Settings.swift */,
 				81F74BA42278857800A397C9 /* Network.swift */,
 				81C602A422A553D3004E26E1 /* Assets.swift */,
-				6D2A629123359FB3008C518A /* AssetIcon.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1096,7 +1093,6 @@
 				81E9B7FE21C90F74004D87B6 /* WalletsViewController.swift in Sources */,
 				81C208A32201ED6A00F4BC1F /* Toast+SnackBar.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
-				6D2A629223359FB3008C518A /* AssetIcon.swift in Sources */,
 				6D8099DB23021D0F0069A69F /* PopoverMenuViewController.swift in Sources */,
 				6D7B5F9322E6852D00DE049D /* WalletMiniCollection.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,

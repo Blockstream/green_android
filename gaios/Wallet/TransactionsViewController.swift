@@ -50,18 +50,15 @@ class TransactionsController: UITableViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
         NotificationCenter.default.addObserver(self, selector: #selector(self.onNewTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.onNewBlock(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onNewBlock), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAssetsUpdate), name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
+        handleRefresh()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard let controller = self.tabBarController as? TabViewController else { return }
         controller.snackbar.isHidden = false
-        loadWallet()
-        refreshAssets()
-            .map { _ in self.loadTransactions() }
-            .map { _ in getIcons() }
-            .catch { _ in }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -69,6 +66,7 @@ class TransactionsController: UITableViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
         guard let controller = self.tabBarController as? TabViewController else { return }
         controller.snackbar.isHidden = true
     }
@@ -87,12 +85,15 @@ class TransactionsController: UITableViewController {
         self.loadTransactions()
     }
 
+    @objc func onAssetsUpdate(_ notification: NSNotification) {
+        self.handleRefresh()
+    }
+
     @objc func onNewTransaction(_ notification: NSNotification) {
         guard let dict = notification.userInfo as NSDictionary? else { return }
         guard let subaccounts = dict["subaccounts"] as? [UInt32] else { return }
         if subaccounts.contains(pointerWallet) {
-            self.loadWallet()
-            self.loadTransactions()
+            handleRefresh()
         }
     }
 
@@ -141,9 +142,11 @@ class TransactionsController: UITableViewController {
         return 0
     }
 
-    @objc func handleRefresh(_ sender: UIRefreshControl?) {
-        self.loadWallet()
-        self.loadTransactions()
+    @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
+        Assets.shared.refresh().done { _ in
+            self.loadWallet()
+            self.loadTransactions()
+        }.catch { _ in }
     }
 
     func loadTransactions(_ pageId: Int = 0) {

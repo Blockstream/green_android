@@ -38,12 +38,14 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAssetsUpdated), name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
     }
 
     @objc func dismissModal() {
@@ -62,6 +64,10 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
             view.removeGestureRecognizer(keyboardDismissGesture!)
             keyboardDismissGesture = nil
         }
+    }
+
+    @objc func onAssetsUpdated(_ notification: NSNotification) {
+        self.tableView.reloadData()
     }
 
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

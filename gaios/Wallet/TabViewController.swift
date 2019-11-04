@@ -21,6 +21,9 @@ class TabViewController: UITabBarController {
         NotificationCenter.default.addObserver(self, selector: #selector(updateConnection),
                                                name: NSNotification.Name(rawValue: EventType.Network.rawValue),
                                                object: nil)
+        Assets.shared.refresh().done { (_, _) in
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, userInfo: nil)
+        }.catch { _ in }
     }
 
     @objc func lockApplication(_ notification: NSNotification) {

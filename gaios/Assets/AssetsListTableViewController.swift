@@ -26,11 +26,31 @@ class AssetsListTableViewController: UITableViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAssetsUpdated), name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
         if !wallet!.balance.isEmpty {
-            return self.tableView.reloadData()
+            return tableView.reloadData()
         }
-        // reload if empty balance
-        wallet!.getBalance().done { _ in
+        reloadData()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
+    }
+
+    @objc func onAssetsUpdated(_ notification: NSNotification) {
+        self.reloadData()
+    }
+
+    func reloadData() {
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then {
+            self.wallet!.getBalance()
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
             self.tableView.reloadData()
         }.catch { _ in }
     }

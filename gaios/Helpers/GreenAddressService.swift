@@ -11,6 +11,7 @@ enum EventType: String {
     case Network = "network"
     case SystemMessage = "system_message"
     case Tor = "tor"
+    case AssetsUpdated = "assets_updated"
 }
 
 struct Connection: Codable {
