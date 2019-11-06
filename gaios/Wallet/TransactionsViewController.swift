@@ -92,7 +92,9 @@ class TransactionsController: UITableViewController {
     }
 
     func onNewBlock(_ notification: Notification) {
-        self.loadTransactions()
+        self.loadTransactions().done {
+            self.reload()
+        }.catch { _ in }
     }
 
     func onAssetsUpdate(_ notification: Notification) {
@@ -153,23 +155,32 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
-        Assets.shared.refresh().done { _ in
-            self.loadWallet()
-            self.loadTransactions()
-        }.catch { _ in }
-    }
-
-    func loadTransactions(_ pageId: Int = 0) {
-        getTransactions(self.pointerWallet, first: 0)
-        .done { txs in
-            self.txs.removeAll()
-            self.txs.append(txs)
-            self.reload()
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then(on: bgq) {
+            Assets.shared.refresh()
+        }.then(on: bgq) { _ -> Promise<Void> in
+            when(fulfilled: [self.loadWallet(), self.loadTransactions()])
         }.ensure {
+            self.stopAnimating()
             if self.tableView.refreshControl!.isRefreshing {
                 self.tableView.refreshControl!.endRefreshing()
             }
-        }.catch { _ in }
+        }.done { _ in
+            self.reload()
+        }.catch { err in
+            print(err.localizedDescription)
+        }
+    }
+
+    func loadTransactions(_ pageId: Int = 0) -> Promise<Void> {
+        return getTransactions(self.pointerWallet, first: 0)
+        .map { txs in
+            self.txs.removeAll()
+            self.txs.append(txs)
+        }
     }
 
     func getWalletCardView() -> WalletFullCardView? {
@@ -183,21 +194,15 @@ class TransactionsController: UITableViewController {
         return view
     }
 
-    func loadWallet() {
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: DispatchQueue.global(qos: .background)) {
-            getSubaccounts()
-        }.ensure {
-            self.stopAnimating()
-        }.done { wallet in
+    func loadWallet() -> Promise<Void> {
+        return getSubaccount(self.pointerWallet)
+        .recover { _ in
+            getSubaccount(0)
+        }.map { wallet in
             self.onChange(wallet.pointer)
             self.presentingWallet = wallet
             let view = self.tableView.tableHeaderView as? WalletFullCardView
             view?.setup(with: wallet)
-        }.catch { err in
-            print(err.localizedDescription)
         }
     }
 
