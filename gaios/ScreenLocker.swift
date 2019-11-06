@@ -156,6 +156,7 @@ class ScreenLocker {
             return
         }
         clear()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.logout(with: false)
     }
 }

@@ -4,44 +4,15 @@ import PromiseKit
 
 class TabViewController: UITabBarController {
 
-    private static let AUTOLOCK = "autolock"
-    private static let PINLOCK = "pinlock"
     let snackbar = SnackBarNetwork()
     private var startTime = DispatchTime.now()
     private var endTime = DispatchTime.now()
 
-    private var autolockToken: NSObjectProtocol?
-    private var pinlockToken: NSObjectProtocol?
     private var networkToken: NSObjectProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        autolockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: TabViewController.AUTOLOCK), object: nil, queue: .main, using: lockApplication)
-        pinlockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: TabViewController.PINLOCK), object: nil, queue: .main, using: lockApplication)
         networkToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
-    }
-
-    func lockApplication(_ notification: Notification) {
-        var pin = false
-        if notification.name == NSNotification.Name(rawValue: TabViewController.PINLOCK) {
-            if let userInfo = notification.userInfo as? [String: Bool] {
-                pin = userInfo["pin"] ?? false
-            }
-        }
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.map {
-            getAppDelegate()!.lock(with: pin)
-        }.map(on: bgq) {
-            try getSession().disconnect()
-        }.ensure {
-            self.stopAnimating()
-            getGAService().reset()
-        }.catch { _ in
-            print("disconnection error never happens")
-        }
     }
 
     func updateConnection(_ notification: Notification) {
@@ -65,13 +36,8 @@ class TabViewController: UITabBarController {
         snackbar.setNeedsDisplay()
     }
 
-    deinit {
-        if let token = autolockToken {
-            NotificationCenter.default.removeObserver(token)
-        }
-        if let token = pinlockToken {
-            NotificationCenter.default.removeObserver(token)
-        }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         if let token = networkToken {
             NotificationCenter.default.removeObserver(token)
         }

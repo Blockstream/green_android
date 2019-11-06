@@ -272,7 +272,8 @@ class TransactionsController: UITableViewController {
     }
 
     func networkDidChange() {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "pinlock"), object: nil, userInfo: ["pin": true])
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.logout(with: true)
     }
 }
 

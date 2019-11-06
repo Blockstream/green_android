@@ -31,12 +31,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func instantiateViewControllerAsRoot(storyboard: String, identifier: String) {
         let storyboard = UIStoryboard(name: storyboard, bundle: nil)
         let firstVC = storyboard.instantiateViewController(withIdentifier: identifier)
-        guard let window = self.window else { return }
-        if window.rootViewController != nil {
-            window.rootViewController!.navigationController?.popToRootViewController(animated: true)
-        }
-        window.rootViewController = firstVC
-        window.makeKeyAndVisible()
+        window?.rootViewController?.navigationController?.popToRootViewController(animated: true)
+        window?.rootViewController?.dismiss(animated: false, completion: nil)
+        window?.rootViewController = firstVC
+        window?.makeKeyAndVisible()
     }
 
     func connect() throws {
@@ -53,6 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func disconnect() {
         try! getSession().disconnect()
+        getGAService().reset()
     }
 
     func lock(with pin: Bool) {
@@ -64,6 +63,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
+    }
+
+    func logout(with pin: Bool) {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            window?.rootViewController?.stopAnimating()
+            return Guarantee()
+        }.map(on: bgq) {
+            self.disconnect()
+        }.ensure {
+            self.window?.rootViewController?.stopAnimating()
+        }.done {
+            self.lock(with: pin)
+        }.catch { _ in
+            fatalError("disconnection error never happens")
+        }
     }
 
     func setupAppearance() {

@@ -136,7 +136,8 @@ class GreenAddressService {
                 let json = try JSONSerialization.data(withJSONObject: data, options: [])
                 let connection = try JSONDecoder().decode(Connection.self, from: json)
                 if connection.loginRequired == true {
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
+                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                    appDelegate?.logout(with: false)
                 } else {
                     post(event: EventType.Network, data: data)
                 }

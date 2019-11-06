@@ -280,7 +280,8 @@ class SettingsViewController: UIViewController {
 extension SettingsViewController {
 
     func logout() {
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.logout(with: false)
     }
 
     func setWatchOnly(username: String, password: String) {

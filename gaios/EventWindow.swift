@@ -47,7 +47,8 @@ class EventWindow: UIWindow {
 
     @objc private func timeout(_ timer: Timer) {
         NSLog("Idle timer expired: locking application...")
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.logout(with: false)
     }
 
     func applicationWillResignActive(_ notification: Notification) {
