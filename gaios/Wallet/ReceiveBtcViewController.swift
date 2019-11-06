@@ -10,6 +10,8 @@ class ReceiveBtcViewController: KeyboardViewController {
     var gestureTap: UITapGestureRecognizer?
     var gestureTapQRCode: UITapGestureRecognizer?
 
+    private var newAddressToken: NSObjectProtocol?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_receive", comment: "")
@@ -34,7 +36,7 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.newAddress(_:)), name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
+        newAddressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, queue: .main, using: newAddress)
         content.amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         content.fiatSwitchButton.addTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
         content.shareButton.addTarget(self, action: #selector(shareButtonClicked(_:)), for: .touchUpInside)
@@ -43,7 +45,9 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil)
+        if let token = newAddressToken {
+            NotificationCenter.default.removeObserver(token)
+        }
         guard gestureTap != nil else { return }
         content.walletQRCode.removeGestureRecognizer(gestureTapQRCode!)
         content.walletAddressLabel.removeGestureRecognizer(gestureTap!)
@@ -62,7 +66,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         }.catch { _ in }
     }
 
-    @objc func newAddress(_ notification: NSNotification) {
+    func newAddress(_ notification: Notification) {
         guard let dict = notification.userInfo as NSDictionary? else { return }
         guard let pointer = dict["pointer"] as? UInt32 else { return }
         guard let address = dict["address"] as? String else { return }

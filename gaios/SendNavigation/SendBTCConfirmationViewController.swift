@@ -12,9 +12,11 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     private var isFiat = false
     private var connected = true
 
+    private var updateToken: NSObjectProtocol?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(updateConnection), name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
+        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
 
         tabBarController?.tabBar.isHidden = true
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
@@ -60,13 +62,15 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.currencyButton.removeTarget(self, action: #selector(click(_:)), for: .touchUpInside)
     }
 
-    @objc func updateConnection(_ notification: NSNotification) {
+    func updateConnection(_ notification: Notification) {
         guard let connected = notification.userInfo?["connected"] as? Bool else { return }
         self.connected = connected
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
+        if let token = updateToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     func reload() {
@@ -169,7 +173,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }
     }
 
-    override func keyboardWillShow(notification: NSNotification) {
+    override func keyboardWillShow(notification: Notification) {
         // Modified slightly for use in Green from the public release at "Managing the Keyboard" from Text Programming Guide for iOS
         super.keyboardWillShow(notification: notification)
         if let kbSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
@@ -184,7 +188,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }
     }
 
-    override func keyboardWillHide(notification: NSNotification) {
+    override func keyboardWillHide(notification: Notification) {
         super.keyboardWillHide(notification: notification)
         let contentInsets = UIEdgeInsets.zero
         content.scrollView.contentInset = contentInsets

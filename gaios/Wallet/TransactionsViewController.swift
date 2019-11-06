@@ -15,6 +15,10 @@ class TransactionsController: UITableViewController {
     var isSweep: Bool = false
     let pointerKey = String(format: "%@_wallet_pointer", getNetwork())
 
+    private var blockToken: NSObjectProtocol?
+    private var transactionToken: NSObjectProtocol?
+    private var assetsUpdatedToken: NSObjectProtocol?
+
     private var modalTransitioningDelegate = ModalTransitioningDelegate()
 
     lazy var noTransactionsLabel: UILabel = {
@@ -49,9 +53,9 @@ class TransactionsController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: true)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.onNewTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onNewBlock), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onAssetsUpdate), name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
+        transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
+        blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
+        assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdate)
         handleRefresh()
     }
 
@@ -64,9 +68,15 @@ class TransactionsController: UITableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
+        if let token = transactionToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = blockToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = assetsUpdatedToken {
+            NotificationCenter.default.removeObserver(token)
+        }
         guard let controller = self.tabBarController as? TabViewController else { return }
         controller.snackbar.isHidden = true
     }
@@ -81,15 +91,15 @@ class TransactionsController: UITableViewController {
         }
     }
 
-    @objc func onNewBlock(_ notification: NSNotification) {
+    func onNewBlock(_ notification: Notification) {
         self.loadTransactions()
     }
 
-    @objc func onAssetsUpdate(_ notification: NSNotification) {
+    func onAssetsUpdate(_ notification: Notification) {
         self.handleRefresh()
     }
 
-    @objc func onNewTransaction(_ notification: NSNotification) {
+    func onNewTransaction(_ notification: Notification) {
         guard let dict = notification.userInfo as NSDictionary? else { return }
         guard let subaccounts = dict["subaccounts"] as? [UInt32] else { return }
         if subaccounts.contains(pointerWallet) {
@@ -180,7 +190,7 @@ class TransactionsController: UITableViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.then {
+        }.then(on: DispatchQueue.global(qos: .background)) {
             getSubaccounts()
         }.ensure {
             self.stopAnimating()

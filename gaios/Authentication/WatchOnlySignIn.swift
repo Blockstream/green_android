@@ -23,6 +23,8 @@ class WatchOnlySignIn: KeyboardViewController {
     var buttonConstraint: NSLayoutConstraint?
     private var network = getGdkNetwork(getNetwork())
 
+    private var progressToken: NSObjectProtocol?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         let logoName = network.liquid ? "btc_liquid" : network.icon
@@ -83,16 +85,18 @@ class WatchOnlySignIn: KeyboardViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(progress), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        progressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: progress)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        if let token = progressToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
-    @objc func progress(_ notification: NSNotification) {
-        Guarantee().map { () -> UInt32 in
+    func progress(_ notification: Notification) {
+        Guarantee().map(on: DispatchQueue.global(qos: .background)) { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(Tor.self, from: json)
             return tor.progress
@@ -107,7 +111,7 @@ class WatchOnlySignIn: KeyboardViewController {
         }
     }
 
-    override func keyboardWillShow(notification: NSNotification) {
+    override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
             self.buttonConstraint?.isActive = false
@@ -121,7 +125,7 @@ class WatchOnlySignIn: KeyboardViewController {
         })
     }
 
-    override func keyboardWillHide(notification: NSNotification) {
+    override func keyboardWillHide(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
             self.buttonConstraint?.isActive = false

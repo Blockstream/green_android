@@ -8,19 +8,29 @@ class EventWindow: UIWindow {
         return TimeInterval(settings.altimeout * 60)
     }
 
+    private var resetTimerToken: NSObjectProtocol?
+    private var activeToken: NSObjectProtocol?
+    private var resignToken: NSObjectProtocol?
+
     func startObserving() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.resetTimer(_:)), name: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive), name: UIApplication.willResignActiveNotification, object: nil)
+        resetTimerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: resetTimer)
+        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
+        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
     }
 
     func stopObserving () {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
+        if let token = resetTimerToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = resignToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
-    @objc func resetTimer(_ notification: NSNotification) {
+    func resetTimer(_ notification: Notification) {
         self.resetTimer()
     }
 
@@ -40,13 +50,13 @@ class EventWindow: UIWindow {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "autolock"), object: nil, userInfo: nil)
     }
 
-    @objc func applicationWillResignActive(_ notification: NSNotification) {
+    func applicationWillResignActive(_ notification: Notification) {
         DispatchQueue.main.async {
             self.timer?.invalidate()
         }
     }
 
-    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+    func applicationDidBecomeActive(_ notification: Notification) {
         resetTimer()
     }
 

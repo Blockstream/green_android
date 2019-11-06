@@ -49,13 +49,26 @@ class TransactionDetailViewController: KeyboardViewController {
         }
     }
 
+    private var transactionToken: NSObjectProtocol?
+    private var blockToken: NSObjectProtocol?
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.refreshTransaction(_:)), name: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil)
+        transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: refreshTransaction)
+        blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: refreshTransaction)
         transactionDetailTableView.reloadData()
         let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonTapped))
         navigationItem.rightBarButtonItem = shareButton
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = transactionToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = blockToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     func configureViewAndCells() {
@@ -175,7 +188,7 @@ class TransactionDetailViewController: KeyboardViewController {
         }
     }
 
-    @objc func refreshTransaction(_ notification: NSNotification) {
+    func refreshTransaction(_ notification: Notification) {
         Guarantee().done { [weak self] _ in
             DispatchQueue.main.async {
                 self?.transactionDetailTableView.reloadData()

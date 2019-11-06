@@ -35,23 +35,36 @@ class ScreenLocker {
         }
     }
 
+    private var activeToken: NSObjectProtocol?
+    private var resignToken: NSObjectProtocol?
+    private var enterForegroundToken: NSObjectProtocol?
+    private var enterBackgroundToken: NSObjectProtocol?
+
     func startObserving() {
         // Initialize the screen lock state.
         clear()
         appIsInactiveOrBackground = UIApplication.shared.applicationState != UIApplication.State.active
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive), name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        activeToken = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main, using: applicationDidBecomeActive)
+        resignToken = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: .main, using: applicationWillResignActive)
+        enterForegroundToken = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main, using: applicationWillEnterForeground)
+        enterBackgroundToken = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main, using: applicationDidEnterBackground)
     }
 
     func stopObserving() {
         hideLockWindow()
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        if let token = activeToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = resignToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = enterForegroundToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = enterBackgroundToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     func clear() {
@@ -89,19 +102,19 @@ class ScreenLocker {
         stopObserving()
     }
 
-    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+    func applicationDidBecomeActive(_ notification: Notification) {
         self.appIsInactiveOrBackground = false
     }
 
-    @objc func applicationWillResignActive(_ notification: NSNotification) {
+    func applicationWillResignActive(_ notification: Notification) {
         self.appIsInactiveOrBackground = true
     }
 
-    @objc func applicationWillEnterForeground(_ notification: NSNotification) {
+    func applicationWillEnterForeground(_ notification: Notification) {
         self.appIsInBackground = false
     }
 
-    @objc func applicationDidEnterBackground(_ notification: NSNotification) {
+    func applicationDidEnterBackground(_ notification: Notification) {
         self.appIsInBackground = true
     }
 

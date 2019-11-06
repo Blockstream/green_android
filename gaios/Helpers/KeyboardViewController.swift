@@ -4,26 +4,33 @@ import UIKit
 class KeyboardViewController: UIViewController {
     var keyboardDismissGesture: UIGestureRecognizer?
 
+    private var showToken: NSObjectProtocol?
+    private var hideToken: NSObjectProtocol?
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        showToken = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main, using: keyboardWillShow)
+        hideToken = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main, using: keyboardWillHide)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        if let token = showToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = hideToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
-    @objc func keyboardWillShow(notification: NSNotification) {
+    func keyboardWillShow(notification: Notification) {
         if keyboardDismissGesture == nil {
             keyboardDismissGesture = UITapGestureRecognizer(target: self, action: #selector(KeyboardViewController.dismissKeyboard))
             view.addGestureRecognizer(keyboardDismissGesture!)
         }
     }
 
-    @objc func keyboardWillHide(notification: NSNotification) {
+    func keyboardWillHide(notification: Notification) {
         if keyboardDismissGesture != nil {
             view.removeGestureRecognizer(keyboardDismissGesture!)
             keyboardDismissGesture = nil

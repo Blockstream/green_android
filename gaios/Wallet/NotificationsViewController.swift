@@ -9,6 +9,9 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
     private var twoFactorConfig: TwoFactorConfig?
     private var wallets = [WalletItem]()
 
+    private var transactionToken: NSObjectProtocol?
+    private var twoFactorResetToken: NSObjectProtocol?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = NSLocalizedString("id_notifications", comment: "")
@@ -19,8 +22,8 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadData(_:)), name: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadData(_:)), name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil, queue: .main, using: self.reloadData)
+        twoFactorResetToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: self.reloadData)
         reloadData(nil)
     }
 
@@ -32,13 +35,17 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil)
+        if let token = transactionToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = twoFactorResetToken {
+            NotificationCenter.default.removeObserver(token)
+        }
         guard let controller = self.tabBarController as? TabViewController else { return }
         controller.snackbar.isHidden = true
     }
 
-    @objc func reloadData(_ notification: NSNotification?) {
+    func reloadData(_ notification: Notification?) {
         let bgq = DispatchQueue.global(qos: .background)
         getSubaccounts().map(on: bgq) { wallets in
             self.wallets = wallets

@@ -76,7 +76,11 @@ class TransactionTableCell: UITableViewCell {
             status.textColor = UIColor.customTitaniumLight()
             status.text = NSLocalizedString("id_12_confirmations", comment: "")
         } else if !isLiquid && blockHeight < transaction.blockHeight + 5 {
-            let confirmCount = blockHeight - transaction.blockHeight + 1
+            guard blockHeight >= transaction.blockHeight else {
+                status.text = ""
+                return
+            }
+            let confirmCount = (blockHeight - transaction.blockHeight) + 1
             status.textColor = UIColor.customTitaniumLight()
             status.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount)
         } else {

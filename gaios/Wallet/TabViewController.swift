@@ -10,23 +10,21 @@ class TabViewController: UITabBarController {
     private var startTime = DispatchTime.now()
     private var endTime = DispatchTime.now()
 
+    private var autolockToken: NSObjectProtocol?
+    private var pinlockToken: NSObjectProtocol?
+    private var networkToken: NSObjectProtocol?
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(lockApplication),
-                                               name: NSNotification.Name(rawValue: TabViewController.AUTOLOCK),
-                                               object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(lockApplication),
-                                               name: NSNotification.Name(rawValue: TabViewController.PINLOCK),
-                                               object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(updateConnection),
-                                               name: NSNotification.Name(rawValue: EventType.Network.rawValue),
-                                               object: nil)
+        autolockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: TabViewController.AUTOLOCK), object: nil, queue: .main, using: lockApplication)
+        pinlockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: TabViewController.PINLOCK), object: nil, queue: .main, using: lockApplication)
+        networkToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
         Assets.shared.refresh().done { (_, _) in
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, userInfo: nil)
         }.catch { _ in }
     }
 
-    @objc func lockApplication(_ notification: NSNotification) {
+    func lockApplication(_ notification: Notification) {
         var pin = false
         if notification.name == NSNotification.Name(rawValue: TabViewController.PINLOCK) {
             if let userInfo = notification.userInfo as? [String: Bool] {
@@ -49,7 +47,7 @@ class TabViewController: UITabBarController {
         }
     }
 
-    @objc func updateConnection(_ notification: NSNotification) {
+    func updateConnection(_ notification: Notification) {
         guard let connected = notification.userInfo?["connected"] as? Bool else { return }
         Guarantee().done {
             if connected {
@@ -71,8 +69,15 @@ class TabViewController: UITabBarController {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: TabViewController.AUTOLOCK), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil)
+        if let token = autolockToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = pinlockToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = networkToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 }
 

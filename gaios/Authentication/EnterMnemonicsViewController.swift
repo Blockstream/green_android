@@ -24,6 +24,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
 
     var currIndexPath: IndexPath?
 
+    private var progressToken: NSObjectProtocol?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_enter_your_wallet_mnemonic", comment: "")
@@ -38,13 +40,15 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(progress), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        progressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: progress)
         updateDoneButton(false)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        if let token = progressToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -57,8 +61,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         doneButton.setGradient(enable)
     }
 
-    @objc func progress(_ notification: NSNotification) {
-        Guarantee().map { () -> UInt32 in
+    func progress(_ notification: Notification) {
+        Guarantee().map(on: DispatchQueue.global(qos: .background)) { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(Tor.self, from: json)
             return tor.progress
@@ -69,7 +73,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         }
     }
 
-    @objc override func keyboardWillShow(notification: NSNotification) {
+    override func keyboardWillShow(notification: Notification) {
         super.keyboardWillShow(notification: notification)
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         let contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardFrame.height, right: 0.0)
@@ -78,7 +82,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         suggestions!.frame = CGRect(x: 0, y: view.frame.height - keyboardFrame.height - 40, width: view.frame.width, height: 40)
     }
 
-    @objc override func keyboardWillHide(notification: NSNotification) {
+    override func keyboardWillHide(notification: Notification) {
         suggestions!.isHidden = true
         super.keyboardWillHide(notification: notification)
     }

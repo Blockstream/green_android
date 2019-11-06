@@ -47,7 +47,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         refresh()
     }
 
-    override func keyboardWillShow(notification: NSNotification) {
+    override func keyboardWillShow(notification: Notification) {
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
     }

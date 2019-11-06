@@ -12,6 +12,8 @@ class VerifyMnemonicsViewController: UIViewController {
     var questionPosition: Int = 0
     let numberOfSteps: Int = 4
 
+    private var progressToken: NSObjectProtocol?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         expectedWordNumbers = generateRandomWordNumbers()
@@ -24,7 +26,7 @@ class VerifyMnemonicsViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(self, selector: #selector(progress), name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        progressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: progress)
         for button in content.buttonsArray {
             button.addTarget(self, action: #selector(self.click), for: .touchUpInside)
         }
@@ -32,14 +34,16 @@ class VerifyMnemonicsViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil)
+        if let token = progressToken {
+            NotificationCenter.default.removeObserver(token)
+        }
         for button in content.buttonsArray {
             button.removeTarget(self, action: #selector(self.click), for: .touchUpInside)
         }
     }
 
-    @objc func progress(_ notification: NSNotification) {
-        Guarantee().map { () -> UInt32 in
+    func progress(_ notification: Notification) {
+        Guarantee().map(on: DispatchQueue.global(qos: .background)) { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
             let tor = try JSONDecoder().decode(Tor.self, from: json)
             return tor.progress
