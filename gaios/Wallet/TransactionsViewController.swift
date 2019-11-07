@@ -55,7 +55,7 @@ class TransactionsController: UITableViewController {
         navigationController?.setNavigationBarHidden(true, animated: true)
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
-        assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdate)
+        assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
         handleRefresh()
     }
 
@@ -97,7 +97,7 @@ class TransactionsController: UITableViewController {
         }.catch { _ in }
     }
 
-    func onAssetsUpdate(_ notification: Notification) {
+    func onAssetsUpdated(_ notification: Notification) {
         self.handleRefresh()
     }
 
