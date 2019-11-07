@@ -15,6 +15,7 @@ import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 
@@ -118,9 +119,9 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final boolean csv, final long subaccount, final long branch, final long pointer,
+    public String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer,
                                   final long csvBlocks) throws BTChipException {
-        return mDongle.getGreenAddress(csv, subaccount, branch, pointer, csvBlocks);
+        return mDongle.getGreenAddress(csvBlocks > 0, subaccount.getPointer(), branch, pointer, csvBlocks);
     }
 
     public String signMessage(final GaActivity parent, final List<Integer> path, final String message) {

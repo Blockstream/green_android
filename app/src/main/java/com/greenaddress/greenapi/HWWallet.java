@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.GaActivity;
 
 import java.util.List;
@@ -74,7 +75,7 @@ public abstract class HWWallet {
 
     public abstract int getIconResourceId();
 
-    public abstract String getGreenAddress(final boolean csv, final long subaccount, final long branch, final long pointer, final long csvBlocks) throws BTChipException;
+    public abstract String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer, final long csvBlocks) throws Exception;
 
     public NetworkData getNetwork() {
         return mNetwork;

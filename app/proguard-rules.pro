@@ -68,6 +68,7 @@
 -keep class com.blockstream.libwally.** {*;}
 -keep class com.blockstream.libgreenaddress.** {*;}
 -keep class com.greenaddress.greenapi.data.** {*;}
+-keep class com.greenaddress.jade.entities** {*;}
 
 
 -keepattributes InnerClasses,EnclosingMethod

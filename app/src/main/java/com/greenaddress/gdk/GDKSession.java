@@ -29,6 +29,8 @@ import com.greenaddress.greenapi.data.TwoFactorDetailData;
 import com.greenaddress.greenapi.model.NotificationHandlerImpl;
 import com.greenaddress.greenbits.ui.BuildConfig;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -138,6 +140,47 @@ public class GDKSession {
 
     public void loginWatchOnly(final String username, final String password) throws Exception {
         GDK.login_watch_only(mNativeSession, username, password);
+    }
+
+    // Pass ready-assembled json parameters
+    public JsonNode httpRequest(final JsonNode details) throws IOException {
+        final Object reply = GDK.http_request(mNativeSession, details);
+        final JsonNode response = mObjectMapper.readTree(reply.toString());
+        return response;
+    }
+
+    // 'data' and 'accept' and certificates can be null, and if so are not passed
+    public JsonNode httpRequest(final String method,
+                                final List<URL> urls,
+                                final String data,
+                                final String accept,
+                                final List<String> certs) throws IOException {
+        // Build the json parameters
+        final ObjectNode details = mObjectMapper.createObjectNode();
+
+        // Method and URLs
+        details.put("method", method);
+        final ArrayNode urlsArray = details.putArray("urls");
+        for (final URL url : urls) {
+            urlsArray.add(url.toExternalForm());
+        }
+
+        // Optional (POST) data, 'accept' strings, and additional certificates.
+        if (data != null) {
+            details.put("data", data);
+        }
+        if (accept != null) {
+            details.put("accept", accept);
+        }
+        if (certs != null) {
+            final ArrayNode certsArray = details.putArray("root_certificates");
+            for (final String cert : certs) {
+                certsArray.add(cert);
+            }
+        }
+
+        // Call httpRequest passing the assembled json parameters
+        return this.httpRequest(details);
     }
 
     public List<TransactionData> parseTransactions(final ArrayNode txListObject) throws Exception {

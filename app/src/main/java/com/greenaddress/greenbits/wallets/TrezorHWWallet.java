@@ -11,6 +11,7 @@ import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.satoshilabs.trezor.Trezor;
@@ -351,7 +352,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final boolean csv, final long subaccount, final long branch, final long pointer,
+    public String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer,
                                   final long csvBlocks) {
         return null;
     }

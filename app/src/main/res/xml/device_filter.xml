@@ -87,4 +87,7 @@
     <usb-device vendor-id="11415" product-id="16413"/>
     <usb-device vendor-id="11415" product-id="16414"/>
     <usb-device vendor-id="11415" product-id="16415"/>
+
+    <!-- VID 0x10c4 PID 0xea60 - Jade -->
+    <usb-device vendor-id="4292" product-id="60000"/>
 </resources>

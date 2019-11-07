@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui.authentication;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -38,9 +37,12 @@ import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
+import com.greenaddress.greenbits.wallets.JadeHWWallet;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
+import com.greenaddress.jade.entities.JadeError;
 import com.polidea.rxandroidble2.RxBleClient;
 import com.polidea.rxandroidble2.RxBleDevice;
+import com.greenaddress.jade.JadeAPI;
 import com.satoshilabs.trezor.Trezor;
 
 import java.util.List;
@@ -57,10 +59,11 @@ public class RequestLoginActivity extends LoginActivity {
 
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
 
-    private static final int VENDOR_BTCHIP    = 0x2581;
-    private static final int VENDOR_LEDGER    = 0x2c97;
-    private static final int VENDOR_TREZOR    = 0x534c;
-    private static final int VENDOR_TREZOR_V2 = 0x1209;
+    private static final int VENDOR_BTCHIP     = 0x2581;
+    private static final int VENDOR_LEDGER     = 0x2c97;
+    private static final int VENDOR_TREZOR     = 0x534c;
+    private static final int VENDOR_TREZOR_V2  = 0x1209;
+    private static final int VENDOR_JADE       = 0x10c4;
 
     private UsbManager mUsbManager;
     private UsbDevice mUsb;
@@ -116,11 +119,18 @@ public class RequestLoginActivity extends LoginActivity {
         Log.d(TAG, "Vendor: " + mVendorId + " Product: " + usb.getProductId());
 
         switch (mVendorId) {
+        case VENDOR_JADE:
+            hardwareIcon.setImageResource(R.drawable.ic_jade);
+            final JadeAPI jadeAPI = JadeAPI.createSerial(mUsbManager, mUsb, 115200);
+            onJade(jadeAPI);
+            return;
+
         case VENDOR_TREZOR:
         case VENDOR_TREZOR_V2:
             hardwareIcon.setImageResource(R.drawable.ic_trezor);
             onTrezor();
             return;
+
         case VENDOR_BTCHIP:
         case VENDOR_LEDGER:
             hardwareIcon.setImageResource(R.drawable.ic_ledger);
@@ -169,6 +179,85 @@ public class RequestLoginActivity extends LoginActivity {
         }
     }
 
+    private void onJade(final JadeAPI jade) {
+        // Connect to jade (using background thread)
+        mDisposables.add(Observable.just(jade)
+                .subscribeOn(Schedulers.computation())
+                .map(JadeAPI::connect)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        rslt -> {
+                            if (rslt) {
+                                // Connected - ok to proceed to fw check, pin, login etc.
+                                onJadeConnected(jade);
+                            } else {
+                                Log.e(TAG, "Failed to connect to Jade");
+                                showInstructions(R.string.id_please_reconnect_your_hardware);
+                            }
+                        },
+                        throwable -> {
+                            Log.e(TAG, "Exception connecting to Jade");
+                            showInstructions(R.string.id_please_reconnect_your_hardware);
+                        }
+                )
+        );
+    }
+
+    private void onJadeConnected(final JadeAPI jade) {
+        mDisposables.add(Observable.just(getSession())
+                .subscribeOn(Schedulers.computation())
+
+                // Connect GDKSession first (on a background thread), as we use httpRequest() as part of
+                // Jade login (to access firmware server and to interact with the pinserver).
+                // This also acts as a handy check that we have network connectivity before we start.
+                .map(session -> {
+                    Log.d(TAG, "(re-)connecting gdk session)");
+                    getSession().disconnect();
+                    this.connect();
+                    return session;
+                })
+                .doOnError(throwable -> Log.e(TAG, "Exception connecting GDK - " + throwable))
+
+                // Then create JadeHWWallet instance and authenticate (with pinserver) still on background thread
+                .map(session -> {
+                    Log.d(TAG, "Creating Jade HW Wallet)");
+                    final HWDeviceData hwDeviceData = new HWDeviceData("Jade", true, true,
+                            HWDeviceData.HWDeviceDataLiquidSupport.Lite);
+                    final JadeHWWallet jadeHwWallet = new JadeHWWallet(this.getApplicationContext(), jade, networkData, hwDeviceData);
+
+                    // check fw-valid, user pin-entry, pinserver handshake, etc
+                    jadeHwWallet.authenticate();
+                    return jadeHwWallet;
+                })
+
+                // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        jadeHwWallet -> {
+                            showInstructions(R.string.id_logging_in);
+                            mHwWallet = jadeHwWallet;
+                            doLogin(false);
+                        },
+                        throwable -> {
+                            Log.e(TAG, "Connecting to Jade HW wallet got error: " + throwable);
+                            if (throwable instanceof JadeError) {
+                                final JadeError jaderr = (JadeError)throwable;
+                                if (jaderr.getCode()  == JadeError.CBOR_RPC_NETWORK_MISMATCH) {
+                                    showInstructions(R.string.id_the_network_selected_on_the);
+                                } else {
+                                    showInstructions(R.string.id_please_reconnect_your_hardware);
+                                }
+                            } else if ("GDK_ERROR_CODE -1 GA_connect".equals(throwable.getMessage())) {
+                                showInstructions(R.string.id_unable_to_contact_the_green);
+                            } else {
+                                showInstructions(R.string.id_please_reconnect_your_hardware);
+                            }
+                            jade.disconnect();
+                        }
+                )
+        );
+    }
+
     private void onTrezor() {
         final Trezor t;
         t = Trezor.getDevice(this);
@@ -205,7 +294,7 @@ public class RequestLoginActivity extends LoginActivity {
                                                            HWDeviceData.HWDeviceDataLiquidSupport.None);
         mHwWallet = new TrezorHWWallet(t, networkData, hwDeviceData);
 
-        doLogin(this);
+        doLogin(true);
     }
 
     private void showLedgerPinDialog(final BTChipTransport transport) {
@@ -328,33 +417,39 @@ public class RequestLoginActivity extends LoginActivity {
                                                            HWDeviceData.HWDeviceDataLiquidSupport.Lite);
         mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData, hwDeviceData);
 
-        doLogin(this);
+        doLogin(true);
     }
 
-    private void doLogin(final Activity parent) {
+    private void doLogin(final boolean bReConnectSession) {
         mDisposables.add(Observable.just(getSession())
-                          .observeOn(Schedulers.computation())
-                          .map((session) -> {
-            session.disconnect();
-            connect();
-            session.registerUser(mHwWallet.getHWDeviceData(), "").resolve(null,
-                                                                          new HardwareCodeResolver(this, mHwWallet));
-            session.login(mHwWallet.getHWDeviceData(), "", "").resolve(null,
-                                                                       new HardwareCodeResolver(this, mHwWallet));
-            session.setHWWallet(mHwWallet);
-            return session;
-        })
-                          .observeOn(AndroidSchedulers.mainThread())
-                          .subscribe((session) -> {
-            onPostLogin();
-            stopLoading();
-            onLoggedIn();
-        }, (final Throwable e) -> {
-            stopLoading();
-            GDKSession.get().disconnect();
-            UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
-            showInstructions(R.string.id_please_reconnect_your_hardware);
-        }));
+                .observeOn(Schedulers.computation())
+                .map((session) -> {
+                    // Reconnect session if required
+                    if (bReConnectSession) {
+                        session.disconnect();
+                        this.connect();
+                    }
+
+                    // Register user/hw-wallet and login
+                    session.registerUser(mHwWallet.getHWDeviceData(), "").resolve(null,
+                                                                                  new HardwareCodeResolver(this, mHwWallet));
+                    session.login(mHwWallet.getHWDeviceData(), "", "").resolve(null,
+                                                                               new HardwareCodeResolver(this, mHwWallet));
+                    session.setHWWallet(mHwWallet);
+                    return session;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((session) -> {
+                    onPostLogin();
+                    stopLoading();
+                    onLoggedIn();
+                }, (final Throwable e) -> {
+                    stopLoading();
+                    GDKSession.get().disconnect();
+                    UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
+                    showInstructions(R.string.id_please_reconnect_your_hardware);
+                })
+        );
     }
 
     @Override
