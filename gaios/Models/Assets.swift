@@ -59,6 +59,9 @@ class Registry: Codable {
 
     func refresh(refresh: Bool = true) -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
+        if !getGdkNetwork(getNetwork()).liquid {
+            return Promise<Void>()
+        }
         return Promise().compactMap(on: bgq) { _ in
             try getSession().refreshAssets(params: ["icons": true, "assets": true, "refresh": refresh])
         }.map { data in
