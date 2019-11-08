@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.greenaddress.greenapi.data.AssetInfoData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,7 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class AssetsDataObservable extends Observable {
     private final Map<String, Bitmap> mIcons = new HashMap<>();
+    private final Map<String, AssetInfoData> mInfos = new HashMap<>();
     private boolean mAssetsLoaded = false;
     private boolean mShownErrorPopup = false;
 
@@ -25,16 +27,20 @@ public class AssetsDataObservable extends Observable {
     private void doRefresh() {
         try {
             // try from cache first
-            setAssetsIcons(getSession().getAssetsIcons(Integer.MAX_VALUE));
-        } catch (final RuntimeException e) {
+            final Map<String, Bitmap> icons = getSession().getAssetsIcons(false);
+            final Map<String, AssetInfoData> infos = getSession().getAssetsInfos(false);
+            setAssets(icons, infos);
+        } catch (final Exception e) {
             // we let this one fail and retry on the next one
             Log.e("ASSETS_OBS CACHED REQ:", e.toString());
         }
 
         try {
-            // then refresh the cache if older than 24h
-            setAssetsIcons(getSession().getAssetsIcons(24 * 60 * 60));
-        } catch (final RuntimeException e) {
+            // then refresh the cache
+            final Map<String, Bitmap> icons = getSession().getAssetsIcons(true);
+            final Map<String, AssetInfoData> infos = getSession().getAssetsInfos(true);
+            setAssets(icons, infos);
+        } catch (final Exception e) {
             Log.e("ASSETS_OBS REFRESH REQ", e.toString());
             e.printStackTrace();
 
@@ -54,6 +60,10 @@ public class AssetsDataObservable extends Observable {
         return mIcons;
     }
 
+    public Map<String, AssetInfoData> getAssetsInfos() {
+        return mInfos;
+    }
+
     public boolean isAssetsLoaded() {
         return mAssetsLoaded;
     }
@@ -66,9 +76,11 @@ public class AssetsDataObservable extends Observable {
         this.mShownErrorPopup = true;
     }
 
-    private void setAssetsIcons(final Map<String, Bitmap> icons) {
+    private void setAssets(final Map<String, Bitmap> icons, final Map<String, AssetInfoData> infos) {
         Log.d("ASSETS_OBS", "setAssetsIcons(" +  icons + ")");
-        mIcons.clear(); // the most updated response comes later, so we clear the older data
+        mInfos.clear();
+        mIcons.clear();
+        mInfos.putAll(infos);
         mIcons.putAll(icons);
         mAssetsLoaded = true;
         setChanged();

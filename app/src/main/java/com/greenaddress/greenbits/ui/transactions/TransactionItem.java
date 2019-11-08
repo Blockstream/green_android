@@ -58,13 +58,13 @@ public class TransactionItem implements Serializable {
     public final Integer subaccount;
     public final boolean isAsset;
 
-    public Map<String, BalanceData> mAssetBalances;
+    public final Map<String, Long> mAssetBalances;
 
     public String toString() {
         return String.format("%s %s %s", date.toString(), type.name(), counterparty);
     }
 
-    public Map<String, BalanceData> getAssetBalances() {
+    public Map<String, Long> getAssetBalances() {
         return mAssetBalances;
     }
 
@@ -108,13 +108,8 @@ public class TransactionItem implements Serializable {
         isAsset = txData.isAsset();
 
         mAssetBalances = new HashMap<>();
-        for (Map.Entry<String, Long> entry : txData.getSatoshi().entrySet()) {
-            BalanceData balance = new BalanceData();
-            balance.setSatoshi(entry.getValue());
-            if (txData.getAssetInfo() != null) {
-                balance.setAssetInfo(txData.getAssetInfo().get(entry.getKey()));
-            }
-            mAssetBalances.put(entry.getKey(), balance);
+        for (final Map.Entry<String, Long> entry : txData.getSatoshi().entrySet()) {
+            mAssetBalances.put(entry.getKey(), entry.getValue());
         }
 
         switch (txData.getType()) {
@@ -122,7 +117,7 @@ public class TransactionItem implements Serializable {
             // don't show outgoing btc amount if it's the tx fees
             type = TYPE.OUT;
             counterparty = txData.getAddressee();
-            if (mAssetBalances.get("btc").getSatoshi() == fee) {
+            if (mAssetBalances.get("btc") == fee) {
                 mAssetBalances.remove("btc");
             }
             break;
@@ -173,15 +168,15 @@ public class TransactionItem implements Serializable {
                 return String.format("-%s %s", feeAmount, service.getBitcoinOrLiquidUnit());
             }
 
-            AssetInfoData assetInfo = mAssetBalances.get(assetId).getAssetInfo();
-            if (assetInfo == null)
-                assetInfo = new AssetInfoData(assetId);
-            final String amount = amountToString(mAssetBalances.get(assetId).getSatoshi(),
+            AssetInfoData info = service.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
+            if (info == null)
+                info = new AssetInfoData(assetId);
+            final String amount = amountToString(mAssetBalances.get(assetId),
                                                  isAsset ? assetId : service.getUnitKey(),
-                                                 isAsset ? assetInfo.toObjectNode() : null);
+                                                 isAsset ? info : null);
             final String denom =
-                isAsset ? (assetInfo.getTicker() !=
-                           null ? assetInfo.getTicker() : "") : service.getBitcoinOrLiquidUnit();
+                isAsset ? (info.getTicker() !=
+                           null ? info.getTicker() : "") : service.getBitcoinOrLiquidUnit();
             return String.format("%s%s %s", type == TYPE.OUT ? "-" : "", amount, denom);
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
@@ -189,11 +184,12 @@ public class TransactionItem implements Serializable {
         }
     }
 
-    private String amountToString(long satoshiAmount, String assetId, ObjectNode assetInfo) throws IOException {
+    private String amountToString(final long satoshi, final String assetId,
+                                  final AssetInfoData info) throws IOException {
         final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("satoshi", satoshiAmount);
-        if (assetInfo != null) {
-            details.set("asset_info", assetInfo);
+        details.put("satoshi", satoshi);
+        if (info != null) {
+            details.set("asset_info", info.toObjectNode());
         }
         final ObjectNode converted = getSession().convert(details);
         return converted.get(assetId).asText();

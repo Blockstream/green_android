@@ -63,12 +63,12 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             // Get subaccount info
             final int pointer = mSubaccountList.get(position).getPointer();
             final SubaccountData subaccount = mSubaccountList.get(position);
-            final BalanceData balance = mService.getModel().getBalanceDataObservable(pointer).getBtcBalanceData();
+            final long satoshi = mService.getModel().getBalanceDataObservable(pointer).getBtcBalanceData();
 
             // Setup subaccount info
             holder.mAccountView.setTitle(subaccount.getNameWithDefault(mResources.getString(R.string.id_main_account)));
-            if (balance != null && mService.getModel().getSettings() != null) {
-                holder.mAccountView.setBalance(mService, balance);
+            if (mService.getModel().getSettings() != null) {
+                holder.mAccountView.setBalance(mService, satoshi);
             }
             holder.mAccountView.listMode(false);
             holder.mAccountView.setOnClickListener(listener);

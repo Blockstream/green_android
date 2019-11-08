@@ -143,7 +143,7 @@ public class Model {
         return getActiveAccountObservable().getActiveAccount();
     }
 
-    public Map<String, BalanceData> getCurrentAccountBalanceData() {
+    public Map<String, Long> getCurrentAccountBalanceData() {
         return getBalanceDataObservable(getCurrentSubaccount()).getBalanceData();
     }
 

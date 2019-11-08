@@ -98,10 +98,9 @@ public class AccountView extends CardView {
         mTitleText.setText(text);
     }
 
-    public void setBalance(final GaService service, final BalanceData balance) {
-        final ObjectNode balanceData = balance.toObjectNode();
-        final String valueBitcoin = service.getValueString(balanceData, false, false);
-        final String valueFiat = service.getValueString(balanceData, true, true);
+    public void setBalance(final GaService service, final long satoshi) {
+        final String valueBitcoin = service.getValueString(satoshi, false, false);
+        final String valueFiat = service.getValueString(satoshi, true, true);
         mBalanceText.setVisibility(VISIBLE);
         mBalanceText.setText(valueBitcoin);
         mBalanceUnitText.setVisibility(VISIBLE);

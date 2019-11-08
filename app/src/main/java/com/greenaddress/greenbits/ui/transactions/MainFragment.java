@@ -300,7 +300,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         } else if (view.getId() == R.id.sendButton) {
             justClicked = true;
 
-            if (getGAService().isLiquid() && getModel().getCurrentAccountBalanceData().get("btc").getSatoshi() == 0L) {
+            if (getGAService().isLiquid() && getModel().getCurrentAccountBalanceData().get("btc") == 0L) {
                 UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
                 .content(R.string.id_insufficient_lbtc_to_send_a)
                 .onPositive((dialog, which) -> {
@@ -323,8 +323,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void onUpdateBalance(final BalanceDataObservable observable) {
         Log.d(TAG, "Updating balance");
-        final BalanceData balanceData = observable.getBtcBalanceData();
-        if (isZombie() || balanceData == null)
+        final Long satoshi = observable.getBtcBalanceData();
+        if (isZombie() || satoshi == null)
             return;
 
         getGaActivity().runOnUiThread(() -> {
@@ -332,7 +332,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             final int subaccount = service.getModel().getCurrentSubaccount();
             final SubaccountData subaccountData = service.getSubaccountData(subaccount);
             mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
-            mAccountView.setBalance(service, balanceData);
+            mAccountView.setBalance(service, satoshi);
         });
     }
 

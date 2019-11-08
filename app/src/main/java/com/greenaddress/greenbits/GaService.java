@@ -504,7 +504,13 @@ public class GaService extends Service  {
     }
 
     public BalanceData getBalanceData(final int subAccount) {
-        return getModel().getBalanceDataObservable(subAccount).getBtcBalanceData();
+        try {
+            final long satoshi = getModel().getBalanceDataObservable(subAccount).getBtcBalanceData();
+            return getSession().convertBalance(satoshi);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String getFiatCurrency() {

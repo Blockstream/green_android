@@ -24,6 +24,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.JSONMap;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.model.Model;
@@ -67,7 +68,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private ImageView mStatusIcon;
 
     private TransactionItem mTxItem;
-    private Map<String, BalanceData> mAssetsBalances;
+    private Map<String, Long> mAssetsBalances;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_transaction; }
@@ -145,7 +146,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         String btc;
         String fiat;
         try {
-            final ObjectNode amount = getSession().convertSatoshi(mTxItem.mAssetBalances.get("btc").getSatoshi());
+            final ObjectNode amount = getSession().convertSatoshi(mTxItem.mAssetBalances.get("btc"));
             btc = mService.getValueString(amount, false, true);
             fiat = mService.getValueString(amount, true, true);
         } catch (final RuntimeException | IOException e) {
@@ -438,10 +439,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        BalanceData balance = mAssetsBalances.get(assetId);
+        final long satoshi = mAssetsBalances.get(assetId);
+        final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
-        .putExtra("ASSET_INFO", balance.getAssetInfo())
-        .putExtra("SATOSHI", balance != null ? balance.getSatoshi() : 0L);
+        .putExtra("ASSET_INFO", info)
+        .putExtra("SATOSHI", satoshi);
         startActivity(intent);
     }
 }

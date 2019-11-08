@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EstimatesData;
 import com.greenaddress.greenapi.data.HWDeviceData;
@@ -176,26 +177,25 @@ public class GDKSession {
         return twoFactorConfigData;
     }
 
-    public Map<String,BalanceData> getBalance(final Integer subAccount, final long confirmations) throws Exception {
+    public Map<String, Long> getBalance(final Integer subAccount, final long confirmations) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
         final ObjectNode balanceData = (ObjectNode) GDK.get_balance(mNativeSession, details);
-        final Map<String, BalanceData> map = new HashMap<>();
+        final Map<String, Long> map = new HashMap<>();
         final Iterator<String> iterator = balanceData.fieldNames();
         while (iterator.hasNext()) {
             final String key = iterator.next();
-            final BalanceData b = mObjectMapper.treeToValue(balanceData.get(key), BalanceData.class);
-            map.put(key,b);
+            map.put(key, balanceData.get(key).asLong(0));
         }
         return map;
     }
 
-    public Map<String, Bitmap> getAssetsIcons(final int cacheAge) throws RuntimeException {
+    public Map<String, Bitmap> getAssetsIcons(final boolean refresh) throws RuntimeException {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("icons", true);
-        details.put("assets", true); // internally refresh assets too
-        details.put("age", cacheAge);
+        details.put("assets", false);
+        details.put("refresh", refresh);
         final ObjectNode data = (ObjectNode) GDK.refresh_assets(mNativeSession, details);
         final ObjectNode iconsData = (ObjectNode) data.get("icons");
         if (iconsData.has("last_modified"))
@@ -211,11 +211,36 @@ public class GDKSession {
         return icons;
     }
 
+    public Map<String, AssetInfoData> getAssetsInfos(final boolean refresh) throws IOException, RuntimeException {
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("icons", false);
+        details.put("assets", true);
+        details.put("refresh", refresh);
+        final ObjectNode data = (ObjectNode) GDK.refresh_assets(mNativeSession, details);
+        final ObjectNode infosData = (ObjectNode) data.get("assets");
+        if (infosData.has("last_modified"))
+            infosData.remove("last_modified");
+        final Map<String, AssetInfoData> infos = new HashMap<>();
+        final Iterator<String> iterator = infosData.fieldNames();
+        while (iterator.hasNext()) {
+            final String key = iterator.next();
+            final AssetInfoData info = mObjectMapper.treeToValue(infosData.get(key), AssetInfoData.class);
+            infos.put(key, info);
+        }
+        return infos;
+    }
+
     public BalanceData convertBalance(final BalanceData balanceData) throws IOException, RuntimeException {
         final ObjectNode convertedBalanceData = (ObjectNode) GDK.convert_amount(mNativeSession, balanceData);
         final BalanceData balanceData1 = mObjectMapper.treeToValue(convertedBalanceData, BalanceData.class);
         debugEqual(convertedBalanceData, balanceData1);
         return balanceData1;
+    }
+
+    public BalanceData convertBalance(final long satoshi) throws IOException, RuntimeException {
+        final ObjectNode convertedBalanceData = (ObjectNode) convertSatoshi(satoshi);
+        final BalanceData balanceData = mObjectMapper.treeToValue(convertedBalanceData, BalanceData.class);
+        return balanceData;
     }
 
     public ObjectNode convert(final ObjectNode amount) throws IOException, RuntimeException {

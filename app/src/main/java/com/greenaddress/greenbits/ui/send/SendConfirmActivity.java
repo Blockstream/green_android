@@ -120,12 +120,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             sendAmount.setVisibility(View.GONE);
             UI.find(this, R.id.amountWordSending).setVisibility(View.GONE);
             final String asset = assetTag.asText();
-            final BalanceData balance = new BalanceData();
-            balance.setSatoshi(address.get("satoshi").asLong());
-            balance.setAssetInfo(mAssetInfo !=
-                                 null ? mAssetInfo : new AssetInfoData(asset));
-            final Map<String, BalanceData> balances = new HashMap<>();
-            balances.put(asset, balance);
+            final Map<String, Long> balances = new HashMap<>();
+            balances.put(asset, address.get("satoshi").asLong());
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
             final AssetsAdapter adapter = new AssetsAdapter(balances, mService, null);

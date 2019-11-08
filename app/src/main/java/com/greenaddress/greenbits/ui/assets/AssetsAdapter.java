@@ -26,7 +26,7 @@ import java.util.Map;
 public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
-    private final Map<String, BalanceData> mAssets;
+    private final Map<String, Long> mAssets;
     private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;
     private final GaService mService;
@@ -36,7 +36,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         void onAssetSelected(String assetSelected);
     }
 
-    public AssetsAdapter(final Map<String, BalanceData> assets, final GaService service,
+    public AssetsAdapter(final Map<String, Long> assets, final GaService service,
                          final OnAssetSelected cb) {
         mAssets = assets;
         mService = service;
@@ -60,9 +60,8 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     public void onBindViewHolder(final Item holder, final int position) {
         final String assetId = mAssetsIds.get(position);
         final boolean isBTC = "btc".equals(assetId);
-        final BalanceData balanceData = mAssets.get(assetId);
-        final AssetInfoData assetInfo = balanceData.getAssetInfo();
-        final long satoshi = balanceData.getSatoshi();
+        final Long satoshi = mAssets.get(assetId);
+        final AssetInfoData assetInfo = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
         if (mOnAccountSelected != null)
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         if (isBTC) {
@@ -71,7 +70,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             holder.mAssetDomain.setVisibility(View.GONE);
         } else {
             holder.mAssetName.setText(assetInfo != null ? assetInfo.getName() : assetId);
-            holder.mAssetValue.setText(mService.getValueString(satoshi, assetId, balanceData.getAssetInfo(), true));
+            holder.mAssetValue.setText(mService.getValueString(satoshi, assetId, assetInfo, true));
             final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
             if (entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
                 holder.mAssetDomain.setVisibility(View.VISIBLE);

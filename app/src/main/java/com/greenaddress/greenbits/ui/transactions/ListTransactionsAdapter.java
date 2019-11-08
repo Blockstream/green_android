@@ -101,7 +101,7 @@ public class ListTransactionsAdapter extends
             else if (mService.isLiquid() && txItem.isAsset) {
                 final String assetId =
                     txItem.mAssetBalances.keySet().toArray(new String[0])[0];
-                final AssetInfoData assetInfo = txItem.mAssetBalances.get(assetId).getAssetInfo();
+                final AssetInfoData assetInfo = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
                 message = assetInfo != null ? assetInfo.getEntity().getDomain() : assetId;
             } else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(

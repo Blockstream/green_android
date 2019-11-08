@@ -44,8 +44,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
         final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
         long totalSatoshi = 0L;
         for (int i = 0; i < balanceObservables.size(); i++) {
-            final BalanceData balanceData = balanceObservables.valueAt(i).getBtcBalanceData();
-            totalSatoshi += balanceData.getSatoshi();
+            final long satoshi = balanceObservables.valueAt(i).getBtcBalanceData();
+            totalSatoshi += satoshi;
         }
         final BalanceData balanceReq = new BalanceData();
         balanceReq.setSatoshi(totalSatoshi);

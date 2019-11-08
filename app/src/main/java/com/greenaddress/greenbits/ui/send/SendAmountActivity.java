@@ -69,7 +69,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private long mMinFeeRate;
     private Long mVsize;
     private String mSelectedAsset = "btc";
-    private BalanceData mAssetBalances;
+    private Long mAssetBalances;
     private boolean isSweep;
 
     private static final int[] mButtonIds =
@@ -240,28 +240,23 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             // Asset not passed, default "btc"
         }
 
-        mAssetBalances = getModel().getCurrentAccountBalanceData().get(mSelectedAsset);
-        final AssetInfoData assetInfo = mAssetBalances.getAssetInfo();
-        final BalanceData balance = new BalanceData();
-        balance.setSatoshi(mAssetBalances.getSatoshi());
-        balance.setAssetInfo(assetInfo !=
-                             null ? assetInfo : new AssetInfoData(mSelectedAsset));
-        final Map<String, BalanceData> balances = new HashMap<>();
-        balances.put(mSelectedAsset, balance);
+        final long satoshi = getModel().getCurrentAccountBalanceData().get(mSelectedAsset);
+        final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+
+        final Map<String, Long> balances = new HashMap<>();
+        balances.put(mSelectedAsset, satoshi);
+
         final RecyclerView assetsList = findViewById(R.id.assetsList);
-        assetsList.setLayoutManager(new LinearLayoutManager(this));
         final AssetsAdapter adapter = new AssetsAdapter(balances, mService, null);
+        assetsList.setLayoutManager(new LinearLayoutManager(this));
         assetsList.setAdapter(adapter);
         UI.showIf(!isAsset(), mUnitButton);
         UI.showIf(!isAsset(), mAccountBalance);
         UI.showIf(isAsset(), assetsList);
-
-        final Long satoshi = mAssetBalances.getSatoshi();
         if (!isAsset())
             mAccountBalance.setText(mService.getValueString(satoshi, false, true));
         else
-            mAccountBalance.setText(mService.getValueString(satoshi, mSelectedAsset,
-                                                            mAssetBalances.getAssetInfo(), true));
+            mAccountBalance.setText(mService.getValueString(satoshi, mSelectedAsset, info, true));
     }
 
     private int[] getBlockTargets() {
@@ -479,13 +474,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     public ObjectNode convert(final long satoshi) throws RuntimeException, IOException {
-        final String asset = mSelectedAsset.isEmpty() ? "btc" : mSelectedAsset;
-        AssetInfoData assetInfo = new AssetInfoData(asset);
-        if (mAssetBalances != null && mAssetBalances.getAssetInfo() != null)
-            assetInfo = mAssetBalances.getAssetInfo();
+        final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
-        details.set("asset_info", assetInfo.toObjectNode());
+        details.set("asset_info", info.toObjectNode());
         mCurrentAmount = getSession().convert(details);
         return mCurrentAmount;
     }
@@ -534,8 +526,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     public void onFinish(final JsonNode transactionData) {
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
+        final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
         intent.putExtra("transaction", transactionData.toString());
-        intent.putExtra("asset_info", mAssetBalances.getAssetInfo());
+        intent.putExtra("asset_info", info);
         intent.putExtra(PrefKeys.SWEEP, isSweep);
         if (mService.getConnectionManager().isHW())
             intent.putExtra("hww", mService.getConnectionManager().getHWDeviceData().toString());
@@ -572,8 +565,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         amount.put(key, value.isEmpty() ? "0" : value);
         if (isAsset()) {
             final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
-            final AssetInfoData assetInfo = mAssetBalances.getAssetInfo();
-            amount.set("asset_info", (assetInfo == null ? assetInfoDefault : assetInfo).toObjectNode());
+            final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+            amount.set("asset_info", (info == null ? assetInfoDefault : info).toObjectNode());
         }
         try {
             // avoid updating the view if changing from fiat to btc or vice versa

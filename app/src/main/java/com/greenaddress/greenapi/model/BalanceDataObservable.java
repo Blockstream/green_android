@@ -12,7 +12,7 @@ import java.util.Observer;
 import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class BalanceDataObservable extends Observable implements Observer {
-    private Map<String,BalanceData> mBalanceData;
+    private Map<String, Long> mSatoshiData;
     private ListeningExecutorService mExecutor;
     private Integer mSubaccount;
 
@@ -28,7 +28,7 @@ public class BalanceDataObservable extends Observable implements Observer {
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                final Map<String,BalanceData> balance = getSession().getBalance(mSubaccount, 0);
+                final Map<String,Long> balance = getSession().getBalance(mSubaccount, 0);
                 setBalanceData(balance);
             } catch (Exception e) {
                 Log.e("OBS", e.getMessage());
@@ -37,20 +37,20 @@ public class BalanceDataObservable extends Observable implements Observer {
         });
     }
 
-    public Map<String,BalanceData> getBalanceData() {
-        if (mBalanceData == null) {
+    public Map<String, Long> getBalanceData() {
+        if (mSatoshiData == null) {
             Log.e("OBS", "Balance observable does not hold the data yet, asking syncronously");
             try {
-                mBalanceData = getSession().getBalance(mSubaccount, 0);
+                mSatoshiData = getSession().getBalance(mSubaccount, 0);
             } catch (Exception e) {
                 Log.e("OBS", e.getMessage());
                 e.printStackTrace();
             }
         }
-        return mBalanceData;
+        return mSatoshiData;
     }
 
-    public BalanceData getBtcBalanceData() {
+    public Long getBtcBalanceData() {
         return getBalanceData().get("btc");
     }
 
@@ -58,9 +58,9 @@ public class BalanceDataObservable extends Observable implements Observer {
         return mSubaccount;
     }
 
-    public void setBalanceData(final Map<String,BalanceData> mBalanceData) {
-        Log.d("OBS", "setBalanceData(" +  mSubaccount + ", " + mBalanceData + ")");
-        this.mBalanceData = mBalanceData;
+    public void setBalanceData(final Map<String,Long> mSatoshiData) {
+        Log.d("OBS", "setBalanceData(" +  mSubaccount + ", " + mSatoshiData + ")");
+        this.mSatoshiData = mSatoshiData;
         fire();
     }
 

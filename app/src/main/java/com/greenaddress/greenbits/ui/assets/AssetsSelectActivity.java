@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -27,7 +28,7 @@ import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
 
     private RecyclerView assetsList;
-    private Map<String, BalanceData> mAssetsBalances;
+    private Map<String, Long> mAssetsBalances;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -112,9 +113,10 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
+        final AssetInfoData assetInfo = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
-        .putExtra("ASSET_INFO", mAssetsBalances.get(assetId).getAssetInfo())
-        .putExtra("SATOSHI", mAssetsBalances.get(assetId).getSatoshi());
+        .putExtra("ASSET_INFO", assetInfo)
+        .putExtra("SATOSHI", mAssetsBalances.get(assetId));
         startActivity(intent);
     }
 
