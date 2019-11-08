@@ -54,7 +54,13 @@ extension UIViewController {
     }
 
     @objc func stopAnimating() {
-        progressIndicator?.activityIndicator.stopAnimating()
-        progressIndicator?.removeFromSuperview()
+        UIApplication.shared.windows.forEach { window in
+            window.subviews.forEach { view in
+                if let pi = view.viewWithTag(ProgressIndicator.tag) as? ProgressIndicator {
+                    pi.activityIndicator.stopAnimating()
+                    pi.removeFromSuperview()
+                }
+            }
+        }
     }
 }
