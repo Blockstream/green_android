@@ -272,6 +272,7 @@ class TransactionsController: UITableViewController {
     }
 
     func networkDidChange() {
+        onFirstInitialization(network: getNetwork())
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         appDelegate?.logout(with: true)
     }
