@@ -372,7 +372,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
     public void onInserted(final String scanned) {
         final GaService service = ((GreenAddressApplication) getApplication()).mService;
 
-        if (service == null)
+        if (service == null || service.getModel() == null)
             return;
 
         final Intent result = new Intent();
