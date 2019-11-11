@@ -45,7 +45,8 @@ class Registry: Codable {
     }
 
     func image(for key: String?) -> UIImage? {
-        let id = "btc" == key ? getGdkNetwork(getNetwork()).policyAsset! : key
+        let network = getGdkNetwork(getNetwork())
+        let id = "btc" == key ? network.policyAsset : key
         let icon = icons.filter { $0.key == id }.first
         if icon != nil {
             return UIImage(base64: icon!.value)
