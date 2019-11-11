@@ -65,7 +65,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
 
     func refresh() {
         guard satoshi != nil else { return }
-        let balance = Balance.convert(details: ["satoshi": satoshi!])!
+        guard let balance = Balance.convert(details: ["satoshi": satoshi!]) else { return }
         let (amount, denom) = balance.get(tag: (isFiat ? "btc"  : "fiat"))
         let denomination = balance.get(tag: (isFiat ? "fiat"  : "btc")).1
         content.convertedLabel.text = "≈ \(amount) \(denom)"
@@ -75,10 +75,11 @@ class TwoFactorLimitViewController: KeyboardViewController {
 
     @objc func currencySwitchClick(_ sender: UIButton) {
         guard satoshi != nil else { return }
-        let balance = Balance.convert(details: ["satoshi": satoshi!])!
+        if let balance = Balance.convert(details: ["satoshi": satoshi!]) {
+            let (amount, _) = balance.get(tag: (isFiat ? "fiat"  : "btc"))
+            content.limitTextField.text = amount
+        }
         isFiat = !isFiat
-        let (amount, _) = balance.get(tag: (isFiat ? "fiat"  : "btc"))
-        content.limitTextField.text = amount
         refresh()
     }
 

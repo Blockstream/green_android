@@ -156,7 +156,7 @@ class SendBtcDetailsViewController: UIViewController {
         guard let addressee = transaction.addressees.first else { return }
         guard addressee.satoshi != 0 else { return }
         let details = "btc" != assetTag ? ["satoshi": addressee.satoshi, "asset_info": asset!.encode()!] : ["satoshi": addressee.satoshi]
-        let (amount, _) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : assetTag)
+        let (amount, _) = Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetTag) ?? ("", "")
         content.amountTextField.text = amount
     }
 
@@ -173,8 +173,10 @@ class SendBtcDetailsViewController: UIViewController {
     func reloadWalletBalance() {
         let satoshi = wallet!.satoshi[assetTag]!
         let details = "btc" != assetTag ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
-        let (amount, denom) = Balance.convert(details: details)!.get(tag: isFiat ? "fiat" : assetTag)
-        content.maxAmountLabel.text =  "\(amount) \(denom)"
+        if let balance = Balance.convert(details: details) {
+            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : assetTag)
+            content.maxAmountLabel.text =  "\(amount) \(denom)"
+        }
     }
 
     @objc func sendAllFundsButtonClick(_ sender: UIButton) {
@@ -287,9 +289,9 @@ class SendBtcDetailsViewController: UIViewController {
             let feeSatVByte = Double(fee) / 1000.0
             let feeSatoshi = UInt64(feeSatVByte * Double(transaction.size))
 
-            let balance = Balance.convert(details: ["satoshi": feeSatoshi])!
-            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : "btc")
-            feeButton.feerateLabel.text =  "\(amount) \(denom) (\(feeSatVByte) satoshi / vbyte)"
+            if let (amount, denom) = Balance.convert(details: ["satoshi": feeSatoshi])?.get(tag: isFiat ? "fiat" : "btc") {
+                feeButton.feerateLabel.text =  "\(amount) \(denom) (\(feeSatVByte) satoshi / vbyte)"
+            }
         }
         content.feeRateButtons[selectedFee]?.isSelect = true
     }

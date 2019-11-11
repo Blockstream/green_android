@@ -75,11 +75,12 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as? WalletCardView else { fatalError("Fail to dequeue reusable cell") }
             let wallet = wallets[indexPath.row]
 
-            let balance = Balance.convert(details: ["satoshi": wallet.btc])!
-            let (amount, denom) = balance.get(tag: "btc")
-            cell.balance.text = amount
-            cell.unit.text = denom
-            cell.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency) "
+            if let balance = Balance.convert(details: ["satoshi": wallet.btc]) {
+                let (amount, denom) = balance.get(tag: "btc")
+                cell.balance.text = amount
+                cell.unit.text = denom
+                cell.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency) "
+            }
             cell.walletName.text = wallet.localizedName()
             let network = getGdkNetwork(getNetwork())
             cell.networkImage.image = UIImage(named: network.icon!)
@@ -96,10 +97,11 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
                 return accumulation + nextValue
             }
             header.title.text = isSweep ? NSLocalizedString("id_where_would_you_like_to", comment: ""): NSLocalizedString("id_total_balance", comment: "")
-            let balance = Balance.convert(details: ["satoshi": satoshi])!
-            let (amount, denom) = balance.get(tag: "btc")
-            header.btcLabel.text = isSweep ? "" : "\(amount) \(denom)"
-            header.fiatLabel.text = isSweep ? "" : "\(balance.fiat) \(balance.fiatCurrency)"
+            if let balance = Balance.convert(details: ["satoshi": satoshi]) {
+                let (amount, denom) = balance.get(tag: "btc")
+                header.btcLabel.text = isSweep ? "" : "\(amount) \(denom)"
+                header.fiatLabel.text = isSweep ? "" : "\(balance.fiat) \(balance.fiatCurrency)"
+            }
             header.equalsLabel.isHidden = isSweep
             return header
         case UICollectionView.elementKindSectionFooter:

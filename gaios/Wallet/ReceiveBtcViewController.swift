@@ -98,14 +98,14 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     @objc func fiatSwitchButtonClick(_ sender: Any) {
         guard let satoshi = getSatoshi() else { return }
-        guard let balance = Balance.convert(details: ["satoshi": satoshi]) else { return }
+        let balance = Balance.convert(details: ["satoshi": satoshi])
         if selectedType == TransactionType.BTC {
             selectedType = TransactionType.FIAT
         } else {
             selectedType = TransactionType.BTC
         }
         let tag = selectedType == TransactionType.BTC ? "btc" : "fiat"
-        content.amountTextfield.text = String(format: "%@", balance.get(tag: tag).0)
+        content.amountTextfield.text = String(format: "%@", balance?.get(tag: tag).0 ?? "")
         reload()
     }
 
@@ -124,9 +124,9 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func updateEstimate() {
         guard let satoshi = getSatoshi() else { return }
-        guard let balance = Balance.convert(details: ["satoshi": satoshi]) else { return }
-        let (amount, denom) = balance.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc")
-        content.estimateLabel.text = "≈ \(amount) \(denom)"
+        if let (amount, denom) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc") {
+            content.estimateLabel.text = "≈ \(amount) \(denom)"
+        }
     }
 
     func updateQRCode() {
