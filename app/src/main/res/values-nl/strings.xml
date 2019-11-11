@@ -10,17 +10,23 @@
   <string name="id_4_hours">~ 4 uur</string>
   <string name="id_5_seconds_minimum">Minimaal 5 seconden</string>
   <string name="id_a_new_transaction_has_just">Een nieuwe transactie is zojuist verschenen in je wallet.</string>
+  <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">Er is een wallet gedetecteerd op dit apparaat:</string>
   <string name="id_about">OVER</string>
   <string name="id_accept">ACCEPTEREN</string>
+  <string name="id_access">Access</string>
   <string name="id_account">ACCOUNT</string>
+  <string name="id_account_id">Account ID</string>
+  <string name="id_account_name">Account Name</string>
+  <string name="id_account_type">Account Type</string>
   <string name="id_action_canceled">Actie geannuleerd</string>
   <string name="id_add_a_note_only_you_can_see_it">Add a note (only you can see it).</string>
+  <string name="id_add_a_pgp_public_key_to_receive">Add a PGP public key to receive encrypted email and keep your privacy</string>
   <string name="id_add_amount">Bedrag toevoegen</string>
+  <string name="id_add_amount_optional">Add amount (optional)</string>
   <string name="id_add_custom_network_by_qr_code">Eigen netwerk toevoegen via QR-code</string>
   <string name="id_add_custom_network_by_url">Eigen netwerk toevoegen via URL</string>
   <string name="id_add_new_account">Nieuwe account toevoegen</string>
-  <string name="id_add_simple_account">Add Simple Account</string>
   <string name="id_add_wallet">Wallet toevoegen</string>
   <string name="id_additional_security">Aanvullende beveiliging</string>
   <string name="id_address">Adres</string>
@@ -30,6 +36,7 @@
   <string name="id_advanced_network_settings">Geavanceerde netwerkinstellingen</string>
   <string name="id_all">Alles</string>
   <string name="id_allows_you_to_quickly_check">Stelt je in staat om je balans snel in te zien, een transactie te ontvangen of een papieren wallet naar deze wallet over te brengen (\'opvegen\'). In watch-only-modus is het niet mogelijk om transacties aan te maken.</string>
+  <string name="id_allows_you_to_receive_and_send">Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.</string>
   <string name="id_always">Altijd</string>
   <string name="id_amount">Bedrag</string>
   <string name="id_are_you_sure_you_want_to_view">Weet je zeker dat je de transactie wilt bekijken met %s?</string>
@@ -38,6 +45,9 @@
   <string name="id_asset_id">Asset-ID</string>
   <string name="id_asset_name">Naam asset</string>
   <string name="id_attempts_remaining_d">Resterende pogingen: %d</string>
+  <string name="id_authorized_assets">Authorized Assets</string>
+  <string name="id_authorized_assets_account">Authorized Assets Account</string>
+  <string name="id_authorized_assets_account_is">Authorized assets account is only available on Liquid.</string>
   <string name="id_auto_logout_timeout">Time-out auto-afmelding</string>
   <string name="id_autolock_after">Auto-vergrendeling na</string>
   <string name="id_be_aware_other_apps_can_read_or">Pas op: andere apps kunnen je klembord uitlezen of veranderen</string>
@@ -48,6 +58,7 @@
   <string name="id_block_height_1d">Block-hoogte: %1$d</string>
   <string name="id_blocks">blocks</string>
   <string name="id_blocks_confirmed">blocks bevestigd</string>
+  <string name="id_blockstream_does_not_have">Blockstream does not have access to your wallet backup and will not be able to help you in case you lose it</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip is niet ingesteld. Stel hem in met een desktop-client om hem te kunnen gebruiken.</string>
   <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">Bellen</string>
@@ -73,7 +84,9 @@
   <string name="id_connecting_to_a_trusted_node">Om met een vertrouwde node via Tor te verbinden, moet je eerst de proxyinstellingen in de app en een Socks5-proxy instellen (Orbot-app voor Android)</string>
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Door te verbinden met Tor (.onion) nodes, verzeker je jezelf van maximale privacy en veiligheid. Druk op "OK" om door te gaan.</string>
+  <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>
   <string name="id_continue">Doorgaan</string>
+  <string name="id_copied_to_clipboard">Copied to clipboard</string>
   <string name="id_copy_details">Copy details</string>
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Naar klembord kopiëren</string>
@@ -119,9 +132,11 @@
   <string name="id_enable">Inschakelen</string>
   <string name="id_enable_custom_networks_debug">Aangepaste opties voor netwerk-debugging inschakelen</string>
   <string name="id_enable_face_id">Face ID inschakelen</string>
+  <string name="id_enable_or_change_your_pin_to">Enable or change your PIN to quickly access your wallet</string>
   <string name="id_enable_spv">SPV inschakelen</string>
   <string name="id_enable_spv_and_modify_spv">SPV inschakelen en SPV-instellingen aanpassen</string>
   <string name="id_enable_touch_id">Touch ID inschakelen</string>
+  <string name="id_enable_twofactor_authentication">Enable Two-Factor Authentication to protect your wallet from unauthorized transactions or changes to critical security settings</string>
   <string name="id_enabled">Ingeschakeld</string>
   <string name="id_enabled_1s">Ingeschakeld: %1$s</string>
   <string name="id_encryption_passphrase">Encryptie passphrase</string>
@@ -158,10 +173,14 @@
   <string name="id_fee_rate_must_be_at_least_s">Het tarief moet minstens %s satoshi/vbyte zijn.</string>
   <string name="id_fee_rate_s">Tarief: %s</string>
   <string name="id_fee_s__s">Tarief: %s / %s</string>
+  <string name="id_for_long_term_storage">For long term storage</string>
+  <string name="id_for_most_users">For most users</string>
+  <string name="id_for_securities_investors">For securities investors</string>
   <string name="id_from">VAN</string>
   <string name="id_funds_received_in_this">Funds received in this transaction are not confidential.</string>
   <string name="id_generate_new_address">Genereer nieuw adres</string>
   <string name="id_get_code">Verkrijg code</string>
+  <string name="id_go_to_account">Go to Account</string>
   <string name="id_go_to_wallet">Ga naar wallet</string>
   <string name="id_google_auth">Google Auth</string>
   <string name="id_google_authenticator">Google Authenticator</string>
@@ -175,6 +194,7 @@
   <string name="id_green_uses_multisig_with_one">Green gebruikt multisig met één signature van je apparaat, en één signature van de servers van Blockstream. Het instellen van tweetrapsauthenticatie zorgt voor meer veiligheid bij het verkrijgen van de signature van de server.</string>
   <string name="id_hardware_wallet_support_for">Er verschijnt binnenkort ondersteuning voor Confidential Transactions via hardware wallets.</string>
   <string name="id_hash">Hash</string>
+  <string name="id_here">here</string>
   <string name="id_hex">HEX</string>
   <string name="id_high">Hoog</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Houd je NFC-tag in de buurt van je apparaat</string>
@@ -211,6 +231,7 @@
   <string name="id_last_attempt_if_failed_you_will">Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.</string>
   <string name="id_last_ping_1d_ms">Laatste ping: %1$d ms</string>
   <string name="id_later">LATER</string>
+  <string name="id_learn_more_about_s">Learn more about %s.</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard gedetecteerd. Open de juiste app voor toegang.</string>
   <string name="id_lets_get_you_set_up">We gaan alles instellen.</string>
   <string name="id_loading_transactions">Transacties laden…</string>
@@ -238,6 +259,7 @@
   <string name="id_multiple_assets">Meerdere assets</string>
   <string name="id_my_notes">MIJN NOTITIES</string>
   <string name="id_name">Naam</string>
+  <string name="id_need_help">Need help?</string>
   <string name="id_network">NETWERK</string>
   <string name="id_network_configuration">Netwerkconfiguratie</string>
   <string name="id_network_fee">NETWERKKOSTEN</string>
@@ -268,6 +290,7 @@
   <string name="id_on_average">gemiddeld</string>
   <string name="id_one_attempt_remaining">Nog één poging te gaan</string>
   <string name="id_one_network_must_be_selected">Er moet één netwerk worden geselecteerd. Standaard is dit bitcoin.</string>
+  <string name="id_onion_addresses_require_tor">Onion addresses require Tor connectivity. Enable it in the network settings.</string>
   <string name="id_only_connect_to_trusted_nodes">Alleen verbinden met vertrouwde node(s) voor SPV</string>
   <string name="id_only_this_time">Alleen dit keer</string>
   <string name="id_operation_failure">Mislukte operatie</string>
@@ -275,6 +298,7 @@
   <string name="id_optional_memo">Optionele memo</string>
   <string name="id_optional_password">Optioneel wachtwoord</string>
   <string name="id_or">OF</string>
+  <string name="id_our_support_page">our support page</string>
   <string name="id_outdated_hardware_wallet">Hardware wallet heeft oude firmware. Werk de firmware bij via je computer.</string>
   <string name="id_outgoing">Uitgaand</string>
   <string name="id_password">Wachtwoord</string>
@@ -304,10 +328,12 @@
   <string name="id_precision">Precisie</string>
   <string name="id_privacy_policy">Privacybeleid</string>
   <string name="id_problem_with_key_1s">Probleem met sleutel %1$s</string>
+  <string name="id_provide_this_id_to_an_asset">Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.</string>
   <string name="id_providing_an_email_enables">Door een e-mailadres toe te voegen, wordt het mogelijk om notificaties te ontvangen en transacties te herstellen.</string>
   <string name="id_proxy_settings">PROXYINSTELLINGEN</string>
   <string name="id_qr_scanner">QR-scanner</string>
   <string name="id_receive">Ontvangen</string>
+  <string name="id_receive_email_notifications_for">Receive email notifications for sent and received transactions</string>
   <string name="id_received">Ontvangen</string>
   <string name="id_received_on">Ontvangen op</string>
   <string name="id_recipient">Ontvanger</string>
@@ -334,8 +360,8 @@
   <string name="id_restore">Herstellen</string>
   <string name="id_restore_green_wallet">Green Wallet herstellen</string>
   <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
-  <string name="id_reuse_androids_authentication">Gebruik de authenticatie van Android</string>
   <string name="id_review">Overzicht</string>
+  <string name="id_review_account_information">Review account information</string>
   <string name="id_s_blocks_left">%s blocks te gaan</string>
   <string name="id_s_from_s">%s van %s</string>
   <string name="id_s_network">%s netwerk</string>
@@ -343,13 +369,17 @@
   <string name="id_save_your_mnemonic">Sla je woordenlijst op</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Scan een QR-code voor SPV-verbinding</string>
   <string name="id_scan_the_qr_code_in_google">Scan de QR-code in Google Authenticator:</string>
+  <string name="id_scan_to_send_here">Scan to send here</string>
   <string name="id_screen_lock">Schermvergrendeling</string>
   <string name="id_search">Zoeken</string>
   <string name="id_second">sec.</string>
   <string name="id_seconds">sec.</string>
   <string name="id_security">BEVEILIGING</string>
+  <string name="id_see_our_privacy_policy_s">See our privacy policy %s</string>
+  <string name="id_see_our_terms_of_service_s">See our Terms of Service %s</string>
   <string name="id_select_account">Selecteer account</string>
   <string name="id_select_asset">Selecteer asset</string>
+  <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">Netwerk selecteren</string>
   <string name="id_select_word_number_d">Selecteer woord nummer %d</string>
   <string name="id_send">Verzenden</string>
@@ -360,11 +390,16 @@
   <string name="id_sending_request">Verzoek verzenden…</string>
   <string name="id_sent">Verzonden</string>
   <string name="id_sent_to">Verzonden naar</string>
+  <string name="id_set_a_limit_to_spend_without">Set a limit to spend without two-factor authentication</string>
   <string name="id_set_a_new_pin">Kies een nieuwe PIN</string>
+  <string name="id_set_a_timeout_to_logout_after">Set a timeout to logout after prolonged inactivity</string>
+  <string name="id_set_an_email_address_to_receive">Set an email address to receive transaction notifications</string>
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">Aangepast transactietarief instellen</string>
   <string name="id_set_twofactor_threshold">Limiet tweetrapsauthenticatie instellen</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
+  <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
+  <string name="id_set_up_credentials_to_access_in">Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app</string>
   <string name="id_set_up_pgp_key_for">PGP-sleutel voor communicatie instellen</string>
   <string name="id_set_up_twofactor_authentication">Tweetrapsauthenticatie instellen</string>
   <string name="id_set_up_watchonly">Watch-only instellen</string>
@@ -375,9 +410,11 @@
   <string name="id_setup_pin_and_s">PIN en %s instellen</string>
   <string name="id_share">Delen</string>
   <string name="id_share_address">Adres delen</string>
+  <string name="id_show_bitcoin_amounts_in">Show bitcoin amounts in</string>
+  <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">Fiat tonen</string>
+  <string name="id_show_my_wallet_backup">Show my wallet backup</string>
   <string name="id_signup_in_progress">Aanmelding in behandeling</string>
-  <string name="id_simple_accounts_allow_you_to">Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_simplified_payment_verification">Simplified Payment Verification (SPV) verifieert je transacties en balans via het bitcoin-netwerk, zonder tussenkomst van servers van Green. Door dit in te schakelen wordt er meer bandbreedte en CPU verbruikt.</string>
   <string name="id_skip">OVERSLAAN</string>
   <string name="id_skip_not_recommended">Overslaan (wordt afgeraden)</string>
@@ -396,6 +433,9 @@
   <string name="id_spv_synchronization">SPV-synchronisatie</string>
   <string name="id_spv_synchronization_using_tor">SPV synchronization using Tor requires a trusted node onion URL</string>
   <string name="id_spv_unverified">SPV niet geverifieerd</string>
+  <string name="id_standard_account">Standard Account</string>
+  <string name="id_standard_accounts_allow_you_to">Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
+  <string name="id_start_a_2fa_reset_process_if">Start a 2FA reset process if you lost access to all your two-factor authentication methods.</string>
   <string name="id_sweep">Opvegen</string>
   <string name="id_sweep_from_paper_wallet">Opvegen van papieren wallet</string>
   <string name="id_sweep_into_s">Opvegen naar %s</string>
@@ -409,6 +449,7 @@
   <string name="id_terms_of_service">Dienstvoorwaarden</string>
   <string name="id_terms_of_use">Gebruiksvoorwaarden</string>
   <string name="id_thank_you_for_downloading_green">Bedankt voor het downloaden van Green! We zouden een beoordeling op prijs stellen.</string>
+  <string name="id_the_asset_registry_is_currently">The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.</string>
   <string name="id_the_camera_has_a_problem_you">Er zijn problemen met de camera. Het is wellicht nodig om het apparaat opnieuw te starten.</string>
   <string name="id_the_easier_safer_and_faster">de simpelere, veiligere, en snellere wallet</string>
   <string name="id_the_hardware_wallet_you_are">De hardware wallet die je gebruikt wordt niet ondersteund</string>
@@ -421,6 +462,7 @@
   <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Tijd: %s</string>
   <string name="id_to">NAAR</string>
+  <string name="id_to_keep_you_in_control_of_your">To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don\'t move funds often enough.</string>
   <string name="id_tor_connectivity_disabled">Tor-connectiviteit uitgeschakeld!</string>
   <string name="id_tor_is_connected">Tor is connected</string>
   <string name="id_tor_status">Tor status</string>
@@ -432,6 +474,7 @@
   <string name="id_touch_to_display">Raak aan om te tonen</string>
   <string name="id_touchface_id_not_available">Touch/Face ID niet beschikbaar</string>
   <string name="id_transaction_already_confirmed">Transactie reeds bevestigd</string>
+  <string name="id_transaction_copied_to_clipboard">Transaction copied to clipboard</string>
   <string name="id_transaction_details">Details transactie</string>
   <string name="id_transaction_id">Transactie-ID</string>
   <string name="id_transaction_sent">Transactie verzonden</string>
@@ -440,6 +483,8 @@
   <string name="id_two_factor_authentication">TWEETRAPSAUTHENTICATIE</string>
   <string name="id_twofactor">TWEETRAPSAUTHENTICATIE</string>
   <string name="id_twofactor_authentication">Tweetrapsauthenticatie</string>
+  <string name="id_twofactor_authentication_expiry">Two-Factor authentication expiry</string>
+  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.</string>
   <string name="id_twofactor_reset_in_progress">Resetten tweetrapsauthenticatie in behandeling. Je wallet is momenteel vergrendeld.</string>
   <string name="id_twofactor_settings">Instellingen tweetrapsauthenticatie</string>
   <string name="id_twofactor_threshold">Limiet tweetrapsauthenticatie</string>
@@ -450,6 +495,7 @@
   <string name="id_unknown_bip21_parameter">Onbekende bip21-parameter</string>
   <string name="id_unknown_custom">Onbekend (aangepast)</string>
   <string name="id_updated">bijgewerkt</string>
+  <string name="id_use_android_screen_lock_to_log">Use Android screen lock to log in</string>
   <string name="id_user_not_found_or_invalid">Gebruiker niet gevonden of wachtwoord ongeldig</string>
   <string name="id_username">Gebruikersnaam</string>
   <string name="id_username_not_available">Gebruikersnaam niet beschikbaar</string>
@@ -459,6 +505,7 @@
   <string name="id_version_1s_2s">Versie %1$s %2$s</string>
   <string name="id_view_in_explorer">In Explorer bekijken</string>
   <string name="id_waiting_for_transaction">Wachten op transactie…</string>
+  <string name="id_wallet_backup">Wallet Backup</string>
   <string name="id_wallet_creation_failed">Wallet-creatie mislukt</string>
   <string name="id_wallets">Wallets</string>
   <string name="id_warning">Waarschuwing!</string>
@@ -478,6 +525,8 @@
   <string name="id_we_use_the_camera_to_scan_qr">We gebruiken de camera om QR-codes te scannen</string>
   <string name="id_welcome">Welkom</string>
   <string name="id_welcome_to">Welkom bij</string>
+  <string name="id_what_type_of_account_would_you">What type of account would you like to add?</string>
+  <string name="id_whats_new">What\'s new?</string>
   <string name="id_where_would_you_like_to">Where would you like to transfer the funds?</string>
   <string name="id_word_d_of_d">Woord %d van %d</string>
   <string name="id_write_down_the_words">Schrijf de woorden op</string>
@@ -495,6 +544,7 @@
   <string name="id_you_must_first_log_out_before">Je moet je afmelden voor je je kunt aanmelden.</string>
   <string name="id_you_must_save_this_mnemonic_now">Je MOET deze woordenlijst NU opslaan</string>
   <string name="id_you_only_have_one_twofactor">Je hebt slechts één tweetrapsauthenticatiemethode ingesteld</string>
+  <string name="id_you_will_find_the_account_id_in">You will find the Account ID in the receive screen.</string>
   <string name="id_you_will_need_to_reenter_your">Je zal je woordenlijst opnieuw moeten invoeren om je weer aan te melden als je geen PIN instelt. Druk op "OK" om door te gaan.</string>
   <string name="id_your_green_wallet_is_now_ready">Green Wallet is nu klaar voor gebruik.</string>
   <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>
@@ -503,6 +553,7 @@
   <string name="id_your_s_sent_to_s_has_been">Je %s (verstuurd naar %s) is bevestigd</string>
   <string name="id_your_transactions_will_be_shown">Je transacties verschijnen hier.</string>
   <string name="id_your_twofactor_threshold_is_s">Je limiet voor tweetrapsauthenticatie is %s.</string>
+  <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
   <string name="id_your_wallet_is_not_yet_fully">Je wallet is nog niet volledig beveiligd.\nSchakel tweetrapsauthenticatie in.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
 </resources>

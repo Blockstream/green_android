@@ -10,17 +10,23 @@
   <string name="id_4_hours">~ 4 Години</string>
   <string name="id_5_seconds_minimum">5 секунд мінімум</string>
   <string name="id_a_new_transaction_has_just">Нова транзакція щойно надійшла на ваш гаманець.</string>
+  <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">На пристрої знайдено гаманець:</string>
   <string name="id_about">ПРО GREEN</string>
   <string name="id_accept">ПРИЙНЯТИ</string>
+  <string name="id_access">Access</string>
   <string name="id_account">АКАУНТ</string>
+  <string name="id_account_id">Account ID</string>
+  <string name="id_account_name">Account Name</string>
+  <string name="id_account_type">Account Type</string>
   <string name="id_action_canceled">Дія скасована</string>
   <string name="id_add_a_note_only_you_can_see_it">Add a note (only you can see it).</string>
+  <string name="id_add_a_pgp_public_key_to_receive">Add a PGP public key to receive encrypted email and keep your privacy</string>
   <string name="id_add_amount">Додати суму</string>
+  <string name="id_add_amount_optional">Add amount (optional)</string>
   <string name="id_add_custom_network_by_qr_code">Додати нову мережу за допомогою QR-коду</string>
   <string name="id_add_custom_network_by_url">Додати нову мережу за допомогою URL</string>
   <string name="id_add_new_account">Додати новий акаунт</string>
-  <string name="id_add_simple_account">Add Simple Account</string>
   <string name="id_add_wallet">Додати гаманець</string>
   <string name="id_additional_security">Додаткова безпека</string>
   <string name="id_address">Адреса</string>
@@ -30,6 +36,7 @@
   <string name="id_advanced_network_settings">Розширені налаштування мережі</string>
   <string name="id_all">Усі</string>
   <string name="id_allows_you_to_quickly_check">Дозволяє швидко перевірити ваш баланс, отримати кошти або зробити свіп паперового гаманця. Ви не можете надсилати кошти в режимі лише-для-перегляду.</string>
+  <string name="id_allows_you_to_receive_and_send">Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.</string>
   <string name="id_always">Завжди</string>
   <string name="id_amount">Сума</string>
   <string name="id_are_you_sure_you_want_to_view">Ви впевнені, що бажаєте переглянути транзакцію за допомогою %s?</string>
@@ -38,6 +45,9 @@
   <string name="id_asset_id">Asset ID</string>
   <string name="id_asset_name">Asset Name</string>
   <string name="id_attempts_remaining_d">Залишилося спроб: %d</string>
+  <string name="id_authorized_assets">Authorized Assets</string>
+  <string name="id_authorized_assets_account">Authorized Assets Account</string>
+  <string name="id_authorized_assets_account_is">Authorized assets account is only available on Liquid.</string>
   <string name="id_auto_logout_timeout">Автоматичний вихід</string>
   <string name="id_autolock_after">Автоблокування</string>
   <string name="id_be_aware_other_apps_can_read_or">Пам\'ятайте, що інші додатки можуть зчитувати або змінювати буфер обміну</string>
@@ -48,6 +58,7 @@
   <string name="id_block_height_1d">Висота блоку: %1$d</string>
   <string name="id_blocks">блоки</string>
   <string name="id_blocks_confirmed">підтверджені блоки</string>
+  <string name="id_blockstream_does_not_have">Blockstream does not have access to your wallet backup and will not be able to help you in case you lose it</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip не налаштовано. Для налаштування, будь ласка, встановіть програму за допомогою десктоп-клієнта.</string>
   <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">Дзвінок</string>
@@ -73,7 +84,9 @@
   <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Підключення до Tor (.onion) вузлів забезпечує максимальну конфіденційність і безпеку. Натисніть "OK", щоб продовжити.</string>
+  <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>
   <string name="id_continue">Продовжити</string>
+  <string name="id_copied_to_clipboard">Copied to clipboard</string>
   <string name="id_copy_details">Copy details</string>
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Скопіювати в буфер обміну</string>
@@ -119,9 +132,11 @@
   <string name="id_enable">Активувати</string>
   <string name="id_enable_custom_networks_debug">Активувати параметри налагодження  спеціалізованих мереж</string>
   <string name="id_enable_face_id">Увімкнути Face ID</string>
+  <string name="id_enable_or_change_your_pin_to">Enable or change your PIN to quickly access your wallet</string>
   <string name="id_enable_spv">Увімкнути SPV</string>
   <string name="id_enable_spv_and_modify_spv">Увімкнути SPV та змінити налаштування SPV</string>
   <string name="id_enable_touch_id">Увімкнути Touch ID</string>
+  <string name="id_enable_twofactor_authentication">Enable Two-Factor Authentication to protect your wallet from unauthorized transactions or changes to critical security settings</string>
   <string name="id_enabled">Увімкнено</string>
   <string name="id_enabled_1s">Увімкнено: %1$s</string>
   <string name="id_encryption_passphrase">Кодова фраза шифрування</string>
@@ -158,10 +173,14 @@
   <string name="id_fee_rate_must_be_at_least_s">Комісія не може бути меншою за %s сатоші/vbyte.</string>
   <string name="id_fee_rate_s">Комісія: %s</string>
   <string name="id_fee_s__s">Комісія всього: %s/%s</string>
+  <string name="id_for_long_term_storage">For long term storage</string>
+  <string name="id_for_most_users">For most users</string>
+  <string name="id_for_securities_investors">For securities investors</string>
   <string name="id_from">ВІД</string>
   <string name="id_funds_received_in_this">Funds received in this transaction are not confidential.</string>
   <string name="id_generate_new_address">Згенерувати нову адресу</string>
   <string name="id_get_code">Отримати код</string>
+  <string name="id_go_to_account">Go to Account</string>
   <string name="id_go_to_wallet">Перейти до гаманця</string>
   <string name="id_google_auth">Google Auth</string>
   <string name="id_google_authenticator">Google Authenticator</string>
@@ -175,6 +194,7 @@
   <string name="id_green_uses_multisig_with_one">Green використовує мультипідпис з підписом, створеним вашим пристроєм, та підписом, згенерованим за допомогою серверів Blockstream. Налаштування двофакторної аутентифікації дає змогу отримати додатковий рівень безпеки для підпису на сервері.</string>
   <string name="id_hardware_wallet_support_for">Hardware wallet support for Confidential Transactions coming soon.</string>
   <string name="id_hash">Хеш</string>
+  <string name="id_here">here</string>
   <string name="id_hex">HEX</string>
   <string name="id_high">Високий</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Тримайте NFC-тег поряд із вашим приcтроєм</string>
@@ -211,6 +231,7 @@
   <string name="id_last_attempt_if_failed_you_will">Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.</string>
   <string name="id_last_ping_1d_ms">Останній пінг: %1$d мс</string>
   <string name="id_later">ПІЗНІШЕ</string>
+  <string name="id_learn_more_about_s">Learn more about %s.</string>
   <string name="id_ledger_dashboard_detected">Знайдена панель Ledger, будь ласка, відкрийте правильний додаток для доступу.</string>
   <string name="id_lets_get_you_set_up">Давайте зробимо налаштування.</string>
   <string name="id_loading_transactions">Завантаження транзакцій... </string>
@@ -238,6 +259,7 @@
   <string name="id_multiple_assets">Multiple Assets</string>
   <string name="id_my_notes">МОЇ НОТАТКИ</string>
   <string name="id_name">Ім’я</string>
+  <string name="id_need_help">Need help?</string>
   <string name="id_network">МЕРЕЖА</string>
   <string name="id_network_configuration">Конфігурація мережі</string>
   <string name="id_network_fee">NETWORK FEE</string>
@@ -268,6 +290,7 @@
   <string name="id_on_average">on average</string>
   <string name="id_one_attempt_remaining">Залишилась одна спроба</string>
   <string name="id_one_network_must_be_selected">Виберіть одну з мереж. За початковими налаштуваннями встановлено Біткоїн</string>
+  <string name="id_onion_addresses_require_tor">Onion addresses require Tor connectivity. Enable it in the network settings.</string>
   <string name="id_only_connect_to_trusted_nodes">З’єднувати лише з перевіреними нодами для SPV</string>
   <string name="id_only_this_time">Лише цього разу</string>
   <string name="id_operation_failure">Збій у роботі</string>
@@ -275,6 +298,7 @@
   <string name="id_optional_memo">Додаткова пам\'ятка</string>
   <string name="id_optional_password">Додатковий пароль</string>
   <string name="id_or">АБО</string>
+  <string name="id_our_support_page">our support page</string>
   <string name="id_outdated_hardware_wallet">Застаріла апаратна прошивка гаманця. Завантажте останню версію прошивки з робочого столу.</string>
   <string name="id_outgoing">Вихідний </string>
   <string name="id_password">Пароль</string>
@@ -304,10 +328,12 @@
   <string name="id_precision">Precision</string>
   <string name="id_privacy_policy">Політика конфіденційності</string>
   <string name="id_problem_with_key_1s">Проблема з ключем %1$s</string>
+  <string name="id_provide_this_id_to_an_asset">Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.</string>
   <string name="id_providing_an_email_enables">Надання електронної адреси дозволяє отримувати повідомлення і відновлювати транзакції.</string>
   <string name="id_proxy_settings">НАЛАШТУВАННЯ ПРОКСІ-СЕРВЕРУ</string>
   <string name="id_qr_scanner">QR-сканер</string>
   <string name="id_receive">Отримати</string>
+  <string name="id_receive_email_notifications_for">Receive email notifications for sent and received transactions</string>
   <string name="id_received">Отримано</string>
   <string name="id_received_on">Отримано</string>
   <string name="id_recipient">Отримувач</string>
@@ -334,8 +360,8 @@
   <string name="id_restore">Відновити</string>
   <string name="id_restore_green_wallet">Відновити Green-гаманець</string>
   <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
-  <string name="id_reuse_androids_authentication">Повторне використання аутентифікації Android</string>
   <string name="id_review">Огляд</string>
+  <string name="id_review_account_information">Review account information</string>
   <string name="id_s_blocks_left">%s блоків залишилось</string>
   <string name="id_s_from_s">%s від %s</string>
   <string name="id_s_network">%s мережа</string>
@@ -343,13 +369,17 @@
   <string name="id_save_your_mnemonic">Збережіть вашу мнемонічну фразу</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Scan a QR code for SPV pairing</string>
   <string name="id_scan_the_qr_code_in_google">Відскануйте QR-код із Google Authenticator</string>
+  <string name="id_scan_to_send_here">Scan to send here</string>
   <string name="id_screen_lock">Блокування екрану</string>
   <string name="id_search">Пошук</string>
   <string name="id_second">секунда</string>
   <string name="id_seconds">секунд</string>
   <string name="id_security">БЕЗПЕКА</string>
+  <string name="id_see_our_privacy_policy_s">See our privacy policy %s</string>
+  <string name="id_see_our_terms_of_service_s">See our Terms of Service %s</string>
   <string name="id_select_account">Select Account</string>
   <string name="id_select_asset">Select asset</string>
+  <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">Оберіть мережу</string>
   <string name="id_select_word_number_d">Виберіть слово номер %d</string>
   <string name="id_send">Надіслати</string>
@@ -360,11 +390,16 @@
   <string name="id_sending_request">Відправка запиту...</string>
   <string name="id_sent">Sent</string>
   <string name="id_sent_to">Відправити на</string>
+  <string name="id_set_a_limit_to_spend_without">Set a limit to spend without two-factor authentication</string>
   <string name="id_set_a_new_pin">Встановити новий PIN-код</string>
+  <string name="id_set_a_timeout_to_logout_after">Set a timeout to logout after prolonged inactivity</string>
+  <string name="id_set_an_email_address_to_receive">Set an email address to receive transaction notifications</string>
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">Встановити розмір комісії</string>
   <string name="id_set_twofactor_threshold">Встановити двофакторний поріг</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
+  <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
+  <string name="id_set_up_credentials_to_access_in">Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app</string>
   <string name="id_set_up_pgp_key_for">Встановити PGP-ключ для зв\'язку</string>
   <string name="id_set_up_twofactor_authentication">Встановити двофакторну аутентифікацію</string>
   <string name="id_set_up_watchonly">Налаштувати холодний гаманець</string>
@@ -375,9 +410,11 @@
   <string name="id_setup_pin_and_s">Встановити PIN-код та %s</string>
   <string name="id_share">Поділитися</string>
   <string name="id_share_address">Поділитися адресою</string>
+  <string name="id_show_bitcoin_amounts_in">Show bitcoin amounts in</string>
+  <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">Показати фіат</string>
+  <string name="id_show_my_wallet_backup">Show my wallet backup</string>
   <string name="id_signup_in_progress">Реєстрація продовжується</string>
-  <string name="id_simple_accounts_allow_you_to">Simple accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_simplified_payment_verification">Спрощена верифікація платежів SPV перевіряє ваші транзакції і баланс за допомогою мережі Біткоїн поза межами Green-серверів. Увімкнення підвищує системні вимоги до пропускної спроможності і обробки.</string>
   <string name="id_skip">ПРОПУСТИТИ</string>
   <string name="id_skip_not_recommended">Пропустити (не рекомендовано)</string>
@@ -396,6 +433,9 @@
   <string name="id_spv_synchronization">SPV синхронізація</string>
   <string name="id_spv_synchronization_using_tor">SPV synchronization using Tor requires a trusted node onion URL</string>
   <string name="id_spv_unverified">SPV не веріфікована</string>
+  <string name="id_standard_account">Standard Account</string>
+  <string name="id_standard_accounts_allow_you_to">Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
+  <string name="id_start_a_2fa_reset_process_if">Start a 2FA reset process if you lost access to all your two-factor authentication methods.</string>
   <string name="id_sweep">Зробити свіп</string>
   <string name="id_sweep_from_paper_wallet">Свіп з паперового гаманця</string>
   <string name="id_sweep_into_s">Sweep into %s</string>
@@ -409,6 +449,7 @@
   <string name="id_terms_of_service">Умови надання послуг</string>
   <string name="id_terms_of_use">Умови використання</string>
   <string name="id_thank_you_for_downloading_green">Дякуємо вам за завантаження гаманця Green! Будь ласка, залиште свій відгук, якщо у вас буде така можливість</string>
+  <string name="id_the_asset_registry_is_currently">The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.</string>
   <string name="id_the_camera_has_a_problem_you">Проблеми з камерою. Можливо, вам потрібно перезавантажити пристрій.</string>
   <string name="id_the_easier_safer_and_faster">простіший, безпечніший та більш швидкий гаманець</string>
   <string name="id_the_hardware_wallet_you_are">Апаратний гаманець, який ви використовуєте, ще не підтримується</string>
@@ -421,6 +462,7 @@
   <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Час:%s</string>
   <string name="id_to">ДО</string>
+  <string name="id_to_keep_you_in_control_of_your">To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don\'t move funds often enough.</string>
   <string name="id_tor_connectivity_disabled">З\'єднання з Tor розірвано!</string>
   <string name="id_tor_is_connected">Tor is connected</string>
   <string name="id_tor_status">Tor status</string>
@@ -432,6 +474,7 @@
   <string name="id_touch_to_display">Торкніться для відображення</string>
   <string name="id_touchface_id_not_available">Відсутній Touch/Face ID</string>
   <string name="id_transaction_already_confirmed">Транзакція вже підтверджена</string>
+  <string name="id_transaction_copied_to_clipboard">Transaction copied to clipboard</string>
   <string name="id_transaction_details">Деталі транзакції</string>
   <string name="id_transaction_id">ID транзакції</string>
   <string name="id_transaction_sent">Транзакцію здійснено</string>
@@ -440,6 +483,8 @@
   <string name="id_two_factor_authentication">ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ</string>
   <string name="id_twofactor">ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ</string>
   <string name="id_twofactor_authentication">Двофакторна аутентифікація</string>
+  <string name="id_twofactor_authentication_expiry">Two-Factor authentication expiry</string>
+  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.</string>
   <string name="id_twofactor_reset_in_progress">Виконується двофакторне скидання, ваш гаманець заблоковано.</string>
   <string name="id_twofactor_settings">Двофакторне налаштування</string>
   <string name="id_twofactor_threshold">Двофакторний поріг</string>
@@ -450,6 +495,7 @@
   <string name="id_unknown_bip21_parameter">Невідомий параметр bip21</string>
   <string name="id_unknown_custom">Невідомий (спеціалізований)</string>
   <string name="id_updated">оновлений</string>
+  <string name="id_use_android_screen_lock_to_log">Use Android screen lock to log in</string>
   <string name="id_user_not_found_or_invalid">Користувача не знайдено або неправильний пароль</string>
   <string name="id_username">Ім\'я користувача</string>
   <string name="id_username_not_available">Ім\'я користувача недоступне</string>
@@ -459,6 +505,7 @@
   <string name="id_version_1s_2s">Версія %1$s %2$s</string>
   <string name="id_view_in_explorer">Переглянути Оглядач</string>
   <string name="id_waiting_for_transaction">Очікування транзакції...</string>
+  <string name="id_wallet_backup">Wallet Backup</string>
   <string name="id_wallet_creation_failed">Створення гаманця неуспішне</string>
   <string name="id_wallets">Гаманці</string>
   <string name="id_warning">Увага!</string>
@@ -478,6 +525,8 @@
   <string name="id_we_use_the_camera_to_scan_qr">Ми використовуємо камеру для сканування QR-кодів</string>
   <string name="id_welcome">Ласкаво просимо</string>
   <string name="id_welcome_to">Ласкаво просимо до</string>
+  <string name="id_what_type_of_account_would_you">What type of account would you like to add?</string>
+  <string name="id_whats_new">What\'s new?</string>
   <string name="id_where_would_you_like_to">Where would you like to transfer the funds?</string>
   <string name="id_word_d_of_d">Слово %d з %d</string>
   <string name="id_write_down_the_words">Запишіть слова</string>
@@ -495,6 +544,7 @@
   <string name="id_you_must_first_log_out_before">Перед тим, як увійти, здійсніть вихід.</string>
   <string name="id_you_must_save_this_mnemonic_now">Вам ПОТРІБНО зберегти цю мнемонічну фразу ЗАРАЗ</string>
   <string name="id_you_only_have_one_twofactor">У вас підключено лише один метод двофакторної аутентифікації</string>
+  <string name="id_you_will_find_the_account_id_in">You will find the Account ID in the receive screen.</string>
   <string name="id_you_will_need_to_reenter_your">Якщо ви не встановите PIN-код, кожного разу, для входу, вам потрібно буде вводити вашу мнемонічну фразу. Натисність "OK" для продовження.</string>
   <string name="id_your_green_wallet_is_now_ready">Ваш Green-гаманець готовий для використання.</string>
   <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>
@@ -503,6 +553,7 @@
   <string name="id_your_s_sent_to_s_has_been">Ваша %s надіслана на %s підтверджена</string>
   <string name="id_your_transactions_will_be_shown">Ваші транзакції будуть показані тут.</string>
   <string name="id_your_twofactor_threshold_is_s">Ваша межа двофакторки %s.</string>
+  <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
   <string name="id_your_wallet_is_not_yet_fully">Ваш гаманець ще не надійно захищений.\nБудь ласка, увімкніть двофакторну аутентифікацію.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
 </resources>

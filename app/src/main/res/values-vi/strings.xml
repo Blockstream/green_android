@@ -10,17 +10,23 @@
   <string name="id_4_hours">4 giờ</string>
   <string name="id_5_seconds_minimum">ít nhất 5 giây</string>
   <string name="id_a_new_transaction_has_just">Một giao dịch mới tới ví bạn</string>
+  <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">Một ví đã được xóa trên thiết bị này:</string>
   <string name="id_about">VỀ CHÚNG TÔI</string>
   <string name="id_accept">CHẤP NHẬN</string>
+  <string name="id_access">Access</string>
   <string name="id_account">TÀI KHOẢN</string>
+  <string name="id_account_id">Account ID</string>
+  <string name="id_account_name">Account Name</string>
+  <string name="id_account_type">Account Type</string>
   <string name="id_action_canceled">Hành động đã hủy</string>
   <string name="id_add_a_note_only_you_can_see_it">Thêm một ghi chú( chỉ có bạn mới thấy nó)</string>
+  <string name="id_add_a_pgp_public_key_to_receive">Add a PGP public key to receive encrypted email and keep your privacy</string>
   <string name="id_add_amount">Thêm số tiền</string>
+  <string name="id_add_amount_optional">Add amount (optional)</string>
   <string name="id_add_custom_network_by_qr_code">Thêm mạng lưới tùy biến bằng mã QR</string>
   <string name="id_add_custom_network_by_url">Thêm mạng tùy biến bằng URL</string>
   <string name="id_add_new_account">Thêm tài khoản mới</string>
-  <string name="id_add_simple_account">Thêm một tài khoản giản đơn</string>
   <string name="id_add_wallet">Thêm ví </string>
   <string name="id_additional_security">Các cài đặt an toàn mở rộng</string>
   <string name="id_address">Địa chỉ ví</string>
@@ -30,6 +36,7 @@
   <string name="id_advanced_network_settings">Cài đặt mạng lưới mở rộng</string>
   <string name="id_all">Tất cả</string>
   <string name="id_allows_you_to_quickly_check">Cho phép bạn kiểm tra nhanh số dư, nhận quỹ và quẹt để nạp tiền từ ví giấy. Bạn không thể gửi tiền đi trong chế độ chỉ xem.</string>
+  <string name="id_allows_you_to_receive_and_send">Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.</string>
   <string name="id_always">Thường trực</string>
   <string name="id_amount">Số tiền</string>
   <string name="id_are_you_sure_you_want_to_view">Bạn có chắc là muốn xem giao dịch sử dụng địa chỉ %s ?</string>
@@ -38,6 +45,9 @@
   <string name="id_asset_id">Số ID tài sản</string>
   <string name="id_asset_name">Tên tài sản</string>
   <string name="id_attempts_remaining_d">Nỗ lực còn lại: %d</string>
+  <string name="id_authorized_assets">Authorized Assets</string>
+  <string name="id_authorized_assets_account">Authorized Assets Account</string>
+  <string name="id_authorized_assets_account_is">Authorized assets account is only available on Liquid.</string>
   <string name="id_auto_logout_timeout">Thời gian tự đăng xuất</string>
   <string name="id_autolock_after">Tự khoá sau thời gian</string>
   <string name="id_be_aware_other_apps_can_read_or">Cẩn thận, các ứng dụng khác có thể đọc hoặc thay đổi thông tin trên clipboard</string>
@@ -48,6 +58,7 @@
   <string name="id_block_height_1d">Độ lớn khối: %1$d</string>
   <string name="id_blocks">khối</string>
   <string name="id_blocks_confirmed">khối đã xác nhận</string>
+  <string name="id_blockstream_does_not_have">Blockstream does not have access to your wallet backup and will not be able to help you in case you lose it</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip chưa được cài đặt. Làm ơn cài đặt nó bằng cách dùng phần mềm trên máy tính để có thể sử dụng.</string>
   <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_call">Gọi</string>
@@ -73,7 +84,9 @@
   <string name="id_connecting_to_a_trusted_node">Kết nối với nút đáng tin cậy thông qua Tor yêu cầu bật cài đặt proxy trong ứng dụng trước khi đăng nhập và proxy  SockS5 (ứng dụng Orbot cho Android)</string>
   <string name="id_connecting_to_peers">Đang nối với các nốt mạng khác...</string>
   <string name="id_connecting_to_tor_onion_nodes">Đang nối tới nốt mạng Tor( có tên miền .onion)  cho phép bảo mật và quyền riêng tư tối đa. Ấn "OK" để tiếp tục.</string>
+  <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>
   <string name="id_continue">Tiếp tục</string>
+  <string name="id_copied_to_clipboard">Copied to clipboard</string>
   <string name="id_copy_details">Copy details</string>
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Sao chép vào clipboard</string>
@@ -119,9 +132,11 @@
   <string name="id_enable">Cho phép</string>
   <string name="id_enable_custom_networks_debug">Cho phép cài đặt gỡ lỗi của mạng tùy chỉnh</string>
   <string name="id_enable_face_id">Cho phép nhận dạng khuôn mặt Face ID</string>
+  <string name="id_enable_or_change_your_pin_to">Enable or change your PIN to quickly access your wallet</string>
   <string name="id_enable_spv">Cho phép Xác thực thanh toán đơn giản SPV</string>
   <string name="id_enable_spv_and_modify_spv">Cho phép và chỉnh sửa  Xác thực thanh toán đơn giản SPV </string>
   <string name="id_enable_touch_id">Cho phép xác thực vân tay</string>
+  <string name="id_enable_twofactor_authentication">Enable Two-Factor Authentication to protect your wallet from unauthorized transactions or changes to critical security settings</string>
   <string name="id_enabled">Cho phép</string>
   <string name="id_enabled_1s">Cho phép: %1$s</string>
   <string name="id_encryption_passphrase">Mật khẩu để mã hóa</string>
@@ -158,10 +173,14 @@
   <string name="id_fee_rate_must_be_at_least_s">Lệ phí phải ít nhất %s satoshi trên vbyte</string>
   <string name="id_fee_rate_s">Lệ phí: %s</string>
   <string name="id_fee_s__s">Phí: %s / %s</string>
+  <string name="id_for_long_term_storage">For long term storage</string>
+  <string name="id_for_most_users">For most users</string>
+  <string name="id_for_securities_investors">For securities investors</string>
   <string name="id_from">TỪ</string>
   <string name="id_funds_received_in_this">Tiền nhận được trong giao dịch này không được bảo mật.</string>
   <string name="id_generate_new_address">Tạo địa chỉ mới</string>
   <string name="id_get_code">Nhận mã số</string>
+  <string name="id_go_to_account">Go to Account</string>
   <string name="id_go_to_wallet">Đi đến ví</string>
   <string name="id_google_auth">Phần mềm xác thực Google Auth</string>
   <string name="id_google_authenticator">Phần mềm Google Authenticator</string>
@@ -175,6 +194,7 @@
   <string name="id_green_uses_multisig_with_one">Green sử dụng ví nhiều khóa với một khóa tạo bởi thiết bị của bạn, và một khóa bới máy chủ của Blockstream. Đặt cài  đặt bảo mật 2 lớp để cho phép thêm lớp bảo mật của phía máy chủ.</string>
   <string name="id_hardware_wallet_support_for">Việc hỗ trợ ví cứng để giao dịch bí mật sẽ có trong tương lai gần</string>
   <string name="id_hash">Băm Hash</string>
+  <string name="id_here">here</string>
   <string name="id_hex">HEX</string>
   <string name="id_high">Cao</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Giữ thẻ NFC gần thiết bị</string>
@@ -211,6 +231,7 @@
   <string name="id_last_attempt_if_failed_you_will">Lần thử cuối cùng: nếu thất bại, bạn sẽ phải khôi phục ví của mình bằng cách sử dụng tính năng  24 từ ghi nhớ mnemonic words.</string>
   <string name="id_last_ping_1d_ms">Lần ping cuối: %1$d phần nghìn của một giây</string>
   <string name="id_later">SAU ĐÓ</string>
+  <string name="id_learn_more_about_s">Learn more about %s.</string>
   <string name="id_ledger_dashboard_detected">Bảng điều khiên Ledger đã tìm thấy, làm ơn mở ứng dụng đúng để vào.</string>
   <string name="id_lets_get_you_set_up">Bạn hãy cài đặt</string>
   <string name="id_loading_transactions">Đang tải giao dịch...</string>
@@ -238,6 +259,7 @@
   <string name="id_multiple_assets">Nhiều tài sản</string>
   <string name="id_my_notes">GHI CHÚ CỦA TÔI</string>
   <string name="id_name">Tên</string>
+  <string name="id_need_help">Need help?</string>
   <string name="id_network">MẠNG</string>
   <string name="id_network_configuration">Thiết lập mạng</string>
   <string name="id_network_fee">PHÍ MẠNG</string>
@@ -268,6 +290,7 @@
   <string name="id_on_average">trung bình</string>
   <string name="id_one_attempt_remaining">Một lần thử còn lại</string>
   <string name="id_one_network_must_be_selected">Một mạng phải được chọn. Hiện đang chọn Bitcoin là mặc định.</string>
+  <string name="id_onion_addresses_require_tor">Onion addresses require Tor connectivity. Enable it in the network settings.</string>
   <string name="id_only_connect_to_trusted_nodes">Chỉ nối với nốt mạng tin tưởng cho việc xác nhận thanh toán đơn giản (SPV )</string>
   <string name="id_only_this_time">Chỉ lúc này thôi</string>
   <string name="id_operation_failure">Lỗi hoạt động</string>
@@ -275,6 +298,7 @@
   <string name="id_optional_memo">Tùy chọn memo</string>
   <string name="id_optional_password">Tùy chọn mật khẩu</string>
   <string name="id_or">HOẶC</string>
+  <string name="id_our_support_page">our support page</string>
   <string name="id_outdated_hardware_wallet">Firmware của ví cứng đã quá hạn. Làm ơn nâng cấp phiên bản mới nhất từ máy tính.</string>
   <string name="id_outgoing">Đi ra </string>
   <string name="id_password">Mật khẩu</string>
@@ -304,10 +328,12 @@
   <string name="id_precision">Độ chính xác</string>
   <string name="id_privacy_policy">Chính sách bảo mật</string>
   <string name="id_problem_with_key_1s">Có vấn đề với khóa %1$s</string>
+  <string name="id_provide_this_id_to_an_asset">Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.</string>
   <string name="id_providing_an_email_enables">Cung cấp một địa chỉ thư điện tử để gửi thông báo và phục hồi  giao dịch.</string>
   <string name="id_proxy_settings">CÀI ĐẶT PROXY</string>
   <string name="id_qr_scanner">Máy quét mã QR</string>
   <string name="id_receive">Nhận</string>
+  <string name="id_receive_email_notifications_for">Receive email notifications for sent and received transactions</string>
   <string name="id_received">Đã nhận</string>
   <string name="id_received_on">Đã nhận trên</string>
   <string name="id_recipient">Người nhận</string>
@@ -334,8 +360,8 @@
   <string name="id_restore">Khôi phục</string>
   <string name="id_restore_green_wallet">Khôi phục ví Green</string>
   <string name="id_restore_temporary_wallet">Khôi phục ví tạm thời</string>
-  <string name="id_reuse_androids_authentication">Dùng lại xác thực của Android</string>
   <string name="id_review">Xem lại</string>
+  <string name="id_review_account_information">Review account information</string>
   <string name="id_s_blocks_left">còn lại %s khối </string>
   <string name="id_s_from_s">%s từ %s</string>
   <string name="id_s_network">Mạng %s</string>
@@ -343,13 +369,17 @@
   <string name="id_save_your_mnemonic">Lưu các chữ gợi nhớ mnemonic</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Quét mã QR để ghép đôi SPV</string>
   <string name="id_scan_the_qr_code_in_google">Quét mã QR vào phần mềm Google Authenticator:</string>
+  <string name="id_scan_to_send_here">Scan to send here</string>
   <string name="id_screen_lock">Khóa màn hình</string>
   <string name="id_search">Tìm kiếm</string>
   <string name="id_second">giây</string>
   <string name="id_seconds">giây</string>
   <string name="id_security">AN NINH</string>
+  <string name="id_see_our_privacy_policy_s">See our privacy policy %s</string>
+  <string name="id_see_our_terms_of_service_s">See our Terms of Service %s</string>
   <string name="id_select_account">Chọn tài khoản</string>
   <string name="id_select_asset">Chọn tài sản số</string>
+  <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">Chọn mạng</string>
   <string name="id_select_word_number_d">Chọn chữ cái số %d</string>
   <string name="id_send">Gửi</string>
@@ -360,11 +390,16 @@
   <string name="id_sending_request">Đang gửi yêu cầu...</string>
   <string name="id_sent">Gửi</string>
   <string name="id_sent_to">Gửi đến</string>
+  <string name="id_set_a_limit_to_spend_without">Set a limit to spend without two-factor authentication</string>
   <string name="id_set_a_new_pin">Cài đặt mã PIN</string>
+  <string name="id_set_a_timeout_to_logout_after">Set a timeout to logout after prolonged inactivity</string>
+  <string name="id_set_an_email_address_to_receive">Set an email address to receive transaction notifications</string>
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">Đặt phí tùy biến</string>
   <string name="id_set_twofactor_threshold">Đặt ngưỡng xác thực 2 lớp</string>
   <string name="id_set_up_a_passcode_for_your_ios">Thiết lập mật mã cho thiết bị iOS của bạn để đặt mã PIN cho ví Blockstream Green</string>
+  <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
+  <string name="id_set_up_credentials_to_access_in">Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app</string>
   <string name="id_set_up_pgp_key_for">Cài đặt khóa PGP để trao đổi thông tin</string>
   <string name="id_set_up_twofactor_authentication">Cài đặt xác thực 2 lớp</string>
   <string name="id_set_up_watchonly">Cài đặt ví chỉ xem</string>
@@ -375,9 +410,11 @@
   <string name="id_setup_pin_and_s">Cài mã PIN và %s</string>
   <string name="id_share">Chia sẻ</string>
   <string name="id_share_address">Địa chỉ chia sẻ</string>
+  <string name="id_show_bitcoin_amounts_in">Show bitcoin amounts in</string>
+  <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">Nhìn số tiền giấy</string>
+  <string name="id_show_my_wallet_backup">Show my wallet backup</string>
   <string name="id_signup_in_progress">Đang trong quá trình đăng ký</string>
-  <string name="id_simple_accounts_allow_you_to">Tài khoản đơn giản cho phép bạn tách riêng tiền của bạn. Mỗi tài khoản sẽ có địa chỉ nhận riêng và việc chuyển tiền qua các tài khoản yêu cầu phải qua các giao dịch.</string>
   <string name="id_simplified_payment_verification">Xác minh thanh toán đơn giản SPV xác minh giao dịch và số dư của bạn bằng mạng lưới Bitcoin, ngoài máy chủ của Green. Đang cho phép thêm băng thông quá trình yêu cầu</string>
   <string name="id_skip">DỪNG</string>
   <string name="id_skip_not_recommended">Dừng( không khuyến khích)</string>
@@ -396,6 +433,9 @@
   <string name="id_spv_synchronization">Đồng bộ SPV</string>
   <string name="id_spv_synchronization_using_tor">Đồng bộ hóa SPV bằng Tor yêu cầu một URL onion đáng tin cậy</string>
   <string name="id_spv_unverified">SPV chưa xác minh</string>
+  <string name="id_standard_account">Standard Account</string>
+  <string name="id_standard_accounts_allow_you_to">Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
+  <string name="id_start_a_2fa_reset_process_if">Start a 2FA reset process if you lost access to all your two-factor authentication methods.</string>
   <string name="id_sweep">Quẹt để nạp tiền</string>
   <string name="id_sweep_from_paper_wallet">Quẹt nạp tiền từ ví giấy</string>
   <string name="id_sweep_into_s">Quẹt vào  %s</string>
@@ -409,6 +449,7 @@
   <string name="id_terms_of_service">Điều khoản dịch vụ</string>
   <string name="id_terms_of_use">Điều khoản sử dụng</string>
   <string name="id_thank_you_for_downloading_green">Cảm ơn bạn đã tải xuống ví Green! Làm ơn để lại xem xét đánh giá của bạn khi bạn có cơ hội</string>
+  <string name="id_the_asset_registry_is_currently">The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.</string>
   <string name="id_the_camera_has_a_problem_you">Camera có vấn đề. Bạn có lẽ cần khởi động lại thiết bị.</string>
   <string name="id_the_easier_safer_and_faster">Ví dễ hơn, an toàn hơn và nhanh hơn</string>
   <string name="id_the_hardware_wallet_you_are">VÍ cứng bạn không được hổ trợ</string>
@@ -421,6 +462,7 @@
   <string name="id_ticker">Người làm dấu</string>
   <string name="id_time_s">Thời gian:  %s</string>
   <string name="id_to">TỚI</string>
+  <string name="id_to_keep_you_in_control_of_your">To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don\'t move funds often enough.</string>
   <string name="id_tor_connectivity_disabled">Kết nối tới mạng Tor đã tắt.</string>
   <string name="id_tor_is_connected">Mạng Tor đã được kết nối</string>
   <string name="id_tor_status">Trạng thái mạng Tor</string>
@@ -432,6 +474,7 @@
   <string name="id_touch_to_display">Chạm để hiện ra</string>
   <string name="id_touchface_id_not_available">Nhận diện Mã Vân tay/ khuôn mặt không sẵn sàng</string>
   <string name="id_transaction_already_confirmed">Giao dịch đã được xác nhận</string>
+  <string name="id_transaction_copied_to_clipboard">Transaction copied to clipboard</string>
   <string name="id_transaction_details">Chi tiết của giao dịch</string>
   <string name="id_transaction_id">Số ID giao dịch</string>
   <string name="id_transaction_sent">Giao địch đã gửi đi</string>
@@ -440,6 +483,8 @@
   <string name="id_two_factor_authentication">XÁC THỰC 2 LỚP</string>
   <string name="id_twofactor">XÁC THỰC 2 LỚP</string>
   <string name="id_twofactor_authentication">Xác thực 2 lớp</string>
+  <string name="id_twofactor_authentication_expiry">Two-Factor authentication expiry</string>
+  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.</string>
   <string name="id_twofactor_reset_in_progress">Cài lại xác thực 2 lớp đang tiến hành, ví của bạn đang khóa.</string>
   <string name="id_twofactor_settings">Cài đặt xác thực 2 lớp</string>
   <string name="id_twofactor_threshold">Ngưỡng của xác thực 2 lớp</string>
@@ -450,6 +495,7 @@
   <string name="id_unknown_bip21_parameter">Không biết thông số BIP21</string>
   <string name="id_unknown_custom">Không biết( tùy biến)</string>
   <string name="id_updated">đã cập nhật</string>
+  <string name="id_use_android_screen_lock_to_log">Use Android screen lock to log in</string>
   <string name="id_user_not_found_or_invalid">Người dùng không tìm thấy hoặc sai mật khẩu</string>
   <string name="id_username">Tên người dùng</string>
   <string name="id_username_not_available">Tên người dùng không sẵn có</string>
@@ -459,6 +505,7 @@
   <string name="id_version_1s_2s">Phiên bản %1$s %2$s</string>
   <string name="id_view_in_explorer">Xem ở trang xem xét các giao dịch của mạng lưới </string>
   <string name="id_waiting_for_transaction">Đang chờ giao dịch...</string>
+  <string name="id_wallet_backup">Wallet Backup</string>
   <string name="id_wallet_creation_failed">Việc tạo ví bị lỗi</string>
   <string name="id_wallets">Các ví</string>
   <string name="id_warning">Cảnh báo!</string>
@@ -478,6 +525,8 @@
   <string name="id_we_use_the_camera_to_scan_qr">Chúng tôi dùng camera để quét mã QR</string>
   <string name="id_welcome">Chào mừng</string>
   <string name="id_welcome_to">Chào mừng bạn đến với</string>
+  <string name="id_what_type_of_account_would_you">What type of account would you like to add?</string>
+  <string name="id_whats_new">What\'s new?</string>
   <string name="id_where_would_you_like_to">Bạn muốn chuyển tiền ở đâu?</string>
   <string name="id_word_d_of_d">Chứ thứ %d của %d</string>
   <string name="id_write_down_the_words">Viết chính xác các chữ </string>
@@ -495,6 +544,7 @@
   <string name="id_you_must_first_log_out_before">Bạn phải đăng xuất trước khi đăng nhập</string>
   <string name="id_you_must_save_this_mnemonic_now">Bạn PHẢI lưu các chữ gợi nhớ mnemonic NGÂY BAY GIỜ</string>
   <string name="id_you_only_have_one_twofactor">Bạn chí có thể có 1 cách xác thực 2 lớp được kích hoạt.</string>
+  <string name="id_you_will_find_the_account_id_in">You will find the Account ID in the receive screen.</string>
   <string name="id_you_will_need_to_reenter_your">Bạn sẽ cần nhập loại các chữ gợi nhớ mnemonic để đăng nhập lại nếu bạn không cài mã số PIN. Ấn "OK" để tiếp tục.</string>
   <string name="id_your_green_wallet_is_now_ready">Ví Green của bạn bây giờ đã sẵn sàng để sử dụng</string>
   <string name="id_your_ios_device_might_not_be">Thiết bị iOS bạn có thể không được hổ trợ</string>
@@ -503,6 +553,7 @@
   <string name="id_your_s_sent_to_s_has_been">%s của bạn đã gửi đến %s đã được xác nhận</string>
   <string name="id_your_transactions_will_be_shown">Các giao dịch của bạn được hiện ra ở đây</string>
   <string name="id_your_twofactor_threshold_is_s">Ngưỡng xác thực 2 lớp của bạn là %s.</string>
+  <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
   <string name="id_your_wallet_is_not_yet_fully">Ví của bạn chưa bảo mật đầy đủ\nLàm ơn kích hoạt xác thực 2 lớp</string>
   <string name="id_your_watchonly_username_and">Tên người dùng và mật khẩu chỉ xem của bạn sẽ được lưu trữ không được mã hóa trên thiết bị này. Nếu thiết bị của bạn bị xâm phạm, bên thứ ba có thể truy cập vào lịch sử giao dịch của bạn. Nhấn "OK" để tiếp tục.</string>
 </resources>

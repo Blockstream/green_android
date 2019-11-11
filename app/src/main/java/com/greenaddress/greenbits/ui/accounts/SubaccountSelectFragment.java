@@ -143,8 +143,8 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
 
     @Override
     public void onNewSubaccount() {
-        final MaterialDialog dialog = UI.popup(getActivity(), R.string.id_add_simple_account)
-                                      .content(R.string.id_simple_accounts_allow_you_to)
+        final MaterialDialog dialog = UI.popup(getActivity(), R.string.id_standard_account)
+                                      .content(R.string.id_standard_accounts_allow_you_to)
                                       .input(getString(R.string.id_name), "", new MaterialDialog.InputCallback() {
             @Override
             public void onInput(@NonNull final MaterialDialog dialog, final CharSequence input) {

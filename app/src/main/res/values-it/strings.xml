@@ -10,17 +10,23 @@
   <string name="id_4_hours">~ 4 Ore</string>
   <string name="id_5_seconds_minimum">minimo 5 secondi</string>
   <string name="id_a_new_transaction_has_just">Hai appena ricevuto una transazione.</string>
+  <string name="id_a_screen_lock_must_be_enabled">Necessario abilitare un blocco schermo nelle impostazioni Android</string>
   <string name="id_a_wallet_is_detected_on_this">Wallet presente sul dispositivo:</string>
   <string name="id_about">ABOUT</string>
   <string name="id_accept">ACCETTA</string>
+  <string name="id_access">Accesso</string>
   <string name="id_account">ACCOUNT</string>
+  <string name="id_account_id">Account ID</string>
+  <string name="id_account_name">Nome Account</string>
+  <string name="id_account_type">Tipo di Account</string>
   <string name="id_action_canceled">Azione annullata</string>
   <string name="id_add_a_note_only_you_can_see_it">Aggiungi una nota (solo tu puoi vederla).</string>
+  <string name="id_add_a_pgp_public_key_to_receive">Aggiungi una chiave pubblica PGP per ricevere email crittate e preservare la tua privacy</string>
   <string name="id_add_amount">Inserisci Importo</string>
+  <string name="id_add_amount_optional">Aggiungi un ammontare (opzionale)</string>
   <string name="id_add_custom_network_by_qr_code">Aggiungi un network custom con un QR Code</string>
   <string name="id_add_custom_network_by_url">Aggiungi un network custom con un URL</string>
   <string name="id_add_new_account">Aggiungi Nuovo Account</string>
-  <string name="id_add_simple_account">Aggiungi Account Semplice</string>
   <string name="id_add_wallet">Aggiungi Wallet</string>
   <string name="id_additional_security">Sicurezza Aggiuntiva</string>
   <string name="id_address">Indirizzo</string>
@@ -30,6 +36,7 @@
   <string name="id_advanced_network_settings">Impostazioni di network avanzate</string>
   <string name="id_all">Tutto</string>
   <string name="id_allows_you_to_quickly_check">Permette di controllare il tuo bilancio, ricevere fondi o sweep di un paper wallet. Non puoi inviare fondi in modalità watch-only.</string>
+  <string name="id_allows_you_to_receive_and_send">Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.</string>
   <string name="id_always">Sempre</string>
   <string name="id_amount">Importo</string>
   <string name="id_are_you_sure_you_want_to_view">Sei sicuro di voler vedere la transazione usando %s?</string>
@@ -38,6 +45,9 @@
   <string name="id_asset_id">Asset ID</string>
   <string name="id_asset_name">Nome Asset</string>
   <string name="id_attempts_remaining_d">Tentativi rimasti: %d</string>
+  <string name="id_authorized_assets">Authorized Assets</string>
+  <string name="id_authorized_assets_account">Authorized Assets Account</string>
+  <string name="id_authorized_assets_account_is">Authorized assets account is only available on Liquid.</string>
   <string name="id_auto_logout_timeout">Timeout per auto logout</string>
   <string name="id_autolock_after">Autolock Dopo</string>
   <string name="id_be_aware_other_apps_can_read_or">Attenzione, altre applicazioni potrebbero leggere o modificare ciò che hai copiato</string>
@@ -48,6 +58,7 @@
   <string name="id_block_height_1d">%1$dAltezza blocchi: </string>
   <string name="id_blocks">blocchi</string>
   <string name="id_blocks_confirmed">blocchi confermati</string>
+  <string name="id_blockstream_does_not_have">Blockstream non ha accesso al backup del tuo wallet e non sarà in grado di aiutarti in caso di smarrimento</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip non è impostato. Per favore  impostalo usando l\'applicazione desktop per riuscire ad usarlo.</string>
   <string name="id_by_proceeding_to_the_next_steps">Procedendo al passaggio successivo accetti i %s</string>
   <string name="id_call">Telefonata</string>
@@ -73,7 +84,9 @@
   <string name="id_connecting_to_a_trusted_node">Per connettersi ad un nodo di fiducia tramite Tor, bisogna abilitare i setting di proxy dell\'app ed una proxy Socks5 (es. Orbot per Android), prima di effettuare il log in.</string>
   <string name="id_connecting_to_peers">Connessione ai peer...</string>
   <string name="id_connecting_to_tor_onion_nodes">Connettersi a nodi Tor (.onion) garantisce massima privacy e sicurezza. Premi "OK" per continuare.</string>
+  <string name="id_contact_support_at_s_or_visit_s">Contatta il supporto presso %s oppure visita %s</string>
   <string name="id_continue">Continua</string>
+  <string name="id_copied_to_clipboard">Copiato in clipboard</string>
   <string name="id_copy_details">Copia i dettagli</string>
   <string name="id_copy_raw_transaction">Copia raw transaction</string>
   <string name="id_copy_to_clipboard">Copia in Clipboard</string>
@@ -119,9 +132,11 @@
   <string name="id_enable">Abilita</string>
   <string name="id_enable_custom_networks_debug">Abilita le opzioni custom di network debug</string>
   <string name="id_enable_face_id">Abilita Face ID</string>
+  <string name="id_enable_or_change_your_pin_to">Abilita o cambia il PIN per accedere velocemente al tuo wallet</string>
   <string name="id_enable_spv">Abilita SPV</string>
   <string name="id_enable_spv_and_modify_spv">Abilita SPV e modifica impostazioni SPV</string>
   <string name="id_enable_touch_id">Abilita Touch ID</string>
+  <string name="id_enable_twofactor_authentication">Enable Two-Factor Authentication to protect your wallet from unauthorized transactions or changes to critical security settings</string>
   <string name="id_enabled">Abilitato</string>
   <string name="id_enabled_1s">Abilitato: %1$s</string>
   <string name="id_encryption_passphrase">Encryption passphrase</string>
@@ -158,10 +173,14 @@
   <string name="id_fee_rate_must_be_at_least_s">Il tasso di commissione deve essere superiore a %s satoshi/vbyte.</string>
   <string name="id_fee_rate_s">Tasso di commissione: %s</string>
   <string name="id_fee_s__s">Commissione: %s / %s</string>
+  <string name="id_for_long_term_storage">For long term storage</string>
+  <string name="id_for_most_users">For most users</string>
+  <string name="id_for_securities_investors">For securities investors</string>
   <string name="id_from">DA</string>
   <string name="id_funds_received_in_this">Dei fondi ricevuti in questa transazione non sono confidenziali.</string>
   <string name="id_generate_new_address">Genera Nuovo Indirizzo</string>
   <string name="id_get_code">Ottieni Codice</string>
+  <string name="id_go_to_account">Go to Account</string>
   <string name="id_go_to_wallet">Vai al Wallet</string>
   <string name="id_google_auth">Google Auth</string>
   <string name="id_google_authenticator">Google Authenticator</string>
@@ -175,6 +194,7 @@
   <string name="id_green_uses_multisig_with_one">Green utilizza uno schema multifirma in cui una firma è generata dal tuo dispositivo e un\' altra da un server di Blockstream. L\' Autenticazione a Due Fattori aggiunge un livello di sicurezza aggiuntivo autorizzando la firma generata dal server.</string>
   <string name="id_hardware_wallet_support_for">Supporto hardware wallet per transazioni confidenziali sarà disponibile prossimamente</string>
   <string name="id_hash">Hash</string>
+  <string name="id_here">qui</string>
   <string name="id_hex">HEX</string>
   <string name="id_high">Alta</string>
   <string name="id_hold_your_nfc_tag_close_to_the">Tieni il tag NFC vicino al dispositivo</string>
@@ -211,6 +231,7 @@
   <string name="id_last_attempt_if_failed_you_will">Ultimo tentativo: in caso di fallimento dovrai rigenerare il tuo wallet utilizzando la mnemonica di 24 parole.</string>
   <string name="id_last_ping_1d_ms">Ultimo ping: %1$d ms</string>
   <string name="id_later">PIÙ TARDI</string>
+  <string name="id_learn_more_about_s">Learn more about %s.</string>
   <string name="id_ledger_dashboard_detected">Dashboard Ledger rilevata, avvia l\'app corretta per accedere.</string>
   <string name="id_lets_get_you_set_up">Impostiamo il tuo wallet.</string>
   <string name="id_loading_transactions">Caricamento transazioni...</string>
@@ -238,6 +259,7 @@
   <string name="id_multiple_assets">Asset Multipli</string>
   <string name="id_my_notes">LE MIE NOTE</string>
   <string name="id_name">Nome</string>
+  <string name="id_need_help">Hai bisogno di aiuto?</string>
   <string name="id_network">NETWORK</string>
   <string name="id_network_configuration">Configurazione Network</string>
   <string name="id_network_fee">COMMISSIONI DI RETE</string>
@@ -268,6 +290,7 @@
   <string name="id_on_average">in media</string>
   <string name="id_one_attempt_remaining">Un tentativo rimasto</string>
   <string name="id_one_network_must_be_selected">Un network dev\'essere selezionato. Bitcoin selezionato di default</string>
+  <string name="id_onion_addresses_require_tor">Un indirizzo onion richiede connessione tramite Tor. Abilitala nelle impostazioni di rete dell\' applicazione</string>
   <string name="id_only_connect_to_trusted_nodes">Connettiti solo a nodi fidati per SPV</string>
   <string name="id_only_this_time">Solo questa volta</string>
   <string name="id_operation_failure">Operazione fallita</string>
@@ -275,6 +298,7 @@
   <string name="id_optional_memo">Memo opzionale</string>
   <string name="id_optional_password">Password opzionale</string>
   <string name="id_or">O</string>
+  <string name="id_our_support_page">la nostra pagina di supporto</string>
   <string name="id_outdated_hardware_wallet">Firmware dell\'Hardware Wallet obsoleto. Esegui l\'upgrade all\'ultimo firmware dal tuo desktop.</string>
   <string name="id_outgoing">In uscita</string>
   <string name="id_password">Password</string>
@@ -304,10 +328,12 @@
   <string name="id_precision">Precisione</string>
   <string name="id_privacy_policy">Privacy Policy</string>
   <string name="id_problem_with_key_1s">Problema con il tasto %1$s</string>
+  <string name="id_provide_this_id_to_an_asset">Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.</string>
   <string name="id_providing_an_email_enables">Fornendo una email abiliti le notifiche e le transazioni per il recupero.</string>
   <string name="id_proxy_settings">PROXY SETTINGS</string>
   <string name="id_qr_scanner">QR Scanner</string>
   <string name="id_receive">Ricevi</string>
+  <string name="id_receive_email_notifications_for">Receive email notifications for sent and received transactions</string>
   <string name="id_received">Ricevuta</string>
   <string name="id_received_on">Ricevuta su</string>
   <string name="id_recipient">Destinatario</string>
@@ -334,8 +360,8 @@
   <string name="id_restore">Ripristina</string>
   <string name="id_restore_green_wallet">Ripristina un Wallet Green</string>
   <string name="id_restore_temporary_wallet">Ripristina wallet temporaneamente</string>
-  <string name="id_reuse_androids_authentication">Usa l\'autenticazione Android</string>
   <string name="id_review">Controlla</string>
+  <string name="id_review_account_information">Review account information</string>
   <string name="id_s_blocks_left">%s blocchi rimanenti</string>
   <string name="id_s_from_s">%s da %s</string>
   <string name="id_s_network">%s network</string>
@@ -343,13 +369,17 @@
   <string name="id_save_your_mnemonic">Conserva la tua mnemonica</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Scansiona un QR code per SPV pairing</string>
   <string name="id_scan_the_qr_code_in_google">Scansiona il QR Code con Google Authenticator:</string>
+  <string name="id_scan_to_send_here">Scan to send here</string>
   <string name="id_screen_lock">Blocca Schermo</string>
   <string name="id_search">Cerca</string>
   <string name="id_second">secondo</string>
   <string name="id_seconds">secondi</string>
   <string name="id_security">SICUREZZA</string>
+  <string name="id_see_our_privacy_policy_s">Consulta %s la nostra privacy policy</string>
+  <string name="id_see_our_terms_of_service_s">Leggi %s i Termini del Servizio</string>
   <string name="id_select_account">Seleziona Account</string>
   <string name="id_select_asset">Seleziona asset</string>
+  <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">Scegli il network</string>
   <string name="id_select_word_number_d">Seleziona la parola numero %d</string>
   <string name="id_send">Invia</string>
@@ -360,11 +390,16 @@
   <string name="id_sending_request">Invio richiesta…</string>
   <string name="id_sent">Inviato</string>
   <string name="id_sent_to">Inviato a</string>
+  <string name="id_set_a_limit_to_spend_without">Imposta un limite per spendere senza Autenticazione a Due Fattori</string>
   <string name="id_set_a_new_pin">Imposta un nuovo PIN</string>
+  <string name="id_set_a_timeout_to_logout_after">Set a timeout to logout after prolonged inactivity</string>
+  <string name="id_set_an_email_address_to_receive">Imposta un indirizzo email per ricevere notifiche sulle transazioni</string>
   <string name="id_set_an_email_for_recovery">Imposta email per il recupero</string>
   <string name="id_set_custom_fee_rate">Imposta commissione personalizzata</string>
   <string name="id_set_twofactor_threshold">Imposta limite per autenticazione a due fattori</string>
   <string name="id_set_up_a_passcode_for_your_ios">Imposta un codice per il tuo device iOS per impostare un PIN per Blockstream Green</string>
+  <string name="id_set_up_a_screen_lock_for_your">Abilita un blocco schermo Android e utilizzalo per accedere al tuo wallet</string>
+  <string name="id_set_up_credentials_to_access_in">Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app</string>
   <string name="id_set_up_pgp_key_for">Fornisci una chiave PGP per le comunicazioni</string>
   <string name="id_set_up_twofactor_authentication">Imposta Autenticazione a Due Fattori</string>
   <string name="id_set_up_watchonly">Imposta watch-only</string>
@@ -375,9 +410,11 @@
   <string name="id_setup_pin_and_s">Imposta PIN e %s</string>
   <string name="id_share">Condividi</string>
   <string name="id_share_address">Condividi Indirizzo</string>
+  <string name="id_show_bitcoin_amounts_in">Show bitcoin amounts in</string>
+  <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">Mostra valuta corrente</string>
+  <string name="id_show_my_wallet_backup">Mostrami il backup del mio wallet</string>
   <string name="id_signup_in_progress">Registrazione in corso</string>
-  <string name="id_simple_accounts_allow_you_to">Gli account semlici permettono di separare i tuoi fondi. Ogni account avrà i propri indirizzi di ricezione e muovere fondi fra account richiede una transazione.</string>
   <string name="id_simplified_payment_verification">La Simplified Payment Verification verifica le tue transazioni e il tuo bilancio utilizzando la rete Bitcoin, al di fuori dei server di Green. L\'abilitazione comporta maggiore utilizzo di banda e potenza di calcolo</string>
   <string name="id_skip">SALTA</string>
   <string name="id_skip_not_recommended">Salta (non raccomandato)</string>
@@ -396,6 +433,9 @@
   <string name="id_spv_synchronization">Sincronizzazione SPV</string>
   <string name="id_spv_synchronization_using_tor">La sincronizzazione SPV via Tor richiede l\' URL onion di un nodo di fiducia</string>
   <string name="id_spv_unverified">Non verificata da SPV</string>
+  <string name="id_standard_account">Standard Account</string>
+  <string name="id_standard_accounts_allow_you_to">Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
+  <string name="id_start_a_2fa_reset_process_if">Start a 2FA reset process if you lost access to all your two-factor authentication methods.</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">Trasferisci Tutto da un Paper Wallet</string>
   <string name="id_sweep_into_s">Sweep verso %s</string>
@@ -409,6 +449,7 @@
   <string name="id_terms_of_service">Termini del servizio</string>
   <string name="id_terms_of_use">Termini di Utilizzo</string>
   <string name="id_thank_you_for_downloading_green">Grazie di aver scaricato Green! Lasciaci una recensione quando hai un momento</string>
+  <string name="id_the_asset_registry_is_currently">Il registro degli asset è momentaneamente non disponibile: procedi con cautela poichè gli ammontare mostrati potrebbere aver un numero di cifre decimali diverso da quello stabilito dagli emittenti.</string>
   <string name="id_the_camera_has_a_problem_you">La fotocamera ha un problema. Potresti dover riavviare il dispositivo.</string>
   <string name="id_the_easier_safer_and_faster">il wallet più semplice, sicuro e veloce</string>
   <string name="id_the_hardware_wallet_you_are">L\' hardware wallet che stai utilizzando non è ancora supportato</string>
@@ -421,6 +462,7 @@
   <string name="id_ticker">Ticker</string>
   <string name="id_time_s">Tempo: %s</string>
   <string name="id_to">A</string>
+  <string name="id_to_keep_you_in_control_of_your">To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don\'t move funds often enough.</string>
   <string name="id_tor_connectivity_disabled">Connessione Tor Disabilitata!</string>
   <string name="id_tor_is_connected">Tor è connesso</string>
   <string name="id_tor_status">Status di Tor</string>
@@ -432,6 +474,7 @@
   <string name="id_touch_to_display">Tocca per mostrare</string>
   <string name="id_touchface_id_not_available">Touch/Face ID non disponibile</string>
   <string name="id_transaction_already_confirmed">Transazione già confermata</string>
+  <string name="id_transaction_copied_to_clipboard">Transazione copiata in clipboard</string>
   <string name="id_transaction_details">Dettagli transazione</string>
   <string name="id_transaction_id">ID Transazione</string>
   <string name="id_transaction_sent">Transazione Inviata</string>
@@ -440,6 +483,8 @@
   <string name="id_two_factor_authentication">AUTENTICAZIONE A DUE FATTORI</string>
   <string name="id_twofactor">AUTENTICAZIONE A DUE FATTORI</string>
   <string name="id_twofactor_authentication">Autenticazione a Due Fattori</string>
+  <string name="id_twofactor_authentication_expiry">Two-Factor authentication expiry</string>
+  <string name="id_twofactor_protection_does_not">Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.</string>
   <string name="id_twofactor_reset_in_progress">Reset Secondo Fattore di Autenticazione in corso, il tuo wallet è attualmente bloccato.</string>
   <string name="id_twofactor_settings">Impostazioni Secondo Fattore</string>
   <string name="id_twofactor_threshold">Limite per il Secondo Fattore</string>
@@ -450,6 +495,7 @@
   <string name="id_unknown_bip21_parameter">Parametro BIP21 sconosciuto</string>
   <string name="id_unknown_custom">Sconosciuto (Custom)</string>
   <string name="id_updated">aggiornato</string>
+  <string name="id_use_android_screen_lock_to_log">Utilizza il blocco schermo di Android per accedere</string>
   <string name="id_user_not_found_or_invalid">Utente non trovato o password non valida</string>
   <string name="id_username">Username</string>
   <string name="id_username_not_available">Username non disponibile</string>
@@ -459,6 +505,7 @@
   <string name="id_version_1s_2s">Versione %1$s%2$s</string>
   <string name="id_view_in_explorer">Vedi nell\'Explorer</string>
   <string name="id_waiting_for_transaction">In attesa della transazione…</string>
+  <string name="id_wallet_backup">Wallet Backup</string>
   <string name="id_wallet_creation_failed">Creazione wallet fallita</string>
   <string name="id_wallets">Wallets</string>
   <string name="id_warning">Attenzione!</string>
@@ -478,6 +525,8 @@
   <string name="id_we_use_the_camera_to_scan_qr">La fotocamera verrà utilizzata per scansionare codici QR</string>
   <string name="id_welcome">Benvenuto</string>
   <string name="id_welcome_to">Benvenuto in</string>
+  <string name="id_what_type_of_account_would_you">What type of account would you like to add?</string>
+  <string name="id_whats_new">Cosa c\'è di nuovo?</string>
   <string name="id_where_would_you_like_to">Dove vorresti trasferire i fondi?</string>
   <string name="id_word_d_of_d">Parola %d di %d</string>
   <string name="id_write_down_the_words">Annota le parole</string>
@@ -495,6 +544,7 @@
   <string name="id_you_must_first_log_out_before">Devi effettuare il logout prima di poter accedere.</string>
   <string name="id_you_must_save_this_mnemonic_now">DEVI conservare la mnemonica ORA</string>
   <string name="id_you_only_have_one_twofactor">Hai attivato un solo metodo di autenticazione a due fattori</string>
+  <string name="id_you_will_find_the_account_id_in">You will find the Account ID in the receive screen.</string>
   <string name="id_you_will_need_to_reenter_your">Se non imposti un PIN dovrai utilizzare la mnemonica per accedere. Premi "OK" per continuare.</string>
   <string name="id_your_green_wallet_is_now_ready">Il tuo wallet Green è ora pronto all\'uso.</string>
   <string name="id_your_ios_device_might_not_be">Il tuo device iOS potrebbe essere non supportato</string>
@@ -503,6 +553,7 @@
   <string name="id_your_s_sent_to_s_has_been">I tuoi %s inviati a %s sono stati confermati</string>
   <string name="id_your_transactions_will_be_shown">Le tue transazioni saranno elencate qui.</string>
   <string name="id_your_twofactor_threshold_is_s">Il tuo limite per il Secondo Fattore è %s.</string>
+  <string name="id_your_wallet_backup_is_made_of">Il backup del tuo wallet è composto da 24 parole, anche noto come mnemonica. Assicurati di avere un backup e tienilo al sicuro. Chiunque ne sia in possesso può rubare i tuoi soldi. Puoi utilizzare il tuo backup per ripristinare il tuo wallet Blockstream Green su un altro dispositivo in caso di smarrimento, malfunzionamento o furto.</string>
   <string name="id_your_wallet_is_not_yet_fully">Il tuo wallet non è ancora in totale sicurezza.\nAbilita l\'Autenticazione a Due Fattori.</string>
   <string name="id_your_watchonly_username_and">I tuoi username e password per watch-only verranno salvati in chiaro su questo dispositivo. Se il tuo device è compromesso terze parti possono avere accesso alle tue transazioni. Premi OK per continuare.</string>
 </resources>
