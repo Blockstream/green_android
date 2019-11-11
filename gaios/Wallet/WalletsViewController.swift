@@ -146,7 +146,7 @@ class WalletsViewController: UICollectionViewController, UICollectionViewDelegat
     }
 
     @objc func addWallet(_ sender: Any?) {
-        let alert = UIAlertController(title: NSLocalizedString("id_add_simple_account", comment: ""), message: NSLocalizedString("id_simple_accounts_allow_you_to", comment: ""), preferredStyle: .alert)
+        let alert = UIAlertController(title: NSLocalizedString("id_standard_account", comment: ""), message: NSLocalizedString("id_standard_accounts_allow_you_to", comment: ""), preferredStyle: .alert)
         alert.addTextField { textField in
             textField.placeholder = NSLocalizedString("id_name", comment: "")
             textField.keyboardType = .asciiCapable
