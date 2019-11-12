@@ -146,7 +146,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
             return false;
         } catch (final KeyStoreAES.KeyInvalidated e) {
             UI.popup(getActivity(), R.string.id_warning).content(R.string.id_problem_with_key_1s,
-                    e.getMessage()).show();
+                                                                 e.getMessage()).show();
             return false;
         } catch (final RuntimeException e) {
             UI.popup(getActivity(), R.string.id_warning).content(e.getMessage()).show();

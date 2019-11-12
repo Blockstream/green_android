@@ -28,7 +28,6 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
-import com.greenaddress.greenbits.ui.authentication.PinActivity;
 import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity;
 import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
@@ -244,6 +243,10 @@ public abstract class GaActivity extends AppCompatActivity {
         if (mProgressBarHandler == null)
             return;
         runOnUiThread(() -> mProgressBarHandler.stop());
+    }
+
+    public ProgressBarHandler getProgressBarHandler() {
+        return mProgressBarHandler;
     }
 
     public boolean isLoading() {

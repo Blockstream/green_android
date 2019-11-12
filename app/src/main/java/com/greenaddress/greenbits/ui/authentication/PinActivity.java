@@ -178,6 +178,11 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
     }
 
     @Override
+    protected void onPauseWithService() {
+        super.onPauseWithService();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home:

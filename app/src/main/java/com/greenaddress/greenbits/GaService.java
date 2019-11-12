@@ -33,6 +33,7 @@ import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.AssetsDataObservable;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
+import com.greenaddress.greenapi.model.TorProgressObservable;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
@@ -67,6 +68,7 @@ public class GaService extends Service  {
     private NetworkData mNetwork;
     private Model mModel;
     private ConnectionManager mConnectionManager;
+    private TorProgressObservable mTorProgressObservable = new TorProgressObservable();
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
 
     private String mSignUpMnemonic;
@@ -578,6 +580,10 @@ public class GaService extends Service  {
 
     public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
         return mExecutor.submit(() -> getSession().changeMemo(txHashHex, memo));
+    }
+
+    public TorProgressObservable getTorProgressObservable() {
+        return mTorProgressObservable;
     }
 
 }

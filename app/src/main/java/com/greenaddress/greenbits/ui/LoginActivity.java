@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.PinData;
+import com.greenaddress.greenapi.model.TorProgressObservable;
+import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -57,6 +59,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
             cm.clearPreviousLoginError();
             checkState();
             cm.addObserver(this);
+            mService.getTorProgressObservable().addObserver(this);
         }
     }
 
@@ -77,12 +80,24 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         if (mService == null)
             return;
         mService.getConnectionManager().deleteObserver(this);
+        mService.getTorProgressObservable().deleteObserver(this);
     }
 
     @Override
     public void update(final Observable observable, final Object o) {
         if (observable instanceof ConnectionManager) {
             checkState();
+        } else if (observable instanceof TorProgressObservable) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final int progress = ((TorProgressObservable) observable).get().get("progress").asInt(0);
+                    final ProgressBarHandler pbar = getProgressBarHandler();
+                    if (pbar != null)
+                        pbar.setMessage(String.format("%s %d%",getString(R.string.id_tor_status),
+                                                      String.valueOf(progress)));
+                }
+            });
         }
     }
 

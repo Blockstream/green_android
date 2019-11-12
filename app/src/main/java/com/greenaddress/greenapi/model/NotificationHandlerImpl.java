@@ -50,47 +50,8 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         mTemp.clear();
     }
 
-    private synchronized void handleTorProgressNotification(final ObjectNode data) {
-        final JsonNode torJson = data.get("tor");
-        if (torJson == null) {
-            return;
-        }
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(
-            GreenAddressApplication.getNotificationContext(), "tor_channel")
-                                             .setContentTitle("Tor status")
-                                             .setContentText(torJson.get("summary").asText("Tor is starting..."))
-                                             .setOngoing(true)
-                                             .setOnlyAlertOnce(true)
-                                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                                             .setSmallIcon(R.drawable.ic_home)
-                                             .setTimeoutAfter(10000); // just in case we get stuck
-
-        NotificationManager notificationManager =
-            (NotificationManager) GreenAddressApplication.getNotificationContext().getSystemService(NOTIFICATION_SERVICE);
-        if (torJson.get("progress").asInt(0) == 100) {
-            builder.setContentText("Tor is connected");
-            builder.setOngoing(false); // allow to swipe away
-            builder.setOnlyAlertOnce(false); // alert the user that we are connected
-            builder.setProgress(0, 0, false); // disable progress
-            builder.setTimeoutAfter(5000); // don't want to bother the user for too long
-        } else {
-            builder.setProgress(100, torJson.get("progress").asInt(0), false);
-        }
-
-        notificationManager.notify(TOR_NOTIFICATION_ID, builder.build()); // create or replace the old one
-    }
-
     @Override
     public synchronized void onNewNotification(final Object session, final Object jsonObject) {
-        if (jsonObject instanceof ObjectNode) {
-            final ObjectNode json = (ObjectNode) jsonObject;
-
-            if (json.get("event") != null && json.get("event").asText().equals("tor")) {
-                handleTorProgressNotification(json);
-            }
-        }
-
         if (mModel == null) {
             mTemp.add(jsonObject);
         } else {
@@ -108,9 +69,13 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         Log.d("OBSNTF", "notification " + jsonObject);
         if (jsonObject == null)
             return;
-        ObjectNode objectNode = (ObjectNode) jsonObject;
+        final ObjectNode objectNode = (ObjectNode) jsonObject;
         try {
             switch (objectNode.get("event").asText()) {
+            case "tor":
+                final JsonNode torJson = objectNode.get("tor");
+                mService.getTorProgressObservable().set(torJson);
+                break;
             case "network": {
                 //{"event":"network","network":{"connected":false,"elapsed":1091312175736,"limit":true,"waiting":0}}
                 final JsonNode networkNode = objectNode.get("network");

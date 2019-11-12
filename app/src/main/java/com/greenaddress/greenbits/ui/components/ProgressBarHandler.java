@@ -62,6 +62,12 @@ public class ProgressBarHandler {
         return mProgressBar != null && mProgressBar.getVisibility() == View.VISIBLE;
     }
 
+    public void setMessage(final String label) {
+        if (mProgressBar != null) {
+            mLabel.setText(label);
+        }
+    }
+
     protected ProgressBar setup(final View view) {
         final ProgressBar progressBar = UI.find(view, R.id.progressBar);
         final int mBackgroundColor = view.getResources().getColor(R.color.green);
