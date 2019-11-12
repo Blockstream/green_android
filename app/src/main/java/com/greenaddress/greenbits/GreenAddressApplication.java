@@ -6,8 +6,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import androidx.multidex.MultiDexApplication;
@@ -23,10 +25,13 @@ import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import org.bitcoinj.crypto.MnemonicCode;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GreenAddressApplication extends MultiDexApplication {
@@ -89,6 +94,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
 
         createNotificationChannel();
+        migratePreferences();
 
         // Provide bitcoinj with Mnemonics. These are used if we need to create a fake
         // wallet during SPV_SYNCRONIZATION syncing to prevent an exception.
@@ -138,4 +144,56 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
         return isRunningTest.get();
     }
+
+    // migrate preferences from previous GreenBits app with single network
+
+    private void migratePreferences() {
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean migrated = sharedPreferences.getBoolean(PrefKeys.PREF_MIGRATED_V2_v3,false);
+        if (!migrated) {
+            // SPV_SYNCRONIZATION is now off by default unless a user had set the trusted peers,
+            // in that case it stay how it was
+
+            final SharedPreferences preferences = getSharedPreferences(getCurrentNetwork(), MODE_PRIVATE);
+            final boolean isEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
+            final boolean haveTrustedPeers = !"".equals(preferences.getString(PrefKeys.TRUSTED_ADDRESS, "").trim());
+            if (haveTrustedPeers && isEnabled) {
+                preferences.edit().putBoolean(PrefKeys.SPV_ENABLED, true);
+            }
+            // mainnet PIN migration
+            copyPreferences(getSharedPreferences("pin", MODE_PRIVATE), getSharedPreferences("mainnet_pin", MODE_PRIVATE));
+            sharedPreferences.edit().putBoolean(PrefKeys.PREF_MIGRATED_V2_v3, true).apply();
+        }
+    }
+
+    public String getCurrentNetwork() {
+        return PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+    }
+
+    private static void copyPreferences(final SharedPreferences source, final SharedPreferences destination) {
+        if (source.getAll().isEmpty())
+            return;
+        final SharedPreferences.Editor destinationEditor = destination.edit();
+        for (final Map.Entry<String, ?> entry : source.getAll().entrySet())
+            writePreference(entry.getKey(), entry.getValue(), destinationEditor);
+        destinationEditor.apply();
+    }
+
+    private static SharedPreferences.Editor writePreference(final String key, final Object value, final SharedPreferences.Editor preferences) {
+        if (value instanceof Boolean)
+            return preferences.putBoolean(key, (Boolean) value);
+        else if (value instanceof String)
+            return preferences.putString(key, (String) value);
+        else if (value instanceof Long)
+            return preferences.putLong(key, (Long) value);
+        else if (value instanceof Integer)
+            return preferences.putInt(key, (Integer) value);
+        else if (value instanceof Float)
+            return preferences.putFloat(key, (Float) value);
+        else if (value instanceof Set)
+            return preferences.putStringSet(key, (Set<String>) value);
+        else
+            throw new RuntimeException("Unknown preference type");
+    }
+
 }

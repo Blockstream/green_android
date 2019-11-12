@@ -329,52 +329,6 @@ public class GaService extends Service  {
         }
 
         mTimerExecutor.scheduleWithFixedDelay(this::checkDisconnect, 5,5, TimeUnit.SECONDS);
-
-        migratePreferences();
-    }
-
-    private void migratePreferences() {
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        final boolean migrated = sharedPreferences.getBoolean(PrefKeys.PREF_MIGRATED_V2_v3,false);
-        if (!migrated) {
-            // SPV_SYNCRONIZATION is now off by default unless a user had set the trusted peers,
-            // in that case it stay how it was
-            final boolean haveTrustedPeers = !"".equals(mSPV.getTrustedPeers());
-            if (haveTrustedPeers && mSPV.isEnabled()) {
-                cfgEdit().putBoolean(PrefKeys.SPV_ENABLED, true);
-            }
-
-            // mainnet PIN migration
-            copyPreferences(getSharedPreferences("pin", MODE_PRIVATE), getSharedPreferences("mainnet_pin", MODE_PRIVATE));
-
-            sharedPreferences.edit().putBoolean(PrefKeys.PREF_MIGRATED_V2_v3, true).apply();
-        }
-    }
-
-    private static void copyPreferences(final SharedPreferences source, final SharedPreferences destination) {
-        if (source.getAll().isEmpty())
-            return;
-        final SharedPreferences.Editor destinationEditor = destination.edit();
-        for (final Map.Entry<String, ?> entry : source.getAll().entrySet())
-            writePreference(entry.getKey(), entry.getValue(), destinationEditor);
-        destinationEditor.apply();
-    }
-
-    private static SharedPreferences.Editor writePreference(final String key, final Object value, final SharedPreferences.Editor preferences) {
-        if (value instanceof Boolean)
-            return preferences.putBoolean(key, (Boolean) value);
-        else if (value instanceof String)
-            return preferences.putString(key, (String) value);
-        else if (value instanceof Long)
-            return preferences.putLong(key, (Long) value);
-        else if (value instanceof Integer)
-            return preferences.putInt(key, (Integer) value);
-        else if (value instanceof Float)
-            return preferences.putFloat(key, (Float) value);
-        else if (value instanceof Set)
-            return preferences.putStringSet(key, (Set<String>) value);
-        else
-            throw new RuntimeException("Unknown preference type");
     }
 
     public String getWatchOnlyUsername() {
