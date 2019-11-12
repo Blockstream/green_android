@@ -19,10 +19,12 @@ import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.JSONConverterImpl;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.MnemonicHelper;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
@@ -30,6 +32,7 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import org.bitcoinj.crypto.MnemonicCode;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -166,10 +169,6 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
     }
 
-    public String getCurrentNetwork() {
-        return PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-    }
-
     private static void copyPreferences(final SharedPreferences source, final SharedPreferences destination) {
         if (source.getAll().isEmpty())
             return;
@@ -196,4 +195,25 @@ public class GreenAddressApplication extends MultiDexApplication {
             throw new RuntimeException("Unknown preference type");
     }
 
+    // get Network function
+    public static NetworkData getNetworkData(final String network) {
+        final List<NetworkData> networks = GDKSession.getNetworks();
+        for (final NetworkData n : networks) {
+            if (n.getNetwork().equals(network)) {
+                return n;
+            }
+        }
+        return null;
+    }
+
+    public void setCurrentNetwork(final String networkId) {
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PrefKeys.NETWORK_ID_ACTIVE, networkId).apply();
+    }
+
+    public String getCurrentNetwork() {
+        return PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+    }
+    public NetworkData getCurrentNetworkData() {
+        return getNetworkData(getCurrentNetwork());
+    }
 }

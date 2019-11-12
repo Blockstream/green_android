@@ -56,7 +56,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         try {
             mAssetsBalances = getModel().getCurrentAccountBalanceData();
 
-            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, mService, this);
+            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, mService, getNetwork(), this);
             assetsList.setAdapter(adapter);
         } catch (final Exception e) {
             e.printStackTrace();

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EntityData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
@@ -30,6 +31,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;
     private final GaService mService;
+    private final NetworkData mNetworkData;
 
     @FunctionalInterface
     public interface OnAssetSelected {
@@ -37,10 +39,12 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     }
 
     public AssetsAdapter(final Map<String, Long> assets, final GaService service,
+                         final NetworkData networkData,
                          final OnAssetSelected cb) {
         mAssets = assets;
         mService = service;
         mOnAccountSelected = cb;
+        mNetworkData = networkData;
         mAssetsIds = new ArrayList<>(mAssets.keySet());
         if (mAssetsIds.contains("btc")) {
             // Move btc as first in the list
@@ -81,7 +85,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         }
         // Get l-btc & asset icon from asset icon map
         final Map<String, Bitmap> icons =  mService.getModel().getAssetsObservable().getAssetsIcons();
-        final String asset = isBTC ? mService.getNetwork().getPolicyAsset() : assetId;
+        final String asset = isBTC ? mNetworkData.getPolicyAsset() : assetId;
         if (icons.containsKey(asset)) {
             holder.mAssetIcon.setImageBitmap(icons.get(asset));
         } else {

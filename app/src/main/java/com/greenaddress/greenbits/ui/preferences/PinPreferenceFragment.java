@@ -52,7 +52,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
-                KeyStoreAES.createKey(true, mService.getNetwork().getNetwork());
+                KeyStoreAES.createKey(true, getNetwork().getNetwork());
             } catch (final Exception e) {
                 mNativePref.setEnabled(false);
                 mNativePref.setSummary(R.string.id_a_screen_lock_must_be_enabled);
@@ -124,7 +124,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
 
         try {
             final String mnemonic = mService.getMnemonic();
-            final String network = mService.getNetwork().getNetwork();
+            final String network = getNetwork().getNetwork();
             final SharedPreferences preferences = AuthenticationHandler.getNewAuth(getContext());
             final String pin = KeyStoreAES.tryEncrypt(network, preferences);
             Futures.addCallback(mService.setPin(mnemonic, pin, preferences),

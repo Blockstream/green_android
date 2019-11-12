@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
@@ -59,6 +60,7 @@ public class TransactionItem implements Serializable {
     public final boolean isAsset;
 
     public final Map<String, Long> mAssetBalances;
+    public final NetworkData mNetworkData;
 
     public String toString() {
         return String.format("%s %s %s", date.toString(), type.name(), counterparty);
@@ -89,9 +91,10 @@ public class TransactionItem implements Serializable {
     }
 
     public TransactionItem(final GaService service, final TransactionData txData, final int currentBlock,
-                           final int subaccount) throws ParseException {
+                           final int subaccount, final NetworkData networkData) throws ParseException {
         doubleSpentBy = null; //TODO gdk;
 
+        mNetworkData = networkData;
         this.currentBlock = currentBlock;
         fee = txData.getFee();
         feeRate = txData.getFeeRate();
@@ -157,7 +160,7 @@ public class TransactionItem implements Serializable {
         spvVerified = service.isSPVVerified(txHash);
 
         date = txData.getCreatedAt();
-        replaceable = !service.isLiquid() &&
+        replaceable = !networkData.getLiquid() &&
                       txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 

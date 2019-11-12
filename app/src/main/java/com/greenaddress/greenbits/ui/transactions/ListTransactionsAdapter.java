@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -38,12 +39,15 @@ public class ListTransactionsAdapter extends
     private final List<TransactionItem> mTxItems;
     private final Activity mActivity;
     private final GaService mService;
+    private final NetworkData mNetworkData;
 
     public ListTransactionsAdapter(final Activity activity, final GaService service,
+                                   final NetworkData networkData,
                                    final List<TransactionItem> txItems) {
         mTxItems = txItems;
         mActivity = activity;
         mService = service;
+        mNetworkData = networkData;
     }
 
     @Override
@@ -92,13 +96,13 @@ public class ListTransactionsAdapter extends
             }
         }
 
-        UI.showIf(txItem.replaceable && !mService.isLiquid(), holder.imageReplaceable);
+        UI.showIf(txItem.replaceable && !mNetworkData.getLiquid(), holder.imageReplaceable);
 
         final String message;
         if (TextUtils.isEmpty(txItem.memo)) {
-            if (mService.isLiquid() && assetsNumber > 1)
+            if (mNetworkData.getLiquid() && assetsNumber > 1)
                 message = mActivity.getString(R.string.id_multiple_assets);
-            else if (mService.isLiquid() && txItem.isAsset) {
+            else if (mNetworkData.getLiquid() && txItem.isAsset) {
                 final String assetId =
                     txItem.mAssetBalances.keySet().toArray(new String[0])[0];
                 final AssetInfoData assetInfo = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
@@ -112,10 +116,10 @@ public class ListTransactionsAdapter extends
                                             R.string.id_received),
                                         txItem.isAsset ? mActivity.getString(R.string.id_asset) : "");
             else
-                message = mService.isLiquid() ? String.format("%s %s", mActivity.getString(
-                                                                  R.string.id_sent),
-                                                              txItem.isAsset ? mActivity.getString(
-                                                                  R.string.id_asset) : "") : txItem.counterparty;
+                message = mNetworkData.getLiquid() ? String.format("%s %s", mActivity.getString(
+                                                                       R.string.id_sent),
+                                                                   txItem.isAsset ? mActivity.getString(
+                                                                       R.string.id_asset) : "") : txItem.counterparty;
         } else {
             if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(R.string.id_redeposited), txItem.memo);
@@ -129,10 +133,10 @@ public class ListTransactionsAdapter extends
         if (txItem.getConfirmations() == 0) {
             confirmations = mActivity.getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
-        } else if (mService.isLiquid() && txItem.getConfirmations() < 2) {
+        } else if (mNetworkData.getLiquid() && txItem.getConfirmations() < 2) {
             confirmations = mActivity.getString(R.string.id_12_confirmations);
             confirmationsColor = R.color.grey_light;
-        } else if (!mService.isLiquid() && !txItem.hasEnoughConfirmations()) {
+        } else if (!mNetworkData.getLiquid() && !txItem.hasEnoughConfirmations()) {
             confirmations = mActivity.getString(R.string.id_d6_confirmations, txItem.getConfirmations());
             confirmationsColor = R.color.grey_light;
         } else {
@@ -146,7 +150,7 @@ public class ListTransactionsAdapter extends
         final int amountColor;
         final int sentOrReceive;
         if (txItem.type == TransactionItem.TYPE.IN) {
-            amountColor = mService.isLiquid() ? R.color.liquidDark : R.color.green;
+            amountColor = mNetworkData.getLiquid() ? R.color.liquidDark : R.color.green;
             sentOrReceive=R.drawable.ic_received;
         } else {
             amountColor = R.color.white;

@@ -25,6 +25,7 @@ import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoginActivity;
@@ -63,6 +64,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
     private HWDeviceData mHwDeviceData;
     private CodeResolver mHwResolver;
     private TextView mActiveNetwork;
+    private NetworkData networkData;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
@@ -74,6 +76,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
 
         mInstructionsText = UI.find(this, R.id.first_login_instructions);
         mActiveNetwork = UI.find(this, R.id.activeNetwork);
+        networkData = getNetwork();
     }
 
     @Override
@@ -93,7 +96,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
         if (usb == null)
             return;
 
-        if (mService.isLiquid()) {
+        if (networkData.getLiquid()) {
             showInstructions(R.string.id_hardware_wallet_support_for);
             return;
         }
@@ -125,7 +128,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
         final Trezor t;
         t = Trezor.getDevice(this);
 
-        if (mService.isLiquid()) {
+        if (networkData.getLiquid()) {
             showInstructions(R.string.id_hardware_wallet_support_for);
             return;
         }
@@ -153,7 +156,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
     private void onTrezorConnected(final Trezor t) {
 
         Log.d(TAG, "Creating Trezor HW wallet");
-        mHwWallet = new TrezorHWWallet(t, mService.getNetwork());
+        mHwWallet = new TrezorHWWallet(t, networkData);
 
         mHwDeviceData = new HWDeviceData("Trezor", false, false);
         mHwResolver = new HardwareCodeResolver(mHwWallet);
@@ -183,7 +186,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
     }
 
     private void onLedger(final boolean hasScreen) {
-        if (mService.isLiquid()) {
+        if (networkData.getLiquid()) {
             showInstructions(R.string.id_hardware_wallet_support_for);
             return;
         }
@@ -211,7 +214,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
             try {
                 // This should only be supported by the Nano X
                 final BTChipDongle.BTChipApplication application = dongle.getApplication();
-                final boolean isMainnet = mService.getNetwork().getMainnet();
+                final boolean isMainnet = networkData.getMainnet();
                 final boolean bothMainnet = isMainnet && application.getName().equals("Bitcoin");
                 final boolean bothTestnet = !isMainnet && application.getName().equals("Bitcoin Test");
 
@@ -271,7 +274,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
 
         final boolean havePin = !TextUtils.isEmpty(pin);
         Log.d(TAG, "Creating Ledger HW wallet" + (havePin ? " with PIN" : ""));
-        mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, mService.getNetwork());
+        mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData);
 
         mHwDeviceData = new HWDeviceData("Ledger", false, true);
         mHwResolver = new HardwareCodeResolver(mHwWallet);
@@ -318,7 +321,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
     @Override
     public void onResumeWithService() {
         super.onResumeWithService();
-        mActiveNetwork.setText(getString(R.string.id_s_network, mService.getNetwork().getName()));
+        mActiveNetwork.setText(getString(R.string.id_s_network, networkData.getName()));
 
         final Intent intent = getIntent();
 

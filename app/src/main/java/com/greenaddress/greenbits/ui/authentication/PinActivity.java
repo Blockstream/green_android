@@ -226,7 +226,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     @TargetApi(Build.VERSION_CODES.M)
     private void tryDecrypt() {
-        final NetworkData network = mService.getNetwork();
+        final NetworkData network = getNetwork();
         final String nativePIN = mPin.getString("native", null);
         final String nativeIV = mPin.getString("nativeiv", null);
 

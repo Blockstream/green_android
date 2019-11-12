@@ -56,9 +56,9 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
 
         final List<NetworkData> networks = GDKSession.getNetworks();
-
-        mSwitchNetworkAdapter = new SwitchNetworkAdapter(this, networks, mService.getNetwork(),
-                                                         mService.isLiquid(), this);
+        final NetworkData networkData = getNetwork();
+        mSwitchNetworkAdapter = new SwitchNetworkAdapter(this, networks, networkData,
+                                                         networkData.getLiquid(), this);
         recyclerView.setAdapter(mSwitchNetworkAdapter);
 
         final View closeButton = UI.find(this, R.id.close_network_settings);
@@ -159,7 +159,7 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
             .apply();
             mService.getConnectionManager().setProxyHostAndPort(socksHost, socksPort);
         }
-        mService.setCurrentNetworkId(networkName);
+        getGAApp().setCurrentNetwork(networkName);
         mService.getConnectionManager().setNetwork(networkName);
         setResult(RESULT_OK);
         finishOnUiThread();

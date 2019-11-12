@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EntityData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -77,6 +78,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private static final int[] mFeeButtonsText =
     {R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom};
     private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
+    private NetworkData networkData;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -88,6 +90,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         Log.d(TAG, "onCreateView -> " + TAG);
         final int[] mBlockTargets = getBlockTargets();
         final GaService service = mService;
+        networkData = getGAApp().getCurrentNetworkData();
 
         isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
 
@@ -132,7 +135,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             mFeeButtons[i] = this.findViewById(mButtonIds[i]);
             final String summary = String.format("(%s)", UI.getFeeRateString(estimates.get(mBlockTargets[i])));
             final String expectedConfirmationTime = getExpectedConfirmationTime(this,
-                                                                                mService.isLiquid() ? 60 : 6,
+                                                                                networkData.getLiquid() ? 60 : 6,
                                                                                 mBlockTargets[i]);
             final String buttonText = getString(mFeeButtonsText[i]) + (i == 3 ? "" : expectedConfirmationTime);
             mFeeButtons[i].init(buttonText, summary, i == 3);
@@ -247,7 +250,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         balances.put(mSelectedAsset, satoshi);
 
         final RecyclerView assetsList = findViewById(R.id.assetsList);
-        final AssetsAdapter adapter = new AssetsAdapter(balances, mService, null);
+        final AssetsAdapter adapter = new AssetsAdapter(balances, mService, getNetwork(), null);
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         assetsList.setAdapter(adapter);
         UI.showIf(!isAsset(), mUnitButton);
@@ -292,7 +295,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             return;
         }
 
-        final boolean isLiquid = mService.getNetwork().getLiquid();
+        final boolean isLiquid = networkData.getLiquid();
         mSendAllButton.setPressed(mSendAll);
         mSendAllButton.setSelected(mSendAll);
         mSendAllButton.setOnClickListener(this);
@@ -345,7 +348,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                                         getBitcoinUnitClean()).asText());
             }
         } else {
-            final boolean isLiquid = mService.getNetwork().getLiquid();
+            final boolean isLiquid = networkData.getLiquid();
 
             // Fee Button
             for (int i = 0; i < mButtonIds.length; ++i) {
@@ -443,7 +446,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             mRecipientText.setText(addressee.get("address").asText());
 
             // TODO this should be removed when handled in gdk
-            if (mService.isLiquid() && mSelectedAsset.isEmpty()) {
+            if (networkData.getLiquid() && mSelectedAsset.isEmpty()) {
                 mNextButton.setText(R.string.id_select_asset);
                 return;
             }
@@ -582,7 +585,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private boolean isAsset() {
-        return mService.isLiquid() && !"btc".equals(mSelectedAsset);
+        return networkData.getLiquid() && !"btc".equals(mSelectedAsset);
     }
 
     @Override

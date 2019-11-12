@@ -11,6 +11,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -83,5 +84,8 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
     public String network() {
         return PreferenceManager.getDefaultSharedPreferences(getContext()).getString(PrefKeys.NETWORK_ID_ACTIVE,
                                                                                      "mainnet");
+    }
+    public NetworkData getNetwork() {
+        return mApp.getCurrentNetworkData();
     }
 }

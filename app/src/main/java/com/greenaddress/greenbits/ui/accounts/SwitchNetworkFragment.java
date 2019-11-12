@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -49,10 +50,11 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
             }
         });
 
+        final NetworkData networkData = getGAApp().getCurrentNetworkData();
         if (activity.mService != null)
             recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), GDKSession.getNetworks(),
-                                                             activity.mService.getNetwork(),
-                                                             activity.mService.isLiquid(),
+                                                             networkData,
+                                                             networkData.getLiquid(),
                                                              this));
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
@@ -65,11 +67,15 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
         final LoggedActivity activity = (LoggedActivity) getActivity();
         final String network = networkData.getNetwork();
 
-        if (activity.mService != null && !activity.mService.getNetwork().getNetwork().equals(network)) {
+        if (activity.mService != null && !getGAApp().getCurrentNetwork().equals(network)) {
 
-            activity.mService.setCurrentNetworkId(network);
+            getGAApp().setCurrentNetwork(network);
             activity.mService.getConnectionManager().setNetwork(network);
             activity.logout();
         }
+    }
+
+    public GreenAddressApplication getGAApp(){
+        return (GreenAddressApplication) getActivity().getApplication();
     }
 }

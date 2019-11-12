@@ -116,7 +116,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
         final TextView sendFee = UI.find(this, R.id.sendFee);
         final JsonNode assetTag = address.get("asset_tag");
-        if (mService.isLiquid()) {
+        if (getGAApp().getCurrentNetworkData().getLiquid()) {
             sendAmount.setVisibility(View.GONE);
             UI.find(this, R.id.amountWordSending).setVisibility(View.GONE);
             final String asset = assetTag.asText();
@@ -124,7 +124,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             balances.put(asset, address.get("satoshi").asLong());
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(balances, mService, null);
+            final AssetsAdapter adapter = new AssetsAdapter(balances, mService, getNetwork(), null);
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
         } else {

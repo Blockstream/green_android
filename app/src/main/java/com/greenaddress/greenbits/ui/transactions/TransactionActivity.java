@@ -29,6 +29,7 @@ import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.BumpTxData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.LoggedActivity;
@@ -110,7 +111,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         hashText.setText(mTxItem.txHash.toString());
 
         // Set explorer button
-        final String blockExplorerTx = mService.getNetwork().getTxExplorerUrl();
+        final NetworkData networkData = getGAApp().getCurrentNetworkData();
+        final String blockExplorerTx = networkData.getTxExplorerUrl();
         openInBrowser(mExplorerButton, mTxItem.txHash.toString(), blockExplorerTx, null);
 
         // Set title: incoming, outgoing, redeposited
@@ -129,15 +131,15 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         if (mTxItem.getConfirmations() == 0) {
             confirmations = getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
-        } else if (mService.isLiquid() && mTxItem.getConfirmations() < 2) {
+        } else if (networkData.getLiquid() && mTxItem.getConfirmations() < 2) {
             confirmations = getString(R.string.id_12_confirmations);
             confirmationsColor = R.color.grey_light;
-        } else if (!mService.isLiquid() && !mTxItem.hasEnoughConfirmations()) {
+        } else if (!networkData.getLiquid() && !mTxItem.hasEnoughConfirmations()) {
             confirmations = getString(R.string.id_d6_confirmations, mTxItem.getConfirmations());
             confirmationsColor = R.color.grey_light;
         } else {
             confirmations = getString(R.string.id_completed);
-            confirmationsColor = mService.isLiquid() ? R.color.liquidDark : R.color.green;
+            confirmationsColor = networkData.getLiquid() ? R.color.liquidDark : R.color.green;
             mStatusIcon.setVisibility(View.VISIBLE);
         }
         mUnconfirmedText.setText(confirmations);
@@ -158,11 +160,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         }
         final String neg = negative ? "-" : "";
         final TextView amountText = UI.find(this, R.id.txAmountText);
-        if (mService.isLiquid()) {
+        if (networkData.getLiquid()) {
             amountText.setVisibility(View.GONE);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getAssetBalances(), mService, this);
+            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getAssetBalances(), mService, getNetwork(),this);
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
 
@@ -281,12 +283,13 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     }
 
     private void showUnconfirmed() {
+        final NetworkData networkData = getGAApp().getCurrentNetworkData();
 
-        if (mService.isWatchOnly() || mService.isLiquid() || !mTxItem.replaceable ||
+        if (mService.isWatchOnly() || networkData.getLiquid() || !mTxItem.replaceable ||
             mService.getModel().isTwoFAReset())
             return; // FIXME: Implement RBF for elements
 
-        if (!mService.isLiquid()) {
+        if (!networkData.getLiquid()) {
             UI.show(mStatusIncreaseFee);
             mStatusIncreaseFee.setOnClickListener(this);
         }
@@ -325,9 +328,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_share:
+            final NetworkData networkData = getGAApp().getCurrentNetworkData();
             final Intent sendIntent = new Intent(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                                mService.getNetwork().getTxExplorerUrl() + mTxItem.txHash.toString());
+                                networkData.getTxExplorerUrl() + mTxItem.txHash.toString());
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
             return true;

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.NotificationsData;
 import com.greenaddress.greenapi.data.PricingData;
 import com.greenaddress.greenapi.data.SettingsData;
@@ -75,12 +76,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private ListPreference mTimeoutPref;
     private PreferenceCategory mAccountTitle;
     private Preference mSPV;
+    private NetworkData networkData;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         addPreferencesFromResource(R.xml.preference_general);
         setHasOptionsMenu(true);
+        networkData = getNetwork();
 
         if (mService == null || mService.getModel() == null) {
             logout();
@@ -108,7 +111,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Network & Logout
         final Preference logout = find(PrefKeys.LOGOUT);
-        logout.setTitle(getString(R.string.id_s_network, mService.getNetwork().getName()));
+        logout.setTitle(getString(R.string.id_s_network, networkData.getName()));
         logout.setSummary(UI.getColoredString(
                               getString(R.string.id_log_out), ContextCompat.getColor(getContext(), R.color.red)));
         logout.setOnPreferenceClickListener(preference -> {
@@ -119,7 +122,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Bitcoin denomination
         mUnitPref = find(PrefKeys.UNIT);
-        mUnitPref.setEntries(mService.isLiquid() ? UI.LIQUID_UNITS : UI.UNITS);
+        mUnitPref.setEntries(networkData.getLiquid() ? UI.LIQUID_UNITS : UI.UNITS);
         mUnitPref.setEntryValues(UI.UNITS);
         mUnitPref.setOnPreferenceChangeListener((preference, newValue) -> {
             if (mService.warnIfOffline(getActivity())) {
@@ -273,7 +276,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // sweep from paper wallet
         mSweepPref = find(PrefKeys.SWEEP);
-        if (mService.isLiquid())
+        if (networkData.getLiquid())
             mSweepPref.setVisible(false);
         mSweepPref.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SweepSelectActivity.class);
@@ -463,7 +466,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private String prioritySummary(final int blocks) {
-        final int blocksPerHour = mService.isLiquid() ? 60 : 6;
+        final int blocksPerHour = networkData.getLiquid() ? 60 : 6;
         final int n = blocks % blocksPerHour == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour);
         final String confirmationInBlocks = getResources().getString(R.string.id_confirmation_in_d_blocks, blocks);
         final int idTime = blocks % blocksPerHour ==
@@ -566,7 +569,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mPinPref.setVisible(!isHW);
         mMemonicPref.setVisible(!isHW);
 
-        final boolean isLiquid = mService.isLiquid();
+        final boolean isLiquid = networkData.getLiquid();
         mCustomRatePref.setVisible(!isLiquid);
         mTxPriorityPref.setVisible(!isLiquid);
         mPriceSourcePref.setVisible(!isLiquid);

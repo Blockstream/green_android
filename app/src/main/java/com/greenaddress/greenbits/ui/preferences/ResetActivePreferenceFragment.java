@@ -31,7 +31,7 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
 
         //  Logout
         final Preference logout = find(PrefKeys.LOGOUT);
-        logout.setTitle(getString(R.string.id_s_network, mService.getNetwork().getName()));
+        logout.setTitle(getString(R.string.id_s_network, getNetwork().getName()));
         logout.setSummary(UI.getColoredString(
                               getString(R.string.id_log_out), ContextCompat.getColor(getContext(), R.color.red)));
         logout.setOnPreferenceClickListener(preference -> {

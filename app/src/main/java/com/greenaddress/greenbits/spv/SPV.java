@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.EventData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
@@ -115,8 +116,9 @@ public class SPV {
     }
 
     public boolean isEnabled() {
+        final NetworkData networkData = mService.getNetwork();
         return !mService.isWatchOnly() && mService.cfg().getBoolean(PrefKeys.SPV_ENABLED, false) &&
-               !mService.isLiquid();
+               !networkData.getLiquid();
     }
 
     public void setEnabledAsync(final boolean enabled) {
@@ -216,6 +218,7 @@ public class SPV {
     }
 
     void updateUnspentOutputs() {
+        final NetworkData networkData = mService.getNetwork();
         final boolean currentlyEnabled = isEnabled();
         Log.d(TAG, "updateUnspentOutputs: " + Var("currentlyEnabled", currentlyEnabled));
 
@@ -251,7 +254,7 @@ public class SPV {
                 recalculateBloom = true;
                 addToBloomFilter(utxo.getBlockHeight(), txHash, prevIndex, subaccount, pointer);
             }
-            newUtxos.add(createOutPoint(prevIndex, txHash, mService.getNetworkParameters()));
+            newUtxos.add(createOutPoint(prevIndex, txHash, networkData.getNetworkParameters()));
         }
 
         mPeerGroup.setFastCatchupTimeSecs(1393545600);  // GA inception
@@ -343,7 +346,8 @@ public class SPV {
             // a transaction received.
             try {
                 Log.d(TAG, "Creating fake wallet for re-sync");
-                final Wallet fakeWallet = new Wallet(mService.getNetworkParameters()) {
+                final NetworkData networkData = mService.getNetwork();
+                final Wallet fakeWallet = new Wallet(networkData.getNetworkParameters()) {
                     @Override
                     public int getLastBlockSeenHeight() {
                         return blockHeight - 1;
@@ -360,7 +364,8 @@ public class SPV {
     }
 
     private void addToUtxo(final Sha256Hash txHash, final Integer prevIndex, final int subAccount, final int pointer) {
-        mUnspentDetails.put(createOutPoint(prevIndex, txHash, mService.getNetworkParameters()),
+        final NetworkData networkData = mService.getNetwork();
+        mUnspentDetails.put(createOutPoint(prevIndex, txHash, networkData.getNetworkParameters()),
                             new AccountInfo(subAccount, pointer));
         if (mUnspentOutpoints.get(txHash) == null)
             mUnspentOutpoints.put(txHash, Lists.newArrayList(prevIndex));
@@ -478,12 +483,13 @@ public class SPV {
         if (host == null)
             throw new UnknownHostException(address);
 
-        final int port = uri.getPort() == -1 ? mService.getNetworkParameters().getPort() : uri.getPort();
+        final NetworkData networkData = mService.getNetwork();
+        final int port = uri.getPort() == -1 ? networkData.getNetworkParameters().getPort() : uri.getPort();
 
         if (!mService.isProxyEnabled() && !mService.getTorEnabled())
-            return new PeerAddress(mService.getNetworkParameters(), InetAddress.getByName(host), port);
+            return new PeerAddress(networkData.getNetworkParameters(), InetAddress.getByName(host), port);
 
-        return new PeerAddress(mService.getNetworkParameters(), host, port) {
+        return new PeerAddress(networkData.getNetworkParameters(), host, port) {
                    @Override
                    public InetSocketAddress toSocketAddress() {
                        return InetSocketAddress.createUnresolved(host, port);
@@ -532,17 +538,18 @@ public class SPV {
                 return;
             }
 
+            final NetworkData networkData = mService.getNetwork();
             try {
                 Log.d(TAG, "Creating block store");
-                mBlockStore = new SPVBlockStore(mService.getNetworkParameters(), mService.getSPVChainFile());
+                mBlockStore = new SPVBlockStore(networkData.getNetworkParameters(), mService.getSPVChainFile());
                 final StoredBlock storedBlock = mBlockStore.getChainHead(); // detect corruptions as early as possible
-                if (storedBlock.getHeight() == 0 && mService.isRegtest()) {
+                if (storedBlock.getHeight() == 0 && networkData.isRegtest()) {
                     InputStream is = null;
                     try {
                         is = mService.getAssets().open(
-                            mService.isMainnet() ? "production/checkpoints" : "btctestnet/checkpoints");
+                            networkData.getMainnet() ? "production/checkpoints" : "btctestnet/checkpoints");
                         final int keyTime = 0; //mService.getLoginData().get("earliest_key_creation_time"); // TODO gdk
-                        CheckpointManager.checkpoint(mService.getNetworkParameters(), is,
+                        CheckpointManager.checkpoint(networkData.getNetworkParameters(), is,
                                                      mBlockStore, keyTime);
                         Log.d(TAG, "checkpoints loaded");
                     } catch (final Exception e) {
@@ -559,7 +566,7 @@ public class SPV {
                     }
                 }
                 Log.d(TAG, "Creating block chain");
-                org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(mService.getNetworkParameters());
+                org.bitcoinj.core.Context context = new org.bitcoinj.core.Context(networkData.getNetworkParameters());
                 mBlockChain = new BlockChain(context, mBlockStore);
                 mBlockChain.addTransactionReceivedListener(mTxListner);
 
@@ -567,7 +574,7 @@ public class SPV {
 
                 Log.d(TAG, "Creating peer group");
                 if (!mService.isProxyEnabled() && !mService.getTorEnabled()) {
-                    mPeerGroup = new PeerGroup(mService.getNetworkParameters(), mBlockChain);
+                    mPeerGroup = new PeerGroup(networkData.getNetworkParameters(), mBlockChain);
                 } else {
                     String proxyHost, proxyPort;
                     if (!mService.isProxyEnabled()) {
@@ -591,7 +598,7 @@ public class SPV {
                     final Socks5SocketFactory sf = new Socks5SocketFactory(proxyHost, proxyPort);
                     final BlockingClientManager bcm = new BlockingClientManager(sf);
                     bcm.setConnectTimeoutMillis(60000);
-                    mPeerGroup = new PeerGroup(mService.getNetworkParameters(), mBlockChain, bcm);
+                    mPeerGroup = new PeerGroup(networkData.getNetworkParameters(), mBlockChain, bcm);
                     mPeerGroup.setConnectTimeoutMillis(60000);
                 }
 
@@ -611,12 +618,12 @@ public class SPV {
                     addresses = new ArrayList<>(Arrays.asList(peers.split(",")));
 
                 for (final String address: addresses)
-                    addPeer(address, mService.getNetworkParameters());
+                    addPeer(address, networkData.getNetworkParameters());
 
                 if (addresses.isEmpty() && !mService.isProxyEnabled() && !mService.getTorEnabled() &&
-                    mService.getNetworkParameters().getDnsSeeds() != null) {
+                    networkData.getNetworkParameters().getDnsSeeds() != null) {
                     // Blank w/o proxy: Use the built in resolving via DNS
-                    mPeerGroup.addPeerDiscovery(new DnsDiscovery(mService.getNetworkParameters()));
+                    mPeerGroup.addPeerDiscovery(new DnsDiscovery(networkData.getNetworkParameters()));
                 }
 
             } catch (final BlockStoreException | UnknownHostException | URISyntaxException e) {

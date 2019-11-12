@@ -24,6 +24,7 @@ import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.HWWallet;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
@@ -56,7 +57,7 @@ public abstract class GaActivity extends AppCompatActivity {
     protected ProgressBarHandler mProgressBarHandler;
     private SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();
 
-    private GreenAddressApplication getGAApp() {
+    protected GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
 
@@ -74,7 +75,7 @@ public abstract class GaActivity extends AppCompatActivity {
     protected final void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
 
-        setTheme(ThemeUtils.getThemeFromNetworkId(GaService.getNetworkFromId(GaService.getCurrentNetworkId(this)), this,
+        setTheme(ThemeUtils.getThemeFromNetworkId(getGAApp().getCurrentNetworkData(), this,
                                                   getMetadata()));
 
         super.onCreate(savedInstanceState);
@@ -196,15 +197,15 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     protected void setTitleWithNetwork(final int resource) {
-        if (mService == null || mService.getNetwork() == null || getSupportActionBar() == null) {
+        final NetworkData networkData = getGAApp().getCurrentNetworkData();
+        if (mService == null || networkData == null || getSupportActionBar() == null) {
             setTitle(resource);
             return;
         }
 
-        final String netname = mService.getNetwork().getName();
-
+        final String netname = networkData.getName();
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(mService.getNetwork().getIcon());
+        getSupportActionBar().setIcon(networkData.getIcon());
         if (!"Bitcoin".equals(netname))
             setTitle(String.format(" %s %s",
                                    netname, getString(resource)));
@@ -325,7 +326,11 @@ public abstract class GaActivity extends AppCompatActivity {
         return getSharedPreferences(network(), MODE_PRIVATE);
     }
 
-    public String network() {
+    protected String network() {
         return PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+    }
+
+    protected NetworkData getNetwork() {
+        return getGAApp().getCurrentNetworkData();
     }
 }

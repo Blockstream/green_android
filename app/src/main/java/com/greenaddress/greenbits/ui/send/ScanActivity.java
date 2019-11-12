@@ -44,6 +44,7 @@ import com.google.zxing.ResultPointCallback;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SweepData;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
@@ -378,6 +379,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
         final Intent result = new Intent();
         result.putExtra("internal_qr", true);
         final Integer subaccount = service.getModel().getCurrentSubaccount();
+        final NetworkData networkData = getNetwork();
 
         if (isSweep) {
             result.putExtra(PrefKeys.SWEEP, true);
@@ -405,20 +407,20 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
             }
         } else {
             final boolean startWithBitcoin = scanned.toLowerCase().startsWith("bitcoin:");
-            if (service.isLiquid() && startWithBitcoin) {
+            if (networkData.getLiquid() && startWithBitcoin) {
                 UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
                 return;
             }
             String text;
 
-            if (service.isLiquid()) {
+            if (networkData.getLiquid()) {
                 text = scanned;
             } else {
                 text = startWithBitcoin ? scanned : String.format("bitcoin:%s", scanned);
                 // qrcodes of bech32 addresses that use alphanumeric mode may be read as uppercase
                 final int i = text.indexOf("1");
                 final String hrp = i == -1 ? "" : text.substring(8, i).toLowerCase();
-                if (!service.isLiquid() && text.substring(8).equals(text.substring(8).toUpperCase()) &&
+                if (!networkData.getLiquid() && text.substring(8).equals(text.substring(8).toUpperCase()) &&
                     (hrp.equals("bc") || hrp.equals("tb"))) {
                     text = text.toLowerCase();
                 }
@@ -438,7 +440,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
                 return;
             }
         }
-        if (mService.isLiquid()) {
+        if (networkData.getLiquid()) {
             result.setClass(this, AssetsSelectActivity.class);
         } else {
             result.setClass(this, SendAmountActivity.class);

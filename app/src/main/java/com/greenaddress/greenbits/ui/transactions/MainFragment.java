@@ -84,7 +84,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getGAService(), mTxItems);
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getGAService(), getNetwork(),  mTxItems);
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
         // FIXME, more efficient to use swap
@@ -114,7 +114,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         mSwitchNetwork = UI.find(mView, R.id.switchNetwork);
         mSwitchNetwork.setOnClickListener(v -> showDialog());
 
-        mSwitchNetwork.setText(getGAService().getNetwork().getName());
+        mSwitchNetwork.setText(getNetwork().getName());
         mSwitchNetwork.setTextColor(getResources().getColor(R.color.white));
 
         final Drawable arrow = getContext().getResources().getDrawable(R.drawable.ic_expand_more_24dp);
@@ -146,7 +146,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     private void updateAssetSelection() {
         try {
             Log.d(TAG, "updateAssetSelection");
-            if (getGAService().isLiquid()) {
+            if (getNetwork().getLiquid()) {
                 final int size = getModel().getCurrentAccountBalanceData().size();
                 mAssetsSelection.setText(size == 1 ?
                                          getString(R.string.id_d_asset_in_this_account, size) :
@@ -237,7 +237,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
             for (final TransactionData tx : txList) {
                 try {
-                    mTxItems.add(new TransactionItem(service, tx, currentBlock, subaccount));
+                    mTxItems.add(new TransactionItem(service, tx, currentBlock, subaccount, getNetwork()));
                     /*
                        //TODO gdk handling of replaced
                        final ArrayList<String> replacedList = txJSON.get("replaced_by");
@@ -300,7 +300,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         } else if (view.getId() == R.id.sendButton) {
             justClicked = true;
 
-            if (getGAService().isLiquid() && getModel().getCurrentAccountBalanceData().get("btc") == 0L) {
+            if (getNetwork().getLiquid() && getModel().getCurrentAccountBalanceData().get("btc") == 0L) {
                 UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
                 .content(R.string.id_insufficient_lbtc_to_send_a)
                 .onPositive((dialog, which) -> {

@@ -65,7 +65,7 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 public class GaService extends Service  {
     private static final String TAG = GaService.class.getSimpleName();
 
-    private NetworkData mNetwork;
+    //private NetworkData mNetwork;
     private Model mModel;
     private ConnectionManager mConnectionManager;
     private TorProgressObservable mTorProgressObservable = new TorProgressObservable();
@@ -86,7 +86,7 @@ public class GaService extends Service  {
     // https://developer.android.com/reference/android/content/SharedPreferences
     private SharedPreferences.OnSharedPreferenceChangeListener mSyncListener;
 
-    public NetworkData getNetwork() {
+    /*public NetworkData getNetwork() {
         return mNetwork;
     }
 
@@ -100,7 +100,7 @@ public class GaService extends Service  {
 
     public boolean isRegtest() {
         return mNetwork.isRegtest();
-    }
+    }*/
 
     public synchronized void disconnect() {
         mConnectionManager.disconnect();
@@ -121,10 +121,6 @@ public class GaService extends Service  {
     public void resetSession() {
         getSession().disconnect();
         getSession().destroy();
-    }
-
-    public boolean isLiquid() {
-        return getNetwork().getLiquid();
     }
 
     class GaBinder extends Binder {
@@ -179,14 +175,16 @@ public class GaService extends Service  {
         return new File(getDir(dirName, Context.MODE_PRIVATE), "blockchain.spvchain");
     }
 
+    public NetworkData getNetwork() {
+        return ((GreenAddressApplication) getApplication()).getCurrentNetworkData();
+    }
     public File getSPVChainFile() {
         return getSPVChainFile(getNetwork().getName());
     }
 
     public String getBitcoinOrLiquidUnit() {
-        int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey()), 0);
-
-        if (isLiquid()) {
+        final int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey()), 0);
+        if (getNetwork().getLiquid()) {
             return UI.LIQUID_UNITS[index];
         } else {
             return UI.UNITS[index];
@@ -235,7 +233,7 @@ public class GaService extends Service  {
     public boolean isWatchOnly() {
         return mConnectionManager.isWatchOnly();
     }
-
+/*
     public static String getCurrentNetworkId(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
     }
@@ -269,9 +267,10 @@ public class GaService extends Service  {
             }
         }
     }
-
+*/
     public SharedPreferences cfg() {
-        return getSharedPreferences(getNetwork().getNetwork(), MODE_PRIVATE);
+        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        return getSharedPreferences(network, MODE_PRIVATE);
     }
 
     public SharedPreferences.Editor cfgEdit() { return cfg().edit(); }
@@ -312,14 +311,8 @@ public class GaService extends Service  {
 
         // Uncomment to test slow service creation
         // android.os.SystemClock.sleep(10000);
-
-        final String activeNetwork = getCurrentNetworkId(this);
-        setCurrentNetworkId(activeNetwork);
-        if (mNetwork == null) {
-            // Handle a previously registered network being deleted
-            setCurrentNetworkId("mainnet");
-        }
-        mConnectionManager = new ConnectionManager(mNetwork.getNetwork(), getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled());
+        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        mConnectionManager = new ConnectionManager(network, getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled());
 
         String deviceId = cfg().getString(PrefKeys.DEVICE_ID, null);
         if (deviceId == null) {
@@ -353,7 +346,8 @@ public class GaService extends Service  {
         if (mModel.getBlockchainHeightObservable().getHeight() == null) {
             return;
         }
-        if (isLiquid()) {
+        final NetworkData networkData = ((GreenAddressApplication) getApplication()).getCurrentNetworkData();
+        if (networkData.getLiquid()) {
             mModel.getAssetsObservable().addObserver((observable, o) -> {
                 AssetsDataObservable assetsDataObservable = (AssetsDataObservable) observable;
 

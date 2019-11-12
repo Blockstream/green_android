@@ -360,7 +360,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         public CharSequence getPageTitle(final int index) {
             if (mService != null && mService.getModel().isTwoFAReset())
                 return " " + getString(R.string.id_wallets);
-            final String networkName = mService.getNetwork().getName();
+            final String networkName = getNetwork().getName();
             switch (index) {
             case 0: return " " + getString(R.string.id_settings);
             case 1: return " " + networkName + " " + getString(R.string.id_wallets);

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.LoginActivity;
@@ -31,9 +32,6 @@ public class FirstScreenActivity extends LoginActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        mTheme = ThemeUtils.getThemeFromNetworkId(GaService.getNetworkFromId(GaService.getCurrentNetworkId(
-                                                                                 this)), this, getMetadata());
-
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
         setTitle("");
 
@@ -60,8 +58,7 @@ public class FirstScreenActivity extends LoginActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.preauth_menu, menu);
-        if (mService != null)
-            menu.findItem(R.id.action_watchonly).setVisible(!mService.isLiquid());
+        menu.findItem(R.id.action_watchonly).setVisible(getGAApp().getCurrentNetworkData().getLiquid());
         return true;
     }
 
@@ -98,12 +95,13 @@ public class FirstScreenActivity extends LoginActivity {
     }
 
     public void onSelectNetwork() {
-        mSelectNetwork.setText(mService.getNetwork().getName());
+        final NetworkData networkData = getGAApp().getCurrentNetworkData();
+        mSelectNetwork.setText(networkData.getName());
         UI.showIf(AuthenticationHandler.hasPin(this), mWalletDetected);
         invalidateOptionsMenu();
 
         // Recreate the activity to load the new theme if necessary
-        if (mTheme != ThemeUtils.getThemeFromNetworkId(mService.getNetwork(), this, getMetadata())) {
+        if (mTheme != ThemeUtils.getThemeFromNetworkId(networkData, this, getMetadata())) {
             recreate();
         }
     }

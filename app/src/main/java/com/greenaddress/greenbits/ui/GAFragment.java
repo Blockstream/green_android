@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
@@ -23,7 +24,7 @@ public abstract class GAFragment extends Fragment {
         mApp = (GreenAddressApplication) getActivity().getApplication();
 
         try {
-            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(mApp.mService.getNetwork(), context, null),
+            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(mApp.getCurrentNetworkData(), context, null),
                                           true);
         } catch (final Exception e) {
             // Some reports show NullPointer Exception in applying style
@@ -37,6 +38,10 @@ public abstract class GAFragment extends Fragment {
 
     protected GaActivity getGaActivity() {
         return (GaActivity) getActivity();
+    }
+
+    protected NetworkData getNetwork() {
+        return ((GaActivity) getActivity()).getNetwork();
     }
 
     protected GaService getGAService() {
