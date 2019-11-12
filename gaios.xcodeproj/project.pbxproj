@@ -46,7 +46,6 @@
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
 		6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */; };
 		671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */; };
-		673CA6262368A12300BE47A9 /* libclang_rt.asan_ios_dynamic.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 673CA6252368A12300BE47A9 /* libclang_rt.asan_ios_dynamic.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		67439CD921D92AEA00280FE2 /* KeyboardSuggestions.xib in Resources */ = {isa = PBXBuildFile; fileRef = 67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */; };
 		67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */; };
 		675DBA6521B4B13B000C5D70 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 675DBA6421B4B13B000C5D70 /* Model.swift */; };
@@ -166,7 +165,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				673CA6262368A12300BE47A9 /* libclang_rt.asan_ios_dynamic.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -218,9 +216,7 @@
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.release.xcconfig"; sourceTree = "<group>"; };
 		6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCodeReaderView.swift; sourceTree = "<group>"; };
-		6718E0EB2360A2F30077D552 /* libclang_rt.asan_ios_dynamic.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libclang_rt.asan_ios_dynamic.dylib; path = ../../../../Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.asan_ios_dynamic.dylib; sourceTree = "<group>"; };
 		671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicWordCell.swift; sourceTree = "<group>"; };
-		673CA6252368A12300BE47A9 /* libclang_rt.asan_ios_dynamic.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libclang_rt.asan_ios_dynamic.dylib; path = Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.asan_ios_dynamic.dylib; sourceTree = DEVELOPER_DIR; };
 		67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = KeyboardSuggestions.xib; sourceTree = "<group>"; };
 		67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardSuggestions.swift; sourceTree = "<group>"; };
 		675DBA6421B4B13B000C5D70 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
@@ -410,7 +406,6 @@
 		3190F6274186A0301E5E66B2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6718E0EB2360A2F30077D552 /* libclang_rt.asan_ios_dynamic.dylib */,
 				30E4BBC6544671082AABADC5 /* Pods_gaios.framework */,
 				FA4558036E53E5B4C1F1D2CC /* Pods_gaiosTests.framework */,
 				B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */,
@@ -421,7 +416,6 @@
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
-				673CA6252368A12300BE47A9 /* libclang_rt.asan_ios_dynamic.dylib */,
 				676FCF1E1F9D0CF800354E93 /* gaios */,
 				676FCF351F9D0CF800354E93 /* gaiosTests */,
 				676FCF401F9D0CF800354E93 /* gaiosUITests */,
@@ -1389,7 +1383,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
-					"-fsanitize=address",
 					"-static-libsan",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
@@ -1400,7 +1393,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -sanitize=address";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";

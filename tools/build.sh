@@ -30,7 +30,7 @@ if [ ! -d gdk-iphone ]; then
     git fetch origin -t
     git checkout release_0.0.24
     rm -rf build-*
-    ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone --sanitizer=address
+    ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone
     cd ..
 fi
 
