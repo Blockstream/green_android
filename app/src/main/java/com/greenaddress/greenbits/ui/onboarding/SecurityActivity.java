@@ -173,7 +173,7 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
             holder.enabled.setChecked(isEnabled);
             holder.enabled.setOnClickListener((v1) -> {
                 mService.rescheduleDisconnect();
-                if (mService.warnIfOffline(SecurityActivity.this)) {
+                if (getGAApp().warnIfOffline(SecurityActivity.this)) {
                     return;
                 }
                 final Intent intent = new Intent(SecurityActivity.this, TwoFactorActivity.class);

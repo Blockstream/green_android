@@ -79,7 +79,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
                         intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
                         NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
 
-        if (mIsBitcoinUri && !mService.getConnectionManager().isLoggingInOrMore()) {
+        if (mIsBitcoinUri && !getConnectionManager().isLoggingInOrMore()) {
             // Not logged in, force the user to login
             final Intent login = new Intent(this, RequestLoginActivity.class);
             startActivityForResult(login, REQUEST_BITCOIN_URL_LOGIN);
@@ -178,7 +178,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         getModel().getActiveAccountObservable().addObserver(this);
         getModel().getEventDataObservable().addObserver(this);
         getModel().getConnMsgObservable().addObserver(this);
-        mService.getConnectionManager().addObserver(this);
+        getConnectionManager().addObserver(this);
 
         updateSnackBar(getModel().getConnMsgObservable());
 
@@ -309,7 +309,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             final Fragment preferenceFragment;
             if (getModel().isTwoFAReset())
                 preferenceFragment = new ResetActivePreferenceFragment();
-            else if (mService.isWatchOnly())
+            else if (getConnectionManager().isWatchOnly())
                 preferenceFragment = new WatchOnlyPreferenceFragment();
             else
                 preferenceFragment = new GeneralPreferenceFragment();

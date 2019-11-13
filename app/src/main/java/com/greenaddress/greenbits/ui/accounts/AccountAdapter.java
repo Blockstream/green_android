@@ -87,7 +87,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
 
     @Override
     public int getItemCount() {
-        return mSubaccountList.size() + (mService.isWatchOnly() ? 0 : 1);
+        return mSubaccountList.size();
     }
 
     static class Item extends RecyclerView.ViewHolder {

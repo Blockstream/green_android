@@ -1,22 +1,27 @@
 package com.greenaddress.greenbits.ui.preferences;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
+import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -96,5 +101,17 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
 
     public Model getModel() {
         return mApp.getModel();
+    }
+
+    protected ConnectionManager getConnectionManager() {
+        return getGAApp().getConnectionManager();
+    }
+
+    public boolean warnIfOffline(final Activity activity) {
+        if (getConnectionManager().isOffline()) {
+            UI.toast(activity, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+            return true;
+        }
+        return false;
     }
 }

@@ -108,7 +108,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
         Log.d(TAG, "onResume -> " + TAG);
         if (getGAService() == null || getModel() == null)
             return;
-        if (getGAService().getConnectionManager().isPostLogin())
+        if (getConnectionManager().isPostLogin())
             attachObservers();
 
     }
@@ -135,7 +135,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     @Override
     public void onAccountSelected(final int subaccount) {
         getModel().getActiveAccountObservable().setActiveAccount(subaccount);
-        if (getGAService().getConnectionManager().isLoginWithPin()) {
+        if (getConnectionManager().isLoginWithPin()) {
             cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
         }
         getGaActivity().finish();

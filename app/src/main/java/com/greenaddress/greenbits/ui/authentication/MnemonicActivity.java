@@ -242,7 +242,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         if (isLoading())
             return;
 
-        final ConnectionManager cm = mService.getConnectionManager();
+        final ConnectionManager cm = getConnectionManager();
         if (cm.isPostLogin()) {
             toast(R.string.id_you_must_first_log_out_before);
             return;
@@ -258,19 +258,19 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
         if (isHexSeed(mnemonic)) {
             mService.getExecutor().execute(() -> {
-                mService.resetSession();
+                getGAApp().resetSession();
                 cm.loginWithMnemonic(mnemonic, "");
             });
         } else if (!mEncryptedSwitch.isChecked()) {
             mService.getExecutor().execute(() -> {
-                mService.resetSession();
+                getGAApp().resetSession();
                 cm.loginWithMnemonic(mnemonic, "");
             });
         } else {
             CB.after(askForPassphrase(), new CB.Toast<String>(this, mOkButton) {
                 @Override
                 public void onSuccess(final String mnemonicPassword) {
-                    mService.resetSession();
+                    getGAApp().resetSession();
                     cm.loginWithMnemonic(mnemonic, mnemonicPassword);
                 }
             });
@@ -440,9 +440,9 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     @Override
     protected void onLoginFailure() {
         super.onLoginFailure();
-        final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
+        final Exception lastLoginException = getConnectionManager().getLastLoginException();
         final int code = getCode(lastLoginException);
-        mService.getConnectionManager().clearPreviousLoginError();
+        getConnectionManager().clearPreviousLoginError();
         if (code == GDK.GA_RECONNECT) {
             UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
         } else {

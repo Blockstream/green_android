@@ -287,11 +287,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     @Override
     public void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || getModel() == null) {
+        if (getConnectionManager() == null || getModel() == null) {
             toFirst();
             return;
         }
-        if (mService.isDisconnected()) {
+        if (getConnectionManager().isDisconnected()) {
             return;
         }
 
@@ -533,8 +533,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         intent.putExtra("transaction", transactionData.toString());
         intent.putExtra("asset_info", info);
         intent.putExtra(PrefKeys.SWEEP, isSweep);
-        if (mService.getConnectionManager().isHW())
-            intent.putExtra("hww", mService.getConnectionManager().getHWDeviceData().toString());
+        if (getConnectionManager().isHW())
+            intent.putExtra("hww", getConnectionManager().getHWDeviceData().toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
     }
 

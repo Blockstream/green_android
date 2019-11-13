@@ -64,9 +64,9 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || getModel() == null)
+        if (getConnectionManager() == null || getModel() == null)
             return;
-        if (mService.isDisconnected()) {
+        if (getConnectionManager().isDisconnected()) {
             return;
         }
         initTotalAmount();

@@ -64,11 +64,11 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
         mService.getExecutor().execute(() -> {
             final String mnemonic = mMnemonic;
             try {
-                mService.resetSession();
-                mService.getConnectionManager().connect();
+                getGAApp().resetSession();
+                getConnectionManager().connect();
                 getSession().registerUser(this, null, mnemonic).resolve(null, null);
-                mService.resetSession();
-                mService.getConnectionManager().loginWithMnemonic(mnemonic, "");
+                getGAApp().resetSession();
+                getConnectionManager().loginWithMnemonic(mnemonic, "");
             } catch (final Exception ex) {
                 if (getCode(ex) == GDK.GA_RECONNECT) {
                     UI.toast(SelectionActivity.this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
@@ -109,8 +109,8 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     protected void onLoginFailure() {
         super.onLoginFailure();
         stopLoading();
-        final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
-        mService.getConnectionManager().clearPreviousLoginError();
+        final Exception lastLoginException = getConnectionManager().getLastLoginException();
+        getConnectionManager().clearPreviousLoginError();
         final int code = getCode(lastLoginException);
         if (code == GDK.GA_RECONNECT) {
             UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
@@ -122,7 +122,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     @Override
     protected void onResumeWithService() {
         //super.onResumeWithService(); not pass activity if logged
-        mService.getConnectionManager().addObserver(this);
+        getConnectionManager().addObserver(this);
     }
 
     @Override

@@ -23,6 +23,7 @@ import androidx.preference.PreferenceManager;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
@@ -332,5 +333,9 @@ public abstract class GaActivity extends AppCompatActivity {
 
     protected NetworkData getNetwork() {
         return getGAApp().getCurrentNetworkData();
+    }
+
+    public ConnectionManager getConnectionManager() {
+        return getGAApp().getConnectionManager();
     }
 }

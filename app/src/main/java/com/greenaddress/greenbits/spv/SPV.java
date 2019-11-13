@@ -18,6 +18,7 @@ import androidx.core.app.NotificationCompat.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.greenaddress.gdk.GDKSession;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -118,7 +119,7 @@ public class SPV {
 
     public boolean isEnabled() {
         final NetworkData networkData = mService.getNetwork();
-        return !mService.isWatchOnly() && mService.cfg().getBoolean(PrefKeys.SPV_ENABLED, false) &&
+        return !getConnectionManager().isWatchOnly() && mService.cfg().getBoolean(PrefKeys.SPV_ENABLED, false) &&
                !networkData.getLiquid();
     }
 
@@ -782,5 +783,8 @@ public class SPV {
 
     public Model getModel () {
         return mService.getGAApp().getModel();
+    }
+    public ConnectionManager getConnectionManager () {
+        return mService.getGAApp().getConnectionManager();
     }
 }

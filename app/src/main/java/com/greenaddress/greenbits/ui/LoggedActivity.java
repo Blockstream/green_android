@@ -16,31 +16,31 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || getModel() == null) {
+        if (getConnectionManager() == null || getModel() == null) {
             toFirst();
             return;
         }
-        if (mService.isDisconnected()) {
+        if (getConnectionManager().isDisconnected()) {
             toFirst();
             return;
         }
-        mService.getConnectionManager().addObserver(this);
+        getConnectionManager().addObserver(this);
         getModel().getToastObservable().addObserver(this);
     }
 
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null || getModel() == null)
+        if (getConnectionManager() == null || getModel() == null)
             return;
-        mService.getConnectionManager().deleteObserver(this);
+        getConnectionManager().deleteObserver(this);
         getModel().getToastObservable().deleteObserver(this);
     }
 
     @Override
     public void update(final Observable observable, final Object o) {
         if (observable instanceof ConnectionManager) {
-            final ConnectionManager cm = mService.getConnectionManager();
+            final ConnectionManager cm = getConnectionManager();
             if (cm.isLoginRequired()) {
                 cm.login(this, cm.getHWDeviceData(), cm.getHWResolver());
             } else if (cm.isDisconnected()) {
@@ -53,14 +53,14 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     public void logout() {
-        if (mService == null || getModel() == null) {
+        if (getConnectionManager() == null || getModel() == null) {
             toFirst();
             return;
         }
-        mService.getConnectionManager().deleteObserver(this);
+        getConnectionManager().deleteObserver(this);
         mService.getExecutor().execute(() -> {
             startLoading();
-            mService.disconnect();
+            getConnectionManager().disconnect();
             toFirst();
             stopLoading();
         });

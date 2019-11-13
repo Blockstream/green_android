@@ -70,7 +70,7 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
         if (activity.mService != null && !getGAApp().getCurrentNetwork().equals(network)) {
 
             getGAApp().setCurrentNetwork(network);
-            activity.mService.getConnectionManager().setNetwork(network);
+            activity.getConnectionManager().setNetwork(network);
             activity.logout();
         }
     }

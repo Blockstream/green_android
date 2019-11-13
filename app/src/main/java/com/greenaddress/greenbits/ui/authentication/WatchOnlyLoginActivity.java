@@ -81,7 +81,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
     public void onDestroy() {
         super.onDestroy();
         UI.unmapClick(mLoginButton);
-        mService.getConnectionManager().deleteObserver(this);
+        getConnectionManager().deleteObserver(this);
     }
 
     private void onLoginButtonClicked() {
@@ -93,14 +93,14 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
             return;
         }
 
-        final ConnectionManager connectionManager = mService.getConnectionManager();
+        final ConnectionManager connectionManager = getConnectionManager();
         final String username = UI.getText(mUsernameText);
         final String password = UI.getText(mPasswordText);
 
         onLoginBegin();
 
         mService.getExecutor().execute(() -> {
-            mService.resetSession();
+            getGAApp().resetSession();
             connectionManager.loginWatchOnly(username, password);
         });
 
@@ -126,8 +126,8 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
     @Override
     protected void onLoginFailure() {
-        final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
-        mService.getConnectionManager().clearPreviousLoginError();
+        final Exception lastLoginException = getConnectionManager().getLastLoginException();
+        getConnectionManager().clearPreviousLoginError();
         final int code = getCode(lastLoginException);
         onLoginStop();
         if (code == GDK.GA_RECONNECT) {

@@ -71,10 +71,10 @@ public class MessagesActivity extends LoggedActivity
                 startLoading();
                 mService.getExecutor().execute(() -> {
                     try {
-                        final ConnectionManager cm = mService.getConnectionManager();
+                        final ConnectionManager cm = getConnectionManager();
                         final GDKTwoFactorCall call = getSession().ackSystemMessage(this, mCurrentMessage);
                         call.resolve(null, cm.getHWResolver());
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         Log.e(TAG, e.getMessage());
                     }
                     //FIXME put this inside the try block when testing with real system messages

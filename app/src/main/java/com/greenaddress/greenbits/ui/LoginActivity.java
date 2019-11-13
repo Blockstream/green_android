@@ -31,11 +31,11 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         // manager state changes, it's not a problem adding twice since per Observer documentation:
         // "Adds an observer to the set of observers for this object, provided
         // that it is not the same as some observer already in the set."
-        mService.getConnectionManager().addObserver(this);
+        getConnectionManager().addObserver(this);
     }
 
     private synchronized void checkState() {
-        final ConnectionManager cm = mService.getConnectionManager();
+        final ConnectionManager cm = getConnectionManager();
         try {
             if (cm.isLoggedIn()) {
                 mService.onPostLogin();
@@ -54,7 +54,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     protected void onResumeWithService() {
         super.onResumeWithService();
         if (mService != null) {
-            final ConnectionManager cm = mService.getConnectionManager();
+            final ConnectionManager cm = getConnectionManager();
             cm.deleteObserver(this);
             cm.clearPreviousLoginError();
             checkState();
@@ -69,8 +69,8 @@ public abstract class LoginActivity extends GaActivity implements Observer {
             return;
         }
         mService.getExecutor().execute(() -> {
-            mService.resetSession();
-            mService.getConnectionManager().loginWithPin(pin, pinData);
+            getGAApp().resetSession();
+            getConnectionManager().loginWithPin(pin, pinData);
         });
     }
 
@@ -79,7 +79,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         super.onPauseWithService();
         if (mService == null)
             return;
-        mService.getConnectionManager().deleteObserver(this);
+        getConnectionManager().deleteObserver(this);
         mService.getTorProgressObservable().deleteObserver(this);
     }
 

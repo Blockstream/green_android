@@ -165,7 +165,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             try {
                 // mTxJson.set("memo", new TextNode(memo));
                 // sign transaction
-                final ConnectionManager cm = mService.getConnectionManager();
+                final ConnectionManager cm = getConnectionManager();
                 final GDKTwoFactorCall signCall = getSession().signTransactionRaw(activity, mTxJson);
                 mTxJson = signCall.resolve(null, cm.getHWResolver());
 

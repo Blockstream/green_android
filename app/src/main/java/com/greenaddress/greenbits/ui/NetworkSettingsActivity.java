@@ -72,15 +72,15 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
         final Button selectButton = UI.find(this, R.id.selectNetworkButton);
         selectButton.setOnClickListener(this::onClick);
 
-        if (mService == null || mService.getConnectionManager() == null ||
-            mService.getConnectionManager().isDisconnectedOrLess()) {
+        if (getConnectionManager() == null ||
+            getConnectionManager().isDisconnectedOrLess()) {
             selectButton.setText(R.string.id_save);
         } else {
             mIsLoggedIn = true;
             selectButton.setText(R.string.id_logout_and_switch);
 
             // Register the observer since we came in from the settings page
-            mService.getConnectionManager().addObserver(this);
+            getConnectionManager().addObserver(this);
         }
     }
 
@@ -92,31 +92,31 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || mService.getConnectionManager() == null) {
+        if (mService == null || getConnectionManager() == null) {
             return;
         }
 
         if (mIsLoggedIn) {
             // the connection was closed while this activity was paused, exit immediately
-            if (mService.getConnectionManager().isDisconnectedOrLess()) {
+            if (getConnectionManager().isDisconnectedOrLess()) {
                 cancelAndExit();
                 return;
             }
 
             // still connected, add back the observer
-            mService.getConnectionManager().addObserver(this);
+            getConnectionManager().addObserver(this);
         }
     }
 
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null || mService.getConnectionManager() == null) {
+        if (getConnectionManager() == null) {
             return;
         }
 
         if (mIsLoggedIn) {
-            mService.getConnectionManager().deleteObserver(this);
+            getConnectionManager().deleteObserver(this);
         }
     }
 
@@ -157,10 +157,10 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
             .putString(PrefKeys.PROXY_HOST, socksHost)
             .putString(PrefKeys.PROXY_PORT, socksPort)
             .apply();
-            mService.getConnectionManager().setProxyHostAndPort(socksHost, socksPort);
+            getConnectionManager().setProxyHostAndPort(socksHost, socksPort);
         }
         getGAApp().setCurrentNetwork(networkName);
-        mService.getConnectionManager().setNetwork(networkName);
+        getConnectionManager().setNetwork(networkName);
         setResult(RESULT_OK);
         finishOnUiThread();
     }
@@ -181,7 +181,7 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     private void onProxyChange(final CompoundButton compoundButton, final boolean b) {
         Log.d("NETDLG", "onProxyChange " + mSwitchNetworkAdapter.getSelected().getNetwork() + " " + b);
         getPrefOfSelected().edit().putBoolean(PrefKeys.PROXY_ENABLED, b).apply();
-        mService.getConnectionManager().setProxyEnabled(b);
+        getConnectionManager().setProxyEnabled(b);
         mProxySection.setVisibility(b ? View.VISIBLE : View.GONE);
     }
 
@@ -195,7 +195,7 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     private void onTorChange(final CompoundButton compoundButton, final boolean b) {
         Log.d("NETDLG", "onTorChange " + mSwitchNetworkAdapter.getSelected().getNetwork() + " " + b);
         getPrefOfSelected().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
-        mService.getConnectionManager().setTorEnabled(b);
+        getConnectionManager().setTorEnabled(b);
     }
 
     @Override

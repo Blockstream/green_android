@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
@@ -33,7 +34,7 @@ public abstract class GAFragment extends Fragment {
     }
 
     protected boolean isDisconnected() {
-        return getGAService() != null && getGAService().isDisconnected();
+        return getConnectionManager() != null && getConnectionManager().isDisconnected();
     }
 
     protected GaActivity getGaActivity() {
@@ -50,6 +51,10 @@ public abstract class GAFragment extends Fragment {
 
     protected Model getModel() {
         return mApp.getModel();
+    }
+
+    protected ConnectionManager getConnectionManager() {
+        return mApp.getConnectionManager();
     }
 
     public SharedPreferences cfg() {

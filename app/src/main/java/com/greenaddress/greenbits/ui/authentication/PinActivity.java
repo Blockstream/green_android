@@ -73,7 +73,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         final String message;
         final int counter = mPin.getInt("counter", 0) + 1;
         final SharedPreferences.Editor editor = mPin.edit();
-        final Exception lastLoginException = mService.getConnectionManager().getLastLoginException();
+        final Exception lastLoginException = getConnectionManager().getLastLoginException();
         final int code = getCode(lastLoginException);
         if (code == GDK.GA_NOT_AUTHORIZED) {
             if (counter < 3) {
@@ -93,7 +93,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             // Should not happen
             message = getString(R.string.id_error);
         }
-        mService.getConnectionManager().clearPreviousLoginError();
+        getConnectionManager().clearPreviousLoginError();
 
         PinActivity.this.runOnUiThread(() -> {
             PinActivity.this.toast(message);

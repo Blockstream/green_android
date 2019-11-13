@@ -106,7 +106,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         if (getModel().isTwoFAReset())
             mAccountView.hideActions();
         else
-            mAccountView.showActions(getGAService().isWatchOnly());
+            mAccountView.showActions(getConnectionManager().isWatchOnly());
 
         mAssetsSelection = UI.find(mView, R.id.assetsSelection);
         mAssetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(),
@@ -311,7 +311,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                 .build().show();
             } else {
                 final Intent intent = new Intent(getActivity(), ScanActivity.class);
-                intent.putExtra(PrefKeys.SWEEP, getGAService().isWatchOnly());
+                intent.putExtra(PrefKeys.SWEEP, getConnectionManager().isWatchOnly());
                 getActivity().startActivity(intent);
             }
         } else if (view.getId() == R.id.selectSubaccount) {

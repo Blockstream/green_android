@@ -78,7 +78,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
     }
 
     private boolean onPinEnabled() {
-        if (mService.warnIfOffline(getActivity()))
+        if (getGAApp().warnIfOffline(getActivity()))
             return false;
         final Intent savePin = PinSaveActivity.createIntent(getActivity(), mService.getMnemonic());
         startActivityForResult(savePin, ACTIVITY_REQUEST_PINSAVE);
@@ -113,7 +113,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
 
 
     private boolean onNativeEnabled() {
-        if (mService.warnIfOffline(getActivity()))
+        if (getGAApp().warnIfOffline(getActivity()))
             return false;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             return false;

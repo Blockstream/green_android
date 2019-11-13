@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits;
 
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
@@ -11,6 +12,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.multidex.MultiDexApplication;
 
@@ -21,6 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.JSONConverterImpl;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.MnemonicHelper;
@@ -28,6 +31,7 @@ import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import org.bitcoinj.crypto.MnemonicCode;
@@ -37,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class GreenAddressApplication extends MultiDexApplication {
 
@@ -219,6 +225,7 @@ public class GreenAddressApplication extends MultiDexApplication {
     }
 
     private Model mModel;
+    private ConnectionManager mConnectionManager;
 
     public Model getModel() {
         return mModel;
@@ -226,4 +233,37 @@ public class GreenAddressApplication extends MultiDexApplication {
     public void setModel(final Model model) {
         mModel = model;
     }
+
+    public ConnectionManager getConnectionManager() {
+        return mConnectionManager;
+    }
+
+    public void setConnectionManager(final ConnectionManager connectionManager) {
+        this.mConnectionManager = connectionManager;
+    }
+    public boolean isWatchOnly() {
+        return mConnectionManager.isWatchOnly();
+    }
+
+    public String getWatchOnlyUsername() {
+        return mConnectionManager.getWatchOnlyUsername();
+    }
+
+    public boolean warnIfOffline(final Activity activity) {
+        if(getConnectionManager().isOffline()) {
+            UI.toast(activity, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isDisconnected() {
+        return mConnectionManager.isDisconnected();
+    }
+
+    public void resetSession() {
+        getSession().disconnect();
+        getSession().destroy();
+    }
+
 }

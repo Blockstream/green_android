@@ -98,7 +98,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mStatusIcon = UI.find(this, R.id.status_icon);
 
         mTxItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
-        final boolean isWatchOnly = mService.isWatchOnly();
+        final boolean isWatchOnly = getConnectionManager().isWatchOnly();
 
         try {
             mAssetsBalances = getModel().getCurrentAccountBalanceData();
@@ -286,7 +286,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private void showUnconfirmed() {
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
 
-        if (mService.isWatchOnly() || networkData.getLiquid() || !mTxItem.replaceable ||
+        if (getConnectionManager().isWatchOnly() || networkData.getLiquid() || !mTxItem.replaceable ||
             getModel().isTwoFAReset())
             return; // FIXME: Implement RBF for elements
 

@@ -68,7 +68,7 @@ public class GaService extends Service  {
 
     //private NetworkData mNetwork;
     //private Model mModel;
-    private ConnectionManager mConnectionManager;
+    //private ConnectionManager mConnectionManager;
     private TorProgressObservable mTorProgressObservable = new TorProgressObservable();
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
 
@@ -86,27 +86,6 @@ public class GaService extends Service  {
     // about possibly being garbage collected has been made a member of the class
     // https://developer.android.com/reference/android/content/SharedPreferences
     private SharedPreferences.OnSharedPreferenceChangeListener mSyncListener;
-
-    public synchronized void disconnect() {
-        mConnectionManager.disconnect();
-    }
-
-    public boolean warnIfOffline(final Activity activity) {
-        if(getConnectionManager().isOffline()) {
-            UI.toast(activity, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isDisconnected() {
-        return mConnectionManager.isDisconnected();
-    }
-
-    public void resetSession() {
-        getSession().disconnect();
-        getSession().destroy();
-    }
 
     class GaBinder extends Binder {
         GaService getService() { return GaService.this; }
@@ -134,10 +113,6 @@ public class GaService extends Service  {
 
     public ScheduledThreadPoolExecutor getTimerExecutor() {
         return mTimerExecutor;
-    }
-
-    public ConnectionManager getConnectionManager() {
-        return mConnectionManager;
     }
 
     public String getReceivingId() {
@@ -211,10 +186,6 @@ public class GaService extends Service  {
         }
     }
 
-    public boolean isWatchOnly() {
-        return mConnectionManager.isWatchOnly();
-    }
-
     public SharedPreferences cfg() {
         final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
         return getSharedPreferences(network, MODE_PRIVATE);
@@ -259,7 +230,7 @@ public class GaService extends Service  {
         // Uncomment to test slow service creation
         // android.os.SystemClock.sleep(10000);
         final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-        mConnectionManager = new ConnectionManager(network, getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled());
+        getGAApp().setConnectionManager(new ConnectionManager(network, getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled()));
 
         String deviceId = cfg().getString(PrefKeys.DEVICE_ID, null);
         if (deviceId == null) {
@@ -271,10 +242,6 @@ public class GaService extends Service  {
         mTimerExecutor.scheduleWithFixedDelay(this::checkDisconnect, 5,5, TimeUnit.SECONDS);
     }
 
-    public String getWatchOnlyUsername() {
-        return mConnectionManager.getWatchOnlyUsername();
-    }
-
     public GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
@@ -284,9 +251,10 @@ public class GaService extends Service  {
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
 
         final Model model = new Model(mExecutor);
+        getGAApp().setModel(model);
         initSettings();
-        getSession().setNotificationModel(getGAApp().getModel(), getConnectionManager());
-        final int activeAccount = mConnectionManager.isLoginWithPin() ? cfg().getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
+        getSession().setNotificationModel(getGAApp().getModel(), getGAApp().getConnectionManager());
+        final int activeAccount = getGAApp().getConnectionManager().isLoginWithPin() ? cfg().getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
         if (model.getSubaccountDataObservable().getSubaccountDataWithPointer(activeAccount) != null)
             model.getActiveAccountObservable().setActiveAccount(activeAccount);
         else
@@ -315,9 +283,9 @@ public class GaService extends Service  {
             model.getAssetsObservable().refresh();
         }
         getGAApp().setModel(model);
-        mConnectionManager.goPostLogin();
+        getGAApp().getConnectionManager().goPostLogin();
 
-        if (!isWatchOnly()) {
+        if (!getGAApp().isWatchOnly()) {
             mSPV.startAsync();
         }
     }
@@ -469,10 +437,10 @@ public class GaService extends Service  {
     }
 
     private void checkDisconnect() {
-        if (getConnectionManager().isDisconnected())
+        if (getGAApp().getConnectionManager().isDisconnected())
             return;
         if (mDisconnectTimer != null && System.currentTimeMillis() > mDisconnectTimer) {
-            mExecutor.submit(this::disconnect);
+            mExecutor.submit(() -> getGAApp().getConnectionManager().disconnect());
         }
     }
 
