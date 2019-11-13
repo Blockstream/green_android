@@ -52,7 +52,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        if (getGAService() == null || getGAService().getModel() == null)
+        if (getGAService() == null || getModel() == null)
             return;
         detachObservers();
     }
@@ -61,12 +61,12 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        if (getGAService() == null || getGAService().getModel() == null)
+        if (getGAService() == null || getModel() == null)
             return;
         if (!isDisconnected()) {
             setupObservers();
             attachObservers();
-            onUpdateActiveSubaccount(getGAService().getModel().getActiveAccountObservable());
+            onUpdateActiveSubaccount(getModel().getActiveAccountObservable());
         }
     }
 
@@ -77,13 +77,13 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     }
 
     public void setupObservers() {
-        mActiveAccountObservable = getGAService().getModel().getActiveAccountObservable();
+        mActiveAccountObservable = getModel().getActiveAccountObservable();
         final int subAccount = mActiveAccountObservable.getActiveAccount();
         Log.d(TAG, "subaccount is " + subAccount);
-        mBalanceDataObservable = getGAService().getModel().getBalanceDataObservable(subAccount);
-        mReceiveAddressObservable = getGAService().getModel().getReceiveAddressObservable(subAccount);
-        mTransactionDataObservable = getGAService().getModel().getTransactionDataObservable(subAccount);
-        mSubaccountObservable = getGAService().getModel().getSubaccountDataObservable();
+        mBalanceDataObservable = getModel().getBalanceDataObservable(subAccount);
+        mReceiveAddressObservable = getModel().getReceiveAddressObservable(subAccount);
+        mTransactionDataObservable = getModel().getTransactionDataObservable(subAccount);
+        mSubaccountObservable = getModel().getSubaccountDataObservable();
     }
 
     public void attachObservers() {

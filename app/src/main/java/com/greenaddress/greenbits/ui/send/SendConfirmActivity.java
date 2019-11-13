@@ -50,7 +50,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -58,7 +58,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
 
         if (isSweep) {
-            final int account = mService.getModel().getActiveAccountObservable().getActiveAccount();
+            final int account = getModel().getActiveAccountObservable().getActiveAccount();
             final String accountName = mService.getSubaccountData(account).getName();
             setTitle(String.format(getString(R.string.id_sweep_into_s),
                                    accountName.equals("") ? getString(R.string.id_main_account) : accountName));
@@ -103,7 +103,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         else {
             final int subAccount = subaccount;
             final SubaccountData subaccountData =
-                mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
+                getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
             subaccountText.setText(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
         }
         addressText.setText(currentRecipient);
@@ -124,7 +124,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             balances.put(asset, address.get("satoshi").asLong());
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(balances, mService, getNetwork(), null);
+            final AssetsAdapter adapter = new AssetsAdapter(balances, mService, getNetwork(), null, getModel());
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
         } else {
@@ -176,17 +176,17 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
                 } else {
                     final GDKTwoFactorCall sendCall = getSession().sendTransactionRaw(activity, mTxJson);
                     sendCall.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
-                    mService.getModel().getTwoFactorConfigDataObservable().refresh();
+                    getModel().getTwoFactorConfigDataObservable().refresh();
                 }
                 if (mTxJson.has("previous_transaction")) {
                     //emptying list to avoid showing replaced txs
-                    mService.getModel().getTransactionDataObservable(mTxJson.get("subaccount").asInt())
+                    getModel().getTransactionDataObservable(mTxJson.get("subaccount").asInt())
                     .setTransactionDataList(new ArrayList<>());
                     final String hash = mTxJson.get("previous_transaction").get("txhash").asText();
-                    mService.getModel().getEventDataObservable().removeTx(hash);
+                    getModel().getEventDataObservable().removeTx(hash);
                 }
                 UI.toast(activity, R.string.id_transaction_sent, Toast.LENGTH_LONG);
-                mService.getModel().getBalanceDataObservable(mTxJson.get("subaccount").asInt()).refresh();
+                getModel().getBalanceDataObservable(mTxJson.get("subaccount").asInt()).refresh();
                 stopLoading();
                 activity.setResult(Activity.RESULT_OK);
                 activity.finishOnUiThread();

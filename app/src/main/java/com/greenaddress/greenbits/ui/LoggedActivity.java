@@ -16,7 +16,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -25,16 +25,16 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             return;
         }
         mService.getConnectionManager().addObserver(this);
-        mService.getModel().getToastObservable().addObserver(this);
+        getModel().getToastObservable().addObserver(this);
     }
 
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
         mService.getConnectionManager().deleteObserver(this);
-        mService.getModel().getToastObservable().deleteObserver(this);
+        getModel().getToastObservable().deleteObserver(this);
     }
 
     @Override

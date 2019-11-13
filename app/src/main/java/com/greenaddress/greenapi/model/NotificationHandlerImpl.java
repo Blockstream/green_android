@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.EstimatesData;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SettingsData;
@@ -31,7 +32,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     private static final int TOR_NOTIFICATION_ID = 0x42;
 
     private Model mModel;
-    private GaService mService;
+    private ConnectionManager mConnectionManager;
     private Queue<Object> mTemp = new LinkedList<>();
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private ScheduledFuture<?> mScheduledFuture;
@@ -41,9 +42,11 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public synchronized void setModel(final GaService service) {
-        this.mService = service;
-        this.mModel = service.getModel();
+    public synchronized void setConnectionManager(final ConnectionManager connectionManager) {
+        mConnectionManager = connectionManager;
+    }
+    public synchronized void setModel(final Model model) {
+        this.mModel = model;
         for (Object element : mTemp) {
             process(element);
         }
@@ -74,7 +77,8 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
             switch (objectNode.get("event").asText()) {
             case "tor":
                 final JsonNode torJson = objectNode.get("tor");
-                mService.getTorProgressObservable().set(torJson);
+                // FIXME
+                //mService.getTorProgressObservable().set(torJson);
                 break;
             case "network": {
                 //{"event":"network","network":{"connected":false,"elapsed":1091312175736,"limit":true,"waiting":0}}
@@ -88,24 +92,25 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     final boolean loginRequired = networkNode.get("login_required").asBoolean(false);
                     mModel.getConnMsgObservable().setOnline();
                     if (loginRequired) {
-                        mService.getConnectionManager().goLoginRequired();
+                        mConnectionManager.goLoginRequired();
                     } else {
-                        mService.getConnectionManager().goPostLogin();
+                        mConnectionManager.goPostLogin();
                     }
                 } else {
                     long waitingMs = networkNode.get("waiting").asLong() * 1000;
                     if (waitingMs > 3000) {
                         mTryingAt = System.currentTimeMillis() + waitingMs;
-                        mScheduledFuture = mService.getTimerExecutor().scheduleAtFixedRate(() -> {
+                        // FIXME
+                        /*mScheduledFuture = mService.getTimerExecutor().scheduleAtFixedRate(() -> {
                                 final int remainingSec = (int) ((mTryingAt - System.currentTimeMillis()) / 1000);
                                 if (remainingSec >= 0)
                                     mModel.getConnMsgObservable().setMessage(R.string.id_not_connected_connecting_in_ds_,
                                                                              new Object[] {remainingSec});
                                 else
                                     cancelTimer();
-                            }, 0, 100, TimeUnit.MILLISECONDS);
+                            }, 0, 100, TimeUnit.MILLISECONDS);*/
                     }
-                    mService.getConnectionManager().goOffline();
+                    mConnectionManager.goOffline();
                 }
 
                 break;

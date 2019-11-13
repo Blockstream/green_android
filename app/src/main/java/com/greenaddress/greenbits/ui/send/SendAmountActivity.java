@@ -82,7 +82,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -95,7 +95,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
 
         if (isSweep) {
-            final int account = mService.getModel().getActiveAccountObservable().getActiveAccount();
+            final int account = getModel().getActiveAccountObservable().getActiveAccount();
             final String accountName = mService.getSubaccountData(account).getName();
             setTitle(String.format(getString(R.string.id_sweep_into_s),
                                    accountName.equals("") ? getString(R.string.id_main_account) : accountName));
@@ -125,7 +125,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         UI.disable(mNextButton);
 
         // Setup fee buttons
-        mSelectedFee = service.getModel().getSettings().getFeeBuckets(mBlockTargets);
+        mSelectedFee = getModel().getSettings().getFeeBuckets(mBlockTargets);
 
         final List<Long> estimates = service.getFeeEstimates();
         mMinFeeRate = estimates.get(0);
@@ -244,13 +244,13 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         final long satoshi = getModel().getCurrentAccountBalanceData().get(mSelectedAsset);
-        final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+        final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
 
         final Map<String, Long> balances = new HashMap<>();
         balances.put(mSelectedAsset, satoshi);
 
         final RecyclerView assetsList = findViewById(R.id.assetsList);
-        final AssetsAdapter adapter = new AssetsAdapter(balances, mService, getNetwork(), null);
+        final AssetsAdapter adapter = new AssetsAdapter(balances, mService, getNetwork(), null, getModel());
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         assetsList.setAdapter(adapter);
         UI.showIf(!isAsset(), mUnitButton);
@@ -287,7 +287,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     @Override
     public void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -477,7 +477,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     public ObjectNode convert(final long satoshi) throws RuntimeException, IOException {
-        final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+        final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
         details.set("asset_info", info.toObjectNode());
@@ -529,7 +529,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     public void onFinish(final JsonNode transactionData) {
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
-        final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+        final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
         intent.putExtra("transaction", transactionData.toString());
         intent.putExtra("asset_info", info);
         intent.putExtra(PrefKeys.SWEEP, isSweep);
@@ -568,7 +568,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         amount.put(key, value.isEmpty() ? "0" : value);
         if (isAsset()) {
             final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
-            final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+            final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
             amount.set("asset_info", (info == null ? assetInfoDefault : info).toObjectNode());
         }
         try {

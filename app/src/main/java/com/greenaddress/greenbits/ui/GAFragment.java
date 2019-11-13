@@ -49,7 +49,7 @@ public abstract class GAFragment extends Fragment {
     }
 
     protected Model getModel() {
-        return mApp.mService.getModel();
+        return mApp.getModel();
     }
 
     public SharedPreferences cfg() {

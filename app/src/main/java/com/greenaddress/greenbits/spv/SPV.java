@@ -25,6 +25,7 @@ import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
@@ -223,7 +224,7 @@ public class SPV {
         Log.d(TAG, "updateUnspentOutputs: " + Var("currentlyEnabled", currentlyEnabled));
 
         final List<TransactionData> utxos = new ArrayList<>();
-        final Model model = mService.getModel();
+        final Model model = getModel();
         final List<SubaccountData> subaccountDataList = model.getSubaccountDataObservable().getSubaccountDataList();
 
         for (final SubaccountData subaccountData : subaccountDataList) {
@@ -285,7 +286,7 @@ public class SPV {
         if (updateVerified)
             mService.cfgEdit().putBoolean(PrefKeys.VERIFIED_HASH_ + txHashHex, true).apply();
 
-        final Model model = mService.getModel();
+        final Model model = getModel();
         final List<SubaccountData> subaccountDataList = model.getSubaccountDataObservable().getSubaccountDataList();
 
         for (final SubaccountData subaccountData : subaccountDataList) {
@@ -423,7 +424,7 @@ public class SPV {
                             // switches peers while downloading.
                             Log.d(TAG, "onChainDownloadStarted: " + Var("blocksLeft", blocksLeft));
                             if (blocksLeft > 0) {
-                                mService.getModel().getEventDataObservable().pushEvent(
+                                getModel().getEventDataObservable().pushEvent(
                                     new EventData(R.string.id_spv_notifications,
                                                   R.string.id_s_blocks_left,
                                                   blocksLeft));
@@ -455,7 +456,7 @@ public class SPV {
                         @Override
                         protected void doneDownload() {
                             Log.d(TAG, "doneDownLoad");
-                            mService.getModel().getEventDataObservable().pushEvent(
+                            getModel().getEventDataObservable().pushEvent(
                                 new EventData(R.string.id_spv_notifications, R.string.id_download_finished));
                             mNotifyManager.cancel(mNotificationId);
                         }
@@ -777,5 +778,9 @@ public class SPV {
             }
             Log.d(TAG, "Finished reset");
         }
+    }
+
+    public Model getModel () {
+        return mService.getGAApp().getModel();
     }
 }

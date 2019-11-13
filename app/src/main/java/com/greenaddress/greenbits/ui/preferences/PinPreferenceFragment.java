@@ -38,7 +38,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
         addPreferencesFromResource(R.xml.preference_pin);
         setHasOptionsMenu(true);
 
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getGAApp().getModel() == null) {
             logout();
             return;
         }

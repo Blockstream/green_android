@@ -26,7 +26,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
 
     @Override
     protected void onCreateWithService(Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -41,7 +41,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     }
 
     private void initTotalAmount() {
-        final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
+        final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();
         long totalSatoshi = 0L;
         for (int i = 0; i < balanceObservables.size(); i++) {
             final long satoshi = balanceObservables.valueAt(i).getBtcBalanceData();
@@ -64,13 +64,13 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
         if (mService.isDisconnected()) {
             return;
         }
         initTotalAmount();
-        final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
+        final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();
         for (int i = 0; i < balanceObservables.size(); i++) {
             balanceObservables.valueAt(i).addObserver(this);
         }
@@ -79,9 +79,9 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
-        final SparseArray<BalanceDataObservable> balanceObservables = mService.getModel().getBalanceDataObservables();
+        final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();
         for (int i = 0; i < balanceObservables.size(); i++) {
             balanceObservables.valueAt(i).deleteObserver(this);
         }

@@ -20,7 +20,7 @@ public class WatchOnlyPreferenceFragment extends GAPreferenceFragment
         addPreferencesFromResource(R.xml.preference_watchonly);
         setHasOptionsMenu(true);
 
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             logout();
             return;
         }

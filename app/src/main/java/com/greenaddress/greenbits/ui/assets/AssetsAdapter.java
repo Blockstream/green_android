@@ -17,6 +17,7 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EntityData;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
@@ -32,6 +33,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     private final OnAssetSelected mOnAccountSelected;
     private final GaService mService;
     private final NetworkData mNetworkData;
+    private final Model mModel;
 
     @FunctionalInterface
     public interface OnAssetSelected {
@@ -40,11 +42,12 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
     public AssetsAdapter(final Map<String, Long> assets, final GaService service,
                          final NetworkData networkData,
-                         final OnAssetSelected cb) {
+                         final OnAssetSelected cb, final Model model) {
         mAssets = assets;
         mService = service;
         mOnAccountSelected = cb;
         mNetworkData = networkData;
+        mModel = model;
         mAssetsIds = new ArrayList<>(mAssets.keySet());
         if (mAssetsIds.contains("btc")) {
             // Move btc as first in the list
@@ -65,7 +68,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final String assetId = mAssetsIds.get(position);
         final boolean isBTC = "btc".equals(assetId);
         final Long satoshi = mAssets.get(assetId);
-        final AssetInfoData assetInfo = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
+        final AssetInfoData assetInfo = mModel.getAssetsObservable().getAssetsInfos().get(assetId);
         if (mOnAccountSelected != null)
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         if (isBTC) {
@@ -84,7 +87,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             }
         }
         // Get l-btc & asset icon from asset icon map
-        final Map<String, Bitmap> icons =  mService.getModel().getAssetsObservable().getAssetsIcons();
+        final Map<String, Bitmap> icons =  mModel.getAssetsObservable().getAssetsIcons();
         final String asset = isBTC ? mNetworkData.getPolicyAsset() : assetId;
         if (icons.containsKey(asset)) {
             holder.mAssetIcon.setImageBitmap(icons.get(asset));

@@ -84,7 +84,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getGAService(), getNetwork(),  mTxItems);
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getGAService(),
+                                                           getNetwork(),  mTxItems, getModel());
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
         // FIXME, more efficient to use swap
@@ -206,8 +207,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     }
 
     private void reloadTransactions(final List<TransactionData> txList, final boolean showWaitDialog) {
-        final GaService service = getGAService();
-        final int subaccount = service.getModel().getCurrentSubaccount();
+        final int subaccount = getModel().getCurrentSubaccount();
         final RecyclerView txView;
 
         if (isZombie())
@@ -224,7 +224,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             replacedTxs = new HashMap<>();
 
         try {
-            final int currentBlock = service.getModel().getBlockchainHeightObservable().getHeight();
+            final int currentBlock = getModel().getBlockchainHeightObservable().getHeight();
 
             if (mSwipeRefreshLayout != null)
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -237,7 +237,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
             for (final TransactionData tx : txList) {
                 try {
-                    mTxItems.add(new TransactionItem(service, tx, currentBlock, subaccount, getNetwork()));
+                    mTxItems.add(new TransactionItem(getGAService(), tx, currentBlock, subaccount, getNetwork(),
+                                                     getModel()));
                     /*
                        //TODO gdk handling of replaced
                        final ArrayList<String> replacedList = txJSON.get("replaced_by");
@@ -329,7 +330,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
         getGaActivity().runOnUiThread(() -> {
             final GaService service = getGAService();
-            final int subaccount = service.getModel().getCurrentSubaccount();
+            final int subaccount = getModel().getCurrentSubaccount();
             final SubaccountData subaccountData = service.getSubaccountData(subaccount);
             mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
             mAccountView.setBalance(service, satoshi);

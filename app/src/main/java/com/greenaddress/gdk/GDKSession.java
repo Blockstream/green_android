@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EstimatesData;
@@ -28,8 +29,10 @@ import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.data.TwoFactorDetailData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.NotificationHandlerImpl;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.BuildConfig;
 
 import org.bitcoinj.core.AddressFormatException;
@@ -438,8 +441,9 @@ public class GDKSession {
         GDK.send_nlocktimes(mNativeSession);
     }
 
-    public void setNotificationModel(final GaService service) {
-        mNotification.setModel(service);
+    public void setNotificationModel(final Model model, final ConnectionManager connectionManager) {
+        mNotification.setModel(model);
+        mNotification.setConnectionManager(connectionManager);
     }
 
     public GDKTwoFactorCall changeSettings(final Activity parent, final ObjectNode setting) {

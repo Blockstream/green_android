@@ -12,7 +12,7 @@ public class ReceiveActivity extends LoggedActivity {
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }

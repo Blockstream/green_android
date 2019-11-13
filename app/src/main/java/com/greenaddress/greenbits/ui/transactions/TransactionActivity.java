@@ -78,7 +78,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -164,7 +164,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             amountText.setVisibility(View.GONE);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getAssetBalances(), mService, getNetwork(),this);
+            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getAssetBalances(), mService,
+                                                            getNetwork(),this, getModel());
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
 
@@ -221,7 +222,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             recipientText.setText(mTxItem.counterparty);
         }
 
-        final String name = mService.getModel().getSubaccountDataObservable().
+        final String name = getModel().getSubaccountDataObservable().
                             getSubaccountDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.
                                                                                                           id_main_account));
 
@@ -286,7 +287,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
 
         if (mService.isWatchOnly() || networkData.getLiquid() || !mTxItem.replaceable ||
-            mService.getModel().isTwoFAReset())
+            getModel().isTwoFAReset())
             return; // FIXME: Implement RBF for elements
 
         if (!networkData.getLiquid()) {
@@ -350,7 +351,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             mMemoTitle.requestFocus();
         });
         // Force reload tx
-        mService.getModel().getTransactionDataObservable(mTxItem.subaccount).refresh();
+        getModel().getTransactionDataObservable(mTxItem.subaccount).refresh();
     }
 
     private void onMemoSaveClicked() {
@@ -413,7 +414,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         Log.d(TAG,"onBumpFeeButtonClicked");
         try {
             startLoading();
-            final Model model = mService.getModel();
+            final Model model = getModel();
             final String txhash = mTxItem.txHash.toString();
             final int subaccount = mTxItem.subaccount == null ? model.getCurrentSubaccount() : mTxItem.subaccount;
             final JsonNode txToBump = getSession().getTransactionRaw(subaccount, txhash);
@@ -445,8 +446,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        final Long satoshi = mAssetsBalances.get(assetId);
-        final AssetInfoData info = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
+        final long satoshi = mAssetsBalances.get(assetId);
+        final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", info)
         .putExtra("SATOSHI", satoshi != null ? satoshi : 0L);

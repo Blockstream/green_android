@@ -45,6 +45,7 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
+import org.h2.command.ddl.GrantRevoke;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +67,7 @@ public class GaService extends Service  {
     private static final String TAG = GaService.class.getSimpleName();
 
     //private NetworkData mNetwork;
-    private Model mModel;
+    //private Model mModel;
     private ConnectionManager mConnectionManager;
     private TorProgressObservable mTorProgressObservable = new TorProgressObservable();
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
@@ -135,10 +136,6 @@ public class GaService extends Service  {
         return mTimerExecutor;
     }
 
-    public Model getModel() {
-        return mModel;
-    }
-
     public ConnectionManager getConnectionManager() {
         return mConnectionManager;
     }
@@ -176,7 +173,7 @@ public class GaService extends Service  {
     }
 
     public String getUnitKey() {
-        final String unit = mModel.getSettings().getUnit();
+        final String unit = getGAApp().getModel().getSettings().getUnit();
         return toUnitKey(unit);
     }
 
@@ -278,27 +275,30 @@ public class GaService extends Service  {
         return mConnectionManager.getWatchOnlyUsername();
     }
 
+    public GreenAddressApplication getGAApp() {
+        return (GreenAddressApplication) getApplication();
+    }
     public void onPostLogin() {
         // Uncomment to test slow login post processing
         // android.os.SystemClock.sleep(10000);
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
 
-        mModel = new Model(mExecutor);
+        final Model model = new Model(mExecutor);
         initSettings();
-        getSession().setNotificationModel(this);
+        getSession().setNotificationModel(getGAApp().getModel(), getConnectionManager());
         final int activeAccount = mConnectionManager.isLoginWithPin() ? cfg().getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
-        if (mModel.getSubaccountDataObservable().getSubaccountDataWithPointer(activeAccount) != null)
-            mModel.getActiveAccountObservable().setActiveAccount(activeAccount);
+        if (model.getSubaccountDataObservable().getSubaccountDataWithPointer(activeAccount) != null)
+            model.getActiveAccountObservable().setActiveAccount(activeAccount);
         else
-            mModel.getActiveAccountObservable().setActiveAccount(0);
+            model.getActiveAccountObservable().setActiveAccount(0);
 
         // FIXME the following prevents an issue when notification are not transmitted even if login was successful
-        if (mModel.getBlockchainHeightObservable().getHeight() == null) {
+        if (model.getBlockchainHeightObservable().getHeight() == null) {
             return;
         }
         final NetworkData networkData = ((GreenAddressApplication) getApplication()).getCurrentNetworkData();
         if (networkData.getLiquid()) {
-            mModel.getAssetsObservable().addObserver((observable, o) -> {
+            model.getAssetsObservable().addObserver((observable, o) -> {
                 AssetsDataObservable assetsDataObservable = (AssetsDataObservable) observable;
 
                 if (assetsDataObservable.isAssetsLoaded() || assetsDataObservable.isShownErrorPopup()) {
@@ -312,9 +312,9 @@ public class GaService extends Service  {
 
                 assetsDataObservable.setShownErrorPopup();
             });
-            mModel.getAssetsObservable().refresh();
+            model.getAssetsObservable().refresh();
         }
-
+        getGAApp().setModel(model);
         mConnectionManager.goPostLogin();
 
         if (!isWatchOnly()) {
@@ -344,11 +344,11 @@ public class GaService extends Service  {
                     if (settings.getPgp() != null)
                         edit.putString(PrefKeys.PGP_KEY, settings.getPgp());
                     edit.apply();
-                    mModel.getSettingsObservable().deleteObserver(this);
+                    getGAApp().getModel().getSettingsObservable().deleteObserver(this);
                 }
             }
         };
-        mModel.getSettingsObservable().addObserver(observer);
+        getGAApp().getModel().getSettingsObservable().addObserver(observer);
     }
 
     public String getMnemonic() {
@@ -356,7 +356,7 @@ public class GaService extends Service  {
     }
 
     public List<Long> getFeeEstimates() {
-        return mModel.getFeeObservable().getFees();
+        return getGAApp().getModel().getFeeObservable().getFees();
     }
 
     public ListenableFuture<Void> setPin(final String mnemonic, final String pin, final SharedPreferences preferences) {
@@ -396,16 +396,16 @@ public class GaService extends Service  {
     }
 
     public SubaccountData getSubaccountData(final int subAccount) {
-        return getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
+        return getGAApp().getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
     }
 
     public String getAddress(final int subAccount) {
-        return getModel().getReceiveAddressObservable(subAccount).getReceiveAddress();
+        return getGAApp().getModel().getReceiveAddressObservable(subAccount).getReceiveAddress();
     }
 
     public BalanceData getBalanceData(final int subAccount) {
         try {
-            final long satoshi = getModel().getBalanceDataObservable(subAccount).getBtcBalanceData();
+            final long satoshi = getGAApp().getModel().getBalanceDataObservable(subAccount).getBtcBalanceData();
             return getSession().convertBalance(satoshi);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -414,7 +414,7 @@ public class GaService extends Service  {
     }
 
     public String getFiatCurrency() {
-        return mModel.getSettings().getPricing().getCurrency();
+        return getGAApp().getModel().getSettings().getPricing().getCurrency();
     }
 
     private void onNetConnectivityChanged() {
@@ -454,7 +454,7 @@ public class GaService extends Service  {
     }
 
     public int getAutoLogoutTimeout() {
-        if (mModel == null || mModel.getSettings() == null) {
+        if (getGAApp().getModel() == null || getGAApp().getModel().getSettings() == null) {
             try {
                 // we need to fetch this also locally,
                 // cause we can scheduleDisconnect before being logged in
@@ -465,7 +465,7 @@ public class GaService extends Service  {
                 return 5;
             }
         }
-        return mModel.getSettings().getAltimeout();
+        return getGAApp().getModel().getSettings().getAltimeout();
     }
 
     private void checkDisconnect() {

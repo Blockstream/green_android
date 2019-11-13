@@ -92,8 +92,8 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                         final TransactionData fullTxData =
                             objectMapper.convertValue(transactionRaw, TransactionData.class);
                         final TransactionItem txItem =
-                            new TransactionItem(mService, fullTxData, mService.getModel().getCurrentBlock(),
-                                                txData.getSubaccount(), getNetwork());
+                            new TransactionItem(mService, fullTxData, getModel().getCurrentBlock(),
+                                                txData.getSubaccount(), getNetwork(), getModel());
                         final Intent transactionActivity = new Intent(getActivity(), TransactionActivity.class);
                         transactionActivity.putExtra("TRANSACTION", txItem);
                         startActivity(transactionActivity);
@@ -120,7 +120,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         if (d == R.string.id_new_incoming_transaction_in ||
             d == R.string.id_new_outgoing_transaction_from) {
             TransactionData tx = (TransactionData) event.getValue();
-            final String accountName = mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
+            final String accountName = getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
                 tx.getSubaccount()).getNameWithDefault(getString(R.string.id_main_account));
             final long satoshi = tx.getSatoshi().get("btc");
             String amount;
@@ -138,7 +138,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             StringBuffer subaccounts = new StringBuffer();
             for (final Integer subaccount : tx.getSubaccounts()) {
                 final String accountName =
-                    mService.getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
+                    getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
                         subaccount).getNameWithDefault(getString(R.string.id_main_account));
                 if (subaccounts.length() != 0) { subaccounts.append(", "); }
                 subaccounts.append(accountName);
@@ -165,7 +165,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
     @Override
     public void onPause() {
         super.onPause();
-        final EventDataObservable observable = mService.getModel().getEventDataObservable();
+        final EventDataObservable observable = getModel().getEventDataObservable();
         if (observable != null)
             observable.deleteObserver(this);
     }
@@ -173,7 +173,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
     @Override
     public void onResume() {
         super.onResume();
-        final EventDataObservable observable = mService.getModel().getEventDataObservable();
+        final EventDataObservable observable = getModel().getEventDataObservable();
         if (observable != null)
             observable.addObserver(this);
         setup(observable);

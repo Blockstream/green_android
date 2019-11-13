@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
@@ -23,6 +24,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
     private final GaService mService;
     private final Resources mResources;
     private final Activity mActivity;
+    private final Model mModel;
 
     public interface OnAccountSelected {
         void onAccountSelected(int account);
@@ -30,12 +32,14 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
     }
 
     public AccountAdapter(final List<SubaccountData> subaccountList, final GaService service,
-                          final OnAccountSelected cb, final Resources resources, final Activity activity) {
+                          final OnAccountSelected cb, final Resources resources, final Activity activity,
+                          final Model model) {
         mSubaccountList = subaccountList;
         mService = service;
         mOnAccountSelected = cb;
         mResources = resources;
         mActivity = activity;
+        mModel = model;
     }
 
     @Override
@@ -63,11 +67,11 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             // Get subaccount info
             final int pointer = mSubaccountList.get(position).getPointer();
             final SubaccountData subaccount = mSubaccountList.get(position);
-            final long satoshi = mService.getModel().getBalanceDataObservable(pointer).getBtcBalanceData();
+            final long satoshi = mModel.getBalanceDataObservable(pointer).getBtcBalanceData();
 
             // Setup subaccount info
             holder.mAccountView.setTitle(subaccount.getNameWithDefault(mResources.getString(R.string.id_main_account)));
-            if (mService.getModel().getSettings() != null) {
+            if (mModel.getSettings() != null) {
                 holder.mAccountView.setBalance(mService, satoshi);
             }
             holder.mAccountView.listMode(false);

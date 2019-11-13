@@ -71,7 +71,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
         UI.preventScreenshots(this);
         final Intent intent = getIntent();
@@ -86,7 +86,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             return;
         }
         launch();
-        final boolean isResetActive = mService.getModel().isTwoFAReset();
+        final boolean isResetActive = getModel().isTwoFAReset();
         if (mIsBitcoinUri && !isResetActive) {
             // If logged in, open send activity
             onBitcoinUri();
@@ -115,7 +115,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         final Intent intent = new Intent(this, SendAmountActivity.class);
         final String text = uri.toString();
         try {
-            final int subaccount = mService.getModel().getCurrentSubaccount();
+            final int subaccount = getModel().getCurrentSubaccount();
             final ObjectNode transactionFromUri = getSession().createTransactionFromUri(text, subaccount);
             intent.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
         } catch (final AddressFormatException e) {
@@ -173,14 +173,14 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     @Override
     public void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
-        mService.getModel().getActiveAccountObservable().addObserver(this);
-        mService.getModel().getEventDataObservable().addObserver(this);
-        mService.getModel().getConnMsgObservable().addObserver(this);
+        getModel().getActiveAccountObservable().addObserver(this);
+        getModel().getEventDataObservable().addObserver(this);
+        getModel().getConnMsgObservable().addObserver(this);
         mService.getConnectionManager().addObserver(this);
 
-        updateSnackBar(mService.getModel().getConnMsgObservable());
+        updateSnackBar(getModel().getConnMsgObservable());
 
         final SectionsPagerAdapter adapter = getPagerAdapter();
 
@@ -198,7 +198,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     private void updateBottomNavigationView() {
         final MenuItem item = mNavigation.getMenu().findItem(R.id.navigation_notifications);
         runOnUiThread(() ->
-                      item.setIcon(mService != null && mService.getModel().getEventDataObservable().hasEvents() ?
+                      item.setIcon(mService != null && getModel().getEventDataObservable().hasEvents() ?
                                    R.drawable.bottom_navigation_notifications_2 :
                                    R.drawable.bottom_navigation_notifications)
                       );
@@ -208,10 +208,10 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     public void onPauseWithService() {
         super.onPauseWithService();
         mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
-        mService.getModel().getActiveAccountObservable().deleteObserver(this);
-        mService.getModel().getEventDataObservable().deleteObserver(this);
+        getModel().getActiveAccountObservable().deleteObserver(this);
+        getModel().getEventDataObservable().deleteObserver(this);
     }
 
     @Override
@@ -307,7 +307,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         public Fragment getItem(final int index) {
             Log.d(TAG, "SectionsPagerAdapter -> getItem " + index);
             final Fragment preferenceFragment;
-            if (mService.getModel().isTwoFAReset())
+            if (getModel().isTwoFAReset())
                 preferenceFragment = new ResetActivePreferenceFragment();
             else if (mService.isWatchOnly())
                 preferenceFragment = new WatchOnlyPreferenceFragment();
@@ -358,7 +358,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
         @Override
         public CharSequence getPageTitle(final int index) {
-            if (mService != null && mService.getModel().isTwoFAReset())
+            if (mService != null && getModel().isTwoFAReset())
                 return " " + getString(R.string.id_wallets);
             final String networkName = getNetwork().getName();
             switch (index) {

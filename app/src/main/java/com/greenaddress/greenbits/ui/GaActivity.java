@@ -224,8 +224,8 @@ public abstract class GaActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-    protected Model getModel() {
-        return mService.getModel();
+    public Model getModel() {
+        return getGAApp().getModel();
     }
 
     public void startLoading() {

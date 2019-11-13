@@ -85,7 +85,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         setHasOptionsMenu(true);
         networkData = getNetwork();
 
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             logout();
             return;
         }
@@ -128,14 +128,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             if (mService.warnIfOffline(getActivity())) {
                 return false;
             }
-            final SettingsData settings = mService.getModel().getSettings();
+            final SettingsData settings = getModel().getSettings();
             if (!newValue.equals(settings.getUnit())) {
                 settings.setUnit(newValue.toString());
                 setUnitSummary(null);
                 mService.getExecutor().execute(() -> {
                     updateSettings(settings);
                     final TwoFactorConfigDataObservable twoFaData =
-                        mService.getModel().getTwoFactorConfigDataObservable();
+                        getModel().getTwoFactorConfigDataObservable();
                     if (twoFaData.getTwoFactorConfigData() != null) {
                         setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
                     }
@@ -155,7 +155,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             final String[] split = o.toString().split(" ");
             final String currency = split[0];
             final String exchange = split[1];
-            final Model model = mService.getModel();
+            final Model model = getModel();
             final SettingsData settings = model.getSettings();
 
             settings.getPricing().setCurrency(currency);
@@ -179,7 +179,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 return false;
             }
             final int index = mTxPriorityPref.findIndexOfValue(newValue.toString());
-            final SettingsData settings = mService.getModel().getSettings();
+            final SettingsData settings = getModel().getSettings();
             settings.setRequiredNumBlocks(Integer.parseInt(priorityValues[index]));
             setRequiredNumBlocksSummary(null);
             mService.getExecutor().execute(() -> updateSettings(settings));
@@ -210,7 +210,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 return false;
             }
             final boolean value = (Boolean) o;
-            final SettingsData settings = mService.getModel().getSettings();
+            final SettingsData settings = getModel().getSettings();
             if (settings.getNotifications() == null)
                 settings.setNotifications(new NotificationsData());
             settings.getNotifications().setEmailOutgoing(value);
@@ -254,7 +254,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 return false;
             }
             final Integer altimeout = Integer.parseInt(newValue.toString());
-            final SettingsData settings = mService.getModel().getSettings();
+            final SettingsData settings = getModel().getSettings();
             settings.setAltimeout(altimeout);
             setTimeoutSummary(null);
             mService.getExecutor().execute(() -> updateSettings(settings));
@@ -305,7 +305,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private void initSummaries() {
-        final Model model = mService.getModel();
+        final Model model = getModel();
         final AvailableCurrenciesObservable currenciesObservable = model.getAvailableCurrenciesObservable();
         final SettingsObservable settingsObservable = model.getSettingsObservable();
         final TwoFactorConfigDataObservable twoFaData = model.getTwoFactorConfigDataObservable();
@@ -345,8 +345,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             final GDKTwoFactorCall gdkTwoFactorCall = getSession().changeSettings(
                 getActivity(), settings.toObjectNode());
             gdkTwoFactorCall.resolve(null, null);
-            mService.getModel().getSettingsObservable().setSettings(settings);
-            mService.getModel().getSubaccountDataObservable().refresh();
+            getModel().getSettingsObservable().setSettings(settings);
+            getModel().getSubaccountDataObservable().refresh();
             UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -355,7 +355,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private String getDefaultFeeRate() {
-        final Long minFeeRateKB = mService.getModel().getFeeObservable().getFees().get(0);
+        final Long minFeeRateKB = getModel().getFeeObservable().getFees().get(0);
         final String minFeeRateText = String.valueOf(minFeeRateKB / 1000.0);
         return cfg().getString( PrefKeys.DEFAULT_FEERATE_SATBYTE, minFeeRateText);
     }
@@ -398,7 +398,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         }
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_pgp_key);
         final EditText inputPGPKey = UI.find(v, R.id.input_pgp_key);
-        final SettingsData settings = mService.getModel().getSettings();
+        final SettingsData settings = getModel().getSettings();
         final String oldValue = settings.getPgp() == null ? "" : settings.getPgp();
         try {
             inputPGPKey.setText(oldValue);
@@ -434,7 +434,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                  .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                  .onPositive((dlg, which) -> {
             try {
-                final Long minFeeRateKB = mService.getModel().getFeeObservable().getFees().get(0);
+                final Long minFeeRateKB = getModel().getFeeObservable().getFees().get(0);
                 final String enteredFeeRate = UI.getText(rateEdit);
                 final Double enteredFeeRateKB = Double.valueOf(enteredFeeRate) * 1000;
 
@@ -529,22 +529,22 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private void attachObservers() {
-        if (mService != null && mService.getModel() != null) {
-            mService.getModel().getAvailableCurrenciesObservable().addObserver(this);
-            mService.getModel().getSettingsObservable().addObserver(this);
-            mService.getModel().getTwoFactorConfigDataObservable().addObserver( this);
+        if (mService != null && getModel() != null) {
+            getModel().getAvailableCurrenciesObservable().addObserver(this);
+            getModel().getSettingsObservable().addObserver(this);
+            getModel().getTwoFactorConfigDataObservable().addObserver( this);
         }
     }
     private void detachObservers() {
-        mService.getModel().getAvailableCurrenciesObservable().deleteObserver(this);
-        mService.getModel().getSettingsObservable().deleteObserver(this);
-        mService.getModel().getTwoFactorConfigDataObservable().deleteObserver( this);
+        getModel().getAvailableCurrenciesObservable().deleteObserver(this);
+        getModel().getSettingsObservable().deleteObserver(this);
+        getModel().getTwoFactorConfigDataObservable().deleteObserver( this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
         initSummaries();
         attachObservers();
@@ -554,15 +554,15 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     @Override
     public void onPause() {
         super.onPause();
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
         detachObservers();
     }
 
     public void updatesVisibilities() {
         if (mService.getConnectionManager() == null ||
-            mService.getModel() == null ||
-            mService.getModel().getTwoFactorConfig() == null)
+            getModel() == null ||
+            getModel().getTwoFactorConfig() == null)
             return;
 
         final boolean isHW = mService.getConnectionManager().isHW();
@@ -577,11 +577,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mAccountTitle.setVisible(!isLiquid);
         mSPV.setVisible(!isLiquid);
 
-        final boolean anyEnabled = mService.getModel().getTwoFactorConfig().isAnyEnabled();
+        final boolean anyEnabled = getModel().getTwoFactorConfig().isAnyEnabled();
         mLimitsPref.setVisible(anyEnabled && !isLiquid);
         mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
 
-        final boolean emailConfirmed = mService.getModel().getTwoFactorConfig().getEmail().isConfirmed();
+        final boolean emailConfirmed = getModel().getTwoFactorConfig().getEmail().isConfirmed();
         mLocktimePref.setVisible(emailConfirmed && !isLiquid);
         mSendLocktimePref.setVisible(emailConfirmed && !isLiquid);
         mSetEmail.setVisible(!emailConfirmed && !isLiquid);
@@ -598,7 +598,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 setRequiredNumBlocksSummary(settings.getRequiredNumBlocks());
                 setUnitSummary(mService.getBitcoinOrLiquidUnit());
                 setTimeoutSummary(settings.getAltimeout());
-                mService.getModel().fireBalances();  // TODO should be just if unit or pricing changes
+                getModel().fireBalances();  // TODO should be just if unit or pricing changes
                 updatesVisibilities();
             } else if (observable instanceof TwoFactorConfigDataObservable) {
                 final TwoFactorConfigData twoFaData = ((TwoFactorConfigDataObservable) observable).getTwoFactorConfigData();
@@ -654,7 +654,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         unitSpinner.setAdapter(adapter);
 
-        final ObjectNode limitsData = mService.getModel().getTwoFactorConfig().getLimits();
+        final ObjectNode limitsData = getModel().getTwoFactorConfig().getLimits();
         final boolean isFiat = limitsData.get("is_fiat").asBoolean();
         unitSpinner.setSelection(isFiat ? 1 : 0);
         amountEdit.setText(mService.getValueString(limitsData, isFiat, false));
@@ -715,7 +715,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 final GDKTwoFactorCall call = getSession().twoFactorChangeLimits(getActivity(), limitsData);
                 final ObjectNode newLimits =
                     call.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
-                mService.getModel().getTwoFactorConfigDataObservable().updateLimits(newLimits);
+                getModel().getTwoFactorConfigDataObservable().updateLimits(newLimits);
                 setLimitsText(newLimits);
                 UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
             } catch (Exception e) {

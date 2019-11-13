@@ -46,6 +46,7 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SweepData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -372,13 +373,14 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
 
     public void onInserted(final String scanned) {
         final GaService service = ((GreenAddressApplication) getApplication()).mService;
+        final Model model = ((GreenAddressApplication) getApplication()).getModel();
 
-        if (service == null || service.getModel() == null)
+        if (service == null || model == null)
             return;
 
         final Intent result = new Intent();
         result.putExtra("internal_qr", true);
-        final Integer subaccount = service.getModel().getCurrentSubaccount();
+        final Integer subaccount = model.getCurrentSubaccount();
         final NetworkData networkData = getNetwork();
 
         if (isSweep) {
@@ -386,7 +388,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
             // See if the address is a private key, and if so, sweep it
             final Long feeRate = service.getFeeEstimates().get(0);
             final String receiveAddress =
-                service.getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
+                model.getReceiveAddressObservable(subaccount).getReceiveAddress();
             final BalanceData balanceData = new BalanceData();
             balanceData.setAddress(receiveAddress);
             final List<BalanceData> balanceDataList = new ArrayList<>();

@@ -63,12 +63,12 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        if (getGAService() == null || getGAService().getModel() == null)
+        if (getGAService() == null || getModel() == null)
             return;
         if (!isDisconnected()) {
-            final int subaccount = getGAService().getModel().getCurrentSubaccount();
-            onUpdateReceiveAddress(getGAService().getModel().getReceiveAddressObservable(subaccount));
-            onUpdateTransactions(getGAService().getModel().getTransactionDataObservable(subaccount));
+            final int subaccount = getModel().getCurrentSubaccount();
+            onUpdateReceiveAddress(getModel().getReceiveAddressObservable(subaccount));
+            onUpdateTransactions(getModel().getTransactionDataObservable(subaccount));
         }
     }
 
@@ -102,8 +102,8 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
         mUnitButton.setPressed(!mIsFiat);
         mUnitButton.setSelected(!mIsFiat);
 
-        final int subaccount = getGAService().getModel().getCurrentSubaccount();
-        mTxList = getGAService().getModel().getTransactionDataObservable(subaccount).getTransactionDataList();
+        final int subaccount = getModel().getCurrentSubaccount();
+        mTxList = getModel().getTransactionDataObservable(subaccount).getTransactionDataList();
         UI.attachHideKeyboardListener(getActivity(), mView);
 
         UI.hideIf(getNetwork().getLiquid(), UI.find(mView, R.id.amountLayout));
@@ -307,8 +307,8 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
         if (getGAService().getConnectionManager().isOffline()) {
             UI.toast(getGaActivity(), R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
         } else {
-            final int subaccount = getGAService().getModel().getCurrentSubaccount();
-            getGAService().getModel().getReceiveAddressObservable(subaccount).refresh();
+            final int subaccount = getModel().getCurrentSubaccount();
+            getModel().getReceiveAddressObservable(subaccount).refresh();
         }
     }
 

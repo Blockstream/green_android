@@ -34,7 +34,7 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -76,9 +76,9 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     protected void onResumeWithService() {
         super.onResumeWithService();
         UI.mapClick(this, R.id.nextButton, this);
-        if (mService != null && mService.getModel() != null) {
+        if (mService != null && getModel() != null) {
             initEnabledMethods();
-            mService.getModel().getTwoFactorConfigDataObservable().addObserver(this);
+            getModel().getTwoFactorConfigDataObservable().addObserver(this);
         }
     }
 
@@ -86,8 +86,8 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     protected void onPauseWithService() {
         super.onPauseWithService();
         UI.unmapClick(UI.find(this, R.id.nextButton));
-        if (mService != null && mService.getModel() != null)
-            mService.getModel().getTwoFactorConfigDataObservable().deleteObserver(this);
+        if (mService != null && getModel() != null)
+            getModel().getTwoFactorConfigDataObservable().deleteObserver(this);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     }
 
     private void initEnabledMethods() {
-        final TwoFactorConfigData twoFactorConfig = mService.getModel().getTwoFactorConfig();
+        final TwoFactorConfigData twoFactorConfig = getModel().getTwoFactorConfig();
         if (twoFactorConfig == null)
             return;
         final List<String> enabledMethods = twoFactorConfig.getEnabledMethods();

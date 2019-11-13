@@ -61,6 +61,7 @@ public class TransactionItem implements Serializable {
 
     public final Map<String, Long> mAssetBalances;
     public final NetworkData mNetworkData;
+    public final Model mModel;
 
     public String toString() {
         return String.format("%s %s %s", date.toString(), type.name(), counterparty);
@@ -91,7 +92,8 @@ public class TransactionItem implements Serializable {
     }
 
     public TransactionItem(final GaService service, final TransactionData txData, final int currentBlock,
-                           final int subaccount, final NetworkData networkData) throws ParseException {
+                           final int subaccount, final NetworkData networkData,
+                           final Model model) throws ParseException {
         doubleSpentBy = null; //TODO gdk;
 
         mNetworkData = networkData;
@@ -109,6 +111,7 @@ public class TransactionItem implements Serializable {
         counterparty = "";
         this.subaccount = subaccount;
         isAsset = txData.isAsset();
+        mModel = model;
 
         mAssetBalances = new HashMap<>();
         for (final Map.Entry<String, Long> entry : txData.getSatoshi().entrySet()) {
@@ -144,7 +147,6 @@ public class TransactionItem implements Serializable {
         /////////////////
 
         isSpent = true;
-        final Model model = service.getModel();
         final List<TransactionData> transactionDataList =
             model.getUTXODataObservable(subaccount).getTransactionDataList();
         if (transactionDataList == null) {
@@ -171,7 +173,7 @@ public class TransactionItem implements Serializable {
                 return String.format("-%s %s", feeAmount, service.getBitcoinOrLiquidUnit());
             }
 
-            AssetInfoData info = service.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
+            AssetInfoData info = mModel.getAssetsObservable().getAssetsInfos().get(assetId);
             if (info == null)
                 info = new AssetInfoData(assetId);
             final String amount = amountToString(mAssetBalances.get(assetId),

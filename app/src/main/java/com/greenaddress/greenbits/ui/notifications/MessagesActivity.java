@@ -31,7 +31,7 @@ public class MessagesActivity extends LoggedActivity
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -78,7 +78,7 @@ public class MessagesActivity extends LoggedActivity
                         Log.e(TAG, e.getMessage());
                     }
                     //FIXME put this inside the try block when testing with real system messages
-                    mService.getModel().getEventDataObservable().remove(mCurrentEvent);
+                    getModel().getEventDataObservable().remove(mCurrentEvent);
                     stopLoading();
                     finishOnUiThread();
                 });

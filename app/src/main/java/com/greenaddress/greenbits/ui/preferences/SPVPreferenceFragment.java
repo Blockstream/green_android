@@ -41,7 +41,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
 
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getGAApp().getModel() == null) {
             logout();
             return;
         }

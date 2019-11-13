@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -40,14 +41,17 @@ public class ListTransactionsAdapter extends
     private final Activity mActivity;
     private final GaService mService;
     private final NetworkData mNetworkData;
+    private final Model mModel;
 
     public ListTransactionsAdapter(final Activity activity, final GaService service,
                                    final NetworkData networkData,
-                                   final List<TransactionItem> txItems) {
+                                   final List<TransactionItem> txItems,
+                                   final Model model) {
         mTxItems = txItems;
         mActivity = activity;
         mService = service;
         mNetworkData = networkData;
+        mModel = model;
     }
 
     @Override
@@ -105,7 +109,7 @@ public class ListTransactionsAdapter extends
             else if (mNetworkData.getLiquid() && txItem.isAsset) {
                 final String assetId =
                     txItem.mAssetBalances.keySet().toArray(new String[0])[0];
-                final AssetInfoData assetInfo = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
+                final AssetInfoData assetInfo = mModel.getAssetsObservable().getAssetsInfos().get(assetId);
                 message = assetInfo != null ? assetInfo.getEntity().getDomain() : assetId;
             } else if (txItem.type == TransactionItem.TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(

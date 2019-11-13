@@ -32,7 +32,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || mService.getModel() == null) {
+        if (mService == null || getModel() == null) {
             toFirst();
             return;
         }
@@ -56,7 +56,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         try {
             mAssetsBalances = getModel().getCurrentAccountBalanceData();
 
-            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, mService, getNetwork(), this);
+            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, mService, getNetwork(), this, getModel());
             assetsList.setAdapter(adapter);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -78,7 +78,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
         if (mService.isDisconnected()) {
             return;
@@ -88,7 +88,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null || mService.getModel() == null)
+        if (mService == null || getModel() == null)
             return;
     }
 
@@ -113,7 +113,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        final AssetInfoData assetInfo = mService.getModel().getAssetsObservable().getAssetsInfos().get(assetId);
+        final AssetInfoData assetInfo = getModel().getAssetsObservable().getAssetsInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", assetInfo)
         .putExtra("SATOSHI", mAssetsBalances.get(assetId));

@@ -74,7 +74,7 @@ public class TwoFactorActivity extends LoggedActivity {
     protected void onCreateWithService(final Bundle savedInstanceState) {
         setTitleBackTransparent();
 
-        if (mService.getModel() == null) {
+        if (getModel() == null) {
             finish();
             return;
         }
@@ -85,7 +85,7 @@ public class TwoFactorActivity extends LoggedActivity {
         mMethod = mMethodName.toLowerCase(Locale.US);
         settingEmail = getIntent().getBooleanExtra("settingEmail", false);
         final boolean mEnable = getIntent().getBooleanExtra("enable", true);
-        twoFactorConfigData = mService.getModel().getTwoFactorConfigDataObservable().getTwoFactorConfigData();
+        twoFactorConfigData = getModel().getTwoFactorConfigDataObservable().getTwoFactorConfigData();
         setTitle(getString(mEnable ? R.string.id_1s_twofactor_set_up : R.string.id_delete_s_twofactor,
                            mLocalizedMap.get(mMethod)));
 
@@ -221,7 +221,7 @@ public class TwoFactorActivity extends LoggedActivity {
         final TextView textCode = UI.find(this, R.id.textCode);
         final LinearLayout layoutCode = UI.find(this, R.id.layoutCode);
 
-        final String gauthUrl = mService.getModel().getTwoFactorConfig().getGauth().getData();
+        final String gauthUrl = getModel().getTwoFactorConfig().getGauth().getData();
         final BitmapDrawable bd =
             new BitmapDrawable(getResources(), new QrBitmap(gauthUrl, getResources().getColor(
                                                                 R.color.white)).getQRCode());
@@ -300,7 +300,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 UI.toast(this, "Email set", Toast.LENGTH_LONG);
                 setEnableDisableResult(false);
                 try {
-                    mService.getModel().getTwoFactorConfigDataObservable().refresh();
+                    getModel().getTwoFactorConfigDataObservable().refresh();
                 } catch (final Exception ignore) { }
             } catch (final Exception e) {
                 e.printStackTrace();
@@ -370,7 +370,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 e.printStackTrace();
                 UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
                 try {
-                    mService.getModel().getTwoFactorConfigDataObservable().refresh();
+                    getModel().getTwoFactorConfigDataObservable().refresh();
                 } catch (final Exception ignore) {}
             }
             finishOnUiThread();

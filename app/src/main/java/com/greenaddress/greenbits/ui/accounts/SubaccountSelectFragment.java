@@ -44,11 +44,11 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-        if (getGAService() == null || getGAService().getModel() == null) {
+        if (getGAService() == null || getModel() == null) {
             ((LoggedActivity) getActivity()).toFirst();
             return rootView;
         }
-        mModel = getGAService().getModel();
+        mModel = getModel();
 
         mAccountsView = UI.find(rootView, R.id.accountsList);
         mAccountsView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -57,7 +57,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
         mAccountsView.addItemDecoration(bottomOffsetDecoration);
 
         final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this,
-                                                                  getResources(), getActivity());
+                                                                  getResources(), getActivity(), getModel());
         mAccountsView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
 
@@ -97,7 +97,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        if (getGAService() == null || getGAService().getModel() == null)
+        if (getGAService() == null || getModel() == null)
             return;
         detachObservers();
     }
@@ -106,7 +106,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        if (getGAService() == null || getGAService().getModel() == null)
+        if (getGAService() == null || getModel() == null)
             return;
         if (getGAService().getConnectionManager().isPostLogin())
             attachObservers();
@@ -134,7 +134,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
 
     @Override
     public void onAccountSelected(final int subaccount) {
-        getGAService().getModel().getActiveAccountObservable().setActiveAccount(subaccount);
+        getModel().getActiveAccountObservable().setActiveAccount(subaccount);
         if (getGAService().getConnectionManager().isLoginWithPin()) {
             cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
         }
@@ -154,7 +154,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
                 try {
                     GDKSession.getSession().createSubAccount(getActivity(), input.toString(), "2of2").resolve(null,
                                                                                                               null);
-                    getGAService().getModel().getSubaccountDataObservable().refresh();
+                    getModel().getSubaccountDataObservable().refresh();
                 } catch (final Exception e) {
                     Toast.makeText(getContext(), R.string.id_operation_failure, Toast.LENGTH_LONG).show();
                 }

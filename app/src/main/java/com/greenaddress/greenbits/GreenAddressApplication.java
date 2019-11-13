@@ -25,6 +25,7 @@ import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
@@ -215,5 +216,14 @@ public class GreenAddressApplication extends MultiDexApplication {
     }
     public NetworkData getCurrentNetworkData() {
         return getNetworkData(getCurrentNetwork());
+    }
+
+    private Model mModel;
+
+    public Model getModel() {
+        return mModel;
+    }
+    public void setModel(final Model model) {
+        mModel = model;
     }
 }

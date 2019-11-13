@@ -35,7 +35,7 @@ public class SweepSelectActivity extends GaActivity implements SweepAdapter.OnAc
     public void onAccountSelected(int account) {
         Intent intent = new Intent(this, ScanActivity.class);
         intent.putExtra(PrefKeys.SWEEP, true);
-        mService.getModel().getActiveAccountObservable().setActiveAccount(mSubaccountData.get(account).getPointer());
+        getModel().getActiveAccountObservable().setActiveAccount(mSubaccountData.get(account).getPointer());
         startActivity(intent);
     }
 
