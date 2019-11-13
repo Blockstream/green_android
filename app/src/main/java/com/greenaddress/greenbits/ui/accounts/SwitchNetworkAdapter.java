@@ -22,7 +22,6 @@ public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdap
 
     private final List<NetworkData> mNetworkList;
     private final Context mContext;
-    private final boolean isLiquid;
     private int mSelectedItem;
     private final NetworkSwitchListener mNetworkSwitchListener;
 
@@ -32,7 +31,6 @@ public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdap
         mNetworkList = networkList;
         mContext = context;
         mSelectedItem = networkList.indexOf(selectedItem);
-        this.isLiquid = isLiquid;
         mNetworkSwitchListener = networkSwitchListener;
     }
 
@@ -48,7 +46,7 @@ public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdap
         holder.setText(networkData.getName());
         holder.setIcon(networkData.getIcon());
         holder.setSelected(position == mSelectedItem);
-        holder.itemView.setOnClickListener(view -> {
+        holder.mButton.setOnClickListener(view -> {
             mSelectedItem = holder.getAdapterPosition();
             notifyItemRangeChanged(0, mNetworkList.size());
             mNetworkSwitchListener.onNetworkClick(networkData);
