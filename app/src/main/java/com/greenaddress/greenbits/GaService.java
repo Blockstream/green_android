@@ -86,22 +86,6 @@ public class GaService extends Service  {
     // https://developer.android.com/reference/android/content/SharedPreferences
     private SharedPreferences.OnSharedPreferenceChangeListener mSyncListener;
 
-    /*public NetworkData getNetwork() {
-        return mNetwork;
-    }
-
-    public NetworkParameters getNetworkParameters() {
-        return mNetwork.getNetworkParameters();
-    }
-
-    public boolean isMainnet() {
-        return mNetwork.IsNetworkMainnet();
-    }
-
-    public boolean isRegtest() {
-        return mNetwork.isRegtest();
-    }*/
-
     public synchronized void disconnect() {
         mConnectionManager.disconnect();
     }
@@ -233,41 +217,7 @@ public class GaService extends Service  {
     public boolean isWatchOnly() {
         return mConnectionManager.isWatchOnly();
     }
-/*
-    public static String getCurrentNetworkId(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-    }
 
-    public static NetworkData getNetworkFromId(final String networkId) {
-        final List<NetworkData> networks = GDKSession.getNetworks();
-
-        NetworkData net = null;
-        for (final NetworkData n : networks) {
-            if (n.getNetwork().equals(networkId)) {
-                net = n;
-                break;
-            } else if (n.getNetwork().equals("mainnet")) {
-                net = n; // mainnet is our default network, we can replace it later if we find `networkId`
-            }
-        }
-
-        return net;
-    }
-
-    public void setCurrentNetworkId(final String networkId) {
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PrefKeys.NETWORK_ID_ACTIVE, networkId).apply();
-
-        final List<NetworkData> networks = GDKSession.getNetworks();
-
-        mNetwork = null;
-        for (final NetworkData n : networks) {
-            if (n.getNetwork().equals(networkId)) {
-                mNetwork = n;
-                break;
-            }
-        }
-    }
-*/
     public SharedPreferences cfg() {
         final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
         return getSharedPreferences(network, MODE_PRIVATE);
