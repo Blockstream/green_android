@@ -23,9 +23,6 @@ public class FirstScreenActivity extends LoginActivity {
 
     public static final int NETWORK_SELECTOR_REQUEST = 51341;
     private Button mSelectNetwork;
-    private TextView mWalletDetected;
-
-    private int mTheme;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_screen; }
@@ -42,16 +39,15 @@ public class FirstScreenActivity extends LoginActivity {
         }
         restoreButton.setOnClickListener(v -> startActivity(new Intent(this, MnemonicActivity.class)));
         loginButton.setText(AuthenticationHandler.hasPin(this) ? R.string.id_log_in : R.string.id_create_new_wallet);
-        Intent loginButtonIntent = AuthenticationHandler.hasPin(this) ?
-                                   new Intent(this, PinActivity.class) :
-                                   new Intent(this, InfoActivity.class);
+        final Intent loginButtonIntent = AuthenticationHandler.hasPin(this) ?
+                                         new Intent(this, PinActivity.class) :
+                                         new Intent(this, InfoActivity.class);
         loginButton.setOnClickListener(v -> startActivity(loginButtonIntent));
 
 
         mSelectNetwork = UI.find(this, R.id.settingsButton);
         mSelectNetwork.setOnClickListener(v -> { startActivityForResult(new Intent(this, NetworkSettingsActivity.class),
                                                                         NETWORK_SELECTOR_REQUEST); });
-
     }
 
 
@@ -64,10 +60,6 @@ public class FirstScreenActivity extends LoginActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
         switch (item.getItemId()) {
         case R.id.action_watchonly:
             startActivity(new Intent(this, WatchOnlyLoginActivity.class));
@@ -97,12 +89,6 @@ public class FirstScreenActivity extends LoginActivity {
     public void onSelectNetwork() {
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
         mSelectNetwork.setText(networkData.getName());
-        UI.showIf(AuthenticationHandler.hasPin(this), mWalletDetected);
         invalidateOptionsMenu();
-
-        // Recreate the activity to load the new theme if necessary
-        if (mTheme != ThemeUtils.getThemeFromNetworkId(networkData, this, getMetadata())) {
-            recreate();
-        }
     }
 }
