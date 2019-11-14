@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
 import java.util.Random;
 import java.util.Set;
 
@@ -68,72 +67,33 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                 getGAApp().resetSession();
                 getConnectionManager().connect(this);
                 getSession().registerUser(this, null, mnemonic).resolve(null, null);
-                getGAApp().resetSession();
-                getConnectionManager().connect(this);
                 getConnectionManager().loginWithMnemonic(mnemonic, "");
-            } catch (final Exception ex) {
-                if (getCode(ex) == GDK.GA_RECONNECT) {
-                    UI.toast(SelectionActivity.this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
-                } else {
-                    UI.toast(SelectionActivity.this, R.string.id_wallet_creation_failed, Toast.LENGTH_LONG);
-                }
-                stopLoading();
+                getGAApp().onPostLogin();
+                runOnUiThread(() -> {
+                    stopLoading();
+                    if (AuthenticationHandler.hasPin(this)) {
+                        final Intent intent = new Intent(this, TabbedMainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    } else {
+                        final Intent savePin = PinSaveActivity.createIntent(this, mMnemonic);
+                        startActivity(savePin);
+                    }
+                });
+            } catch (final Exception e) {
+                getSession().disconnect();
+                getGAApp().resetSession();
+                runOnUiThread(() -> {
+                    stopLoading();
+                    getConnectionManager().clearPreviousLoginError();
+                    if (getCode(e) == GDK.GA_RECONNECT) {
+                        UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+                    } else {
+                        UI.toast(this, R.string.id_wallet_creation_failed, Toast.LENGTH_LONG);
+                    }
+                });
             }
         });
-    }
-    @Override
-    protected void onLoginSuccess() {
-        super.onLoginSuccess();
-        stopLoading();
-        if (AuthenticationHandler.hasPin(this)) {
-            final Intent intent = new Intent(this, TabbedMainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        } else {
-            final Intent savePin = PinSaveActivity.createIntent(this, mMnemonic);
-            startActivity(savePin);
-        }
-    }
-
-    @Override
-    public void update(final Observable observable, final Object o) {
-        if (observable instanceof ConnectionManager) {
-            //do not auto redirect if I am in post login, so I can finish setting two-factors
-            final ConnectionManager cm = (ConnectionManager) observable;
-            if (!cm.isPostLogin()) {
-                super.update(observable, o);
-            }
-        }
-    }
-
-    @Override
-    protected void onLoginFailure() {
-        super.onLoginFailure();
-        stopLoading();
-        final Exception lastLoginException = getConnectionManager().getLastLoginException();
-        getConnectionManager().clearPreviousLoginError();
-        final int code = getCode(lastLoginException);
-        if (code == GDK.GA_RECONNECT) {
-            UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
-        } else {
-            UI.toast(this, R.string.id_wallet_creation_failed, Toast.LENGTH_LONG);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getConnectionManager() != null) {
-            getConnectionManager().addObserver(this);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (getConnectionManager() != null) {
-            getConnectionManager().deleteObserver(this);
-        }
     }
 
     @Override

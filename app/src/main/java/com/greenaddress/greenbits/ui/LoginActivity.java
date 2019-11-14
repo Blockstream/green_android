@@ -22,33 +22,9 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         finishOnUiThread();
     }
 
-    protected void onLoginSuccess() { }
-    protected void onLoginFailure() { }
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // We add the observer on both create and resume, to be sure to be notified of connection
-        // manager state changes, it's not a problem adding twice since per Observer documentation:
-        // "Adds an observer to the set of observers for this object, provided
-        // that it is not the same as some observer already in the set."
-        getConnectionManager().addObserver(this);
-    }
-
-    private synchronized void checkState() {
-        final ConnectionManager cm = getConnectionManager();
-        try {
-            if (cm.isLoggedIn()) {
-                getGAApp().onPostLogin();
-                runOnUiThread(this::onLoginSuccess);
-            } else if (cm.isLastLoginFailed()) {
-                runOnUiThread(this::onLoginFailure);
-            } else if (cm.isPostLogin()) {
-                runOnUiThread(this::onLoggedIn);
-            }
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -56,34 +32,16 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         super.onResume();
         if (getConnectionManager() != null) {
             final ConnectionManager cm = getConnectionManager();
-            cm.deleteObserver(this);
             cm.clearPreviousLoginError();
-            checkState();
-            cm.addObserver(this);
         }
         if (getGAApp().getTorProgressObservable() != null) {
             getGAApp().getTorProgressObservable().addObserver(this);
         }
     }
 
-    protected void loginWithPin(final String pin, final PinData pinData) {
-        if (getConnectionManager() == null) {
-            shortToast(R.string.id_you_are_not_connected);
-            return;
-        }
-        getGAApp().getExecutor().execute(() -> {
-            getGAApp().resetSession();
-            getConnectionManager().connect(this);
-            getConnectionManager().loginWithPin(pin, pinData);
-        });
-    }
-
     @Override
     public void onPause() {
         super.onPause();
-        if (getConnectionManager() != null) {
-            getConnectionManager().deleteObserver(this);
-        }
         if (getGAApp().getTorProgressObservable() != null) {
             getGAApp().getTorProgressObservable().deleteObserver(this);
         }
@@ -91,9 +49,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
 
     @Override
     public void update(final Observable observable, final Object o) {
-        if (observable instanceof ConnectionManager) {
-            checkState();
-        } else if (observable instanceof TorProgressObservable) {
+        if (observable instanceof TorProgressObservable) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

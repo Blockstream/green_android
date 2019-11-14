@@ -63,12 +63,26 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             mPinFragment.setEnabled(false);
 
         final PinData pinData = PinData.fromPreferenceValues(mPin);
-        loginWithPin(pin, pinData);
+        getGAApp().getExecutor().execute(() -> {
+            try {
+                getGAApp().resetSession();
+                getConnectionManager().connect(this);
+                getConnectionManager().loginWithPin(pin, pinData);
+                getGAApp().onPostLogin();
+                runOnUiThread(() -> {
+                    stopLoading();
+                    mPin.edit().putInt("counter", 0).apply();
+                    goToTabbedMainActivity();
+                });
+            } catch (final Exception e) {
+                getConnectionManager().disconnect();
+                getGAApp().resetSession();
+                runOnUiThread(this::onLoginFailure);
+            }
+        });
     }
 
-    @Override
-    protected void onLoginFailure() {
-        super.onLoginFailure();
+    void onLoginFailure() {
         stopLoading();
         final String message;
         final int counter = mPin.getInt("counter", 0) + 1;
@@ -109,13 +123,6 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 mPinFragment.setEnabled(true);
             }
         });
-    }
-
-    @Override
-    protected void onLoginSuccess() {
-        super.onLoginSuccess();
-        stopLoading();
-        mPin.edit().putInt("counter", 0).apply();
     }
 
     @Override

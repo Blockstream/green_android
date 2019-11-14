@@ -42,7 +42,7 @@ import java.util.concurrent.Callable;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
-public class RequestLoginActivity extends LoginActivity implements Observer {
+public class RequestLoginActivity extends LoginActivity {
 
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
 
@@ -292,28 +292,20 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
                 getGAApp().resetSession();
                 cm.connect(this);
                 cm.login(parent, mHwDeviceData, mHwResolver);
+                runOnUiThread(() -> {
+                    stopLoading();
+                    onLoggedIn();
+                });
             } catch (final Exception e) {
                 e.printStackTrace();
-                onLoginFailure();
+                runOnUiThread(() -> {
+                    stopLoading();
+                    toast(R.string.id_error_logging_in_with_hardware);
+                    showInstructions(R.string.id_please_reconnect_your_hardware);
+                });
             }
         });
     }
-
-    @Override
-    protected void onLoginSuccess() {
-        stopLoading();
-        onLoggedIn();
-    }
-
-    @Override
-    protected void onLoginFailure() {
-        stopLoading();
-        runOnUiThread(() -> {
-            toast(R.string.id_error_logging_in_with_hardware);
-            showInstructions(R.string.id_please_reconnect_your_hardware);
-        });
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -209,8 +209,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         }
     }
 
-
-
     private int checkValid(final String mnemonic) {
         final String[] words = mnemonic.split(" ");
 
@@ -257,31 +255,49 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             return;
         }
 
-        if (isHexSeed(mnemonic)) {
+        if (isHexSeed(mnemonic) || !mEncryptedSwitch.isChecked()) {
             getGAApp().getExecutor().execute(() -> {
-                getGAApp().resetSession();
-                cm.connect(this);
-                cm.loginWithMnemonic(mnemonic, "");
-            });
-        } else if (!mEncryptedSwitch.isChecked()) {
-            getGAApp().getExecutor().execute(() -> {
-                getGAApp().resetSession();
-                cm.connect(this);
-                cm.loginWithMnemonic(mnemonic, "");
+                loginWithMnemonic(mnemonic, "");
             });
         } else {
             CB.after(askForPassphrase(), new CB.Toast<String>(this, mOkButton) {
                 @Override
                 public void onSuccess(final String mnemonicPassword) {
-                    getGAApp().resetSession();
-                    cm.connect(getBaseContext());
-                    cm.loginWithMnemonic(mnemonic, mnemonicPassword);
+                    getGAApp().getExecutor().execute(() -> {
+                        loginWithMnemonic(mnemonic, mnemonicPassword);
+                    });
                 }
             });
         }
 
         startLoading();
         mOkButton.setEnabled(false);
+    }
+
+    void loginWithMnemonic(String mnemonic, String password) {
+        try {
+            getGAApp().resetSession();
+            getConnectionManager().connect(this);
+            getConnectionManager().loginWithMnemonic(mnemonic, "");
+            getGAApp().onPostLogin();
+            runOnUiThread(() -> {
+                stopLoading();
+                onLoginSuccess();
+            });
+        } catch (final Exception e) {
+            getConnectionManager().disconnect();
+            getGAApp().resetSession();
+            runOnUiThread(() -> {
+                stopLoading();
+                getConnectionManager().clearPreviousLoginError();
+                if (getCode(e) == GDK.GA_RECONNECT) {
+                    UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+                } else {
+                    UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+                }
+                enableLogin();
+            });
+        }
     }
 
     private ListenableFuture<String> askForPassphrase() {
@@ -422,9 +438,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             startActivityForResult(new Intent(this, ScanForResultActivity.class), QRSCANNER);
     }
 
-    @Override
-    protected void onLoginSuccess() {
-        super.onLoginSuccess();
+    void onLoginSuccess() {
         stopLoading();
         if (getCallingActivity() == null) {
             if (getIntent().getBooleanExtra(TEMPORARY_MODE, false)) {
@@ -440,22 +454,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             setResult(RESULT_OK);
             finishOnUiThread();
         }
-    }
-
-    @Override
-    protected void onLoginFailure() {
-        super.onLoginFailure();
-        final Exception lastLoginException = getConnectionManager().getLastLoginException();
-        final int code = getCode(lastLoginException);
-        getConnectionManager().clearPreviousLoginError();
-        if (code == GDK.GA_RECONNECT) {
-            UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
-        } else {
-            UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
-        }
-
-        stopLoading();
-        enableLogin();
     }
 
     @Override

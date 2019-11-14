@@ -216,18 +216,19 @@ public class ConnectionManager extends Observable {
         }
     }
 
-    public void loginWithPin(final String pin, final PinData pinData) {
+    public void loginWithPin(final String pin, final PinData pinData) throws Exception {
         login(null,null, pin, pinData,null, null);
     }
-    public void loginWatchOnly(final String username, final String password) {
+    public void loginWatchOnly(final String username, final String password) throws Exception {
         login(null,null, null,null,username, password);
     }
-    public void loginWithMnemonic(final String mnemonic, final String mnemonicPassword) {
+    public void loginWithMnemonic(final String mnemonic, final String mnemonicPassword) throws Exception {
         login(mnemonic, mnemonicPassword, null, null, null, null);
     }
+
     public void login(final String mnenonic, final String mnemonicPassword,
                       final String pin, final PinData pinData,
-                      final String username, final String password) {
+                      final String username, final String password) throws Exception {
         try {
             setState(ConnState.LOGGINGIN);
             final Activity parent = null; // FIXME: Pass this in/split this call up
@@ -255,6 +256,7 @@ public class ConnectionManager extends Observable {
             Log.e(TAG, "Error while logging " + e.getMessage() );
             mLastLoginException = e;
             setState(ConnState.DISCONNECTED);
+            throw e;
         }
     }
 

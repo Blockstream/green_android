@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui.authentication;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,9 +18,7 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.CircularButton;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import java.util.Observer;
-
-public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClickListener, Observer {
+public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClickListener {
 
     private EditText mUsernameText;
     private EditText mPasswordText;
@@ -82,7 +79,6 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
     public void onDestroy() {
         super.onDestroy();
         UI.unmapClick(mLoginButton);
-        getConnectionManager().deleteObserver(this);
     }
 
     private void onLoginButtonClicked() {
@@ -94,17 +90,35 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
             return;
         }
 
-        final ConnectionManager connectionManager = getConnectionManager();
         final String username = UI.getText(mUsernameText);
         final String password = UI.getText(mPasswordText);
 
         onLoginBegin();
 
         getGAApp().getExecutor().execute(() -> {
-            getGAApp().resetSession();
-            connectionManager.loginWatchOnly(username, password);
+            try {
+                getGAApp().resetSession();
+                getConnectionManager().connect(this);
+                getConnectionManager().loginWatchOnly(username, password);
+                getGAApp().onPostLogin();
+                runOnUiThread(() -> {
+                    onLoginStop();
+                    goToTabbedMainActivity();
+                });
+            } catch (final Exception e) {
+                getConnectionManager().disconnect();
+                getGAApp().resetSession();
+                runOnUiThread(() -> {
+                    getConnectionManager().clearPreviousLoginError();
+                    onLoginStop();
+                    if (getCode(e) == GDK.GA_RECONNECT) {
+                        mPasswordText.setError(getString(R.string.id_you_are_not_connected_to_the));
+                    } else {
+                        mPasswordText.setError(getString(R.string.id_user_not_found_or_invalid));
+                    }
+                });
+            }
         });
-
     }
 
     private void onLoginBegin() {
@@ -123,24 +137,6 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
         mUsernameText.setEnabled(true);
         mPasswordText.setEnabled(true);
         mRememberSwitch.setEnabled(true);
-    }
-
-    @Override
-    protected void onLoginFailure() {
-        final Exception lastLoginException = getConnectionManager().getLastLoginException();
-        getConnectionManager().clearPreviousLoginError();
-        final int code = getCode(lastLoginException);
-        onLoginStop();
-        if (code == GDK.GA_RECONNECT) {
-            mPasswordText.setError(getString(R.string.id_you_are_not_connected_to_the));
-        } else {
-            mPasswordText.setError(getString(R.string.id_user_not_found_or_invalid));
-        }
-    }
-
-    @Override
-    protected void onLoginSuccess() {
-        super.onLoggedIn();
     }
 
     private boolean validate() {
