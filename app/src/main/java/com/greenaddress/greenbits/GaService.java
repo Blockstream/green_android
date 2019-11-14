@@ -69,7 +69,6 @@ public class GaService extends Service  {
     //private NetworkData mNetwork;
     //private Model mModel;
     //private ConnectionManager mConnectionManager;
-    private TorProgressObservable mTorProgressObservable = new TorProgressObservable();
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
 
     private String mSignUpMnemonic;
@@ -446,10 +445,6 @@ public class GaService extends Service  {
 
     public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
         return mExecutor.submit(() -> getSession().changeMemo(txHashHex, memo));
-    }
-
-    public TorProgressObservable getTorProgressObservable() {
-        return mTorProgressObservable;
     }
 
 }

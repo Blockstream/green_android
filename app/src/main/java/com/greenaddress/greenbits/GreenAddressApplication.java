@@ -29,6 +29,7 @@ import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.model.TorProgressObservable;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -47,6 +48,7 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 public class GreenAddressApplication extends MultiDexApplication {
 
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
+    private TorProgressObservable mTorProgressObservable = new TorProgressObservable();
 
     public GaService mService;
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
@@ -264,6 +266,10 @@ public class GreenAddressApplication extends MultiDexApplication {
     public void resetSession() {
         getSession().disconnect();
         getSession().destroy();
+    }
+
+    public TorProgressObservable getTorProgressObservable() {
+        return mTorProgressObservable;
     }
 
 }

@@ -59,7 +59,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
             cm.clearPreviousLoginError();
             checkState();
             cm.addObserver(this);
-            mService.getTorProgressObservable().addObserver(this);
+            getGAApp().getTorProgressObservable().addObserver(this);
         }
     }
 
@@ -80,7 +80,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         if (mService == null)
             return;
         getConnectionManager().deleteObserver(this);
-        mService.getTorProgressObservable().deleteObserver(this);
+        getGAApp().getTorProgressObservable().deleteObserver(this);
     }
 
     @Override
