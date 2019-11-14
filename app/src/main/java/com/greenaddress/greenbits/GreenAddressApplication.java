@@ -20,6 +20,8 @@ import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.JSONConverterImpl;
@@ -41,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
@@ -49,6 +52,7 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
     private TorProgressObservable mTorProgressObservable = new TorProgressObservable();
+    private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
 
     public GaService mService;
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
@@ -270,6 +274,10 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     public TorProgressObservable getTorProgressObservable() {
         return mTorProgressObservable;
+    }
+
+    public ListeningExecutorService getExecutor() {
+        return mExecutor;
     }
 
 }

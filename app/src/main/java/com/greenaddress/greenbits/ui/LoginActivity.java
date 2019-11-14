@@ -68,7 +68,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
             shortToast(R.string.id_you_are_not_connected);
             return;
         }
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             getGAApp().resetSession();
             getConnectionManager().loginWithPin(pin, pinData);
         });

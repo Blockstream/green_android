@@ -69,7 +69,7 @@ public class GaService extends Service  {
     //private NetworkData mNetwork;
     //private Model mModel;
     //private ConnectionManager mConnectionManager;
-    private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
+    //private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
 
     private String mSignUpMnemonic;
     private Bitmap mSignUpQRCode;
@@ -104,10 +104,6 @@ public class GaService extends Service  {
         app.registerReceiver(netConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         // Fire a fake connectivity change to kick start the state machine
         netConnectivityReceiver.onReceive(null, null);
-    }
-
-    public ListeningExecutorService getExecutor() {
-        return mExecutor;
     }
 
     public ScheduledThreadPoolExecutor getTimerExecutor() {
@@ -249,7 +245,7 @@ public class GaService extends Service  {
         // android.os.SystemClock.sleep(10000);
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
 
-        final Model model = new Model(mExecutor);
+        final Model model = new Model(getGAApp().getExecutor());
         getGAApp().setModel(model);
         initSettings();
         getSession().setNotificationModel(getGAApp().getModel(), getGAApp().getConnectionManager());
@@ -327,7 +323,7 @@ public class GaService extends Service  {
     }
 
     public ListenableFuture<Void> setPin(final String mnemonic, final String pin, final SharedPreferences preferences) {
-        return mExecutor.submit(() -> {
+        return getGAApp().getExecutor().submit(() -> {
             final PinData pinData = getSession().setPin(mnemonic, pin, "default");
             AuthenticationHandler.setPin(pinData, pin.length() == 6, preferences);
             setPinJustSaved(true);
@@ -439,12 +435,12 @@ public class GaService extends Service  {
         if (getGAApp().getConnectionManager().isDisconnected())
             return;
         if (mDisconnectTimer != null && System.currentTimeMillis() > mDisconnectTimer) {
-            mExecutor.submit(() -> getGAApp().getConnectionManager().disconnect());
+            getGAApp().getExecutor().submit(() -> getGAApp().getConnectionManager().disconnect());
         }
     }
 
     public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
-        return mExecutor.submit(() -> getSession().changeMemo(txHashHex, memo));
+        return getGAApp().getExecutor().submit(() -> getSession().changeMemo(txHashHex, memo));
     }
 
 }

@@ -174,7 +174,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
                      .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                      .onPositive((dialog, which) -> {
             mPin = UI.getText(v, R.id.btchipPINValue);
-            mService.getExecutor().submit((Callable<Void>)() -> { onLedger(false); return null; });
+            getGAApp().getExecutor().submit((Callable<Void>)() -> { onLedger(false); return null; });
         })
                      .onNegative((dialog, which) -> {
             toast(R.string.id_no_pin_provided_exiting);
@@ -283,7 +283,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
     }
 
     private void doLogin(final Activity parent) {
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 final ConnectionManager cm = getConnectionManager();
                 cm.connect();

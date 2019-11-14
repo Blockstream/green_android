@@ -61,7 +61,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
 
     private void onMnemonicVerified() {
         startLoading();
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             final String mnemonic = mMnemonic;
             try {
                 getGAApp().resetSession();

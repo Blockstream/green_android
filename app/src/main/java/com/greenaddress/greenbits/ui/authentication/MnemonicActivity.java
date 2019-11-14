@@ -257,12 +257,12 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
 
         if (isHexSeed(mnemonic)) {
-            mService.getExecutor().execute(() -> {
+            getGAApp().getExecutor().execute(() -> {
                 getGAApp().resetSession();
                 cm.loginWithMnemonic(mnemonic, "");
             });
         } else if (!mEncryptedSwitch.isChecked()) {
-            mService.getExecutor().execute(() -> {
+            getGAApp().getExecutor().execute(() -> {
                 getGAApp().resetSession();
                 cm.loginWithMnemonic(mnemonic, "");
             });

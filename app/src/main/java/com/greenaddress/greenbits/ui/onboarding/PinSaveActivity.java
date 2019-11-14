@@ -66,7 +66,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
                     UI.popup(PinSaveActivity.this, R.string.id_warning).content(t.getLocalizedMessage()).show();
                 });
             }
-        }, mService.getExecutor());
+        }, getGAApp().getExecutor());
     }
 
     @Override

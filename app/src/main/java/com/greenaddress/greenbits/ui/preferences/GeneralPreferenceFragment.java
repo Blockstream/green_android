@@ -132,7 +132,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             if (!newValue.equals(settings.getUnit())) {
                 settings.setUnit(newValue.toString());
                 setUnitSummary(null);
-                mService.getExecutor().execute(() -> {
+                getGAApp().getExecutor().execute(() -> {
                     updateSettings(settings);
                     final TwoFactorConfigDataObservable twoFaData =
                         getModel().getTwoFactorConfigDataObservable();
@@ -161,7 +161,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             settings.getPricing().setCurrency(currency);
             settings.getPricing().setExchange(exchange);
             setPricingSummary(null);
-            mService.getExecutor().execute(() -> updateSettings(settings));
+            getGAApp().getExecutor().execute(() -> updateSettings(settings));
 
             final TwoFactorConfigDataObservable twoFaData = model.getTwoFactorConfigDataObservable();
             if (twoFaData.getTwoFactorConfigData() != null) {
@@ -182,7 +182,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             final SettingsData settings = getModel().getSettings();
             settings.setRequiredNumBlocks(Integer.parseInt(priorityValues[index]));
             setRequiredNumBlocksSummary(null);
-            mService.getExecutor().execute(() -> updateSettings(settings));
+            getGAApp().getExecutor().execute(() -> updateSettings(settings));
             return true;
         });
 
@@ -215,7 +215,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 settings.setNotifications(new NotificationsData());
             settings.getNotifications().setEmailOutgoing(value);
             settings.getNotifications().setEmailIncoming(value);
-            mService.getExecutor().execute(() -> updateSettings(settings));
+            getGAApp().getExecutor().execute(() -> updateSettings(settings));
             return true;
         });
 
@@ -257,7 +257,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             final SettingsData settings = getModel().getSettings();
             settings.setAltimeout(altimeout);
             setTimeoutSummary(null);
-            mService.getExecutor().execute(() -> updateSettings(settings));
+            getGAApp().getExecutor().execute(() -> updateSettings(settings));
             cfg().edit().putString(PrefKeys.ALTIMEOUT, newValue.toString()).apply(); // need to save this, for scheduleDisconnect
             mService.rescheduleDisconnect();
             return true;
@@ -328,7 +328,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username));
         } else {
             mWatchOnlyLogin.setSummary("");
-            mService.getExecutor().submit(() -> {
+            getGAApp().getExecutor().submit(() -> {
                 final String username2 = getSession().getWatchOnlyUsername();
                 getActivity().runOnUiThread(() -> {
                     if (username2.isEmpty())
@@ -411,7 +411,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             final String newValue = UI.getText(inputPGPKey);
             if (!newValue.equals(oldValue)) {
                 settings.setPgp(newValue);
-                mService.getExecutor().execute(() -> updateSettings(settings));
+                getGAApp().getExecutor().execute(() -> updateSettings(settings));
             }
         }).build();
         UI.showDialog(dialog);
@@ -681,7 +681,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         if (warnIfOffline(getActivity())) {
             return false;
         }
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 getSession().sendNlocktimes();
             } catch (final Exception e) {
@@ -710,7 +710,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         limitsData.set("is_fiat", isFiat ? BooleanNode.TRUE : BooleanNode.FALSE);
         limitsData.set(isFiat ? "fiat" : mService.getUnitKey(), new TextNode(amountStr));
 
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 final GDKTwoFactorCall call = getSession().twoFactorChangeLimits(getActivity(), limitsData);
                 final ObjectNode newLimits =

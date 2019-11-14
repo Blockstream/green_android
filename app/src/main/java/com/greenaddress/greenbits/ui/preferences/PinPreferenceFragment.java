@@ -136,7 +136,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
                 public void onFailure(final Throwable t) {
                     UI.popup(getActivity(), R.string.id_warning).content(t.getMessage()).show();
                 }
-            }, mService.getExecutor());
+            }, getGAApp().getExecutor());
         } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
             try {
                 KeyStoreAES.showAuthenticationScreen(getActivity(), "");

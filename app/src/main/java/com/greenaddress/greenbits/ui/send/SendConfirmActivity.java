@@ -161,7 +161,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final TextView noteText = UI.find(this, R.id.noteText);
         final String memo = noteText.getText().toString();
         final GaActivity activity = SendConfirmActivity.this;
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 // mTxJson.set("memo", new TextNode(memo));
                 // sign transaction

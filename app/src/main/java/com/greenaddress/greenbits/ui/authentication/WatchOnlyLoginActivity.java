@@ -99,7 +99,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
         onLoginBegin();
 
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             getGAApp().resetSession();
             connectionManager.loginWatchOnly(username, password);
         });

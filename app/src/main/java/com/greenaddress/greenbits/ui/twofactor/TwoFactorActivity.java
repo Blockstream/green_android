@@ -288,7 +288,7 @@ public class TwoFactorActivity extends LoggedActivity {
     }
 
     public void setEmail(String data) {
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 final TwoFactorDetailData twoFactorDetail = new TwoFactorDetailData();
                 twoFactorDetail.setData(data);
@@ -317,7 +317,7 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 final TwoFactorDetailData twoFactorDetail = new TwoFactorDetailData();
                 twoFactorDetail.setEnabled(true);
@@ -351,7 +351,7 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 final TwoFactorDetailData twoFactorDetail = twoFactorConfigData.getMethod(method);
                 twoFactorDetail.setEnabled(false);
@@ -384,7 +384,7 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 final GDKTwoFactorCall twoFactorCall = getSession().twoFactorReset(this, email, isDispute);
                 twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
@@ -408,7 +408,7 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        mService.getExecutor().execute(() -> {
+        getGAApp().getExecutor().execute(() -> {
             try {
                 final GDKTwoFactorCall twoFactorCall = getSession().twofactorCancelReset(this);
                 twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));

@@ -69,7 +69,7 @@ public class MessagesActivity extends LoggedActivity
             if (mAckedCheckBox.isChecked()) {
                 // Sign and ack the current message, then move to the next
                 startLoading();
-                mService.getExecutor().execute(() -> {
+                getGAApp().getExecutor().execute(() -> {
                     try {
                         final ConnectionManager cm = getConnectionManager();
                         final GDKTwoFactorCall call = getSession().ackSystemMessage(this, mCurrentMessage);
