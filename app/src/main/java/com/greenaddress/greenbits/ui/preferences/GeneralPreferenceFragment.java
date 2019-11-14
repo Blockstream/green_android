@@ -85,7 +85,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         setHasOptionsMenu(true);
         networkData = getNetwork();
 
-        if (mService == null || getModel() == null) {
+        if (getModel() == null) {
             logout();
             return;
         }
@@ -244,7 +244,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         }
 
         // Auto logout timeout
-        final int timeout = mService.getAutoLogoutTimeout();
+        final int timeout = getModel().getSettings().getAltimeout();
         mTimeoutPref = find(PrefKeys.ALTIMEOUT);
         mTimeoutPref.setEntryValues(getResources().getStringArray(R.array.auto_logout_values));
         setTimeoutValues(mTimeoutPref);
@@ -259,7 +259,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             setTimeoutSummary(null);
             getGAApp().getExecutor().execute(() -> updateSettings(settings));
             cfg().edit().putString(PrefKeys.ALTIMEOUT, newValue.toString()).apply(); // need to save this, for scheduleDisconnect
-            mService.rescheduleDisconnect();
             return true;
         });
 
@@ -529,7 +528,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     }
 
     private void attachObservers() {
-        if (mService != null && getModel() != null) {
+        if (getModel() != null) {
             getModel().getAvailableCurrenciesObservable().addObserver(this);
             getModel().getSettingsObservable().addObserver(this);
             getModel().getTwoFactorConfigDataObservable().addObserver( this);
@@ -544,8 +543,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     @Override
     public void onResume() {
         super.onResume();
-        if (mService == null || getModel() == null)
-            return;
         initSummaries();
         attachObservers();
         updatesVisibilities();
@@ -554,8 +551,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     @Override
     public void onPause() {
         super.onPause();
-        if (mService == null || getModel() == null)
-            return;
         detachObservers();
     }
 

@@ -121,11 +121,6 @@ public class ScanForResultActivity extends AppCompatActivity implements TextureV
     @Override
     protected void onResume() {
         super.onResume();
-        final GaService service = ((GreenAddressApplication) getApplication()).mService;
-        if (service == null) {
-            finish();
-            return;
-        }
         maybeOpenCamera();
     }
 

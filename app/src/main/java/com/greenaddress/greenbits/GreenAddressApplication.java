@@ -353,4 +353,8 @@ public class GreenAddressApplication extends MultiDexApplication {
         };
         getModel().getSettingsObservable().addObserver(observer);
     }
+
+    public GaService getService() {
+        return mService;
+    }
 }

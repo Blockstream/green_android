@@ -45,10 +45,6 @@ public abstract class GAFragment extends Fragment {
         return ((GaActivity) getActivity()).getNetwork();
     }
 
-    protected GaService getGAService() {
-        return mApp.mService;
-    }
-
     protected Model getModel() {
         return mApp.getModel();
     }

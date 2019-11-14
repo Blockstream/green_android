@@ -21,7 +21,6 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
 
     private final List<SubaccountData> mSubaccountList;
     private final OnAccountSelected mOnAccountSelected;
-    private final GaService mService;
     private final Resources mResources;
     private final Activity mActivity;
     private final Model mModel;
@@ -31,11 +30,10 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
         void onNewSubaccount();
     }
 
-    public AccountAdapter(final List<SubaccountData> subaccountList, final GaService service,
+    public AccountAdapter(final List<SubaccountData> subaccountList,
                           final OnAccountSelected cb, final Resources resources, final Activity activity,
                           final Model model) {
         mSubaccountList = subaccountList;
-        mService = service;
         mOnAccountSelected = cb;
         mResources = resources;
         mActivity = activity;

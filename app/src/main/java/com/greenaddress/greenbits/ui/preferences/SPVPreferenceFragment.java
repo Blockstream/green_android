@@ -15,6 +15,7 @@ import androidx.preference.Preference;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ScanForResultActivity;
 import com.greenaddress.greenbits.ui.UI;
@@ -38,6 +39,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     private Preference mScanSPV;
     private CheckBoxPreference mSPVEnabled;
     private CheckBoxPreference mSPVSyncOnMobile;
+    private GaService mService;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
@@ -45,11 +47,12 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
 
-        if (mService == null || getGAApp().getModel() == null) {
+        if (getGAApp().getModel() == null) {
             logout();
             return;
         }
 
+        mService = getGAApp().getService();
         mTrustedPeer = find("trusted_peer");
         mResetSPV = find("reset_spv");
         mSPVEnabled = find("spvEnabled");

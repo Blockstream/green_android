@@ -44,7 +44,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-        if (getGAService() == null || getModel() == null) {
+        if (getModel() == null) {
             ((LoggedActivity) getActivity()).toFirst();
             return rootView;
         }
@@ -56,7 +56,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         mAccountsView.addItemDecoration(bottomOffsetDecoration);
 
-        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, getGAService(), this,
+        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, this,
                                                                   getResources(), getActivity(), getModel());
         mAccountsView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
@@ -97,7 +97,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        if (getGAService() == null || getModel() == null)
+        if (getModel() == null)
             return;
         detachObservers();
     }
@@ -106,7 +106,7 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        if (getGAService() == null || getModel() == null)
+        if (getModel() == null)
             return;
         if (getConnectionManager().isPostLogin())
             attachObservers();

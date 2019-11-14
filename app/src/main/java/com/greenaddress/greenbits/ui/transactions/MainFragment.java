@@ -20,6 +20,7 @@ import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.SubaccountFragment;
 import com.greenaddress.greenbits.ui.UI;
@@ -84,7 +85,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getGAService(),
+        final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), app.getService(),
                                                            getNetwork(),  mTxItems, getModel());
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
@@ -179,8 +181,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     // Called when a new verified transaction is seen
     @Override
     public void onVerifiedTx(final Observer observer) {
-
-        final GaService service = getGAService();
+        final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
+        final GaService service = app.getService();
         final boolean isSPVEnabled = service.isSPVEnabled();
 
         for (final TransactionItem txItem : mTxItems)
@@ -219,6 +221,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         setIsDirty(false);
 
         txView = UI.find(mView, R.id.mainTransactionList);
+        final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
 
         if (replacedTxs == null)
             replacedTxs = new HashMap<>();
@@ -237,7 +240,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
             for (final TransactionData tx : txList) {
                 try {
-                    mTxItems.add(new TransactionItem(getGAService(), tx, currentBlock, subaccount, getNetwork(),
+                    mTxItems.add(new TransactionItem(app.getService(), tx, currentBlock, subaccount, getNetwork(),
                                                      getModel()));
                     /*
                        //TODO gdk handling of replaced

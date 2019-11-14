@@ -39,12 +39,12 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
 
     // Returns true if we are being restored without an activity or service
     protected boolean isZombieNoView() {
-        return getZombieStatus(getActivity() == null || getGAService() == null);
+        return getZombieStatus(getActivity() == null);
     }
 
     // Returns true if we are being restored without an activity, service or view
     protected boolean isZombie() {
-        return getZombieStatus(getActivity() == null || getGAService() == null || mView == null);
+        return getZombieStatus(getActivity() == null || mView == null);
     }
 
 
@@ -52,7 +52,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause -> " + TAG);
-        if (getGAService() == null || getModel() == null)
+        if (getModel() == null)
             return;
         detachObservers();
     }
@@ -61,7 +61,7 @@ public abstract class SubaccountFragment extends GAFragment implements Observer,
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume -> " + TAG);
-        if (getGAService() == null || getModel() == null)
+        if (getModel() == null)
             return;
         if (!isDisconnected()) {
             setupObservers();

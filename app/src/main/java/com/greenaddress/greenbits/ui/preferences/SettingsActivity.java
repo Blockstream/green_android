@@ -22,7 +22,7 @@ public class SettingsActivity extends GaPreferenceActivity {
             return;
         }
 
-        if (getGAApp().mService == null || getGAApp().getModel() == null) {
+        if (getGAApp().getModel() == null) {
             logout();
             return;
         }

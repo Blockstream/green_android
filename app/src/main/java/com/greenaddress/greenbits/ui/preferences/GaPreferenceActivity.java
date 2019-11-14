@@ -67,18 +67,12 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     @Override
     final public void onPause() {
         super.onPause();
-        final GaService service = getGAApp().mService;
-        if (service != null)
-            service.decRef();
     }
 
     @Override
     final public void onResume() {
         super.onResume();
-        final GaService service = getGAApp().mService;
-        if (service != null)
-            service.incRef();
-        if (service == null) {
+        if (getGAApp().getModel() == null) {
             // FIXME: Should pass flag to activity so it shows it was forced logged out
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();

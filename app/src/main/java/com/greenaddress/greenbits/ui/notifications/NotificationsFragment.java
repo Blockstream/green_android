@@ -92,7 +92,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                         final TransactionData fullTxData =
                             objectMapper.convertValue(transactionRaw, TransactionData.class);
                         final TransactionItem txItem =
-                            new TransactionItem(mService, fullTxData, getModel().getCurrentBlock(),
+                            new TransactionItem(getGAApp().getService(), fullTxData, getModel().getCurrentBlock(),
                                                 txData.getSubaccount(), getNetwork(), getModel());
                         final Intent transactionActivity = new Intent(getActivity(), TransactionActivity.class);
                         transactionActivity.putExtra("TRANSACTION", txItem);

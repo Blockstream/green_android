@@ -28,14 +28,12 @@ import static android.content.Context.MODE_PRIVATE;
 public class GAPreferenceFragment extends PreferenceFragmentCompat {
     private static final String TAG = GAPreferenceFragment.class.getSimpleName();
 
-    protected GaService mService;
     private GreenAddressApplication mApp;
 
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
         mApp = (GreenAddressApplication) getActivity().getApplication();
-        mService = mApp.mService;
     }
 
     @Override

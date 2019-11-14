@@ -40,7 +40,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
         addPreferencesFromResource(R.xml.preference_pin);
         setHasOptionsMenu(true);
 
-        if (mService == null || getGAApp().getModel() == null) {
+        if (getGAApp().getModel() == null) {
             logout();
             return;
         }
@@ -82,7 +82,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
     private boolean onPinEnabled() {
         if (getGAApp().warnIfOffline(getActivity()))
             return false;
-        final Intent savePin = PinSaveActivity.createIntent(getActivity(), mService.getMnemonic());
+        final Intent savePin = PinSaveActivity.createIntent(getActivity(), getSession().getMnemonicPassphrase());
         startActivityForResult(savePin, ACTIVITY_REQUEST_PINSAVE);
         return true;
     }
