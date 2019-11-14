@@ -66,19 +66,7 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 public class GaService extends Service  {
     private static final String TAG = GaService.class.getSimpleName();
 
-    //private NetworkData mNetwork;
-    //private Model mModel;
-    //private ConnectionManager mConnectionManager;
-    //private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
-
-    private String mSignUpMnemonic;
-    private Bitmap mSignUpQRCode;
-
     private final SPV mSPV = new SPV(this);
-
-    private int mRefCount; // Number of non-paused activities using us
-    private ScheduledThreadPoolExecutor mTimerExecutor = new ScheduledThreadPoolExecutor(1);
-    private Long mDisconnectTimer;
 
     // This could be a local variable in theory but since there is a warning in the documentation
     // about possibly being garbage collected has been made a member of the class
@@ -104,11 +92,6 @@ public class GaService extends Service  {
         // Fire a fake connectivity change to kick start the state machine
         netConnectivityReceiver.onReceive(null, null);
     }
-
-    public ScheduledThreadPoolExecutor getTimerExecutor() {
-        return mTimerExecutor;
-    }
-
 
     public File getSPVChainFile(final String networkName) {
         final String dirName;
@@ -168,18 +151,11 @@ public class GaService extends Service  {
 
         if(GreenAddressApplication.isRunningTest())
             return;
-
-        mTimerExecutor.scheduleWithFixedDelay(this::checkDisconnect, 5,5, TimeUnit.SECONDS);
     }
 
     public GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
-
-    public String getMnemonic() {
-        return getSession().getMnemonicPassphrase();
-    }
-
 
     private void onNetConnectivityChanged() {
         final NetworkInfo info = getNetworkInfo();
@@ -200,48 +176,4 @@ public class GaService extends Service  {
             return null;
         }
     }
-
-    public void incRef() {
-        ++mRefCount;
-        rescheduleDisconnect();
-    }
-
-    public void decRef() {
-        if (BuildConfig.DEBUG && mRefCount <= 0)
-            throw new RuntimeException("Incorrect reference count");
-        if (--mRefCount == 0)
-            checkDisconnect();
-    }
-
-    public void rescheduleDisconnect() {
-        mDisconnectTimer = System.currentTimeMillis() + getAutoLogoutTimeout() * 60 * 1000;
-    }
-
-    public int getAutoLogoutTimeout() {
-        if (getGAApp().getModel() == null || getGAApp().getModel().getSettings() == null) {
-            try {
-                // we need to fetch this also locally,
-                // cause we can scheduleDisconnect before being logged in
-                final String altimeString = cfg().getString(PrefKeys.ALTIMEOUT, "5");
-                return Integer.parseInt(altimeString);
-            } catch (Exception e) {
-                Log.e(TAG,"getAutoLogoutTimeout: " + e.getMessage());
-                return 5;
-            }
-        }
-        return getGAApp().getModel().getSettings().getAltimeout();
-    }
-
-    private void checkDisconnect() {
-        if (getGAApp().getConnectionManager().isDisconnected())
-            return;
-        if (mDisconnectTimer != null && System.currentTimeMillis() > mDisconnectTimer) {
-            getGAApp().getExecutor().submit(() -> getGAApp().getConnectionManager().disconnect());
-        }
-    }
-
-    public ListenableFuture<Boolean> changeMemo(final String txHashHex, final String memo) {
-        return getGAApp().getExecutor().submit(() -> getSession().changeMemo(txHashHex, memo));
-    }
-
 }
