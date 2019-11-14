@@ -72,7 +72,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
             // Setup subaccount info
             holder.mAccountView.setTitle(subaccount.getNameWithDefault(mResources.getString(R.string.id_main_account)));
             if (mModel.getSettings() != null) {
-                holder.mAccountView.setBalance(mService, satoshi);
+                holder.mAccountView.setBalance(mModel, satoshi);
             }
             holder.mAccountView.listMode(false);
             holder.mAccountView.setOnClickListener(listener);

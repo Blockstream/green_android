@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -98,13 +99,13 @@ public class AccountView extends CardView {
         mTitleText.setText(text);
     }
 
-    public void setBalance(final GaService service, final long satoshi) {
-        final String valueBitcoin = service.getValueString(satoshi, false, false);
-        final String valueFiat = service.getValueString(satoshi, true, true);
+    public void setBalance(final Model model, final long satoshi) {
+        final String valueBitcoin = model.getValueString(satoshi, false, false);
+        final String valueFiat = model.getValueString(satoshi, true, true);
         mBalanceText.setVisibility(VISIBLE);
         mBalanceText.setText(valueBitcoin);
         mBalanceUnitText.setVisibility(VISIBLE);
-        mBalanceUnitText.setText(" " + service.getBitcoinOrLiquidUnit());
+        mBalanceUnitText.setText(" " + model.getBitcoinOrLiquidUnit());
         mBalanceFiatText.setText("≈  " + valueFiat);
     }
 

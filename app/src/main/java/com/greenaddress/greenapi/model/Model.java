@@ -1,14 +1,26 @@
 package com.greenaddress.greenapi.model;
 
+import android.util.Log;
 import android.util.SparseArray;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SettingsData;
+import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
+import com.greenaddress.greenbits.ui.UI;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 
 public class Model {
@@ -29,16 +41,18 @@ public class Model {
     private FeeObservable mFeeObservable;
     private AvailableCurrenciesObservable mAvailableCurrenciesObservable;
     private Boolean mTwoFAReset = false;
+    private NetworkData mNetworkData;
 
     private Model() {}
 
-    public Model(final ListeningExecutorService executor) {
+    public Model(final ListeningExecutorService executor, final NetworkData networkData) {
         mAssetsObservable = new AssetsDataObservable(executor);
         mSubaccountDataObservable = new SubaccountDataObservable(executor, mAssetsObservable, this);
         mEventDataObservable = new EventDataObservable();
         mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(executor, mEventDataObservable);
         mFeeObservable = new FeeObservable(executor);
         mAvailableCurrenciesObservable = new AvailableCurrenciesObservable(executor);
+        mNetworkData = networkData;
     }
 
     public SubaccountDataObservable getSubaccountDataObservable() {
@@ -149,5 +163,81 @@ public class Model {
 
     public AssetsDataObservable getAssetsObservable() {
         return mAssetsObservable;
+    }
+
+
+    public String getFiatCurrency() {
+        return getSettings().getPricing().getCurrency();
+    }
+
+    public String getBitcoinOrLiquidUnit() {
+        final int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey()), 0);
+        if (mNetworkData.getLiquid()) {
+            return UI.LIQUID_UNITS[index];
+        } else {
+            return UI.UNITS[index];
+        }
+    }
+
+    public String getUnitKey() {
+        final String unit = getSettings().getUnit();
+        return toUnitKey(unit);
+    }
+
+    public static String toUnitKey(final String unit) {
+        if (!Arrays.asList(UI.UNITS).contains(unit))
+            return UI.UNITS[0].toLowerCase(Locale.US);
+        return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
+    }
+
+    public String getValueString(final long amount, final boolean asFiat, boolean withUnit) {
+        try {
+            return getValueString(getSession().convertSatoshi(amount), asFiat, withUnit);
+        } catch (final RuntimeException | IOException e) {
+            Log.e("", "Conversion error: " + e.getLocalizedMessage());
+            return "";
+        }
+    }
+    public String getValueString(final ObjectNode amount, final boolean asFiat, boolean withUnit) {
+        if (asFiat)
+            return amount.get("fiat").asText() + (withUnit ? (" " + getFiatCurrency()) : "");
+        return amount.get(getUnitKey()).asText() + (withUnit ? (" " + getBitcoinOrLiquidUnit()) : "");
+    }
+
+    public String getValueString(final long amount, final String asset, final AssetInfoData assetInfo,
+                                 boolean withUnit) {
+        try {
+            final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset);
+            final ObjectNode details = new ObjectMapper().createObjectNode();
+            details.put("satoshi", amount);
+            details.set("asset_info", assetInfoData.toObjectNode());
+            final ObjectNode converted = getSession().convert(details);
+            return converted.get(asset).asText() + (withUnit ? " " + assetInfoData.getTicker() : "");
+        } catch (final RuntimeException | IOException e) {
+            Log.e("", "Conversion error: " + e.getLocalizedMessage());
+            return "";
+        }
+    }
+
+    public SubaccountData getSubaccountData(final int subAccount) {
+        return getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
+    }
+
+    public String getAddress(final int subAccount) {
+        return getReceiveAddressObservable(subAccount).getReceiveAddress();
+    }
+
+    public BalanceData getBalanceData(final int subAccount) {
+        try {
+            final long satoshi = getBalanceDataObservable(subAccount).getBtcBalanceData();
+            return getSession().convertBalance(satoshi);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String getReceivingId() {
+        return getSubaccountData(0).getReceivingId();
     }
 }

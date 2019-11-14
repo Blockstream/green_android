@@ -73,11 +73,11 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         if (isBTC) {
             holder.mAssetName.setText("L-BTC");
-            holder.mAssetValue.setText(mService.getValueString(satoshi, false, true));
+            holder.mAssetValue.setText(mModel.getValueString(satoshi, false, true));
             holder.mAssetDomain.setVisibility(View.GONE);
         } else {
             holder.mAssetName.setText(assetInfo != null ? assetInfo.getName() : assetId);
-            holder.mAssetValue.setText(mService.getValueString(satoshi, assetId, assetInfo, true));
+            holder.mAssetValue.setText(mModel.getValueString(satoshi, assetId, assetInfo, true));
             final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
             if (entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
                 holder.mAssetDomain.setVisibility(View.VISIBLE);

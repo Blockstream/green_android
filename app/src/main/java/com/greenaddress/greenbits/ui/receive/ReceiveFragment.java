@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.GaService;
@@ -160,16 +161,16 @@ public class ReceiveFragment extends SubaccountFragment implements TextWatcher, 
     public boolean isFiat() { return mIsFiat; }
 
     private String getFiatCurrency() {
-        return getGAService().getFiatCurrency();
+        return getModel().getFiatCurrency();
     }
 
     private String getBitcoinOrLiquidUnit() {
-        return getGAService().getBitcoinOrLiquidUnit();
+        return getModel().getBitcoinOrLiquidUnit();
     }
 
     private String getBitcoinUnitClean() {
         final String unit = getBitcoinOrLiquidUnit();
-        return GaService.toUnitKey(unit);
+        return Model.toUnitKey(unit);
     }
 
     @Override

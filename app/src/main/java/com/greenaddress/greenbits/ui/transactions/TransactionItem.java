@@ -169,19 +169,19 @@ public class TransactionItem implements Serializable {
     public String getAmountWithUnit(final GaService service, final String assetId) {
         try {
             if (type == TYPE.REDEPOSIT) {
-                final String feeAmount = amountToString(fee, service.getUnitKey(), null);
-                return String.format("-%s %s", feeAmount, service.getBitcoinOrLiquidUnit());
+                final String feeAmount = amountToString(fee, mModel.getUnitKey(), null);
+                return String.format("-%s %s", feeAmount, mModel.getBitcoinOrLiquidUnit());
             }
 
             AssetInfoData info = mModel.getAssetsObservable().getAssetsInfos().get(assetId);
             if (info == null)
                 info = new AssetInfoData(assetId);
             final String amount = amountToString(mAssetBalances.get(assetId),
-                                                 isAsset ? assetId : service.getUnitKey(),
+                                                 isAsset ? assetId : mModel.getUnitKey(),
                                                  isAsset ? info : null);
             final String denom =
                 isAsset ? (info.getTicker() !=
-                           null ? info.getTicker() : "") : service.getBitcoinOrLiquidUnit();
+                           null ? info.getTicker() : "") : mModel.getBitcoinOrLiquidUnit();
             return String.format("%s%s %s", type == TYPE.OUT ? "-" : "", amount, denom);
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());

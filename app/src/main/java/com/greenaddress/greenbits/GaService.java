@@ -110,14 +110,11 @@ public class GaService extends Service  {
         return mTimerExecutor;
     }
 
-    public String getReceivingId() {
-        return getSubaccountData(0).getReceivingId();
-    }
 
     public File getSPVChainFile(final String networkName) {
         final String dirName;
         if (getNetwork().IsNetworkMainnet()) {
-            dirName = "blockstore_" + getReceivingId();
+            dirName = "blockstore_" + getGAApp().getModel().getReceivingId();
         } else {
             dirName = "blockstore_" + networkName;
         }
@@ -131,54 +128,6 @@ public class GaService extends Service  {
     }
     public File getSPVChainFile() {
         return getSPVChainFile(getNetwork().getName());
-    }
-
-    public String getBitcoinOrLiquidUnit() {
-        final int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey()), 0);
-        if (getNetwork().getLiquid()) {
-            return UI.LIQUID_UNITS[index];
-        } else {
-            return UI.UNITS[index];
-        }
-    }
-
-    public String getUnitKey() {
-        final String unit = getGAApp().getModel().getSettings().getUnit();
-        return toUnitKey(unit);
-    }
-
-    public static String toUnitKey(final String unit) {
-        if (!Arrays.asList(UI.UNITS).contains(unit))
-            return UI.UNITS[0].toLowerCase(Locale.US);
-        return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
-    }
-
-    public String getValueString(final long amount, final boolean asFiat, boolean withUnit) {
-        try {
-            return getValueString(getSession().convertSatoshi(amount), asFiat, withUnit);
-        } catch (final RuntimeException | IOException e) {
-            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-            return "";
-        }
-    }
-    public String getValueString(final ObjectNode amount, final boolean asFiat, boolean withUnit) {
-        if (asFiat)
-            return amount.get("fiat").asText() + (withUnit ? (" " + getFiatCurrency()) : "");
-        return amount.get(getUnitKey()).asText() + (withUnit ? (" " + getBitcoinOrLiquidUnit()) : "");
-    }
-
-    public String getValueString(final long amount, final String asset, final AssetInfoData assetInfo, boolean withUnit) {
-        try {
-            final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset);
-            final ObjectNode details = new ObjectMapper().createObjectNode();
-            details.put("satoshi", amount);
-            details.set("asset_info", assetInfoData.toObjectNode());
-            final ObjectNode converted = getSession().convert(details);
-            return converted.get(asset).asText() + (withUnit ? " " + assetInfoData.getTicker() : "");
-        } catch (final RuntimeException | IOException e) {
-            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-            return "";
-        }
     }
 
     public SharedPreferences cfg() {
@@ -245,7 +194,7 @@ public class GaService extends Service  {
         // android.os.SystemClock.sleep(10000);
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
 
-        final Model model = new Model(getGAApp().getExecutor());
+        final Model model = new Model(getGAApp().getExecutor(), getNetwork());
         getGAApp().setModel(model);
         initSettings();
         getSession().setNotificationModel(getGAApp().getModel(), getGAApp().getConnectionManager());
@@ -356,28 +305,6 @@ public class GaService extends Service  {
         if (mSignUpQRCode == null)
             mSignUpQRCode = new QrBitmap(getSignUpMnemonic(), getResources().getColor(R.color.green)).getQRCode();
        return mSignUpQRCode;
-    }
-
-    public SubaccountData getSubaccountData(final int subAccount) {
-        return getGAApp().getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
-    }
-
-    public String getAddress(final int subAccount) {
-        return getGAApp().getModel().getReceiveAddressObservable(subAccount).getReceiveAddress();
-    }
-
-    public BalanceData getBalanceData(final int subAccount) {
-        try {
-            final long satoshi = getGAApp().getModel().getBalanceDataObservable(subAccount).getBtcBalanceData();
-            return getSession().convertBalance(satoshi);
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public String getFiatCurrency() {
-        return getGAApp().getModel().getSettings().getPricing().getCurrency();
     }
 
     private void onNetConnectivityChanged() {

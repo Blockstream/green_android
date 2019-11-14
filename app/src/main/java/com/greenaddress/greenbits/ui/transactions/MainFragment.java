@@ -329,11 +329,10 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
             return;
 
         getGaActivity().runOnUiThread(() -> {
-            final GaService service = getGAService();
             final int subaccount = getModel().getCurrentSubaccount();
-            final SubaccountData subaccountData = service.getSubaccountData(subaccount);
+            final SubaccountData subaccountData = getModel().getSubaccountData(subaccount);
             mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
-            mAccountView.setBalance(service, satoshi);
+            mAccountView.setBalance(getModel(), satoshi);
         });
     }
 

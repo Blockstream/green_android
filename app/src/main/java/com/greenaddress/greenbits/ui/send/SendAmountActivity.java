@@ -96,7 +96,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         if (isSweep) {
             final int account = getModel().getActiveAccountObservable().getActiveAccount();
-            final String accountName = mService.getSubaccountData(account).getName();
+            final String accountName = getModel().getSubaccountData(account).getName();
             setTitle(String.format(getString(R.string.id_sweep_into_s),
                                    accountName.equals("") ? getString(R.string.id_main_account) : accountName));
         }
@@ -257,9 +257,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         UI.showIf(!isAsset(), mAccountBalance);
         UI.showIf(isAsset(), assetsList);
         if (!isAsset())
-            mAccountBalance.setText(mService.getValueString(satoshi, false, true));
+            mAccountBalance.setText(getModel().getValueString(satoshi, false, true));
         else
-            mAccountBalance.setText(mService.getValueString(satoshi, mSelectedAsset, info, true));
+            mAccountBalance.setText(getModel().getValueString(satoshi, mSelectedAsset, info, true));
     }
 
     private int[] getBlockTargets() {
@@ -491,7 +491,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             final String feeRateString = UI.getFeeRateString(currentEstimate);
             mFeeButtons[i].setSummary(mVsize == null ?
                                       String.format("(%s)", feeRateString) :
-                                      String.format("%s (%s)", mService.getValueString(
+                                      String.format("%s (%s)", getModel().getValueString(
                                                         (currentEstimate * mVsize)/1000L,
                                                         isFiat(), true),
                                                     feeRateString));
@@ -543,15 +543,15 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private String getFiatCurrency() {
-        return mService.getFiatCurrency();
+        return getModel().getFiatCurrency();
     }
 
     private String getBitcoinOrLiquidUnit() {
-        return mService.getBitcoinOrLiquidUnit();
+        return getModel().getBitcoinOrLiquidUnit();
     }
 
     private String getBitcoinUnitClean() {
-        return mService.getUnitKey();
+        return getModel().getUnitKey();
     }
 
     @Override

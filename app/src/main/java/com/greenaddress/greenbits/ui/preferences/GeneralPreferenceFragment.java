@@ -314,7 +314,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             setPricingEntries(currenciesObservable);
         if (settingsObservable.getSettings() != null) {
             setPricingSummary(settingsObservable.getSettings().getPricing());
-            mUnitPref.setSummary(mService.getBitcoinOrLiquidUnit());
+            mUnitPref.setSummary(model.getBitcoinOrLiquidUnit());
             setRequiredNumBlocksSummary(model.getSettings().getRequiredNumBlocks());
             if (twoFaData.getTwoFactorConfigData() != null) {
                 setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
@@ -596,7 +596,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 final SettingsData settings = ((SettingsObservable) observable).getSettings();
                 setPricingSummary(settings.getPricing());
                 setRequiredNumBlocksSummary(settings.getRequiredNumBlocks());
-                setUnitSummary(mService.getBitcoinOrLiquidUnit());
+                setUnitSummary(getModel().getBitcoinOrLiquidUnit());
                 setTimeoutSummary(settings.getAltimeout());
                 getModel().fireBalances();  // TODO should be just if unit or pricing changes
                 updatesVisibilities();
@@ -627,7 +627,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 if (!isFiat && limitsData.get("satoshi").asLong(0) == 0) {
                     mLimitsPref.setSummary(R.string.id_set_twofactor_threshold);
                 } else {
-                    final String limit = mService.getValueString(limitsData, isFiat, true);
+                    final String limit = getModel().getValueString(limitsData, isFiat, true);
                     mLimitsPref.setSummary(limit);
                 }
             } catch (final Exception e) {
@@ -647,7 +647,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final EditText amountEdit = UI.find(v, R.id.set_limits_amount);
 
         final String[] currencies;
-        currencies = new String[] {mService.getBitcoinOrLiquidUnit(), mService.getFiatCurrency()};
+        currencies = new String[] {getModel().getBitcoinOrLiquidUnit(), getModel().getFiatCurrency()};
 
         final ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, currencies);
@@ -657,7 +657,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final ObjectNode limitsData = getModel().getTwoFactorConfig().getLimits();
         final boolean isFiat = limitsData.get("is_fiat").asBoolean();
         unitSpinner.setSelection(isFiat ? 1 : 0);
-        amountEdit.setText(mService.getValueString(limitsData, isFiat, false));
+        amountEdit.setText(getModel().getValueString(limitsData, isFiat, false));
         amountEdit.selectAll();
 
         final MaterialDialog dialog;
@@ -703,12 +703,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private void setSpendingLimits(final String unit, final String amount) {
         final Activity activity = getActivity();
 
-        final boolean isFiat = unit.equals(mService.getFiatCurrency());
+        final boolean isFiat = unit.equals(getModel().getFiatCurrency());
         final String amountStr = TextUtils.isEmpty(amount) ? "0" : amount;
 
         final ObjectNode limitsData = new ObjectMapper().createObjectNode();
         limitsData.set("is_fiat", isFiat ? BooleanNode.TRUE : BooleanNode.FALSE);
-        limitsData.set(isFiat ? "fiat" : mService.getUnitKey(), new TextNode(amountStr));
+        limitsData.set(isFiat ? "fiat" : getModel().getUnitKey(), new TextNode(amountStr));
 
         getGAApp().getExecutor().execute(() -> {
             try {

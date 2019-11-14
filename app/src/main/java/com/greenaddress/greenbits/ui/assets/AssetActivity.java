@@ -93,6 +93,6 @@ public class AssetActivity extends LoggedActivity {
     }
 
     private void refresh() {
-        mAssetBalanceText.setText(mService.getValueString(mSatoshi, mAssetId, getAssetInfo(), true));
+        mAssetBalanceText.setText(getModel().getValueString(mSatoshi, mAssetId, getAssetInfo(), true));
     }
 }

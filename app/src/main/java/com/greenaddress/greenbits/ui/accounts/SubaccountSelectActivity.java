@@ -51,8 +51,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
         balanceReq.setSatoshi(totalSatoshi);
         try {
             final BalanceData total = getSession().convertBalance(balanceReq);
-            final String btcString = mService.getValueString(total.toObjectNode(), false, true);
-            final String fiatString = mService.getValueString(total.toObjectNode(), true, true);
+            final String btcString = getModel().getValueString(total.toObjectNode(), false, true);
+            final String fiatString = getModel().getValueString(total.toObjectNode(), true, true);
             mTotalAmountBtc.setTextColor(ThemeUtils.resolveColorAccent(this));
             mTotalAmountBtc.setText(btcString);
             mTotalAmountFiat.setText(" ≈ " + fiatString);

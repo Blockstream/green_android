@@ -59,7 +59,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
         if (isSweep) {
             final int account = getModel().getActiveAccountObservable().getActiveAccount();
-            final String accountName = mService.getSubaccountData(account).getName();
+            final String accountName = getModel().getSubaccountData(account).getName();
             setTitle(String.format(getString(R.string.id_sweep_into_s),
                                    accountName.equals("") ? getString(R.string.id_main_account) : accountName));
         }
@@ -146,8 +146,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         try {
             final ObjectNode feeNode = getSession().convertSatoshi(amount);
             return String.format("%s / %s",
-                                 mService.getValueString(feeNode, false, true),
-                                 mService.getValueString(feeNode, true, true));
+                                 getModel().getValueString(feeNode, false, true),
+                                 getModel().getValueString(feeNode, true, true));
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             return "";

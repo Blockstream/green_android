@@ -151,8 +151,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         String fiat;
         try {
             final ObjectNode amount = getSession().convertSatoshi(mTxItem.mAssetBalances.get("btc"));
-            btc = mService.getValueString(amount, false, true);
-            fiat = mService.getValueString(amount, true, true);
+            btc = getModel().getValueString(amount, false, true);
+            fiat = getModel().getValueString(amount, true, true);
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             btc = "";
@@ -275,7 +275,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
         String btcFee;
         try {
-            btcFee = mService.getValueString(getSession().convertSatoshi(fee), false, true);
+            btcFee = getModel().getValueString(getSession().convertSatoshi(fee), false, true);
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             btcFee = "";

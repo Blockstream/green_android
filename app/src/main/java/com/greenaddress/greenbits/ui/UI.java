@@ -37,6 +37,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
@@ -62,7 +63,7 @@ public abstract class UI {
         @NullableDecl
         @Override
         public String apply(@NullableDecl String input) {
-            return input != null ? GaService.toUnitKey(input) : null;
+            return input != null ? Model.toUnitKey(input) : null;
         }
     };
     public static final List<String> UNIT_KEYS_LIST = Lists.transform(Arrays.asList(UNITS), UI.toUnitKeyFunc);

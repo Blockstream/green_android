@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.SubaccountData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -24,17 +25,17 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
 
     private final ArrayList<SubaccountData> mSubaccountList;
     private OnAccountSelected mOnAccountSelected;
-    private final GaService mService;
+    private final Model mModel;
     private final boolean mShowCardView;
 
     interface OnAccountSelected {
         void onAccountSelected(int account);
     }
 
-    public AccountItemAdapter(final ArrayList<SubaccountData> subaccountList, final GaService service,
+    public AccountItemAdapter(final ArrayList<SubaccountData> subaccountList, final Model model,
                               final boolean showCardView) {
         mSubaccountList = subaccountList;
-        mService = service;
+        mModel = model;
         mShowCardView = showCardView;
     }
 
@@ -60,9 +61,9 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         final int pointer = mSubaccountList.get(position).getPointer();
         holder.mName.setText(mSubaccountList.get(position).getName());
 
-        final ObjectNode balanceData = mService.getBalanceData(pointer).toObjectNode();
-        final String valueBitcoin = mService.getValueString(balanceData, false, true);
-        final String valueFiat = mService.getValueString(balanceData, true, true);
+        final ObjectNode balanceData = mModel.getBalanceData(pointer).toObjectNode();
+        final String valueBitcoin = mModel.getValueString(balanceData, false, true);
+        final String valueFiat = mModel.getValueString(balanceData, true, true);
         holder.mBalance.setText(valueBitcoin);
         holder.mFiatBalance.setText(valueFiat);
 
@@ -76,7 +77,7 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         holder.mRadio.setOnClickListener(listener);
         if (mShowCardView) {
 
-            final String address = mService.getAddress(mSubaccountList.get(position).getPointer());
+            final String address = mModel.getAddress(mSubaccountList.get(position).getPointer());
             if (address == null) {
                 Log.d(this.getClass().getName(),"*** ADDRESS "+pointer+" NULL ***");
                 return;
