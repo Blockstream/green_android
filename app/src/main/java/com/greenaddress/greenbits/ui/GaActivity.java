@@ -46,15 +46,11 @@ public abstract class GaActivity extends AppCompatActivity {
     public static final int HARDWARE_PIN_REQUEST = 59212;
     public static final int HARDWARE_PASSPHRASE_REQUEST = 21392;
 
-    private static final String TAG = GaActivity.class.getSimpleName();
+    protected static final String TAG = GaActivity.class.getSimpleName();
     protected static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
 
-    // Both of these variables are only assigned in the UI thread.
-    // mService is available to all derived classes as soon as
-    // onCreateWithService() is called. Once assigned it does not
-    // change so may be read from background threads.
-    protected ProgressBarHandler mProgressBarHandler;
-    private SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();
+    private ProgressBarHandler mProgressBarHandler;
+    private final SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();
 
     protected GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
@@ -84,7 +80,6 @@ public abstract class GaActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
-        Log.d(TAG, "onPause");
         super.onPause();
         if (mProgressBarHandler != null)
             mProgressBarHandler.stop();
@@ -92,7 +87,6 @@ public abstract class GaActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume");
         super.onResume();
     }
 
@@ -115,7 +109,7 @@ public abstract class GaActivity extends AppCompatActivity {
         });
     }
 
-    protected boolean isHexSeed(final String hexSeed) {
+    protected static boolean isHexSeed(final String hexSeed) {
         if (hexSeed.endsWith("X") && hexSeed.length() == 129) {
             try {
                 Wally.hex_to_bytes(hexSeed.substring(0, 128));

@@ -36,7 +36,7 @@ public class ConnectionManager extends Observable {
         }
     }
 
-    private ConnState mState;
+    private ConnState mState = ConnState.DISCONNECTED;
     public String mWatchOnlyUsername;
     public String mNetwork;
     public String mProxyHost;

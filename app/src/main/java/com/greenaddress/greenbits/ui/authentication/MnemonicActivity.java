@@ -257,15 +257,16 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             return;
         }
 
-
         if (isHexSeed(mnemonic)) {
             getGAApp().getExecutor().execute(() -> {
                 getGAApp().resetSession();
+                cm.connect(this);
                 cm.loginWithMnemonic(mnemonic, "");
             });
         } else if (!mEncryptedSwitch.isChecked()) {
             getGAApp().getExecutor().execute(() -> {
                 getGAApp().resetSession();
+                cm.connect(this);
                 cm.loginWithMnemonic(mnemonic, "");
             });
         } else {
@@ -273,6 +274,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
                 @Override
                 public void onSuccess(final String mnemonicPassword) {
                     getGAApp().resetSession();
+                    cm.connect(getBaseContext());
                     cm.loginWithMnemonic(mnemonic, mnemonicPassword);
                 }
             });

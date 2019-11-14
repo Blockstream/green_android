@@ -62,6 +62,7 @@ public class GreenAddressApplication extends MultiDexApplication {
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
     private Model mModel;
     private ConnectionManager mConnectionManager = new ConnectionManager("mainnet");
+    private static AtomicBoolean isRunningTest;
 
     public GaService mService;
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
@@ -155,7 +156,6 @@ public class GreenAddressApplication extends MultiDexApplication {
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
-    private static AtomicBoolean isRunningTest;
     public static synchronized boolean isRunningTest() {
         if (null == isRunningTest) {
             boolean istest;
@@ -247,9 +247,6 @@ public class GreenAddressApplication extends MultiDexApplication {
         return mConnectionManager;
     }
 
-    public void setConnectionManager(final ConnectionManager connectionManager) {
-        this.mConnectionManager = connectionManager;
-    }
     public boolean isWatchOnly() {
         return mConnectionManager.isWatchOnly();
     }
@@ -264,10 +261,6 @@ public class GreenAddressApplication extends MultiDexApplication {
             return true;
         }
         return false;
-    }
-
-    public boolean isDisconnected() {
-        return mConnectionManager.isDisconnected();
     }
 
     public void resetSession() {

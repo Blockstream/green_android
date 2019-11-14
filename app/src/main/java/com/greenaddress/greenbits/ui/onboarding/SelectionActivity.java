@@ -69,6 +69,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                 getConnectionManager().connect(this);
                 getSession().registerUser(this, null, mnemonic).resolve(null, null);
                 getGAApp().resetSession();
+                getConnectionManager().connect(this);
                 getConnectionManager().loginWithMnemonic(mnemonic, "");
             } catch (final Exception ex) {
                 if (getCode(ex) == GDK.GA_RECONNECT) {
@@ -122,12 +123,17 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
-        getConnectionManager().addObserver(this);
+        if (getConnectionManager() != null) {
+            getConnectionManager().addObserver(this);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if (getConnectionManager() != null) {
+            getConnectionManager().deleteObserver(this);
+        }
     }
 
     @Override
