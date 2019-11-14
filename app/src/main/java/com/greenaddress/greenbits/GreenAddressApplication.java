@@ -30,11 +30,15 @@ import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.data.SettingsData;
+import com.greenaddress.greenapi.model.AssetsDataObservable;
 import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TorProgressObservable;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import org.bitcoinj.crypto.MnemonicCode;
@@ -42,6 +46,8 @@ import org.bitcoinj.crypto.MnemonicCode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -280,4 +286,74 @@ public class GreenAddressApplication extends MultiDexApplication {
         return mExecutor;
     }
 
+    public void onPostLogin() {
+        // Uncomment to test slow login post processing
+        // android.os.SystemClock.sleep(10000);
+        Log.d(TAG, "Success LOGIN callback onPostLogin" );
+
+        mModel = new Model(getExecutor(), getCurrentNetworkData());
+        initSettings();
+        getSession().setNotificationModel(mModel, mConnectionManager);
+        final SharedPreferences preferences = getSharedPreferences(getCurrentNetwork(), MODE_PRIVATE);
+        final int activeAccount = mConnectionManager.isLoginWithPin() ? preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
+        if (mModel.getSubaccountDataObservable().getSubaccountDataWithPointer(activeAccount) != null)
+            mModel.getActiveAccountObservable().setActiveAccount(activeAccount);
+        else
+            mModel.getActiveAccountObservable().setActiveAccount(0);
+
+        // FIXME the following prevents an issue when notification are not transmitted even if login was successful
+        if (mModel.getBlockchainHeightObservable().getHeight() == null) {
+            return;
+        }
+        if (getCurrentNetworkData().getLiquid()) {
+            mModel.getAssetsObservable().addObserver((observable, o) -> {
+                final AssetsDataObservable assetsDataObservable = (AssetsDataObservable) observable;
+                if (assetsDataObservable.isAssetsLoaded() || assetsDataObservable.isShownErrorPopup()) {
+                    return;
+                }
+
+                final Intent intent = new Intent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setClass(this, RegistryErrorActivity.class);
+                startActivity(intent);
+
+                assetsDataObservable.setShownErrorPopup();
+            });
+            mModel.getAssetsObservable().refresh();
+        }
+        mConnectionManager.goPostLogin();
+
+        if (!mConnectionManager.isWatchOnly()) {
+            //mSPV.startAsync();
+        }
+    }
+
+    private void initSettings() {
+        final Observer observer = new Observer() {
+            @Override
+            public void update(final Observable observable, final Object o) {
+                if (observable instanceof SettingsObservable) {
+                    Log.d(TAG,"initSettings");
+                    final SettingsData settings = ((SettingsObservable) observable).getSettings();
+                    final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    final SharedPreferences.Editor edit = pref.edit();
+                    if (settings.getPricing() != null)
+                        edit.putString(PrefKeys.PRICING, settings.getPricing().toString());
+                    if (settings.getNotifications() != null)
+                        edit.putBoolean(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS, settings.getNotifications().isEmailIncoming());
+                    if (settings.getAltimeout() != null)
+                        edit.putString(PrefKeys.ALTIMEOUT, String.valueOf(settings.getAltimeout()));
+                    if (settings.getUnit() != null)
+                        edit.putString(PrefKeys.UNIT, settings.getUnit());
+                    if (settings.getRequiredNumBlocks() != null)
+                        edit.putString(PrefKeys.REQUIRED_NUM_BLOCKS, String.valueOf(settings.getRequiredNumBlocks()));
+                    if (settings.getPgp() != null)
+                        edit.putString(PrefKeys.PGP_KEY, settings.getPgp());
+                    edit.apply();
+                    getModel().getSettingsObservable().deleteObserver(this);
+                }
+            }
+        };
+        getModel().getSettingsObservable().addObserver(observer);
+    }
 }

@@ -38,7 +38,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         final ConnectionManager cm = getConnectionManager();
         try {
             if (cm.isLoggedIn()) {
-                mService.onPostLogin();
+                getGAApp().onPostLogin();
                 runOnUiThread(this::onLoginSuccess);
             } else if (cm.isLastLoginFailed()) {
                 runOnUiThread(this::onLoginFailure);
