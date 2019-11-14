@@ -1,6 +1,9 @@
 package com.greenaddress.greenapi;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -8,10 +11,13 @@ import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Locale;
 import java.util.Observable;
+import java.util.UUID;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class ConnectionManager extends Observable {
@@ -29,17 +35,20 @@ public class ConnectionManager extends Observable {
     }
 
     private ConnState mState;
-    private String mWatchOnlyUsername;
-    private String mNetwork;
-    private String mProxyHost;
-    private String mProxyPort;
-    private boolean mProxyEnabled;
-    private boolean mTorEnabled;
-    private boolean mLoginWithPin;
-    private Exception mLastLoginException = null;
-    private HWDeviceData mHWDevice;
-    private CodeResolver mHWResolver;
+    public String mWatchOnlyUsername;
+    public String mNetwork;
+    public String mProxyHost;
+    public String mProxyPort;
+    public boolean mProxyEnabled;
+    public boolean mTorEnabled;
+    public boolean mLoginWithPin;
+    public Exception mLastLoginException = null;
+    public HWDeviceData mHWDevice;
+    public CodeResolver mHWResolver;
 
+    public ConnectionManager(final String network) {
+        this.mNetwork = network;
+    }
     public ConnectionManager(final String network,
                              final String proxyHost, final String proxyPort,
                              final boolean proxyEnabled, final boolean torEnabled) {
@@ -151,7 +160,24 @@ public class ConnectionManager extends Observable {
         return mWatchOnlyUsername;
     }
 
-    public  void connect() throws RuntimeException {
+    public void connect(final Context context) throws RuntimeException {
+        mNetwork = PreferenceManager.getDefaultSharedPreferences(context).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        final SharedPreferences preferences = context.getSharedPreferences(mNetwork, MODE_PRIVATE);
+        mProxyHost = preferences.getString(PrefKeys.PROXY_HOST, "");
+        mProxyPort = preferences.getString(PrefKeys.PROXY_PORT, "");
+        mProxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
+        mTorEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
+
+        String deviceId = preferences.getString(PrefKeys.DEVICE_ID, null);
+        if (deviceId == null) {
+            // Generate a unique device id
+            deviceId = UUID.randomUUID().toString();
+            preferences.edit().putString(PrefKeys.DEVICE_ID, deviceId).apply();
+        }
+        connect();
+    }
+
+    private void connect() throws RuntimeException {
         setState(ConnState.CONNECTING);
         final boolean isDebug = BuildConfig.DEBUG;
         Log.d(TAG,"connecting to " + mNetwork + (isDebug ? " in DEBUG mode" : "") + (mTorEnabled ? " with TOR" : ""));
@@ -173,7 +199,6 @@ public class ConnectionManager extends Observable {
     public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver) {
 
         try {
-            connect();
             setState(ConnState.LOGGINGIN);
             this.mHWDevice = hwDevice;
             this.mHWResolver = hwResolver;
@@ -200,7 +225,6 @@ public class ConnectionManager extends Observable {
                       final String pin, final PinData pinData,
                       final String username, final String password) {
         try {
-            connect();
             setState(ConnState.LOGGINGIN);
             final Activity parent = null; // FIXME: Pass this in/split this call up
             if (!TextUtils.isEmpty(mnenonic) && mnemonicPassword != null) {

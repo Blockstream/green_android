@@ -58,8 +58,10 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 public class GreenAddressApplication extends MultiDexApplication {
 
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
-    private TorProgressObservable mTorProgressObservable = new TorProgressObservable();
+    private final TorProgressObservable mTorProgressObservable = new TorProgressObservable();
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
+    private Model mModel;
+    private ConnectionManager mConnectionManager = new ConnectionManager("mainnet");
 
     public GaService mService;
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
@@ -237,14 +239,8 @@ public class GreenAddressApplication extends MultiDexApplication {
         return getNetworkData(getCurrentNetwork());
     }
 
-    private Model mModel;
-    private ConnectionManager mConnectionManager;
-
     public Model getModel() {
         return mModel;
-    }
-    public void setModel(final Model model) {
-        mModel = model;
     }
 
     public ConnectionManager getConnectionManager() {
@@ -356,22 +352,5 @@ public class GreenAddressApplication extends MultiDexApplication {
             }
         };
         getModel().getSettingsObservable().addObserver(observer);
-    }
-
-    public void connect() {
-        final SharedPreferences preferences = getSharedPreferences(getCurrentNetwork(), MODE_PRIVATE);
-        final String proxyHost = preferences.getString(PrefKeys.PROXY_HOST, "");
-        final String proxyPort = preferences.getString(PrefKeys.PROXY_PORT, "");
-        final boolean proxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
-        final boolean torEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
-        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-        mConnectionManager = new ConnectionManager(network, proxyHost, proxyPort, proxyEnabled, torEnabled);
-
-        String deviceId = preferences.getString(PrefKeys.DEVICE_ID, null);
-        if (deviceId == null) {
-            // Generate a unique device id
-            deviceId = UUID.randomUUID().toString();
-            preferences.edit().putString(PrefKeys.DEVICE_ID, deviceId).apply();
-        }
     }
 }

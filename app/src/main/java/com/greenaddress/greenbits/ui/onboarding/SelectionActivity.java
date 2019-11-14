@@ -65,7 +65,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
             final String mnemonic = mMnemonic;
             try {
                 getGAApp().resetSession();
-                getConnectionManager().connect();
+                getConnectionManager().connect(this);
                 getSession().registerUser(this, null, mnemonic).resolve(null, null);
                 getGAApp().resetSession();
                 getConnectionManager().loginWithMnemonic(mnemonic, "");

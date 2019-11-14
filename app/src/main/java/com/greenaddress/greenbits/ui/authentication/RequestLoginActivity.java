@@ -286,9 +286,10 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
         getGAApp().getExecutor().execute(() -> {
             try {
                 final ConnectionManager cm = getConnectionManager();
-                cm.connect();
+                cm.connect(this);
                 getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
                 getGAApp().resetSession();
+                cm.connect(this);
                 cm.login(parent, mHwDeviceData, mHwResolver);
             } catch (final Exception e) {
                 e.printStackTrace();
