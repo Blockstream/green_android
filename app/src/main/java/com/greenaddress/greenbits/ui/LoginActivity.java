@@ -53,18 +53,20 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService != null) {
+        if (getConnectionManager() != null) {
             final ConnectionManager cm = getConnectionManager();
             cm.deleteObserver(this);
             cm.clearPreviousLoginError();
             checkState();
             cm.addObserver(this);
+        }
+        if (getGAApp().getTorProgressObservable() != null) {
             getGAApp().getTorProgressObservable().addObserver(this);
         }
     }
 
     protected void loginWithPin(final String pin, final PinData pinData) {
-        if (mService == null) {
+        if (getConnectionManager() == null) {
             shortToast(R.string.id_you_are_not_connected);
             return;
         }
@@ -78,10 +80,12 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null)
-            return;
-        getConnectionManager().deleteObserver(this);
-        getGAApp().getTorProgressObservable().deleteObserver(this);
+        if (getConnectionManager() != null) {
+            getConnectionManager().deleteObserver(this);
+        }
+        if (getGAApp().getTorProgressObservable() != null) {
+            getGAApp().getTorProgressObservable().deleteObserver(this);
+        }
     }
 
     @Override

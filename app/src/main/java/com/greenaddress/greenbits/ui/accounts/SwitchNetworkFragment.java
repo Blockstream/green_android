@@ -51,11 +51,10 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
         });
 
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
-        if (activity.mService != null)
-            recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), GDKSession.getNetworks(),
-                                                             networkData,
-                                                             networkData.getLiquid(),
-                                                             this));
+        recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), GDKSession.getNetworks(),
+                                                         networkData,
+                                                         networkData.getLiquid(),
+                                                         this));
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         return view;
@@ -67,7 +66,7 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
         final LoggedActivity activity = (LoggedActivity) getActivity();
         final String network = networkData.getNetwork();
 
-        if (activity.mService != null && !getGAApp().getCurrentNetwork().equals(network)) {
+        if (!getGAApp().getCurrentNetwork().equals(network)) {
 
             getGAApp().setCurrentNetwork(network);
             activity.getConnectionManager().setNetwork(network);

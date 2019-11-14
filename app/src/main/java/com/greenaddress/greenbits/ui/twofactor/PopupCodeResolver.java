@@ -30,8 +30,6 @@ public class PopupCodeResolver implements CodeResolver {
     @Override
     public SettableFuture<String> code(final String method) {
         final SettableFuture<String> future = SettableFuture.create();
-        if (activity instanceof GaActivity)
-            ((GaActivity)activity).mService.rescheduleDisconnect();
 
         final MaterialDialog.Builder builder =
             UI.popup(activity, activity.getString(R.string.id_please_provide_your_1s_code,

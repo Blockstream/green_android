@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui.transactions;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -78,7 +79,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || getModel() == null) {
+        if (getModel() == null) {
             toFirst();
             return;
         }
@@ -164,7 +165,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             amountText.setVisibility(View.GONE);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getAssetBalances(), mService,
+            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getAssetBalances(),
                                                             getNetwork(),this, getModel());
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
@@ -257,9 +258,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mMemoTitle.setFocusableInTouchMode(true);
 
         // SPV
+        final SharedPreferences preferences = getSharedPreferences(getNetwork().getNetwork(), MODE_PRIVATE);
+        final boolean isEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
         final boolean spvVerified = mTxItem.spvVerified || mTxItem.isSpent ||
                                     mTxItem.type == TransactionItem.TYPE.OUT ||
-                                    !mService.isSPVEnabled();
+                                    !isEnabled;
 
         if (!spvVerified) {
             mStatusSPVUnverified.setVisibility(View.VISIBLE);
@@ -360,8 +363,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             onFinishedSavingMemo();
             return;
         }
-
-        CB.after(mService.changeMemo(mTxItem.txHash.toString(), newMemo),
+        CB.after(getGAApp().getExecutor().submit(() -> getSession().changeMemo(mTxItem.txHash.toString(), newMemo)),
                  new CB.Toast<Boolean>(this) {
             @Override
             public void onSuccess(final Boolean result) {

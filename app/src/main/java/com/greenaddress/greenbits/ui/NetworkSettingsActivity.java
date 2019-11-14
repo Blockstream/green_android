@@ -92,7 +92,7 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     @Override
     protected void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || getConnectionManager() == null) {
+        if (getConnectionManager() == null) {
             return;
         }
 

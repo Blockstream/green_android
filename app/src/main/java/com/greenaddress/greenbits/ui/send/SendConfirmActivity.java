@@ -50,7 +50,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || getModel() == null) {
+        if (getModel() == null) {
             toFirst();
             return;
         }
@@ -124,7 +124,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             balances.put(asset, address.get("satoshi").asLong());
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(balances, mService, getNetwork(), null, getModel());
+            final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null, getModel());
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
         } else {

@@ -82,14 +82,13 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || getModel() == null) {
+        if (getModel() == null) {
             toFirst();
             return;
         }
 
         Log.d(TAG, "onCreateView -> " + TAG);
         final int[] mBlockTargets = getBlockTargets();
-        final GaService service = mService;
         networkData = getGAApp().getCurrentNetworkData();
 
         isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
@@ -127,7 +126,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         // Setup fee buttons
         mSelectedFee = getModel().getSettings().getFeeBuckets(mBlockTargets);
 
-        final List<Long> estimates = service.getFeeEstimates();
+        final List<Long> estimates = getGAApp().getModel().getFeeObservable().getFees();
         mMinFeeRate = estimates.get(0);
 
         for (int i = 0; i < mButtonIds.length; ++i) {
@@ -250,7 +249,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         balances.put(mSelectedAsset, satoshi);
 
         final RecyclerView assetsList = findViewById(R.id.assetsList);
-        final AssetsAdapter adapter = new AssetsAdapter(balances, mService, getNetwork(), null, getModel());
+        final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null, getModel());
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         assetsList.setAdapter(adapter);
         UI.showIf(!isAsset(), mUnitButton);

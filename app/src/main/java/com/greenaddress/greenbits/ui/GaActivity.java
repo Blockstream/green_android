@@ -54,7 +54,6 @@ public abstract class GaActivity extends AppCompatActivity {
     // onCreateWithService() is called. Once assigned it does not
     // change so may be read from background threads.
     private boolean mResumed;
-    public GaService mService;
     protected ProgressBarHandler mProgressBarHandler;
     private SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();
 
@@ -92,13 +91,11 @@ public abstract class GaActivity extends AppCompatActivity {
                 GaActivity.this.runOnUiThread(() -> {
                     final GaActivity self = GaActivity.this;
                     Log.d(TAG, "onCreateWithService -> " + self.getClass().getSimpleName());
-                    self.mService = getGAApp().mService;
                     self.onCreateWithService(savedInstanceState);
                     if (self.mResumed) {
                         // We resumed before the service became available, and so
                         // did not call onResumeWithService() then - call it now.
                         Log.d(TAG, "(delayed)onResumeWithService -> " + self.getClass().getSimpleName());
-                        self.mService.incRef();
                         onResumeWithService();
                     }
                 });
@@ -107,32 +104,21 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     @Override
-    final public void onPause() {
-        Log.d(TAG, getLogMessage("onPause"));
+    public final void onPause() {
+        Log.d(TAG, "onPause");
         super.onPause();
         mResumed = false;
         if (mProgressBarHandler != null)
             mProgressBarHandler.stop();
-        if (mService != null) {
-            mService.decRef();
-            onPauseWithService();
-        }
+        onPauseWithService();
     }
 
     @Override
-    final public void onResume() {
-        Log.d(TAG, getLogMessage("onResume"));
+    public final void onResume() {
+        Log.d(TAG, "onResume");
         super.onResume();
         mResumed = true;
-        if (mService != null) {
-            mService.incRef();
-            onResumeWithService();
-        }
-    }
-
-    private String getLogMessage(final String caller) {
-        return caller + " -> " + getClass().getSimpleName() +
-               (mService == null ? " (no attached service)" : "");
+        onResumeWithService();
     }
 
     /** Override to provide the main view id */
@@ -199,7 +185,7 @@ public abstract class GaActivity extends AppCompatActivity {
 
     protected void setTitleWithNetwork(final int resource) {
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
-        if (mService == null || networkData == null || getSupportActionBar() == null) {
+        if (networkData == null || getSupportActionBar() == null) {
             setTitle(resource);
             return;
         }

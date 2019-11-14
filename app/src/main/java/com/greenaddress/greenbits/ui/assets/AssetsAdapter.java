@@ -18,7 +18,6 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EntityData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     private final Map<String, Long> mAssets;
     private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;
-    private final GaService mService;
     private final NetworkData mNetworkData;
     private final Model mModel;
 
@@ -40,11 +38,10 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         void onAssetSelected(String assetSelected);
     }
 
-    public AssetsAdapter(final Map<String, Long> assets, final GaService service,
+    public AssetsAdapter(final Map<String, Long> assets,
                          final NetworkData networkData,
                          final OnAssetSelected cb, final Model model) {
         mAssets = assets;
-        mService = service;
         mOnAccountSelected = cb;
         mNetworkData = networkData;
         mModel = model;

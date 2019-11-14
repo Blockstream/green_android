@@ -47,6 +47,7 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
 
 import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class MnemonicActivity extends LoginActivity implements View.OnClickListener,
     View.OnKeyListener, TextView.OnEditorActionListener {
@@ -428,7 +429,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             } else {
-                final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this, mService.getMnemonic());
+                final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this,
+                                                                    getSession().getMnemonicPassphrase());
                 startActivityForResult(savePin, PINSAVE);
             }
         } else {

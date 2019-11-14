@@ -338,7 +338,7 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
 
         // No hardware wallet, jump to PIN or 1st screen entry
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        if (mService != null && AuthenticationHandler.hasPin(this))
+        if (AuthenticationHandler.hasPin(this))
             startActivityForResult(new Intent(this, PinActivity.class), 0);
         else
             startActivityForResult(new Intent(this, FirstScreenActivity.class), 0);

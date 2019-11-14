@@ -34,7 +34,7 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || getModel() == null) {
+        if (getModel() == null) {
             toFirst();
             return;
         }
@@ -76,7 +76,7 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     protected void onResumeWithService() {
         super.onResumeWithService();
         UI.mapClick(this, R.id.nextButton, this);
-        if (mService != null && getModel() != null) {
+        if (getModel() != null) {
             initEnabledMethods();
             getModel().getTwoFactorConfigDataObservable().addObserver(this);
         }
@@ -86,7 +86,7 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     protected void onPauseWithService() {
         super.onPauseWithService();
         UI.unmapClick(UI.find(this, R.id.nextButton));
-        if (mService != null && getModel() != null)
+        if (getModel() != null)
             getModel().getTwoFactorConfigDataObservable().deleteObserver(this);
     }
 
@@ -172,7 +172,6 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
             final boolean isEnabled = mEnabled.contains(method);
             holder.enabled.setChecked(isEnabled);
             holder.enabled.setOnClickListener((v1) -> {
-                mService.rescheduleDisconnect();
                 if (getGAApp().warnIfOffline(SecurityActivity.this)) {
                     return;
                 }

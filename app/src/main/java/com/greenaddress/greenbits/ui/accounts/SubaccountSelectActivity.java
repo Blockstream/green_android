@@ -26,7 +26,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
 
     @Override
     protected void onCreateWithService(Bundle savedInstanceState) {
-        if (mService == null || getModel() == null) {
+        if (getModel() == null) {
             toFirst();
             return;
         }
@@ -79,7 +79,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null || getModel() == null)
+        if (getModel() == null)
             return;
         final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();
         for (int i = 0; i < balanceObservables.size(); i++) {

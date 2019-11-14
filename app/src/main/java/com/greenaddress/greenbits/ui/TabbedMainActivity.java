@@ -71,7 +71,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || getModel() == null)
+        if (getModel() == null)
             return;
         UI.preventScreenshots(this);
         final Intent intent = getIntent();
@@ -173,7 +173,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     @Override
     public void onResumeWithService() {
         super.onResumeWithService();
-        if (mService == null || getModel() == null)
+        if (getModel() == null)
             return;
         getModel().getActiveAccountObservable().addObserver(this);
         getModel().getEventDataObservable().addObserver(this);
@@ -198,7 +198,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     private void updateBottomNavigationView() {
         final MenuItem item = mNavigation.getMenu().findItem(R.id.navigation_notifications);
         runOnUiThread(() ->
-                      item.setIcon(mService != null && getModel().getEventDataObservable().hasEvents() ?
+                      item.setIcon(getModel() != null && getModel().getEventDataObservable().hasEvents() ?
                                    R.drawable.bottom_navigation_notifications_2 :
                                    R.drawable.bottom_navigation_notifications)
                       );
@@ -208,7 +208,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     public void onPauseWithService() {
         super.onPauseWithService();
         mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
-        if (mService == null || getModel() == null)
+        if (getModel() == null)
             return;
         getModel().getActiveAccountObservable().deleteObserver(this);
         getModel().getEventDataObservable().deleteObserver(this);
@@ -358,7 +358,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
         @Override
         public CharSequence getPageTitle(final int index) {
-            if (mService != null && getModel().isTwoFAReset())
+            if (getModel().isTwoFAReset())
                 return " " + getString(R.string.id_wallets);
             final String networkName = getNetwork().getName();
             switch (index) {
@@ -370,7 +370,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         }
 
         void onViewPageSelected(final int index) {
-            mService.rescheduleDisconnect();
             Log.d(TAG, "SectionsPagerAdapter -> onViewPageSelected " + index +
                   " current is " + mSelectedPage + " initial " + mInitialPage);
 

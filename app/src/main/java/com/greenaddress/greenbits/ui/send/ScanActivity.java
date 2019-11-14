@@ -372,10 +372,9 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
     }
 
     public void onInserted(final String scanned) {
-        final GaService service = ((GreenAddressApplication) getApplication()).mService;
         final Model model = ((GreenAddressApplication) getApplication()).getModel();
 
-        if (service == null || model == null)
+        if (model == null)
             return;
 
         final Intent result = new Intent();
@@ -386,7 +385,7 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
         if (isSweep) {
             result.putExtra(PrefKeys.SWEEP, true);
             // See if the address is a private key, and if so, sweep it
-            final Long feeRate = service.getFeeEstimates().get(0);
+            final Long feeRate = getGAApp().getModel().getFeeObservable().getFees().get(0);
             final String receiveAddress =
                 model.getReceiveAddressObservable(subaccount).getReceiveAddress();
             final BalanceData balanceData = new BalanceData();

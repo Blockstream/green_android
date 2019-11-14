@@ -31,7 +31,7 @@ public class MessagesActivity extends LoggedActivity
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || getModel() == null) {
+        if (getModel() == null) {
             toFirst();
             return;
         }

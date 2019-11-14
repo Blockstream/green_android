@@ -83,7 +83,6 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     protected void onLoginSuccess() {
         super.onLoginSuccess();
         stopLoading();
-        mService.resetSignUp();
         if (AuthenticationHandler.hasPin(this)) {
             final Intent intent = new Intent(this, TabbedMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

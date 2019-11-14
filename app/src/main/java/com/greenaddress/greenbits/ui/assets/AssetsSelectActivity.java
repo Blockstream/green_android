@@ -32,7 +32,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
-        if (mService == null || getModel() == null) {
+        if (getModel() == null) {
             toFirst();
             return;
         }
@@ -56,7 +56,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         try {
             mAssetsBalances = getModel().getCurrentAccountBalanceData();
 
-            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, mService, getNetwork(), this, getModel());
+            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, getNetwork(), this, getModel());
             assetsList.setAdapter(adapter);
         } catch (final Exception e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     @Override
     protected void onPauseWithService() {
         super.onPauseWithService();
-        if (mService == null || getModel() == null)
+        if (getModel() == null)
             return;
     }
 

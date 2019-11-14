@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui.onboarding;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +17,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.greenaddress.gdk.GDKSession;
+import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -32,6 +35,8 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
     private Dialog mMnemonicDialog;
     private ImageView mQrCodeBitmap;
     private ImageView mProgressImage;
+    private String mSignUpMnemonic;
+    private Bitmap mSignUpQRCode;
 
     @Override
     protected void onCreateWithService(final Bundle savedInstanceState) {
@@ -41,7 +46,7 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
         UI.preventScreenshots(this);
 
         // Generate mnemonic from GDK
-        mMnemonic = mService.getSignUpMnemonic();
+        mMnemonic = getSignUpMnemonic();
 
         // Set up the action bar.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -130,6 +135,18 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
         }
     }
 
+    public String getSignUpMnemonic() {
+        if (mSignUpMnemonic == null)
+            mSignUpMnemonic = GDKSession.generateMnemonic("en");
+        return mSignUpMnemonic;
+    }
+
+    public Bitmap getSignUpQRCode() {
+        if (mSignUpQRCode == null)
+            mSignUpQRCode = new QrBitmap(getSignUpMnemonic(), getResources().getColor(R.color.green)).getQRCode();
+        return mSignUpQRCode;
+    }
+
     private void onQrCodeButtonClicked() {
         if (mMnemonicDialog == null) {
             final View v = UI.inflateDialog(this, R.layout.dialog_qrcode);
@@ -140,7 +157,7 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
             mMnemonicDialog.setContentView(v);
         }
         mMnemonicDialog.show();
-        final BitmapDrawable bd = new BitmapDrawable(getResources(), mService.getSignUpQRCode());
+        final BitmapDrawable bd = new BitmapDrawable(getResources(), getSignUpQRCode());
         bd.setFilterBitmap(false);
         mQrCodeBitmap.setImageDrawable(bd);
     }

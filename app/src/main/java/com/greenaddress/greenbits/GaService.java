@@ -180,28 +180,6 @@ public class GaService extends Service  {
         return getSession().getMnemonicPassphrase();
     }
 
-    public List<Long> getFeeEstimates() {
-        return getGAApp().getModel().getFeeObservable().getFees();
-    }
-
-    public void resetSignUp() {
-        mSignUpMnemonic = null;
-        if (mSignUpQRCode != null)
-            mSignUpQRCode.recycle();
-        mSignUpQRCode = null;
-    }
-
-    public String getSignUpMnemonic() {
-        if (mSignUpMnemonic == null)
-            mSignUpMnemonic = GDKSession.generateMnemonic("en");
-        return mSignUpMnemonic;
-    }
-
-    public Bitmap getSignUpQRCode() {
-        if (mSignUpQRCode == null)
-            mSignUpQRCode = new QrBitmap(getSignUpMnemonic(), getResources().getColor(R.color.green)).getQRCode();
-       return mSignUpQRCode;
-    }
 
     private void onNetConnectivityChanged() {
         final NetworkInfo info = getNetworkInfo();
