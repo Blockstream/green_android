@@ -140,7 +140,6 @@ public class GaService extends Service  {
     public String getProxyHost() { return cfg().getString(PrefKeys.PROXY_HOST, ""); }
     public String getProxyPort() { return cfg().getString(PrefKeys.PROXY_PORT, ""); }
     public boolean getProxyEnabled() { return cfg().getBoolean(PrefKeys.PROXY_ENABLED, false); }
-
     public boolean getTorEnabled() { return cfg().getBoolean(PrefKeys.TOR_ENABLED, false); }
     public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
 
@@ -170,18 +169,6 @@ public class GaService extends Service  {
 
         if(GreenAddressApplication.isRunningTest())
             return;
-
-        // Uncomment to test slow service creation
-        // android.os.SystemClock.sleep(10000);
-        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-        getGAApp().setConnectionManager(new ConnectionManager(network, getProxyHost(), getProxyPort(), getProxyEnabled(), getTorEnabled()));
-
-        String deviceId = cfg().getString(PrefKeys.DEVICE_ID, null);
-        if (deviceId == null) {
-            // Generate a unique device id
-            deviceId = UUID.randomUUID().toString();
-            cfgEdit().putString(PrefKeys.DEVICE_ID, deviceId).apply();
-        }
 
         mTimerExecutor.scheduleWithFixedDelay(this::checkDisconnect, 5,5, TimeUnit.SECONDS);
     }

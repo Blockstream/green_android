@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -355,5 +356,22 @@ public class GreenAddressApplication extends MultiDexApplication {
             }
         };
         getModel().getSettingsObservable().addObserver(observer);
+    }
+
+    public void connect() {
+        final SharedPreferences preferences = getSharedPreferences(getCurrentNetwork(), MODE_PRIVATE);
+        final String proxyHost = preferences.getString(PrefKeys.PROXY_HOST, "");
+        final String proxyPort = preferences.getString(PrefKeys.PROXY_PORT, "");
+        final boolean proxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
+        final boolean torEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
+        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        mConnectionManager = new ConnectionManager(network, proxyHost, proxyPort, proxyEnabled, torEnabled);
+
+        String deviceId = preferences.getString(PrefKeys.DEVICE_ID, null);
+        if (deviceId == null) {
+            // Generate a unique device id
+            deviceId = UUID.randomUUID().toString();
+            preferences.edit().putString(PrefKeys.DEVICE_ID, deviceId).apply();
+        }
     }
 }

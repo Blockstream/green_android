@@ -2,9 +2,11 @@ package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import androidx.preference.CheckBoxPreference;
@@ -20,6 +22,8 @@ import com.greenaddress.greenbits.ui.UI;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener,
@@ -106,11 +110,18 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mService.setSPVEnabledAsync(newValue);
         mSPVSyncOnMobile.setEnabled(newValue);
         mScanSPV.setEnabled(newValue);
+        final String network = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(
+            PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        final SharedPreferences preferences = getContext().getSharedPreferences(network, MODE_PRIVATE);
+        final boolean proxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
+        final boolean torEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
+        final String peers =
+            preferences.getString(PrefKeys.TRUSTED_ADDRESS, preferences.getString("trusted_peer", "")).trim();
+
         if (!newValue) {
             mSPVSyncOnMobile.setChecked(false);
             mService.setSPVSyncOnMobileEnabledAsync(false);
-        } else if ((mService.getTorEnabled() || mService.isProxyEnabled()) &&
-                   (mService.getSPVTrustedPeers() == null || mService.getSPVTrustedPeers().isEmpty())) {
+        } else if ((torEnabled || proxyEnabled) && peers.isEmpty()) {
             if (getActivity() == null) {
                 return true;
             }
@@ -143,9 +154,14 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     }
 
     private boolean onTrustedPeerChange(final String newValue) {
-
+        final String network = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(
+            PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        final SharedPreferences preferences = getContext().getSharedPreferences(network, MODE_PRIVATE);
+        final String prefPeers =
+            preferences.getString(PrefKeys.TRUSTED_ADDRESS, preferences.getString("trusted_peer", "")).trim();
         final String peers = newValue.trim().replaceAll("\\s","");
-        if (mService.getSPVTrustedPeers().equals(peers))
+
+        if (prefPeers.equals(peers))
             return false;
 
         if (peers.isEmpty()) {
