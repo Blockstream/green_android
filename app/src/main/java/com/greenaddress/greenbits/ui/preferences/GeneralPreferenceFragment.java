@@ -92,7 +92,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Pin submenu
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
-        if (!getConnectionManager().isLoginWithPin() && !mService.isPinJustSaved()) {
+        if (!getConnectionManager().isLoginWithPin() && !getConnectionManager().isPinJustSaved()) {
             mPinPref.setEnabled(false);
             mPinPref.setSummary(getString(R.string.id_green_only_supports_one_pin_per));
         }

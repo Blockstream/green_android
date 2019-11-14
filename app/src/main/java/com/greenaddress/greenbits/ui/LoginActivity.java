@@ -70,6 +70,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         }
         getGAApp().getExecutor().execute(() -> {
             getGAApp().resetSession();
+            getConnectionManager().connect(this);
             getConnectionManager().loginWithPin(pin, pinData);
         });
     }

@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.KeyStoreAES;
 import com.greenaddress.greenbits.ui.R;
@@ -22,6 +23,7 @@ import androidx.preference.Preference;
 import androidx.preference.SwitchPreference;
 
 import static android.app.Activity.RESULT_OK;
+import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class PinPreferenceFragment extends GAPreferenceFragment implements Observer {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
@@ -123,12 +125,15 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
         }
 
         try {
-            final String mnemonic = mService.getMnemonic();
+            final String mnemonic = getSession().getMnemonicPassphrase();
             final String network = getNetwork().getNetwork();
             final SharedPreferences preferences = AuthenticationHandler.getNewAuth(getContext());
             final String pin = KeyStoreAES.tryEncrypt(network, preferences);
-            Futures.addCallback(mService.setPin(mnemonic, pin, preferences),
-                                new FutureCallback<Void>() {
+            final ListenableFuture<Void> future = getGAApp().getExecutor().submit(() -> {
+                getConnectionManager().setPin(mnemonic, pin, preferences);
+                return null;
+            });
+            Futures.addCallback(future, new FutureCallback<Void>() {
                 @Override
                 public void onSuccess(final Void result) {}
 

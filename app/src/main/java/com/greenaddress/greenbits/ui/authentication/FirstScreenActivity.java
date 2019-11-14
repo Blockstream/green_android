@@ -76,7 +76,6 @@ public class FirstScreenActivity extends LoginActivity {
     @Override
     public void onResumeWithService() {
         onSelectNetwork();
-        mService.setPinJustSaved(false);
     }
 
     @Override

@@ -7,9 +7,11 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.PinData;
+import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
@@ -45,6 +47,7 @@ public class ConnectionManager extends Observable {
     public Exception mLastLoginException = null;
     public HWDeviceData mHWDevice;
     public CodeResolver mHWResolver;
+    private boolean pinJustSaved = false;
 
     public ConnectionManager(final String network) {
         this.mNetwork = network;
@@ -167,6 +170,7 @@ public class ConnectionManager extends Observable {
         mProxyPort = preferences.getString(PrefKeys.PROXY_PORT, "");
         mProxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
         mTorEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
+        pinJustSaved = false;
 
         String deviceId = preferences.getString(PrefKeys.DEVICE_ID, null);
         if (deviceId == null) {
@@ -254,7 +258,6 @@ public class ConnectionManager extends Observable {
         }
     }
 
-
     public void disconnect() {
         setState(ConnState.DISCONNECTING);
         mWatchOnlyUsername = null;
@@ -263,5 +266,19 @@ public class ConnectionManager extends Observable {
         mHWResolver = null;
         getSession().disconnect();
         setState(ConnState.DISCONNECTED);
+    }
+
+    public void setPin(final String mnemonic, final String pin, final SharedPreferences preferences) throws Exception {
+        final PinData pinData = getSession().setPin(mnemonic, pin, "default");
+        AuthenticationHandler.setPin(pinData, pin.length() == 6, preferences);
+        setPinJustSaved(true);
+    }
+
+    public boolean isPinJustSaved() {
+        return pinJustSaved;
+    }
+
+    public void setPinJustSaved(boolean pinJustSaved) {
+        this.pinJustSaved = pinJustSaved;
     }
 }

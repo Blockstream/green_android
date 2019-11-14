@@ -73,7 +73,6 @@ public class GaService extends Service  {
 
     private String mSignUpMnemonic;
     private Bitmap mSignUpQRCode;
-    private boolean pinJustSaved = false;
 
     private final SPV mSPV = new SPV(this);
 
@@ -183,23 +182,6 @@ public class GaService extends Service  {
 
     public List<Long> getFeeEstimates() {
         return getGAApp().getModel().getFeeObservable().getFees();
-    }
-
-    public ListenableFuture<Void> setPin(final String mnemonic, final String pin, final SharedPreferences preferences) {
-        return getGAApp().getExecutor().submit(() -> {
-            final PinData pinData = getSession().setPin(mnemonic, pin, "default");
-            AuthenticationHandler.setPin(pinData, pin.length() == 6, preferences);
-            setPinJustSaved(true);
-            return null;
-        });
-    }
-
-    public boolean isPinJustSaved() {
-        return pinJustSaved;
-    }
-
-    public void setPinJustSaved(boolean pinJustSaved) {
-        this.pinJustSaved = pinJustSaved;
     }
 
     public void resetSignUp() {

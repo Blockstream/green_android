@@ -1,21 +1,16 @@
 package com.greenaddress.greenbits.ui.onboarding;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.greenbits.AuthenticationHandler;
-import com.greenaddress.greenbits.KeyStoreAES;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -49,8 +44,11 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         intent.putExtra("from_onboarding",true);
 
         final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
-        Futures.addCallback(mService.setPin(mnemonic, pin, AuthenticationHandler.getNewAuth(this)),
-                            new FutureCallback<Void>() {
+        final ListenableFuture<Void> future = getGAApp().getExecutor().submit(() -> {
+            getConnectionManager().setPin(mnemonic, pin, AuthenticationHandler.getNewAuth(this));
+            return null;
+        });
+        Futures.addCallback(future, new FutureCallback<Void>() {
             @Override
             public void onSuccess(final Void result) {
                 setResult(RESULT_OK);
