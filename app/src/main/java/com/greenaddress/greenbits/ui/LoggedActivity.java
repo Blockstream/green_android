@@ -14,8 +14,8 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     private boolean mChangingActivity = false;
 
     @Override
-    protected void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         if (getConnectionManager() == null || getModel() == null) {
             toFirst();
             return;
@@ -29,8 +29,8 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         if (getConnectionManager() == null || getModel() == null)
             return;
         getConnectionManager().deleteObserver(this);

@@ -37,7 +37,8 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding_selection);
         setTitleBackTransparent();
         setTitle("");
@@ -119,14 +120,14 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
     }
 
     @Override
-    protected void onResumeWithService() {
-        //super.onResumeWithService(); not pass activity if logged
+    public void onResume() {
+        super.onResume();
         getConnectionManager().addObserver(this);
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
     }
 
     @Override

@@ -53,7 +53,6 @@ public abstract class GaActivity extends AppCompatActivity {
     // mService is available to all derived classes as soon as
     // onCreateWithService() is called. Once assigned it does not
     // change so may be read from background threads.
-    private boolean mResumed;
     protected ProgressBarHandler mProgressBarHandler;
     private SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();
 
@@ -72,9 +71,8 @@ public abstract class GaActivity extends AppCompatActivity {
     }
 
     @Override
-    protected final void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
-
         setTheme(ThemeUtils.getThemeFromNetworkId(getGAApp().getCurrentNetworkData(), this,
                                                   getMetadata()));
 
@@ -82,53 +80,24 @@ public abstract class GaActivity extends AppCompatActivity {
         final int viewId = getMainViewId();
         if (viewId != UI.INVALID_RESOURCE_ID)
             setContentView(viewId);
-
-        // Call onCreateWithService() on the GUI thread once our service
-        // becomes available. In most cases this will execute immediately.
-        Futures.addCallback(getGAApp().onServiceAttached, new CB.Op<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                GaActivity.this.runOnUiThread(() -> {
-                    final GaActivity self = GaActivity.this;
-                    Log.d(TAG, "onCreateWithService -> " + self.getClass().getSimpleName());
-                    self.onCreateWithService(savedInstanceState);
-                    if (self.mResumed) {
-                        // We resumed before the service became available, and so
-                        // did not call onResumeWithService() then - call it now.
-                        Log.d(TAG, "(delayed)onResumeWithService -> " + self.getClass().getSimpleName());
-                        onResumeWithService();
-                    }
-                });
-            }
-        });
     }
 
     @Override
-    public final void onPause() {
+    public void onPause() {
         Log.d(TAG, "onPause");
         super.onPause();
-        mResumed = false;
         if (mProgressBarHandler != null)
             mProgressBarHandler.stop();
-        onPauseWithService();
     }
 
     @Override
-    public final void onResume() {
+    public void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        mResumed = true;
-        onResumeWithService();
     }
 
     /** Override to provide the main view id */
     protected int getMainViewId() { return UI.INVALID_RESOURCE_ID; }
-
-    /** Override to provide onCreate/onResume/onPause processing.
-     * When called, our service is guaranteed to be available. */
-    abstract protected void onCreateWithService(final Bundle savedInstanceState);
-    protected void onPauseWithService() { }
-    protected void onResumeWithService() { }
 
     // Utility methods
 

@@ -33,7 +33,8 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     private ViewAdapter mMethodsAdapter;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (getModel() == null) {
             toFirst();
             return;
@@ -73,8 +74,8 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     }
 
     @Override
-    protected void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         UI.mapClick(this, R.id.nextButton, this);
         if (getModel() != null) {
             initEnabledMethods();
@@ -83,8 +84,8 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         UI.unmapClick(UI.find(this, R.id.nextButton));
         if (getModel() != null)
             getModel().getTwoFactorConfigDataObservable().deleteObserver(this);

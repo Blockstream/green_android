@@ -119,8 +119,8 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
     }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
-
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (!AuthenticationHandler.hasPin(this)) {
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
@@ -168,18 +168,18 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
     }
 
     @Override
-    public void onResumeWithService() {
+    public void onResume() {
+        super.onResume();
         setAppNameTitle();
 
         if (mPinFragment != null)
             getSupportFragmentManager().beginTransaction()
             .replace(R.id.fragment_container, mPinFragment).commit();
-        super.onResumeWithService();
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -249,7 +249,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 .onAny((dlg, which) -> {
                     AuthenticationHandler.clean(this, AuthenticationHandler.getNativeAuth(this));
                     onPinAuth();
-                    onResumeWithService();
+                    onResume();
                 }).show();
             }
         } catch (final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException |
@@ -257,7 +257,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                  NoSuchAlgorithmException | NoSuchPaddingException e) {
             UI.popup(this, R.string.id_warning, R.string.id_continue)
             .content(e.getLocalizedMessage())
-            .onAny((dlg, which) -> { onPinAuth(); onResumeWithService(); })
+            .onAny((dlg, which) -> { onPinAuth(); onResume(); })
             .show();
         }
     }

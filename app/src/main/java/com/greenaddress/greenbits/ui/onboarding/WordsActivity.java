@@ -39,7 +39,8 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
     private Bitmap mSignUpQRCode;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding_words);
         setTitleBackTransparent();
         setTitle("");
@@ -58,14 +59,14 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
     }
 
     @Override
-    protected void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         UI.mapClick(this, R.id.nextButton, this);
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         UI.unmapClick(UI.find(this, R.id.nextButton));
     }
 

@@ -70,7 +70,8 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mInLedgerDashboard = false;
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
@@ -320,8 +321,8 @@ public class RequestLoginActivity extends LoginActivity implements Observer {
     }
 
     @Override
-    public void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         mActiveNetwork.setText(getString(R.string.id_s_network, networkData.getName()));
 
         final Intent intent = getIntent();

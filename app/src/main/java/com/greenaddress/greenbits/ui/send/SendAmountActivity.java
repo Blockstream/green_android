@@ -81,7 +81,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private NetworkData networkData;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (getModel() == null) {
             toFirst();
             return;
@@ -284,8 +285,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     @Override
-    public void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         if (getConnectionManager() == null || getModel() == null) {
             toFirst();
             return;
@@ -307,8 +308,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     @Override
-    public void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         mCustomFeeDialog = UI.dismiss(this, mCustomFeeDialog);
         UI.unmapClick(mSendAllButton);
         for (int i = 0; i < mButtonIds.length; ++i)

@@ -11,7 +11,8 @@ import com.greenaddress.greenbits.ui.UI;
 public class ReceiveActivity extends LoggedActivity {
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (getModel() == null) {
             toFirst();
             return;

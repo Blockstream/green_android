@@ -16,7 +16,8 @@ import com.greenaddress.greenbits.ui.UI;
 public class InfoActivity extends LoginActivity implements View.OnClickListener {
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding_info);
         setTitleBackTransparent();
         setTitle("");
@@ -32,14 +33,14 @@ public class InfoActivity extends LoginActivity implements View.OnClickListener 
     }
 
     @Override
-    protected void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         UI.mapClick(this, R.id.continueButton, this);
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         UI.unmapClick(UI.find(this, R.id.continueButton));
     }
 

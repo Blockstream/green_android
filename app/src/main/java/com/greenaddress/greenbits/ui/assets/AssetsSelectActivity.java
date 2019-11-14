@@ -31,7 +31,8 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     private Map<String, Long> mAssetsBalances;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (getModel() == null) {
             toFirst();
             return;
@@ -76,8 +77,8 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     }
 
     @Override
-    protected void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         if (getConnectionManager() == null || getModel() == null)
             return;
         if (getConnectionManager().isDisconnected()) {
@@ -86,8 +87,8 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         if (getModel() == null)
             return;
     }

@@ -95,7 +95,8 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
     private static final Logger log = LoggerFactory.getLogger(ScanActivity.class);
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         UI.preventScreenshots(this);
 
         getSupportActionBar().setElevation(0);
@@ -162,14 +163,16 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
     }
 
     @Override
-    public void onResumeWithService() {
+    public void onResume() {
+        super.onResume();
         mAddressEditText.addTextChangedListener(this);
         UI.find(this, R.id.nextButton).setOnClickListener(this);
         maybeOpenCamera();
     }
 
     @Override
-    public void onPauseWithService() {
+    public void onPause() {
+        super.onPause();
         cameraHandler.post(closeRunnable);
         mAddressEditText.removeTextChangedListener(this);
         UI.find(this, R.id.nextButton).setOnClickListener(null);

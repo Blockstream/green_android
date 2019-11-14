@@ -15,7 +15,8 @@ import com.greenaddress.greenbits.ui.UI;
 public class TrezorPassphraseActivity extends GaActivity {
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trezor_passphrase);
         setTitleBackTransparent();
 

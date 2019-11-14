@@ -106,7 +106,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     };
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Log.d(TAG, getIntent().getType() + ' ' + getIntent());
         setTitleBackTransparent();
         setTitleWithNetwork(R.string.id_restore);

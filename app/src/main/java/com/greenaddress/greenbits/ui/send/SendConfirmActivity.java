@@ -49,7 +49,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     private AssetInfoData mAssetInfo;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (getModel() == null) {
             toFirst();
             return;

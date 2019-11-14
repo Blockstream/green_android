@@ -26,7 +26,8 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     protected void onLoginFailure() { }
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         // We add the observer on both create and resume, to be sure to be notified of connection
         // manager state changes, it's not a problem adding twice since per Observer documentation:
         // "Adds an observer to the set of observers for this object, provided
@@ -51,8 +52,8 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     }
 
     @Override
-    protected void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         if (getConnectionManager() != null) {
             final ConnectionManager cm = getConnectionManager();
             cm.deleteObserver(this);
@@ -78,8 +79,8 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         if (getConnectionManager() != null) {
             getConnectionManager().deleteObserver(this);
         }

@@ -78,7 +78,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     protected int getMainViewId() { return R.layout.activity_transaction; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (getModel() == null) {
             toFirst();
             return;
@@ -301,7 +302,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     }
 
     @Override
-    public void onPauseWithService() {
+    public void onPause() {
+        super.onPause();
         mSummary = UI.dismiss(this, mSummary);
         mTwoFactor = UI.dismiss(this, mTwoFactor);
     }

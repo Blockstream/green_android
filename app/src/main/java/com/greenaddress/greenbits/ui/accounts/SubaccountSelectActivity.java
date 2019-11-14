@@ -25,7 +25,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     protected int getMainViewId() { return R.layout.activity_subaccount_select; }
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (getModel() == null) {
             toFirst();
             return;
@@ -62,8 +63,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     }
 
     @Override
-    protected void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         if (getConnectionManager() == null || getModel() == null)
             return;
         if (getConnectionManager().isDisconnected()) {
@@ -77,8 +78,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         if (getModel() == null)
             return;
         final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();

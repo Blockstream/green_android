@@ -29,7 +29,8 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
     private SwitchCompat mRememberSwitch;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setAppNameTitle();
         setContentView(R.layout.activity_watchonly);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);

@@ -30,8 +30,8 @@ public class DisplayMnemonicActivity extends LoggedActivity {
     }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
-
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_mnemonic);
         setTitleBackTransparent();
         UI.preventScreenshots(this);

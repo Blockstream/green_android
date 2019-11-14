@@ -70,7 +70,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         if (getModel() == null)
             return;
         UI.preventScreenshots(this);
@@ -171,8 +172,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     }
 
     @Override
-    public void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         if (getModel() == null)
             return;
         getModel().getActiveAccountObservable().addObserver(this);
@@ -205,8 +206,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     }
 
     @Override
-    public void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
         if (getModel() == null)
             return;

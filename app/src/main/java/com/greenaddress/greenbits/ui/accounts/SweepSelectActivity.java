@@ -21,7 +21,8 @@ public class SweepSelectActivity extends GaActivity implements SweepAdapter.OnAc
     private List<SubaccountData> mSubaccountData;
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sweep_selection);
         setTitleBackTransparent();
 

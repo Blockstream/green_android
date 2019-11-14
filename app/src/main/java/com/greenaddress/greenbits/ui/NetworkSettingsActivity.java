@@ -43,7 +43,8 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     private boolean mIsLoggedIn = false;
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_networksettings);
         getSupportActionBar().hide();
         mProxySection = UI.find(this, R.id.proxySection);
@@ -90,8 +91,8 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     }
 
     @Override
-    protected void onResumeWithService() {
-        super.onResumeWithService();
+    public void onResume() {
+        super.onResume();
         if (getConnectionManager() == null) {
             return;
         }
@@ -109,8 +110,8 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     }
 
     @Override
-    protected void onPauseWithService() {
-        super.onPauseWithService();
+    public void onPause() {
+        super.onPause();
         if (getConnectionManager() == null) {
             return;
         }

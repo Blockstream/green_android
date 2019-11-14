@@ -28,7 +28,8 @@ public class FirstScreenActivity extends LoginActivity {
     protected int getMainViewId() { return R.layout.activity_first_screen; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
         setTitle("");
 
@@ -74,7 +75,8 @@ public class FirstScreenActivity extends LoginActivity {
     }
 
     @Override
-    public void onResumeWithService() {
+    public void onResume() {
+        super.onResume();
         onSelectNetwork();
     }
 

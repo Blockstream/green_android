@@ -71,7 +71,8 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
     protected int getMainViewId() { return R.layout.activity_pin_save; }
 
     @Override
-    protected void onCreateWithService(final Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
         if (isHexSeed(mnemonic))
             goToTabbedMainActivity();

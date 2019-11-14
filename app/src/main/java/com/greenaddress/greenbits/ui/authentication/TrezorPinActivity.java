@@ -18,7 +18,8 @@ public class TrezorPinActivity extends GaActivity {
     private StringBuffer value = new StringBuffer();
 
     @Override
-    protected void onCreateWithService(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trezor_pin_dialog);
         setTitleBackTransparent();
         final TextView textView = UI.find(this, R.id.asteriskTextView);
