@@ -1341,8 +1341,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
-					"-fsanitize=address",
-					"-static-libsan",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"$(inherited)",
@@ -1352,7 +1350,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
 				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -sanitize=address";
+				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/gdk-iphone/include/gdk $(SRCROOT)/gdk-iphone/include/gdk/libwally-core";
@@ -1383,7 +1381,6 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
-					"-static-libsan",
 				);
 				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
 					"$(inherited)",
