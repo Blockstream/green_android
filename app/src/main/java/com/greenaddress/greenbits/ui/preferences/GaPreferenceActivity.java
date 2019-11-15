@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.UI;

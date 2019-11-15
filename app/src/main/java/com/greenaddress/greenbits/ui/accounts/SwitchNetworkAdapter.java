@@ -6,16 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.transactions.ListTransactionsAdapter;
 
 import java.util.List;
-
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdapter.ViewHolder> {

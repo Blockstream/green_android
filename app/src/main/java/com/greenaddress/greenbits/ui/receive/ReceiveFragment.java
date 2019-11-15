@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui.receive;
 
-
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -30,7 +29,6 @@ import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.SubaccountFragment;
@@ -44,7 +42,6 @@ import java.util.Locale;
 import java.util.Observer;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
-
 
 public class ReceiveFragment extends SubaccountFragment implements TextWatcher, View.OnClickListener {
     private static final String TAG = ReceiveFragment.class.getSimpleName();

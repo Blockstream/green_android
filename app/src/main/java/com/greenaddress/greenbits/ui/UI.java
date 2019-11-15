@@ -38,7 +38,6 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.GaService;
 
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 

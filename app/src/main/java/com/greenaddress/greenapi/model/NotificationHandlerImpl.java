@@ -16,17 +16,12 @@ import com.greenaddress.greenapi.data.EstimatesData;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TransactionData;
-import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class NotificationHandlerImpl implements GDK.NotificationHandler {
     private static final int TOR_NOTIFICATION_ID = 0x42;

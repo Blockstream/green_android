@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui.onboarding;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -15,7 +14,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;

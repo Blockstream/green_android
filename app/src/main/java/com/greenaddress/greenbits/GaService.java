@@ -1,13 +1,11 @@
 package com.greenaddress.greenbits;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
@@ -15,53 +13,14 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.greenaddress.gdk.GDKSession;
-import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenapi.data.AssetInfoData;
-import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.data.PinData;
-import com.greenaddress.greenapi.data.SettingsData;
-import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenapi.model.AssetsDataObservable;
-import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenapi.model.SettingsObservable;
-import com.greenaddress.greenapi.model.TorProgressObservable;
 import com.greenaddress.greenbits.spv.SPV;
-import com.greenaddress.greenbits.ui.BuildConfig;
-import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
-import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.PeerGroup;
 import org.bitcoinj.core.Sha256Hash;
-import org.h2.command.ddl.GrantRevoke;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class GaService extends Service  {
     private static final String TAG = GaService.class.getSimpleName();

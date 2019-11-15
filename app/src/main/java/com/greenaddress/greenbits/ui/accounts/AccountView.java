@@ -13,11 +13,7 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 

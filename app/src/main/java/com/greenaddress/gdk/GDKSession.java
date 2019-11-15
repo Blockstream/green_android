@@ -31,8 +31,6 @@ import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.data.TwoFactorDetailData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.NotificationHandlerImpl;
-import com.greenaddress.greenbits.GaService;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.BuildConfig;
 
 import org.bitcoinj.core.AddressFormatException;

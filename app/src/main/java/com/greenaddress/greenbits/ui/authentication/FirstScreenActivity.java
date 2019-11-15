@@ -2,20 +2,16 @@ package com.greenaddress.greenbits.ui.authentication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.AuthenticationHandler;
-import com.greenaddress.greenbits.GaService;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.ThemeUtils;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.onboarding.InfoActivity;
 

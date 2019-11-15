@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenapi.model.TorProgressObservable;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 
