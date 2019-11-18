@@ -85,7 +85,7 @@ class AccountCreateViewController: UIViewController {
         }.compactMap(on: bgq) {
             try session.createSubaccount(details: ["name": name, "type": type.rawValue])
         }.compactMap(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

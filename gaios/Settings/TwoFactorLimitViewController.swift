@@ -96,7 +96,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         }.compactMap(on: bgq) {
             try getSession().setTwoFactorLimit(details: details)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

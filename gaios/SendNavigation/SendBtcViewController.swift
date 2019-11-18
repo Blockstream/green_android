@@ -121,8 +121,11 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
             }
         }.compactMap(on: bgq) { data in
             try getSession().createTransaction(details: data)
-        }.compactMap(on: bgq) { data in
-            return Transaction(data)
+        }.then(on: bgq) { call in
+            call.resolve()
+        }.compactMap(on: bgq) { data -> Transaction in
+            let result = data["result"] as? [String: Any]
+            return Transaction(result ?? [:])
         }.done { tx in
             if !tx.error.isEmpty && tx.error != "id_invalid_amount" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))

@@ -244,42 +244,55 @@ class WalletItem: Codable {
         return pointer == 0 ? NSLocalizedString("id_main_account", comment: "") : name
     }
 
-    func generateNewAddress() -> String? {
-        let res = try? getSession().getReceiveAddress(details: ["subaccount": self.pointer])
-        return res?["address"] as? String
+    func generateNewAddress() -> Promise<String> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().compactMap(on: bgq) {_ in
+            try getSession().getReceiveAddress(details: ["subaccount": self.pointer])
+        }.then(on: bgq) { call in
+            call.resolve()
+        }.compactMap(on: bgq) { data in
+            let result = data["result"] as? [String: Any]
+            return result?["address"] as? String ?? ""
+        }
     }
 
-    func getAddress() -> String {
+    func getAddress() -> Promise<String> {
         if let address = receiveAddress {
+            return Guarantee().compactMap { _ in
+                return address
+            }
+        }
+        return generateNewAddress().compactMap { address in
+            self.receiveAddress = address
             return address
         }
-        receiveAddress = generateNewAddress()
-        return receiveAddress ?? String()
     }
 
     func getBalance() -> Promise<[String: UInt64]> {
         let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
-            try getSession().getBalance(details: ["subaccount": self.pointer, "num_confs": 0]) as? [String: UInt64]
-        }.compactMap { satoshi in
-            self.satoshi = satoshi
+            try getSession().getBalance(details: ["subaccount": self.pointer, "num_confs": 0])
+        }.then(on: bgq) { call in
+            call.resolve()
+        }.compactMap { data in
+            let satoshi = data["result"] as? [String: UInt64]
+            self.satoshi = satoshi ?? [:]
             return satoshi
         }
     }
-}
-
-class Wallets: Codable {
-    let array: [WalletItem]
 }
 
 func getTransactions(_ pointer: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {_ in
         try getSession().getTransactions(details: ["subaccount": pointer, "first": first, "count": 15])
+    }.then(on: bgq) { call in
+        call.resolve()
     }.compactMap(on: bgq) { data in
-        guard let dict = data["array"] as? [[String: Any]] else { throw GaError.GenericError }
-        let list = dict.map { Transaction($0) }
-        return Transactions(list: list)
+        let result = data["result"] as? [String: Any]
+        let dict = result?["transactions"] as? [[String: Any]]
+        let list = dict?.map { Transaction($0) }
+        return Transactions(list: list ?? [])
     }
 }
 
@@ -294,8 +307,11 @@ func createTransaction(details: [String: Any]) -> Promise<Transaction> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
         try getSession().createTransaction(details: details)
+    }.then(on: bgq) { call in
+        call.resolve()
     }.map(on: bgq) { data in
-        return Transaction(data)
+        let result = data["result"] as? [String: Any]
+        return Transaction(result ?? [:])
     }
 }
 
@@ -365,8 +381,11 @@ func getSubaccount(_ pointer: UInt32) -> Promise<WalletItem> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
         try getSession().getSubaccount(subaccount: pointer)
+    }.then(on: bgq) { call in
+        call.resolve()
     }.compactMap(on: bgq) { data in
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
+        let result = data["result"] as? [String: Any]
+        let jsonData = try JSONSerialization.data(withJSONObject: result ?? [:])
         return try JSONDecoder().decode(WalletItem.self, from: jsonData)
     }
 }
@@ -375,17 +394,13 @@ func getSubaccounts() -> Promise<[WalletItem]> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
         try getSession().getSubaccounts()
+    }.then(on: bgq) { call in
+        call.resolve()
     }.compactMap(on: bgq) { data in
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        let wallets: Wallets = try JSONDecoder().decode(Wallets.self, from: jsonData)
-        return wallets.array
-    }
-}
-
-func changeAddresses(_ accounts: [UInt32]) -> Promise<[WalletItem]> {
-    let bgq = DispatchQueue.global(qos: .background)
-    return getSubaccounts().compactMap(on: bgq) { wallets in
-        let updates = wallets.filter { accounts.contains($0.pointer) }
-        return updates.map { $0.receiveAddress = $0.generateNewAddress(); return $0 }
+        let result = data["result"] as? [String: Any]
+        let subaccounts = result?["subaccounts"] as? [[String: Any]]
+        let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
+        let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
+        return wallets
     }
 }

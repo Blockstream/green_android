@@ -68,24 +68,17 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @IBAction func refreshClick(_ sender: Any) {
-        let pointers: [UInt32] = [self.wallet!.pointer]
-        changeAddresses(pointers).done { (wallets: [WalletItem]) in
-            wallets.forEach { wallet in
-                guard let address = wallet.receiveAddress else { return }
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, userInfo: ["pointer": wallet.pointer, "address": address])
-            }
-        }.catch { _ in }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, userInfo: ["pointer": self.wallet?.pointer ?? 0])
     }
 
-    func newAddress(_ notification: Notification) {
-        guard let dict = notification.userInfo as NSDictionary? else { return }
-        guard let pointer = dict["pointer"] as? UInt32 else { return }
-        guard let address = dict["address"] as? String else { return }
+    func newAddress(_ notification: Notification?) {
+        let dict = notification?.userInfo as NSDictionary?
+        let pointer = dict?["pointer"] as? UInt32
         if wallet?.pointer == pointer {
-            wallet?.receiveAddress = address
-            DispatchQueue.main.async {
+            wallet?.generateNewAddress().done { address in
+                self.wallet?.receiveAddress = address
                 self.reload()
-            }
+            }.catch { _ in }
         }
     }
 
@@ -103,7 +96,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     @objc func copyToClipboard(_ sender: Any) {
         guard let wallet = self.wallet else { return }
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {
+        Guarantee().then(on: bgq) {
             return wallet.getAddress()
         }.done { address in
             let uri = getGdkNetwork(getNetwork()).liquid || self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC() ?? 0)
@@ -154,7 +147,7 @@ class ReceiveBtcViewController: KeyboardViewController {
             return
         }
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {
+        Guarantee().then(on: bgq) {
             return wallet.getAddress()
         }.done { address in
             if address.isEmpty {
@@ -189,7 +182,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     @objc func shareButtonClicked(_ sender: UIButton?) {
         guard let wallet = self.wallet else { return }
         let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().compactMap(on: bgq) {
+        Guarantee().then(on: bgq) {
             return wallet.getAddress()
         }.done { address in
             if address.isEmpty {

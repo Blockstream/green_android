@@ -141,7 +141,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }.then(on: bgq) {
             signTransaction(transaction: self.transaction)
         }.then(on: bgq) { call in
-            call.resolve(self, connected: {
+            call.resolve(connected: {
                 return self.connected })
         }.map(on: bgq) { resultDict in
             let result = resultDict["result"] as? [String: Any]
@@ -153,7 +153,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
                 return try getSession().sendTransaction(details: result!)
             }
         }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
-            call?.resolve(self, connected: {
+            call?.resolve(connected: {
                 return self.connected }) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
         }.done { _ in
             self.executeOnDone()

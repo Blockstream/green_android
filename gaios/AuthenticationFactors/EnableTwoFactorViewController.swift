@@ -114,7 +114,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
         }.compactMap(on: bgq) { details in
             try getGAService().getSession().changeSettingsTwoFactor(method: type.rawValue, details: details)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

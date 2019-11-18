@@ -9,12 +9,12 @@ enum TwoFactorCallError: Error {
 
 extension TwoFactorCall {
 
-    func resolve(_ sender: UIViewController, connected: @escaping() -> Bool = { true }) -> Promise<[String: Any]> {
+    func resolve(connected: @escaping() -> Bool = { true }) -> Promise<[String: Any]> {
         func step() -> Promise<[String: Any]> {
             return Guarantee().map {
                 try self.getStatus()!
             }.then { json in
-                try self.resolving(sender: sender, json: json, connected: connected).map { _ in json }
+                try self.resolving(json: json, connected: connected).map { _ in json }
             }.then { json -> Promise<[String: Any]> in
                 guard let status = json["status"] as? String else { throw GaError.GenericError }
                 if status == "done" {
@@ -27,7 +27,7 @@ extension TwoFactorCall {
         return step()
     }
 
-    private func resolving(sender: UIViewController, json: [String: Any], connected: @escaping() -> Bool = { true }) throws -> Promise<Void> {
+    private func resolving(json: [String: Any], connected: @escaping() -> Bool = { true }) throws -> Promise<Void> {
         guard let status = json["status"] as? String else { throw GaError.GenericError }
         switch status {
         case "done":
@@ -40,11 +40,12 @@ extension TwoFactorCall {
         case "request_code":
             let methods = json["methods"] as? [String] ?? []
             if methods.count > 1 {
-                let popup = PopupMethodResolver(sender)
+                let sender = UIApplication.shared.keyWindow?.rootViewController
+                let popup = PopupMethodResolver(sender!)
                 return Promise()
-                    .map { sender.stopAnimating() }
+                    .map { sender?.stopAnimating() }
                     .then { popup.method(methods) }
-                    .map { method in sender.startAnimating(); return method }
+                    .map { method in sender?.startAnimating(); return method }
                     .then { code in self.waitConnection(connected).map { return code} }
                     .then { method in
                         try self.requestCode(method: method)
@@ -54,11 +55,12 @@ extension TwoFactorCall {
             }
         case "resolve_code":
             let method = json["method"] as? String ?? ""
-            let popup = PopupCodeResolver(sender)
+            let sender = UIApplication.shared.keyWindow?.rootViewController
+            let popup = PopupCodeResolver(sender!)
             return Promise()
-                .map { sender.stopAnimating() }
+                .map { sender?.stopAnimating() }
                 .then { popup.code(method) }
-                .map { code in sender.startAnimating(); return code }
+                .map { code in sender?.startAnimating(); return code }
                 .then { code in self.waitConnection(connected).map { return code} }
                 .then { code in
                     return try self.resolveCode(code: code)

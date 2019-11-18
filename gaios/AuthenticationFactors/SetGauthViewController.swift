@@ -50,7 +50,7 @@ class SetGauthViewController: UIViewController {
         }.compactMap(on: bgq) { details in
             try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

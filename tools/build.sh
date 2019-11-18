@@ -28,7 +28,7 @@ if [ ! -d gdk-iphone ]; then
     fi
     cd gdk
     git fetch origin -t
-    git checkout release_0.0.24
+    git checkout release_0.0.25
     rm -rf build-*
     ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone
     cd ..

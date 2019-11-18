@@ -94,7 +94,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         }.compactMap(on: bgq) { details in
             try getGAService().getSession().changeSettings(details: details)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.done { _ in
             self.navigationController?.popViewController(animated: true)
         }.catch {_ in

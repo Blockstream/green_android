@@ -107,7 +107,9 @@ class GreenAddressService {
                 let txEvent = try JSONDecoder().decode(TransactionEvent.self, from: json)
                 events.append(Event(value: data))
                 if txEvent.type == "incoming" {
-                    updateAddresses(txEvent.subAccounts.map { UInt32($0)})
+                    txEvent.subAccounts.forEach { pointer in
+                        post(event: .AddressChanged, data: ["pointer": UInt32(pointer)])
+                    }
                     DispatchQueue.main.async {
                         Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT)
                     }
@@ -153,15 +155,6 @@ class GreenAddressService {
 
     func post(event: EventType, data: [String: Any]) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue), object: nil, userInfo: data)
-    }
-
-    func updateAddresses(_ accounts: [UInt32]) {
-        changeAddresses(accounts).done { (wallets: [WalletItem]) in
-            wallets.forEach { wallet in
-                guard let address = wallet.receiveAddress else { return }
-                self.post(event: .AddressChanged, data: ["pointer": wallet.pointer, "address": address])
-            }
-        }.catch { _ in }
     }
 
     func reloadTwoFactor() {

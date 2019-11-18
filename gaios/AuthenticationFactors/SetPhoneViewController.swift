@@ -47,7 +47,7 @@ class SetPhoneViewController: KeyboardViewController {
         }.compactMap(on: bgq) { details in
             try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: details)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

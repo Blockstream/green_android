@@ -321,7 +321,7 @@ extension SettingsViewController {
         }.compactMap(on: bgq) {
             try getGAService().getSession().cancelTwoFactorReset()
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -356,7 +356,7 @@ extension SettingsViewController {
         }.compactMap(on: bgq) { _ in
             try session.changeSettings(details: details!)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -374,7 +374,7 @@ extension SettingsViewController {
         }.compactMap(on: bgq) { _ in
             try session.resetTwoFactor(email: email, isDispute: false)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

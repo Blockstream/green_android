@@ -372,11 +372,11 @@ class SendBtcDetailsViewController: UIViewController {
         let session = getGAService().getSession()
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {_ in
-        self.startAnimating()
+            self.startAnimating()
         }.compactMap(on: bgq) { _ in
             try session.changeSettings(details: details!)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -414,8 +414,10 @@ class TransactionTask {
     init(tx: Transaction) {
         self.tx = tx
         task = DispatchWorkItem {
-            let data = try? getSession().createTransaction(details: self.tx.details)
-            self.tx = Transaction(data!)
+            let call = try? getSession().createTransaction(details: self.tx.details)
+            let data = try? call?.resolve().wait()
+            let result = data?["result"] as? [String: Any]
+            self.tx = Transaction(result ?? [:])
         }
     }
 

@@ -41,7 +41,7 @@ class SystemMessageViewController: UIViewController {
             Guarantee().map(on: bgq) {
                 try getSession().ackSystemMessage(message: self.text)
             }.then(on: bgq) { twoFactorCall in
-                twoFactorCall.resolve(self)
+                twoFactorCall.resolve()
             }.done { _ in
                 getGAService().reloadSystemMessage()
                 self.navigationController?.popViewController(animated: true)

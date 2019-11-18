@@ -31,7 +31,7 @@ class PgpViewController: KeyboardViewController {
         }.compactMap(on: bgq) { details in
             try session.changeSettings(details: details)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             self.stopAnimating()
         }.done {_ in

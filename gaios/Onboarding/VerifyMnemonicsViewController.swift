@@ -98,11 +98,11 @@ class VerifyMnemonicsViewController: UIViewController {
         }.compactMap(on: bgq) {
             try getSession().registerUser(mnemonic: mnemonics)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.compactMap(on: bgq) { _ in
             try getSession().login(mnemonic: mnemonics)
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.then { _ in
             Registry.shared.refresh().recover { _ in Guarantee() }
         }.ensure {
