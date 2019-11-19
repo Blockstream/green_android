@@ -46,7 +46,7 @@
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="completed" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a3b-3L-Usg">
                             <rect key="frame" x="282" y="45" width="68" height="17"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="17" id="5M7-2q-Sw9"/>
+                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="17" id="5M7-2q-Sw9"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" weight="light" pointSize="14"/>
                             <color key="textColor" name="customTitaniumMedium"/>
@@ -72,11 +72,9 @@
                     </subviews>
                     <constraints>
                         <constraint firstItem="gle-3F-dUj" firstAttribute="leading" secondItem="OyH-zL-5Ug" secondAttribute="trailing" id="7s5-Ba-cM7"/>
-                        <constraint firstAttribute="bottom" secondItem="IeI-c0-CbE" secondAttribute="bottom" constant="20" id="AD9-0f-87g"/>
                         <constraint firstItem="a3b-3L-Usg" firstAttribute="top" secondItem="gle-3F-dUj" secondAttribute="bottom" constant="6" id="IjM-9b-g9c"/>
                         <constraint firstItem="IeI-c0-CbE" firstAttribute="leading" secondItem="Stp-VZ-PSk" secondAttribute="trailing" constant="8" id="Jgh-vU-VAU"/>
                         <constraint firstItem="OyH-zL-5Ug" firstAttribute="top" secondItem="Kgy-Kq-zWp" secondAttribute="top" constant="20" id="Ng1-qm-PC7"/>
-                        <constraint firstItem="IeI-c0-CbE" firstAttribute="top" secondItem="gle-3F-dUj" secondAttribute="bottom" constant="6" id="P4S-5U-wxb"/>
                         <constraint firstAttribute="trailing" secondItem="gle-3F-dUj" secondAttribute="trailing" id="QvH-5Q-CBh"/>
                         <constraint firstItem="a3b-3L-Usg" firstAttribute="leading" secondItem="IeI-c0-CbE" secondAttribute="trailing" constant="8" id="RF6-d4-u09"/>
                         <constraint firstAttribute="trailing" secondItem="a3b-3L-Usg" secondAttribute="trailing" id="SLK-Q8-mmj"/>
@@ -85,6 +83,7 @@
                         <constraint firstItem="gle-3F-dUj" firstAttribute="top" secondItem="Kgy-Kq-zWp" secondAttribute="top" constant="17" id="gof-ga-9DW"/>
                         <constraint firstItem="Stp-VZ-PSk" firstAttribute="leading" secondItem="Kgy-Kq-zWp" secondAttribute="leading" id="oLv-zb-l7B"/>
                         <constraint firstItem="Stp-VZ-PSk" firstAttribute="centerY" secondItem="Kgy-Kq-zWp" secondAttribute="centerY" id="suf-zW-CKu"/>
+                        <constraint firstItem="a3b-3L-Usg" firstAttribute="centerY" secondItem="IeI-c0-CbE" secondAttribute="centerY" id="wkn-os-xmZ"/>
                     </constraints>
                 </view>
             </subviews>
