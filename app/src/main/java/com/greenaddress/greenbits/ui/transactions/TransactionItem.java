@@ -9,7 +9,7 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.spv.GaService;
 
 import org.bitcoinj.core.Sha256Hash;
 

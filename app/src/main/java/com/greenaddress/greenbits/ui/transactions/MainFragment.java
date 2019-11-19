@@ -15,7 +15,7 @@ import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
-import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.SubaccountFragment;

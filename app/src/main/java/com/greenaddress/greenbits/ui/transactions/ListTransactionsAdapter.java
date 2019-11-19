@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.FontAwesomeTextView;

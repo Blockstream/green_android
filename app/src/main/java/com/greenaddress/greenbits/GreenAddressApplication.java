@@ -35,6 +35,7 @@ import com.greenaddress.greenapi.model.AssetsDataObservable;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TorProgressObservable;
+import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;

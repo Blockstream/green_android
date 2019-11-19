@@ -15,7 +15,7 @@ import androidx.preference.Preference;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.greenaddress.greenbits.GaService;
+import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ScanForResultActivity;
 import com.greenaddress.greenbits.ui.UI;

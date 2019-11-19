@@ -75,7 +75,7 @@
         </activity>
 
         <service
-            android:name="com.greenaddress.greenbits.GaService"
+            android:name="com.greenaddress.greenbits.spv.GaService"
             android:enabled="true"
             android:exported="false"
             />

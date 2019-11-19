@@ -1,4 +1,4 @@
-package com.greenaddress.greenbits;
+package com.greenaddress.greenbits.spv;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -14,7 +14,7 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import org.bitcoinj.core.PeerGroup;
