@@ -67,7 +67,7 @@ public abstract class GaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
-        setTheme(ThemeUtils.getThemeFromNetworkId(getGAApp().getCurrentNetworkData(), this,
+        setTheme(ThemeUtils.getThemeFromNetworkId(getGAApp().getCurrentNetwork(), this,
                                                   getMetadata()));
 
         super.onCreate(savedInstanceState);

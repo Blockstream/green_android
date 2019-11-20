@@ -9,16 +9,15 @@ import androidx.annotation.ColorInt;
 import com.greenaddress.greenapi.data.NetworkData;
 
 public class ThemeUtils {
-    public static int getThemeFromNetworkId(final NetworkData net, final Context context, final Bundle metadata) {
+    public static int getThemeFromNetworkId(final String network, final Context context, final Bundle metadata) {
         String baseTheme = "BitcoinTheme";
-        if (net.getLiquid()) {
+        if (network.contains("liquid")) {
             baseTheme = "LiquidTheme";
-        } else if (!net.getMainnet()) {
+        } else if (!network.equals("mainnet")) {
             baseTheme = "BitcoinTestnetTheme";
         }
 
-        String finalTheme = applyThemeVariant(baseTheme, metadata);
-
+        final String finalTheme = applyThemeVariant(baseTheme, metadata);
         return context.getResources().getIdentifier(finalTheme, "style", context.getPackageName());
     }
 

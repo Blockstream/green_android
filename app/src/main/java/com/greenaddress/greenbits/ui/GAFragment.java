@@ -24,7 +24,7 @@ public abstract class GAFragment extends Fragment {
         mApp = (GreenAddressApplication) getActivity().getApplication();
 
         try {
-            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(mApp.getCurrentNetworkData(), context, null),
+            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(mApp.getCurrentNetwork(), context, null),
                                           true);
         } catch (final Exception e) {
             // Some reports show NullPointer Exception in applying style
