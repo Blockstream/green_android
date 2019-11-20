@@ -275,8 +275,14 @@ public class GreenAddressApplication extends MultiDexApplication {
         }
         mConnectionManager.goPostLogin();
 
-        if (!mConnectionManager.isWatchOnly()) {
-            //mSPV.startAsync();
+        final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
+        if (!mConnectionManager.isWatchOnly() && isSpvEnabled) {
+            try {
+                mSPV.startService(this);
+            } catch (final Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -312,7 +318,6 @@ public class GreenAddressApplication extends MultiDexApplication {
     public SPV getSpv() {
         return mSPV;
     }
-
     public Timer getTimer() {
         return mTimer;
     }
