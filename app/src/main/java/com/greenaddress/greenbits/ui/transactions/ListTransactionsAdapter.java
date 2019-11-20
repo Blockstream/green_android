@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui.transactions;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
@@ -19,13 +20,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.FontAwesomeTextView;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.text.DateFormat;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class ListTransactionsAdapter extends
     RecyclerView.Adapter<ListTransactionsAdapter.ViewHolder> {
@@ -36,6 +39,7 @@ public class ListTransactionsAdapter extends
     private final Activity mActivity;
     private final NetworkData mNetworkData;
     private final Model mModel;
+    private final Boolean isSpvEnabled;
 
     public ListTransactionsAdapter(final Activity activity,
                                    final NetworkData networkData,
@@ -45,6 +49,8 @@ public class ListTransactionsAdapter extends
         mActivity = activity;
         mNetworkData = networkData;
         mModel = model;
+        final SharedPreferences preferences = activity.getSharedPreferences(mNetworkData.getNetwork(), MODE_PRIVATE);
+        isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
     }
 
     @Override
@@ -68,7 +74,7 @@ public class ListTransactionsAdapter extends
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
         final boolean spvVerified = txItem.spvVerified || txItem.isSpent ||
                                     txItem.type == TransactionItem.TYPE.OUT ||
-                                    !txItem.isSpvEnabled;
+                                    !isSpvEnabled;
 
         holder.spvUnconfirmed.setVisibility(spvVerified ? View.GONE : View.VISIBLE);
 

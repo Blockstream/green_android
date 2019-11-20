@@ -9,7 +9,6 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.spv.SPV;
 
 import org.bitcoinj.core.Sha256Hash;
@@ -46,7 +45,7 @@ public class TransactionItem implements Serializable {
     public final String doubleSpentBy;
     public final Date date;
     public String memo;
-    public boolean spvVerified;
+    public boolean spvVerified = false;
     public Boolean isSpent;
     public final long fee;
     public final long feeRate;
@@ -61,7 +60,6 @@ public class TransactionItem implements Serializable {
     public final Map<String, Long> mAssetBalances;
     public final NetworkData mNetworkData;
     public final Model mModel;
-    public boolean isSpvEnabled = false;
 
     public String toString() {
         return String.format("%s %s %s", date.toString(), type.name(), counterparty);
@@ -159,8 +157,9 @@ public class TransactionItem implements Serializable {
             }
         }
 
-        spvVerified = spv != null ? spv.isSPVVerified(txHash) : false;
-        isSpvEnabled = spv != null ? spv.isSPVEnabled() : false;
+        if (spv.getService() != null) {
+            spvVerified = spv.isSPVVerified(txHash);
+        }
 
         date = txData.getCreatedAt();
         replaceable = !networkData.getLiquid() &&
