@@ -1,13 +1,17 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.model.ToastObservable;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public abstract class LoggedActivity extends GaActivity implements Observer {
 
@@ -74,5 +78,29 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             startActivity(intent);
             finishOnUiThread();
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(final MotionEvent ev) {
+        if (getGAApp().getTimer() != null) {
+            getGAApp().getTimer().cancel();
+            getGAApp().getTimer().purge();
+        }
+
+        final String altimeString = cfg().getString(PrefKeys.ALTIMEOUT, "5");
+        int sec = Integer.parseInt(altimeString);
+        if (getModel().getSettings() != null) {
+            sec = getModel().getSettings().getAltimeout();
+        }
+
+        final Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                logout();
+            }
+        }, sec * 60 * 1000);
+        getGAApp().setTimer(timer);
+        return super.dispatchTouchEvent(ev);
     }
 }
