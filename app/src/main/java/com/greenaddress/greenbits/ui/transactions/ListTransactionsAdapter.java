@@ -34,17 +34,15 @@ public class ListTransactionsAdapter extends
 
     private final List<TransactionItem> mTxItems;
     private final Activity mActivity;
-    private final GaService mService;
     private final NetworkData mNetworkData;
     private final Model mModel;
 
-    public ListTransactionsAdapter(final Activity activity, final GaService service,
+    public ListTransactionsAdapter(final Activity activity,
                                    final NetworkData networkData,
                                    final List<TransactionItem> txItems,
                                    final Model model) {
         mTxItems = txItems;
         mActivity = activity;
-        mService = service;
         mNetworkData = networkData;
         mModel = model;
     }
@@ -64,13 +62,13 @@ public class ListTransactionsAdapter extends
             holder.textValue.setText(mActivity.getString(R.string.id_d_assets,assetsNumber));
         } else {
             final String assetId = txItem.mAssetBalances.keySet().toArray(new String[0])[0];
-            holder.textValue.setText(txItem.getAmountWithUnit(mService, assetId));
+            holder.textValue.setText(txItem.getAmountWithUnit(assetId));
         }
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
         final boolean spvVerified = txItem.spvVerified || txItem.isSpent ||
                                     txItem.type == TransactionItem.TYPE.OUT ||
-                                    !mService.isSPVEnabled();
+                                    !txItem.isSpvEnabled;
 
         holder.spvUnconfirmed.setVisibility(spvVerified ? View.GONE : View.VISIBLE);
 

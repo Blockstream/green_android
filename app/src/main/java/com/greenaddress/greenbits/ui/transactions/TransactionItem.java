@@ -10,6 +10,7 @@ import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.spv.GaService;
+import com.greenaddress.greenbits.spv.SPV;
 
 import org.bitcoinj.core.Sha256Hash;
 
@@ -60,6 +61,7 @@ public class TransactionItem implements Serializable {
     public final Map<String, Long> mAssetBalances;
     public final NetworkData mNetworkData;
     public final Model mModel;
+    public boolean isSpvEnabled = false;
 
     public String toString() {
         return String.format("%s %s %s", date.toString(), type.name(), counterparty);
@@ -89,9 +91,9 @@ public class TransactionItem implements Serializable {
         return getConfirmations() >= 6;
     }
 
-    public TransactionItem(final GaService service, final TransactionData txData, final int currentBlock,
+    public TransactionItem(final TransactionData txData, final int currentBlock,
                            final int subaccount, final NetworkData networkData,
-                           final Model model) throws ParseException {
+                           final Model model, final SPV spv) throws ParseException {
         doubleSpentBy = null; //TODO gdk;
 
         mNetworkData = networkData;
@@ -157,14 +159,15 @@ public class TransactionItem implements Serializable {
             }
         }
 
-        spvVerified = service.isSPVVerified(txHash);
+        spvVerified = spv != null ? spv.isSPVVerified(txHash) : false;
+        isSpvEnabled = spv != null ? spv.isSPVEnabled() : false;
 
         date = txData.getCreatedAt();
         replaceable = !networkData.getLiquid() &&
                       txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 
-    public String getAmountWithUnit(final GaService service, final String assetId) {
+    public String getAmountWithUnit(final String assetId) {
         try {
             if (type == TYPE.REDEPOSIT) {
                 final String feeAmount = amountToString(fee, mModel.getUnitKey(), null);

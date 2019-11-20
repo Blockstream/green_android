@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits.spv;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,12 +11,14 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import org.bitcoinj.core.PeerGroup;
@@ -24,8 +28,6 @@ import java.io.File;
 
 public class GaService extends Service  {
     private static final String TAG = GaService.class.getSimpleName();
-
-    private final SPV mSPV = new SPV(this);
 
     // This could be a local variable in theory but since there is a warning in the documentation
     // about possibly being garbage collected has been made a member of the class
@@ -40,14 +42,14 @@ public class GaService extends Service  {
     @Override
     public IBinder onBind(final Intent intent) { return mBinder; }
 
-    public void onBound(final GreenAddressApplication app) {
+    public void onBound(final Context ctx) {
         // Update our state when network connectivity changes.
         final BroadcastReceiver netConnectivityReceiver = new BroadcastReceiver() {
             public void onReceive(final Context context, final Intent intent) {
                 onNetConnectivityChanged();
             }
         };
-        app.registerReceiver(netConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        ctx.registerReceiver(netConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         // Fire a fake connectivity change to kick start the state machine
         netConnectivityReceiver.onReceive(null, null);
     }
@@ -71,44 +73,13 @@ public class GaService extends Service  {
         return getSPVChainFile(getNetwork().getName());
     }
 
-    public SharedPreferences cfg() {
-        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-        return getSharedPreferences(network, MODE_PRIVATE);
-    }
-
-    public SharedPreferences.Editor cfgEdit() { return cfg().edit(); }
-
-    public String getProxyHost() { return cfg().getString(PrefKeys.PROXY_HOST, ""); }
-    public String getProxyPort() { return cfg().getString(PrefKeys.PROXY_PORT, ""); }
-    public boolean getProxyEnabled() { return cfg().getBoolean(PrefKeys.PROXY_ENABLED, false); }
-    public boolean getTorEnabled() { return cfg().getBoolean(PrefKeys.TOR_ENABLED, false); }
-    public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
 
     // SPV_SYNCRONIZATION
-    public String getSPVTrustedPeers() { return mSPV.getTrustedPeers(); }
-    public void setSPVTrustedPeersAsync(final String peers) { mSPV.setTrustedPeersAsync(peers); }
-
-    public boolean isSPVEnabled() { return mSPV.isEnabled(); }
-    public void setSPVEnabledAsync(final boolean enabled) { mSPV.setEnabledAsync(enabled); }
-
-    public boolean isSPVSyncOnMobileEnabled() { return mSPV.isSyncOnMobileEnabled(); }
-    public void setSPVSyncOnMobileEnabledAsync(final boolean enabled) { mSPV.setSyncOnMobileEnabledAsync(enabled); }
-
-    public void resetSPVAsync() { mSPV.resetAsync(); }
-
-    public PeerGroup getSPVPeerGroup() { return mSPV.getPeerGroup(); }
-    public int getSPVHeight() { return mSPV.getSPVHeight(); }
-
-    public boolean isSPVVerified(final Sha256Hash txHash) { return mSPV.isVerified(txHash); }
-
-    public void enableSPVPingMonitoring() { mSPV.enablePingMonitoring(); }
-    public void disableSPVPingMonitoring() { mSPV.disablePingMonitoring(); }
-
     @Override
     public void onCreate() {
         super.onCreate();
 
-        if(GreenAddressApplication.isRunningTest())
+        if (GreenAddressApplication.isRunningTest())
             return;
     }
 
@@ -121,7 +92,7 @@ public class GaService extends Service  {
         Log.d(TAG, "onNetConnectivityChanged " + info);
         // TODO: auto-reconnect using gdk
         if (info != null)
-            mSPV.onNetConnectivityChangedAsync(info);
+            getGAApp().mSPV.onNetConnectivityChangedAsync(info);
     }
 
     public NetworkInfo getNetworkInfo() {
@@ -133,6 +104,21 @@ public class GaService extends Service  {
             return ni != null && ni.isConnectedOrConnecting() ? ni : null;
         } catch (final Exception e) {
             return null;
+        }
+    }
+
+    public static void createNotificationChannel(final Context ctx) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            final NotificationManager nm = ctx.getSystemService(NotificationManager.class);
+            final NotificationChannel nc =
+                new NotificationChannel("spv_channel", ctx.getString(R.string.id_spv_notifications),
+                                        NotificationManager.IMPORTANCE_LOW);
+            nc.setDescription(ctx.getString(R.string.id_displays_the_progress_of_spv));
+            nm.createNotificationChannel(nc);
+            final NotificationChannel tor_nc = new NotificationChannel("tor_channel", "Tor Status",
+                                                                       NotificationManager.IMPORTANCE_LOW);
+            tor_nc.setDescription("Displays the progress of Tor initialization");
+            nm.createNotificationChannel(tor_nc);
         }
     }
 }

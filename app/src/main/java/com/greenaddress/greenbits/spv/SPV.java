@@ -3,11 +3,17 @@ package com.greenaddress.greenbits.spv;
 import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
@@ -15,16 +21,21 @@ import android.util.SparseArray;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 
+import com.blockstream.libwally.Wally;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenapi.GAException;
+import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
@@ -47,6 +58,7 @@ import org.bitcoinj.core.TransactionOutPoint;
 import org.bitcoinj.core.VerificationException;
 import org.bitcoinj.core.listeners.DownloadProgressTracker;
 import org.bitcoinj.core.listeners.TransactionReceivedInBlockListener;
+import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.net.BlockingClientManager;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.store.BlockStore;
@@ -72,6 +84,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class SPV {
 
     private final static String TAG = SPV.class.getSimpleName();
@@ -91,7 +105,7 @@ public class SPV {
     private final SparseArray<Coin> mVerifiedCoinBalances = new SparseArray<>();
     private final Map<Sha256Hash, List<Integer>> mUnspentOutpoints = new HashMap<>();
     private final Map<TransactionOutPoint, AccountInfo> mUnspentDetails = new HashMap<>();
-    private final GaService mService;
+    private GaService mService;
     private BlockStore mBlockStore;
     private BlockChain mBlockChain;
     private PeerGroup mPeerGroup;
@@ -101,10 +115,40 @@ public class SPV {
     private final static int mNotificationId = 1;
     private int mNetWorkType;
     private final Object mStateLock = new Object();
+    public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
 
-    public SPV(final GaService service) {
-        mService = service;
+    public SPV() {
         mNetWorkType = ConnectivityManager.TYPE_DUMMY;
+    }
+
+    public void startService(final Context ctx) throws Exception {
+        GaService.createNotificationChannel(ctx);
+
+        // Provide bitcoinj with Mnemonics. These are used if we need to create a fake
+        // wallet during SPV_SYNCRONIZATION syncing to prevent an exception.
+        final ArrayList<String> words = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
+        MnemonicHelper.initWordList(words, null);
+        MnemonicCode.INSTANCE = new MnemonicCode(words, null);
+
+        Log.d(TAG, "onCreate: binding service");
+        final ServiceConnection connection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(final ComponentName className,
+                                           final IBinder service) {
+                Log.d(TAG, "onServiceConnected: dispatching onServiceAttached callbacks");
+                mService = ((GaService.GaBinder) service).getService();
+                mService.onBound(ctx);
+                onServiceAttached.set(null);
+            }
+
+            @Override
+            public void onServiceDisconnected(final ComponentName name) {
+                Log.d(TAG, "onServiceDisconnected: dispatching onServiceAttached exception");
+                onServiceAttached.setException(new GAException(name.toString()));
+            }
+        };
+        final Intent intent = new Intent(ctx, GaService.class);
+        ctx.bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
     public GaService getService() {
@@ -117,7 +161,7 @@ public class SPV {
 
     public boolean isEnabled() {
         final NetworkData networkData = mService.getNetwork();
-        return !getConnectionManager().isWatchOnly() && mService.cfg().getBoolean(PrefKeys.SPV_ENABLED, false) &&
+        return !getConnectionManager().isWatchOnly() && cfg().getBoolean(PrefKeys.SPV_ENABLED, false) &&
                !networkData.getLiquid();
     }
 
@@ -131,14 +175,14 @@ public class SPV {
             Log.d(TAG, "setEnabled: " + Var("enabled", enabled) + Var("current", current));
             if (enabled == current)
                 return;
-            mService.cfgEdit().putBoolean(PrefKeys.SPV_ENABLED, enabled).apply();
+            cfgEdit().putBoolean(PrefKeys.SPV_ENABLED, enabled).apply();
             // FIXME: Should we delete unspent here?
             reset(false /* deleteAllData */, false /* deleteUnspent */);
         }
     }
 
     public boolean isSyncOnMobileEnabled() {
-        return mService.cfg().getBoolean(PrefKeys.SPV_MOBILE_SYNC_ENABLED, false);
+        return cfg().getBoolean(PrefKeys.SPV_MOBILE_SYNC_ENABLED, false);
     }
 
     public void setSyncOnMobileEnabledAsync(final boolean enabled) {
@@ -153,7 +197,7 @@ public class SPV {
             if (enabled == current)
                 return; // Setting hasn't changed
 
-            mService.cfgEdit().putBoolean(PrefKeys.SPV_MOBILE_SYNC_ENABLED, enabled).apply();
+            cfgEdit().putBoolean(PrefKeys.SPV_MOBILE_SYNC_ENABLED, enabled).apply();
 
             if (getNetworkType() != ConnectivityManager.TYPE_MOBILE)
                 return; // Any change doesn't affect us since we aren't currently on mobile
@@ -168,7 +212,7 @@ public class SPV {
     }
 
     public String getTrustedPeers() {
-        return mService.cfg().getString(PrefKeys.TRUSTED_ADDRESS, mService.cfg().getString("trusted_peer", "")).trim();
+        return cfg().getString(PrefKeys.TRUSTED_ADDRESS, cfg().getString("trusted_peer", "")).trim();
     }
 
     public void setTrustedPeersAsync(final String peers) {
@@ -180,7 +224,7 @@ public class SPV {
             // FIXME: We should check if the peers differ here, instead of in the caller
             final String current = getTrustedPeers();
             Log.d(TAG, "setTrustedPeers: " + Var("peers", peers) + Var("current", current));
-            mService.cfgEdit().putString(PrefKeys.TRUSTED_ADDRESS, peers).apply();
+            cfgEdit().putString(PrefKeys.TRUSTED_ADDRESS, peers).apply();
             reset(false /* deleteAllData */, false /* deleteUnspent */);
         }
     }
@@ -190,7 +234,7 @@ public class SPV {
     }
 
     public boolean isVerified(final Sha256Hash txHash) {
-        return mService.cfg().getBoolean(PrefKeys.VERIFIED_HASH_ + txHash.toString(), false);
+        return cfg().getBoolean(PrefKeys.VERIFIED_HASH_ + txHash.toString(), false);
     }
 
     public void startAsync() {
@@ -283,7 +327,7 @@ public class SPV {
         final String txHashHex = txHash.toString();
 
         if (updateVerified)
-            mService.cfgEdit().putBoolean(PrefKeys.VERIFIED_HASH_ + txHashHex, true).apply();
+            cfgEdit().putBoolean(PrefKeys.VERIFIED_HASH_ + txHashHex, true).apply();
 
         final Model model = getModel();
         final List<SubaccountData> subaccountDataList = model.getSubaccountDataObservable().getSubaccountDataList();
@@ -486,7 +530,7 @@ public class SPV {
         final NetworkData networkData = mService.getNetwork();
         final int port = uri.getPort() == -1 ? networkData.getNetworkParameters().getPort() : uri.getPort();
 
-        if (!mService.isProxyEnabled() && !mService.getTorEnabled())
+        if (!isProxyEnabled() && !getTorEnabled())
             return new PeerAddress(networkData.getNetworkParameters(), InetAddress.getByName(host), port);
 
         return new PeerAddress(networkData.getNetworkParameters(), host, port) {
@@ -573,11 +617,11 @@ public class SPV {
                 System.setProperty("user.home", mService.getFilesDir().toString());
 
                 Log.d(TAG, "Creating peer group");
-                if (!mService.isProxyEnabled() && !mService.getTorEnabled()) {
+                if (!isProxyEnabled() && !getTorEnabled()) {
                     mPeerGroup = new PeerGroup(networkData.getNetworkParameters(), mBlockChain);
                 } else {
                     String proxyHost, proxyPort;
-                    if (!mService.isProxyEnabled()) {
+                    if (!isProxyEnabled()) {
                         if (GDKSession.getSession() == null || GDKSession.getSession().getTorSocks5() == null) {
                             throw new URISyntaxException("", "null session or TorSocks5");
                         }
@@ -591,8 +635,8 @@ public class SPV {
                         proxyHost = fullUrl.split(":")[0];
                         proxyPort = fullUrl.split(":")[1];
                     } else {
-                        proxyHost = mService.getProxyHost();
-                        proxyPort = mService.getProxyPort();
+                        proxyHost = getProxyHost();
+                        proxyPort = getProxyPort();
                     }
 
                     final Socks5SocketFactory sf = new Socks5SocketFactory(proxyHost, proxyPort);
@@ -620,7 +664,7 @@ public class SPV {
                 for (final String address: addresses)
                     addPeer(address, networkData.getNetworkParameters());
 
-                if (addresses.isEmpty() && !mService.isProxyEnabled() && !mService.getTorEnabled() &&
+                if (addresses.isEmpty() && !isProxyEnabled() && !getTorEnabled() &&
                     networkData.getNetworkParameters().getDnsSeeds() != null) {
                     // Blank w/o proxy: Use the built in resolving via DNS
                     mPeerGroup.addPeerDiscovery(new DnsDiscovery(networkData.getNetworkParameters()));
@@ -785,4 +829,26 @@ public class SPV {
     public ConnectionManager getConnectionManager () {
         return mService.getGAApp().getConnectionManager();
     }
+    public SharedPreferences cfg() {
+        final String network = PreferenceManager.getDefaultSharedPreferences(mService).getString(
+            PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        return mService.getSharedPreferences(network, MODE_PRIVATE);
+    }
+    public SharedPreferences.Editor cfgEdit() { return cfg().edit(); }
+    public String getProxyHost() { return cfg().getString(PrefKeys.PROXY_HOST, ""); }
+    public String getProxyPort() { return cfg().getString(PrefKeys.PROXY_PORT, ""); }
+    public boolean getProxyEnabled() { return cfg().getBoolean(PrefKeys.PROXY_ENABLED, false); }
+    public boolean getTorEnabled() { return cfg().getBoolean(PrefKeys.TOR_ENABLED, false); }
+    public boolean isProxyEnabled() { return !TextUtils.isEmpty(getProxyHost()) && !TextUtils.isEmpty(getProxyPort()); }
+    public String getSPVTrustedPeers() { return getTrustedPeers(); }
+    public void setSPVTrustedPeersAsync(final String peers) { setTrustedPeersAsync(peers); }
+    public boolean isSPVEnabled() { return isEnabled(); }
+    public void setSPVEnabledAsync(final boolean enabled) { setEnabledAsync(enabled); }
+    public boolean isSPVSyncOnMobileEnabled() { return isSyncOnMobileEnabled(); }
+    public void setSPVSyncOnMobileEnabledAsync(final boolean enabled) { setSyncOnMobileEnabledAsync(enabled); }
+    public void resetSPVAsync() { resetAsync(); }
+    public PeerGroup getSPVPeerGroup() { return getPeerGroup(); }
+    public boolean isSPVVerified(final Sha256Hash txHash) { return isVerified(txHash); }
+    public void enableSPVPingMonitoring() { enablePingMonitoring(); }
+    public void disableSPVPingMonitoring() { disablePingMonitoring(); }
 }

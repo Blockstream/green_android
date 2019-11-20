@@ -36,6 +36,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TorProgressObservable;
 import com.greenaddress.greenbits.spv.GaService;
+import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -63,9 +64,7 @@ public class GreenAddressApplication extends MultiDexApplication {
     private Model mModel;
     private ConnectionManager mConnectionManager = new ConnectionManager("mainnet");
     private static AtomicBoolean isRunningTest;
-
-    public GaService mService;
-    public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
+    public final SPV mSPV = new SPV();
 
     private void failHard(final String title, final String message) {
         final Intent fail = new Intent(this, FailHardActivity.class);
@@ -74,22 +73,6 @@ public class GreenAddressApplication extends MultiDexApplication {
         fail.putExtra("errorContent", String.format("%s. %s", message, supportMessage));
         fail.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(fail);
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager nm = getSystemService(NotificationManager.class);
-
-            NotificationChannel nc = new NotificationChannel("spv_channel", getString(R.string.id_spv_notifications),
-                                                             NotificationManager.IMPORTANCE_LOW);
-            nc.setDescription(getString(R.string.id_displays_the_progress_of_spv));
-            nm.createNotificationChannel(nc);
-
-            NotificationChannel tor_nc = new NotificationChannel("tor_channel", "Tor Status",
-                    NotificationManager.IMPORTANCE_LOW);
-            tor_nc.setDescription("Displays the progress of Tor initialization");
-            nm.createNotificationChannel(tor_nc);
-        }
     }
 
     @Override
@@ -114,46 +97,23 @@ public class GreenAddressApplication extends MultiDexApplication {
         details.put("datadir", getFilesDir().getAbsolutePath());
         try {
             GDK.init(new JSONConverterImpl(), details);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             failHard("GDK initialization failed", e.getMessage());
             return;
         }
 
-        createNotificationChannel();
         migratePreferences();
 
-        // Provide bitcoinj with Mnemonics. These are used if we need to create a fake
-        // wallet during SPV_SYNCRONIZATION syncing to prevent an exception.
+
+        final SharedPreferences preferences = getSharedPreferences(getCurrentNetwork(), MODE_PRIVATE);
+        final boolean isEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
         try {
-            final ArrayList<String> words = new ArrayList<>(Wally.BIP39_WORDLIST_LEN);
-            MnemonicHelper.initWordList(words, null);
-            MnemonicCode.INSTANCE = new MnemonicCode(words, null);
+            if (isEnabled)
+                mSPV.startService(this);
         } catch (final Exception e) {
             e.printStackTrace();
             failHard("Bitcoinj initialization failed", e.getMessage());
-            return;
         }
-
-        Log.d(TAG, "onCreate: binding service");
-        final ServiceConnection connection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(final ComponentName className,
-                                           final IBinder service) {
-                Log.d(TAG, "onServiceConnected: dispatching onServiceAttached callbacks");
-                mService = ((GaService.GaBinder) service).getService();
-                mService.onBound(GreenAddressApplication.this);
-                onServiceAttached.set(null);
-            }
-
-            @Override
-            public void onServiceDisconnected(final ComponentName name) {
-                Log.d(TAG, "onServiceDisconnected: dispatching onServiceAttached exception");
-                onServiceAttached.setException(new GAException(name.toString()));
-            }
-        };
-
-        final Intent intent = new Intent(this, GaService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
     public static synchronized boolean isRunningTest() {
@@ -347,7 +307,7 @@ public class GreenAddressApplication extends MultiDexApplication {
         getModel().getSettingsObservable().addObserver(observer);
     }
 
-    public GaService getService() {
-        return mService;
+    public SPV getSpv() {
+        return mSPV;
     }
 }

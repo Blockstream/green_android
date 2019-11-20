@@ -17,6 +17,7 @@ import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.SubaccountFragment;
 import com.greenaddress.greenbits.ui.UI;
@@ -82,8 +83,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
         final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), app.getService(),
-                                                           getNetwork(),  mTxItems, getModel());
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems, getModel());
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
         // FIXME, more efficient to use swap
@@ -178,11 +178,11 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void onVerifiedTx(final Observer observer) {
         final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
-        final GaService service = app.getService();
-        final boolean isSPVEnabled = service.isSPVEnabled();
+        final SPV spv = app.mSPV;
+        final boolean isSPVEnabled = spv.isSPVEnabled();
 
         for (final TransactionItem txItem : mTxItems)
-            txItem.spvVerified = !isSPVEnabled || service.isSPVVerified(txItem.txHash);
+            txItem.spvVerified = !isSPVEnabled || spv.isSPVVerified(txItem.txHash);
 
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
@@ -236,8 +236,8 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
             for (final TransactionData tx : txList) {
                 try {
-                    mTxItems.add(new TransactionItem(app.getService(), tx, currentBlock, subaccount, getNetwork(),
-                                                     getModel()));
+                    mTxItems.add(new TransactionItem(tx, currentBlock, subaccount, getNetwork(),
+                                                     getModel(), app.getSpv()));
                     /*
                        //TODO gdk handling of replaced
                        final ArrayList<String> replacedList = txJSON.get("replaced_by");
