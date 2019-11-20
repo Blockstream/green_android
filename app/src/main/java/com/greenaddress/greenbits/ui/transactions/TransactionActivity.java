@@ -444,7 +444,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        final long satoshi = mAssetsBalances.get(assetId);
+        long satoshi = 0L;
+        if (mAssetsBalances.containsKey(assetId)) {
+            satoshi = mAssetsBalances.get(assetId);
+        }
         final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", info)
