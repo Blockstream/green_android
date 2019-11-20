@@ -19,8 +19,6 @@ class TransactionsController: UITableViewController {
     private var transactionToken: NSObjectProtocol?
     private var assetsUpdatedToken: NSObjectProtocol?
 
-    private var modalTransitioningDelegate = ModalTransitioningDelegate()
-
     lazy var noTransactionsLabel: UILabel = {
         let noTransactionsLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 100, y: self.tableView.tableHeaderView!.frame.height, width: 200, height: self.view.frame.size.height - self.tableView.tableHeaderView!.frame.height))
         noTransactionsLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
@@ -264,7 +262,7 @@ class TransactionsController: UITableViewController {
             nextController.wallet = presentingWallet
             nextController.title = presentingWallet!.localizedName()
         } else if let networkSelector = segue.destination as? NetworkSelectionSettings {
-            networkSelector.transitioningDelegate = modalTransitioningDelegate
+            networkSelector.transitioningDelegate = self
             networkSelector.modalPresentationStyle = .custom
             networkSelector.onSelection = networkDidChange
             networkSelector.isLanding = false
@@ -296,5 +294,19 @@ extension TransactionsController: SubaccountDelegate {
     func onChange(_ pointer: UInt32) {
         UserDefaults.standard.set(Int(pointer), forKey: pointerKey)
         UserDefaults.standard.synchronize()
+    }
+}
+
+extension TransactionsController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return ModalPresentationController(presentedViewController: presented, presenting: presenting)
+    }
+
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        ModalAnimator(isPresenting: true)
+    }
+
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        ModalAnimator(isPresenting: false)
     }
 }
