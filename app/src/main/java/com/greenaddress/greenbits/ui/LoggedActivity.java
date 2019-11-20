@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
+import android.icu.util.DateInterval;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -16,10 +17,18 @@ import java.util.TimerTask;
 public abstract class LoggedActivity extends GaActivity implements Observer {
 
     private boolean mChangingActivity = false;
+    private Timer mTimer = new Timer();
+    private long mStart = System.currentTimeMillis();
 
     @Override
     public void onResume() {
         super.onResume();
+        if (mStart + delayLogoutTimer() < System.currentTimeMillis()) {
+            logout();
+            return;
+        }
+        startLogoutTimer();
+
         if (getConnectionManager() == null || getModel() == null) {
             toFirst();
             return;
@@ -35,6 +44,9 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     @Override
     public void onPause() {
         super.onPause();
+        stopLogoutTimer();
+        mStart = System.currentTimeMillis();
+
         if (getConnectionManager() == null || getModel() == null)
             return;
         getConnectionManager().deleteObserver(this);
@@ -82,25 +94,35 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
 
     @Override
     public boolean dispatchTouchEvent(final MotionEvent ev) {
-        if (getGAApp().getTimer() != null) {
-            getGAApp().getTimer().cancel();
-            getGAApp().getTimer().purge();
-        }
+        stopLogoutTimer();
+        startLogoutTimer();
+        return super.dispatchTouchEvent(ev);
+    }
 
-        final String altimeString = cfg().getString(PrefKeys.ALTIMEOUT, "5");
-        int sec = Integer.parseInt(altimeString);
+    private int delayLogoutTimer() {
         if (getModel().getSettings() != null) {
-            sec = getModel().getSettings().getAltimeout();
+            return getModel().getSettings().getAltimeout()  * 60 * 1000;
         }
+        final String altimeString = cfg().getString(PrefKeys.ALTIMEOUT, "5");
+        return Integer.parseInt(altimeString) * 60 * 1000;
+    }
 
+    private void startLogoutTimer() {
+        stopLogoutTimer();
         final Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 logout();
             }
-        }, sec * 60 * 1000);
-        getGAApp().setTimer(timer);
-        return super.dispatchTouchEvent(ev);
+        }, delayLogoutTimer());
+        mTimer = timer;
+    }
+
+    private void stopLogoutTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer.purge();
+        }
     }
 }
