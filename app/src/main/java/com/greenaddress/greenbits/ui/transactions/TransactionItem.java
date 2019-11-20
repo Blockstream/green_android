@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
@@ -39,27 +39,22 @@ public class TransactionItem implements Serializable {
     private final int currentBlock;
     private final Integer blockHeight;
     public String counterparty;
-    public final JSONMap receivedOnEp;
     public final boolean replaceable;
     public final Sha256Hash txHash;
     public final String doubleSpentBy;
     public final Date date;
     public String memo;
     public boolean spvVerified = false;
-    public Boolean isSpent;
+    public Boolean isSpent = false;
     public final long fee;
     public final long feeRate;
     public final Integer size;
     public final Integer vSize;
     public final List<Sha256Hash> replacedHashes;
     public final String data;
-    public final List<TransactionData> eps;
     public final Integer subaccount;
     public final boolean isAsset;
-
     public final Map<String, Long> mAssetBalances;
-    public final NetworkData mNetworkData;
-    public final Model mModel;
 
     public String toString() {
         return String.format("%s %s %s", date.toString(), type.name(), counterparty);
@@ -90,11 +85,9 @@ public class TransactionItem implements Serializable {
     }
 
     public TransactionItem(final TransactionData txData, final int currentBlock,
-                           final int subaccount, final NetworkData networkData,
-                           final Model model, final SPV spv) throws ParseException {
+                           final int subaccount, final NetworkData networkData, final SPV spv) throws ParseException {
         doubleSpentBy = null; //TODO gdk;
 
-        mNetworkData = networkData;
         this.currentBlock = currentBlock;
         fee = txData.getFee();
         feeRate = txData.getFeeRate();
@@ -109,7 +102,6 @@ public class TransactionItem implements Serializable {
         counterparty = "";
         this.subaccount = subaccount;
         isAsset = txData.isAsset();
-        mModel = model;
 
         mAssetBalances = new HashMap<>();
         for (final Map.Entry<String, Long> entry : txData.getSatoshi().entrySet()) {
@@ -139,21 +131,9 @@ public class TransactionItem implements Serializable {
             throw new ParseException("cannot parse type", 0);
         }
 
-        // TODO gdk
-        eps = new ArrayList<>();
-        receivedOnEp = new JSONMap();
-        /////////////////
-
-        isSpent = true;
-        final List<TransactionData> transactionDataList =
-            model.getUTXODataObservable(subaccount).getTransactionDataList();
-        if (transactionDataList == null) {
-            isSpent = false;
-        } else {
-            for (TransactionData transactionData : transactionDataList) {
-                if (txhash.equals(transactionData.getTxhash())) {
-                    isSpent = false;
-                }
+        for (final InputOutputData output : txData.getOutputs()) {
+            if (output.getIsSpent()) {
+                isSpent = true;
             }
         }
 
@@ -166,22 +146,22 @@ public class TransactionItem implements Serializable {
                       txData.getCanRbf() && type != TransactionItem.TYPE.IN;
     }
 
-    public String getAmountWithUnit(final String assetId) {
+    public String getAmountWithUnit(final Model model, final String assetId) {
         try {
             if (type == TYPE.REDEPOSIT) {
-                final String feeAmount = amountToString(fee, mModel.getUnitKey(), null);
-                return String.format("-%s %s", feeAmount, mModel.getBitcoinOrLiquidUnit());
+                final String feeAmount = amountToString(fee, model.getUnitKey(), null);
+                return String.format("-%s %s", feeAmount, model.getBitcoinOrLiquidUnit());
             }
 
-            AssetInfoData info = mModel.getAssetsObservable().getAssetsInfos().get(assetId);
+            AssetInfoData info = model.getAssetsObservable().getAssetsInfos().get(assetId);
             if (info == null)
                 info = new AssetInfoData(assetId);
             final String amount = amountToString(mAssetBalances.get(assetId),
-                                                 isAsset ? assetId : mModel.getUnitKey(),
+                                                 isAsset ? assetId : model.getUnitKey(),
                                                  isAsset ? info : null);
             final String denom =
                 isAsset ? (info.getTicker() !=
-                           null ? info.getTicker() : "") : mModel.getBitcoinOrLiquidUnit();
+                           null ? info.getTicker() : "") : model.getBitcoinOrLiquidUnit();
             return String.format("%s%s %s", type == TYPE.OUT ? "-" : "", amount, denom);
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());

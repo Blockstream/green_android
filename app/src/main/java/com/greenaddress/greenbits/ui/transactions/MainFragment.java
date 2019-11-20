@@ -236,8 +236,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
             for (final TransactionData tx : txList) {
                 try {
-                    mTxItems.add(new TransactionItem(tx, currentBlock, subaccount, getNetwork(),
-                                                     getModel(), app.getSpv()));
+                    mTxItems.add(new TransactionItem(tx, currentBlock, subaccount, getNetwork(), app.getSpv()));
                     /*
                        //TODO gdk handling of replaced
                        final ArrayList<String> replacedList = txJSON.get("replaced_by");

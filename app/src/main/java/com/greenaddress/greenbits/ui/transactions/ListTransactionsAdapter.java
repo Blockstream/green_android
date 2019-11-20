@@ -68,7 +68,7 @@ public class ListTransactionsAdapter extends
             holder.textValue.setText(mActivity.getString(R.string.id_d_assets,assetsNumber));
         } else {
             final String assetId = txItem.mAssetBalances.keySet().toArray(new String[0])[0];
-            holder.textValue.setText(txItem.getAmountWithUnit(assetId));
+            holder.textValue.setText(txItem.getAmountWithUnit(mModel, assetId));
         }
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
