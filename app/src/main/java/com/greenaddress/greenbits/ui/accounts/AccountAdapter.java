@@ -10,17 +10,18 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
 
     private final List<SubaccountData> mSubaccountList;
     private final OnAccountSelected mOnAccountSelected;
-    private final Resources mResources;
-    private final Activity mActivity;
     private final Model mModel;
+    private final boolean showNewButton;
 
     public interface OnAccountSelected {
         void onAccountSelected(int account);
@@ -28,13 +29,16 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
     }
 
     public AccountAdapter(final List<SubaccountData> subaccountList,
-                          final OnAccountSelected cb, final Resources resources, final Activity activity,
+                          final OnAccountSelected cb, final boolean showNewAccount,
                           final Model model) {
         mSubaccountList = subaccountList;
         mOnAccountSelected = cb;
-        mResources = resources;
-        mActivity = activity;
         mModel = model;
+        showNewButton = showNewAccount;
+        if (showNewButton) {
+            // add create button for not watch-only
+            mSubaccountList.add(new SubaccountData());
+        }
     }
 
     @Override
@@ -49,35 +53,33 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
         Log.d(this.getClass().getName(),
               "Update position " + position + " of " + mSubaccountList.size());
         holder.mAccountView.hideActions();
-        if (position < mSubaccountList.size()) {
-            // Set click listener
-            final View.OnClickListener listener = new View.OnClickListener() {
-                @Override
-                public void onClick(final View view) {
-                    if (mOnAccountSelected != null)
-                        mOnAccountSelected.onAccountSelected(holder.getAdapterPosition());
-                }
-            };
-
-            // Get subaccount info
-            final int pointer = mSubaccountList.get(position).getPointer();
-            final SubaccountData subaccount = mSubaccountList.get(position);
-            final long satoshi = mModel.getBalanceDataObservable(pointer).getBtcBalanceData();
-
-            // Setup subaccount info
-            holder.mAccountView.setTitle(subaccount.getNameWithDefault(mResources.getString(R.string.id_main_account)));
-            if (mModel.getSettings() != null) {
-                holder.mAccountView.setBalance(mModel, satoshi);
-            }
-            holder.mAccountView.listMode(false);
-            holder.mAccountView.setOnClickListener(listener);
-            holder.mAccountView.showAdd(false);
-        } else {
+        if (position == mSubaccountList.size() - 1 && showNewButton) {
             holder.mAccountView.showAdd(true);
-            holder.mAccountView.setOnClickListener( view -> {
+            holder.mAccountView.setOnClickListener(view -> {
                 mOnAccountSelected.onNewSubaccount();
             });
+            return;
         }
+        // Set click listener
+        final View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                if (mOnAccountSelected != null)
+                    mOnAccountSelected.onAccountSelected(holder.getAdapterPosition());
+            }
+        };
+
+        // Setup subaccount info
+        final SubaccountData subaccount = mSubaccountList.get(position);
+        final long satoshi = subaccount.getSatoshi().get("btc");
+        holder.mAccountView.setTitle(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.string.
+                                                                                                            id_main_account)));
+        if (mModel.getSettings() != null) {
+            holder.mAccountView.setBalance(mModel, satoshi);
+        }
+        holder.mAccountView.listMode(false);
+        holder.mAccountView.setOnClickListener(listener);
+        holder.mAccountView.showAdd(false);
     }
 
     @Override

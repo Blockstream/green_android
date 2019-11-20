@@ -55,8 +55,8 @@ public class SubaccountSelectFragment extends GAFragment implements Observer, Ac
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         mAccountsView.addItemDecoration(bottomOffsetDecoration);
 
-        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, this,
-                                                                  getResources(), getActivity(), getModel());
+        final boolean isWatchonly = getGaActivity().getConnectionManager().isWatchOnly();
+        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, this, !isWatchonly, getModel());
         mAccountsView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
 

@@ -448,7 +448,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", info)
-        .putExtra("SATOSHI", satoshi != null ? satoshi : 0L);
+        .putExtra("SATOSHI", satoshi);
         startActivity(intent);
     }
 }

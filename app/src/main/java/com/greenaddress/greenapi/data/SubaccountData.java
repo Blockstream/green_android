@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SubaccountData extends JSONData {
@@ -16,6 +19,7 @@ public class SubaccountData extends JSONData {
     private String recoveryChainCode;
     private String recoveryPubKey;
     private String type;  // 2of3 2of2
+    private Map<String,Long> satoshi;
 
     @JsonIgnore
     public byte[] getRecoveryPubKeyAsBytes() {
@@ -86,5 +90,13 @@ public class SubaccountData extends JSONData {
 
     public void setType(final String type) {
         this.type = type;
+    }
+
+    public Map<String, Long> getSatoshi() {
+        return satoshi;
+    }
+
+    public void setSatoshi(final Map<String, Long> satoshi) {
+        this.satoshi = satoshi;
     }
 }
