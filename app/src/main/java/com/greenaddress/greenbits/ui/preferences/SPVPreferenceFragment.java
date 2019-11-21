@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.preference.CheckBoxPreference;
@@ -15,8 +16,10 @@ import androidx.preference.Preference;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.common.util.concurrent.Futures;
 import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ScanForResultActivity;
 import com.greenaddress.greenbits.ui.UI;
@@ -62,6 +65,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mSPVEnabled.setSingleLineTitle(false);
         mSPVSyncOnMobile.setSingleLineTitle(false);
         mSpv = getGAApp().getSpv();
+        final boolean isSpvEnabled = cfg().getBoolean(PrefKeys.SPV_ENABLED, false);
 
         if (getGAApp().isWatchOnly()) {
             // Do not allow editing of SPV_SYNCRONIZATION prefs from watch only logins
@@ -74,13 +78,15 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             // Initialise values and bindings for preference changes
             bindPreferenceSummaryToValue(mTrustedPeer);
 
-            mSPVEnabled.setChecked(mSpv.isSPVEnabled());
-            mSPVSyncOnMobile.setChecked(mSpv.isSPVSyncOnMobileEnabled());
+            mSPVEnabled.setChecked(isSpvEnabled);
+            mSPVSyncOnMobile.setChecked(cfg().getBoolean(PrefKeys.SPV_MOBILE_SYNC_ENABLED, false));
 
-            mTrustedPeer.setEnabled(mSpv.isSPVEnabled());
-            mScanSPV.setEnabled(mSpv.isSPVEnabled());
+            mTrustedPeer.setEnabled(isSpvEnabled);
+            mScanSPV.setEnabled(isSpvEnabled);
             final boolean setTextValue = true;
-            setTrustedPeersPreference(mSpv.getSPVTrustedPeers(), setTextValue);
+            final String trustedPeers =
+                cfg().getString(PrefKeys.TRUSTED_ADDRESS, cfg().getString("trusted_peer", "")).trim();
+            setTrustedPeersPreference(trustedPeers, setTextValue);
 
             mResetSPV.setOnPreferenceClickListener(this);
             mSPVEnabled.setOnPreferenceChangeListener(this);
@@ -107,6 +113,25 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         final boolean setTextValue = false;
         setTrustedPeersPreference(peers, setTextValue);
         mSpv.setSPVTrustedPeersAsync(peers);
+    }
+
+    private void runOnService(final Runnable runnable) {
+        Futures.addCallback(mSpv.onServiceAttached, new CB.Op<Void>() {
+            @Override
+            public void onSuccess(final Void result) {
+                runnable.run();
+            }
+        });
+        if (mSpv.getService() == null) {
+            try {
+                mSpv.startService(getGAApp());
+            } catch (final Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getGAApp(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            }
+        } else {
+            runnable.run();
+        }
     }
 
     private boolean onSPVEnabledChanged(final Boolean newValue) {
@@ -182,7 +207,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
         if (peers.toLowerCase(Locale.US).contains(".onion")) {
             // Tor address
-            if (!mSpv.getTorEnabled()) {
+            if (!cfg().getBoolean(PrefKeys.TOR_ENABLED, false)) {
                 UI.popup(getActivity(), R.string.id_tor_connectivity_disabled, android.R.string.ok)
                 .content(R.string.id_onion_addresses_require_tor).build().show();
                 return false;
@@ -205,12 +230,24 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
     @Override
     public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-        if (preference == mSPVEnabled)
-            return onSPVEnabledChanged((Boolean) newValue);
-        if (preference == mSPVSyncOnMobile)
-            return onSPVSyncOnMobileChanged((Boolean) newValue);
-        if (preference == mTrustedPeer)
-            return onTrustedPeerChange((String) newValue);
+        if (preference == mSPVEnabled) {
+            runOnService(() -> {
+                onSPVEnabledChanged((Boolean) newValue);
+            });
+            return true;
+        }
+        if (preference == mSPVSyncOnMobile) {
+            runOnService(() -> {
+                onSPVSyncOnMobileChanged((Boolean) newValue);
+            });
+            return true;
+        }
+        if (preference == mTrustedPeer) {
+            runOnService(() -> {
+                onTrustedPeerChange((String) newValue);
+            });
+            return true;
+        }
         return false;
     }
 
@@ -218,7 +255,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     public boolean onPreferenceClick(final Preference preference) {
         if (preference == mResetSPV) {
             UI.toast(getActivity(), R.string.id_spv_reset_and_restarted, Toast.LENGTH_LONG);
-            mSpv.resetSPVAsync();
+            runOnService(() -> { mSpv.resetSPVAsync(); });
         } else if (preference == mScanSPV) {
             onScanClicked();
         }
@@ -253,4 +290,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             setTrustedPeers(address);
         }
     }
+
+
 }
