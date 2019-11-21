@@ -29,14 +29,9 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
-import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class GreenAddressApplication extends MultiDexApplication {
 
@@ -47,7 +42,6 @@ public class GreenAddressApplication extends MultiDexApplication {
     private ConnectionManager mConnectionManager = new ConnectionManager("mainnet");
     private static AtomicBoolean isRunningTest;
     private final SPV mSPV = new SPV();
-    private Timer mTimer = new Timer();
 
     private void failHard(final String title, final String message) {
         final Intent fail = new Intent(this, FailHardActivity.class);
@@ -209,11 +203,5 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     public SPV getSpv() {
         return mSPV;
-    }
-    public Timer getTimer() {
-        return mTimer;
-    }
-    public void setTimer(final Timer timer) {
-        mTimer = timer;
     }
 }
