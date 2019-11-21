@@ -33,7 +33,7 @@ public class Model {
     private SparseArray<ReceiveAddressObservable> mReceiveAddressObservables = new SparseArray<>();
     private SparseArray<BalanceDataObservable> mBalanceDataObservables = new SparseArray<>();
     private ActiveAccountObservable mActiveAccountObservable = new ActiveAccountObservable();
-    private SettingsObservable mSettingsObservable = new SettingsObservable();
+    private SettingsObservable mSettingsObservable;
     private BlockchainHeightObservable mBlockchainHeightObservable = new BlockchainHeightObservable();
     private ToastObservable mToastObservable = new ToastObservable();
     private ConnectionMessageObservable mConnMsgObservable = new ConnectionMessageObservable();
@@ -52,6 +52,7 @@ public class Model {
         mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(executor, mEventDataObservable);
         mFeeObservable = new FeeObservable(executor);
         mAvailableCurrenciesObservable = new AvailableCurrenciesObservable(executor);
+        mSettingsObservable= new SettingsObservable(executor);
         mNetworkData = networkData;
     }
 

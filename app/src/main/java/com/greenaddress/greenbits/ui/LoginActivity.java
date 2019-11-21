@@ -88,11 +88,10 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         // android.os.SystemClock.sleep(10000);
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
 
+        // setup data observers
         final ConnectionManager connectionManager = getConnectionManager();
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
         final Model model = new Model(getGAApp().getExecutor(), networkData);
-        initSettings();
-        getSession().setNotificationModel(model, connectionManager);
         final SharedPreferences preferences = getSharedPreferences(networkData.getNetwork(), MODE_PRIVATE);
         final int activeAccount =
             connectionManager.isLoginWithPin() ? preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
@@ -100,30 +99,29 @@ public abstract class LoginActivity extends GaActivity implements Observer {
             model.getActiveAccountObservable().setActiveAccount(activeAccount);
         else
             model.getActiveAccountObservable().setActiveAccount(0);
+        getGAApp().setModel(model);
+        getSession().setNotificationModel(model, connectionManager);
+        initSettings();
+        connectionManager.goPostLogin();
 
-        // FIXME the following prevents an issue when notification are not transmitted even if login was successful
-        if (model.getBlockchainHeightObservable().getHeight() == null) {
-            return;
-        }
+        // refresh assets in liquid network
         if (networkData.getLiquid()) {
             model.getAssetsObservable().addObserver((observable, o) -> {
                 final AssetsDataObservable assetsDataObservable = (AssetsDataObservable) observable;
-                if (assetsDataObservable.isAssetsLoaded() || assetsDataObservable.isShownErrorPopup()) {
-                    return;
+                if (!assetsDataObservable.isAssetsLoaded() && !assetsDataObservable.isShownErrorPopup()) {
+
+                    final Intent intent = new Intent();
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setClass(this, RegistryErrorActivity.class);
+                    startActivity(intent);
+
+                    assetsDataObservable.setShownErrorPopup();
                 }
-
-                final Intent intent = new Intent();
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setClass(this, RegistryErrorActivity.class);
-                startActivity(intent);
-
-                assetsDataObservable.setShownErrorPopup();
             });
             model.getAssetsObservable().refresh();
         }
-        connectionManager.goPostLogin();
-        getGAApp().setModel(model);
 
+        // check and start spv if enabled
         final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
         if (!connectionManager.isWatchOnly() && isSpvEnabled) {
             try {

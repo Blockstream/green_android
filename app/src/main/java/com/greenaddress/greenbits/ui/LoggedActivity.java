@@ -100,7 +100,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     private int delayLogoutTimer() {
-        if (getModel().getSettings() != null) {
+        if (getModel() != null && getModel().getSettings() != null) {
             return getModel().getSettings().getAltimeout()  * 60 * 1000;
         }
         final String altimeString = cfg().getString(PrefKeys.ALTIMEOUT, "5");
