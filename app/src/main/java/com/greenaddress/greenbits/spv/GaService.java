@@ -92,7 +92,7 @@ public class GaService extends Service  {
         Log.d(TAG, "onNetConnectivityChanged " + info);
         // TODO: auto-reconnect using gdk
         if (info != null)
-            getGAApp().mSPV.onNetConnectivityChangedAsync(info);
+            getGAApp().getSpv().onNetConnectivityChangedAsync(info);
     }
 
     public NetworkInfo getNetworkInfo() {

@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.preference.CheckBoxPreference;
@@ -17,7 +16,6 @@ import androidx.preference.Preference;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.Futures;
-import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
@@ -122,7 +120,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                 runnable.run();
             }
         });
-        if (mSpv.getService() == null) {
+        if (mSpv.getService() != null) {
             try {
                 mSpv.startService(getGAApp());
             } catch (final Exception e) {

@@ -66,7 +66,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                 getConnectionManager().connect(this);
                 getSession().registerUser(this, null, mnemonic).resolve(null, null);
                 getConnectionManager().loginWithMnemonic(mnemonic, "");
-                getGAApp().onPostLogin();
+                onPostLogin();
                 runOnUiThread(() -> {
                     stopLoading();
                     if (AuthenticationHandler.hasPin(this)) {

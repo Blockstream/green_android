@@ -279,7 +279,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             getGAApp().resetSession();
             getConnectionManager().connect(this);
             getConnectionManager().loginWithMnemonic(mnemonic, "");
-            getGAApp().onPostLogin();
+            onPostLogin();
             runOnUiThread(() -> {
                 stopLoading();
                 onLoginSuccess();

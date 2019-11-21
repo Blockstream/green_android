@@ -98,7 +98,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
                 getGAApp().resetSession();
                 getConnectionManager().connect(this);
                 getConnectionManager().loginWatchOnly(username, password);
-                getGAApp().onPostLogin();
+                onPostLogin();
                 runOnUiThread(() -> {
                     onLoginStop();
                     goToTabbedMainActivity();

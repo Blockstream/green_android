@@ -178,7 +178,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void onVerifiedTx(final Observer observer) {
         final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
-        final SPV spv = app.mSPV;
+        final SPV spv = app.getSpv();
         final boolean isSPVEnabled = spv.isSPVEnabled();
 
         for (final TransactionItem txItem : mTxItems)

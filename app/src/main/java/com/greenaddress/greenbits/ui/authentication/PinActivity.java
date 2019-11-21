@@ -66,7 +66,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 getGAApp().resetSession();
                 getConnectionManager().connect(this);
                 getConnectionManager().loginWithPin(pin, pinData);
-                getGAApp().onPostLogin();
+                onPostLogin();
                 runOnUiThread(() -> {
                     stopLoading();
                     mPin.edit().putInt("counter", 0).apply();
