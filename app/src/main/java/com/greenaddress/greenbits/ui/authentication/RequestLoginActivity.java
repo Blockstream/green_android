@@ -284,12 +284,12 @@ public class RequestLoginActivity extends LoginActivity {
     }
 
     private void doLogin(final Activity parent) {
+        final ConnectionManager cm = getConnectionManager();
         getGAApp().getExecutor().execute(() -> {
             try {
-                final ConnectionManager cm = getConnectionManager();
                 cm.connect(this);
                 getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
-                getGAApp().resetSession();
+                cm.disconnect();
                 cm.connect(this);
                 cm.login(parent, mHwDeviceData, mHwResolver);
                 runOnUiThread(() -> {
@@ -298,6 +298,7 @@ public class RequestLoginActivity extends LoginActivity {
                 });
             } catch (final Exception e) {
                 e.printStackTrace();
+                cm.disconnect();
                 runOnUiThread(() -> {
                     stopLoading();
                     toast(R.string.id_error_logging_in_with_hardware);

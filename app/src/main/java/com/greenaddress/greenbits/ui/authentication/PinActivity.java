@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import androidx.appcompat.widget.Toolbar;
 
 import com.blockstream.libgreenaddress.GDK;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.AuthenticationHandler;
@@ -61,11 +62,12 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             mPinFragment.setEnabled(false);
 
         final PinData pinData = PinData.fromPreferenceValues(mPin);
+        final ConnectionManager cm = getConnectionManager();
         getGAApp().getExecutor().execute(() -> {
             try {
-                getGAApp().resetSession();
-                getConnectionManager().connect(this);
-                getConnectionManager().loginWithPin(pin, pinData);
+                cm.disconnect();
+                cm.connect(this);
+                cm.loginWithPin(pin, pinData);
                 onPostLogin();
                 runOnUiThread(() -> {
                     stopLoading();
@@ -73,8 +75,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                     goToTabbedMainActivity();
                 });
             } catch (final Exception e) {
-                getConnectionManager().disconnect();
-                getGAApp().resetSession();
+                cm.disconnect();
                 runOnUiThread(this::onLoginFailure);
             }
         });

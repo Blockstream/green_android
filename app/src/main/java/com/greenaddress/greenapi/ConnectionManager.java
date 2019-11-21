@@ -267,6 +267,7 @@ public class ConnectionManager extends Observable {
         mHWDevice = null;
         mHWResolver = null;
         getSession().disconnect();
+        getSession().destroy();
         setState(ConnState.DISCONNECTED);
     }
 

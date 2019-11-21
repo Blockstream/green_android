@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -59,13 +60,14 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
 
     private void onMnemonicVerified() {
         startLoading();
+        final ConnectionManager cm = getConnectionManager();
         getGAApp().getExecutor().execute(() -> {
             final String mnemonic = mMnemonic;
             try {
-                getGAApp().resetSession();
-                getConnectionManager().connect(this);
+                cm.disconnect();
+                cm.connect(this);
                 getSession().registerUser(this, null, mnemonic).resolve(null, null);
-                getConnectionManager().loginWithMnemonic(mnemonic, "");
+                cm.loginWithMnemonic(mnemonic, "");
                 onPostLogin();
                 runOnUiThread(() -> {
                     stopLoading();
@@ -79,8 +81,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                     }
                 });
             } catch (final Exception e) {
-                getSession().disconnect();
-                getGAApp().resetSession();
+                cm.disconnect();
                 runOnUiThread(() -> {
                     stopLoading();
                     getConnectionManager().clearPreviousLoginError();

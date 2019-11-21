@@ -199,11 +199,6 @@ public class GreenAddressApplication extends MultiDexApplication {
         return false;
     }
 
-    public void resetSession() {
-        getSession().disconnect();
-        getSession().destroy();
-    }
-
     public TorProgressObservable getTorProgressObservable() {
         return mTorProgressObservable;
     }

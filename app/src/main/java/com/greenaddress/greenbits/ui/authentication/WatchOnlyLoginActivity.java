@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.blockstream.libgreenaddress.GDK;
+import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -93,19 +94,19 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
 
         onLoginBegin();
 
+        final ConnectionManager cm = getConnectionManager();
         getGAApp().getExecutor().execute(() -> {
             try {
-                getGAApp().resetSession();
-                getConnectionManager().connect(this);
-                getConnectionManager().loginWatchOnly(username, password);
+                cm.disconnect();
+                cm.connect(this);
+                cm.loginWatchOnly(username, password);
                 onPostLogin();
                 runOnUiThread(() -> {
                     onLoginStop();
                     goToTabbedMainActivity();
                 });
             } catch (final Exception e) {
-                getConnectionManager().disconnect();
-                getGAApp().resetSession();
+                cm.disconnect();
                 runOnUiThread(() -> {
                     getConnectionManager().clearPreviousLoginError();
                     onLoginStop();

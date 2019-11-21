@@ -276,7 +276,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
     void loginWithMnemonic(String mnemonic, String password) {
         try {
-            getGAApp().resetSession();
             getConnectionManager().connect(this);
             getConnectionManager().loginWithMnemonic(mnemonic, "");
             onPostLogin();
@@ -286,7 +285,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             });
         } catch (final Exception e) {
             getConnectionManager().disconnect();
-            getGAApp().resetSession();
             runOnUiThread(() -> {
                 stopLoading();
                 getConnectionManager().clearPreviousLoginError();
