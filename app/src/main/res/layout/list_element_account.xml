@@ -50,16 +50,6 @@
                     android:textColor="@color/white"
                     android:textSize="20sp" />
 
-                <ImageButton
-                    android:id="@+id/selectSubaccount"
-                    android:layout_width="wrap_content"
-                    android:src="@drawable/ic_stack_wallets"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:padding="@dimen/button_margin"
-                    android:background="@color/hide"
-                    />
-
             </LinearLayout>
 
             <Space
@@ -103,115 +93,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/actionLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:baselineAligned="false">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/sendReceiveBtnBg"
-                android:orientation="horizontal">
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <Button
-                    android:id="@+id/sendButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:drawableStart="@drawable/ic_send"
-                    android:text="@string/id_send"/>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/separator"
-                android:layout_margin="5dp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/sendReceiveBtnBg"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-                <Button
-                    android:id="@+id/receiveButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:drawableStart="@drawable/ic_receive"
-                    android:text="@string/id_receive"/>
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
-
-            </LinearLayout>
-        </LinearLayout>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/addSubaccount"
-        android:layout_width="match_parent"
-        android:visibility="gone"
-        android:layout_height="@dimen/card_size"
-        android:orientation="vertical"
-        android:background="@drawable/cardview_add"
-        >
-
-        <ImageView
-            android:id="@+id/networkImage2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
-            android:src="?attr/themeIcon"
-            />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_add_wallet_1"
-            />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:textColor="@color/white"
-            android:text="@string/id_add_new_account"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

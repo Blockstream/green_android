@@ -45,7 +45,7 @@ public class AccountView extends CardView {
     private void setupInflate(final Context context) {
         final LayoutInflater inflater = (LayoutInflater) context
                                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.list_element_account, this, true);
+        inflater.inflate(R.layout.list_element_wallet, this, true);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
             getBackground().setAlpha(0);

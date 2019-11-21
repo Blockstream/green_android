@@ -2,21 +2,26 @@ package com.greenaddress.greenbits.ui.accounts;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
+public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final List<SubaccountData> mSubaccountList;
     private final OnAccountSelected mOnAccountSelected;
@@ -35,66 +40,77 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Item> {
         mOnAccountSelected = cb;
         mModel = model;
         showNewButton = showNewAccount;
-        if (showNewButton) {
-            // add create button for not watch-only
-            mSubaccountList.add(new SubaccountData());
-        }
     }
 
     @Override
-    public Item onCreateViewHolder(final ViewGroup parent, final int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         final View view = LayoutInflater.from(parent.getContext())
-                          .inflate(R.layout.list_element_account, parent, false);
-        return new Item(view);
+                          .inflate(viewType, parent, false);
+        if (viewType == R.layout.list_element_account) {
+            return new Account(view);
+        }
+        if (viewType == R.layout.list_element_addaccount) {
+            return new AddAccount(view);
+        }
+        return null;
     }
 
     @Override
-    public void onBindViewHolder(final Item holder, final int position) {
-        Log.d(this.getClass().getName(),
-              "Update position " + position + " of " + mSubaccountList.size());
-        holder.mAccountView.hideActions();
-        if (position == mSubaccountList.size() - 1 && showNewButton) {
-            holder.mAccountView.showAdd(true);
-            holder.mAccountView.setOnClickListener(view -> {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+        if (holder.getItemViewType() == R.layout.list_element_account) {
+            final Account h = (Account) holder;
+            final SubaccountData subaccount = mSubaccountList.get(position);
+            final long satoshi = subaccount.getSatoshi().get("btc");
+            ((Account) holder).name.setText(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.
+                                                                                                                   string
+                                                                                                                   .
+                                                                                                                   id_main_account)));
+            final String valueBitcoin = mModel.getValueString(satoshi, false, false);
+            final String valueFiat = mModel.getValueString(satoshi, true, true);
+            h.mainBalanceText.setText(valueBitcoin);
+            h.mainBalanceUnitText.setText(" " + mModel.getBitcoinOrLiquidUnit());
+            h.mainLocalBalanceText.setText("≈  " + valueFiat);
+            h.itemView.setOnClickListener(view -> {
+                mOnAccountSelected.onAccountSelected(h.getAdapterPosition());
+            });
+        }
+        if (holder.getItemViewType() == R.layout.list_element_addaccount) {
+            final AddAccount h = (AddAccount) holder;
+            h.itemView.setOnClickListener(view -> {
                 mOnAccountSelected.onNewSubaccount();
             });
-            return;
         }
-        // Set click listener
-        final View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                if (mOnAccountSelected != null)
-                    mOnAccountSelected.onAccountSelected(holder.getAdapterPosition());
-            }
-        };
-
-        // Setup subaccount info
-        final SubaccountData subaccount = mSubaccountList.get(position);
-        final long satoshi = subaccount.getSatoshi().get("btc");
-        holder.mAccountView.setTitle(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.string.
-                                                                                                            id_main_account)));
-        if (mModel.getSettings() != null) {
-            holder.mAccountView.setBalance(mModel, satoshi);
-        }
-        holder.mAccountView.listMode(false);
-        holder.mAccountView.setOnClickListener(listener);
-        holder.mAccountView.showAdd(false);
     }
 
     @Override
     public int getItemCount() {
-        return mSubaccountList.size();
+        return mSubaccountList.size() + (showNewButton ? 1 : 0);
     }
 
-    static class Item extends RecyclerView.ViewHolder {
+    @Override
+    public int getItemViewType(final int position) {
+        return position == getItemCount() - 1 &&
+               showNewButton ? R.layout.list_element_addaccount : R.layout.list_element_account;
+    }
 
-        final AccountView mAccountView;
+    static class Account extends RecyclerView.ViewHolder {
+        final TextView name;
+        final TextView mainBalanceText;
+        final TextView mainBalanceUnitText;
+        final TextView mainLocalBalanceText;
 
-        Item(final View v) {
+        Account(final View v) {
             super(v);
-            mAccountView = new AccountView(v.getContext());
-            mAccountView.setView(v);
+            name = UI.find(v, R.id.name);
+            mainBalanceText = UI.find(v, R.id.mainBalanceText);
+            mainBalanceUnitText = UI.find(v, R.id.mainBalanceUnitText);
+            mainLocalBalanceText = UI.find(v, R.id.mainLocalBalanceText);
+        }
+    }
+
+    static class AddAccount extends RecyclerView.ViewHolder {
+        AddAccount(final View v) {
+            super(v);
         }
     }
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="8dp"
+    app:cardUseCompatPadding="true"
+    android:elevation="0dp"
+    app:cardPreventCornerOverlap="false"
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp"
+    app:cardBackgroundColor="@color/windowBackground">
+
+    <LinearLayout
+        android:id="@+id/addSubaccount"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/card_size"
+        android:orientation="vertical"
+        android:background="@drawable/cardview_add"
+        android:gravity="center"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_add_wallet_1"
+            />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:text="@string/id_add_new_account"/>
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
