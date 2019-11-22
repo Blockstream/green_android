@@ -18,7 +18,6 @@ import com.greenaddress.greenbits.ui.onboarding.InfoActivity;
 public class FirstScreenActivity extends LoginActivity {
 
     public static final int NETWORK_SELECTOR_REQUEST = 51341;
-    private Button mSelectNetwork;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_screen; }
@@ -28,23 +27,6 @@ public class FirstScreenActivity extends LoginActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
         setTitle("");
-
-        final Button loginButton = findViewById(R.id.loginButton);
-        final Button restoreButton = findViewById(R.id.restoreButton);
-        if (AuthenticationHandler.hasPin(this)) {
-            restoreButton.setVisibility(View.GONE);
-        }
-        restoreButton.setOnClickListener(v -> startActivity(new Intent(this, MnemonicActivity.class)));
-        loginButton.setText(AuthenticationHandler.hasPin(this) ? R.string.id_log_in : R.string.id_create_new_wallet);
-        final Intent loginButtonIntent = AuthenticationHandler.hasPin(this) ?
-                                         new Intent(this, PinActivity.class) :
-                                         new Intent(this, InfoActivity.class);
-        loginButton.setOnClickListener(v -> startActivity(loginButtonIntent));
-
-
-        mSelectNetwork = UI.find(this, R.id.settingsButton);
-        mSelectNetwork.setOnClickListener(v -> { startActivityForResult(new Intent(this, NetworkSettingsActivity.class),
-                                                                        NETWORK_SELECTOR_REQUEST); });
     }
 
 
@@ -85,7 +67,23 @@ public class FirstScreenActivity extends LoginActivity {
 
     public void onSelectNetwork() {
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
-        mSelectNetwork.setText(networkData.getName());
         invalidateOptionsMenu();
+
+        final Button loginButton = findViewById(R.id.loginButton);
+        final Button restoreButton = findViewById(R.id.restoreButton);
+        final Button selectNetworkButton = UI.find(this, R.id.settingsButton);
+
+        restoreButton.setVisibility(AuthenticationHandler.hasPin(this) ? View.GONE : View.VISIBLE);
+        restoreButton.setOnClickListener(v -> startActivity(new Intent(this, MnemonicActivity.class)));
+        loginButton.setText(AuthenticationHandler.hasPin(this) ? R.string.id_log_in : R.string.id_create_new_wallet);
+        final Intent loginButtonIntent = AuthenticationHandler.hasPin(this) ?
+                                         new Intent(this, PinActivity.class) :
+                                         new Intent(this, InfoActivity.class);
+        loginButton.setOnClickListener(v -> startActivity(loginButtonIntent));
+
+        selectNetworkButton.setText(networkData.getName());
+        selectNetworkButton.setOnClickListener(v -> { startActivityForResult(new Intent(this,
+                                                                                        NetworkSettingsActivity.class),
+                                                                             NETWORK_SELECTOR_REQUEST); });
     }
 }
