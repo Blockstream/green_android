@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class GreenAddressApplication extends MultiDexApplication {
 
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
-    private final TorProgressObservable mTorProgressObservable = new TorProgressObservable();
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
     private Model mModel;
     private ConnectionManager mConnectionManager = new ConnectionManager("mainnet");
@@ -191,10 +190,6 @@ public class GreenAddressApplication extends MultiDexApplication {
             return true;
         }
         return false;
-    }
-
-    public TorProgressObservable getTorProgressObservable() {
-        return mTorProgressObservable;
     }
 
     public ListeningExecutorService getExecutor() {

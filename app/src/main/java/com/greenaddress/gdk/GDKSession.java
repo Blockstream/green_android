@@ -439,9 +439,8 @@ public class GDKSession {
         GDK.send_nlocktimes(mNativeSession);
     }
 
-    public void setNotificationModel(final Model model, final ConnectionManager connectionManager) {
-        mNotification.setModel(model);
-        mNotification.setConnectionManager(connectionManager);
+    public NotificationHandlerImpl getNotificationModel() {
+        return mNotification;
     }
 
     public GDKTwoFactorCall changeSettings(final Activity parent, final ObjectNode setting) {

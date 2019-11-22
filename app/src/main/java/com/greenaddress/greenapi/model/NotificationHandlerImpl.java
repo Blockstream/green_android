@@ -21,7 +21,10 @@ import com.greenaddress.greenbits.ui.R;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class NotificationHandlerImpl implements GDK.NotificationHandler {
     private static final int TOR_NOTIFICATION_ID = 0x42;
@@ -30,7 +33,8 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     private ConnectionManager mConnectionManager;
     private Queue<Object> mTemp = new LinkedList<>();
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
-    private ScheduledFuture<?> mScheduledFuture;
+    private TorProgressObservable mTorProgressObservable;
+    private Timer mOfflineTimer = new Timer();
     private Long mTryingAt;
 
     public NotificationHandlerImpl() {
@@ -40,6 +44,11 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     public synchronized void setConnectionManager(final ConnectionManager connectionManager) {
         mConnectionManager = connectionManager;
     }
+
+    public synchronized void setTorProgressObservable(final TorProgressObservable torProgressObservable) {
+        mTorProgressObservable = torProgressObservable;
+    }
+
     public synchronized void setModel(final Model model) {
         this.mModel = model;
         for (Object element : mTemp) {
@@ -58,8 +67,10 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     }
 
     private void cancelTimer() {
-        if (mScheduledFuture != null && !mScheduledFuture.isCancelled())
-            mScheduledFuture.cancel(false);
+        if (mOfflineTimer != null) {
+            mOfflineTimer.cancel();
+            mOfflineTimer.purge();
+        }
     }
 
 //{"reset_2fa_active":true,"reset_2fa_days_remaining":90,"reset_2fa_disputed":false}
@@ -72,8 +83,9 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
             switch (objectNode.get("event").asText()) {
             case "tor":
                 final JsonNode torJson = objectNode.get("tor");
-                // FIXME
-                //mService.getTorProgressObservable().set(torJson);
+                if (mTorProgressObservable != null) {
+                    mTorProgressObservable.set(torJson);
+                }
                 break;
             case "network": {
                 //{"event":"network","network":{"connected":false,"elapsed":1091312175736,"limit":true,"waiting":0}}
@@ -92,22 +104,25 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                         mConnectionManager.goPostLogin();
                     }
                 } else {
-                    long waitingMs = networkNode.get("waiting").asLong() * 1000;
+                    final long waitingMs = networkNode.get("waiting").asLong() * 1000;
                     if (waitingMs > 3000) {
                         mTryingAt = System.currentTimeMillis() + waitingMs;
-                        // FIXME
-                        /*mScheduledFuture = mService.getTimerExecutor().scheduleAtFixedRate(() -> {
-                                final int remainingSec = (int) ((mTryingAt - System.currentTimeMillis()) / 1000);
-                                if (remainingSec >= 0)
-                                    mModel.getConnMsgObservable().setMessage(R.string.id_not_connected_connecting_in_ds_,
-                                                                             new Object[] {remainingSec});
-                                else
-                                    cancelTimer();
-                            }, 0, 100, TimeUnit.MILLISECONDS);*/
+                        mOfflineTimer = new Timer();
+                        mOfflineTimer.schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    final int remainingSec = (int) ((mTryingAt - System.currentTimeMillis()) / 1000);
+                                    if (remainingSec >= 0)
+                                        mModel.getConnMsgObservable().setMessage(R.string.
+                                                                                 id_not_connected_connecting_in_ds_,
+                                                                                 new Object[] {remainingSec});
+                                    else
+                                        cancelTimer();
+                                }
+                            }, 0, 100);
                     }
                     mConnectionManager.goOffline();
                 }
-
                 break;
             }
             case "block": {

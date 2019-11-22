@@ -25,6 +25,8 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 
 public abstract class LoginActivity extends GaActivity implements Observer {
 
+    private final TorProgressObservable mTorProgressObservable = new TorProgressObservable();
+
     protected void onLoggedIn() {
         final Intent intent = new Intent(LoginActivity.this, TabbedMainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -37,6 +39,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSession().getNotificationModel().setTorProgressObservable(mTorProgressObservable);
     }
 
     @Override
@@ -46,17 +49,13 @@ public abstract class LoginActivity extends GaActivity implements Observer {
             final ConnectionManager cm = getConnectionManager();
             cm.clearPreviousLoginError();
         }
-        if (getGAApp().getTorProgressObservable() != null) {
-            getGAApp().getTorProgressObservable().addObserver(this);
-        }
+        mTorProgressObservable.addObserver(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (getGAApp().getTorProgressObservable() != null) {
-            getGAApp().getTorProgressObservable().deleteObserver(this);
-        }
+        mTorProgressObservable.deleteObserver(this);
     }
 
     @Override
@@ -100,7 +99,8 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         else
             model.getActiveAccountObservable().setActiveAccount(0);
         getGAApp().setModel(model);
-        getSession().setNotificationModel(model, connectionManager);
+        getSession().getNotificationModel().setModel(model);
+        getSession().getNotificationModel().setConnectionManager(connectionManager);
         initSettings();
         connectionManager.goPostLogin();
 
