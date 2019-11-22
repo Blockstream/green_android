@@ -37,16 +37,16 @@ public class ConnectionManager extends Observable {
     }
 
     private ConnState mState = ConnState.DISCONNECTED;
-    public String mWatchOnlyUsername;
-    public String mNetwork;
-    public String mProxyHost;
-    public String mProxyPort;
-    public boolean mProxyEnabled;
-    public boolean mTorEnabled;
-    public boolean mLoginWithPin;
-    public Exception mLastLoginException = null;
-    public HWDeviceData mHWDevice;
-    public CodeResolver mHWResolver;
+    private String mWatchOnlyUsername;
+    private String mNetwork;
+    private String mProxyHost;
+    private String mProxyPort;
+    private boolean mProxyEnabled;
+    private boolean mTorEnabled;
+    private boolean mLoginWithPin;
+    private Exception mLastLoginException = null;
+    private HWDeviceData mHWDevice;
+    private CodeResolver mHWResolver;
     private boolean pinJustSaved = false;
 
     public ConnectionManager(final String network) {
