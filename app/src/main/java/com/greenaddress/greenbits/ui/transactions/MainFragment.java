@@ -14,12 +14,13 @@ import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
+import com.greenaddress.greenapi.model.SubaccountDataObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
-import com.greenaddress.greenbits.spv.GaService;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.ui.GAFragment;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.SubaccountFragment;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.AccountView;
 import com.greenaddress.greenbits.ui.accounts.SubaccountSelectActivity;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Observer;
 
 import androidx.core.content.ContextCompat;
@@ -51,7 +53,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 
-public class MainFragment extends SubaccountFragment implements View.OnClickListener, OnGdkListener {
+public class MainFragment extends GAFragment implements View.OnClickListener, Observer, OnGdkListener {
     private static final String TAG = MainFragment.class.getSimpleName();
     private AccountView mAccountView;
     private final List<TransactionItem> mTxItems = new ArrayList<>();
@@ -62,6 +64,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
     private TextView mAssetsSelection;
     private TextView mSwitchNetwork;
+    private View mView;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -86,6 +89,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems, getModel());
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
+
         // FIXME, more efficient to use swap
         // txView.swapAdapter(lta, false);
         mSwipeRefreshLayout = UI.find(mView, R.id.mainTransactionListSwipe);
@@ -112,7 +116,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
                                                                         REQUEST_SELECT_ASSET));
         mSwitchNetwork = UI.find(mView, R.id.switchNetwork);
         mSwitchNetwork.setOnClickListener(v -> showDialog());
-
         mSwitchNetwork.setText(getNetwork().getName());
         mSwitchNetwork.setTextColor(getResources().getColor(R.color.white));
 
@@ -125,21 +128,72 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void onPause() {
         super.onPause();
+        detachObservers();
     }
 
     @Override
-    public void onResume() {
+    public void onResume () {
         super.onResume();
-        if (!isDisconnected()) {
-            justClicked = false;
-            mTxItems.clear();
-            mTransactionsAdapter.notifyDataSetChanged();
-            UI.find(mView, R.id.loadingList).setVisibility(View.VISIBLE);
-            onUpdateBalance(mBalanceDataObservable);
-            onUpdateReceiveAddress(mReceiveAddressObservable);
-            onUpdateTransactions(mTransactionDataObservable);
-            updateAssetSelection();
+        attachObservers();
+
+        justClicked = false;
+        mTransactionsAdapter.notifyDataSetChanged();
+        UI.find(mView, R.id.loadingList).setVisibility(View.VISIBLE);
+        updateAssetSelection();
+
+        update(getModel().getSubaccountDataObservable(), null);
+    }
+
+    private void attachObservers() {
+        final int subaccount = getModel().getActiveAccountObservable().getActiveAccount();
+        getModel().getBalanceDataObservable(subaccount).addObserver(this);
+        getModel().getTransactionDataObservable(subaccount).addObserver(this);
+        getModel().getActiveAccountObservable().addObserver(this);
+        getModel().getSubaccountDataObservable().addObserver(this);
+    }
+
+    private void detachObservers() {
+        final int subaccount = getModel().getActiveAccountObservable().getActiveAccount();
+        getModel().getBalanceDataObservable(subaccount).deleteObserver(this);
+        getModel().getTransactionDataObservable(subaccount).deleteObserver(this);
+        getModel().getActiveAccountObservable().deleteObserver(this);
+        getModel().getSubaccountDataObservable().deleteObserver(this);
+    }
+
+    @Override
+    public void update(final Observable observable, final Object o) {
+        if (observable instanceof BalanceDataObservable) {
+            onUpdateBalance((BalanceDataObservable) observable);
+        } else if (observable instanceof ReceiveAddressObservable) {
+            onUpdateReceiveAddress((ReceiveAddressObservable) observable);
+        } else if (observable instanceof TransactionDataObservable) {
+            onUpdateTransactions((TransactionDataObservable) observable);
+            //toast(R.string.id_a_new_transaction_has_just);
+        } else if (observable instanceof ActiveAccountObservable) {
+            detachObservers();
+            attachObservers();
+            onUpdateActiveSubaccount((ActiveAccountObservable) observable);
+        } else if (observable instanceof SubaccountDataObservable) {
+            final int subaccount = getModel().getActiveAccountObservable().getActiveAccount();
+            onUpdateBalance(getModel().getBalanceDataObservable(subaccount));
+            onUpdateTransactions(getModel().getTransactionDataObservable(subaccount));
         }
+    }
+
+    private boolean getZombieStatus(final boolean status) {
+        if (status)
+            Log.d(TAG, "Zombie re-awakening: " + getClass().getName());
+        return status;
+    }
+
+    // Returns true if we are being restored without an activity or service
+    protected boolean isZombieNoView() {
+        return getZombieStatus(getActivity() == null);
+    }
+
+    // Returns true if we are being restored without an activity, service or view
+    protected boolean isZombie() {
+        return getZombieStatus(getActivity() == null || mView == null);
     }
 
     private void updateAssetSelection() {
@@ -165,14 +219,7 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
     // Called when a new transaction is seen
     @Override
-    public void onNewTx(final Observer observer) {
-        if (!isPageSelected()) {
-            Log.d(TAG, "New transaction while page hidden");
-            setIsDirty(true);
-            return;
-        }
-        //reloadTransactions(false);
-    }
+    public void onNewTx(final Observer observer) { }
 
     // Called when a new verified transaction is seen
     @Override
@@ -210,11 +257,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
 
         if (isZombie())
             return;
-
-        // Mark ourselves as clean before fetching. This means that while the callback
-        // is running, we may be marked dirty again if a new block arrives, which
-        // is required to avoid missing updates while the RPC is in flight.
-        setIsDirty(false);
 
         txView = UI.find(mView, R.id.mainTransactionList);
         final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
@@ -281,8 +323,9 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
     @Override
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            hideKeyboard();
+        final GaActivity activity = getGaActivity();
+        if (isVisibleToUser && activity != null) {
+            activity.hideKeyboardFrom(null); // Current focus
         }
     }
 
@@ -346,7 +389,6 @@ public class MainFragment extends SubaccountFragment implements View.OnClickList
         Log.d(TAG, "Updating transactions");
         isLastPage=observable.isLastPage();
         getGaActivity().runOnUiThread(() -> reloadTransactions(txList, false));
-        updateAssetSelection();
     }
 
     @Override

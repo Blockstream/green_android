@@ -120,7 +120,7 @@ public abstract class GaActivity extends AppCompatActivity {
         return false;
     }
 
-    protected void hideKeyboardFrom(final View v) {
+    public void hideKeyboardFrom(final View v) {
         final View toHideFrom = v == null ? getCurrentFocus() : v;
         if (toHideFrom != null) {
             final InputMethodManager imm;
