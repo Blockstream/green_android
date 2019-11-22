@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.polidea.rxandroidble2.RxBleDevice;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.io.IOException;
 /**
  * Mid-level interface to Jade
  * Wraps either a serial or a ble connection
- * Calls to send and receive bytes or text/json messages.
+ * Calls to send and receive messages as JsonNode trees.
  * Intended for use wrapped by JadeAPI (see JadeAPI.createSerial() and JadeAPI.createBle()).
  */
 class JadeInterface {
@@ -38,9 +39,9 @@ class JadeInterface {
         return new JadeInterface(serial);
     }
 
-    public static JadeInterface createBle() {
-        // FIXME: implement BLE
-        return null;
+    public static JadeInterface createBle(final RxBleDevice device) {
+        final JadeBleImpl ble = new JadeBleImpl(device);
+        return new JadeInterface(ble);
     }
 
     public static ObjectMapper mapper() {

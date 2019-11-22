@@ -40,6 +40,7 @@ import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
 import com.greenaddress.greenbits.wallets.JadeHWWallet;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.greenaddress.jade.entities.JadeError;
+import com.greenaddress.jade.JadeBleImpl;
 import com.polidea.rxandroidble2.RxBleClient;
 import com.polidea.rxandroidble2.RxBleDevice;
 import com.greenaddress.jade.JadeAPI;
@@ -167,8 +168,17 @@ public class RequestLoginActivity extends LoginActivity {
         Log.d(TAG, "onBleAttach " + bleDevice.getName() + " (" + bleDevice.getMacAddress() + ")");
         final ImageView hardwareIcon = UI.find(this, R.id.hardwareIcon);
 
-        // Ledger (Nano X)
-        if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId.getUuid())) {
+        // Check service id matches a supported hw wallet
+        if (JadeBleImpl.IO_SERVICE_UUID.equals(serviceId.getUuid())) {
+            // Blockstream Jade
+            hardwareIcon.setImageResource(R.drawable.ic_jade);
+
+            // Create JadeAPI on BLE device
+            final JadeAPI jadeAPI = JadeAPI.createBle(bleDevice);
+            onJade(jadeAPI);
+
+        } else if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId.getUuid())) {
+            // Ledger (Nano X)
             hardwareIcon.setImageResource(R.drawable.ic_ledger);
 
             // Ledger BLE adapter will call the 'onLedger' function when the BLE connection is established

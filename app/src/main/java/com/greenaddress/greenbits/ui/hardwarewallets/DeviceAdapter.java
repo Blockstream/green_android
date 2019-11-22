@@ -2,10 +2,10 @@ package com.greenaddress.greenbits.ui.hardwarewallets;
 
 import android.bluetooth.BluetoothDevice;
 import android.os.ParcelUuid;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.greenaddress.greenbits.ui.R;
@@ -21,15 +21,15 @@ import androidx.recyclerview.widget.RecyclerView;
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder> {
 
     public interface OnAdapterInterface {
-        public void onItemClick(final Pair<ParcelUuid, BluetoothDevice> info);
+        public void onItemClick(final DeviceEntry entry);
     }
 
-    private final List<Pair<ParcelUuid, BluetoothDevice>> mList = new ArrayList<>();
+    private final List<DeviceEntry> mList = new ArrayList<>();
     private OnAdapterInterface mListener;
 
     // Sort by name
-    private static final Comparator<Pair<ParcelUuid, BluetoothDevice>> SORTING_COMPARATOR = (lhs, rhs) ->
-            lhs.second.getName().compareTo(rhs.second.getName());
+    private static final Comparator<DeviceEntry> SORTING_COMPARATOR = (lhs, rhs) ->
+            lhs.device.getName().compareTo(rhs.device.getName());
 
     void setOnAdapterInterface(final OnAdapterInterface listener) {
         this.mListener = listener;
@@ -44,9 +44,10 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
 
     @Override
     public void onBindViewHolder(final DeviceAdapter.DeviceViewHolder holder, final int position) {
-        final Pair<ParcelUuid, BluetoothDevice> info = mList.get(position);
-        holder.text.setText(info.second.getName());
-        holder.itemView.setOnClickListener(view -> mListener.onItemClick(info));
+        final DeviceEntry entry = mList.get(position);
+        holder.text.setText(entry.device.getName());
+        holder.image.setImageResource(entry.imageResource);
+        holder.itemView.setOnClickListener(view -> mListener.onItemClick(entry));
     }
 
     public void clear() {
@@ -54,18 +55,20 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         notifyDataSetChanged();
     }
 
-    public void add(final Pair<ParcelUuid, BluetoothDevice> info) {
-        if (info.first == null || info.second == null || info.second.getName() == null || info.second.getAddress() == null) {
+    public void add(final ParcelUuid serviceId, final int imageResource, final BluetoothDevice device) {
+        if (serviceId == null || device == null || device.getName() == null || device.getAddress() == null) {
             return;
         }
 
         // Ignore if already in list
-        if (mList.contains(info)) {
-            return;
+        for (final DeviceEntry entry : mList) {
+            if (entry.device == device) {
+                return;
+            }
         }
 
         // Add new device
-        mList.add(info);
+        mList.add(new DeviceEntry(serviceId, imageResource, device));
         Collections.sort(mList, SORTING_COMPARATOR);
         notifyDataSetChanged();
     }
@@ -75,13 +78,27 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         return mList.size();
     }
 
-    public static class DeviceViewHolder extends RecyclerView.ViewHolder {
+    static class DeviceViewHolder extends RecyclerView.ViewHolder {
 
-        protected TextView text;
+        final TextView text;
+        final ImageView image;
 
-        public DeviceViewHolder(final View itemView) {
+        DeviceViewHolder(final View itemView) {
             super(itemView);
             text = itemView.findViewById(R.id.text);
+            image = itemView.findViewById(R.id.icon);
+        }
+    }
+
+    static class DeviceEntry {
+        final ParcelUuid serviceId;
+        final int imageResource;
+        final BluetoothDevice device;
+
+        public DeviceEntry(final ParcelUuid serviceId, final int imageResource, final BluetoothDevice device) {
+            this.serviceId = serviceId;
+            this.imageResource = imageResource;
+            this.device = device;
         }
     }
 }

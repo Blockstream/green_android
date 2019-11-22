@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui.hardwarewallets;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
@@ -14,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.util.Log;
-import android.util.Pair;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -23,6 +21,7 @@ import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
+import com.greenaddress.jade.JadeBleImpl;
 import com.polidea.rxandroidble2.RxBleClient;
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.exceptions.BleScanException;
@@ -59,6 +58,7 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
 
     // Supported hw
     private static ParcelUuid PARCEL_SERVICE_UUID_LEDGER = new ParcelUuid(LedgerDeviceBLE.SERVICE_UUID);
+    private static ParcelUuid PARCEL_SERVICE_UUID_JADE = new ParcelUuid(JadeBleImpl.IO_SERVICE_UUID);
 
     private RecyclerView mRecyclerView;
     private DeviceAdapter mAdapter;
@@ -205,10 +205,16 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
                         for (final BluetoothGattService service : services.getBluetoothGattServices()) {
                             final UUID serviceId = service.getUuid();
 
+                            // Blockstream Jade
+                            if (JadeBleImpl.IO_SERVICE_UUID.equals(serviceId)) {
+                                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.ic_jade, device);
+                                break;
+                            }
+
                             // Ledger (Nano X)
                             if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId)) {
-                                mAdapter.add(Pair.create(PARCEL_SERVICE_UUID_LEDGER, device));
-                                return;
+                                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ic_ledger, device);
+                                break;
                             }
                         }
                     },
@@ -245,22 +251,33 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
                     .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                     .build(),
             // add custom filters - filter to just supported hw
+            // Blockstream Jade
+            new ScanFilter.Builder()
+                    .setServiceUuid(PARCEL_SERVICE_UUID_JADE)
+                    .build(),
             // Ledger (Nano X)
             new ScanFilter.Builder()
                     .setServiceUuid(PARCEL_SERVICE_UUID_LEDGER)
                     .build()
             )
                 .observeOn(AndroidSchedulers.mainThread())
+                .doFinally(this::dispose)
                 .subscribe(this::onScan, this::onScanFailure)
         );
     }
 
     private void onScan(final ScanResult rslt) {
+        // Filter to supported hw, and associate with service uuid
         final ScanRecord rec = rslt.getScanRecord();
         if (rec != null && rec.getServiceUuids() != null && !rec.getServiceUuids().isEmpty()) {
+            // Blockstream Jade
+            if (rec.getServiceUuids().contains(PARCEL_SERVICE_UUID_JADE)) {
+                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.ic_jade, rslt.getBleDevice().getBluetoothDevice());
+            }
+
             // Ledger (Nano X)
-            if (rec.getServiceUuids().contains(PARCEL_SERVICE_UUID_LEDGER)) {
-                mAdapter.add(Pair.create(PARCEL_SERVICE_UUID_LEDGER, rslt.getBleDevice().getBluetoothDevice()));
+            else if (rec.getServiceUuids().contains(PARCEL_SERVICE_UUID_LEDGER)) {
+                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ic_ledger, rslt.getBleDevice().getBluetoothDevice());
             }
         }
     }
@@ -278,18 +295,18 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
         mAdapter.clear();
     }
 
-    private void loginWithDevice(final Pair<ParcelUuid, BluetoothDevice> info) {
+    private void loginWithDevice(final DeviceAdapter.DeviceEntry entry) {
         // Stop scanning
         dispose();
 
         // Send selected device to RequestLoginActivity
         startActivity(new Intent(this, RequestLoginActivity.class)
                 .setAction(ACTION_BLE_SELECTED)
-                .putExtra(BluetoothDevice.EXTRA_UUID, info.first)
-                .putExtra(BluetoothDevice.EXTRA_DEVICE, info.second));
+                .putExtra(BluetoothDevice.EXTRA_UUID, entry.serviceId)
+                .putExtra(BluetoothDevice.EXTRA_DEVICE, entry.device));
     }
 
-    private void handleBonding(final ParcelUuid serviceId) {
+    private void handleBonding(final DeviceAdapter.DeviceEntry entry) {
         Log.i(TAG, "Handling bonding events ...");
         final LoginActivity activity = this;
         final IntentFilter intentFilter = new IntentFilter();
@@ -300,24 +317,25 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
             public void onReceive(final Context context, final Intent intent) {
                 Log.i(TAG, "handleBonding() event: " + intent.getAction());
                 if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(intent.getAction())) {
-                    final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, 0);
+                    final BluetoothDevice btDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    if (btDevice != null && entry.device.getAddress().equals(btDevice.getAddress())) {
+                        final int prevState = intent.getIntExtra(BluetoothDevice.EXTRA_PREVIOUS_BOND_STATE, 0);
+                        if (prevState == BluetoothDevice.BOND_BONDING || prevState == BluetoothDevice.BOND_BONDED) {
+                            final int currState = btDevice.getBondState();
 
-                    if (prevState == BluetoothDevice.BOND_BONDING) {
-                        final BluetoothDevice btDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                        final int currState = btDevice.getBondState();
-
-                        if (currState == BluetoothDevice.BOND_BONDED) {
-                            // Bonding succeeded, can now connect/login with this device
-                            Log.i(TAG,
-                                  "Bond established - initiating connect/login : " + btDevice.getName() + " (" +
-                                  btDevice.getAddress() + ")");
-                            context.unregisterReceiver(this);
-                            loginWithDevice(Pair.create(serviceId, btDevice));
-                        } else if (currState == BluetoothDevice.BOND_NONE) {
-                            // error
-                            Log.e(TAG, "Bonding failed for " + btDevice.getName() + " (" + btDevice.getAddress() + ")");
-                            context.unregisterReceiver(this);
-                            UI.popup(activity, R.string.id_please_reconnect_your_hardware).show();
+                            if (currState == BluetoothDevice.BOND_BONDED) {
+                                // Bonding succeeded, can now connect/login with this device
+                                Log.i(TAG,
+                                        "Bond established - initiating connect/login : " + btDevice.getName() + " (" +
+                                                btDevice.getAddress() + ")");
+                                context.unregisterReceiver(this);
+                                loginWithDevice(entry);
+                            } else if (currState == BluetoothDevice.BOND_NONE) {
+                                // error
+                                Log.e(TAG, "Bonding failed for " + btDevice.getName() + " (" + btDevice.getAddress() + ")");
+                                context.unregisterReceiver(this);
+                                UI.popup(activity, R.string.id_please_reconnect_your_hardware).show();
+                            }
                         }
                     }
                 }
@@ -325,33 +343,30 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
         }, intentFilter);
     }
 
-    private boolean initiateBonding(final Pair<ParcelUuid, BluetoothDevice> info, final boolean bRetry) {
+    private boolean initiateBonding(final DeviceAdapter.DeviceEntry entry) {
         Log.i(TAG, "Initiating bonding.");
-        if (!info.second.createBond()) {
+        if (!entry.device.createBond()) {
             Log.e(TAG, "Initiating bonding failed.");
             UI.popup(this, R.string.id_please_reconnect_your_hardware).show();
             return false;
         }
 
         // Initiated creating bond, handle responses
-        handleBonding(info.first);
+        handleBonding(entry);
         return true;
     }
 
     @Override
-    public void onItemClick(final Pair<ParcelUuid, BluetoothDevice> info) {
-        final BluetoothDevice bleDevice = info.second;
-        Log.d(TAG, "Clicked: " + bleDevice.getName() + "  (" + bleDevice.getAddress() + ")");
-        final BluetoothManager btManager = (BluetoothManager) this.getSystemService(Context.BLUETOOTH_SERVICE);
-        final BluetoothAdapter btAdapter = btManager.getAdapter();
+    public void onItemClick(final DeviceAdapter.DeviceEntry entry) {
+        Log.d(TAG, "Clicked: " + entry.device.getName() + "  (" + entry.device.getAddress() + ")");
 
-        if (btAdapter.getBondedDevices().contains(bleDevice)) {
+        if (entry.device.getBondState() == BluetoothDevice.BOND_BONDED) {
             // Already bonded, connect/login with device
             Log.i(TAG, "Existing bond found for device - initiating connect/login");
-            loginWithDevice(info);
+            loginWithDevice(entry);
         } else {
             Log.i(TAG, "Existing bond not found for device - initiating bonding");
-            initiateBonding(info, true);
+            initiateBonding(entry);
         }
     }
 }

@@ -10,7 +10,7 @@ import com.greenaddress.jade.entities.JadeError;
 
 /**
  * Low-level Serial backend interface to Jade
- * Calls to send and receive bytes or text/json messages.
+ * Calls to send and receive bytes to/from Jade.
  * Intended for use wrapped by JadeInterface (see JadeInterface.createSerial()).
  */
 public class JadeSerialImpl extends JadeConnectionImpl {

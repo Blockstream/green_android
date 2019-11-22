@@ -14,6 +14,7 @@ import com.greenaddress.jade.entities.TxChangeOutput;
 import com.greenaddress.jade.entities.TxInput;
 import com.greenaddress.jade.entities.TxInputLiquid;
 import com.greenaddress.jade.entities.VersionInfo;
+import com.polidea.rxandroidble2.RxBleDevice;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,9 +52,9 @@ public class JadeAPI {
         return new JadeAPI(jade);
     }
 
-    public static JadeAPI createBle() {
-        // FIXME: implement BLE
-        return null;
+    public static JadeAPI createBle(final RxBleDevice device) {
+        final JadeInterface jade = JadeInterface.createBle(device);
+        return new JadeAPI(jade);
     }
 
     public boolean connect() {
