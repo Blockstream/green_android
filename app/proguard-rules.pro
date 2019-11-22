@@ -26,6 +26,8 @@
     public <init>(android.content.Context);
 }
 
+-keep class androidx.core.app.CoreComponentFactory { *; }
+
 # BEGIN for protobuf in trezor:
 -keep class com.satoshilabs.trezor.** { *; }
 -keepattributes InnerClasses,EnclosingMethod
