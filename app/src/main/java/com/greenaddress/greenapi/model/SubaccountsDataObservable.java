@@ -12,8 +12,8 @@ import java.util.Observable;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
-public class SubaccountDataObservable extends Observable {
-    private List<SubaccountData> mSubaccountData;
+public class SubaccountsDataObservable extends Observable {
+    private List<SubaccountData> mSubaccountsData;
     private ListeningExecutorService mExecutor;
     private SparseArray<TransactionDataObservable> mTransactionDataObservables;
     private SparseArray<TransactionDataObservable> mUTXODataObservables;
@@ -24,8 +24,8 @@ public class SubaccountDataObservable extends Observable {
 
     private AssetsDataObservable mAssetsDataObservable;
 
-    SubaccountDataObservable(final ListeningExecutorService executor,
-                             AssetsDataObservable assetsDataObservable, final Model model) {
+    SubaccountsDataObservable(final ListeningExecutorService executor,
+                              AssetsDataObservable assetsDataObservable, final Model model) {
         mExecutor = executor;
         mTransactionDataObservables = model.getTransactionDataObservables();
         mBalanceDataObservables = model.getBalanceDataObservables();
@@ -50,7 +50,7 @@ public class SubaccountDataObservable extends Observable {
                 mBalanceDataObservables.get(pointer).refresh();
             }
             Log.d("OBS", "setSubaccountData init took " + (System.currentTimeMillis()-millis) +"ms");
-            setSubaccountData(subAccounts);
+            setSubaccountsData(subAccounts);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,31 +88,31 @@ public class SubaccountDataObservable extends Observable {
     }
 
 
-    public List<SubaccountData> getSubaccountDataList() {
-        return mSubaccountData;
+    public List<SubaccountData> getSubaccountsDataList() {
+        return mSubaccountsData;
     }
 
-    public SubaccountData getSubaccountDataWithPointer(final Integer pointer) {
-        for (final SubaccountData subaccountData : mSubaccountData) {
+    public SubaccountData getSubaccountsDataWithPointer(final Integer pointer) {
+        for (final SubaccountData subaccountData : mSubaccountsData) {
             if (subaccountData.getPointer().equals(pointer))
                 return subaccountData;
         }
         return null;
     }
 
-    private void setSubaccountData(final List<SubaccountData> subaccountData) {
-        Log.d("OBS", "setSubaccountData(" + subaccountData +")");
-        this.mSubaccountData = subaccountData;
+    private void setSubaccountsData(final List<SubaccountData> subaccountsData) {
+        Log.d("OBS", "setSubaccountData(" + subaccountsData +")");
+        this.mSubaccountsData = subaccountsData;
         setChanged();
         notifyObservers();
     }
 
     public void add(final SubaccountData newSubAccount) {
-        mSubaccountData.add(newSubAccount);
+        mSubaccountsData.add(newSubAccount);
         final Integer newPointer = newSubAccount.getPointer();
         initObservables(newPointer);
         mReceiveAddressObservables.get(newPointer).refresh();
         mBalanceDataObservables.get(newPointer).refresh();
-        setSubaccountData(mSubaccountData);
+        setSubaccountsData(mSubaccountsData);
     }
 }

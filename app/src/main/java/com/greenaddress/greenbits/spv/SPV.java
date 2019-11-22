@@ -268,7 +268,7 @@ public class SPV {
 
         final List<TransactionData> utxos = new ArrayList<>();
         final Model model = getModel();
-        final List<SubaccountData> subaccountDataList = model.getSubaccountDataObservable().getSubaccountDataList();
+        final List<SubaccountData> subaccountDataList = model.getSubaccountsDataObservable().getSubaccountsDataList();
 
         for (final SubaccountData subaccountData : subaccountDataList) {
             final TransactionDataObservable utxoDataObservable =
@@ -330,7 +330,7 @@ public class SPV {
             cfgEdit().putBoolean(PrefKeys.VERIFIED_HASH_ + txHashHex, true).apply();
 
         final Model model = getModel();
-        final List<SubaccountData> subaccountDataList = model.getSubaccountDataObservable().getSubaccountDataList();
+        final List<SubaccountData> subaccountDataList = model.getSubaccountsDataObservable().getSubaccountsDataList();
 
         for (final SubaccountData subaccountData : subaccountDataList) {
             final Integer pointer = subaccountData.getPointer();

@@ -24,7 +24,7 @@ import static com.greenaddress.gdk.GDKSession.getSession;
 
 
 public class Model {
-    private SubaccountDataObservable mSubaccountDataObservable;
+    private SubaccountsDataObservable mSubaccountsDataObservable;
     private TwoFactorConfigDataObservable mTwoFactorConfigDataObservable;
     private EventDataObservable mEventDataObservable;
     private AssetsDataObservable mAssetsObservable;
@@ -47,7 +47,7 @@ public class Model {
 
     public Model(final ListeningExecutorService executor, final NetworkData networkData) {
         mAssetsObservable = new AssetsDataObservable(executor);
-        mSubaccountDataObservable = new SubaccountDataObservable(executor, mAssetsObservable, this);
+        mSubaccountsDataObservable = new SubaccountsDataObservable(executor, mAssetsObservable, this);
         mEventDataObservable = new EventDataObservable();
         mTwoFactorConfigDataObservable = new TwoFactorConfigDataObservable(executor, mEventDataObservable);
         mFeeObservable = new FeeObservable(executor);
@@ -56,8 +56,8 @@ public class Model {
         mNetworkData = networkData;
     }
 
-    public SubaccountDataObservable getSubaccountDataObservable() {
-        return mSubaccountDataObservable;
+    public SubaccountsDataObservable getSubaccountsDataObservable() {
+        return mSubaccountsDataObservable;
     }
 
     public TwoFactorConfigDataObservable getTwoFactorConfigDataObservable() {
@@ -220,8 +220,8 @@ public class Model {
         }
     }
 
-    public SubaccountData getSubaccountData(final int subAccount) {
-        return getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
+    public SubaccountData getSubaccountsData(final int subAccount) {
+        return getSubaccountsDataObservable().getSubaccountsDataWithPointer(subAccount);
     }
 
     public String getAddress(final int subAccount) {
@@ -239,6 +239,6 @@ public class Model {
     }
 
     public String getReceivingId() {
-        return getSubaccountData(0).getReceivingId();
+        return getSubaccountsData(0).getReceivingId();
     }
 }

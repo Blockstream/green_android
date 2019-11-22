@@ -93,7 +93,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         if (isSweep) {
             final int account = getModel().getActiveAccountObservable().getActiveAccount();
-            final String accountName = getModel().getSubaccountData(account).getName();
+            final String accountName = getModel().getSubaccountsData(account).getName();
             setTitle(String.format(getString(R.string.id_sweep_into_s),
                                    accountName.equals("") ? getString(R.string.id_main_account) : accountName));
         }

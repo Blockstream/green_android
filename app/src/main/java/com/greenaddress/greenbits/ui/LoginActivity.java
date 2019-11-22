@@ -94,7 +94,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         final SharedPreferences preferences = getSharedPreferences(networkData.getNetwork(), MODE_PRIVATE);
         final int activeAccount =
             connectionManager.isLoginWithPin() ? preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
-        if (model.getSubaccountDataObservable().getSubaccountDataWithPointer(activeAccount) != null)
+        if (model.getSubaccountsDataObservable().getSubaccountsDataWithPointer(activeAccount) != null)
             model.getActiveAccountObservable().setActiveAccount(activeAccount);
         else
             model.getActiveAccountObservable().setActiveAccount(0);

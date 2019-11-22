@@ -26,7 +26,7 @@ public class SweepSelectActivity extends GaActivity implements SweepAdapter.OnAc
         setContentView(R.layout.activity_sweep_selection);
         setTitleBackTransparent();
 
-        mSubaccountData = getModel().getSubaccountDataObservable().getSubaccountDataList();
+        mSubaccountData = getModel().getSubaccountsDataObservable().getSubaccountsDataList();
         mRecyclerView = findViewById(R.id.accountsList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(new SweepAdapter(mSubaccountData, this));

@@ -44,7 +44,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
         final String callingActivity = getCallingActivity() != null ? getCallingActivity().getClassName() : "";
         if (callingActivity.equals(TabbedMainActivity.class.getName())) {
-            final String accountName = getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(
+            final String accountName = getModel().getSubaccountsDataObservable().getSubaccountsDataWithPointer(
                 getModel().getCurrentSubaccount()).getNameWithDefault(getString(R.string.id_main_account));
             setTitle(accountName);
         } else if (callingActivity.equals(ScanActivity.class.getName())) {

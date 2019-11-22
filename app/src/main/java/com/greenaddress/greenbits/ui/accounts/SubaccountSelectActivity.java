@@ -10,7 +10,7 @@ import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
-import com.greenaddress.greenapi.model.SubaccountDataObservable;
+import com.greenaddress.greenapi.model.SubaccountsDataObservable;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -76,8 +76,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
 
     public void attachObservers() {
         final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();
-        final SubaccountDataObservable subaccountObservable = getModel().getSubaccountDataObservable();
-        for (final SubaccountData o : subaccountObservable.getSubaccountDataList()) {
+        final SubaccountsDataObservable subaccountObservable = getModel().getSubaccountsDataObservable();
+        for (final SubaccountData o : subaccountObservable.getSubaccountsDataList()) {
             getModel().getBalanceDataObservable(o.getPointer()).addObserver(this);
         }
         for (int i = 0; i < balanceObservables.size(); i++) {
@@ -87,8 +87,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
 
     public void detachObservers() {
         final SparseArray<BalanceDataObservable> balanceObservables = getModel().getBalanceDataObservables();
-        final SubaccountDataObservable subaccountObservable = getModel().getSubaccountDataObservable();
-        for (final SubaccountData o : subaccountObservable.getSubaccountDataList()) {
+        final SubaccountsDataObservable subaccountObservable = getModel().getSubaccountsDataObservable();
+        for (final SubaccountData o : subaccountObservable.getSubaccountsDataList()) {
             final Observable obsBalance = getModel().getBalanceDataObservable(o.getPointer());
             if (obsBalance != null)
                 obsBalance.deleteObserver(this);
@@ -130,8 +130,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     }
 
     private void updateSubaccounts() {
-        final SubaccountDataObservable observable = getModel().getSubaccountDataObservable();
-        final List<SubaccountData> list = observable.getSubaccountDataList();
+        final SubaccountsDataObservable observable = getModel().getSubaccountsDataObservable();
+        final List<SubaccountData> list = observable.getSubaccountsDataList();
         if (list == null)
             return;
         mSubaccountList.clear();
@@ -163,7 +163,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
                     GDKSession.getSession().createSubAccount(SubaccountSelectActivity.this,
                                                              input.toString(), "2of2").resolve(null,
                                                                                                null);
-                    getModel().getSubaccountDataObservable().refresh();
+                    getModel().getSubaccountsDataObservable().refresh();
                 } catch (final Exception e) {
                     runOnUiThread(() -> { UI.toast(SubaccountSelectActivity.this, R.string.id_operation_failure,
                                                    Toast.LENGTH_LONG); });

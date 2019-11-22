@@ -218,9 +218,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             recipientText.setText(mTxItem.counterparty);
         }
 
-        final String name = getModel().getSubaccountDataObservable().
-                            getSubaccountDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.
-                                                                                                          id_main_account));
+        final String name = getModel().getSubaccountsDataObservable().
+                            getSubaccountsDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.
+                                                                                                           id_main_account));
 
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.REDEPOSIT, UI.find(this, R.id.txRecipientReceiverView));
         UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientText);

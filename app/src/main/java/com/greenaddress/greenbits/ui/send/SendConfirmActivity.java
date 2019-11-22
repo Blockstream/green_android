@@ -58,7 +58,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
         if (isSweep) {
             final int account = getModel().getActiveAccountObservable().getActiveAccount();
-            final String accountName = getModel().getSubaccountData(account).getName();
+            final String accountName = getModel().getSubaccountsData(account).getName();
             setTitle(String.format(getString(R.string.id_sweep_into_s),
                                    accountName.equals("") ? getString(R.string.id_main_account) : accountName));
         }
@@ -102,7 +102,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         else {
             final int subAccount = subaccount;
             final SubaccountData subaccountData =
-                getModel().getSubaccountDataObservable().getSubaccountDataWithPointer(subAccount);
+                getModel().getSubaccountsDataObservable().getSubaccountsDataWithPointer(subAccount);
             subaccountText.setText(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
         }
         addressText.setText(currentRecipient);

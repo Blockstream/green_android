@@ -14,7 +14,7 @@ import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.ReceiveAddressObservable;
-import com.greenaddress.greenapi.model.SubaccountDataObservable;
+import com.greenaddress.greenapi.model.SubaccountsDataObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.spv.SPV;
@@ -141,7 +141,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         UI.find(mView, R.id.loadingList).setVisibility(View.VISIBLE);
         updateAssetSelection();
 
-        update(getModel().getSubaccountDataObservable(), null);
+        update(getModel().getSubaccountsDataObservable(), null);
     }
 
     private void attachObservers() {
@@ -149,7 +149,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         getModel().getBalanceDataObservable(subaccount).addObserver(this);
         getModel().getTransactionDataObservable(subaccount).addObserver(this);
         getModel().getActiveAccountObservable().addObserver(this);
-        getModel().getSubaccountDataObservable().addObserver(this);
+        getModel().getSubaccountsDataObservable().addObserver(this);
     }
 
     private void detachObservers() {
@@ -157,7 +157,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         getModel().getBalanceDataObservable(subaccount).deleteObserver(this);
         getModel().getTransactionDataObservable(subaccount).deleteObserver(this);
         getModel().getActiveAccountObservable().deleteObserver(this);
-        getModel().getSubaccountDataObservable().deleteObserver(this);
+        getModel().getSubaccountsDataObservable().deleteObserver(this);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
             detachObservers();
             attachObservers();
             onUpdateActiveSubaccount((ActiveAccountObservable) observable);
-        } else if (observable instanceof SubaccountDataObservable) {
+        } else if (observable instanceof SubaccountsDataObservable) {
             final int subaccount = getModel().getActiveAccountObservable().getActiveAccount();
             onUpdateBalance(getModel().getBalanceDataObservable(subaccount));
             onUpdateTransactions(getModel().getTransactionDataObservable(subaccount));
@@ -371,7 +371,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
 
         getGaActivity().runOnUiThread(() -> {
             final int subaccount = getModel().getCurrentSubaccount();
-            final SubaccountData subaccountData = getModel().getSubaccountData(subaccount);
+            final SubaccountData subaccountData = getModel().getSubaccountsData(subaccount);
             mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
             mAccountView.setBalance(getModel(), satoshi);
         });
