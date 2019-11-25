@@ -52,10 +52,6 @@ public abstract class GAFragment extends Fragment {
         return mApp.getConnectionManager();
     }
 
-    public SharedPreferences cfg() {
-        return getContext().getSharedPreferences(network(), MODE_PRIVATE);
-    }
-
     public String network() {
         return PreferenceManager.getDefaultSharedPreferences(getContext()).getString(PrefKeys.NETWORK_ID_ACTIVE,
                                                                                      "mainnet");
