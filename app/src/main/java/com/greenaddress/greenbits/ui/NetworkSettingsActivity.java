@@ -17,17 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.gdk.GDKSession;
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.accounts.NetworkSwitchListener;
 import com.greenaddress.greenbits.ui.accounts.SwitchNetworkAdapter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
-public class NetworkSettingsActivity extends GaActivity implements Observer, NetworkSwitchListener {
+public class NetworkSettingsActivity extends GaActivity implements NetworkSwitchListener {
 
     private LinearLayout mProxySection;
     private Switch mSwitchTor;
@@ -35,8 +32,6 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     private EditText mSocks5Host;
     private EditText mSocks5Port;
     private SwitchNetworkAdapter mSwitchNetworkAdapter;
-
-    private boolean mIsLoggedIn = false;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -52,33 +47,15 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
         final RecyclerView recyclerView = UI.find(this, R.id.networksRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
 
-        final List<NetworkData> networks = GDKSession.getNetworks();
-        final NetworkData networkData = getNetwork();
-        mSwitchNetworkAdapter = new SwitchNetworkAdapter(this, networks, networkData,
-                                                         networkData.getLiquid(), this);
-        recyclerView.setAdapter(mSwitchNetworkAdapter);
-
         final View closeButton = UI.find(this, R.id.close_network_settings);
         closeButton.setOnClickListener(this::onCloseClick);
 
         mSwitchProxy.setOnCheckedChangeListener(this::onProxyChange);
-        initProxy();
         mSwitchTor.setOnCheckedChangeListener(this::onTorChange);
-        initTor(mSwitchNetworkAdapter.getSelected());
 
         final Button selectButton = UI.find(this, R.id.selectNetworkButton);
         selectButton.setOnClickListener(this::onClick);
-
-        if (getConnectionManager() == null ||
-            getConnectionManager().isDisconnectedOrLess()) {
-            selectButton.setText(R.string.id_save);
-        } else {
-            mIsLoggedIn = true;
-            selectButton.setText(R.string.id_logout_and_switch);
-
-            // Register the observer since we came in from the settings page
-            getConnectionManager().addObserver(this);
-        }
+        selectButton.setText(R.string.id_save);
     }
 
     private void cancelAndExit() {
@@ -89,39 +66,14 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     @Override
     public void onResume() {
         super.onResume();
-        if (getConnectionManager() == null) {
-            return;
-        }
 
-        if (mIsLoggedIn) {
-            // the connection was closed while this activity was paused, exit immediately
-            if (getConnectionManager().isDisconnectedOrLess()) {
-                cancelAndExit();
-                return;
-            }
-
-            // still connected, add back the observer
-            getConnectionManager().addObserver(this);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (getConnectionManager() == null) {
-            return;
-        }
-
-        if (mIsLoggedIn) {
-            getConnectionManager().deleteObserver(this);
-        }
-    }
-
-    @Override
-    public void update(Observable observable, Object arg) {
-        if (observable instanceof ConnectionManager) {
-            cancelAndExit();
-        }
+        final List<NetworkData> networks = GDKSession.getNetworks();
+        final NetworkData networkData = getNetwork();
+        mSwitchNetworkAdapter = new SwitchNetworkAdapter(this, networks, networkData, this);
+        final RecyclerView recyclerView = UI.find(this, R.id.networksRecyclerView);
+        recyclerView.setAdapter(mSwitchNetworkAdapter);
+        initProxy();
+        initTor(mSwitchNetworkAdapter.getSelected());
     }
 
     private void onCloseClick(final View view) {
@@ -154,10 +106,8 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
             .putString(PrefKeys.PROXY_HOST, socksHost)
             .putString(PrefKeys.PROXY_PORT, socksPort)
             .apply();
-            getConnectionManager().setProxyHostAndPort(socksHost, socksPort);
         }
         getGAApp().setCurrentNetwork(networkName);
-        getConnectionManager().setNetwork(networkName);
         setResult(RESULT_OK);
         finishOnUiThread();
     }
@@ -178,7 +128,6 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     private void onProxyChange(final CompoundButton compoundButton, final boolean b) {
         Log.d("NETDLG", "onProxyChange " + mSwitchNetworkAdapter.getSelected().getNetwork() + " " + b);
         getPrefOfSelected().edit().putBoolean(PrefKeys.PROXY_ENABLED, b).apply();
-        getConnectionManager().setProxyEnabled(b);
         mProxySection.setVisibility(b ? View.VISIBLE : View.GONE);
     }
 
@@ -192,7 +141,6 @@ public class NetworkSettingsActivity extends GaActivity implements Observer, Net
     private void onTorChange(final CompoundButton compoundButton, final boolean b) {
         Log.d("NETDLG", "onTorChange " + mSwitchNetworkAdapter.getSelected().getNetwork() + " " + b);
         getPrefOfSelected().edit().putBoolean(PrefKeys.TOR_ENABLED, b).apply();
-        getConnectionManager().setTorEnabled(b);
     }
 
     @Override

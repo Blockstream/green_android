@@ -22,7 +22,7 @@ public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdap
     private final NetworkSwitchListener mNetworkSwitchListener;
 
     public SwitchNetworkAdapter(final Context context, final List<NetworkData> networkList,
-                                final NetworkData selectedItem, final boolean isLiquid,
+                                final NetworkData selectedItem,
                                 final NetworkSwitchListener networkSwitchListener) {
         mNetworkList = networkList;
         mContext = context;

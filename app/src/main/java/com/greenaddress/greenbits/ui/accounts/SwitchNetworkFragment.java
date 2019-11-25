@@ -51,7 +51,6 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
         recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), GDKSession.getNetworks(),
                                                          networkData,
-                                                         networkData.getLiquid(),
                                                          this));
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
