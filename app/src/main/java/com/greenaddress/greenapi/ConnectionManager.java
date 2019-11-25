@@ -37,11 +37,6 @@ public class ConnectionManager extends Observable {
 
     private ConnState mState = ConnState.DISCONNECTED;
     private String mWatchOnlyUsername;
-    private String mNetwork;
-    private String mProxyHost;
-    private String mProxyPort;
-    private boolean mProxyEnabled;
-    private boolean mTorEnabled;
     private boolean mLoginWithPin;
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
@@ -109,12 +104,12 @@ public class ConnectionManager extends Observable {
     }
 
     public void connect(final Context context) throws RuntimeException {
-        mNetwork = PreferenceManager.getDefaultSharedPreferences(context).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-        final SharedPreferences preferences = context.getSharedPreferences(mNetwork, MODE_PRIVATE);
-        mProxyHost = preferences.getString(PrefKeys.PROXY_HOST, "");
-        mProxyPort = preferences.getString(PrefKeys.PROXY_PORT, "");
-        mProxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
-        mTorEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
+        final String network = PreferenceManager.getDefaultSharedPreferences(context).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        final SharedPreferences preferences = context.getSharedPreferences(network, MODE_PRIVATE);
+        final String proxyHost = preferences.getString(PrefKeys.PROXY_HOST, "");
+        final String proxyPort = preferences.getString(PrefKeys.PROXY_PORT, "");
+        final Boolean proxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
+        final Boolean torEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
         pinJustSaved = false;
 
         String deviceId = preferences.getString(PrefKeys.DEVICE_ID, null);
@@ -123,24 +118,20 @@ public class ConnectionManager extends Observable {
             deviceId = UUID.randomUUID().toString();
             preferences.edit().putString(PrefKeys.DEVICE_ID, deviceId).apply();
         }
-        connect();
-    }
-
-    private void connect() throws RuntimeException {
         setState(ConnState.CONNECTING);
         final boolean isDebug = BuildConfig.DEBUG;
-        Log.d(TAG,"connecting to " + mNetwork + (isDebug ? " in DEBUG mode" : "") + (mTorEnabled ? " with TOR" : ""));
-        if (mProxyEnabled || mTorEnabled) {
+        Log.d(TAG,"connecting to " + network + (isDebug ? " in DEBUG mode" : "") + (torEnabled ? " with TOR" : ""));
+        if (proxyEnabled || torEnabled) {
             final String proxyString;
-            if (!mProxyEnabled || TextUtils.isEmpty(mProxyHost)) {
+            if (!proxyEnabled || TextUtils.isEmpty(proxyHost)) {
                proxyString = "";
             } else {
-               proxyString = String.format(Locale.US, "%s:%s", mProxyHost, mProxyPort);
+               proxyString = String.format(Locale.US, "%s:%s", proxyHost, proxyPort);
                Log.d(TAG, "connecting with proxy " + proxyString);
             }
-            getSession().connectWithProxy(mNetwork, proxyString, mTorEnabled, isDebug);
+            getSession().connectWithProxy(network, proxyString, torEnabled, isDebug);
         } else {
-            getSession().connect(mNetwork, isDebug);
+            getSession().connect(network, isDebug);
         }
         setState(ConnState.CONNECTED);
     }
