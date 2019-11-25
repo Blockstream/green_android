@@ -47,7 +47,6 @@ public class SubaccountsDataObservable extends Observable {
             for (SubaccountData subAccount : subAccounts) {
                 final int pointer = subAccount.getPointer();
                 initObservables(pointer);
-                mBalanceDataObservables.get(pointer).refresh();
             }
             Log.d("OBS", "setSubaccountData init took " + (System.currentTimeMillis()-millis) +"ms");
             setSubaccountsData(subAccounts);
