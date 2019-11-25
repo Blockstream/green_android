@@ -22,9 +22,11 @@ public abstract class GAFragment extends Fragment {
         super.onAttach(context);
 
         mApp = (GreenAddressApplication) getActivity().getApplication();
+        final GaActivity activity = (GaActivity) getActivity();
 
         try {
-            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(mApp.getCurrentNetwork(), context, null),
+            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(mApp.getCurrentNetwork(), context,
+                                                                           activity.getMetadata()),
                                           true);
         } catch (final Exception e) {
             // Some reports show NullPointer Exception in applying style

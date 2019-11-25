@@ -54,7 +54,7 @@ public abstract class GaActivity extends AppCompatActivity {
         return (GreenAddressApplication) getApplication();
     }
 
-    protected Bundle getMetadata() {
+    public Bundle getMetadata() {
         Bundle metadata = null;
         try {
             metadata =
