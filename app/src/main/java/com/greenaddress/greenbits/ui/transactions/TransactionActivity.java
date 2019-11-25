@@ -359,11 +359,12 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             onFinishedSavingMemo();
             return;
         }
-        CB.after(getGAApp().getExecutor().submit(() -> getSession().changeMemo(mTxItem.txHash.toString(), newMemo)),
-                 new CB.Toast<Boolean>(this) {
-            @Override
-            public void onSuccess(final Boolean result) {
+        getGAApp().getExecutor().submit(() -> {
+            final boolean res = getSession().changeMemo(mTxItem.txHash.toString(), newMemo);
+            if (res) {
                 onFinishedSavingMemo();
+            } else {
+                runOnUiThread(() -> { UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG); });
             }
         });
     }
