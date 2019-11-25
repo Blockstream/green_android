@@ -289,9 +289,8 @@ public class RequestLoginActivity extends LoginActivity {
             try {
                 cm.connect(this);
                 getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
-                cm.disconnect();
-                cm.connect(this);
                 cm.login(parent, mHwDeviceData, mHwResolver);
+                onPostLogin();
                 runOnUiThread(() -> {
                     stopLoading();
                     onLoggedIn();
