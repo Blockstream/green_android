@@ -22,9 +22,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -32,8 +30,6 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.FontFitEditText;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Observable;
 

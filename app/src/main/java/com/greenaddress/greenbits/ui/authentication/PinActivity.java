@@ -38,7 +38,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-
 public class PinActivity extends LoginActivity implements PinFragment.OnPinListener {
 
     private static final int ACTIVITY_REQUEST_CODE = 1;

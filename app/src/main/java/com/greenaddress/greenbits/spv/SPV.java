@@ -35,7 +35,6 @@ import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;

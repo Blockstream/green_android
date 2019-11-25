@@ -6,7 +6,6 @@ import android.util.Log;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.MethodResolver;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 

@@ -82,7 +82,7 @@ public class NetworkSettingsActivity extends GaActivity implements NetworkSwitch
 
     private void onClick(final View view) {
         final NetworkData selectedNetwork = mSwitchNetworkAdapter.getSelected();
-        String networkName = selectedNetwork.getNetwork();
+        final String networkName = selectedNetwork.getNetwork();
         final String socksHost = UI.getText(mSocks5Host);
         final String socksPort = UI.getText(mSocks5Port);
 

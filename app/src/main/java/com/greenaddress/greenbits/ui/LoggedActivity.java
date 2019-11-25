@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
-import android.icu.util.DateInterval;
 import android.view.MotionEvent;
 import android.widget.Toast;
 

@@ -1,24 +1,16 @@
 package com.greenaddress.greenbits.ui.accounts;
 
-import android.app.Activity;
-import android.content.res.Resources;
-import android.media.Image;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

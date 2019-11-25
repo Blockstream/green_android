@@ -20,7 +20,6 @@ import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenapi.model.TorProgressObservable;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;

@@ -6,8 +6,6 @@ import android.util.TypedValue;
 
 import androidx.annotation.ColorInt;
 
-import com.greenaddress.greenapi.data.NetworkData;
-
 public class ThemeUtils {
     public static int getThemeFromNetworkId(final String network, final Context context, final Bundle metadata) {
         String baseTheme = "BitcoinTheme";

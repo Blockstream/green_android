@@ -37,7 +37,6 @@ import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.satoshilabs.trezor.Trezor;
 
 import java.util.List;
-import java.util.Observer;
 import java.util.concurrent.Callable;
 
 import static com.greenaddress.gdk.GDKSession.getSession;

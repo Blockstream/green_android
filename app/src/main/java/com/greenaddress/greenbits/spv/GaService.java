@@ -13,16 +13,10 @@ import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-
-import org.bitcoinj.core.PeerGroup;
-import org.bitcoinj.core.Sha256Hash;
 
 import java.io.File;
 
