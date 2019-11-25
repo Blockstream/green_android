@@ -51,7 +51,7 @@ public class GaService extends Service  {
     public File getSPVChainFile(final String networkName) {
         final String dirName;
         if (getNetwork().IsNetworkMainnet()) {
-            dirName = "blockstore_" + getGAApp().getModel().getReceivingId();
+            dirName = "blockstore_" + getGAApp().getModel().getReceivingId(0);
         } else {
             dirName = "blockstore_" + networkName;
         }

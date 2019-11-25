@@ -238,7 +238,7 @@ public class Model {
         }
     }
 
-    public String getReceivingId() {
-        return getSubaccountsData(0).getReceivingId();
+    public String getReceivingId(final int subAccount) {
+        return getSubaccountsData(subAccount).getReceivingId();
     }
 }
