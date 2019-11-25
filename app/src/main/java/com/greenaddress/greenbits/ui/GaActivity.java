@@ -126,15 +126,9 @@ public abstract class GaActivity extends AppCompatActivity {
         }
     }
 
-    public void toast(final Throwable t) { UI.toast(this, t, null); }
-    public void toast(final int id) { UI.toast(this, id, Toast.LENGTH_LONG); }
-    public void toast(final int id, final Button reenable) { UI.toast(this, getString(id), reenable); }
-    public void toast(final String s) { UI.toast(this, s, Toast.LENGTH_LONG); }
-    public void shortToast(final int id) { UI.toast(this, id, Toast.LENGTH_SHORT); }
-
     protected boolean isPermissionGranted(final int[] granted, final int msgId) {
         if (granted == null || granted.length == 0 || granted[0] != PackageManager.PERMISSION_GRANTED) {
-            shortToast(msgId);
+            UI.toast(this, msgId, Toast.LENGTH_SHORT);
             return false;
         }
         return true;

@@ -185,7 +185,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 if (details.isEmpty())
                     return;
                 if (!isValidPhoneNumber(details)) {
-                    toast(R.string.id_invalid_phone_number_format);
+                    UI.toast(TwoFactorActivity.this, R.string.id_invalid_phone_number_format, Toast.LENGTH_LONG);
                     return;
                 }
                 UI.disable(mContinueButton);
@@ -207,7 +207,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 if (details.isEmpty())
                     return;
                 if (!isValidPhoneNumber(details)) {
-                    toast(R.string.id_invalid_phone_number_format);
+                    UI.toast(TwoFactorActivity.this, R.string.id_invalid_phone_number_format, Toast.LENGTH_LONG);
                     return;
                 }
                 UI.disable(mContinueButton);
@@ -238,7 +238,7 @@ public class TwoFactorActivity extends LoggedActivity {
                                                getSystemService(Context.CLIPBOARD_SERVICE);
             final ClipData clip = ClipData.newPlainText("data", gauthCode);
             clipboard.setPrimaryClip(clip);
-            TwoFactorActivity.this.toast(R.string.id_be_aware_other_apps_can_read_or);
+            UI.toast(TwoFactorActivity.this, R.string.id_be_aware_other_apps_can_read_or, Toast.LENGTH_LONG);
         }
             );
 

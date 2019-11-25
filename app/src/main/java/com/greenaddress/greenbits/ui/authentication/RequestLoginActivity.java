@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.btchip.BTChipConstants;
@@ -177,7 +178,7 @@ public class RequestLoginActivity extends LoginActivity {
             getGAApp().getExecutor().submit((Callable<Void>)() -> { onLedger(false); return null; });
         })
                      .onNegative((dialog, which) -> {
-            toast(R.string.id_no_pin_provided_exiting);
+            UI.toast(this, R.string.id_no_pin_provided_exiting, Toast.LENGTH_LONG);
             finish();
         }).build();
 
@@ -300,7 +301,7 @@ public class RequestLoginActivity extends LoginActivity {
                 cm.disconnect();
                 runOnUiThread(() -> {
                     stopLoading();
-                    toast(R.string.id_error_logging_in_with_hardware);
+                    UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
                     showInstructions(R.string.id_please_reconnect_your_hardware);
                 });
             }

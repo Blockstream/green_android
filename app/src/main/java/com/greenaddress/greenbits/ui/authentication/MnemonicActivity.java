@@ -244,7 +244,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
 
         final ConnectionManager cm = getConnectionManager();
         if (cm.isPostLogin()) {
-            toast(R.string.id_you_must_first_log_out_before);
+            UI.toast(this, R.string.id_you_must_first_log_out_before, Toast.LENGTH_LONG);
             return;
         }
 

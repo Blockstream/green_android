@@ -9,6 +9,7 @@ import android.security.keystore.KeyProperties;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
 
@@ -50,7 +51,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             return;
 
         if (pin.length() < 4) {
-            shortToast(R.string.id_pin_has_to_be_between_4_and_15);
+            UI.toast(this, R.string.id_pin_has_to_be_between_4_and_15, Toast.LENGTH_SHORT);
             if (mPinFragment != null)
                 mPinFragment.clear();
             return;
@@ -107,8 +108,8 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         }
         getConnectionManager().clearPreviousLoginError();
 
-        PinActivity.this.runOnUiThread(() -> {
-            PinActivity.this.toast(message);
+        runOnUiThread(() -> {
+            UI.toast(this, message, Toast.LENGTH_LONG);
 
             if (counter >= 3) {
                 startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));

@@ -33,7 +33,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
     private void setPin(final String pin) {
 
         if (pin.length() < 4) {
-            shortToast(R.string.id_pin_has_to_be_between_4_and_15);
+            UI.toast(this, R.string.id_pin_has_to_be_between_4_and_15, Toast.LENGTH_SHORT);
             return;
         }
 
