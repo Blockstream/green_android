@@ -32,10 +32,6 @@ public abstract class GAFragment extends Fragment {
         }
     }
 
-    protected boolean isDisconnected() {
-        return getConnectionManager() != null && getConnectionManager().isDisconnected();
-    }
-
     protected GaActivity getGaActivity() {
         return (GaActivity) getActivity();
     }
