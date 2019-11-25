@@ -11,7 +11,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -39,7 +38,6 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
                              final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.switch_network_dialog_fragment, container, false);
 
-        final GaActivity activity = (GaActivity) getActivity();
         final RecyclerView recyclerView = UI.find(view, R.id.switch_network_recycler);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL) {
             @Override
@@ -64,9 +62,7 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
         final String network = networkData.getNetwork();
 
         if (!getGAApp().getCurrentNetwork().equals(network)) {
-
             getGAApp().setCurrentNetwork(network);
-            activity.getConnectionManager().setNetwork(network);
             activity.logout();
         }
     }

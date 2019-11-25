@@ -56,10 +56,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     public void update(final Observable observable, final Object o) {
         if (observable instanceof ConnectionManager) {
             final ConnectionManager cm = getConnectionManager();
-            if (cm.isLoginRequired()) {
-                cm.connect(this);
-                cm.login(this, cm.getHWDeviceData(), cm.getHWResolver());
-            } else if (cm.isDisconnected()) {
+            if (cm.isLoginRequired() || cm.isDisconnected()) {
                 toFirst();
             }
         } else if (observable instanceof ToastObservable) {

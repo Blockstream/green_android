@@ -37,7 +37,7 @@ public class GreenAddressApplication extends MultiDexApplication {
     private static final String TAG = GreenAddressApplication.class.getSimpleName();
     private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
     private Model mModel;
-    private ConnectionManager mConnectionManager = new ConnectionManager("mainnet");
+    private final ConnectionManager mConnectionManager = new ConnectionManager();
     private static AtomicBoolean isRunningTest;
     private final SPV mSPV = new SPV();
 

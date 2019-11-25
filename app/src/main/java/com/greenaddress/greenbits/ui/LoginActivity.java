@@ -45,10 +45,6 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        if (getConnectionManager() != null) {
-            final ConnectionManager cm = getConnectionManager();
-            cm.clearPreviousLoginError();
-        }
         mTorProgressObservable.addObserver(this);
     }
 

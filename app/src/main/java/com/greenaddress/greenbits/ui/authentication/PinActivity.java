@@ -76,19 +76,18 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 });
             } catch (final Exception e) {
                 cm.disconnect();
-                runOnUiThread(this::onLoginFailure);
+                runOnUiThread(() -> { onLoginFailure(e); });
             }
         });
     }
 
-    void onLoginFailure() {
+    void onLoginFailure(final Exception e) {
         stopLoading();
         final String message;
         final int counter = mPin.getInt("counter", 0) + 1;
         final SharedPreferences.Editor editor = mPin.edit();
-        final Exception lastLoginException = getConnectionManager().getLastLoginException();
-        final int code = getCode(lastLoginException);
-        if (code == GDK.GA_NOT_AUTHORIZED) {
+        final int code = getCode(e);
+        if (getCode(e) == GDK.GA_NOT_AUTHORIZED) {
             if (counter < 3) {
                 editor.putInt("counter", counter);
                 message = (counter == 2) ? getString(R.string.id_last_attempt_if_failed_you_will) :
@@ -100,13 +99,10 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             editor.apply();
         } else if (code == GDK.GA_RECONNECT || code == GDK.GA_ERROR) {
             message = getString(R.string.id_you_are_not_connected_to_the);
-        } else if (lastLoginException != null) {
-            message = UI.i18n(getResources(), lastLoginException.getMessage());
         } else {
             // Should not happen
             message = getString(R.string.id_error);
         }
-        getConnectionManager().clearPreviousLoginError();
 
         runOnUiThread(() -> {
             UI.toast(this, message, Toast.LENGTH_LONG);

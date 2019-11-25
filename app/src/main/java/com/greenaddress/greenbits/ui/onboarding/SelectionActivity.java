@@ -84,7 +84,6 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
                 cm.disconnect();
                 runOnUiThread(() -> {
                     stopLoading();
-                    getConnectionManager().clearPreviousLoginError();
                     if (getCode(e) == GDK.GA_RECONNECT) {
                         UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
                     } else {

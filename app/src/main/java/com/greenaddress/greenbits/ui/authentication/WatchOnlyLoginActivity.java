@@ -108,7 +108,6 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
             } catch (final Exception e) {
                 cm.disconnect();
                 runOnUiThread(() -> {
-                    getConnectionManager().clearPreviousLoginError();
                     onLoginStop();
                     if (getCode(e) == GDK.GA_RECONNECT) {
                         mPasswordText.setError(getString(R.string.id_you_are_not_connected_to_the));

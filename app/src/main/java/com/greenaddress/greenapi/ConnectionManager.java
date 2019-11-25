@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.PinData;
@@ -44,57 +43,15 @@ public class ConnectionManager extends Observable {
     private boolean mProxyEnabled;
     private boolean mTorEnabled;
     private boolean mLoginWithPin;
-    private Exception mLastLoginException = null;
     private HWDeviceData mHWDevice;
     private CodeResolver mHWResolver;
     private boolean pinJustSaved = false;
-
-    public ConnectionManager(final String network) {
-        this.mNetwork = network;
-    }
-    public ConnectionManager(final String network,
-                             final String proxyHost, final String proxyPort,
-                             final boolean proxyEnabled, final boolean torEnabled) {
-        this.mNetwork = network;
-        this.mProxyHost = proxyHost;
-        this.mProxyPort = proxyPort;
-        this.mProxyEnabled = proxyEnabled;
-        this.mTorEnabled = torEnabled;
-        this.mState = ConnState.DISCONNECTED;
-    }
-
-    public void setTorEnabled(boolean mTorEnabled) {
-        this.mTorEnabled = mTorEnabled;
-    }
-
-    public void setProxyHostAndPort(final String proxyHost, final String proxyPort) {
-        this.mProxyHost = proxyHost;
-        this.mProxyPort = proxyPort;
-    }
-
-    public void setProxyEnabled(final boolean proxyEnabled) {
-        this.mProxyEnabled = proxyEnabled;
-    }
-
-    public void setNetwork(final String network) {
-        this.mNetwork = network;
-    }
-
-    public boolean isLoggedIn() { return mState == ConnState.LOGGEDIN; }
 
     public boolean isConnected() { return mState == ConnState.CONNECTED; }
 
     public boolean isPostLogin() { return mState == ConnState.POSTLOGGEDIN; }
 
     public boolean isOffline() { return mState == ConnState.OFFLINE; }
-
-    public boolean isLastLoginFailed() {
-        return mLastLoginException != null;
-    }
-
-    public boolean isDisconnectedOrLess() {
-        return mState.value <= ConnState.DISCONNECTED.value;
-    }
 
     public boolean isDisconnected() {
         return mState == ConnState.DISCONNECTED;
@@ -119,24 +76,12 @@ public class ConnectionManager extends Observable {
         notifyObservers();
     }
 
-    public void clearPreviousLoginError() {
-        if (isLastLoginFailed()) {
-            Log.d(TAG, "clearing previous login error");
-            mLastLoginException = null;
-        }
-    }
-
     public void goLoginRequired() {
         setState(ConnState.LOGINREQUIRED);
     }
 
     public boolean isLoginRequired() {
         return mState == ConnState.LOGINREQUIRED;
-    }
-
-
-    public Exception getLastLoginException() {
-        return mLastLoginException;
     }
 
     public boolean isWatchOnly() {
@@ -200,19 +145,17 @@ public class ConnectionManager extends Observable {
         setState(ConnState.CONNECTED);
     }
 
-    public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver) {
-
+    public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver) throws Exception {
         try {
             setState(ConnState.LOGGINGIN);
-            this.mHWDevice = hwDevice;
-            this.mHWResolver = hwResolver;
+            mHWDevice = hwDevice;
+            mHWResolver = hwResolver;
             getSession().login(parent, hwDevice, "", "").resolve(null, hwResolver);
-            mLastLoginException = null;
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {
             Log.e(TAG, "Error while logging in " + e.getMessage() );
-            mLastLoginException = e;
             setState(ConnState.CONNECTED);
+            throw e;
         }
     }
 
@@ -250,11 +193,9 @@ public class ConnectionManager extends Observable {
             } else {
                 throw new Exception("wrong parameters");
             }
-            mLastLoginException = null;
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {
             Log.e(TAG, "Error while logging " + e.getMessage() );
-            mLastLoginException = e;
             setState(ConnState.DISCONNECTED);
             throw e;
         }
