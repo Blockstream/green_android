@@ -153,7 +153,10 @@ public class GreenAddressApplication extends MultiDexApplication {
     }
 
     public void setCurrentNetwork(final String networkId) {
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PrefKeys.NETWORK_ID_ACTIVE, networkId).apply();
+        final boolean res = PreferenceManager.getDefaultSharedPreferences(this).edit().putString(PrefKeys.NETWORK_ID_ACTIVE, networkId).commit();
+        if (res == false) {
+            failHard(getString(R.string.id_error), getString(R.string.id_operation_failure));
+        }
     }
 
     public String getCurrentNetwork() {
