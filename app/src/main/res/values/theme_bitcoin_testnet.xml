@@ -4,12 +4,16 @@
         <item name="themeIcon">@drawable/ic_testnet_btc</item>
         <item name="themeIconNoPadding">@drawable/ic_testnet_btc_no_padding</item>
 
-
         <item name="drawableSendReceiveIcColor">@color/colorAccent</item>
         <item name="sendReceiveBtnBg">@color/buttonJungleGreen</item>
 
         <item name="receiveIconArrow">@color/accentLight</item>
         <item name="receiveIconCircle">@color/accentPressed</item>
     </style>
-    <style name="BitcoinTestnetTheme.NoActionBar" parent="AppTheme.NoActionBar"/>
+    <style name="BitcoinTestnetTheme.NoActionBar" parent="BitcoinTestnetTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="colorPrimaryDark">@color/windowBackground</item>
+    </style>
 </resources>
