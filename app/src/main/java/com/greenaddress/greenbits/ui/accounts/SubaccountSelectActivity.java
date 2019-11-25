@@ -37,11 +37,9 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     private final List<SubaccountData> mSubaccountList = new ArrayList<>();
 
     @Override
-    protected int getMainViewId() { return R.layout.activity_subaccount_select; }
-
-    @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_subaccount_select);
 
         UI.preventScreenshots(this);
 

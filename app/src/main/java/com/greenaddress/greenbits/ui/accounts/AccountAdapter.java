@@ -69,7 +69,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             h.mainBalanceUnitText.setText(" " + mModel.getBitcoinOrLiquidUnit());
             h.mainLocalBalanceText.setText("≈  " + valueFiat);
             h.itemView.setOnClickListener(view -> {
-                mOnAccountSelected.onAccountSelected(h.getAdapterPosition());
+                mOnAccountSelected.onAccountSelected(subaccount.getPointer());
             });
         }
         if (holder.getItemViewType() == R.layout.list_element_addaccount) {
