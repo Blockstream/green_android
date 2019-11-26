@@ -23,6 +23,11 @@ class NotesViewController: UIViewController {
         memoTextView.delegate = self
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        memoTextView.becomeFirstResponder()
+    }
+
     @IBAction func dismissButtonTapped(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
