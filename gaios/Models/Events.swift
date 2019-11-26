@@ -43,7 +43,7 @@ struct Event: EventProtocol, Equatable {
         } else if kindOf(TwoFactorReset.self) {
             guard let twoFactorReset = getGAService().getTwoFactorReset() else { return "" }
             if !twoFactorReset.isResetActive { return "" }
-            return NSLocalizedString("id_twofactor_reset_in_progress", comment: "")
+            return String(format: NSLocalizedString("id_warning_wallet_locked_for", comment: ""), twoFactorReset.daysRemaining)
         } else if kindOf(Settings.self) {
             return NSLocalizedString("id_set_up_twofactor_authentication", comment: "")
         } else if kindOf(SystemMessage.self) {
