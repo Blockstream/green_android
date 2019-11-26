@@ -63,8 +63,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
                     final int progress = ((TorProgressObservable) observable).get().get("progress").asInt(0);
                     final ProgressBarHandler pbar = getProgressBarHandler();
                     if (pbar != null)
-                        pbar.setMessage(String.format("%s %d%",getString(R.string.id_tor_status),
-                                                      String.valueOf(progress)));
+                        pbar.setMessage(String.format("%s %d %%",getString(R.string.id_tor_status), progress));
                 }
             });
         }
@@ -121,7 +120,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
         if (!connectionManager.isWatchOnly() && isSpvEnabled) {
             try {
-                getGAApp().getSpv().startService(this);
+                getGAApp().getSpv().startService(getGAApp());
             } catch (final Exception e) {
                 e.printStackTrace();
                 Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();

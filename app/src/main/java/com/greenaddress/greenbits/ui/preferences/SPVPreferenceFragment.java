@@ -120,15 +120,11 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                 runnable.run();
             }
         });
-        if (mSpv.getService() != null) {
-            try {
-                mSpv.startService(getGAApp());
-            } catch (final Exception e) {
-                e.printStackTrace();
-                Toast.makeText(getGAApp(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-            }
-        } else {
-            runnable.run();
+        try {
+            mSpv.startService(getGAApp());
+        } catch (final Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getGAApp(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }
     }
 

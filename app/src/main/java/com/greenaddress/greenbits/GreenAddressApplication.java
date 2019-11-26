@@ -201,4 +201,9 @@ public class GreenAddressApplication extends MultiDexApplication {
     public SPV getSpv() {
         return mSPV;
     }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
 }

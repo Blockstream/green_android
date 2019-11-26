@@ -1,7 +1,5 @@
 package com.greenaddress.greenapi.model;
 
-import android.app.NotificationManager;
-import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import com.blockstream.libgreenaddress.GDK;
@@ -23,11 +21,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 public class NotificationHandlerImpl implements GDK.NotificationHandler {
-    private static final int TOR_NOTIFICATION_ID = 0x42;
 
     private Model mModel;
     private ConnectionManager mConnectionManager;

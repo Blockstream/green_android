@@ -67,16 +67,6 @@ public class GaService extends Service  {
         return getSPVChainFile(getNetwork().getName());
     }
 
-
-    // SPV_SYNCRONIZATION
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        if (GreenAddressApplication.isRunningTest())
-            return;
-    }
-
     public GreenAddressApplication getGAApp() {
         return (GreenAddressApplication) getApplication();
     }
@@ -109,10 +99,6 @@ public class GaService extends Service  {
                                         NotificationManager.IMPORTANCE_LOW);
             nc.setDescription(ctx.getString(R.string.id_displays_the_progress_of_spv));
             nm.createNotificationChannel(nc);
-            final NotificationChannel tor_nc = new NotificationChannel("tor_channel", "Tor Status",
-                                                                       NotificationManager.IMPORTANCE_LOW);
-            tor_nc.setDescription("Displays the progress of Tor initialization");
-            nm.createNotificationChannel(tor_nc);
         }
     }
 }
