@@ -25,7 +25,7 @@ import androidx.preference.SwitchPreference;
 import static android.app.Activity.RESULT_OK;
 import static com.greenaddress.gdk.GDKSession.getSession;
 
-public class PinPreferenceFragment extends GAPreferenceFragment implements Observer {
+public class PinPreferenceFragment extends GAPreferenceFragment {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
 
     private static final int ACTIVITY_REQUEST_PINSAVE = 100;
@@ -69,9 +69,6 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
         mNativePref.setEnabled(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M);
     }
 
-    @Override
-    public void update(final Observable observable, final Object o) {}
-
     private boolean onPinChanged(final Preference preference, final Object newValue) {
         if ((Boolean) newValue)
             return onPinEnabled();
@@ -89,8 +86,8 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
 
     private boolean onPinDisabled() {
         final Context context = getContext();
-        final SharedPreferences pin = AuthenticationHandler.getPinAuth(context);
-        if (pin == null) {
+        final SharedPreferences pinNative = AuthenticationHandler.getNativeAuth(context);
+        if (pinNative != null) {
             UI.toast(getActivity(), R.string.id_please_disable_biometric, Toast.LENGTH_LONG);
             return false;
         }
@@ -99,6 +96,7 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
         .cancelable(false)
         .onNegative((dlg, which) -> mPinPref.setChecked(true))
         .onPositive((dlg, which) -> {
+            final SharedPreferences pin = AuthenticationHandler.getPinAuth(context);
             AuthenticationHandler.clean(context, pin);
         }).show();
         return true;
@@ -116,8 +114,6 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
 
     private boolean onNativeEnabled() {
         if (getGAApp().warnIfOffline(getActivity()))
-            return false;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
             return false;
         if (AuthenticationHandler.getPinAuth(getContext()) == null) {
             UI.toast(getActivity(), R.string.id_please_enable_pin, Toast.LENGTH_LONG);
@@ -162,17 +158,9 @@ public class PinPreferenceFragment extends GAPreferenceFragment implements Obser
     private boolean onNativeDisabled() {
         final Context context = getContext();
         final SharedPreferences pin = AuthenticationHandler.getNativeAuth(context);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-            return false;
         if (pin == null)
             return false;
-        UI.popup(getActivity(), R.string.id_warning)
-        .content(R.string.id_deleting_your_pin_will_remove)
-        .cancelable(false)
-        .onNegative((dlg, which) -> mNativePref.setChecked(true))
-        .onPositive((dlg, which) -> {
-            AuthenticationHandler.clean(context, pin);
-        }).show();
+        AuthenticationHandler.clean(context, pin);
         return true;
     }
 

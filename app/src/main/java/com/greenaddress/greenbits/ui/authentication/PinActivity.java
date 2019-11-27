@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.security.keystore.KeyProperties;
+import android.security.keystore.UserNotAuthenticatedException;
 import android.util.Base64;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -149,6 +150,10 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     private void onPinAuth() {
         mPin = AuthenticationHandler.getPinAuth(this);
+        if (mPin == null) {
+            onBackPressed();
+            return;
+        }
         mPinFragment = new PinFragment();
         final Bundle bundle = new Bundle();
         bundle.putBoolean("is_six_digit", isSixDigit());
@@ -242,7 +247,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             final byte[] decrypted = cipher.doFinal(Base64.decode(nativePIN, Base64.NO_WRAP));
             final String pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15);
             login(pin);
-        } catch (final KeyStoreException | InvalidKeyException e) {
+        } catch (final KeyStoreException | UserNotAuthenticatedException e) {
             try {
                 KeyStoreAES.showAuthenticationScreen(this, network.getName());
             } catch (final Exception exception) {
@@ -256,7 +261,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             }
         } catch (final InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException |
                  CertificateException | UnrecoverableKeyException | IOException |
-                 NoSuchAlgorithmException | NoSuchPaddingException e) {
+                 NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
             UI.popup(this, R.string.id_warning, R.string.id_continue)
             .content(e.getLocalizedMessage())
             .onAny((dlg, which) -> { onPinAuth(); onResume(); })
