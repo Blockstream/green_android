@@ -10,12 +10,13 @@ fi
 
 SIGN_EXPORT=0
 
-TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim,sign-and-export,update-cocoapods -- "$@"`
+TEMPOPT=`"$GETOPT" -n "build.sh" -o s,d -l iphone,iphonesim,build-gdk,sign-and-export,update-cocoapods -- "$@"`
 eval set -- "$TEMPOPT"
 while true; do
     case $1 in
         --iphone) DEVICE=iphoneos; TARGET=iphone; shift ;;
         --iphonesim) DEVICE=iphonesim; TARGET=iphonesim; shift ;;
+        --build-gdk) BUILD_GDK=1; shift ;;
         --sign-and-export) SIGN_EXPORT=1; shift ;;
         --update-cocoapods) UPDATE_COCOAPODS=1; shift ;;
         -- ) break ;;
@@ -37,16 +38,16 @@ fi
 Pods/SwiftLint/swiftlint --strict
 
 # check gdk build
-if [ ! -d gdk-iphone ]; then
-    if [ ! -d gdk ]; then
-        git clone https://github.com/Blockstream/gdk.git
-    fi
+if [[ "$BUILD_GDK" -eq 1 ]]; then
+    git clone https://github.com/Blockstream/gdk.git
     cd gdk
     git fetch origin -t
     git checkout release_0.0.27
     rm -rf build-*
     ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone
     cd ..
+else
+    ./tools/fetch_gdk_binaries.sh
 fi
 
 SDK=$(xcodebuild -showsdks | grep $DEVICE | tr -s ' ' | tr -d '\-' | cut -f 3-)
