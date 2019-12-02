@@ -135,7 +135,7 @@ public class SPV {
             public void onServiceConnected(final ComponentName className,
                                            final IBinder service) {
                 Log.d(TAG, "onServiceConnected: dispatching onServiceAttached callbacks");
-                mService = ((GaService.GaBinder) service).getService();
+                mService = ((GaService.GaBinder)service).getService();
                 mService.onBound(ctx);
                 startAsync();
                 onServiceAttached.set(null);

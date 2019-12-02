@@ -157,7 +157,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
                                                    .cancelable(false)
                                                    .onAny((dialog,
                                                            which) -> getPreferenceManager().showDialog(mTrustedPeer));
-            getActivity().runOnUiThread(builder::show);
+            getActivity().runOnUiThread(() -> { builder.show(); });
         }
         return true;
     }
