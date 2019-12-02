@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
@@ -10,9 +9,8 @@ import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public abstract class GAFragment extends Fragment {
     private GreenAddressApplication mApp;
@@ -48,6 +46,10 @@ public abstract class GAFragment extends Fragment {
 
     protected ConnectionManager getConnectionManager() {
         return mApp.getConnectionManager();
+    }
+
+    protected SPV getSpv() {
+        return mApp.getSpv();
     }
 
     public String network() {

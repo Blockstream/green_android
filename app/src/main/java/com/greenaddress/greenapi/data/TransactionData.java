@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import org.bitcoinj.core.Sha256Hash;
 
+import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.Map;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TransactionData extends JSONData {
+public class TransactionData extends JSONData implements Serializable {
     private Integer blockHeight;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createdAt;
@@ -39,7 +41,6 @@ public class TransactionData extends JSONData {
     private Boolean serverSigned;
     private Boolean userSigned;
     private String data;
-    private Map<String, AssetInfoData> assetInfo;
     // FIXME: I don't think these belong here
     private Integer ptIdx;
     private Integer scriptType;
@@ -53,6 +54,25 @@ public class TransactionData extends JSONData {
     private List<InputOutputData> inputs;
     private List<InputOutputData> outputs;
 
+    public enum TYPE {
+        OUT,
+        IN,
+        REDEPOSIT
+    }
+
+    @JsonIgnore
+    public TYPE getTxType() {
+        switch (getType()) {
+        case "outgoing":
+            return TYPE.OUT;
+        case "incoming":
+            return TYPE.IN;
+        case "redeposit":
+            return TYPE.REDEPOSIT;
+        default:
+            return TYPE.OUT;
+        }
+    }
 
     @JsonIgnore
     public Sha256Hash getTxhashAsSha256Hash() {
@@ -345,11 +365,37 @@ public class TransactionData extends JSONData {
         this.subtype = subtype;
     }
 
-    public Map<String, AssetInfoData> getAssetInfo() {
-        return assetInfo;
+    @JsonIgnore
+    public String getLocalizedTime(final int style) {
+        return DateFormat.getTimeInstance(style).format(createdAt);
     }
 
-    public void setAssetInfo(final Map<String, AssetInfoData> assetInfo) {
-        this.assetInfo = assetInfo;
+    @JsonIgnore
+    public String getLocalizedDate(final int style) {
+        return DateFormat.getDateInstance(style).format(createdAt);
+    }
+
+    @JsonIgnore
+    public boolean isSpent() {
+        for (final InputOutputData output : getOutputs()) {
+            if (output.getIsSpent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @JsonIgnore
+    public int getConfirmations(final int currentBlock) {
+        if (blockHeight == 0)
+            return 0;
+        if (blockHeight != null)
+            return currentBlock - blockHeight + 1;
+        return 0;
+    }
+
+    @JsonIgnore
+    public boolean hasEnoughConfirmations(final int currentBlock) {
+        return getConfirmations(currentBlock) >= 6;
     }
 }

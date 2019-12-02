@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Html;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,8 +27,8 @@ import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -65,7 +64,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private Dialog mTwoFactor;
     private ImageView mStatusIcon;
 
-    private TransactionItem mTxItem;
+    private TransactionData mTxItem;
     private Map<String, Long> mAssetsBalances;
 
     @Override
@@ -93,7 +92,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mStatusSPVUnverified = UI.find(this, R.id.status_spv_unverified);
         mStatusIcon = UI.find(this, R.id.status_icon);
 
-        mTxItem = (TransactionItem) getIntent().getSerializableExtra("TRANSACTION");
+        mTxItem = (TransactionData) getIntent().getSerializableExtra("TRANSACTION");
         final boolean isWatchOnly = getConnectionManager().isWatchOnly();
 
         try {
@@ -104,18 +103,18 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Set txid
         final TextView hashText = UI.find(this, R.id.txHashText);
-        hashText.setText(mTxItem.txHash.toString());
+        hashText.setText(mTxItem.getTxhash());
 
         // Set explorer button
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
         final String blockExplorerTx = networkData.getTxExplorerUrl();
-        openInBrowser(mExplorerButton, mTxItem.txHash.toString(), blockExplorerTx, null);
+        openInBrowser(mExplorerButton, mTxItem.getTxhash(), blockExplorerTx, null);
 
         // Set title: incoming, outgoing, redeposited
         final String title;
-        if (mTxItem.type == TransactionItem.TYPE.OUT)
+        if (mTxItem.getTxType() == TransactionData.TYPE.OUT)
             title = getString(R.string.id_sent);
-        else if (mTxItem.type == TransactionItem.TYPE.REDEPOSIT)
+        else if (mTxItem.getTxType() == TransactionData.TYPE.REDEPOSIT)
             title = getString(R.string.id_redeposited);
         else
             title = getString(R.string.id_received);
@@ -123,15 +122,16 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         final String confirmations;
         final int confirmationsColor;
+        final int currentBlock = getModel().getBlockchainHeightObservable().getHeight();
         mStatusIcon.setVisibility(View.GONE);
-        if (mTxItem.getConfirmations() == 0) {
+        if (mTxItem.getConfirmations(currentBlock) == 0) {
             confirmations = getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
-        } else if (networkData.getLiquid() && mTxItem.getConfirmations() < 2) {
+        } else if (networkData.getLiquid() && mTxItem.getConfirmations(currentBlock) < 2) {
             confirmations = getString(R.string.id_12_confirmations);
             confirmationsColor = R.color.grey_light;
-        } else if (!networkData.getLiquid() && !mTxItem.hasEnoughConfirmations()) {
-            confirmations = getString(R.string.id_d6_confirmations, mTxItem.getConfirmations());
+        } else if (!networkData.getLiquid() && !mTxItem.hasEnoughConfirmations(currentBlock)) {
+            confirmations = getString(R.string.id_d6_confirmations, mTxItem.getConfirmations(currentBlock));
             confirmationsColor = R.color.grey_light;
         } else {
             confirmations = getString(R.string.id_completed);
@@ -142,11 +142,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mUnconfirmedText.setTextColor(getResources().getColor(confirmationsColor));
 
         // Set amount
-        boolean negative = mTxItem.type != TransactionItem.TYPE.IN;
+        final boolean negative = mTxItem.getTxType() != TransactionData.TYPE.IN;
         String btc;
         String fiat;
         try {
-            final ObjectNode amount = getSession().convertSatoshi(mTxItem.mAssetBalances.get("btc"));
+            final ObjectNode amount = getSession().convertSatoshi(mTxItem.getSatoshi().get("btc"));
             btc = getModel().getValueString(amount, false, true);
             fiat = getModel().getValueString(amount, true, true);
         } catch (final RuntimeException | IOException e) {
@@ -160,7 +160,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             amountText.setVisibility(View.GONE);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getAssetBalances(),
+            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getSatoshi(),
                                                             getNetwork(),this, getModel());
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
@@ -176,60 +176,30 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         dateText.setText(date + ", " + time);
 
         // Set fees
-        showFeeInfo(mTxItem.fee, mTxItem.vSize, mTxItem.feeRate);
+        showFeeInfo(mTxItem.getFee(), mTxItem.getTransactionVsize(), mTxItem.getFeeRate());
         UI.hide(mStatusIncreaseFee);
-        if (mTxItem.type == TransactionItem.TYPE.OUT || mTxItem.type == TransactionItem.TYPE.REDEPOSIT ||
-            mTxItem.isSpent) {
-            if (mTxItem.getConfirmations() == 0)
+        if (mTxItem.getTxType() == TransactionData.TYPE.OUT || mTxItem.getTxType() == TransactionData.TYPE.REDEPOSIT ||
+            mTxItem.isSpent()) {
+            if (mTxItem.getConfirmations(currentBlock) == 0)
                 showUnconfirmed();
         }
-        // FIXME: use a list instead of reusing a TextView to show all double spends to allow
-        // for a warning to be shown before the browser is open
-        // this is to prevent to accidentally leak to block explorers your addresses
-        if (mTxItem.doubleSpentBy != null || !mTxItem.replacedHashes.isEmpty()) {
-            CharSequence res = "";
-            if (mTxItem.doubleSpentBy != null) {
-                if (mTxItem.doubleSpentBy.equals("malleability") || mTxItem.doubleSpentBy.equals("update"))
-                    res = mTxItem.doubleSpentBy;
-                else
-                    res = Html.fromHtml(
-                        "<a href=\"" + blockExplorerTx + mTxItem.doubleSpentBy + "\">" + mTxItem.doubleSpentBy +
-                        "</a>");
-                if (!mTxItem.replacedHashes.isEmpty())
-                    res = TextUtils.concat(res, "; ");
-            }
-            if (!mTxItem.replacedHashes.isEmpty()) {
-                res = TextUtils.concat(res, Html.fromHtml("replaces transactions:<br/>"));
-                for (int i = 0; i < mTxItem.replacedHashes.size(); ++i) {
-                    if (i > 0)
-                        res = TextUtils.concat(res, Html.fromHtml("<br/>"));
-                    final String txHashHex = mTxItem.replacedHashes.get(i).toString();
-                    final String link = "<a href=\"" + blockExplorerTx + txHashHex + "\">" + txHashHex + "</a>";
-                    res = TextUtils.concat(res, Html.fromHtml(link));
-                }
-            }
-        }
-        final boolean showDoubleSpent = mTxItem.doubleSpentBy != null || !mTxItem.replacedHashes.isEmpty();
 
         // Set recipient / received on
         final TextView recipientText = UI.find(this, R.id.txRecipientText);
         final TextView recipientTitle = UI.find(this, R.id.txRecipientTitle);
-        if (!TextUtils.isEmpty(mTxItem.counterparty)) {
-            recipientText.setText(mTxItem.counterparty);
+        if (!TextUtils.isEmpty(mTxItem.getAddressee())) {
+            recipientText.setText(mTxItem.getAddressee());
         }
 
-        final String name = getModel().getSubaccountsDataObservable().
-                            getSubaccountsDataWithPointer(mTxItem.subaccount).getNameWithDefault(getString(R.string.
-                                                                                                           id_main_account));
-
-        UI.hideIf(mTxItem.type == TransactionItem.TYPE.REDEPOSIT, UI.find(this, R.id.txRecipientReceiverView));
-        UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientText);
-        UI.hideIf(mTxItem.type == TransactionItem.TYPE.IN, recipientTitle);
+        UI.hideIf(mTxItem.getTxType() == TransactionData.TYPE.REDEPOSIT, UI.find(this, R.id.txRecipientReceiverView));
+        UI.hideIf(mTxItem.getTxType() == TransactionData.TYPE.REDEPOSIT, UI.find(this, R.id.amountView));
+        UI.hideIf(mTxItem.getTxType() == TransactionData.TYPE.IN, recipientText);
+        UI.hideIf(mTxItem.getTxType() == TransactionData.TYPE.IN, recipientTitle);
 
         // Memo
         CharInputFilter.setIfNecessary(mMemoText);
-        if (!TextUtils.isEmpty(mTxItem.memo)) {
-            mMemoText.setText(mTxItem.memo);
+        if (!TextUtils.isEmpty(mTxItem.getMemo())) {
+            mMemoText.setText(mTxItem.getMemo());
         }
 
         if (!isWatchOnly) {
@@ -254,12 +224,13 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // SPV
         final SharedPreferences preferences = getSharedPreferences(getNetwork().getNetwork(), MODE_PRIVATE);
-        final boolean isEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
-        final boolean spvVerified = mTxItem.spvVerified || mTxItem.isSpent ||
-                                    mTxItem.type == TransactionItem.TYPE.OUT ||
-                                    !isEnabled;
+        final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
+        final boolean isSpvVerified = mTxItem.isSpent() ||
+                                      mTxItem.getTxType() == TransactionData.TYPE.OUT ||
+                                      !isSpvEnabled || (isSpvEnabled && getGAApp().getSpv().isSPVVerified(
+                                                            mTxItem.getTxhash()));
 
-        if (!spvVerified) {
+        if (!isSpvVerified) {
             mStatusSPVUnverified.setVisibility(View.VISIBLE);
             mStatusSPVUnverified.setText(String.format("⚠️ %s", getString(R.string.id_spv_unverified)));
         } else {
@@ -284,8 +255,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private void showUnconfirmed() {
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
 
-        if (getConnectionManager().isWatchOnly() || networkData.getLiquid() || !mTxItem.replaceable ||
-            getModel().isTwoFAReset())
+        if (getConnectionManager().isWatchOnly() || networkData.getLiquid() || getModel().isTwoFAReset())
             return; // FIXME: Implement RBF for elements
 
         if (!networkData.getLiquid()) {
@@ -331,7 +301,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final NetworkData networkData = getGAApp().getCurrentNetworkData();
             final Intent sendIntent = new Intent(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                                networkData.getTxExplorerUrl() + mTxItem.txHash.toString());
+                                networkData.getTxExplorerUrl() + mTxItem.getTxhash());
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
             return true;
@@ -350,17 +320,17 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             mMemoTitle.requestFocus();
         });
         // Force reload tx
-        getModel().getTransactionDataObservable(mTxItem.subaccount).refresh();
+        getModel().getTransactionDataObservable(mTxItem.getSubaccount()).refresh();
     }
 
     private void onMemoSaveClicked() {
         final String newMemo = UI.getText(mMemoText);
-        if (newMemo.equals(mTxItem.memo)) {
+        if (newMemo.equals(mTxItem.getMemo())) {
             onFinishedSavingMemo();
             return;
         }
         getGAApp().getExecutor().submit(() -> {
-            final boolean res = getSession().changeMemo(mTxItem.txHash.toString(), newMemo);
+            final boolean res = getSession().changeMemo(mTxItem.getTxhash(), newMemo);
             if (res) {
                 onFinishedSavingMemo();
             } else {
@@ -414,8 +384,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         try {
             startLoading();
             final Model model = getModel();
-            final String txhash = mTxItem.txHash.toString();
-            final int subaccount = mTxItem.subaccount == null ? model.getCurrentSubaccount() : mTxItem.subaccount;
+            final String txhash = mTxItem.getTxhash();
+            final int subaccount = mTxItem.getSubaccount() ==
+                                   null ? model.getCurrentSubaccount() : mTxItem.getSubaccount();
             final JsonNode txToBump = getSession().getTransactionRaw(subaccount, txhash);
             final JsonNode feeRate = txToBump.get("fee_rate");
             BumpTxData bumpTxData = new BumpTxData();

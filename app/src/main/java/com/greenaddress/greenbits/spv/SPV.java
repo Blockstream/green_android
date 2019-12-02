@@ -234,8 +234,8 @@ public class SPV {
         return mPeerGroup;
     }
 
-    public boolean isVerified(final Sha256Hash txHash) {
-        return cfg().getBoolean(PrefKeys.VERIFIED_HASH_ + txHash.toString(), false);
+    public boolean isVerified(final String txHash) {
+        return cfg().getBoolean(PrefKeys.VERIFIED_HASH_ + txHash, false);
     }
 
     public void startAsync() {
@@ -292,7 +292,7 @@ public class SPV {
             final Integer pointer = utxo.getPointer();
             final Sha256Hash txHash = utxo.getTxhashAsSha256Hash();
 
-            if (isVerified(txHash)) {
+            if (isVerified(txHash.toString())) {
                 addToUtxo(txHash, prevIndex, subaccount, pointer);
                 addUtxoToValues(txHash, false /* updateVerified */);
             } else {
@@ -849,7 +849,7 @@ public class SPV {
     public void setSPVSyncOnMobileEnabledAsync(final boolean enabled) { setSyncOnMobileEnabledAsync(enabled); }
     public void resetSPVAsync() { resetAsync(); }
     public PeerGroup getSPVPeerGroup() { return getPeerGroup(); }
-    public boolean isSPVVerified(final Sha256Hash txHash) { return isVerified(txHash); }
+    public boolean isSPVVerified(final String txHash) { return isVerified(txHash); }
     public void enableSPVPingMonitoring() { enablePingMonitoring(); }
     public void disableSPVPingMonitoring() { disablePingMonitoring(); }
 }

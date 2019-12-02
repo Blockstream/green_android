@@ -17,7 +17,6 @@ import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.SubaccountsDataObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.GAFragment;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -35,7 +34,6 @@ import com.greenaddress.greenbits.ui.send.ScanActivity;
 
 import org.bitcoinj.core.Sha256Hash;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +54,7 @@ import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_AS
 public class MainFragment extends GAFragment implements View.OnClickListener, Observer, OnGdkListener {
     private static final String TAG = MainFragment.class.getSimpleName();
     private AccountView mAccountView;
-    private final List<TransactionItem> mTxItems = new ArrayList<>();
+    private final List<TransactionData> mTxItems = new ArrayList<>();
     private Map<Sha256Hash, List<Sha256Hash>> replacedTxs;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private boolean justClicked = false;
@@ -86,7 +84,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
         final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems, getModel());
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems, getModel(),
+                                                           getSpv());
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
 
@@ -224,13 +223,6 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
     // Called when a new verified transaction is seen
     @Override
     public void onVerifiedTx(final Observer observer) {
-        final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
-        final SPV spv = app.getSpv();
-        final boolean isSPVEnabled = spv.isSPVEnabled();
-
-        for (final TransactionItem txItem : mTxItems)
-            txItem.spvVerified = !isSPVEnabled || spv.isSPVVerified(txItem.txHash);
-
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
     }
@@ -272,42 +264,16 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
 
             showTxView(!txList.isEmpty());
 
-            final Sha256Hash oldTop = !mTxItems.isEmpty() ? mTxItems.get(0).txHash : null;
+            final Sha256Hash oldTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhashAsSha256Hash() : null;
             mTxItems.clear();
             replacedTxs.clear();
 
             for (final TransactionData tx : txList) {
-                try {
-                    mTxItems.add(new TransactionItem(tx, currentBlock, subaccount, getNetwork(), app.getSpv()));
-                    /*
-                       //TODO gdk handling of replaced
-                       final ArrayList<String> replacedList = txJSON.get("replaced_by");
-                       if (replacedList == null) {
-                        mTxItems.add(new TransactionItem(service, txJSON, currentBlock));
-                        continue;
-                       }
-
-
-                       for (final String replacedBy : replacedList) {
-                        final Sha256Hash replacedHash = Sha256Hash.wrap(replacedBy);
-                        if (!replacedTxs.containsKey(replacedHash))
-                            replacedTxs.put(replacedHash, new ArrayList<Sha256Hash>());
-                        replacedTxs.get(replacedHash).add(txJSON.getHash("txhash"));
-                       }
-                     */
-                } catch (final ParseException e) {
-                    e.printStackTrace();
-                }
+                mTxItems.add(tx);
             }
-
-            for (final TransactionItem txItem : mTxItems) {
-                if (replacedTxs.containsKey(txItem.txHash))
-                    txItem.replacedHashes.addAll(replacedTxs.get(txItem.txHash));
-            }
-
             txView.getAdapter().notifyDataSetChanged();
 
-            final Sha256Hash newTop = !mTxItems.isEmpty() ? mTxItems.get(0).txHash : null;
+            final Sha256Hash newTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhashAsSha256Hash() : null;
             if (oldTop != null && newTop != null && !oldTop.equals(newTop)) {
                 // A new tx has arrived; scroll to the top to show it
                 txView.smoothScrollToPosition(0);

@@ -27,7 +27,6 @@ import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.preferences.GAPreferenceFragment;
 import com.greenaddress.greenbits.ui.transactions.TransactionActivity;
-import com.greenaddress.greenbits.ui.transactions.TransactionItem;
 
 import java.io.IOException;
 import java.util.List;
@@ -91,13 +90,10 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                         final TransactionData fullTxData =
                             objectMapper.convertValue(transactionRaw, TransactionData.class);
-                        final TransactionItem txItem =
-                            new TransactionItem(fullTxData, getModel().getCurrentBlock(),
-                                                txData.getSubaccount(), getNetwork(), getGAApp().getSpv());
                         final Intent transactionActivity = new Intent(getActivity(), TransactionActivity.class);
-                        transactionActivity.putExtra("TRANSACTION", txItem);
+                        transactionActivity.putExtra("TRANSACTION", fullTxData);
                         startActivity(transactionActivity);
-                    } catch (Exception e1) {
+                    } catch (final Exception e1) {
                         e1.printStackTrace();
                     }
                     return false;
