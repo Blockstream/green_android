@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -253,10 +254,14 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         UI.showIf(!isAsset(), mUnitButton);
         UI.showIf(!isAsset(), mAccountBalance);
         UI.showIf(isAsset(), assetsList);
-        if (!isAsset())
-            mAccountBalance.setText(getModel().getValueString(satoshi, false, true));
-        else
-            mAccountBalance.setText(getModel().getValueString(satoshi, mSelectedAsset, info, true));
+        try {
+            if (!isAsset())
+                mAccountBalance.setText(getModel().getBtc(satoshi, true));
+            else
+                mAccountBalance.setText(getModel().getAsset(satoshi, mSelectedAsset, info, true));
+        } catch (final IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+        }
     }
 
     private int[] getBlockTargets() {
@@ -486,12 +491,15 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         for (int i = 0; i < mButtonIds.length; ++i) {
             long currentEstimate = mFeeEstimates[i];
             final String feeRateString = UI.getFeeRateString(currentEstimate);
-            mFeeButtons[i].setSummary(mVsize == null ?
-                                      String.format("(%s)", feeRateString) :
-                                      String.format("%s (%s)", getModel().getValueString(
-                                                        (currentEstimate * mVsize)/1000L,
-                                                        isFiat(), true),
-                                                    feeRateString));
+            final long amount = (currentEstimate * mVsize)/1000L;
+            try {
+                final String formatted = isFiat() ? getModel().getFiat(amount, true) : getModel().getBtc(amount, true);
+                mFeeButtons[i].setSummary(mVsize == null ?
+                                          String.format("(%s)", feeRateString) :
+                                          String.format("%s (%s)", formatted, feeRateString));
+            } catch (final IOException e) {
+                Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            }
         }
     }
 

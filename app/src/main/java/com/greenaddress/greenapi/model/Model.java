@@ -15,6 +15,7 @@ import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenbits.ui.UI;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -191,33 +192,41 @@ public class Model {
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
     }
 
-    public String getValueString(final long amount, final boolean asFiat, boolean withUnit) {
-        try {
-            return getValueString(getSession().convertSatoshi(amount), asFiat, withUnit);
-        } catch (final RuntimeException | IOException e) {
-            Log.e("", "Conversion error: " + e.getLocalizedMessage());
-            return "";
-        }
-    }
-    public String getValueString(final ObjectNode amount, final boolean asFiat, boolean withUnit) {
-        if (asFiat)
-            return amount.get("fiat").asText() + (withUnit ? (" " + getFiatCurrency()) : "");
-        return amount.get(getUnitKey()).asText() + (withUnit ? (" " + getBitcoinOrLiquidUnit()) : "");
+    public String getFiat(final long satoshi, final boolean withUnit) throws IOException {
+        return getFiat(getSession().convertBalance(satoshi), withUnit);
     }
 
-    public String getValueString(final long amount, final String asset, final AssetInfoData assetInfo,
-                                 boolean withUnit) {
-        try {
-            final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset);
-            final ObjectNode details = new ObjectMapper().createObjectNode();
-            details.put("satoshi", amount);
-            details.set("asset_info", assetInfoData.toObjectNode());
-            final ObjectNode converted = getSession().convert(details);
-            return converted.get(asset).asText() + (withUnit ? " " + assetInfoData.getTicker() : "");
-        } catch (final RuntimeException | IOException e) {
-            Log.e("", "Conversion error: " + e.getLocalizedMessage());
-            return "";
-        }
+    public String getBtc(final long satoshi, final boolean withUnit) throws IOException {
+        return getBtc(getSession().convertBalance(satoshi), withUnit);
+    }
+
+    public String getAsset(final long satoshi,  final String asset, final AssetInfoData assetInfo,
+                           final boolean withUnit) throws IOException {
+        final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset);
+        final BalanceData balance = new BalanceData();
+        balance.setSatoshi(satoshi);
+        balance.setAssetInfo(assetInfoData);
+        return getAsset(getSession().convertBalance(balance), withUnit);
+    }
+
+    public String getFiat(final BalanceData balanceData, final boolean withUnit) {
+        final Double number = Double.parseDouble(balanceData.getFiat());
+        return NumberFormat.getInstance().format(number) + (withUnit ? " " + getFiatCurrency() : "");
+    }
+
+    public String getBtc(final BalanceData balanceData, final boolean withUnit) {
+        final String converted = balanceData.toObjectNode().get(getUnitKey()).asText();
+        final Double number = Double.parseDouble(converted);
+        return NumberFormat.getInstance().format(number) + (withUnit ? " " + getBitcoinOrLiquidUnit() : "");
+    }
+
+    public String getAsset(final BalanceData balanceData, final boolean withUnit) {
+        final AssetInfoData info = balanceData.getAssetInfo();
+        final String asset = info.getAssetId();
+        final String converted = balanceData.toObjectNode().get(asset).asText();
+        final Double number = Double.parseDouble(converted);
+        final String ticker = info.getTicker() != null ? info.getTicker() : "";
+        return NumberFormat.getInstance().format(number) + (withUnit ? " " + ticker : "");
     }
 
     public SubaccountData getSubaccountsData(final int subAccount) {

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -146,9 +147,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         String btc;
         String fiat;
         try {
-            final ObjectNode amount = getSession().convertSatoshi(mTxItem.getSatoshi().get("btc"));
-            btc = getModel().getValueString(amount, false, true);
-            fiat = getModel().getValueString(amount, true, true);
+            final BalanceData balance = getSession().convertBalance(mTxItem.getSatoshi().get("btc"));
+            btc = getModel().getBtc(balance, true);
+            fiat = getModel().getFiat(balance, true);
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             btc = "";
@@ -240,16 +241,13 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     }
 
     private void showFeeInfo(final long fee, final long vSize, final long feeRate) {
-
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
-        String btcFee;
         try {
-            btcFee = getModel().getValueString(getSession().convertSatoshi(fee), false, true);
+            final String btcFee = getModel().getBtc(fee, true);
+            feeText.setText(String.format("%s (%s)", btcFee, UI.getFeeRateString(feeRate)));
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-            btcFee = "";
         }
-        feeText.setText(String.format("%s (%s)", btcFee, UI.getFeeRateString(feeRate)));
     }
 
     private void showUnconfirmed() {

@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.assets;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,17 +69,25 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         if (isBTC) {
             holder.mAssetName.setText("L-BTC");
-            holder.mAssetValue.setText(mModel.getValueString(satoshi, false, true));
             holder.mAssetDomain.setVisibility(View.GONE);
+            try {
+                holder.mAssetValue.setText(mModel.getBtc(satoshi, true));
+            } catch (final IOException e) {
+                Log.e("", "Conversion error: " + e.getLocalizedMessage());
+            }
         } else {
             holder.mAssetName.setText(assetInfo != null ? assetInfo.getName() : assetId);
-            holder.mAssetValue.setText(mModel.getValueString(satoshi, assetId, assetInfo, true));
             final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
             if (entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
                 holder.mAssetDomain.setVisibility(View.VISIBLE);
                 holder.mAssetDomain.setText(entity.getDomain());
             } else {
                 holder.mAssetDomain.setVisibility(View.GONE);
+            }
+            try {
+                holder.mAssetValue.setText(mModel.getAsset(satoshi, assetId, assetInfo, true));
+            } catch (final IOException e) {
+                e.printStackTrace();
             }
         }
         // Get l-btc & asset icon from asset icon map

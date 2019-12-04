@@ -121,7 +121,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             final long satoshi = tx.getSatoshi().get("btc");
             String amount;
             try {
-                amount = getModel().getValueString(getSession().convertSatoshi(satoshi), false, true);
+                amount = getModel().getBtc(satoshi, true);
             } catch (final RuntimeException | IOException e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
                 amount = "";

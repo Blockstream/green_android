@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -143,10 +144,9 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
     private String getFormatAmount(final long amount) {
         try {
-            final ObjectNode feeNode = getSession().convertSatoshi(amount);
             return String.format("%s / %s",
-                                 getModel().getValueString(feeNode, false, true),
-                                 getModel().getValueString(feeNode, true, true));
+                                 getModel().getBtc(amount, true),
+                                 getModel().getFiat(amount, true));
         } catch (final RuntimeException | IOException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             return "";

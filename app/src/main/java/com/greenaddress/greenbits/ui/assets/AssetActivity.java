@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.assets;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -9,6 +10,8 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+
+import java.io.IOException;
 
 /**
  * Activity showing details about an asset (L-BTC excluded)
@@ -94,6 +97,11 @@ public class AssetActivity extends LoggedActivity {
     }
 
     private void refresh() {
-        mAssetBalanceText.setText(getModel().getValueString(mSatoshi, mAssetId, getAssetInfo(), true));
+        try {
+            final String amount = getModel().getAsset(mSatoshi, mAssetId, getAssetInfo(), true);
+            mAssetBalanceText.setText(amount);
+        } catch (final IOException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+        }
     }
 }

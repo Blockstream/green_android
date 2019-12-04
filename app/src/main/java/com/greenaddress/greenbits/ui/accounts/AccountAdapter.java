@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.accounts;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
+import java.io.IOException;
 import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -53,13 +55,17 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final Account h = (Account) holder;
             final SubaccountData subaccount = mSubaccountList.get(position);
             final long satoshi = subaccount.getSatoshi().get("btc");
-            final String valueBitcoin = mModel.getValueString(satoshi, false, false);
-            final String valueFiat = mModel.getValueString(satoshi, true, true);
-            h.name.setText(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.string.
-                                                                                                  id_main_account)));
-            h.mainBalanceText.setText(valueBitcoin);
-            h.mainBalanceUnitText.setText(" " + mModel.getBitcoinOrLiquidUnit());
-            h.mainLocalBalanceText.setText("≈  " + valueFiat);
+            try {
+                final String valueBitcoin = mModel.getBtc(satoshi, false);
+                final String valueFiat = mModel.getFiat(satoshi, true);
+                h.name.setText(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.string.
+                                                                                                      id_main_account)));
+                h.mainBalanceText.setText(valueBitcoin);
+                h.mainBalanceUnitText.setText(" " + mModel.getBitcoinOrLiquidUnit());
+                h.mainLocalBalanceText.setText("≈  " + valueFiat);
+            } catch (final IOException e) {
+                Log.e("", "Conversion error: " + e.getLocalizedMessage());
+            }
             h.itemView.setOnClickListener(view -> {
                 mOnAccountSelected.onAccountSelected(subaccount.getPointer());
             });

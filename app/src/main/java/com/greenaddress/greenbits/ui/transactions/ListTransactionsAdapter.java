@@ -191,35 +191,22 @@ public class ListTransactionsAdapter extends
     public String getAmountWithUnit(final TransactionData tx, final Model model, final String assetId) {
         try {
             if (tx.getTxType() == TYPE.REDEPOSIT) {
-                final String feeAmount = amountToString(tx.getFee(), model.getUnitKey(), null);
-                return String.format("-%s %s", feeAmount, model.getBitcoinOrLiquidUnit());
+                final String fee = model.getBtc(tx.getFee(), true);
+                return String.format("-%s", fee);
             }
-
+            if ("btc".equals(assetId)) {
+                final String amount = model.getBtc(tx.getSatoshi().get("btc"), true);
+                return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
+            }
             AssetInfoData info = model.getAssetsObservable().getAssetsInfos().get(assetId);
             if (info == null)
                 info = new AssetInfoData(assetId);
-            final String amount = amountToString(tx.getSatoshi().get(assetId),
-                                                 tx.isAsset() ? assetId : model.getUnitKey(),
-                                                 tx.isAsset() ? info : null);
-            final String denom =
-                tx.isAsset() ? info.getTicker() !=
-                null ? info.getTicker() : "" : model.getBitcoinOrLiquidUnit();
-            return String.format("%s%s %s", tx.getTxType() == TYPE.OUT ? "-" : "", amount, denom);
+            final String amount = model.getAsset(tx.getSatoshi().get(assetId), assetId, info, true);
+            return String.format("%s%s %s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
             return "";
         }
-    }
-
-    private String amountToString(final long satoshi, final String assetId,
-                                  final AssetInfoData info) throws IOException {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("satoshi", satoshi);
-        if (info != null) {
-            details.set("asset_info", info.toObjectNode());
-        }
-        final ObjectNode converted = getSession().convert(details);
-        return converted.get(assetId).asText();
     }
 
     private int getColor(final int resource) {

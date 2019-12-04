@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.R;
@@ -60,11 +61,9 @@ class AccountItemAdapter extends RecyclerView.Adapter<AccountItemAdapter.Item> {
         final int pointer = mSubaccountList.get(position).getPointer();
         holder.mName.setText(mSubaccountList.get(position).getName());
 
-        final ObjectNode balanceData = mModel.getBalanceData(pointer).toObjectNode();
-        final String valueBitcoin = mModel.getValueString(balanceData, false, true);
-        final String valueFiat = mModel.getValueString(balanceData, true, true);
-        holder.mBalance.setText(valueBitcoin);
-        holder.mFiatBalance.setText(valueFiat);
+        final BalanceData balance = mModel.getBalanceData(pointer);
+        holder.mBalance.setText(mModel.getBtc(balance, true));
+        holder.mFiatBalance.setText(mModel.getFiat(balance, true));
 
         //onDisplayBalance(holder, position);
         final boolean isCurrent = pointer == mSubaccountList.get(position).getPointer();

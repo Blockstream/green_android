@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,8 @@ import androidx.core.content.ContextCompat;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+
+import java.io.IOException;
 
 public class AccountView extends CardView {
 
@@ -96,13 +99,17 @@ public class AccountView extends CardView {
     }
 
     public void setBalance(final Model model, final long satoshi) {
-        final String valueBitcoin = model.getValueString(satoshi, false, false);
-        final String valueFiat = model.getValueString(satoshi, true, true);
         mBalanceText.setVisibility(VISIBLE);
-        mBalanceText.setText(valueBitcoin);
         mBalanceUnitText.setVisibility(VISIBLE);
-        mBalanceUnitText.setText(" " + model.getBitcoinOrLiquidUnit());
-        mBalanceFiatText.setText("≈  " + valueFiat);
+        try {
+            final String valueBitcoin = model.getBtc(satoshi, false);
+            final String valueFiat = model.getFiat(satoshi, true);
+            mBalanceText.setText(valueBitcoin);
+            mBalanceUnitText.setText(" " + model.getBitcoinOrLiquidUnit());
+            mBalanceFiatText.setText("≈  " + valueFiat);
+        } catch (final IOException e) {
+            Log.e("", "Conversion error: " + e.getLocalizedMessage());
+        }
     }
 
     // Set on click listener

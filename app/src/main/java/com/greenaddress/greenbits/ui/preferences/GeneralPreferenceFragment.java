@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -18,11 +19,13 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.NotificationsData;
 import com.greenaddress.greenapi.data.PricingData;
@@ -58,6 +61,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private static final int PINSAVE = 1337;
     public static final int REQUEST_ENABLE_2FA = 2031;
     private static final int REQUEST_2FA = 101;
+    private static final ObjectMapper mObjectMapper = new ObjectMapper();
 
     private Preference mPinPref;
     private Preference mWatchOnlyLogin;
@@ -619,11 +623,13 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         getActivity().runOnUiThread(() -> {
             try {
                 final boolean isFiat = limitsData.get("is_fiat").asBoolean();
-                if (!isFiat && limitsData.get("satoshi").asLong(0) == 0) {
+                final BalanceData balance = mObjectMapper.treeToValue(limitsData, BalanceData.class);
+                if (!isFiat && balance.getSatoshi() == 0) {
                     mLimitsPref.setSummary(R.string.id_set_twofactor_threshold);
+                } else if (isFiat) {
+                    mLimitsPref.setSummary(getModel().getFiat(balance, true));
                 } else {
-                    final String limit = getModel().getValueString(limitsData, isFiat, true);
-                    mLimitsPref.setSummary(limit);
+                    mLimitsPref.setSummary(getModel().getBtc(balance, true));
                 }
             } catch (final Exception e) {
                 // We can throw because we have been logged out here, e.g. when
@@ -652,8 +658,18 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final ObjectNode limitsData = getModel().getTwoFactorConfig().getLimits();
         final boolean isFiat = limitsData.get("is_fiat").asBoolean();
         unitSpinner.setSelection(isFiat ? 1 : 0);
-        amountEdit.setText(getModel().getValueString(limitsData, isFiat, false));
         amountEdit.selectAll();
+        final BalanceData balance;
+        try {
+            balance = mObjectMapper.treeToValue(limitsData, BalanceData.class);
+            if (isFiat) {
+                amountEdit.setText(getModel().getFiat(balance, true));
+            } else {
+                amountEdit.setText(getModel().getBtc(balance, true));
+            }
+        } catch (final JsonProcessingException e) {
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+        }
 
         final MaterialDialog dialog;
         dialog = UI.popup(getActivity(), R.string.id_set_twofactor_threshold)
