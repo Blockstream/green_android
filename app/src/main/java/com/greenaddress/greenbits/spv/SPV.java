@@ -29,7 +29,6 @@ import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.MnemonicHelper;
-import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -467,12 +466,6 @@ public class SPV {
                             // Note that this method may be called multiple times if syncing
                             // switches peers while downloading.
                             Log.d(TAG, "onChainDownloadStarted: " + Var("blocksLeft", blocksLeft));
-                            if (blocksLeft > 0) {
-                                getModel().getEventDataObservable().pushEvent(
-                                    new EventData(R.string.id_spv_notifications,
-                                                  R.string.id_s_blocks_left,
-                                                  blocksLeft));
-                            }
                             super.onChainDownloadStarted(peer, blocksLeft);
                         }
 
@@ -500,8 +493,6 @@ public class SPV {
                         @Override
                         protected void doneDownload() {
                             Log.d(TAG, "doneDownLoad");
-                            getModel().getEventDataObservable().pushEvent(
-                                new EventData(R.string.id_spv_notifications, R.string.id_download_finished));
                             mNotifyManager.cancel(mNotificationId);
                         }
                     });
