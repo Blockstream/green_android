@@ -122,6 +122,11 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
     }
 
     @objc func dismissModal() {
+        if #available(iOS 13.0, *) {
+            if let presentationController = presentationController {
+                presentationController.delegate?.presentationControllerDidDismiss?(presentationController)
+            }
+        }
         dismiss(animated: true, completion: nil)
     }
 

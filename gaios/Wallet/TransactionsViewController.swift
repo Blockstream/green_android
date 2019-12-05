@@ -258,6 +258,7 @@ class TransactionsController: UITableViewController {
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? AccountsViewController {
             nextController.subaccountDelegate = self
+            nextController.presentationController?.delegate = self
         } else if let nextController = segue.destination as? AssetsListTableViewController {
             nextController.wallet = presentingWallet
             nextController.title = presentingWallet!.localizedName()
@@ -308,5 +309,12 @@ extension TransactionsController: UIViewControllerTransitioningDelegate {
 
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         ModalAnimator(isPresenting: false)
+    }
+}
+
+extension TransactionsController: UIAdaptivePresentationControllerDelegate {
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        handleRefresh()
     }
 }
