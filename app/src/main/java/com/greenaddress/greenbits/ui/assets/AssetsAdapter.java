@@ -25,7 +25,6 @@ import java.util.Map;
 
 public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
-    private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private final Map<String, Long> mAssets;
     private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;

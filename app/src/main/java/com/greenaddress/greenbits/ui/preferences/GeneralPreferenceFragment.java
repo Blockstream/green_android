@@ -663,9 +663,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         try {
             balance = mObjectMapper.treeToValue(limitsData, BalanceData.class);
             if (isFiat) {
-                amountEdit.setText(getModel().getFiat(balance, true));
+                amountEdit.setText(getModel().getFiat(balance, false));
             } else {
-                amountEdit.setText(getModel().getBtc(balance, true));
+                amountEdit.setText(getModel().getBtc(balance, false));
             }
         } catch (final JsonProcessingException e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
@@ -679,7 +679,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                  .onPositive((dlg, which) -> {
             try {
                 final String unit = unitSpinner.getSelectedItem().toString();
-                setSpendingLimits(unit, UI.getText(amountEdit));
+                final String value = UI.getText(amountEdit);
+                final Double doubleValue = getModel().getNumberFormat().parse(value).doubleValue();
+                setSpendingLimits(unit, doubleValue.toString());
             } catch (final Exception e) {
                 UI.toast(getActivity(), "Error setting limits", Toast.LENGTH_LONG);
             }

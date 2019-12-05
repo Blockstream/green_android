@@ -1,7 +1,9 @@
 package com.greenaddress.greenapi.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -11,6 +13,7 @@ import java.io.Serializable;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BalanceData extends JSONData implements Serializable {
     //{"bits":"1584407.51","btc":"1.58440751","fiat":"1.74284826100000014072365527239843",
     // "fiat_currency":"USD","fiat_rate":"1.10000000000000008881784197001252","mbtc":"1584.40751",
@@ -25,7 +28,20 @@ public class BalanceData extends JSONData implements Serializable {
     private String ubtc;
     private String sats;
     private Long satoshi;
+    private String asset;
+    private String assetValue;
     private AssetInfoData assetInfo;
+
+    @JsonIgnore
+    public static BalanceData from(final ObjectMapper objectMapper,
+                                   final ObjectNode objectNode) throws JsonProcessingException {
+        final BalanceData balance = objectMapper.treeToValue(objectNode, BalanceData.class);
+        if (balance.assetInfo != null && balance.assetInfo.getAssetId() != null) {
+            balance.asset = balance.assetInfo.getAssetId();
+            balance.assetValue = objectNode.get(balance.asset).asText();
+        }
+        return balance;
+    }
 
     @JsonIgnore
     public ObjectNode toObjectNode() {
@@ -114,5 +130,21 @@ public class BalanceData extends JSONData implements Serializable {
 
     public void setAssetInfo(final AssetInfoData assetInfo) {
         this.assetInfo = assetInfo;
+    }
+
+    public String getAsset() {
+        return asset;
+    }
+
+    public void setAsset(final String asset) {
+        this.asset = asset;
+    }
+
+    public String getAssetValue() {
+        return assetValue;
+    }
+
+    public void setAssetValue(final String assetValue) {
+        this.assetValue = assetValue;
     }
 }

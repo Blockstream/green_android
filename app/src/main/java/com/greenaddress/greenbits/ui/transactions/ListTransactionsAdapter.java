@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -41,7 +40,6 @@ import java.text.DateFormat;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.greenaddress.gdk.GDKSession.getSession;
 
 public class ListTransactionsAdapter extends
     Adapter<ViewHolder> {
@@ -202,7 +200,7 @@ public class ListTransactionsAdapter extends
             if (info == null)
                 info = new AssetInfoData(assetId);
             final String amount = model.getAsset(tx.getSatoshi().get(assetId), assetId, info, true);
-            return String.format("%s%s %s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
+            return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
         } catch (final RuntimeException | IOException e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
             return "";

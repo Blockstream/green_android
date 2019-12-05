@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EstimatesData;
@@ -29,7 +28,6 @@ import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.data.TwoFactorDetailData;
-import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.NotificationHandlerImpl;
 import com.greenaddress.greenbits.ui.BuildConfig;
 
@@ -233,14 +231,16 @@ public class GDKSession {
 
     public BalanceData convertBalance(final BalanceData balanceData) throws IOException, RuntimeException {
         final ObjectNode convertedBalanceData = (ObjectNode) GDK.convert_amount(mNativeSession, balanceData);
-        final BalanceData balanceData1 = mObjectMapper.treeToValue(convertedBalanceData, BalanceData.class);
+        if (balanceData.getAssetInfo() != null)
+            convertedBalanceData.set("asset_info", balanceData.getAssetInfo().toObjectNode());
+        final BalanceData balanceData1 = BalanceData.from(mObjectMapper, convertedBalanceData);
         debugEqual(convertedBalanceData, balanceData1);
         return balanceData1;
     }
 
     public BalanceData convertBalance(final long satoshi) throws IOException, RuntimeException {
         final ObjectNode convertedBalanceData = (ObjectNode) convertSatoshi(satoshi);
-        final BalanceData balanceData = mObjectMapper.treeToValue(convertedBalanceData, BalanceData.class);
+        final BalanceData balanceData = BalanceData.from(mObjectMapper, convertedBalanceData);
         return balanceData;
     }
 

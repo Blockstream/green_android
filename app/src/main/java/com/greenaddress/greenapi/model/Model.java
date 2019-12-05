@@ -1,10 +1,7 @@
 package com.greenaddress.greenapi.model;
 
-import android.util.Log;
 import android.util.SparseArray;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
@@ -17,7 +14,6 @@ import com.greenaddress.greenbits.ui.UI;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -206,27 +202,48 @@ public class Model {
         final BalanceData balance = new BalanceData();
         balance.setSatoshi(satoshi);
         balance.setAssetInfo(assetInfoData);
-        return getAsset(getSession().convertBalance(balance), withUnit);
+        final BalanceData converted = getSession().convertBalance(balance);
+        return getAsset(converted, withUnit);
     }
 
     public String getFiat(final BalanceData balanceData, final boolean withUnit) {
         final Double number = Double.parseDouble(balanceData.getFiat());
-        return NumberFormat.getInstance().format(number) + (withUnit ? " " + getFiatCurrency() : "");
+        return getNumberFormat(2).format(number) + (withUnit ? " " + getFiatCurrency() : "");
     }
 
     public String getBtc(final BalanceData balanceData, final boolean withUnit) {
         final String converted = balanceData.toObjectNode().get(getUnitKey()).asText();
         final Double number = Double.parseDouble(converted);
-        return NumberFormat.getInstance().format(number) + (withUnit ? " " + getBitcoinOrLiquidUnit() : "");
+        return getNumberFormat().format(number) + (withUnit ? " " + getBitcoinOrLiquidUnit() : "");
+    }
+
+    public NumberFormat getNumberFormat() {
+        switch (getUnitKey()) {
+        case "btc":
+            return getNumberFormat(8);
+        case "mbtc":
+            return getNumberFormat(5);
+        case "ubtc":
+            return getNumberFormat(2);
+        case "bits":
+            return getNumberFormat(2);
+        default:
+            return getNumberFormat(0);
+        }
+    }
+
+    private NumberFormat getNumberFormat(final int decimals) {
+        final NumberFormat instance = NumberFormat.getInstance();
+        instance.setMinimumFractionDigits(decimals);
+        instance.setMaximumFractionDigits(decimals);
+        return instance;
     }
 
     public String getAsset(final BalanceData balanceData, final boolean withUnit) {
         final AssetInfoData info = balanceData.getAssetInfo();
-        final String asset = info.getAssetId();
-        final String converted = balanceData.toObjectNode().get(asset).asText();
-        final Double number = Double.parseDouble(converted);
+        final Double number = Double.parseDouble(balanceData.getAssetValue());
         final String ticker = info.getTicker() != null ? info.getTicker() : "";
-        return NumberFormat.getInstance().format(number) + (withUnit ? " " + ticker : "");
+        return getNumberFormat(info.getPrecision()).format(number) + (withUnit ? " " + ticker : "");
     }
 
     public SubaccountData getSubaccountsData(final int subAccount) {
