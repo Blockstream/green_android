@@ -212,10 +212,10 @@ struct Balance: Codable {
             let denomination = getGAService().getSettings()?.denomination ?? .BTC
             let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
             let value = res![denomination.rawValue] as? String
-            return (value!, denomination.string)
+            return (value!.localeFormattedString(), denomination.string)
         }
         if let asset = asset?[tag] {
-            return (asset, assetInfo?.ticker ?? "")
+            return (asset.localeFormattedString(), assetInfo?.ticker ?? "")
         }
         return ("", "")
     }

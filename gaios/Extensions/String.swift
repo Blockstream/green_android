@@ -23,6 +23,18 @@ extension String {
         let boundingBox = self.boundingRect(with: constraintRect, options: [.usesLineFragmentOrigin, .usesFontLeading], attributes: [NSAttributedString.Key.font: font], context: nil)
         return boundingBox.height
     }
+
+    func localeFormattedString() -> String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.locale = Locale.current
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.roundingMode = .down
+        if let localFormattedNumber = numberFormatter.number(from: self),
+            let localFormattedString = numberFormatter.string(from: localFormattedNumber) {
+                return localFormattedString
+        }
+        return self
+    }
 }
 
 extension NSMutableAttributedString {
