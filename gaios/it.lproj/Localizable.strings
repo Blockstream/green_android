@@ -14,7 +14,7 @@
 "id_accept" = "ACCETTA";
 "id_access" = "Accesso";
 "id_account" = "ACCOUNT";
-"id_account_id" = "Account ID";
+"id_account_id" = "ID Account";
 "id_account_name" = "Nome Account";
 "id_account_type" = "Tipo di Account";
 "id_action_canceled" = "Azione annullata";
@@ -34,7 +34,6 @@
 "id_advanced_network_settings" = "Impostazioni di network avanzate";
 "id_all" = "Tutto";
 "id_allows_you_to_quickly_check" = "Permette di controllare il tuo bilancio, ricevere fondi o sweep di un paper wallet. Non puoi inviare fondi in modalità watch-only.";
-"id_allows_you_to_receive_and_send" = "Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.";
 "id_always" = "Sempre";
 "id_amount" = "Importo";
 "id_are_you_sure_you_want_to_view" = "Sei sicuro di voler vedere la transazione usando %@?";
@@ -43,9 +42,6 @@
 "id_asset_id" = "Asset ID";
 "id_asset_name" = "Nome Asset";
 "id_attempts_remaining_d" = "Tentativi rimasti: %d";
-"id_authorized_assets" = "Authorized Assets";
-"id_authorized_assets_account" = "Authorized Assets Account";
-"id_authorized_assets_account_is" = "Authorized assets account is only available on Liquid.";
 "id_auto_logout_timeout" = "Timeout per auto logout";
 "id_autolock_after" = "Autolock Dopo";
 "id_be_aware_other_apps_can_read_or" = "Attenzione, altre applicazioni potrebbero leggere o modificare ciò che hai copiato";
@@ -75,6 +71,7 @@
 "id_confidential" = "Confidenziale";
 "id_confirm_code" = "Conferma codice";
 "id_confirm_passphrase" = "Conferma passphrase";
+"id_confirm_transaction_details_on" = "Conferma i dettagli di transazione sul tuo hardware wallet";
 "id_confirmation_in_d_blocks" = "Conferma in %d blocchi";
 "id_congratulations" = "Congratulazioni!";
 "id_connect_through_a_proxy" = "Connettiti tramite proxy";
@@ -134,7 +131,7 @@
 "id_enable_spv" = "Abilita SPV";
 "id_enable_spv_and_modify_spv" = "Abilita SPV e modifica impostazioni SPV";
 "id_enable_touch_id" = "Abilita Touch ID";
-"id_enable_twofactor_authentication" = "Enable Two-Factor Authentication to protect your wallet from unauthorized transactions or changes to critical security settings";
+"id_enable_twofactor_authentication" = "Abilita il Secondo Fattore d'Autenticazione per proteggere il wallet da transazioni e cambiamenti a impostazioni di sicurezza non autorizzati";
 "id_enabled" = "Abilitato";
 "id_enabled_1s" = "Abilitato: %1$@";
 "id_encryption_passphrase" = "Encryption passphrase";
@@ -179,6 +176,7 @@
 "id_generate_new_address" = "Genera Nuovo Indirizzo";
 "id_get_code" = "Ottieni Codice";
 "id_go_to_account" = "Go to Account";
+"id_go_to_receive_to_get_your" = "Go to Receive to get your Account ID.";
 "id_go_to_wallet" = "Vai al Wallet";
 "id_google_auth" = "Google Auth";
 "id_google_authenticator" = "Google Authenticator";
@@ -230,8 +228,13 @@
 "id_last_ping_1d_ms" = "Ultimo ping: %1$d ms";
 "id_later" = "PIÙ TARDI";
 "id_learn_more_about_s" = "Learn more about %@.";
+"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Dashboard Ledger rilevata, avvia l'app corretta per accedere.";
 "id_lets_get_you_set_up" = "Impostiamo il tuo wallet.";
+"id_liquid_securities" = "Liquid Securities";
+"id_liquid_securities_account" = "Liquid Securities Account";
+"id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
 "id_loading_transactions" = "Caricamento transazioni...";
 "id_log_in" = "Accedi";
 "id_log_in_into_your_s_wallet" = "Accedi al tuo %@ wallet";
@@ -326,7 +329,7 @@
 "id_precision" = "Precisione";
 "id_privacy_policy" = "Privacy Policy";
 "id_problem_with_key_1s" = "Problema con il tasto %1$@";
-"id_provide_this_id_to_an_asset" = "Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
 "id_providing_an_email_enables" = "Fornendo una email abiliti le notifiche e le transazioni per il recupero.";
 "id_proxy_settings" = "PROXY SETTINGS";
 "id_qr_scanner" = "QR Scanner";
@@ -377,7 +380,7 @@
 "id_see_our_terms_of_service_s" = "Leggi %@ i Termini del Servizio";
 "id_select_account" = "Seleziona Account";
 "id_select_asset" = "Seleziona asset";
-"id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
+"id_select_duration_of_twofactor" = "Seleziona la durata del Secondo Fattore d'Autenticazione per i tuoi coin. La nuova selezione verrà applicata a tutti i nuovi coin ricevuti.";
 "id_select_network" = "Scegli il network";
 "id_select_word_number_d" = "Seleziona la parola numero %d";
 "id_send" = "Invia";
@@ -409,7 +412,7 @@
 "id_share" = "Condividi";
 "id_share_address" = "Condividi Indirizzo";
 "id_show_bitcoin_amounts_in" = "Show bitcoin amounts in";
-"id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
+"id_show_coins_with_expiring" = "Mostra i coin con Secondo Fattore d'Autenticazione in scadenza.";
 "id_show_fiat" = "Mostra valuta corrente";
 "id_show_my_wallet_backup" = "Mostrami il backup del mio wallet";
 "id_signup_in_progress" = "Registrazione in corso";
@@ -433,7 +436,7 @@
 "id_spv_unverified" = "Non verificata da SPV";
 "id_standard_account" = "Standard Account";
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
-"id_start_a_2fa_reset_process_if" = "Start a 2FA reset process if you lost access to all your two-factor authentication methods.";
+"id_start_a_2fa_reset_process_if" = "Inizia il processo di reset dei 2FA solo se hai perso accesso a tutti i tuoi metodi d'Autenticazione a Due Fattori.";
 "id_sweep" = "Sweep";
 "id_sweep_from_paper_wallet" = "Trasferisci Tutto da un Paper Wallet";
 "id_sweep_into_s" = "Sweep verso %@";
@@ -460,7 +463,7 @@
 "id_ticker" = "Ticker";
 "id_time_s" = "Tempo: %@";
 "id_to" = "A";
-"id_to_keep_you_in_control_of_your" = "To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don't move funds often enough.";
+"id_to_keep_you_in_control_of_your" = "Per mantenre controllo dei tuoi fondi, la protezione col Secondo Fattore d'Autenticazione scade dopo circa %d giorni dal tuo ultimo pagamento. Ti verrà proposto di fare una transazione di Riattivazione del Secondo Fattore se non muovi i fondi abbastanza spesso.";
 "id_tor_connectivity_disabled" = "Connessione Tor Disabilitata!";
 "id_tor_is_connected" = "Tor è connesso";
 "id_tor_status" = "Status di Tor";
@@ -481,8 +484,8 @@
 "id_two_factor_authentication" = "AUTENTICAZIONE A DUE FATTORI";
 "id_twofactor" = "AUTENTICAZIONE A DUE FATTORI";
 "id_twofactor_authentication" = "Autenticazione a Due Fattori";
-"id_twofactor_authentication_expiry" = "Two-Factor authentication expiry";
-"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.";
+"id_twofactor_authentication_expiry" = "Scadenza del Secondo Fattore d'Autenticazione";
+"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.";
 "id_twofactor_reset_in_progress" = "Reset Secondo Fattore di Autenticazione in corso, il tuo wallet è attualmente bloccato.";
 "id_twofactor_settings" = "Impostazioni Secondo Fattore";
 "id_twofactor_threshold" = "Limite per il Secondo Fattore";
@@ -542,7 +545,6 @@
 "id_you_must_first_log_out_before" = "Devi effettuare il logout prima di poter accedere.";
 "id_you_must_save_this_mnemonic_now" = "DEVI conservare la mnemonica ORA";
 "id_you_only_have_one_twofactor" = "Hai attivato un solo metodo di autenticazione a due fattori";
-"id_you_will_find_the_account_id_in" = "You will find the Account ID in the receive screen.";
 "id_you_will_need_to_reenter_your" = "Se non imposti un PIN dovrai utilizzare la mnemonica per accedere. Premi \"OK\" per continuare.";
 "id_your_green_wallet_is_now_ready" = "Il tuo wallet Green è ora pronto all'uso.";
 "id_your_ios_device_might_not_be" = "Il tuo device iOS potrebbe essere non supportato";

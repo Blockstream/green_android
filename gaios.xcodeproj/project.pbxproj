@@ -57,9 +57,14 @@
 		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		676FCF561F9D0E7100354E93 /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF511F9D0E7100354E93 /* InitialViewController.swift */; };
 		6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6770BF6D235E50D400BDB7DA /* GreenAddress.swift */; };
+		6D0B3DBE23A0611200C0E1C2 /* AccountTypeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0B3DBD23A0611200C0E1C2 /* AccountTypeCell.swift */; };
+		6D0B3DC023A0870100C0E1C2 /* AccountInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0B3DBF23A0870100C0E1C2 /* AccountInfoViewController.swift */; };
 		6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D12C952236760A600A51F1F /* ProgressIndicator.xib */; };
 		6D1674FA234C0E2200C4749D /* NetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D1674F8234C0E2200C4749D /* NetworkSelection.storyboard */; };
 		6D2A613623302694008C518A /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2A613523302694008C518A /* UIImage.swift */; };
+		6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D3A13E923A43B6200C69153 /* UITableViewCell.swift */; };
+		6D3A13EC23A7F51200C69153 /* ReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D3A13EB23A7F51200C69153 /* ReviewCell.swift */; };
+		6D50841C239970530063804F /* AccountCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D50841B239970530063804F /* AccountCreateViewController.swift */; };
 		6D565ECF22C2E44F00C20786 /* TransactionDetailHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ECE22C2E44F00C20786 /* TransactionDetailHeaderCell.swift */; };
 		6D565ED122C2E50900C20786 /* TransactionStatusTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ED022C2E50900C20786 /* TransactionStatusTableCell.swift */; };
 		6D565ED322C2E53E00C20786 /* TransactionDetailTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D565ED222C2E53E00C20786 /* TransactionDetailTableCell.swift */; };
@@ -235,9 +240,14 @@
 		676FCF511F9D0E7100354E93 /* InitialViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InitialViewController.swift; sourceTree = "<group>"; };
 		6770BF6D235E50D400BDB7DA /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = "gdk-iphone/share/gdk/GreenAddress.swift"; sourceTree = SOURCE_ROOT; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
+		6D0B3DBD23A0611200C0E1C2 /* AccountTypeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTypeCell.swift; sourceTree = "<group>"; };
+		6D0B3DBF23A0870100C0E1C2 /* AccountInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoViewController.swift; sourceTree = "<group>"; };
 		6D12C952236760A600A51F1F /* ProgressIndicator.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProgressIndicator.xib; sourceTree = "<group>"; };
 		6D1674F9234C0E2200C4749D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = gaios/Base.lproj/NetworkSelection.storyboard; sourceTree = SOURCE_ROOT; };
 		6D2A613523302694008C518A /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		6D3A13E923A43B6200C69153 /* UITableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCell.swift; sourceTree = "<group>"; };
+		6D3A13EB23A7F51200C69153 /* ReviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewCell.swift; sourceTree = "<group>"; };
+		6D50841B239970530063804F /* AccountCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateViewController.swift; sourceTree = "<group>"; };
 		6D565ECE22C2E44F00C20786 /* TransactionDetailHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailHeaderCell.swift; sourceTree = "<group>"; };
 		6D565ED022C2E50900C20786 /* TransactionStatusTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionStatusTableCell.swift; sourceTree = "<group>"; };
 		6D565ED222C2E53E00C20786 /* TransactionDetailTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailTableCell.swift; sourceTree = "<group>"; };
@@ -486,6 +496,15 @@
 			path = gaiosUITests;
 			sourceTree = "<group>";
 		};
+		6D50841D239971940063804F /* TableViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				6D0B3DBD23A0611200C0E1C2 /* AccountTypeCell.swift */,
+				6D3A13EB23A7F51200C69153 /* ReviewCell.swift */,
+			);
+			path = TableViewCells;
+			sourceTree = "<group>";
+		};
 		6D565ECD22C2E43400C20786 /* TableViewCells */ = {
 			isa = PBXGroup;
 			children = (
@@ -499,9 +518,12 @@
 		6D56C76D235E162A00E4F990 /* Accounts */ = {
 			isa = PBXGroup;
 			children = (
+				6D50841D239971940063804F /* TableViewCells */,
 				81A3B5422244B2280091B6BC /* Views */,
 				6D56C771235E27F000E4F990 /* Accounts.storyboard */,
 				81E9B7FD21C90F74004D87B6 /* AccountsViewController.swift */,
+				6D50841B239970530063804F /* AccountCreateViewController.swift */,
+				6D0B3DBF23A0870100C0E1C2 /* AccountInfoViewController.swift */,
 			);
 			path = Accounts;
 			sourceTree = "<group>";
@@ -734,6 +756,7 @@
 				FF29CA7522374F1A0035F95A /* UIButton.swift */,
 				FF29CA7722374F8D0035F95A /* UILabel.swift */,
 				6D2A613523302694008C518A /* UIImage.swift */,
+				6D3A13E923A43B6200C69153 /* UITableViewCell.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1055,8 +1078,11 @@
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				6D565ED122C2E50900C20786 /* TransactionStatusTableCell.swift in Sources */,
 				09546B3721686053009BABFE /* ScreenLockViewController.swift in Sources */,
+				6D0B3DBE23A0611200C0E1C2 /* AccountTypeCell.swift in Sources */,
+				6D3A13EC23A7F51200C69153 /* ReviewCell.swift in Sources */,
 				FF29CA7222374E8B0035F95A /* URL.swift in Sources */,
 				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
+				6D50841C239970530063804F /* AccountCreateViewController.swift in Sources */,
 				6DD813B722BDA4F2002DCC8B /* AssetDetailTableCell.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */,
@@ -1097,8 +1123,10 @@
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
 				6D8099DB23021D0F0069A69F /* PopoverMenuViewController.swift in Sources */,
 				6D7B5F9322E6852D00DE049D /* AccountMiniCollection.swift in Sources */,
+				6D0B3DC023A0870100C0E1C2 /* AccountInfoViewController.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
+				6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */,
 				6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */,
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
 				81E9B80021C92DB1004D87B6 /* AccountCardView.swift in Sources */,

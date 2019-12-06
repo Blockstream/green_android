@@ -34,7 +34,6 @@
 "id_advanced_network_settings" = "Cài đặt mạng lưới mở rộng";
 "id_all" = "Tất cả";
 "id_allows_you_to_quickly_check" = "Cho phép bạn kiểm tra nhanh số dư, nhận quỹ và quẹt để nạp tiền từ ví giấy. Bạn không thể gửi tiền đi trong chế độ chỉ xem.";
-"id_allows_you_to_receive_and_send" = "Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.";
 "id_always" = "Thường trực";
 "id_amount" = "Số tiền";
 "id_are_you_sure_you_want_to_view" = "Bạn có chắc là muốn xem giao dịch sử dụng địa chỉ %@ ?";
@@ -43,9 +42,6 @@
 "id_asset_id" = "Số ID tài sản";
 "id_asset_name" = "Tên tài sản";
 "id_attempts_remaining_d" = "Nỗ lực còn lại: %d";
-"id_authorized_assets" = "Authorized Assets";
-"id_authorized_assets_account" = "Authorized Assets Account";
-"id_authorized_assets_account_is" = "Authorized assets account is only available on Liquid.";
 "id_auto_logout_timeout" = "Thời gian tự đăng xuất";
 "id_autolock_after" = "Tự khoá sau thời gian";
 "id_be_aware_other_apps_can_read_or" = "Cẩn thận, các ứng dụng khác có thể đọc hoặc thay đổi thông tin trên clipboard";
@@ -75,6 +71,7 @@
 "id_confidential" = "Bí mật";
 "id_confirm_code" = "Mã xác nhận";
 "id_confirm_passphrase" = "Xác nhận mật khẩu";
+"id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "Xác nhận trong %d khối tiếp theo";
 "id_congratulations" = "Chúc mừng bạn!";
 "id_connect_through_a_proxy" = "Nối thông qua một địa chỉ proxy";
@@ -179,6 +176,7 @@
 "id_generate_new_address" = "Tạo địa chỉ mới";
 "id_get_code" = "Nhận mã số";
 "id_go_to_account" = "Go to Account";
+"id_go_to_receive_to_get_your" = "Go to Receive to get your Account ID.";
 "id_go_to_wallet" = "Đi đến ví";
 "id_google_auth" = "Phần mềm xác thực Google Auth";
 "id_google_authenticator" = "Phần mềm Google Authenticator";
@@ -230,8 +228,13 @@
 "id_last_ping_1d_ms" = "Lần ping cuối: %1$d phần nghìn của một giây";
 "id_later" = " SAU ĐÓ";
 "id_learn_more_about_s" = "Learn more about %@.";
+"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Bảng điều khiên Ledger đã tìm thấy, làm ơn mở ứng dụng đúng để vào.";
 "id_lets_get_you_set_up" = "Bạn hãy cài đặt";
+"id_liquid_securities" = "Liquid Securities";
+"id_liquid_securities_account" = "Liquid Securities Account";
+"id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
 "id_loading_transactions" = "Đang tải giao dịch...";
 "id_log_in" = "Đăng nhập";
 "id_log_in_into_your_s_wallet" = "Đăng nhập vào ví %@ ";
@@ -326,7 +329,7 @@
 "id_precision" = "Độ chính xác";
 "id_privacy_policy" = "Chính sách bảo mật";
 "id_problem_with_key_1s" = "Có vấn đề với khóa %1$@";
-"id_provide_this_id_to_an_asset" = "Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
 "id_providing_an_email_enables" = "Cung cấp một địa chỉ thư điện tử để gửi thông báo và phục hồi  giao dịch.";
 "id_proxy_settings" = "CÀI ĐẶT PROXY";
 "id_qr_scanner" = "Máy quét mã QR";
@@ -482,7 +485,7 @@
 "id_twofactor" = "XÁC THỰC 2 LỚP";
 "id_twofactor_authentication" = "Xác thực 2 lớp";
 "id_twofactor_authentication_expiry" = "Two-Factor authentication expiry";
-"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.";
+"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.";
 "id_twofactor_reset_in_progress" = "Cài lại xác thực 2 lớp đang tiến hành, ví của bạn đang khóa.";
 "id_twofactor_settings" = "Cài đặt xác thực 2 lớp";
 "id_twofactor_threshold" = "Ngưỡng của xác thực 2 lớp";
@@ -542,7 +545,6 @@
 "id_you_must_first_log_out_before" = "Bạn phải đăng xuất trước khi đăng nhập";
 "id_you_must_save_this_mnemonic_now" = "Bạn PHẢI lưu các chữ gợi nhớ mnemonic NGÂY BAY GIỜ";
 "id_you_only_have_one_twofactor" = "Bạn chí có thể có 1 cách xác thực 2 lớp được kích hoạt.";
-"id_you_will_find_the_account_id_in" = "You will find the Account ID in the receive screen.";
 "id_you_will_need_to_reenter_your" = "Bạn sẽ cần nhập loại các chữ gợi nhớ mnemonic để đăng nhập lại nếu bạn không cài mã số PIN. Ấn \"OK\" để tiếp tục.";
 "id_your_green_wallet_is_now_ready" = "Ví Green của bạn bây giờ đã sẵn sàng để sử dụng";
 "id_your_ios_device_might_not_be" = "Thiết bị iOS bạn có thể không được hổ trợ";

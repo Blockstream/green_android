@@ -13,6 +13,8 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
     private let headerId = "header"
     private let footerId = "footer"
 
+    var network = { getGdkNetwork(getNetwork()) }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         guard let collectionView = self.collectionView else { return }
@@ -83,7 +85,6 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
                 cell.balanceFiat.text = "≈ \(fiat) \(fiatCurrency) "
             }
             cell.walletName.text = wallet.localizedName()
-            let network = getGdkNetwork(getNetwork())
             cell.networkImage.image = UIImage(named: network.icon!)
             return cell
         }
@@ -160,42 +161,24 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
     }
 
     @objc func addWallet(_ sender: Any?) {
-        let alert = UIAlertController(title: NSLocalizedString("id_standard_account", comment: ""), message: NSLocalizedString("id_standard_accounts_allow_you_to", comment: ""), preferredStyle: .alert)
-        alert.addTextField { textField in
-            textField.placeholder = NSLocalizedString("id_name", comment: "")
-            textField.keyboardType = .asciiCapable
-        }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_create", comment: ""), style: .default) { _ in
-            let textField = alert.textFields!.first
-            self.createWallet(name: textField!.text!)
-        })
-        self.present(alert, animated: true, completion: nil)
-    }
-
-    func createWallet(name: String) {
-        let bgq = DispatchQueue.global(qos: .background)
-        let session = getGAService().getSession()
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap(on: bgq) {
-            try session.createSubaccount(details: ["name": name, "type": "2of2"])
-        }.compactMap(on: bgq) { call in
-            call.resolve(self)
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.reloadData()
-        }.catch { e in
-            Toast.show(e.localizedDescription)
-        }
+        performSegue(withIdentifier: "create", sender: nil)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let controller = segue.destination as? SendBtcViewController {
             controller.isSweep = true
             controller.wallet = wallet
+        } else if let controller = segue.destination as? AccountCreateViewController {
+            controller.subaccountDelegate = subaccountDelegate
+            controller.presentationController?.delegate = self
+            controller.canCreateAdvanced = network.liquid && !wallets.contains { $0.type == AccountType.advanced.rawValue }
         }
+    }
+}
+
+extension AccountsViewController: UIAdaptivePresentationControllerDelegate {
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        reloadData()
     }
 }

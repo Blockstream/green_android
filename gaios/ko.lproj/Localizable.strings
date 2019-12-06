@@ -34,7 +34,6 @@
 "id_advanced_network_settings" = "네트워크 상세설정";
 "id_all" = "전부";
 "id_allows_you_to_quickly_check" = "잔액을 확인, 또는 돈을 받거나 종이 지갑을 sweep 할 수 있습니다. 감시모드에서는 송금은 할 수 없습니다.";
-"id_allows_you_to_receive_and_send" = "Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.";
 "id_always" = "항상";
 "id_amount" = "금액";
 "id_are_you_sure_you_want_to_view" = "정말로 %@를 사용하여 거래를 확인하시겠습니까?";
@@ -43,9 +42,6 @@
 "id_asset_id" = "자산 ID";
 "id_asset_name" = "자산 이름";
 "id_attempts_remaining_d" = "남은 시도: %d";
-"id_authorized_assets" = "Authorized Assets";
-"id_authorized_assets_account" = "Authorized Assets Account";
-"id_authorized_assets_account_is" = "Authorized assets account is only available on Liquid.";
 "id_auto_logout_timeout" = "자동 로그아웃 시간";
 "id_autolock_after" = "자동 잠금 시간";
 "id_be_aware_other_apps_can_read_or" = "클립보드로 복사하면 다른 앱들이 읽거나 바꿀 수 있음으로 주의하세요";
@@ -75,6 +71,7 @@
 "id_confidential" = "기밀";
 "id_confirm_code" = "코드 컨펌";
 "id_confirm_passphrase" = "비밀번호 확인";
+"id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "%d 블록 내에 컨펌";
 "id_congratulations" = "축하합니다!";
 "id_connect_through_a_proxy" = "프록시를 사용하여 연결하기";
@@ -179,6 +176,7 @@
 "id_generate_new_address" = "새로운 주소 생성하기";
 "id_get_code" = "코드 받기";
 "id_go_to_account" = "Go to Account";
+"id_go_to_receive_to_get_your" = "Go to Receive to get your Account ID.";
 "id_go_to_wallet" = "지갑으로 가기";
 "id_google_auth" = "구글 OTP";
 "id_google_authenticator" = "구글 OTP";
@@ -230,8 +228,13 @@
 "id_last_ping_1d_ms" = "마지막 핑: %1$d ms";
 "id_later" = "이후";
 "id_learn_more_about_s" = "Learn more about %@.";
+"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Ledger 대시 보드가 감지되었습니다. 올바른 앱을 열어 사용하세요.";
 "id_lets_get_you_set_up" = "새로운 지갑을 만들어 볼까요?";
+"id_liquid_securities" = "Liquid Securities";
+"id_liquid_securities_account" = "Liquid Securities Account";
+"id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
 "id_loading_transactions" = "거래 로딩중...";
 "id_log_in" = "로그인";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -326,7 +329,7 @@
 "id_precision" = "정확도";
 "id_privacy_policy" = "개인정보처리방침";
 "id_problem_with_key_1s" = "키 %1$@에 문제있음";
-"id_provide_this_id_to_an_asset" = "Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
 "id_providing_an_email_enables" = "이메일을 제공하시면 알람과 거래 복구를 가능케 합니다.";
 "id_proxy_settings" = "프록시 설정";
 "id_qr_scanner" = "QR 스캐너";
@@ -482,7 +485,7 @@
 "id_twofactor" = "2FA";
 "id_twofactor_authentication" = "2FA";
 "id_twofactor_authentication_expiry" = "Two-Factor authentication expiry";
-"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.";
+"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.";
 "id_twofactor_reset_in_progress" = "2FA를 재설정하고 있어 지갑이 현재 잠겨있습니다.";
 "id_twofactor_settings" = "2FA 설정";
 "id_twofactor_threshold" = "2FA 최소한도";
@@ -542,7 +545,6 @@
 "id_you_must_first_log_out_before" = "로그인하기 전에 로그아웃을 먼저 해야 합니다.";
 "id_you_must_save_this_mnemonic_now" = "지금 당장 이 니모닉(복원 코드)을 꼭 저장하여야 합니다.";
 "id_you_only_have_one_twofactor" = "2FA 설정을 한 가지만 하였습니다.";
-"id_you_will_find_the_account_id_in" = "You will find the Account ID in the receive screen.";
 "id_you_will_need_to_reenter_your" = "비밀번호를 설정하지 않으시면 니모닉(복원 코드)을 사용하여 로그인 하여야 합니다. 계속하시려면 \"확인\"을 눌러주세요.";
 "id_your_green_wallet_is_now_ready" = "이제 Green 지갑을 사용하실 수 있습니다";
 "id_your_ios_device_might_not_be" = "Your iOS device might not be supported";

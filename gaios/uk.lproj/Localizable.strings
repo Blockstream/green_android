@@ -34,7 +34,6 @@
 "id_advanced_network_settings" = "Розширені налаштування мережі";
 "id_all" = "Усі";
 "id_allows_you_to_quickly_check" = "Дозволяє швидко перевірити ваш баланс, отримати кошти або зробити свіп паперового гаманця. Ви не можете надсилати кошти в режимі лише-для-перегляду.";
-"id_allows_you_to_receive_and_send" = "Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.";
 "id_always" = "Завжди";
 "id_amount" = "Сума";
 "id_are_you_sure_you_want_to_view" = "Ви впевнені, що бажаєте переглянути транзакцію за допомогою %@?";
@@ -43,9 +42,6 @@
 "id_asset_id" = "Asset ID";
 "id_asset_name" = "Asset Name";
 "id_attempts_remaining_d" = "Залишилося спроб: %d";
-"id_authorized_assets" = "Authorized Assets";
-"id_authorized_assets_account" = "Authorized Assets Account";
-"id_authorized_assets_account_is" = "Authorized assets account is only available on Liquid.";
 "id_auto_logout_timeout" = "Автоматичний вихід";
 "id_autolock_after" = "Автоблокування";
 "id_be_aware_other_apps_can_read_or" = "Пам'ятайте, що інші додатки можуть зчитувати або змінювати буфер обміну";
@@ -75,6 +71,7 @@
 "id_confidential" = "Confidential";
 "id_confirm_code" = "Підтвердіть код";
 "id_confirm_passphrase" = "Confirm passphrase";
+"id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "Confirmation in %d blocks";
 "id_congratulations" = "Вітаємо!";
 "id_connect_through_a_proxy" = "Встановити з’єднання через проксі-сервер";
@@ -179,6 +176,7 @@
 "id_generate_new_address" = "Згенерувати нову адресу";
 "id_get_code" = "Отримати код";
 "id_go_to_account" = "Go to Account";
+"id_go_to_receive_to_get_your" = "Go to Receive to get your Account ID.";
 "id_go_to_wallet" = "Перейти до гаманця";
 "id_google_auth" = "Google Auth";
 "id_google_authenticator" = "Google Authenticator";
@@ -230,8 +228,13 @@
 "id_last_ping_1d_ms" = "Останній пінг: %1$d мс";
 "id_later" = "ПІЗНІШЕ";
 "id_learn_more_about_s" = "Learn more about %@.";
+"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Знайдена панель Ledger, будь ласка, відкрийте правильний додаток для доступу.";
 "id_lets_get_you_set_up" = "Давайте зробимо налаштування.";
+"id_liquid_securities" = "Liquid Securities";
+"id_liquid_securities_account" = "Liquid Securities Account";
+"id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
 "id_loading_transactions" = "Завантаження транзакцій... ";
 "id_log_in" = "Увійти";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -326,7 +329,7 @@
 "id_precision" = "Precision";
 "id_privacy_policy" = "Політика конфіденційності";
 "id_problem_with_key_1s" = "Проблема з ключем %1$@";
-"id_provide_this_id_to_an_asset" = "Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
 "id_providing_an_email_enables" = "Надання електронної адреси дозволяє отримувати повідомлення і відновлювати транзакції.";
 "id_proxy_settings" = "НАЛАШТУВАННЯ ПРОКСІ-СЕРВЕРУ";
 "id_qr_scanner" = "QR-сканер";
@@ -482,7 +485,7 @@
 "id_twofactor" = "ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ";
 "id_twofactor_authentication" = "Двофакторна аутентифікація";
 "id_twofactor_authentication_expiry" = "Two-Factor authentication expiry";
-"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.";
+"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.";
 "id_twofactor_reset_in_progress" = "Виконується двофакторне скидання, ваш гаманець заблоковано.";
 "id_twofactor_settings" = "Двофакторне налаштування";
 "id_twofactor_threshold" = "Двофакторний поріг";
@@ -542,7 +545,6 @@
 "id_you_must_first_log_out_before" = "Перед тим, як увійти, здійсніть вихід.";
 "id_you_must_save_this_mnemonic_now" = "Вам ПОТРІБНО зберегти цю мнемонічну фразу ЗАРАЗ";
 "id_you_only_have_one_twofactor" = "У вас підключено лише один метод двофакторної аутентифікації";
-"id_you_will_find_the_account_id_in" = "You will find the Account ID in the receive screen.";
 "id_you_will_need_to_reenter_your" = "Якщо ви не встановите PIN-код, кожного разу, для входу, вам потрібно буде вводити вашу мнемонічну фразу. Натисність \"OK\" для продовження.";
 "id_your_green_wallet_is_now_ready" = "Ваш Green-гаманець готовий для використання.";
 "id_your_ios_device_might_not_be" = "Your iOS device might not be supported";

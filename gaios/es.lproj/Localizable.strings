@@ -34,7 +34,6 @@
 "id_advanced_network_settings" = "Opciones avanzadas de red\n";
 "id_all" = "Todos";
 "id_allows_you_to_quickly_check" = "Te permite revisar rápidamente el saldo, recibir fondos o barrer fondos a carteras de papel. Con el modo de solo lectura, no podrás enviar fondos.";
-"id_allows_you_to_receive_and_send" = "Allows you to receive and send assets that require authorization from the issuer to be transferred. Authorized Assets may be restricted from transfer to other account types.";
 "id_always" = "Siempre";
 "id_amount" = "Cantidad";
 "id_are_you_sure_you_want_to_view" = "¿Está seguro de que quiere visualizar la transacción con %@?";
@@ -43,9 +42,6 @@
 "id_asset_id" = "Identificación del activo";
 "id_asset_name" = "Nombre del activo";
 "id_attempts_remaining_d" = "Intentos restantes: %d";
-"id_authorized_assets" = "Authorized Assets";
-"id_authorized_assets_account" = "Authorized Assets Account";
-"id_authorized_assets_account_is" = "Authorized assets account is only available on Liquid.";
 "id_auto_logout_timeout" = "Tiempo de espera para cierre de sesión automático";
 "id_autolock_after" = "Bloquear automáticamente después de";
 "id_be_aware_other_apps_can_read_or" = "Ten en cuenta que otras apps pueden leer o cambiar el portapapeles";
@@ -75,6 +71,7 @@
 "id_confidential" = "Confidencial";
 "id_confirm_code" = "Confirmar el código";
 "id_confirm_passphrase" = "Confirmar la frase de seguridad";
+"id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "Confirmación en %d bloques";
 "id_congratulations" = "¡Felicidades!";
 "id_connect_through_a_proxy" = "Conectarse a través de un proxy";
@@ -179,6 +176,7 @@
 "id_generate_new_address" = "Generar Dirección Nueva";
 "id_get_code" = "Conseguir Código";
 "id_go_to_account" = "Go to Account";
+"id_go_to_receive_to_get_your" = "Go to Receive to get your Account ID.";
 "id_go_to_wallet" = "Ir a Cartera";
 "id_google_auth" = "Google Auth";
 "id_google_authenticator" = "Google Authenticator";
@@ -230,8 +228,13 @@
 "id_last_ping_1d_ms" = "Último pin: %1$d ms";
 "id_later" = "LUEGO";
 "id_learn_more_about_s" = "Learn more about %@.";
+"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Ledger Dashboard detectado. Abre la app correcta para acceder.";
 "id_lets_get_you_set_up" = "Empecemos.";
+"id_liquid_securities" = "Liquid Securities";
+"id_liquid_securities_account" = "Liquid Securities Account";
+"id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
 "id_loading_transactions" = "Cargando transacciones...";
 "id_log_in" = "Iniciar sesión";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -326,7 +329,7 @@
 "id_precision" = "Precisión";
 "id_privacy_policy" = "Política de privacidad";
 "id_problem_with_key_1s" = "Problema con clave %1$@";
-"id_provide_this_id_to_an_asset" = "Provide this ID to an asset issuer to get authorization to receive and send Authorized Assets.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
 "id_providing_an_email_enables" = "Proporcionar un correo electrónico habilita las notificaciones y la recuperación de transacciones.";
 "id_proxy_settings" = "CONFIGURACIÓN DEL PROXY";
 "id_qr_scanner" = "Escáner QR";
@@ -482,7 +485,7 @@
 "id_twofactor" = "DOS FACTORES";
 "id_twofactor_authentication" = "Autenticación de dos factores";
 "id_twofactor_authentication_expiry" = "Two-Factor authentication expiry";
-"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, therefore resetting a lost Two-Factor authentication will require 12 months. Enabling 2 separate Two-Factor methods is highly suggested.";
+"id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.";
 "id_twofactor_reset_in_progress" = "Restablecimiento de la autenticación de dos factores en curso. Su cartera se encuentra bloqueada.";
 "id_twofactor_settings" = "Configuración de dos factores";
 "id_twofactor_threshold" = "Umbral de dos factores";
@@ -542,7 +545,6 @@
 "id_you_must_first_log_out_before" = "Tienes que cerrar sesión antes de iniciar sesión.";
 "id_you_must_save_this_mnemonic_now" = "DEBES guardar la Frase de Recuperación AHORA.";
 "id_you_only_have_one_twofactor" = "Solo tienes un método de autenticación de dos factores habilitado";
-"id_you_will_find_the_account_id_in" = "You will find the Account ID in the receive screen.";
 "id_you_will_need_to_reenter_your" = "Tendrás que volver a ingresar tu Frase de Recuperación para iniciar sesión si no estableces un PIN. Presiona \"OK\" para continuar.";
 "id_your_green_wallet_is_now_ready" = "Tu Green Wallet está lista para usarse.";
 "id_your_ios_device_might_not_be" = "Your iOS device might not be supported";
