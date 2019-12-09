@@ -79,7 +79,8 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
                 let (amount, denom) = balance.get(tag: "btc")
                 cell.balance.text = amount
                 cell.unit.text = denom
-                cell.balanceFiat.text = "≈ \(balance.fiat) \(balance.fiatCurrency) "
+                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
+                cell.balanceFiat.text = "≈ \(fiat) \(fiatCurrency) "
             }
             cell.walletName.text = wallet.localizedName()
             let network = getGdkNetwork(getNetwork())
@@ -100,7 +101,8 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             if let balance = Balance.convert(details: ["satoshi": satoshi]) {
                 let (amount, denom) = balance.get(tag: "btc")
                 header.btcLabel.text = isSweep ? "" : "\(amount) \(denom)"
-                header.fiatLabel.text = isSweep ? "" : "\(balance.fiat) \(balance.fiatCurrency)"
+                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
+                header.fiatLabel.text = isSweep ? "" : "\(fiat) \(fiatCurrency)"
             }
             header.equalsLabel.isHidden = isSweep
             header.dismissButton.isHidden = isSweep

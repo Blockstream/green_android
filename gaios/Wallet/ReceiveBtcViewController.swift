@@ -18,9 +18,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         tabBarController?.tabBar.isHidden = true
         gestureTap = UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard))
         gestureTapQRCode = UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard))
-        content.amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
-
+        content.amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
         content.walletQRCode.addGestureRecognizer(gestureTapQRCode!)
         content.walletQRCode.isUserInteractionEnabled = true
         content.walletAddressLabel.isUserInteractionEnabled = true
@@ -188,13 +186,10 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func getSatoshi() -> UInt64? {
         var amountText = content.amountTextfield.text!
-        amountText = amountText.replacingOccurrences(of: ",", with: ".")
         amountText = amountText.isEmpty ? "0" : amountText
-        guard let number = Double(amountText) else { return nil }
-        if number < 0 { return nil }
-        guard let denomination = getGAService().getSettings()?.denomination else {
-            return 0
-        }
+        amountText = amountText.unlocaleFormattedString(8)
+        guard let number = Double(amountText), number > 0 else { return nil }
+        let denomination = getGAService().getSettings()!.denomination
         let key = selectedType == TransactionType.BTC ? denomination.rawValue : "fiat"
         return Balance.convert(details: [key: amountText])?.satoshi
     }

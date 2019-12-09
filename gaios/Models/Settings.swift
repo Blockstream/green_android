@@ -87,6 +87,19 @@ public enum DenominationType: String, CodingKey {
         return DenominationType.denominations.filter { $0.key == self }.first?.value ?? DenominationType.denominations[.BTC]!
     }
 
+    var digits: Int {
+        switch self {
+        case .BTC:
+            return 8
+        case .MilliBTC:
+            return 5
+        case .MicroBTC, .Bits:
+            return 2
+        case .Sats:
+            return 0
+        }
+    }
+
     static func from(_ string: String) -> DenominationType {
         return DenominationType.denominations.filter { $0.value == string }.first?.key ?? .BTC
     }

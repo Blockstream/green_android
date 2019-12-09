@@ -206,16 +206,16 @@ struct Balance: Codable {
 
     func get(tag: String) -> (String, String) {
         if "fiat" == tag {
-            return (fiat, fiatCurrency)
+            return (fiat.localeFormattedString(2), fiatCurrency)
         }
         if "btc" == tag {
             let denomination = getGAService().getSettings()?.denomination ?? .BTC
             let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
             let value = res![denomination.rawValue] as? String
-            return (value!.localeFormattedString(), denomination.string)
+            return (value!.localeFormattedString(denomination.digits), denomination.string)
         }
         if let asset = asset?[tag] {
-            return (asset.localeFormattedString(), assetInfo?.ticker ?? "")
+            return (asset.localeFormattedString(Int(assetInfo?.precision ?? 8)), assetInfo?.ticker ?? "")
         }
         return ("", "")
     }

@@ -68,8 +68,7 @@ class SendBtcDetailsViewController: UIViewController {
 
         uiErrorLabel = UIErrorLabel(self.view)
         content.errorLabel.isHidden = true
-        content.amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                                   attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
+        content.amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
 
         if let oldFeeRate = oldFeeRate {
             feeEstimates[content.feeRateButtons.count - 1] = oldFeeRate + minFeeRate
@@ -216,13 +215,18 @@ class SendBtcDetailsViewController: UIViewController {
 
     func getSatoshi() -> UInt64? {
         var amountText = content.amountTextField.text!
-        amountText = amountText.replacingOccurrences(of: ",", with: ".")
         amountText = amountText.isEmpty ? "0" : amountText
-        amountText = (Double(amountText) != nil) ? amountText : "0"
+        amountText = amountText.unlocaleFormattedString(8)
+        guard let number = Double(amountText), number > 0 else { return nil }
         let isBtc = assetTag == "btc"
         let denominationBtc = getGAService().getSettings()!.denomination.rawValue
         let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetTag)
-        let details: [String: Any] = "btc" != assetTag ? [key: amountText, "asset_info": asset!.encode()!] : [key: amountText]
+        let details: [String: Any]
+        if "btc" == assetTag {
+            details = [key: amountText]
+        } else {
+            details = [key: amountText, "asset_info": asset!.encode()!]
+        }
         return Balance.convert(details: details)?.satoshi
     }
 
@@ -290,7 +294,8 @@ class SendBtcDetailsViewController: UIViewController {
             let feeSatoshi = UInt64(feeSatVByte * Double(transaction.size))
 
             if let (amount, denom) = Balance.convert(details: ["satoshi": feeSatoshi])?.get(tag: isFiat ? "fiat" : "btc") {
-                feeButton.feerateLabel.text =  "\(amount) \(denom) (\(feeSatVByte) satoshi / vbyte)"
+                let feeRate = feeSatVByte.description.localeFormattedString(1)
+                feeButton.feerateLabel.text =  "\(amount) \(denom) (\(feeRate) satoshi / vbyte)"
             }
         }
         content.feeRateButtons[selectedFee]?.isSelect = true
@@ -318,9 +323,10 @@ class SendBtcDetailsViewController: UIViewController {
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { [weak alert] (_) in
             let settings = getGAService().getSettings()!
-            guard var amount = alert!.textFields![0].text else { return }
-            amount = amount.replacingOccurrences(of: ",", with: ".")
-            guard let number = Double(amount) else { return }
+            guard var amountText = alert!.textFields![0].text else { return }
+            amountText = amountText.isEmpty ? "0" : amountText
+            amountText = amountText.unlocaleFormattedString(8)
+            guard let number = Double(amountText), number > 0 else { return }
             if 1000 * number >= Double(UInt64.max) { return }
             let feeRate = UInt64(1000 * number)
             if feeRate < self.minFeeRate {

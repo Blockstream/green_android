@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -27,7 +25,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Qrj-U1-YkW">
-                    <rect key="frame" x="16" y="40" width="267" height="57"/>
+                    <rect key="frame" x="16" y="20" width="267" height="57"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="57" id="uCp-HC-oef"/>
                     </constraints>
@@ -36,7 +34,7 @@
                     <textInputTraits key="textInputTraits" keyboardType="decimalPad" keyboardAppearance="alert"/>
                 </textField>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lni-ot-zd7">
-                    <rect key="frame" x="299" y="52.5" width="60" height="32"/>
+                    <rect key="frame" x="299" y="32.5" width="60" height="32"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="60" id="Z7q-Xa-wAt"/>
                         <constraint firstAttribute="height" constant="32" id="dhJ-dM-Zpq"/>
@@ -65,13 +63,13 @@
                     </state>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="~0.0 USD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V1T-BV-6uQ">
-                    <rect key="frame" x="16" y="97" width="343" height="18"/>
+                    <rect key="frame" x="16" y="77" width="343" height="18"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You don't need two factor code for transactions under the selected value" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fFW-oR-ogq">
-                    <rect key="frame" x="16" y="131" width="343" height="36"/>
+                    <rect key="frame" x="16" y="111" width="343" height="36"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <color key="textColor" name="customTitaniumLight"/>
                     <nil key="highlightedColor"/>
@@ -95,17 +93,18 @@
                 <constraint firstItem="V1T-BV-6uQ" firstAttribute="top" secondItem="Qrj-U1-YkW" secondAttribute="bottom" id="xen-j0-FHR"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="lo4-cH-ngv"/>
+            <point key="canvasLocation" x="138" y="142"/>
         </view>
     </objects>
     <resources>
         <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
-            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
-            <color red="0.42745098039215684" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

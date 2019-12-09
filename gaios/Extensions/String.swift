@@ -24,14 +24,34 @@ extension String {
         return boundingBox.height
     }
 
-    func localeFormattedString() -> String {
+    func localeFormattedString(_ digits: Int) -> String {
         let numberFormatter = NumberFormatter()
-        numberFormatter.locale = Locale.current
         numberFormatter.numberStyle = .decimal
         numberFormatter.roundingMode = .down
-        if let localFormattedNumber = numberFormatter.number(from: self),
-            let localFormattedString = numberFormatter.string(from: localFormattedNumber) {
+        numberFormatter.maximumFractionDigits = digits
+        numberFormatter.minimumFractionDigits = digits
+        numberFormatter.locale = Locale(identifier: "en_EN")
+        if let number = numberFormatter.number(from: self) {
+            numberFormatter.locale = Locale.current
+            if let localFormattedString = numberFormatter.string(from: number) {
                 return localFormattedString
+            }
+        }
+        return self
+    }
+    func unlocaleFormattedString(_ digits: Int) -> String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.roundingMode = .down
+        numberFormatter.maximumFractionDigits = digits
+        numberFormatter.minimumFractionDigits = digits
+        numberFormatter.locale = Locale.current
+        if let number = numberFormatter.number(from: self) {
+            numberFormatter.groupingSeparator = ""
+            numberFormatter.locale = Locale(identifier: "en_EN")
+            if let localFormattedString = numberFormatter.string(from: number) {
+                return localFormattedString
+            }
         }
         return self
     }

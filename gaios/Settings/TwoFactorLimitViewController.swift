@@ -9,8 +9,8 @@ class TwoFactorLimitViewController: KeyboardViewController {
 
     var amount: String? {
         var amount = content.limitTextField.text!
-        amount = amount.replacingOccurrences(of: ",", with: ".")
         amount = amount.isEmpty ? "0" : amount
+        amount = amount.unlocaleFormattedString(8)
         guard let number = Double(amount) else { return nil }
         if number < 0 { return nil }
         return amount
@@ -40,8 +40,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         content.fiatButton.addTarget(self, action: #selector(currencySwitchClick), for: .touchUpInside)
         content.nextButton.setGradient(true)
         content.limitTextField.becomeFirstResponder()
-        content.limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00",
-                                                                  attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
+        content.limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         content.limitTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         reload()
         refresh()
@@ -53,19 +52,24 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     func reload() {
-        let settings = getGAService().getSettings()!
         guard let limits = limits else { return }
         isFiat = limits.isFiat
-        let amount = isFiat ? limits.fiat : limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denomination.rawValue)!)!
-        let denom = isFiat ? settings.getCurrency() : denomination.string
-        content.limitTextField.text = amount
-        content.descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
+        var balance: Balance?
+        if limits.isFiat {
+            balance = Balance.convert(details: ["fiat": limits.fiat])
+        } else {
+            let denom = denomination.rawValue
+            balance = Balance.convert(details: [denom: limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)!])
+        }
+        if let (amount, denom) = balance?.get(tag: limits.isFiat ? "fiat" : "btc") {
+            content.limitTextField.text = amount
+            content.descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
+        }
         refresh()
     }
 
     func refresh() {
-        guard satoshi != nil else { return }
-        guard let balance = Balance.convert(details: ["satoshi": satoshi!]) else { return }
+        guard let balance = Balance.convert(details: ["satoshi": satoshi ?? 0]) else { return }
         let (amount, denom) = balance.get(tag: (isFiat ? "btc"  : "fiat"))
         let denomination = balance.get(tag: (isFiat ? "fiat"  : "btc")).1
         content.convertedLabel.text = "≈ \(amount) \(denom)"
@@ -74,8 +78,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     @objc func currencySwitchClick(_ sender: UIButton) {
-        guard satoshi != nil else { return }
-        if let balance = Balance.convert(details: ["satoshi": satoshi!]) {
+        if let balance = Balance.convert(details: ["satoshi": satoshi ?? 0]) {
             let (amount, _) = balance.get(tag: (isFiat ? "fiat"  : "btc"))
             content.limitTextField.text = amount
         }
