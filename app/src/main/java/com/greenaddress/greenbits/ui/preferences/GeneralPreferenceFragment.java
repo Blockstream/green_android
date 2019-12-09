@@ -36,12 +36,9 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.SettingsObservable;
 import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.BuildConfig;
-import com.greenaddress.greenbits.ui.GaActivity;
-import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.SweepSelectActivity;
-import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
@@ -427,8 +424,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         }
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_custom_feerate);
         final EditText rateEdit = UI.find(v, R.id.set_custom_feerate_amount);
+        UI.localeDecimalInput(rateEdit);
 
-        rateEdit.setText(getDefaultFeeRate());
+        final Double aDouble = Double.valueOf(getDefaultFeeRate());
+
+        rateEdit.setText(Model.getNumberFormat(2).format(aDouble));
         rateEdit.selectAll();
 
         final MaterialDialog dialog;
@@ -439,13 +439,14 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             try {
                 final Long minFeeRateKB = getModel().getFeeObservable().getFees().get(0);
                 final String enteredFeeRate = UI.getText(rateEdit);
-                final Double enteredFeeRateKB = Double.valueOf(enteredFeeRate) * 1000;
+                final Number parsed = Model.getNumberFormat(2).parse(enteredFeeRate);
+                final Double enteredFeeRateKB = parsed.doubleValue();
 
-                if (enteredFeeRateKB < minFeeRateKB) {
+                if (enteredFeeRateKB * 1000 < minFeeRateKB) {
                     UI.toast(getActivity(), getString(R.string.id_fee_rate_must_be_at_least_s,
                                                       String.format("%.2f",(minFeeRateKB/1000.0) )), Toast.LENGTH_LONG);
                 } else {
-                    cfg().edit().putString(PrefKeys.DEFAULT_FEERATE_SATBYTE, enteredFeeRate).apply();
+                    cfg().edit().putString(PrefKeys.DEFAULT_FEERATE_SATBYTE, String.valueOf(enteredFeeRateKB)).apply();
                     setFeeRateSummary();
                 }
             } catch (final Exception e) {
@@ -646,6 +647,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_limits);
         final Spinner unitSpinner = UI.find(v, R.id.set_limits_currency);
         final EditText amountEdit = UI.find(v, R.id.set_limits_amount);
+        UI.localeDecimalInput(amountEdit);
 
         final String[] currencies;
         currencies = new String[] {getModel().getBitcoinOrLiquidUnit(), getModel().getFiatCurrency()};

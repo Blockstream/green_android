@@ -1,13 +1,20 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.ToastObservable;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
@@ -119,6 +126,24 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         if (mTimer != null) {
             mTimer.cancel();
             mTimer.purge();
+        }
+    }
+
+    protected String getBitcoinUnitClean() {
+        final String unit = getModel().getBitcoinOrLiquidUnit();
+        return Model.toUnitKey(unit);
+    }
+
+    protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount) {
+        try {
+            final NumberFormat us = Model.getNumberFormat(8, Locale.US);
+            final NumberFormat fiatNf = Model.getNumberFormat(2);
+            final NumberFormat btcNf = getModel().getNumberFormat();
+            final String fiat = fiatNf.format( us.parse(currentAmount.get("fiat").asText()) );
+            final String btc = btcNf.format( us.parse(currentAmount.get(getBitcoinUnitClean()).asText()));
+            amountText.setText(isFiat ? fiat : btc);
+        } catch (ParseException e) {
+            Log.e(TAG,e.getMessage());
         }
     }
 }

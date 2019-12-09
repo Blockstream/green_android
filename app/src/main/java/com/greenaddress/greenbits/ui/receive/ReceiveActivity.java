@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +28,6 @@ import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.components.FontFitEditText;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -39,7 +39,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
     private TextView mAddressText;
     private ImageView mAddressImage;
-    private FontFitEditText mAmountText;
+    private EditText mAmountText;
     private Button mUnitButton;
 
     private Boolean mIsFiat = false;
@@ -58,6 +58,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         mAddressImage = UI.find(this, R.id.receiveQrImageView);
         mAddressText = UI.find(this, R.id.receiveAddressText);
         mAmountText = UI.find(this, R.id.amountEditText);
+        UI.localeDecimalInput(mAmountText);
         mUnitButton = UI.find(this, R.id.unitButton);
 
         mAmountText.addTextChangedListener(this);
@@ -127,24 +128,20 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         mBitmapWorkerTask.execute();
     }
 
-    private String getBitcoinUnitClean() {
-        final String unit = getModel().getBitcoinOrLiquidUnit();
-        return Model.toUnitKey(unit);
-    }
-
     @Override
     public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {}
 
     @Override
     public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
         final String key = mIsFiat ? "fiat" : getBitcoinUnitClean();
-        final String value = mAmountText.getText().toString();
+        final String value = mAmountText.getText().toString().replace(",",".");
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode amount = mapper.createObjectNode();
         amount.put(key, value.isEmpty() ? "0" : value);
         try {
             // avoid updating the view if changing from fiat to btc or vice versa
             if (mCurrentAmount == null || !mCurrentAmount.get(key).asText().equals(value)) {
+
                 mCurrentAmount = getSession().convert(amount);
                 update(null, null);
             }
@@ -164,8 +161,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         mUnitButton.setSelected(!mIsFiat);
 
         if (mCurrentAmount != null) {
-            mAmountText.setText(mIsFiat ? mCurrentAmount.get("fiat").asText() : mCurrentAmount.get(
-                                    getBitcoinUnitClean()).asText());
+            setAmountText(mAmountText, mIsFiat, mCurrentAmount);
             update(null, null);
         }
     }

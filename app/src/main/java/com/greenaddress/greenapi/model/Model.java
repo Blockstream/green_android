@@ -224,7 +224,6 @@ public class Model {
         case "mbtc":
             return getNumberFormat(5);
         case "ubtc":
-            return getNumberFormat(2);
         case "bits":
             return getNumberFormat(2);
         default:
@@ -232,8 +231,12 @@ public class Model {
         }
     }
 
-    private NumberFormat getNumberFormat(final int decimals) {
-        final NumberFormat instance = NumberFormat.getInstance();
+    public static NumberFormat getNumberFormat(final int decimals) {
+        return getNumberFormat(decimals, Locale.getDefault());
+    }
+
+    public static NumberFormat getNumberFormat(final int decimals, final Locale locale) {
+        final NumberFormat instance = NumberFormat.getInstance(locale);
         instance.setMinimumFractionDigits(decimals);
         instance.setMaximumFractionDigits(decimals);
         return instance;

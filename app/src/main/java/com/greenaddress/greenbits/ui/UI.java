@@ -12,6 +12,7 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.DigitsKeyListener;
 import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -42,7 +43,7 @@ import com.greenaddress.greenapi.model.Model;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -388,10 +389,7 @@ public abstract class UI {
 
     public static String getFeeRateString(final long feePerKB) {
         final double feePerByte = feePerKB / 1000.0;
-        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-        DecimalFormat df = (DecimalFormat)nf;
-        df.applyPattern(".##");
-        return df.format(feePerByte) + " satoshi / vbyte";
+        return Model.getNumberFormat(2).format(feePerByte) + " satoshi / vbyte";
     }
 
     public static Spannable getColoredString(final String string, final int color) {
@@ -438,5 +436,23 @@ public abstract class UI {
         } catch (final Exception e) {
             return textOrIdentifier; // Unknown id
         }
+    }
+
+
+    public static void localeDecimalInput(final EditText editText) {
+        final DecimalFormat decFormat = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
+        final DecimalFormatSymbols symbols=decFormat.getDecimalFormatSymbols();
+        final String defaultSeperator = Character.toString(symbols.getDecimalSeparator());
+        editText.setHint(String.format("0%s00",defaultSeperator));
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.toString().contains(defaultSeperator))
+                    editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+                else
+                    editText.setKeyListener(DigitsKeyListener.getInstance("0123456789" + defaultSeperator));
+            }
+        });
     }
 }

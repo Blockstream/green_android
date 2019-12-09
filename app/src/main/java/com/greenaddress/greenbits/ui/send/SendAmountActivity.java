@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,14 +27,16 @@ import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
-import com.greenaddress.greenbits.ui.components.FontFitEditText;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -56,7 +58,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private TextView mAccountBalance;
     private Button mNextButton;
     private Button mSendAllButton;
-    private FontFitEditText mAmountText;
+    private EditText mAmountText;
     private Button mUnitButton;
 
     private boolean mIsFiat = false;
@@ -106,6 +108,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mAccountBalance = UI.find(this, R.id.accountBalanceText);
 
         mAmountText = UI.find(this, R.id.amountText);
+        UI.localeDecimalInput(mAmountText);
         mUnitButton = UI.find(this, R.id.unitButton);
 
         mAmountText.addTextChangedListener(this);
@@ -345,8 +348,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             updateFeeSummaries();
 
             if (mCurrentAmount != null) {
-                mAmountText.setText(isFiat() ? mCurrentAmount.get("fiat").asText() : mCurrentAmount.get(
-                                        getBitcoinUnitClean()).asText());
+                setAmountText(mAmountText, mIsFiat, mCurrentAmount);
             }
         } else {
             final boolean isLiquid = networkData.getLiquid();
@@ -368,24 +370,24 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     private void onCustomFeeClicked() {
         long customValue = mFeeEstimates[mButtonIds.length - 1];
-        final String hint = UI.getFeeRateString(customValue);
-        final String initValue = String.format(Locale.US, "%.2f", customValue/1000.0);
 
-        mCustomFeeDialog = new MaterialDialog.Builder(this)
-                           .title(R.string.id_set_custom_fee_rate)
-                           .positiveText(android.R.string.ok)
-                           .negativeText(android.R.string.cancel)
-                           .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
-                           .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
-                           .input(hint,
-                                  initValue,
-                                  false,
-                                  (dialog, input) -> {
+        final String initValue = Model.getNumberFormat(2).format(customValue/1000.0);
+
+        final View v = UI.inflateDialog(this, R.layout.dialog_set_custom_feerate);
+        final EditText rateEdit = UI.find(v, R.id.set_custom_feerate_amount);
+        UI.localeDecimalInput(rateEdit);
+        rateEdit.setText(initValue);
+
+        final MaterialDialog dialog;
+        dialog = UI.popup(this, R.string.id_set_custom_fee_rate)
+                 .customView(v, true)
+                 .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
+                 .onPositive((dlg, which) -> {
             try {
-                final String rateText = input.toString().trim();
+                final String rateText = rateEdit.getText().toString().trim();
                 if (rateText.isEmpty())
                     throw new Exception();
-                final double feePerByte = Double.valueOf(rateText);
+                final double feePerByte = Model.getNumberFormat(2).parse(rateText).doubleValue();
                 final long feePerKB = (long) (feePerByte * 1000);
                 if (feePerKB < mMinFeeRate) {
                     UI.toast(this, getString(R.string.id_fee_rate_must_be_at_least_s,
@@ -405,9 +407,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 updateTransaction(mFeeButtons[mSelectedFee]);
             } catch (final Exception e) {
                 e.printStackTrace();
-                onClick(mFeeButtons[1]);                                    // FIXME: Get from user config
+                onClick(mFeeButtons[1]);          // FIXME: Get from user config
             }
-        }).show();
+        }).build();
+        UI.showDialog(dialog);
     }
 
     private void updateTransaction(final View caller) {
@@ -487,11 +490,14 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private void updateFeeSummaries() {
+        if (mVsize == null)
+            return;
+
         for (int i = 0; i < mButtonIds.length; ++i) {
-            long currentEstimate = mFeeEstimates[i];
-            final String feeRateString = UI.getFeeRateString(currentEstimate);
-            final long amount = (currentEstimate * mVsize)/1000L;
             try {
+                long currentEstimate = mFeeEstimates[i];
+                final String feeRateString = UI.getFeeRateString(currentEstimate);
+                final long amount = (currentEstimate * mVsize)/1000L;
                 final String formatted = isFiat() ? getModel().getFiat(amount, true) : getModel().getBtc(amount, true);
                 mFeeButtons[i].setSummary(mVsize == null ?
                                           String.format("(%s)", feeRateString) :
@@ -554,10 +560,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         return getModel().getBitcoinOrLiquidUnit();
     }
 
-    private String getBitcoinUnitClean() {
-        return getModel().getUnitKey();
-    }
-
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -566,10 +568,18 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final String key = isAsset() ? mSelectedAsset : isFiat() ? "fiat" : getBitcoinUnitClean();
         if (key.isEmpty())
             return;
-        final String value = mAmountText.getText().toString();
+        final String localizedValue = mAmountText.getText().toString();
+        String value = "0";
+        try {
+            value = Model.getNumberFormat(8).parse(localizedValue).toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode amount = mapper.createObjectNode();
-        amount.put(key, value.isEmpty() ? "0" : value);
+
+        amount.put(key, value);
         if (isAsset()) {
             final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
             final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
