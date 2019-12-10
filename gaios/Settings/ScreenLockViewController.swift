@@ -36,7 +36,10 @@ class ScreenLockViewController: UIViewController {
 
     func updateValues() {
         content.helpLabel.text = ""
-        let screenlock = getGAService().getSettings()!.getScreenLock()
+        guard let screenlock = getGAService().getSettings()?.getScreenLock() else {
+            Toast.show(NSLocalizedString("id_operation_failure", comment: ""))
+            return
+        }
         if GreenAddressService.isTemporary {
             content.bioSwitch.isOn = false
             content.bioSwitch.isEnabled = false

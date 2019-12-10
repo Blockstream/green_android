@@ -110,7 +110,9 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func setButton() {
-        let settings = getGAService().getSettings()!
+        guard let settings = getGAService().getSettings() else {
+            return
+        }
         if selectedType == TransactionType.BTC {
             content.fiatSwitchButton.setTitle(settings.denomination.string, for: UIControl.State.normal)
             content.fiatSwitchButton.backgroundColor = UIColor.customMatrixGreen()
@@ -190,7 +192,9 @@ class ReceiveBtcViewController: KeyboardViewController {
         amountText = amountText.isEmpty ? "0" : amountText
         guard let number = Double(amountText) else { return nil }
         if number < 0 { return nil }
-        let denomination = getGAService().getSettings()!.denomination
+        guard let denomination = getGAService().getSettings()?.denomination else {
+            return 0
+        }
         let key = selectedType == TransactionType.BTC ? denomination.rawValue : "fiat"
         return Balance.convert(details: [key: amountText])?.satoshi
     }
