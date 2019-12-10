@@ -14,26 +14,29 @@ class TransactionStatusTableCell: UITableViewCell {
     @IBOutlet weak var increaseFeeStackView: UIStackView!
 
     func configure(for transaction: Transaction, isLiquid: Bool) {
+        let blockHeight = getGAService().getBlockheight()
         var status: TransactionStatus = .unconfirmed
         if transaction.blockHeight == 0 {
-            statusLabel.textColor = UIColor.errorRed()
             statusLabel.text = NSLocalizedString("id_unconfirmed", comment: "")
-        } else if isLiquid && getGAService().getBlockheight() - transaction.blockHeight < 1 {
+            statusLabel.textColor = UIColor.errorRed()
+        } else if isLiquid && blockHeight < transaction.blockHeight + 1 {
             status = .confirming
             statusLabel.textColor = UIColor.customTitaniumLight()
             statusLabel.text = NSLocalizedString("id_12_confirmations", comment: "")
-        } else if !isLiquid && getGAService().getBlockheight() - transaction.blockHeight < 5 {
-            status = .confirming
-            statusLabel.textColor = UIColor.customTitaniumLight()
-            let blocks = getGAService().getBlockheight() - transaction.blockHeight + 1
-            statusLabel.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), blocks)
+        } else if !isLiquid && blockHeight < transaction.blockHeight + 5 {
+            if blockHeight >= transaction.blockHeight {
+                status = .confirming
+                let confirmCount = (blockHeight - transaction.blockHeight) + 1
+                statusLabel.textColor = UIColor.customTitaniumLight()
+                statusLabel.text = String(format: NSLocalizedString("id_d6_confirmations", comment: ""), confirmCount)
+            }
         } else {
             status = .confirmed
             statusLabel.textColor = UIColor.customMatrixGreen()
             statusLabel.text = NSLocalizedString("id_completed", comment: "")
         }
 
-        let showBumpFee = !isLiquid && transaction.canRBF && !getGAService().isWatchOnly && !getGAService().getTwoFactorReset()!.isResetActive
+        let showBumpFee = !isLiquid && transaction.canRBF && !getGAService().isWatchOnly && !(getGAService().getTwoFactorReset()?.isResetActive ?? false)
         statusImageView.isHidden = !(status == .confirmed)
         increaseFeeStackView.isHidden = !showBumpFee
     }
