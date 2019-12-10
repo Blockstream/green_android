@@ -280,8 +280,10 @@ class SettingsViewController: UIViewController {
 extension SettingsViewController {
 
     func logout() {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        appDelegate?.logout(with: false)
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.logout(with: false)
+        }
     }
 
     func setWatchOnly(username: String, password: String) {

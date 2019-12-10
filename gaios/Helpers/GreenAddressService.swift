@@ -136,8 +136,10 @@ class GreenAddressService {
                 let json = try JSONSerialization.data(withJSONObject: data, options: [])
                 let connection = try JSONDecoder().decode(Connection.self, from: json)
                 if connection.loginRequired == true {
-                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                    appDelegate?.logout(with: false)
+                    DispatchQueue.main.async {
+                        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                        appDelegate?.logout(with: false)
+                    }
                 } else {
                     post(event: EventType.Network, data: data)
                 }
