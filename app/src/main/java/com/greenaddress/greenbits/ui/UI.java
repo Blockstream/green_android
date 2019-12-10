@@ -442,16 +442,34 @@ public abstract class UI {
     public static void localeDecimalInput(final EditText editText) {
         final DecimalFormat decFormat = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
         final DecimalFormatSymbols symbols=decFormat.getDecimalFormatSymbols();
-        final String defaultSeperator = Character.toString(symbols.getDecimalSeparator());
-        editText.setHint(String.format("0%s00",defaultSeperator));
+        final String defaultSeparator = Character.toString(symbols.getDecimalSeparator());
+        final String otherSeparator = ".".equals(defaultSeparator) ? "," : ".";
+
+        editText.setHint(String.format("0%s00",defaultSeparator));
 
         editText.addTextChangedListener(new TextWatcher() {
+            private boolean isEditing =false;
+            @Override
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+                Log.d(TAG,s + " " + start + " " + before + " " + count);
+            }
+
+
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.toString().contains(defaultSeperator))
+                if (isEditing)
+                    return;
+                isEditing = true;
+                final int index = editable.toString().indexOf(otherSeparator);
+                if (index > 0)
+                    editable.replace(index,index+1, defaultSeparator);
+
+                if (editable.toString().contains(".") || editable.toString().contains(","))
                     editText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
                 else
-                    editText.setKeyListener(DigitsKeyListener.getInstance("0123456789" + defaultSeperator));
+                    editText.setKeyListener(DigitsKeyListener.getInstance("0123456789.,"));
+
+                isEditing =false;
             }
         });
     }
