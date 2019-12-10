@@ -120,20 +120,24 @@ class ScreenLocker {
 
     func showLockWindow() {
         // Hide Root Window
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        appDelegate.window!.isHidden = true
-        ScreenLockWindow.shared.show()
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.window?.isHidden = true
+            ScreenLockWindow.shared.show()
+        }
     }
 
     func hideLockWindow() {
-        ScreenLockWindow.shared.hide()
-        // Show Root Window
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        appDelegate.window!.isHidden = false
-        // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
-        // In the normal case, that means the ViewController will call `becomeFirstResponder`
-        // on the vc on top of its navigation stack.
-        appDelegate.window!.makeKeyAndVisible()
+        DispatchQueue.main.async {
+            ScreenLockWindow.shared.hide()
+            // Show Root Window
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.window?.isHidden = false
+            // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
+            // In the normal case, that means the ViewController will call `becomeFirstResponder`
+            // on the vc on top of its navigation stack.
+            appDelegate?.window?.makeKeyAndVisible()
+        }
     }
 
     func ensureUI() {
@@ -156,7 +160,9 @@ class ScreenLocker {
             return
         }
         clear()
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        appDelegate?.logout(with: false)
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.logout(with: false)
+        }
     }
 }
