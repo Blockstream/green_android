@@ -12,7 +12,6 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-import java.io.IOException;
 import java.util.List;
 
 public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -63,7 +62,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 h.mainBalanceText.setText(valueBitcoin);
                 h.mainBalanceUnitText.setText(" " + mModel.getBitcoinOrLiquidUnit());
                 h.mainLocalBalanceText.setText("≈  " + valueFiat);
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
             }
             h.itemView.setOnClickListener(view -> {

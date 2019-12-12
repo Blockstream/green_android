@@ -11,8 +11,6 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-import java.io.IOException;
-
 /**
  * Activity showing details about an asset (L-BTC excluded)
  */
@@ -100,7 +98,7 @@ public class AssetActivity extends LoggedActivity {
         try {
             final String amount = getModel().getAsset(mSatoshi, mAssetId, getAssetInfo(), true);
             mAssetBalanceText.setText(amount);
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
     }

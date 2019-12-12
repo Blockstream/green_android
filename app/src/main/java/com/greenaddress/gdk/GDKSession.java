@@ -7,7 +7,6 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.blockstream.libgreenaddress.GDK;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,7 +32,6 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 
 import org.bitcoinj.core.AddressFormatException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -72,7 +70,7 @@ public class GDKSession {
         return instance;
     }
 
-    public void connect(final String network, final boolean isDebug) throws RuntimeException {
+    public void connect(final String network, final boolean isDebug) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("name", network);
         details.put("use_tor", false);
@@ -80,7 +78,7 @@ public class GDKSession {
         GDK.connect(mNativeSession, details);
     }
 
-    public void connectWithProxy(final String network, final String proxyAsString, final boolean useTor, boolean isDebug) throws RuntimeException {
+    public void connectWithProxy(final String network, final String proxyAsString, final boolean useTor, boolean isDebug) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("name", network);
         details.put("proxy", proxyAsString);
@@ -89,42 +87,42 @@ public class GDKSession {
         GDK.connect(mNativeSession, details);
     }
 
-    public void reconnectNow() {
+    public void reconnectNow() throws Exception {
         final ReconnectHint hint = new ReconnectHint();
         hint.setHint("now");
         Log.d("reconnectNow",hint.toString());
         GDK.reconnect_hint(mNativeSession, hint);
     }
 
-    public void reconnectDisable() {
+    public void reconnectDisable() throws Exception {
         final ReconnectHint hint = new ReconnectHint();
         hint.setHint("disable");
         Log.d("reconnectDisable",hint.toString());
         GDK.reconnect_hint(mNativeSession, hint);
     }
 
-    public void disconnect() {
+    public void disconnect() throws Exception {
         GDK.disconnect(mNativeSession);
     }
 
-    public void loginWithPin(final String pin, final PinData pinData) {
+    public void loginWithPin(final String pin, final PinData pinData) throws Exception {
         GDK.login_with_pin(mNativeSession, pin, pinData);
     }
 
-    public String getTorSocks5() {
+    public String getTorSocks5() throws Exception {
         return GDK.get_tor_socks5(mNativeSession);
     }
 
-    public String getWatchOnlyUsername() {
+    public String getWatchOnlyUsername() throws Exception {
         return GDK.get_watch_only_username(mNativeSession);
     }
 
-    public GDKTwoFactorCall login(final Activity parent, final HWDeviceData hwDevice, final String mnemonic, final String mnemonicPassword) {
+    public GDKTwoFactorCall login(final Activity parent, final HWDeviceData hwDevice, final String mnemonic, final String mnemonicPassword) throws Exception {
         final ObjectNode hw = hwDevice == null ? mObjectMapper.createObjectNode() : mObjectMapper.valueToTree(hwDevice);
         return new GDKTwoFactorCall(parent, GDK.login(mNativeSession, hw, mnemonic, mnemonicPassword));
     }
 
-    public void loginWatchOnly(final String username, final String password) {
+    public void loginWatchOnly(final String username, final String password) throws Exception {
         GDK.login_watch_only(mNativeSession, username, password);
     }
 
@@ -153,11 +151,11 @@ public class GDKSession {
         return null;
     }
 
-    public void setWatchOnly(final String username, final String password) {
+    public void setWatchOnly(final String username, final String password) throws Exception {
         GDK.set_watch_only(mNativeSession, username, password);
     }
 
-    public List<SubaccountData> getSubAccounts() throws IOException {
+    public List<SubaccountData> getSubAccounts() throws Exception {
         final ArrayNode accounts = (ArrayNode) GDK.get_subaccounts(mNativeSession);
         return mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts), new TypeReference<List<SubaccountData>>() {});
     }
@@ -169,7 +167,7 @@ public class GDKSession {
         return new GDKTwoFactorCall(parent, GDK.create_subaccount(mNativeSession, details));
     }
 
-    public TwoFactorConfigData getTwoFactorConfig() throws IOException  {
+    public TwoFactorConfigData getTwoFactorConfig() throws Exception  {
         final ObjectNode twofactorConfig = (ObjectNode) GDK.get_twofactor_config(mNativeSession);
         final TwoFactorConfigData twoFactorConfigData = mObjectMapper.treeToValue(twofactorConfig, TwoFactorConfigData.class);
         debugEqual(twofactorConfig, twoFactorConfigData);
@@ -190,7 +188,7 @@ public class GDKSession {
         return map;
     }
 
-    public Map<String, Bitmap> getAssetsIcons(final boolean refresh) throws RuntimeException {
+    public Map<String, Bitmap> getAssetsIcons(final boolean refresh) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("icons", true);
         details.put("assets", false);
@@ -210,7 +208,7 @@ public class GDKSession {
         return icons;
     }
 
-    public Map<String, AssetInfoData> getAssetsInfos(final boolean refresh) throws IOException, RuntimeException {
+    public Map<String, AssetInfoData> getAssetsInfos(final boolean refresh) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("icons", false);
         details.put("assets", true);
@@ -229,7 +227,7 @@ public class GDKSession {
         return infos;
     }
 
-    public BalanceData convertBalance(final BalanceData balanceData) throws IOException, RuntimeException {
+    public BalanceData convertBalance(final BalanceData balanceData) throws Exception {
         final ObjectNode convertedBalanceData = (ObjectNode) GDK.convert_amount(mNativeSession, balanceData);
         if (balanceData.getAssetInfo() != null)
             convertedBalanceData.set("asset_info", balanceData.getAssetInfo().toObjectNode());
@@ -238,31 +236,31 @@ public class GDKSession {
         return balanceData1;
     }
 
-    public BalanceData convertBalance(final long satoshi) throws IOException, RuntimeException {
+    public BalanceData convertBalance(final long satoshi) throws Exception {
         final ObjectNode convertedBalanceData = (ObjectNode) convertSatoshi(satoshi);
         final BalanceData balanceData = BalanceData.from(mObjectMapper, convertedBalanceData);
         return balanceData;
     }
 
-    public ObjectNode convert(final ObjectNode amount) throws IOException, RuntimeException {
+    public ObjectNode convert(final ObjectNode amount) throws Exception {
         return (ObjectNode) GDK.convert_amount(mNativeSession, amount);
     }
 
-    public ObjectNode convertSatoshi(final long satoshi) throws IOException, RuntimeException {
+    public ObjectNode convertSatoshi(final long satoshi) throws Exception {
         final ObjectNode amount = mObjectMapper.createObjectNode();
         amount.set("satoshi", new LongNode(satoshi));
         return convert(amount);
     }
 
-    public ObjectNode createTransactionRaw(final JSONData createTransactionData) {
+    public ObjectNode createTransactionRaw(final JSONData createTransactionData) throws Exception {
         return (ObjectNode) GDK.create_transaction(mNativeSession, createTransactionData);
     }
 
-    public ObjectNode createTransactionRaw(final ObjectNode tx) {
+    public ObjectNode createTransactionRaw(final ObjectNode tx) throws Exception {
         return (ObjectNode) GDK.create_transaction(mNativeSession, tx);
     }
 
-    public ObjectNode createTransactionFromUri(final String uri, final int subaccount) throws AddressFormatException {
+    public ObjectNode createTransactionFromUri(final String uri, final int subaccount) throws Exception {
         final ObjectNode tx = mObjectMapper.createObjectNode();
         tx.put("subaccount", subaccount);
         final ObjectNode address = mObjectMapper.createObjectNode();
@@ -278,26 +276,26 @@ public class GDKSession {
         return transaction;
     }
 
-    public GDKTwoFactorCall signTransactionRaw(final Activity parent, final ObjectNode createTransactionData) {
+    public GDKTwoFactorCall signTransactionRaw(final Activity parent, final ObjectNode createTransactionData) throws Exception {
         return new GDKTwoFactorCall(parent, GDK.sign_transaction(mNativeSession, createTransactionData));
     }
 
-    public GDKTwoFactorCall sendTransactionRaw(final Activity parent, final ObjectNode txDetails) {
+    public GDKTwoFactorCall sendTransactionRaw(final Activity parent, final ObjectNode txDetails) throws Exception {
         final Object twoFactorCall = GDK.send_transaction(mNativeSession, txDetails);
         final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
         return gdkTwoFactorCall;
     }
 
-    public String broadcastTransactionRaw(final String txDetails) {
+    public String broadcastTransactionRaw(final String txDetails) throws Exception {
         return GDK.broadcast_transaction(mNativeSession, txDetails);
     }
 
-    public List<Long> getFeeEstimates() throws IOException {
+    public List<Long> getFeeEstimates() throws Exception {
         final ObjectNode feeEstimates = (ObjectNode) GDK.get_fee_estimates(mNativeSession);
         return mObjectMapper.treeToValue(feeEstimates, EstimatesData.class).getFees();
     }
 
-    public List<TransactionData> getUTXO(final long subAccount, final long confirmations) throws IOException {
+    public List<TransactionData> getUTXO(final long subAccount, final long confirmations) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
@@ -318,12 +316,12 @@ public class GDKSession {
         }
     }
 
-    public Map<String, Object> getAvailableCurrencies() throws JsonProcessingException {
+    public Map<String, Object> getAvailableCurrencies() throws Exception {
         final ObjectNode availableCurrencies = (ObjectNode) GDK.get_available_currencies(mNativeSession);
         return mObjectMapper.treeToValue(availableCurrencies, Map.class);
     }
 
-    public static List<NetworkData> getNetworks()  {
+    public static List<NetworkData> getNetworks() {
         final List<NetworkData> networksMap = new LinkedList<>();
         final ObjectNode networks = (ObjectNode) GDK.get_networks();
         final ArrayNode nodes = (ArrayNode) networks.get("all_networks");
@@ -344,11 +342,11 @@ public class GDKSession {
         return networksMap;
     }
 
-    public static void registerNetwork(final String name, final String networkJson ) {
+    public static void registerNetwork(final String name, final String networkJson) throws Exception {
         GDK.register_network(name, networkJson);
     }
 
-    public String getReceiveAddress(final int subAccount ) {
+    public String getReceiveAddress(final int subAccount) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         final ObjectNode receiveAddress = (ObjectNode) GDK.get_receive_address(mNativeSession, details);
@@ -363,35 +361,35 @@ public class GDKSession {
         return GDK.generate_mnemonic();
     }
 
-    public GDKTwoFactorCall registerUser(final Activity parent, final HWDeviceData hwDevice, final String mnemonic) {
+    public GDKTwoFactorCall registerUser(final Activity parent, final HWDeviceData hwDevice, final String mnemonic) throws Exception {
         final ObjectNode hw = hwDevice == null ? mObjectMapper.createObjectNode() : mObjectMapper.valueToTree(hwDevice);
         return new GDKTwoFactorCall(parent, GDK.register_user(mNativeSession, hw, mnemonic));
     }
 
-    public PinData setPin(final String mnemonic, final String pin, final String device) throws IOException {
+    public PinData setPin(final String mnemonic, final String pin, final String device) throws Exception {
         final ObjectNode pinData = (ObjectNode) GDK.set_pin(mNativeSession, mnemonic, pin, device);
         final PinData value = mObjectMapper.treeToValue(pinData, PinData.class);
         debugEqual(pinData, value);
         return value;
     }
 
-    public void destroy() {
+    public void destroy() throws Exception {
         GDK.destroy_session(mNativeSession);
         mNativeSession = null;
 
         instance = null;
     }
 
-    public Boolean changeMemo(final String txHashHex, final String memo) {
+    public Boolean changeMemo(final String txHashHex, final String memo) throws Exception {
         GDK.set_transaction_memo(mNativeSession, txHashHex, memo, GDK.GA_MEMO_USER);
         return true;
     }
 
-    public String getSystemMessage() {
+    public String getSystemMessage() throws Exception {
         return GDK.get_system_message(mNativeSession);
     }
 
-    public GDKTwoFactorCall ackSystemMessage(final Activity parent, final String message) {
+    public GDKTwoFactorCall ackSystemMessage(final Activity parent, final String message) throws Exception {
         return new GDKTwoFactorCall(parent, GDK.ack_system_message(mNativeSession, message));
     }
 
@@ -400,11 +398,11 @@ public class GDKSession {
         return GDK.get_mnemonic_passphrase(mNativeSession, "");
     }
 
-    public ObjectNode getSettings() {
+    public ObjectNode getSettings() throws Exception  {
         return (ObjectNode) GDK.get_settings(mNativeSession);
     }
 
-    protected static void debugEqual(final ObjectNode jsonNode, final JSONData data) {
+    protected static void debugEqual(final ObjectNode jsonNode, final JSONData data)  {
         if(!jsonNode.toString().equals(data.toString())) {
             final Class<? extends JSONData> aClass = data.getClass();
             Log.d("DBGEQ", "jsonData type " + aClass);
@@ -413,29 +411,29 @@ public class GDKSession {
         }
     }
 
-    public GDKTwoFactorCall changeSettingsTwoFactor(final Activity parent, final String method, final TwoFactorDetailData details) {
+    public GDKTwoFactorCall changeSettingsTwoFactor(final Activity parent, final String method, final TwoFactorDetailData details) throws Exception  {
         final Object twoFactorCall = GDK.change_settings_twofactor(mNativeSession, method, details);
         final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
         return gdkTwoFactorCall;
     }
 
-    public GDKTwoFactorCall twoFactorReset(final Activity parent, final String email, final boolean isDispute) {
+    public GDKTwoFactorCall twoFactorReset(final Activity parent, final String email, final boolean isDispute) throws Exception  {
         final Object twoFactorCall = GDK.twofactor_reset(mNativeSession, email, isDispute ? GDK.GA_TRUE : GDK.GA_FALSE);
         final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
         return gdkTwoFactorCall;
     }
 
-    public GDKTwoFactorCall twofactorCancelReset(final Activity parent) {
+    public GDKTwoFactorCall twofactorCancelReset(final Activity parent) throws Exception  {
         final Object twoFactorCall = GDK.twofactor_cancel_reset(mNativeSession);
         final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
         return gdkTwoFactorCall;
     }
 
-    public GDKTwoFactorCall twoFactorChangeLimits(final Activity parent, final ObjectNode limitsData) {
+    public GDKTwoFactorCall twoFactorChangeLimits(final Activity parent, final ObjectNode limitsData) throws Exception  {
         return new GDKTwoFactorCall(parent, GDK.twofactor_change_limits(mNativeSession, limitsData));
     }
 
-    public void sendNlocktimes() {
+    public void sendNlocktimes() throws Exception  {
         GDK.send_nlocktimes(mNativeSession);
     }
 
@@ -443,7 +441,7 @@ public class GDKSession {
         return mNotification;
     }
 
-    public GDKTwoFactorCall changeSettings(final Activity parent, final ObjectNode setting) {
+    public GDKTwoFactorCall changeSettings(final Activity parent, final ObjectNode setting) throws Exception  {
         return new GDKTwoFactorCall(parent, GDK.change_settings(mNativeSession, setting));
     }
 }

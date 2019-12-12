@@ -11,7 +11,6 @@ import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenbits.ui.UI;
 
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
@@ -188,16 +187,16 @@ public class Model {
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
     }
 
-    public String getFiat(final long satoshi, final boolean withUnit) throws IOException {
+    public String getFiat(final long satoshi, final boolean withUnit) throws Exception {
         return getFiat(getSession().convertBalance(satoshi), withUnit);
     }
 
-    public String getBtc(final long satoshi, final boolean withUnit) throws IOException {
+    public String getBtc(final long satoshi, final boolean withUnit) throws Exception {
         return getBtc(getSession().convertBalance(satoshi), withUnit);
     }
 
     public String getAsset(final long satoshi,  final String asset, final AssetInfoData assetInfo,
-                           final boolean withUnit) throws IOException {
+                           final boolean withUnit) throws Exception {
         final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset);
         final BalanceData balance = new BalanceData();
         balance.setSatoshi(satoshi);

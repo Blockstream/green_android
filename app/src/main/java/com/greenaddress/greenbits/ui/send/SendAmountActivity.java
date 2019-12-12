@@ -35,8 +35,6 @@ import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -261,7 +259,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 mAccountBalance.setText(getModel().getBtc(satoshi, true));
             else
                 mAccountBalance.setText(getModel().getAsset(satoshi, mSelectedAsset, info, true));
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
     }
@@ -466,7 +464,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                                             mSelectedAsset.equals("btc") ? getBitcoinUnitClean() : mSelectedAsset;
                         mAmountText.setText(convert(newSatoshi).get(isFiat() ? "fiat" : unit).asText());
                     }
-                } catch (final RuntimeException | IOException e) {
+                } catch (final Exception e) {
                     Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
                 }
                 if (mTx.get("transaction_vsize") != null)
@@ -480,7 +478,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
     }
 
-    public ObjectNode convert(final long satoshi) throws RuntimeException, IOException {
+    public ObjectNode convert(final long satoshi) throws Exception {
         final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
@@ -502,7 +500,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 mFeeButtons[i].setSummary(mVsize == null ?
                                           String.format("(%s)", feeRateString) :
                                           String.format("%s (%s)", formatted, feeRateString));
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             }
         }
@@ -593,7 +591,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 mCurrentAmount = getSession().convert(amount);
                 updateTransaction(null);
             }
-        } catch (final RuntimeException | IOException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
     }

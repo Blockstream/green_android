@@ -39,7 +39,6 @@ import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
@@ -150,7 +149,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final BalanceData balance = getSession().convertBalance(mTxItem.getSatoshi().get("btc"));
             btc = getModel().getBtc(balance, true);
             fiat = getModel().getFiat(balance, true);
-        } catch (final RuntimeException | IOException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             btc = "";
             fiat = "";
@@ -245,7 +244,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         try {
             final String btcFee = getModel().getBtc(fee, true);
             feeText.setText(String.format("%s (%s)", btcFee, UI.getFeeRateString(feeRate)));
-        } catch (final RuntimeException | IOException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
     }
@@ -328,11 +327,15 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             return;
         }
         getGAApp().getExecutor().submit(() -> {
-            final boolean res = getSession().changeMemo(mTxItem.getTxhash(), newMemo);
-            if (res) {
-                onFinishedSavingMemo();
-            } else {
-                runOnUiThread(() -> { UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG); });
+            try {
+                final boolean res = getSession().changeMemo(mTxItem.getTxhash(), newMemo);
+                if (res) {
+                    onFinishedSavingMemo();
+                } else {
+                    runOnUiThread(() -> { UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG); });
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

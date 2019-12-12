@@ -6,7 +6,6 @@ import android.util.SparseArray;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.greenaddress.greenapi.data.SubaccountData;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
 
@@ -50,7 +49,7 @@ public class SubaccountsDataObservable extends Observable {
             }
             Log.d("OBS", "setSubaccountData init took " + (System.currentTimeMillis()-millis) +"ms");
             setSubaccountsData(subAccounts);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

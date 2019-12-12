@@ -35,7 +35,6 @@ import com.greenaddress.greenbits.ui.components.FontAwesomeTextView;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.transactions.ListTransactionsAdapter.ViewHolder;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.List;
 
@@ -201,7 +200,7 @@ public class ListTransactionsAdapter extends
                 info = new AssetInfoData(assetId);
             final String amount = model.getAsset(tx.getSatoshi().get(assetId), assetId, info, true);
             return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
-        } catch (final RuntimeException | IOException e) {
+        } catch (final Exception e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
             return "";
         }

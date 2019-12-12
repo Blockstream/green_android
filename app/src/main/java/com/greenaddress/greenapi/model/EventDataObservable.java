@@ -27,12 +27,17 @@ public class EventDataObservable extends Observable implements Observer {
     }
 
     public void refresh() {
-        final String systemMessage = getSession().getSystemMessage();
-        if (!TextUtils.isEmpty(systemMessage)) {
-            // Add to system messages
-            pushEvent(new EventData(R.string.id_system_message, R.string.notification_format_string,
-                                    systemMessage));
+        try {
+            final String systemMessage = getSession().getSystemMessage();
+            if (!TextUtils.isEmpty(systemMessage)) {
+                // Add to system messages
+                pushEvent(new EventData(R.string.id_system_message, R.string.notification_format_string,
+                                        systemMessage));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     public List<EventData> getEventDataList() {

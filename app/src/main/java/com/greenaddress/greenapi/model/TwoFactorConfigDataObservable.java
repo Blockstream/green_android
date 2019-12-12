@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 
-import java.io.IOException;
 import java.util.Observable;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
@@ -27,7 +26,7 @@ public class TwoFactorConfigDataObservable extends Observable {
             try {
                 final TwoFactorConfigData twoFactorConfig = getSession().getTwoFactorConfig();
                 setTwoFactorConfigData(twoFactorConfig);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e("OBS", e.getMessage());
                 e.printStackTrace();
             }

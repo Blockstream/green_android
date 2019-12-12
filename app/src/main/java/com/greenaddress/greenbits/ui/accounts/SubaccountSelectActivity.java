@@ -18,7 +18,6 @@ import com.greenaddress.greenbits.ui.ThemeUtils;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -121,7 +120,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
             mTotalAmountBtc.setTextColor(ThemeUtils.resolveColorAccent(this));
             mTotalAmountBtc.setText(btcString);
             mTotalAmountFiat.setText(" ≈ " + fiatString);
-        } catch (final RuntimeException | IOException e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             UI.toast(this, R.string.id_you_are_not_connected_please, Toast.LENGTH_LONG);
         }

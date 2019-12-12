@@ -3,7 +3,6 @@ package com.greenaddress.greenapi.model;
 import android.util.Log;
 import android.util.Pair;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.util.concurrent.ListeningExecutorService;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class AvailableCurrenciesObservable extends Observable {
             try {
                 Map<String, Object> availableCurrencies = getSession().getAvailableCurrencies();
                 setAvailableCurrencies(availableCurrencies);
-            } catch (JsonProcessingException e) {
+            } catch (Exception e) {
                 Log.e("OBS", "getAvailableCurrencies error " +  e.getMessage());
             }
         });

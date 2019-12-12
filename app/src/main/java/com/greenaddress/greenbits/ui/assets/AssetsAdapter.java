@@ -11,14 +11,12 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.EntityData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.R;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +69,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             holder.mAssetDomain.setVisibility(View.GONE);
             try {
                 holder.mAssetValue.setText(mModel.getBtc(satoshi, true));
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
             }
         } else {
@@ -85,7 +83,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             }
             try {
                 holder.mAssetValue.setText(mModel.getAsset(satoshi, assetId, assetInfo, true));
-            } catch (final IOException e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }

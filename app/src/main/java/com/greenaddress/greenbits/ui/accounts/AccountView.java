@@ -18,8 +18,6 @@ import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-import java.io.IOException;
-
 public class AccountView extends CardView {
 
     private View mView;
@@ -107,7 +105,7 @@ public class AccountView extends CardView {
             mBalanceText.setText(valueBitcoin);
             mBalanceUnitText.setText(" " + model.getBitcoinOrLiquidUnit());
             mBalanceFiatText.setText("≈  " + valueFiat);
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
         }
     }

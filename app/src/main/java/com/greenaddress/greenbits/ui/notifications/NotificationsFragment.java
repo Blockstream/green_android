@@ -28,7 +28,6 @@ import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.preferences.GAPreferenceFragment;
 import com.greenaddress.greenbits.ui.transactions.TransactionActivity;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -122,7 +121,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             String amount;
             try {
                 amount = getModel().getBtc(satoshi, true);
-            } catch (final RuntimeException | IOException e) {
+            } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
                 amount = "";
             }

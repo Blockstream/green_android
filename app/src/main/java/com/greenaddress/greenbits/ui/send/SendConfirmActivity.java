@@ -31,7 +31,6 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -146,7 +145,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             return String.format("%s / %s",
                                  getModel().getBtc(amount, true),
                                  getModel().getFiat(amount, true));
-        } catch (final RuntimeException | IOException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             return "";
         }

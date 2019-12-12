@@ -103,7 +103,7 @@ public class ConnectionManager extends Observable {
         return mWatchOnlyUsername;
     }
 
-    public void connect(final Context context) throws RuntimeException {
+    public void connect(final Context context) throws Exception {
         final String network = PreferenceManager.getDefaultSharedPreferences(context).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
         final SharedPreferences preferences = context.getSharedPreferences(network, MODE_PRIVATE);
         final String proxyHost = preferences.getString(PrefKeys.PROXY_HOST, "");
@@ -198,8 +198,12 @@ public class ConnectionManager extends Observable {
         mLoginWithPin = false;
         mHWDevice = null;
         mHWResolver = null;
-        getSession().disconnect();
-        getSession().destroy();
+        try {
+            getSession().disconnect();
+            getSession().destroy();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         setState(ConnState.DISCONNECTED);
     }
 

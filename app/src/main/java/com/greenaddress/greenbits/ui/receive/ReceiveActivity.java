@@ -23,13 +23,11 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Observable;
 
@@ -145,7 +143,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
                 mCurrentAmount = getSession().convert(amount);
                 update(null, null);
             }
-        } catch (final RuntimeException | IOException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
     }

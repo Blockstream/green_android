@@ -662,7 +662,7 @@ public class SPV {
                     mPeerGroup.addPeerDiscovery(new DnsDiscovery(networkData.getNetworkParameters()));
                 }
 
-            } catch (final BlockStoreException | UnknownHostException | URISyntaxException e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }

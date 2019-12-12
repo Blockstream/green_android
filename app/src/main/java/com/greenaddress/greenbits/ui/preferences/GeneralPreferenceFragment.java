@@ -329,13 +329,17 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         } else {
             mWatchOnlyLogin.setSummary("");
             getGAApp().getExecutor().submit(() -> {
-                final String username2 = getSession().getWatchOnlyUsername();
-                getActivity().runOnUiThread(() -> {
-                    if (username2.isEmpty())
-                        mWatchOnlyLogin.setSummary(R.string.id_set_up_watchonly_credentials);
-                    else
-                        mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username2));
-                });
+                try {
+                    final String username2 = getSession().getWatchOnlyUsername();
+                    getActivity().runOnUiThread(() -> {
+                        if (username2.isEmpty())
+                            mWatchOnlyLogin.setSummary(R.string.id_set_up_watchonly_credentials);
+                        else
+                            mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username2));
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             });
         }
     }

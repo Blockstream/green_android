@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
 
@@ -25,7 +24,7 @@ public class FeeObservable extends Observable {
             try {
                 final List<Long> feeEstimates = getSession().getFeeEstimates();
                 setFees(feeEstimates);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

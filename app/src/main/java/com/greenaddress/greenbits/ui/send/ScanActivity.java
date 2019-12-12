@@ -399,15 +399,21 @@ public class ScanActivity extends GaActivity implements TextureView.SurfaceTextu
             sweepData.setFeeRate(feeRate);
             sweepData.setAddressees(balanceDataList);
             sweepData.setSubaccount(subaccount);
-            final ObjectNode transactionRaw = getSession().createTransactionRaw(sweepData);
-            final String error = transactionRaw.get("error").asText();
-            if (error.isEmpty()) {
-                result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
-            } else {
-                UI.toast(this, error, Toast.LENGTH_LONG);
+
+            try {
+                final ObjectNode transactionRaw = getSession().createTransactionRaw(sweepData);
+                final String error = transactionRaw.get("error").asText();
+                if (error.isEmpty()) {
+                    result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
+                } else {
+                    throw new Exception(error);
+                }
+            } catch (Exception e) {
+                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
                 cameraHandler.post(fetchAndDecodeRunnable);
                 return;
             }
+
         } else {
             final boolean startWithBitcoin = scanned.toLowerCase().startsWith("bitcoin:");
             if (networkData.getLiquid() && startWithBitcoin) {

@@ -123,6 +123,10 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             e.printStackTrace();
             UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
             return;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            return;
         }
         intent.putExtra("internal_qr", getIntent().getBooleanExtra("internal_qr", false));
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
@@ -141,7 +145,13 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         final View snackbarView = mSnackbar.getView();
         final TextView textView = snackbarView.findViewById(R.id.snackbar_text);
         textView.setTextColor(Color.RED);
-        mSnackbar.setAction(R.string.id_try_now, v -> getSession().reconnectNow());
+        mSnackbar.setAction(R.string.id_try_now, v -> {
+            try {
+                getSession().reconnectNow();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
         // Set up the action bar.
         final SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
