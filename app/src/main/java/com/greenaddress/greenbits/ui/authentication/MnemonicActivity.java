@@ -277,7 +277,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     void loginWithMnemonic(String mnemonic, String password) {
         try {
             getConnectionManager().connect(this);
-            getConnectionManager().loginWithMnemonic(mnemonic, "");
+            getConnectionManager().loginWithMnemonic(mnemonic, password);
             onPostLogin();
             runOnUiThread(() -> {
                 stopLoading();
