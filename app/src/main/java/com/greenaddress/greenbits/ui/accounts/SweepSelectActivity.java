@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
@@ -15,7 +15,7 @@ import java.util.List;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SweepSelectActivity extends GaActivity implements SweepAdapter.OnAccountSelected {
+public class SweepSelectActivity extends LoggedActivity implements SweepAdapter.OnAccountSelected {
 
     private RecyclerView mRecyclerView;
     private List<SubaccountData> mSubaccountData;

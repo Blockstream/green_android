@@ -5,12 +5,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 
 import androidx.fragment.app.Fragment;
 
-public class SubaccountAddActivity extends GaActivity {
+public class SubaccountAddActivity extends LoggedActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
