@@ -37,15 +37,12 @@ public class SettingsObservable extends Observable {
         refresh();
     }
 
-    public void refresh() {
-        mExecutor.submit(() -> {
-            try {
-                ;
-                final ObjectNode settings = getSession().getSettings();
-                setSettings(mObjectMapper.convertValue(settings, SettingsData.class));
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-        });
+    private void refresh() {
+        try {
+            final ObjectNode settings = getSession().getSettings();
+            setSettings(mObjectMapper.convertValue(settings, SettingsData.class));
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 }

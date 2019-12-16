@@ -129,33 +129,24 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     }
 
     private void initSettings() {
-        final Observer observer = new Observer() {
-            @Override
-            public void update(final Observable observable, final Object o) {
-                if (observable instanceof SettingsObservable) {
-                    Log.d(TAG,"initSettings");
-                    final SettingsData settings = ((SettingsObservable) observable).getSettings();
-                    final SharedPreferences pref =
-                        PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    final SharedPreferences.Editor edit = pref.edit();
-                    if (settings.getPricing() != null)
-                        edit.putString(PrefKeys.PRICING, settings.getPricing().toString());
-                    if (settings.getNotifications() != null)
-                        edit.putBoolean(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS,
-                                        settings.getNotifications().isEmailIncoming());
-                    if (settings.getAltimeout() != null)
-                        edit.putString(PrefKeys.ALTIMEOUT, String.valueOf(settings.getAltimeout()));
-                    if (settings.getUnit() != null)
-                        edit.putString(PrefKeys.UNIT, settings.getUnit());
-                    if (settings.getRequiredNumBlocks() != null)
-                        edit.putString(PrefKeys.REQUIRED_NUM_BLOCKS, String.valueOf(settings.getRequiredNumBlocks()));
-                    if (settings.getPgp() != null)
-                        edit.putString(PrefKeys.PGP_KEY, settings.getPgp());
-                    edit.apply();
-                    getModel().getSettingsObservable().deleteObserver(this);
-                }
-            }
-        };
-        getModel().getSettingsObservable().addObserver(observer);
+        Log.d(TAG,"initSettings");
+        final SettingsData settings = getModel().getSettings();
+        final SharedPreferences pref =
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final SharedPreferences.Editor edit = pref.edit();
+        if (settings.getPricing() != null)
+            edit.putString(PrefKeys.PRICING, settings.getPricing().toString());
+        if (settings.getNotifications() != null)
+            edit.putBoolean(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS,
+                            settings.getNotifications().isEmailIncoming());
+        if (settings.getAltimeout() != null)
+            edit.putString(PrefKeys.ALTIMEOUT, String.valueOf(settings.getAltimeout()));
+        if (settings.getUnit() != null)
+            edit.putString(PrefKeys.UNIT, settings.getUnit());
+        if (settings.getRequiredNumBlocks() != null)
+            edit.putString(PrefKeys.REQUIRED_NUM_BLOCKS, String.valueOf(settings.getRequiredNumBlocks()));
+        if (settings.getPgp() != null)
+            edit.putString(PrefKeys.PGP_KEY, settings.getPgp());
+        edit.apply();
     }
 }
