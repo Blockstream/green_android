@@ -66,7 +66,7 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
 
     @JsonIgnore
     public boolean IsNetworkMainnet() {
-        return getNetworkParameters() == MainNetParams.get();
+        return getMainnet();
     }
 
     @JsonIgnore

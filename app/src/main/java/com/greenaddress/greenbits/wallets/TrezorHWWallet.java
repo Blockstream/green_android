@@ -191,7 +191,7 @@ public class TrezorHWWallet extends HWWallet {
     private TrezorType.HDNodeType getUserXpub(final GaActivity parent, final List<Integer> path) {
         final String key = Joiner.on("/").join(path);
 
-        if (parent != null && !mUserXPubs.containsKey(key)) {
+        if (!mUserXPubs.containsKey(key)) {
             Message m = mTrezor.io(TrezorMessage.GetPublicKey.newBuilder().addAllAddressN(path));
             m = handleCommon(parent, m);
             if (m.getClass().getSimpleName().equals("PublicKey")) {

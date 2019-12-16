@@ -99,8 +99,9 @@ public class SubaccountReviewFragment extends GAFragment {
     private void createAccount(final String type, final Editable input) {
         mApp.getExecutor().execute(() -> {
             try {
-                GDKSession.getSession().createSubAccount(getActivity(), input.toString(), type).resolve(null,
-                                                                                                        null);
+                GDKSession.getSession().createSubAccount(getGaActivity(), input.toString(), type).resolve(null,
+                                                                                                          getConnectionManager()
+                                                                                                          .getHWResolver());
                 getModel().getSubaccountsDataObservable().refresh();
             } catch (final Exception e) {
                 getGaActivity().runOnUiThread(() -> { Toast.makeText(getContext(), R.string.id_operation_failure,
