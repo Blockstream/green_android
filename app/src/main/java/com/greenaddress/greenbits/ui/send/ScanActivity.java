@@ -48,7 +48,7 @@ import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SweepData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
@@ -68,7 +68,7 @@ import de.schildbach.wallet.ui.scan.CameraManager;
 import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
-public class ScanActivity extends GaActivity implements TextureView.SurfaceTextureListener, View.OnClickListener,
+public class ScanActivity extends LoggedActivity implements TextureView.SurfaceTextureListener, View.OnClickListener,
     TextWatcher {
 
     public static final String INTENT_STRING_TX = "intent_string_tx";
