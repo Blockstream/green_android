@@ -14,6 +14,22 @@ build_tag_release:
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
+build_debug:
+  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    expire_in: 14 days
+    when: on_success
+    paths:
+    - app/build/outputs/apk/*/debug/*.apk
+    - app/build/outputs/mapping/*/debug/mapping.txt
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./gradlew lintProductionRelease
+    - ./gradlew assembleProductionDebug
+
 build_tag_osx_release:
   tags:
     - osx
