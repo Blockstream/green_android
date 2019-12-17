@@ -130,8 +130,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     protected String getBitcoinUnitClean() {
-        final String unit = getModel().getBitcoinOrLiquidUnit();
-        return Model.toUnitKey(unit);
+        return getModel().getUnitKey();
     }
 
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount) {
