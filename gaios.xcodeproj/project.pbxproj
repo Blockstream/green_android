@@ -1374,6 +1374,7 @@
 				INFOPLIST_FILE = gaios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 3.2.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
@@ -1414,6 +1415,7 @@
 				INFOPLIST_FILE = gaios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 3.2.9;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-lc++",
