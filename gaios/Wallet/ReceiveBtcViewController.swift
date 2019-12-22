@@ -106,8 +106,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         Guarantee().compactMap(on: bgq) {
             return wallet.getAddress()
         }.done { address in
-            let uri = getGdkNetwork(getNetwork()).liquid || self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC() ?? 0)
-            UIPasteboard.general.string = uri
+            UIPasteboard.general.string = self.uriBitcoin(address: address)
             Toast.show(NSLocalizedString("id_address_copied_to_clipboard", comment: ""), timeout: Toast.SHORT)
         }.catch { _ in }
     }
@@ -160,21 +159,20 @@ class ReceiveBtcViewController: KeyboardViewController {
             if address.isEmpty {
                 throw GaError.GenericError
             }
-            let uri: String
-            if getGdkNetwork(getNetwork()).liquid {
-                uri = address
-                self.content.walletAddressLabel.text = address
-            } else if self.getSatoshi() == 0 {
-                uri = Bip21Helper.btcURIforAddress(address: address)
-                self.content.walletAddressLabel.text = address
-            } else {
-                uri = Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC() ?? 0)
-                self.content.walletAddressLabel.text = uri
-            }
+            let uri = self.uriBitcoin(address: address)
+            self.content.walletAddressLabel.text = uri
             self.content.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: self.content.walletQRCode.frame)
         }.catch { _ in
             Toast.show(NSLocalizedString("id_you_are_not_connected_to_the", comment: ""), timeout: Toast.SHORT)
         }
+    }
+
+    func uriBitcoin(address: String) -> String {
+        let satoshi = self.getSatoshi() ?? 0
+        if getGdkNetwork(getNetwork()).liquid || satoshi == 0 {
+            return address
+        }
+        return String(format: "bitcoin:%@?amount=%.8f", address, getBTC() ?? 0)
     }
 
     override func viewDidLayoutSubviews() {
@@ -195,7 +193,7 @@ class ReceiveBtcViewController: KeyboardViewController {
             if address.isEmpty {
                 throw GaError.GenericError
             }
-            let uri = self.getSatoshi() == 0 ? address : Bip21Helper.btcURIforAmount(address: address, amount: self.getBTC() ?? 0)
+            let uri = self.uriBitcoin(address: address)
             let activityViewController = UIActivityViewController(activityItems: [uri], applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = self.view
             self.present(activityViewController, animated: true, completion: nil)
