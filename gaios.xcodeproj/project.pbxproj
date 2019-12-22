@@ -40,7 +40,6 @@
 		0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */; };
 		0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */; };
 		0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */; };
-		09B761AD212280C800989B1D /* bip21Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B761AC212280C800989B1D /* bip21Helper.swift */; };
 		09DA612620E73A2300C3EA03 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
@@ -210,7 +209,6 @@
 		0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBTCConfirmationViewController.swift; sourceTree = "<group>"; };
 		0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLoginViewController.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
-		09B761AC212280C800989B1D /* bip21Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bip21Helper.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
 		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -389,7 +387,6 @@
 				811006E02199C5BF00D14414 /* UIErrorLabel.swift */,
 				09309F19212F8D8700DE093B /* SearchTextField.swift */,
 				0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */,
-				09B761AC212280C800989B1D /* bip21Helper.swift */,
 				098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */,
 				811EFD8D21A719FC0006EA8C /* KeyboardViewController.swift */,
 				811ED52A21BFCE4D0033A4A1 /* GreenAddressService.swift */,
@@ -1134,7 +1131,6 @@
 				6DC4D155234D2040008207AF /* NetworkSelectionSettingsView.swift in Sources */,
 				81923A35228089BE0097BEA8 /* AssetTableCell.swift in Sources */,
 				676FCF201F9D0CF800354E93 /* AppDelegate.swift in Sources */,
-				09B761AD212280C800989B1D /* bip21Helper.swift in Sources */,
 				098192832176D05500D8434F /* EventWindow.swift in Sources */,
 				81E9B80621C946CE004D87B6 /* WalletFullCardView.swift in Sources */,
 				097D20CC218161B10089C379 /* WatchOnlySignIn.swift in Sources */,
