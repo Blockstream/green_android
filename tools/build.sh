@@ -50,7 +50,7 @@ Pods/SwiftLint/swiftlint
 
 SDK=$(xcodebuild -showsdks | grep $DEVICE | tr -s ' ' | tr -d '\-' | cut -f 3-)
 if [[ "$SIGN_EXPORT" -eq 1 ]]; then
-    xcodebuild CODE_SIGN_STYLE="Manual" PROVISIONING_PROFILE="b38d1a3f-9e58-491f-8e19-f9a9db0bbd45" DEVELOPMENT_TEAM="D9W37S9468" CODE_SIGN_IDENTITY="iPhone Distribution" -$SDK -workspace gaios.xcworkspace -scheme gaios clean archive -configuration release -archivePath ./build/Green.xcarchive
+    xcodebuild CODE_SIGN_STYLE="Manual" PROVISIONING_PROFILE="e79dac47-b4e7-4240-abab-12eb0e6fe96e" DEVELOPMENT_TEAM="D9W37S9468" CODE_SIGN_IDENTITY="iPhone Distribution" -$SDK -workspace gaios.xcworkspace -scheme gaios clean archive -configuration release -archivePath ./build/Green.xcarchive
     xcodebuild -exportArchive -archivePath ./build/Green.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath ./build/Green.ipa
 else
     xcodebuild CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -$SDK -workspace gaios.xcworkspace -scheme gaios clean build -configuration release
