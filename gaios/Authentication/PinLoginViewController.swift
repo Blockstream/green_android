@@ -132,10 +132,8 @@ class PinLoginViewController: UIViewController {
                             return
                         }
                     }
-                case .GenericError:
-                    break
                 default:
-                    message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+                    break
                 }
             }
             self.pinCode = ""

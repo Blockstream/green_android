@@ -5,15 +5,24 @@ import Security
 class AuthenticationTypeHandler {
     public enum AuthError: Error, Equatable {
         case CanceledByUser
-        case ServiceNotAvailable(_ desc: String)
         case NotSupported
         case PasscodeNotSet
-        case SecurityError(_ desc: String)
+        case ConnectionFailed
         case KeychainError(_ status: OSStatus)
+        case ServiceNotAvailable(_ desc: String)
+        case SecurityError(_ desc: String)
 
         var localizedDescription: String {
             get {
                 switch self {
+                case .CanceledByUser:
+                    return NSLocalizedString("id_action_canceled", comment: "")
+                case .NotSupported:
+                    return NSLocalizedString("id_your_ios_device_might_not_be", comment: "")
+                case .PasscodeNotSet:
+                    return NSLocalizedString("id_set_up_a_passcode_for_your_ios", comment: "")
+                case .ConnectionFailed:
+                    return NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
                 case .KeychainError(let status):
                     if #available(iOS 11.3, *) {
                         let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString
@@ -23,12 +32,6 @@ class AuthenticationTypeHandler {
                     }
                 case .ServiceNotAvailable(let desc), .SecurityError(let desc):
                     return desc
-                case .NotSupported:
-                    return NSLocalizedString("id_your_ios_device_might_not_be", comment: "")
-                case .PasscodeNotSet:
-                    return NSLocalizedString("id_set_up_a_passcode_for_your_ios", comment: "")
-                case .CanceledByUser:
-                    return NSLocalizedString("id_action_canceled", comment: "")
                 }
             }
         }
