@@ -6,6 +6,12 @@ class DesignableButton: UIButton {}
 extension UIButton {
     private static var gradientLayers = [UIButton: (CAGradientLayer, CAGradientLayer)]()
 
+    override open var isHighlighted: Bool {
+        didSet {
+            self.alpha = isHighlighted ? 0.6 : 1
+        }
+    }
+
     var enabledGradientLayer: CAGradientLayer {
         get {
             return createGradients().0
