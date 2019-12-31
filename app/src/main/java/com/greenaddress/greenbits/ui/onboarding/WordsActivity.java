@@ -1,16 +1,11 @@
 package com.greenaddress.greenbits.ui.onboarding;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -18,7 +13,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.greenaddress.gdk.GDKSession;
-import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -32,11 +26,7 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
     private String mMnemonic;
     private ViewPager mViewPager;
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private Dialog mMnemonicDialog;
-    private ImageView mQrCodeBitmap;
-    private ImageView mProgressImage;
     private String mSignUpMnemonic;
-    private Bitmap mSignUpQRCode;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -73,7 +63,6 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mMnemonicDialog = UI.dismiss(this, mMnemonicDialog);
     }
 
     @Override
@@ -93,11 +82,6 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
         switch (item.getItemId()) {
         case android.R.id.home:
             onBackPressed();
-            return true;
-        case R.id.action_qr:
-            onQrCodeButtonClicked();
-            return true;
-        case R.id.action_nfc:
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -142,27 +126,6 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
         return mSignUpMnemonic;
     }
 
-    public Bitmap getSignUpQRCode() {
-        if (mSignUpQRCode == null)
-            mSignUpQRCode = new QrBitmap(getSignUpMnemonic(), getResources().getColor(R.color.green)).getQRCode();
-        return mSignUpQRCode;
-    }
-
-    private void onQrCodeButtonClicked() {
-        if (mMnemonicDialog == null) {
-            final View v = UI.inflateDialog(this, R.layout.dialog_qrcode);
-            mQrCodeBitmap = UI.find(v, R.id.qrInDialogImageView);
-            mQrCodeBitmap.setLayoutParams(UI.getScreenLayout(this, 0.8));
-            mMnemonicDialog = new Dialog(this);
-            mMnemonicDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            mMnemonicDialog.setContentView(v);
-        }
-        mMnemonicDialog.show();
-        final BitmapDrawable bd = new BitmapDrawable(getResources(), getSignUpQRCode());
-        bd.setFilterBitmap(false);
-        mQrCodeBitmap.setImageDrawable(bd);
-    }
-
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         private final int FRAGMENTS_NUMBER = 4;
         private final int WORDS_FOR_FRAGMENT = 6;
@@ -183,13 +146,10 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
             return null;
         }
 
-
-
         @Override
         public int getCount() {
             return FRAGMENTS_NUMBER;
         }
     }
-
 
 }
