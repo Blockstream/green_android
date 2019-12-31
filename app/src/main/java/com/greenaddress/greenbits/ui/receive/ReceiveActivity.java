@@ -270,7 +270,12 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         @Override
         protected Bitmap doInBackground(final Object ... integers) {
             Log.d(TAG, " doInBackground(" + address + ")");
-            return new QrBitmap(getAddressUri(address,amount), qrCodeBackground).getQRCode();
+            try {
+                return new QrBitmap(getAddressUri(address,amount), qrCodeBackground).getQRCode();
+            } catch (final Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override

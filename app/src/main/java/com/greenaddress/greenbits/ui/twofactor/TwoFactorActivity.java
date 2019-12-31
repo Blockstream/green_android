@@ -221,13 +221,17 @@ public class TwoFactorActivity extends LoggedActivity {
         final ImageView imageView = UI.find(this, R.id.imageView);
         final TextView textCode = UI.find(this, R.id.textCode);
         final LinearLayout layoutCode = UI.find(this, R.id.layoutCode);
-
         final String gauthUrl = getModel().getTwoFactorConfig().getGauth().getData();
-        final BitmapDrawable bd =
-            new BitmapDrawable(getResources(), new QrBitmap(gauthUrl, getResources().getColor(
-                                                                R.color.white)).getQRCode());
-        bd.setFilterBitmap(false);
-        imageView.setImageDrawable(bd);
+
+        try {
+            final BitmapDrawable bd =
+                new BitmapDrawable(getResources(), new QrBitmap(gauthUrl, getResources().getColor(
+                                                                    R.color.white)).getQRCode());
+            bd.setFilterBitmap(false);
+            imageView.setImageDrawable(bd);
+        }catch (final Exception e) {
+            e.printStackTrace();
+        }
 
         final String gauthCode = gauthUrl.split("=")[1];
         textCode.setText(gauthCode);

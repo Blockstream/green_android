@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
@@ -26,14 +25,10 @@ public class QrBitmap implements Parcelable {
         return mData;
     }
 
-    public Bitmap getQRCode() {
+    public Bitmap getQRCode() throws Exception {
         if (mQRCode == null) {
             final ByteMatrix matrix;
-            try {
-                matrix = Encoder.encode(mData, ErrorCorrectionLevel.M).getMatrix();
-            } catch (final WriterException e) {
-                throw new RuntimeException(e);
-            }
+            matrix = Encoder.encode(mData, ErrorCorrectionLevel.M).getMatrix();
             final int height = matrix.getHeight() * SCALE;
             final int width = matrix.getWidth() * SCALE;
             mQRCode = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
