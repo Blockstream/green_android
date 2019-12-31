@@ -166,9 +166,9 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         final int subaccount = getModel().getCurrentSubaccount();
         mCurrentAddress = getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
         if (mCurrentAmount == null || mCurrentAmount.get("satoshi").asLong() == 0)
-            mAddressText.setText(mCurrentAddress);
+            runOnUiThread(() -> { mAddressText.setText(mCurrentAddress); });
         else
-            mAddressText.setText(getAddressUri());
+            runOnUiThread(() -> { mAddressText.setText(getAddressUri()); });
         if (mBitmapWorkerTask != null)
             mBitmapWorkerTask.cancel(true);
         mBitmapWorkerTask = new BitmapWorkerTask();
