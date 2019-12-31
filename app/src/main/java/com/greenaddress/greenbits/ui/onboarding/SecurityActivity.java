@@ -35,10 +35,8 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getModel() == null) {
-            toFirst();
+        if (isFinishing())
             return;
-        }
 
         setContentView(R.layout.activity_onboarding_security);
         setTitle("");

@@ -33,10 +33,8 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getModel() == null) {
-            toFirst();
+        if (isFinishing())
             return;
-        }
 
         UI.preventScreenshots(this);
 

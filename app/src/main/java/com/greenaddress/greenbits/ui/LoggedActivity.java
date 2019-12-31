@@ -30,31 +30,27 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     public void onResume() {
         super.onResume();
         if (mStart + delayLogoutTimer() < System.currentTimeMillis()) {
-            logout();
+            exit();
             return;
         }
-        startLogoutTimer();
-
         if (getConnectionManager() == null || getModel() == null) {
-            toFirst();
-            return;
-        }
-        if (getConnectionManager().isDisconnected()) {
-            toFirst();
+            exit();
             return;
         }
         getConnectionManager().addObserver(this);
         getModel().getToastObservable().addObserver(this);
+        startLogoutTimer();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if (getConnectionManager() == null || getModel() == null) {
+            exit();
+            return;
+        }
         stopLogoutTimer();
         mStart = System.currentTimeMillis();
-
-        if (getConnectionManager() == null || getModel() == null)
-            return;
         getConnectionManager().deleteObserver(this);
         getModel().getToastObservable().deleteObserver(this);
     }
@@ -64,7 +60,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         if (observable instanceof ConnectionManager) {
             final ConnectionManager cm = getConnectionManager();
             if (cm.isLoginRequired() || cm.isDisconnected()) {
-                toFirst();
+                exit();
             }
         } else if (observable instanceof ToastObservable) {
             final ToastObservable tObs = (ToastObservable) observable;
@@ -73,25 +69,20 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     public void logout() {
-        if (getConnectionManager() == null || getModel() == null) {
-            toFirst();
-            return;
-        }
-        getConnectionManager().deleteObserver(this);
         getGAApp().getExecutor().execute(() -> {
             startLoading();
             getConnectionManager().disconnect();
-            toFirst();
             stopLoading();
+            runOnUiThread(() -> exit());
         });
     }
 
-    public void toFirst() {
+    private void exit() {
         if (!mChangingActivity) {
             mChangingActivity = true;
             final Intent intent = GaActivity.createToFirstIntent(this);
             startActivity(intent);
-            finishOnUiThread();
+            finishAffinity();
         }
     }
 
@@ -116,7 +107,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                logout();
+                exit();
             }
         }, delayLogoutTimer());
         mTimer = timer;

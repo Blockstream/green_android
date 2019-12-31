@@ -48,10 +48,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getModel() == null) {
-            toFirst();
+        if (isFinishing())
             return;
-        }
 
         final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
 

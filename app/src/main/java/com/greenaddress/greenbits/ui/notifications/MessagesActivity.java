@@ -32,11 +32,6 @@ public class MessagesActivity extends LoggedActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getModel() == null) {
-            toFirst();
-            return;
-        }
-
         setContentView(R.layout.activity_messages);
 
         mMessageText = UI.find(this, R.id.system_message_text);

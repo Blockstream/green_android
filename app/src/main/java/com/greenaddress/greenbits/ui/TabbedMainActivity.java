@@ -188,7 +188,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     @Override
     public void onResume() {
         super.onResume();
-        if (getModel() == null)
+        if (isFinishing())
             return;
         getModel().getActiveAccountObservable().addObserver(this);
         getModel().getEventDataObservable().addObserver(this);
@@ -223,7 +223,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     public void onPause() {
         super.onPause();
         mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
-        if (getModel() == null)
+        if (isFinishing())
             return;
         getModel().getActiveAccountObservable().deleteObserver(this);
         getModel().getEventDataObservable().deleteObserver(this);

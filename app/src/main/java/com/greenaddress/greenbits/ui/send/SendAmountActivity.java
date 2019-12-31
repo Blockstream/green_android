@@ -81,10 +81,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getModel() == null) {
-            toFirst();
+        if (isFinishing())
             return;
-        }
 
         Log.d(TAG, "onCreateView -> " + TAG);
         final int[] mBlockTargets = getBlockTargets();
@@ -291,13 +289,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     @Override
     public void onResume() {
         super.onResume();
-        if (getConnectionManager() == null || getModel() == null) {
-            toFirst();
+        if (isFinishing())
             return;
-        }
-        if (getConnectionManager().isDisconnected()) {
-            return;
-        }
 
         final boolean isLiquid = networkData.getLiquid();
         mSendAllButton.setPressed(mSendAll);

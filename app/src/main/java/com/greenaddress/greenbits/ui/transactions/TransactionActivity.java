@@ -75,10 +75,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getModel() == null) {
-            toFirst();
-            return;
-        }
 
         setResult(RESULT_OK);
         UI.preventScreenshots(this);

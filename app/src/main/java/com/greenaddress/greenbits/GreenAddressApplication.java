@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.multidex.MultiDexApplication;
@@ -205,5 +206,6 @@ public class GreenAddressApplication extends MultiDexApplication {
     @Override
     public void onLowMemory() {
         super.onLowMemory();
+        Log.i("LoggedActivity","onLowMemory app");
     }
 }

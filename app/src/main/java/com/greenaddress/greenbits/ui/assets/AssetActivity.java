@@ -38,11 +38,6 @@ public class AssetActivity extends LoggedActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getModel() == null) {
-            toFirst();
-            return;
-        }
-
         setResult(RESULT_OK);
         UI.preventScreenshots(this);
 

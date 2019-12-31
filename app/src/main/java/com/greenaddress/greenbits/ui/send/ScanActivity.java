@@ -450,7 +450,6 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                     cameraHandler.post(fetchAndDecodeRunnable);
                     return;
                 }
-
                 result.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
             } catch (final Exception e) {
                 if (e.getMessage() != null)

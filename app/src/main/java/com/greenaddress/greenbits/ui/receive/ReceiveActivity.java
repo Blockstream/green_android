@@ -67,11 +67,14 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener((final View v) -> { onCurrencyClick(); });
-        UI.find(this, R.id.shareAddressButton).setOnClickListener((final View v) -> { onShareClicked(); });
 
+        if (getModel() == null)
+            return;
         mUnitButton.setText(mIsFiat ? getModel().getFiatCurrency() : getModel().getBitcoinOrLiquidUnit());
         mUnitButton.setPressed(!mIsFiat);
         mUnitButton.setSelected(!mIsFiat);
+
+        UI.find(this, R.id.shareAddressButton).setOnClickListener((final View v) -> { onShareClicked(); });
 
         final int subaccount = getModel().getCurrentSubaccount();
         final SubaccountData subaccountData = getModel().getSubaccountsData(subaccount);
@@ -139,6 +142,9 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     @Override
     public void onResume() {
         super.onResume();
+        if (isFinishing())
+            return;
+
         final int subaccount = getModel().getCurrentSubaccount();
         getModel().getReceiveAddressObservable(subaccount).addObserver(this);
         getModel().getTransactionDataObservable(subaccount).addObserver(this);
@@ -147,6 +153,9 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     @Override
     public void onPause() {
         super.onPause();
+        if (isFinishing())
+            return;
+
         final int subaccount = getModel().getCurrentSubaccount();
         getModel().getReceiveAddressObservable(subaccount).deleteObserver(this);
         getModel().getTransactionDataObservable(subaccount).deleteObserver(this);
