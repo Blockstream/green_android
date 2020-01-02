@@ -150,11 +150,13 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         final TextView textView = snackbarView.findViewById(R.id.snackbar_text);
         textView.setTextColor(Color.RED);
         mSnackbar.setAction(R.string.id_try_now, v -> {
-            try {
-                getSession().reconnectNow();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            getGAApp().getExecutor().submit(() -> {
+                try {
+                    getSession().reconnectNow();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            });
         });
 
         // Set up the action bar.
