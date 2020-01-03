@@ -81,7 +81,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (modelIsNullOrDisconnected())
             return;
 
         Log.d(TAG, "onCreateView -> " + TAG);
@@ -307,6 +307,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     @Override
     public void onPause() {
         super.onPause();
+        if (isFinishing())
+            return;
+
         mCustomFeeDialog = UI.dismiss(this, mCustomFeeDialog);
         UI.unmapClick(mSendAllButton);
         for (int i = 0; i < mButtonIds.length; ++i)

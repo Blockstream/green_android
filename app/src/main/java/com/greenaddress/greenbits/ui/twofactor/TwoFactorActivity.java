@@ -73,12 +73,10 @@ public class TwoFactorActivity extends LoggedActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitleBackTransparent();
-
-        if (getModel() == null) {
-            finish();
+        if (modelIsNullOrDisconnected()) {
             return;
         }
+        setTitleBackTransparent();
 
         // 2FA method to localized description
         final Map<String, String> mLocalizedMap = UI.getTwoFactorLookup(getResources());

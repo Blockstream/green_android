@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -11,9 +14,6 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 
 import java.util.List;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class SweepSelectActivity extends LoggedActivity implements SweepAdapter.OnAccountSelected {
 
@@ -23,6 +23,8 @@ public class SweepSelectActivity extends LoggedActivity implements SweepAdapter.
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (modelIsNullOrDisconnected())
+            return;
         setContentView(R.layout.activity_sweep_selection);
         setTitleBackTransparent();
 

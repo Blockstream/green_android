@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentTransaction;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -32,8 +34,6 @@ import com.greenaddress.greenbits.ui.accounts.SubaccountPopup;
 
 import java.util.Locale;
 import java.util.Observable;
-
-import androidx.fragment.app.FragmentTransaction;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
@@ -54,6 +54,9 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (modelIsNullOrDisconnected()) {
+            return;
+        }
 
         setContentView(R.layout.activity_receive);
         UI.preventScreenshots(this);
@@ -68,8 +71,6 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener((final View v) -> { onCurrencyClick(); });
 
-        if (getModel() == null)
-            return;
         mUnitButton.setText(mIsFiat ? getModel().getFiatCurrency() : getModel().getBitcoinOrLiquidUnit());
         mUnitButton.setPressed(!mIsFiat);
         mUnitButton.setSelected(!mIsFiat);

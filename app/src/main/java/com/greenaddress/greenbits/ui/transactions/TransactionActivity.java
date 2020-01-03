@@ -75,6 +75,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (modelIsNullOrDisconnected())
+            return;
 
         setResult(RESULT_OK);
         UI.preventScreenshots(this);
@@ -93,11 +95,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mTxItem = (TransactionData) getIntent().getSerializableExtra("TRANSACTION");
         final boolean isWatchOnly = getConnectionManager().isWatchOnly();
 
-        try {
-            mAssetsBalances = getModel().getCurrentAccountBalanceData();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        mAssetsBalances = getModel().getCurrentAccountBalanceData();
 
         // Set txid
         final TextView hashText = UI.find(this, R.id.txHashText);

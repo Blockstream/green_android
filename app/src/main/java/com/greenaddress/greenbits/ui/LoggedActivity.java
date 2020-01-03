@@ -29,14 +29,13 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     @Override
     public void onResume() {
         super.onResume();
-        if (mStart + delayLogoutTimer() < System.currentTimeMillis()) {
+
+        final boolean timerExpired = mStart + delayLogoutTimer() < System.currentTimeMillis();
+        if (timerExpired || modelIsNullOrDisconnected()) {
             exit();
             return;
         }
-        if (getConnectionManager() == null || getModel() == null) {
-            exit();
-            return;
-        }
+
         getConnectionManager().addObserver(this);
         getModel().getToastObservable().addObserver(this);
         startLogoutTimer();
@@ -45,10 +44,11 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     @Override
     public void onPause() {
         super.onPause();
-        if (getConnectionManager() == null || getModel() == null) {
+        if (modelIsNullOrDisconnected()) {
             exit();
             return;
         }
+
         stopLogoutTimer();
         mStart = System.currentTimeMillis();
         getConnectionManager().deleteObserver(this);
@@ -118,6 +118,10 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             mTimer.cancel();
             mTimer.purge();
         }
+    }
+
+    protected boolean modelIsNullOrDisconnected() {
+        return getModel() == null || getConnectionManager() == null || getConnectionManager().isDisconnected();
     }
 
     protected String getBitcoinUnitClean() {

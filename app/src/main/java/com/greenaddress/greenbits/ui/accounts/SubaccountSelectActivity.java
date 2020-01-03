@@ -6,14 +6,17 @@ import android.util.SparseArray;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
 import com.greenaddress.greenapi.model.SubaccountsDataObservable;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.ThemeUtils;
+import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
@@ -21,9 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
@@ -38,6 +38,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (modelIsNullOrDisconnected())
+            return;
         setContentView(R.layout.activity_subaccount_select);
 
         UI.preventScreenshots(this);
@@ -62,12 +64,16 @@ public class SubaccountSelectActivity extends LoggedActivity implements Observer
     @Override
     public void onResume() {
         super.onResume();
+        if (isFinishing())
+            return;
         attachObservers();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if (isFinishing())
+            return;
         detachObservers();
     }
 

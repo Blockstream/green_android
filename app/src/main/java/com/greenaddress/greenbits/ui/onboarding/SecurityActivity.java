@@ -35,8 +35,6 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
-            return;
 
         setContentView(R.layout.activity_onboarding_security);
         setTitle("");
@@ -74,19 +72,20 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     @Override
     public void onResume() {
         super.onResume();
+        if (isFinishing())
+            return;
         UI.mapClick(this, R.id.nextButton, this);
-        if (getModel() != null) {
-            initEnabledMethods();
-            getModel().getTwoFactorConfigDataObservable().addObserver(this);
-        }
+        initEnabledMethods();
+        getModel().getTwoFactorConfigDataObservable().addObserver(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if (isFinishing())
+            return;
         UI.unmapClick(UI.find(this, R.id.nextButton));
-        if (getModel() != null)
-            getModel().getTwoFactorConfigDataObservable().deleteObserver(this);
+        getModel().getTwoFactorConfigDataObservable().deleteObserver(this);
     }
 
     @Override
@@ -120,6 +119,8 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
     }
 
     private void initEnabledMethods() {
+        if (getModel() == null)
+            return;
         final TwoFactorConfigData twoFactorConfig = getModel().getTwoFactorConfig();
         if (twoFactorConfig == null)
             return;

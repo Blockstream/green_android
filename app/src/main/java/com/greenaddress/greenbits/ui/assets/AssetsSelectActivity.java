@@ -33,7 +33,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (modelIsNullOrDisconnected())
             return;
 
         UI.preventScreenshots(this);
@@ -72,23 +72,6 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         default:
             return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getConnectionManager() == null || getModel() == null)
-            return;
-        if (getConnectionManager().isDisconnected()) {
-            return;
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (getModel() == null)
-            return;
     }
 
     @Override

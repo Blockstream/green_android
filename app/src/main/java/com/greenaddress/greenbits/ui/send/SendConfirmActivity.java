@@ -48,7 +48,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isFinishing())
+        if (modelIsNullOrDisconnected())
             return;
 
         final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
