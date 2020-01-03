@@ -410,6 +410,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 final ObjectNode transactionRaw = call.resolve(null, getConnectionManager().getHWResolver());
                 final String error = transactionRaw.get("error").asText();
                 if (error.isEmpty()) {
+                    removeUtxosIfTooBig(transactionRaw);
                     result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
                 } else {
                     throw new Exception(error);
@@ -450,7 +451,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                     cameraHandler.post(fetchAndDecodeRunnable);
                     return;
                 }
-
+                removeUtxosIfTooBig(transactionFromUri);
                 result.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
             } catch (final Exception e) {
                 if (e.getMessage() != null)

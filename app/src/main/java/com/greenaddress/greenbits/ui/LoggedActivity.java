@@ -6,6 +6,7 @@ import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.model.Model;
@@ -143,6 +144,15 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             amountText.setText(isFiat ? fiat : btc);
         } catch (ParseException e) {
             Log.e(TAG,e.getMessage());
+        }
+    }
+
+    protected void removeUtxosIfTooBig(ObjectNode transactionFromUri) {
+        if (transactionFromUri.has("utxos")) {
+            final JsonNode utxos = transactionFromUri.get("utxos");
+            if (utxos.toString().length() > 200000) {
+                transactionFromUri.remove("utxos");
+            }
         }
     }
 }
