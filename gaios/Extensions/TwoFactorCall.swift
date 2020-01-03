@@ -54,6 +54,25 @@ extension TwoFactorCall {
                 return try self.requestCode(method: methods[0])
             }
         case "resolve_code":
+            // Ledger interface resolver
+            if let requiredData = json["required_data"] as? [String: Any] {
+                let action = requiredData["action"] as? String
+                let ledgerResolver = LedgerResolver()
+                return Promise().then {_ -> Promise<String> in
+                    if action == "get_xpubs" {
+                        return ledgerResolver.getXpubs(requiredData)
+                    } else if action == "sign_message" {
+                        return ledgerResolver.signMessage(requiredData)
+                    } else if action == "sign_tx" {
+                        return ledgerResolver.signTransaction(requiredData)
+                    } else {
+                        throw GaError.GenericError
+                    }
+                }.then { code in
+                    return try self.resolveCode(code: code)
+                }
+            }
+            // User interface resolver
             let method = json["method"] as? String ?? ""
             let sender = UIApplication.shared.keyWindow?.rootViewController
             let popup = PopupCodeResolver(sender!)

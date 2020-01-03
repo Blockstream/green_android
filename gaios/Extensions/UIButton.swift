@@ -68,4 +68,21 @@ extension UIButton {
         setNeedsDisplay()
         setNeedsLayout()
     }
+
+    func insets(for content: UIEdgeInsets, image: CGFloat) {
+
+        self.contentEdgeInsets = UIEdgeInsets(
+            top: content.top,
+            left: content.left,
+            bottom: content.bottom,
+            right: content.right + image
+        )
+
+        self.titleEdgeInsets = UIEdgeInsets(
+            top: 0,
+            left: image,
+            bottom: 0,
+            right: -image
+        )
+    }
 }

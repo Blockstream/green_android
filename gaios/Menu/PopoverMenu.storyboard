@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -20,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="5OP-Iu-nCe">
-                                <rect key="frame" x="0.0" y="0.0" width="300" height="200"/>
+                                <rect key="frame" x="0.0" y="8" width="300" height="184"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MenuOptionCell" textLabel="dmQ-j2-Z7q" style="IBUITableViewCellStyleDefault" id="gvE-fG-BEW">
@@ -48,8 +46,8 @@
                         <constraints>
                             <constraint firstItem="5OP-Iu-nCe" firstAttribute="trailing" secondItem="MmU-xk-hLY" secondAttribute="trailing" id="M4j-7e-OFy"/>
                             <constraint firstItem="5OP-Iu-nCe" firstAttribute="leading" secondItem="MmU-xk-hLY" secondAttribute="leading" id="bAg-WP-yPi"/>
-                            <constraint firstItem="5OP-Iu-nCe" firstAttribute="top" secondItem="KcJ-Qr-GCW" secondAttribute="top" id="l22-XT-Z4j"/>
-                            <constraint firstAttribute="bottom" secondItem="5OP-Iu-nCe" secondAttribute="bottom" id="tHN-7r-cHc"/>
+                            <constraint firstItem="5OP-Iu-nCe" firstAttribute="top" secondItem="KcJ-Qr-GCW" secondAttribute="top" constant="8" id="l22-XT-Z4j"/>
+                            <constraint firstAttribute="bottom" secondItem="5OP-Iu-nCe" secondAttribute="bottom" constant="8" id="tHN-7r-cHc"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="MmU-xk-hLY"/>
                     </view>
@@ -65,7 +63,7 @@
     </scenes>
     <resources>
         <namedColor name="customModalBlueDark">
-            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.097999997437000275" green="0.13300000131130219" blue="0.17299999296665192" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

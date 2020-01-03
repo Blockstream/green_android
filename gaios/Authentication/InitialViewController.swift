@@ -114,6 +114,8 @@ extension InitialViewController: PopoverMenuDelegate {
         switch menuOption {
         case .watchOnly:
             performSegue(withIdentifier: "watchonly", sender: nil)
+        case .hardwareWallets:
+            performSegue(withIdentifier: "ble", sender: nil)
         case .tempRestore:
             tempRestore = true
             onAction(identifier: "enterMnemonic")

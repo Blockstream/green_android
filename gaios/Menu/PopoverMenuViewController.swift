@@ -2,6 +2,7 @@ import UIKit
 
 enum MenuOption {
     case watchOnly
+    case hardwareWallets
     case tempRestore
 }
 
@@ -59,6 +60,9 @@ extension PopoverMenuViewController: UITableViewDataSource, UITableViewDelegate 
             switch option {
             case .watchOnly:
                 cell.textLabel?.text = NSLocalizedString("id_watchonly", comment: "")
+                return cell
+            case .hardwareWallets:
+                cell.textLabel?.text = NSLocalizedString("id_hardware_wallets", comment: "")
                 return cell
             case .tempRestore:
                 cell.textLabel?.text = NSLocalizedString("id_restore_temporary_wallet", comment: "")
