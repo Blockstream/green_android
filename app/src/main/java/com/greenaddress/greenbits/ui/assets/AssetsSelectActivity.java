@@ -81,6 +81,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
             try {
                 final ObjectNode tx = updateTransaction(assetId);
                 final Intent intent = new Intent(this, SendAmountActivity.class);
+                removeUtxosIfTooBig(tx);
                 intent.putExtra(INTENT_STRING_TX, tx.toString());
                 startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
             } catch (final Exception e) {

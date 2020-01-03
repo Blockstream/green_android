@@ -26,7 +26,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
-
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.ConnectionMessageObservable;
@@ -124,7 +123,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
                 UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
                 return;
             }
-
+            removeUtxosIfTooBig(transactionFromUri);
             intent.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
         } catch (final Exception e) {
             e.printStackTrace();

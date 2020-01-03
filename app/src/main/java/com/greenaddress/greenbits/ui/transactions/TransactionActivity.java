@@ -397,6 +397,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final GDKTwoFactorCall signCall = getSession().createTransactionRaw(null, bumpTxData);
             final ObjectNode tx = signCall.resolve(null, getConnectionManager().getHWResolver());
             final Intent intent = new Intent(this, SendAmountActivity.class);
+            removeUtxosIfTooBig(tx);
             intent.putExtra(INTENT_STRING_TX, tx.toString());
             stopLoading();
             startActivity(intent);
