@@ -478,10 +478,12 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     public ObjectNode convert(final long satoshi) throws Exception {
-        final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
-        details.set("asset_info", info.toObjectNode());
+        if (!"btc".equals(mSelectedAsset)) {
+            final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+            details.set("asset_info", info.toObjectNode());
+        }
         mCurrentAmount = getSession().convert(details);
         return mCurrentAmount;
     }
