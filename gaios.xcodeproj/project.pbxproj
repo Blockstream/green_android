@@ -70,10 +70,10 @@
 		6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D56C771235E27F000E4F990 /* Accounts.storyboard */; };
 		6D707ECA229DAA830038CCA8 /* NetworkSelectionTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D707EC8229DAA830038CCA8 /* NetworkSelectionTableCell.swift */; };
 		6D7176BA234FF2B3001E1538 /* NetworkSelectionSettingsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D7176B9234FF2B2001E1538 /* NetworkSelectionSettingsView.xib */; };
-		6D7B5F9322E6852D00DE049D /* AccountMiniCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7B5F9122E6852D00DE049D /* AccountMiniCollection.swift */; };
-		6D7B5F9422E6852D00DE049D /* AccountMiniCollection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D7B5F9222E6852D00DE049D /* AccountMiniCollection.xib */; };
 		6D75A3D9238F50A900EEA148 /* HardwareDeviceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D75A3D8238F50A900EEA148 /* HardwareDeviceCell.swift */; };
 		6D75A3DB238F6EBD00EEA148 /* RadarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D75A3DA238F6EBD00EEA148 /* RadarImageView.swift */; };
+		6D7B5F9322E6852D00DE049D /* AccountMiniCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7B5F9122E6852D00DE049D /* AccountMiniCollection.swift */; };
+		6D7B5F9422E6852D00DE049D /* AccountMiniCollection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6D7B5F9222E6852D00DE049D /* AccountMiniCollection.xib */; };
 		6D8099CF22FA235A0069A69F /* TransactionDetail.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D8099CE22FA235A0069A69F /* TransactionDetail.storyboard */; };
 		6D8099D222FA24200069A69F /* NotesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D8099D122FA24200069A69F /* NotesViewController.swift */; };
 		6D8099D823021CEF0069A69F /* PopoverMenu.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6D8099D723021CEF0069A69F /* PopoverMenu.storyboard */; };
@@ -264,10 +264,10 @@
 		6D56C771235E27F000E4F990 /* Accounts.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Accounts.storyboard; sourceTree = "<group>"; };
 		6D707EC8229DAA830038CCA8 /* NetworkSelectionTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionTableCell.swift; sourceTree = "<group>"; };
 		6D7176B9234FF2B2001E1538 /* NetworkSelectionSettingsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NetworkSelectionSettingsView.xib; sourceTree = "<group>"; };
-		6D7B5F9122E6852D00DE049D /* AccountMiniCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountMiniCollection.swift; sourceTree = "<group>"; };
-		6D7B5F9222E6852D00DE049D /* AccountMiniCollection.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountMiniCollection.xib; sourceTree = "<group>"; };
 		6D75A3D8238F50A900EEA148 /* HardwareDeviceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareDeviceCell.swift; sourceTree = "<group>"; };
 		6D75A3DA238F6EBD00EEA148 /* RadarImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarImageView.swift; sourceTree = "<group>"; };
+		6D7B5F9122E6852D00DE049D /* AccountMiniCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountMiniCollection.swift; sourceTree = "<group>"; };
+		6D7B5F9222E6852D00DE049D /* AccountMiniCollection.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountMiniCollection.xib; sourceTree = "<group>"; };
 		6D8099CE22FA235A0069A69F /* TransactionDetail.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TransactionDetail.storyboard; sourceTree = "<group>"; };
 		6D8099D122FA24200069A69F /* NotesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesViewController.swift; sourceTree = "<group>"; };
 		6D8099D723021CEF0069A69F /* PopoverMenu.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PopoverMenu.storyboard; sourceTree = "<group>"; };
@@ -1080,14 +1080,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-gaios/Pods-gaios-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/RxBluetoothKit/RxBluetoothKit.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxBluetoothKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
@@ -1444,14 +1442,8 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1484,14 +1476,8 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"$(inherited)",
-					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
-				);
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";

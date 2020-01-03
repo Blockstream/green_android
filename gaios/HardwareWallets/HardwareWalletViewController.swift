@@ -37,8 +37,8 @@ class HardwareWalletViewController: UIViewController {
         deviceView.addGestureRecognizer(tapGesture)
         deviceView.isUserInteractionEnabled = true
 
-        self.reload(self.manager.state)
-        self.manager.observeState()
+        _ = self.manager.observeState()
+            .startWith(manager.state)
             .subscribe { self.reload($0.element!)}
     }
 
@@ -60,7 +60,7 @@ class HardwareWalletViewController: UIViewController {
             stateLabel.text = "Not found \(pairedDeviceUUID!)"
             return
         }
-        peripheral.establishConnection()
+        _ = peripheral.establishConnection()
             .timeoutIfNoEvent(self.timeout)
             .flatMap { Ledger.shared.open($0) }
             .timeoutIfNoEvent(self.timeout)
@@ -116,11 +116,11 @@ class HardwareWalletViewController: UIViewController {
         }.compactMap(on: bgq) { _ -> TwoFactorCall in
             return try session.registerUser(mnemonic: "", hw_device: ["device": (Ledger.shared.hwDevice as Any) ])
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.compactMap(on: bgq) {_ -> TwoFactorCall in
             try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice])
         }.then(on: bgq) { call in
-            call.resolve(self)
+            call.resolve()
         }.ensure {
             print("ensure")
             self.stopAnimating()

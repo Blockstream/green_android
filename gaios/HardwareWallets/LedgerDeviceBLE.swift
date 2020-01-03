@@ -114,7 +114,7 @@ class LedgerDeviceBLE: LedgerProtocol {
         do {
             let res = try LedgerWrapper.unwrapResponseAPDUInternal(channel: 0, data: buffer, packetSize: UInt8(buffer.count), hasChannel: false)
             #if DEBUG
-            print ("<= " + res.map { String(format: "%02hhx", $0) }.joined())
+            print("<= " + res.map { String(format: "%02hhx", $0) }.joined())
             #endif
             let command = res[0..<res.count-2]
             let lastSW = (UInt16(res[res.count - 2]) << 8) + UInt16(res[res.count - 1])
@@ -151,7 +151,7 @@ class LedgerDeviceBLE: LedgerProtocol {
                 // Descriptor
                 print(descriptor.uuid)
                 if descriptor.uuid == self.CLIENT_CHARACTERISTIC_CONFIG {
-                    print ("descriptor CLIENT_CHARACTERISTIC_CONFIG")
+                    print("descriptor CLIENT_CHARACTERISTIC_CONFIG")
                 }
                 self.characteristicNotify = descriptor.characteristic
                 // Notification
