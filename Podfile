@@ -8,6 +8,8 @@ target 'gaios' do
   # Pods for Green
   pod 'PromiseKit', '6.10.0'
   pod 'SwiftLint', '0.35.0'
+  pod 'RxSwift', '5.0.0'
+  pod 'RxBluetoothKit', '5.3.0'
   target 'gaiosTests' do
     inherit! :search_paths
     # Pods for testing
