@@ -79,7 +79,9 @@ public class PinFragment extends GAFragment implements View.OnClickListener, Key
     }
 
     public void setEnabled(final boolean enabled) {
-        UI.enableIf(enabled, mIsSixDigit ? mPinEntryView : mPinLongText);
+        final View view = mIsSixDigit ? mPinEntryView : mPinLongText;
+        if (view != null)
+            UI.enableIf(enabled, view);
     }
 
     public String getPin(){
