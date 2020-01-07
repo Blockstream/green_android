@@ -37,8 +37,9 @@
     <ScrollView
         android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@+id/assetWhitelistWarning"
+        android:layout_above="@+id/shareAddressButton"
         android:padding="@dimen/card_padding">
 
         <LinearLayout
