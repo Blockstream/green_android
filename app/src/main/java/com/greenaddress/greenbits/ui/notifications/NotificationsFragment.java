@@ -167,6 +167,8 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
     @Override
     public void onPause() {
         super.onPause();
+        if (isZombie())
+            return;
         final EventDataObservable observable = getModel().getEventDataObservable();
         if (observable != null)
             observable.deleteObserver(this);
@@ -175,6 +177,8 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
     @Override
     public void onResume() {
         super.onResume();
+        if (isZombie())
+            return;
         final EventDataObservable observable = getModel().getEventDataObservable();
         if (observable != null)
             observable.addObserver(this);

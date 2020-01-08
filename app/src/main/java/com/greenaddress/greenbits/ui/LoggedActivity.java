@@ -120,7 +120,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         }
     }
 
-    protected boolean modelIsNullOrDisconnected() {
+    public boolean modelIsNullOrDisconnected() {
         return getModel() == null || getConnectionManager() == null || getConnectionManager().isDisconnected();
     }
 

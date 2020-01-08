@@ -19,6 +19,7 @@ import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GAFragment;
 import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.AccountView;
@@ -70,10 +71,10 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         super.onCreateView(inflater, container, savedInstanceState);
 
         Log.d(TAG, "onCreateView -> " + TAG);
-        if (isZombieNoView())
-            return null;
 
         mView = inflater.inflate(R.layout.fragment_main, container, false);
+        if (isZombie())
+            return mView;
 
         // Setup recycler & adapter
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
@@ -127,12 +128,16 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
     @Override
     public void onPause() {
         super.onPause();
+        if (isZombie())
+            return;
         detachObservers();
     }
 
     @Override
     public void onResume () {
         super.onResume();
+        if (isZombie())
+            return;
         attachObservers();
 
         justClicked = false;
@@ -177,22 +182,6 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
             onUpdateBalance(getModel().getBalanceDataObservable(subaccount));
             onUpdateTransactions(getModel().getTransactionDataObservable(subaccount));
         }
-    }
-
-    private boolean getZombieStatus(final boolean status) {
-        if (status)
-            Log.d(TAG, "Zombie re-awakening: " + getClass().getName());
-        return status;
-    }
-
-    // Returns true if we are being restored without an activity or service
-    protected boolean isZombieNoView() {
-        return getZombieStatus(getActivity() == null);
-    }
-
-    // Returns true if we are being restored without an activity, service or view
-    protected boolean isZombie() {
-        return getZombieStatus(getActivity() == null || mView == null);
     }
 
     private void updateAssetSelection() {

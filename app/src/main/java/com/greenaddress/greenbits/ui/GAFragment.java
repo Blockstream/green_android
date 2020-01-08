@@ -56,4 +56,11 @@ public abstract class GAFragment extends Fragment {
         return PreferenceManager.getDefaultSharedPreferences(getContext()).getString(PrefKeys.NETWORK_ID_ACTIVE,
                                                                                      "mainnet");
     }
+
+    // Returns true if we are being restored without an activity or service
+    protected boolean isZombie() {
+        if (((LoggedActivity) getActivity()).modelIsNullOrDisconnected())
+            return true;
+        return getActivity() == null;
+    }
 }

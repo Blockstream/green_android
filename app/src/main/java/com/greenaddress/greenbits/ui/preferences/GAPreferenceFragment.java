@@ -110,4 +110,11 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
         }
         return false;
     }
+
+    // Returns true if we are being restored without an activity or service
+    protected boolean isZombie() {
+        if (((LoggedActivity) getActivity()).modelIsNullOrDisconnected())
+            return true;
+        return getActivity() == null;
+    }
 }

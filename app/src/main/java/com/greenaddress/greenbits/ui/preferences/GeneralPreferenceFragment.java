@@ -552,6 +552,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     @Override
     public void onResume() {
         super.onResume();
+        if (isZombie())
+            return;
         initSummaries();
         attachObservers();
         updatesVisibilities();
@@ -560,6 +562,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     @Override
     public void onPause() {
         super.onPause();
+        if (isZombie())
+            return;
         detachObservers();
     }
 
