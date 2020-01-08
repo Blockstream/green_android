@@ -142,12 +142,14 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         }
     }
 
-    protected void removeUtxosIfTooBig(ObjectNode transactionFromUri) {
+    protected void removeUtxosIfTooBig(final ObjectNode transactionFromUri) {
+        if (transactionFromUri.toString().length() <= 200000)
+            return;
         if (transactionFromUri.has("utxos")) {
-            final JsonNode utxos = transactionFromUri.get("utxos");
-            if (utxos.toString().length() > 200000) {
-                transactionFromUri.remove("utxos");
-            }
+            transactionFromUri.remove("utxos");
+        }
+        if (transactionFromUri.get("send_all").asBoolean() && transactionFromUri.has("used_utxos")) {
+            transactionFromUri.remove("used_utxos");
         }
     }
 }
