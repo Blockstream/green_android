@@ -73,18 +73,90 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row].peripheral
         enstablishDispose?.dispose()
-        enstablishDispose = peripheral.establishConnection()
+        self.connect(peripheral: peripheral)
+    }
+}
+
+extension HardwareWalletScanViewController {
+
+    enum DeviceError: Error {
+        case dashboard
+        case wrong_app
+    }
+
+    func network() -> String {
+        return getGdkNetwork(getNetwork()).network.lowercased() == "testnet" ? "Bitcoin Test" : "Bitcoin"
+    }
+
+    func connect(peripheral: Peripheral) {
+        _ = peripheral.establishConnection()
             .timeoutIfNoEvent(self.timeout)
             .flatMap { Ledger.shared.open($0) }
+            .timeoutIfNoEvent(self.timeout)
+            .flatMap { _ in Ledger.shared.application() }
+            .flatMap { res -> Observable<Bool> in
+                let name = res["name"] as? String
+                if name!.contains("OLOS") {
+                    // open app from dashboard
+                    return Observable<Bool>.error(DeviceError.dashboard)
+                } else if name! != self.network() {
+                    // change app
+                    return Observable<Bool>.error(DeviceError.wrong_app)
+                }
+                // correct open app
+                return Observable.just(true)
+            }
             .subscribe(onNext: { _ in
-                UserDefaults.standard.set(peripheral.name, forKey: "paired_device_name")
-                UserDefaults.standard.set(peripheral.identifier.uuidString, forKey: "paired_device_uuid")
-                self.navigationController?.popViewController(animated: true)
+                print("Login on progress")
+                self.login()
             }, onError: { err in
-                print(err.localizedDescription)
-                let alert = UIAlertController(title: "Select your paired device", message: "Pair yout Ledger Nano X with Ledger Live app and retry. Error: \(err.localizedDescription)", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel))
-                self.present(alert, animated: true, completion: nil)
-            })
+                if err as? RxError != nil {
+                    print("Turn on your Ledger and try again")
+                } else if let derr = err as? DeviceError {
+                    if derr == .dashboard {
+                        print("Open \(self.network()) app on your Ledger")
+                    } else if derr == .wrong_app {
+                        print("Quit current app and open \(self.network()) app on your Ledger")
+                    }
+                }
+            }, onCompleted: {}, onDisposed: {})
+    }
+
+    func login() {
+        let bgq = DispatchQueue.global(qos: .background)
+        let session = getGAService().getSession()
+        let appDelegate = getAppDelegate()!
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try appDelegate.connect()
+        }.compactMap(on: bgq) { _ -> TwoFactorCall in
+            return try session.registerUser(mnemonic: "", hw_device: ["device": (Ledger.shared.hwDevice as Any) ])
+        }.then(on: bgq) { call in
+            call.resolve()
+        }.compactMap(on: bgq) {_ -> TwoFactorCall in
+            try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice])
+        }.then(on: bgq) { call in
+            call.resolve()
+        }.ensure {
+            print("ensure")
+            self.stopAnimating()
+        }.done { _ in
+            print("done")
+            appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+        }.catch { e in
+            print("error \(e.localizedDescription)")
+        }
+    }
+}
+
+extension Observable {
+    func timeoutIfNoEvent(_ dueTime: RxTimeInterval) -> Observable<Element> {
+        let timeout = Observable
+            .never()
+            .timeout(dueTime, scheduler: MainScheduler.instance)
+
+        return self.amb(timeout)
     }
 }
