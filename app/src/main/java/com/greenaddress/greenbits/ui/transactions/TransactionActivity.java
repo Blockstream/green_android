@@ -47,7 +47,6 @@ import java.text.DateFormat;
 import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
-import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
 
 
 public class TransactionActivity extends LoggedActivity implements View.OnClickListener,
@@ -398,7 +397,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final ObjectNode tx = signCall.resolve(null, getConnectionManager().getHWResolver());
             final Intent intent = new Intent(this, SendAmountActivity.class);
             removeUtxosIfTooBig(tx);
-            intent.putExtra(INTENT_STRING_TX, tx.toString());
+            intent.putExtra(PrefKeys.INTENT_STRING_TX, tx.toString());
             stopLoading();
             startActivity(intent);
             finish();

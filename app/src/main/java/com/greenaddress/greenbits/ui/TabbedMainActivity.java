@@ -34,6 +34,7 @@ import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
 import com.greenaddress.greenbits.ui.notifications.NotificationsFragment;
 import com.greenaddress.greenbits.ui.preferences.GeneralPreferenceFragment;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.WatchOnlyPreferenceFragment;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
@@ -44,7 +45,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
-import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
 public class TabbedMainActivity extends LoggedActivity implements Observer,
@@ -124,7 +124,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
                 return;
             }
             removeUtxosIfTooBig(transactionFromUri);
-            intent.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
+            intent.putExtra(PrefKeys.INTENT_STRING_TX, transactionFromUri.toString());
         } catch (final Exception e) {
             e.printStackTrace();
             if (e.getMessage() != null)

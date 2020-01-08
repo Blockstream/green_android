@@ -16,6 +16,7 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 
@@ -23,7 +24,6 @@ import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
-import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
 
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
 
@@ -76,13 +76,13 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
     @Override
     public void onAssetSelected(final String assetId) {
-        if (getIntent().hasExtra(INTENT_STRING_TX)) {
+        if (getIntent().hasExtra(PrefKeys.INTENT_STRING_TX)) {
             // Update transaction in send navigation flow
             try {
                 final ObjectNode tx = updateTransaction(assetId);
                 final Intent intent = new Intent(this, SendAmountActivity.class);
                 removeUtxosIfTooBig(tx);
-                intent.putExtra(INTENT_STRING_TX, tx.toString());
+                intent.putExtra(PrefKeys.INTENT_STRING_TX, tx.toString());
                 startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
             } catch (final Exception e) {
                 Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -113,7 +113,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     }
 
     private ObjectNode updateTransaction(final String assetId) throws Exception {
-        final String tx = getIntent().getStringExtra(INTENT_STRING_TX);
+        final String tx = getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX);
         final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
         final ObjectNode addressee = (ObjectNode) txJson.get("addressees").get(0);
         addressee.put("asset_tag", assetId);

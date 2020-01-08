@@ -43,7 +43,6 @@ import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
-import static com.greenaddress.greenbits.ui.send.ScanActivity.INTENT_STRING_TX;
 
 public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
     private static final String TAG = SendAmountActivity.class.getSimpleName();
@@ -142,7 +141,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         // Create the initial transaction
         try {
             if (mTx == null) {
-                final String tx = getIntent().getStringExtra(INTENT_STRING_TX);
+                final String tx = getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX);
                 final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
                 // Fee
                 // FIXME: If default fee is custom then fetch it here
@@ -535,11 +534,12 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
     }
 
-    public void onFinish(final JsonNode transactionData) {
+    public void onFinish(final ObjectNode transactionData) {
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
         final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
-        intent.putExtra("transaction", transactionData.toString());
+        removeUtxosIfTooBig(transactionData);
+        intent.putExtra(PrefKeys.INTENT_STRING_TX, transactionData.toString());
         intent.putExtra("asset_info", info);
         intent.putExtra(PrefKeys.SWEEP, isSweep);
         if (getConnectionManager().isHW())

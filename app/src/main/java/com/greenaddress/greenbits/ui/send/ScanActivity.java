@@ -72,8 +72,6 @@ import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_U
 public class ScanActivity extends LoggedActivity implements TextureView.SurfaceTextureListener, View.OnClickListener,
     TextWatcher {
 
-    public static final String INTENT_STRING_TX = "intent_string_tx";
-
     private static final long AUTO_FOCUS_INTERVAL_MS = 2500L;
 
     private final CameraManager cameraManager = new CameraManager();
@@ -411,7 +409,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 final String error = transactionRaw.get("error").asText();
                 if (error.isEmpty()) {
                     removeUtxosIfTooBig(transactionRaw);
-                    result.putExtra(INTENT_STRING_TX, transactionRaw.toString());
+                    result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
                 } else {
                     throw new Exception(error);
                 }
@@ -452,7 +450,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                     return;
                 }
                 removeUtxosIfTooBig(transactionFromUri);
-                result.putExtra(INTENT_STRING_TX, transactionFromUri.toString());
+                result.putExtra(PrefKeys.INTENT_STRING_TX, transactionFromUri.toString());
             } catch (final Exception e) {
                 if (e.getMessage() != null)
                     UI.toast(this, e.getMessage(), Toast.LENGTH_SHORT);
