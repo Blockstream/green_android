@@ -84,7 +84,7 @@ class AccountCreateViewController: UIViewController {
             return Guarantee()
         }.compactMap(on: bgq) {
             try session.createSubaccount(details: ["name": name, "type": type.rawValue])
-        }.compactMap(on: bgq) { call in
+        }.then(on: bgq) { call in
             call.resolve()
         }.ensure {
             self.stopAnimating()
@@ -92,6 +92,7 @@ class AccountCreateViewController: UIViewController {
             self.dismissModal()
         }.catch { e in
             Toast.show(e.localizedDescription)
+            print(e.localizedDescription)
         }
     }
 
