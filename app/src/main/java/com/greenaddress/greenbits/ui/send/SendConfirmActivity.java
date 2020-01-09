@@ -67,7 +67,11 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             if (hwwJson != null)
                 mHwData = mObjectMapper.readValue(hwwJson, HWDeviceData.class);
-            mTxJson =  mObjectMapper.readValue(getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX), ObjectNode.class);
+            mTxJson = mObjectMapper.readValue(getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX), ObjectNode.class);
+
+            // recreating json, since some field could be elided during activity change (eg used_utxos)
+            mTxJson = getSession().createTransactionRaw(this, mTxJson)
+                      .resolve(null,getConnectionManager().getHWResolver());
             mAssetInfo = (AssetInfoData) getIntent().getSerializableExtra("asset_info");
         } catch (final Exception e) {
             e.printStackTrace();
