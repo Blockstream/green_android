@@ -1,5 +1,6 @@
 import UIKit
 import PromiseKit
+import RxBluetoothKit
 
 func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate
@@ -23,6 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: EventWindow?
     static let service = GreenAddressService()
+    static let manager = CentralManager(queue: .main)
 
     static func getService() -> GreenAddressService {
         return service
