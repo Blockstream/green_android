@@ -10,12 +10,14 @@ struct GdkNetwork: Codable {
         case development
         case txExplorerUrl = "tx_explorer_url"
         case icon
+        case mainnet
         case policyAsset = "policy_asset"
     }
 
     let name: String
     let network: String
     let liquid: Bool
+    let mainnet: Bool
     let development: Bool
     let txExplorerUrl: String
     var icon: String?
