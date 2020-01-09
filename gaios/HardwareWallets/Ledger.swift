@@ -95,12 +95,13 @@ final class Ledger: LedgerCommands {
         if let base58 = xPubsCached[key] {
             return Observable.just(base58)
         }
+        let isMainnet = getGdkNetwork(getNetwork()).mainnet
         return self.pubKey(path: path)
             .flatMap { data -> Observable<String> in
                 let chainCode = Array((data["chainCode"] as? Data)!)
                 let publicKey = Array((data["publicKey"] as? Data)!)
                 let compressed = try! compressPublicKey(publicKey)
-                let base58 = try! bip32KeyToBase58(isMainnet: false, pubKey: compressed, chainCode: chainCode)
+                let base58 = try! bip32KeyToBase58(isMainnet: isMainnet, pubKey: compressed, chainCode: chainCode)
                 self.xPubsCached[key] = base58
                 return Observable.just(base58)
         }
