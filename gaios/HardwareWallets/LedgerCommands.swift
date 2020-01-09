@@ -157,8 +157,9 @@ class LedgerCommands: LedgerDeviceBLE {
     func pubKey(path: [Int]) -> Observable<[String: Any]> {
         let buffer = try! pathToData(path)
         return exchangeAdpu(cla: CLA_BOLOS, ins: INS_GET_WALLET_PUBLIC_KEY, p1: UInt8(0), p2: UInt8(0), data: Data(buffer)).flatMap { buffer -> Observable<[String: Any]> in
-            let publicKey = buffer[1..<Int(buffer[0]&0xff)+1]
-            var offset: Int = publicKey.count + 1
+            var offset: Int = 0
+            let publicKey = buffer[1..<Int(buffer[offset]&0xff)+1]
+            offset += publicKey.count + 1
             let address = buffer[offset+1..<offset+Int(buffer[offset]&0xff)+1]
             offset += address.count + 1
             let chainCode = buffer[offset..<offset+32]
