@@ -139,11 +139,13 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         if (mHwData != null && !mTxJson.get("change_address").isNull() && !mTxJson.get("change_amount").isNull()) {
             UI.show(UI.find(this, R.id.changeLayout));
             final TextView view = UI.find(this, R.id.changeAddressText);
-            final Collection<String> changedAddress = new ArrayList<>();
-            for (final JsonNode changeAddress : mTxJson.get("change_address")) {
-                changedAddress.add("- " + changeAddress.get("address").asText());
+            final Collection<String> changesList = new ArrayList<>();
+            for (final JsonNode output : mTxJson.get("transaction_outputs")) {
+                if (output.get("is_change").asBoolean() && !output.get("is_fee").asBoolean()) {
+                    changesList.add("- " + output.get("address").asText());
+                }
             }
-            view.setText(TextUtils.join("\n", changedAddress));
+            view.setText(TextUtils.join("\n", changesList));
         }
 
         mSwipeButton.setOnActiveListener(this);
