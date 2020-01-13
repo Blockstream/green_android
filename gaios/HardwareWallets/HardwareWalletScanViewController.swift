@@ -21,10 +21,25 @@ class HardwareWalletScanViewController: UIViewController {
         tableView.tableFooterView = UIView()
 
         let manager = AppDelegate.manager
+        if manager.state == .poweredOn {
+            scanningDispose = scan()
+            return
+        }
+
+        // wait bluetooth is ready
         scanningDispose = manager.observeState()
+            .do(onNext: { print("do: \($0.rawValue)") })
             .filter { $0 == .poweredOn }
             .take(1)
-            .flatMap { _ in manager.scanForPeripherals(withServices: nil) }
+            .subscribe(onNext: { _ in
+                self.scanningDispose = self.scan()
+            }, onError: { err in
+                self.showAlert(err.localizedDescription)
+            })
+    }
+
+    func scan() -> Disposable {
+        return AppDelegate.manager.scanForPeripherals(withServices: nil)
             .filter { $0.peripheral.name?.contains("Nano") ?? false }
             .subscribe(onNext: { p in
                 self.peripherals.removeAll { $0.rssi == p.rssi }
@@ -42,7 +57,7 @@ class HardwareWalletScanViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         scanningDispose?.dispose()
-        //enstablishDispose?.dispose()
+        AppDelegate.manager.manager.stopScan()
     }
 }
 
