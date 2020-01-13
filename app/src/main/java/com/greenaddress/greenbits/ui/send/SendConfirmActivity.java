@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui.send;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +33,10 @@ import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
@@ -135,8 +139,11 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         if (mHwData != null && !mTxJson.get("change_address").isNull() && !mTxJson.get("change_amount").isNull()) {
             UI.show(UI.find(this, R.id.changeLayout));
             final TextView view = UI.find(this, R.id.changeAddressText);
-            // FIXME: HWs are not supported (yet) on Liquid, hardcoding BTC here
-            view.setText(mTxJson.get("change_address").get("btc").get("address").asText());
+            final Collection<String> changedAddress = new ArrayList<>();
+            for (final JsonNode changeAddress : mTxJson.get("change_address")) {
+                changedAddress.add("- " + changeAddress.get("address").asText());
+            }
+            view.setText(TextUtils.join("\n", changedAddress));
         }
 
         mSwipeButton.setOnActiveListener(this);

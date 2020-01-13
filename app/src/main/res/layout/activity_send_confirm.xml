@@ -93,8 +93,7 @@
                 android:id="@+id/addressText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawablePadding="8dp"
-                android:drawableStart="@drawable/account"
+                android:padding="8dp"
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
                 android:textSize="12sp"/>
@@ -115,11 +114,10 @@
                     android:id="@+id/changeAddressText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:drawableStart="@drawable/account"
+                    android:padding="8dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/white"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <TextView
