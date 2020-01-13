@@ -4,7 +4,7 @@ extension String {
     func hexadecimal() -> Data? {
         var data = Data(capacity: self.count / 2)
         let regex = try! NSRegularExpression(pattern: "[0-9a-f]{1,2}", options: .caseInsensitive)
-        regex.enumerateMatches(in: self, options: .withoutAnchoringBounds, range: NSMakeRange(0, utf16.count), using: ({ match, _, _ in
+        regex.enumerateMatches(in: self, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: utf16.count), using: ({ match, _, _ in
             let byteString = (self as NSString).substring(with: match!.range)
             var num = UInt8(byteString, radix: 16)!
             data.append(&num, count: 1)
