@@ -10,7 +10,7 @@
 "id_a_new_transaction_has_just" = "방금 지갑에 새로운 거래가 인식되었습니다.";
 "id_a_screen_lock_must_be_enabled" = "A screen lock must be enabled from Android settings";
 "id_a_wallet_is_detected_on_this" = "지갑이 인식되었습니다:";
-"id_about" = "대하여";
+"id_about" = "About";
 "id_accept" = "수락";
 "id_access" = "Access";
 "id_account" = "계좌";
@@ -44,6 +44,7 @@
 "id_attempts_remaining_d" = "남은 시도: %d";
 "id_auto_logout_timeout" = "자동 로그아웃 시간";
 "id_autolock_after" = "자동 잠금 시간";
+"id_back" = "Back";
 "id_be_aware_other_apps_can_read_or" = "클립보드로 복사하면 다른 앱들이 읽거나 바꿀 수 있음으로 주의하세요";
 "id_bitcoin_denomination" = "비트코인 단위명";
 "id_bitcoin_wallet" = "비트코인 지갑.";
@@ -62,6 +63,7 @@
 "id_cannot_remove_enabled_network" = "활성화 된 네트워크는 제거할 수 없으므로 먼저 비활성화 하세요.";
 "id_cant_connect_to_this_url" = "URL 연결 불가";
 "id_change" = "거스름돈";
+"id_change_pin" = "Change PIN";
 "id_choose" = "선택";
 "id_choose_method_to_authorize_the" = "권한부여 방식 선택";
 "id_choose_twofactor_authentication" = "2FA 방식 선택";
@@ -88,6 +90,7 @@
 "id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "생성";
 "id_create_a_pin_to_access_your" = "지갑을 사용하기 전 비밀번호를 설정하세요";
+"id_create_a_wallet_for_bitcoin" = "Create a wallet for Bitcoin, Liquid or Testnet";
 "id_create_new_wallet" = "새로운 지갑 생성";
 "id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "통화";
@@ -114,6 +117,7 @@
 "id_displays_the_progress_of_spv" = "SPV 동기화 진행을 표시합니다";
 "id_dispute_twofactor_reset" = "2FA 재설정 분쟁";
 "id_disputed" = "분쟁중";
+"id_distributed_under_the_s_see" = "Distributed under the %@, see LICENSE for more information or visit %@";
 "id_domain" = "도메인";
 "id_done" = "완료";
 "id_dont_ask_me_again" = "다시 묻지 않기";
@@ -173,6 +177,7 @@
 "id_for_securities_investors" = "For securities investors";
 "id_from" = "보낸이";
 "id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
+"id_general" = "General";
 "id_generate_new_address" = "새로운 주소 생성하기";
 "id_get_code" = "코드 받기";
 "id_go_to_account" = "Go to Account";
@@ -190,6 +195,7 @@
 "id_green_uses_multisig_with_one" = "Green 은 Blockstream 서버의 서명과 사용자의 매체에서 생성되는 서명으로 멀티서명 기술을 사용합니다. 2FA를 설정할 경우, 서버측 서명을 더욱 안전하게 만듭니다.";
 "id_hardware_wallet_support_for" = "기밀 자산의 하드웨어 지갑 지원이 곧 출시 될 예정입니다.";
 "id_hash" = "해시";
+"id_help" = "Help";
 "id_here" = "here";
 "id_hex" = "HEX";
 "id_high" = "높음";
@@ -228,13 +234,13 @@
 "id_last_ping_1d_ms" = "마지막 핑: %1$d ms";
 "id_later" = "이후";
 "id_learn_more_about_s" = "Learn more about %@.";
-"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Ledger 대시 보드가 감지되었습니다. 올바른 앱을 열어 사용하세요.";
+"id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.";
 "id_lets_get_you_set_up" = "새로운 지갑을 만들어 볼까요?";
 "id_liquid_securities" = "Liquid Securities";
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
-"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
 "id_loading_transactions" = "거래 로딩중...";
 "id_log_in" = "로그인";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -311,6 +317,7 @@
 "id_pin" = "비밀번호";
 "id_pin_has_to_be_between_4_and_15" = "비밀번호는 4 에서 15자리 사이 여야 합니다.";
 "id_pins_do_not_match_please_try" = "비밀번호가 일치하지 않습니다.";
+"id_please_contribute_if_you_find" = "Please contribute if you find Blockstream Green useful";
 "id_please_disable_biometric" = "비밀번호를 지우기 전에 생체인증을 먼저 비활성화하세요.";
 "id_please_disconnect_your_ledger" = "Ledger Nano X를 휴대폰에서 분리하신 다음, 양쪽 버튼은 둘 다 길게 눌러 종료하세요. 종료 후 다시 연결한 다음 비밀번호를 입력하세요.";
 "id_please_enable_another" = "자산에 대한 접근권한을 잃지 않도록 다른 방법도 활성화하세요.";
@@ -329,7 +336,7 @@
 "id_precision" = "정확도";
 "id_privacy_policy" = "개인정보처리방침";
 "id_problem_with_key_1s" = "키 %1$@에 문제있음";
-"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
 "id_providing_an_email_enables" = "이메일을 제공하시면 알람과 거래 복구를 가능케 합니다.";
 "id_proxy_settings" = "프록시 설정";
 "id_qr_scanner" = "QR 스캐너";
@@ -338,6 +345,7 @@
 "id_received" = "받음";
 "id_received_on" = "받은 시간";
 "id_recipient" = "수령인";
+"id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "복구와 알람";
 "id_recovery_transaction_emails" = "복구 거래 이메일";
 "id_recovery_transaction_request" = "복구 거래 요청 보냄";
@@ -378,6 +386,7 @@
 "id_security" = "보안";
 "id_see_our_privacy_policy_s" = "See our privacy policy %@";
 "id_see_our_terms_of_service_s" = "See our Terms of Service %@";
+"id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "계정 선택";
 "id_select_asset" = "자산 선택";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
@@ -437,6 +446,7 @@
 "id_standard_account" = "Standard Account";
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_start_a_2fa_reset_process_if" = "Start a 2FA reset process if you lost access to all your two-factor authentication methods.";
+"id_support" = "Support";
 "id_sweep" = "Sweep";
 "id_sweep_from_paper_wallet" = "종이 지갑에서 자산 Sweep 하기";
 "id_sweep_into_s" = "%@로 자산 sweep 하기";
@@ -457,6 +467,7 @@
 "id_the_network_selected_on_the" = "Green 앱에서 선택한 네트워크는 하드웨어 지갑에서 선택한 네트워크랑 일치하지 않습니다. 두 기기에서 동일한 네트워크를 선택해 주세요.";
 "id_the_password_cant_be_empty" = "비밀번호는 비워 둘 수 없습니다";
 "id_the_recovery_key_below_will_not" = "밑의 복원 키는 다시 표시되지 않습니다. 자산을 잃어버리지 않도록 안전하게 보관해두세요.";
+"id_the_source_code_is_available_at" = "The source code is available at %@";
 "id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = "%@ 지갑에는 비밀번호가 이미 설정되어 있습니다. 이대로 진행할 경우 비밀번호는 설정할 수 없으며 로그인을 위해서는 24개의 니모닉(복원 코드)이 필요합니다. 3번 로그인 실패를 하거나 설정에서 비밀번호를 해제하실 수 있습니다. ";
 "id_this_transaction_spent" = "This transaction spent non-confidential funds.";
@@ -479,6 +490,7 @@
 "id_transaction_details" = "상세 거래 내역";
 "id_transaction_id" = "거래 ID";
 "id_transaction_sent" = "거래 보냄";
+"id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "지금 시도하기";
 "id_two_factor_authentication" = "2FA ";
@@ -505,6 +517,7 @@
 "id_version_1s" = "버전: %1$@";
 "id_version_1s_2s" = "버전 %1$@%2$@";
 "id_view_in_explorer" = "탐색기에서 보기";
+"id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "거래 기다리는중...";
 "id_wallet_backup" = "Wallet Backup";
 "id_wallet_creation_failed" = "지갑 생성 실패";

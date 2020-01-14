@@ -10,7 +10,7 @@
 "id_a_new_transaction_has_just" = "收到一笔新交易";
 "id_a_screen_lock_must_be_enabled" = "A screen lock must be enabled from Android settings";
 "id_a_wallet_is_detected_on_this" = "本设备上检测到了一个钱包：";
-"id_about" = "关于";
+"id_about" = "About";
 "id_accept" = "接受";
 "id_access" = "Access";
 "id_account" = "账户";
@@ -44,6 +44,7 @@
 "id_attempts_remaining_d" = "剩余尝试机会：%d";
 "id_auto_logout_timeout" = "自动登出超时";
 "id_autolock_after" = "自动锁定之后";
+"id_back" = "Back";
 "id_be_aware_other_apps_can_read_or" = "请注意，其他应用能够读取或改变剪贴板";
 "id_bitcoin_denomination" = "比特币面值";
 "id_bitcoin_wallet" = "比特币钱包。";
@@ -62,6 +63,7 @@
 "id_cannot_remove_enabled_network" = "无法移除已启用的网络，请先禁用该网络";
 "id_cant_connect_to_this_url" = "无法连接至此URL";
 "id_change" = "改变";
+"id_change_pin" = "Change PIN";
 "id_choose" = "选择";
 "id_choose_method_to_authorize_the" = "选择批准该操作的方法";
 "id_choose_twofactor_authentication" = "选择双重验证方法";
@@ -88,6 +90,7 @@
 "id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "创建";
 "id_create_a_pin_to_access_your" = "创建一个新的PIN来接入你的钱包";
+"id_create_a_wallet_for_bitcoin" = "Create a wallet for Bitcoin, Liquid or Testnet";
 "id_create_new_wallet" = "创建新钱包";
 "id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "币种";
@@ -114,6 +117,7 @@
 "id_displays_the_progress_of_spv" = "显示SPV同步进程";
 "id_dispute_twofactor_reset" = "免除重置双重认证";
 "id_disputed" = "以免除";
+"id_distributed_under_the_s_see" = "Distributed under the %@, see LICENSE for more information or visit %@";
 "id_domain" = "域";
 "id_done" = "完成";
 "id_dont_ask_me_again" = "不再询问";
@@ -173,6 +177,7 @@
 "id_for_securities_investors" = "For securities investors";
 "id_from" = "来自";
 "id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
+"id_general" = "General";
 "id_generate_new_address" = "创建新的地址";
 "id_get_code" = "获取代码";
 "id_go_to_account" = "Go to Account";
@@ -190,6 +195,7 @@
 "id_green_uses_multisig_with_one" = "Green使用multisig，其中一个签名由你的设备生成，另一个由Blockstream服务器生成。设置双重验证将能为服务器生成的签名增添更多一层保护。";
 "id_hardware_wallet_support_for" = "硬件钱包即将支持保密交易。";
 "id_hash" = "哈希";
+"id_help" = "Help";
 "id_here" = "here";
 "id_hex" = "HEX";
 "id_high" = "高";
@@ -228,13 +234,13 @@
 "id_last_ping_1d_ms" = "最后一次ping：%1$d ms";
 "id_later" = "稍后";
 "id_learn_more_about_s" = "Learn more about %@.";
-"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "检测到Ledger Dashboard，请打开正确的应用来获取。";
+"id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.";
 "id_lets_get_you_set_up" = "立即开始设置。";
 "id_liquid_securities" = "Liquid Securities";
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
-"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
 "id_loading_transactions" = "正在加载交易…";
 "id_log_in" = "登录";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -311,6 +317,7 @@
 "id_pin" = "PIN";
 "id_pin_has_to_be_between_4_and_15" = "PIN必须为4到15位";
 "id_pins_do_not_match_please_try" = "PIN不匹配，请再试一次。";
+"id_please_contribute_if_you_find" = "Please contribute if you find Blockstream Green useful";
 "id_please_disable_biometric" = "删除PIN前请关闭生物识别验证";
 "id_please_disconnect_your_ledger" = "请断开Ledger Nano X的连接，长按两个按钮将其关闭，然后重新连接并输入PIN";
 "id_please_enable_another" = "请开启另一个验证方法，以避免失去资金的访问权限。";
@@ -329,7 +336,7 @@
 "id_precision" = "精确";
 "id_privacy_policy" = "隐私政策";
 "id_problem_with_key_1s" = "密钥%1$@出现了问题";
-"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
 "id_providing_an_email_enables" = "提供邮箱地址将能收到通知以及交易恢复。";
 "id_proxy_settings" = "PROXY设置";
 "id_qr_scanner" = "二维码扫描器";
@@ -338,6 +345,7 @@
 "id_received" = "已接收";
 "id_received_on" = "接收平台为";
 "id_recipient" = "接收方";
+"id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "恢复与通知";
 "id_recovery_transaction_emails" = "恢复交易邮件";
 "id_recovery_transaction_request" = "恢复交易请求已发送";
@@ -378,6 +386,7 @@
 "id_security" = "安全";
 "id_see_our_privacy_policy_s" = "See our privacy policy %@";
 "id_see_our_terms_of_service_s" = "See our Terms of Service %@";
+"id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "选择账户";
 "id_select_asset" = "选择资产";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
@@ -437,6 +446,7 @@
 "id_standard_account" = "Standard Account";
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_start_a_2fa_reset_process_if" = "Start a 2FA reset process if you lost access to all your two-factor authentication methods.";
+"id_support" = "Support";
 "id_sweep" = "扫描";
 "id_sweep_from_paper_wallet" = "从纸钱包中提取";
 "id_sweep_into_s" = "已扫描%@";
@@ -457,6 +467,7 @@
 "id_the_network_selected_on_the" = "在Green应用程序上选择的网络与在硬件钱包上选择的网络不同。请在两台设备上选择相同的网络。";
 "id_the_password_cant_be_empty" = "密码不能为空";
 "id_the_recovery_key_below_will_not" = "恢复密钥将不再显示。请立即创建该密钥的安全副本，以确保随时能够获得资金的访问权限。";
+"id_the_source_code_is_available_at" = "The source code is available at %@";
 "id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = "钱包%@已设置PIN。继续进行将无法设置PIN，登录需要24字助记词。可在设置中关闭PIN，或输入错误3次也可关闭PIN。";
 "id_this_transaction_spent" = "This transaction spent non-confidential funds.";
@@ -479,6 +490,7 @@
 "id_transaction_details" = "交易细节";
 "id_transaction_id" = "交易ID";
 "id_transaction_sent" = "交易已发送";
+"id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "立即尝试";
 "id_two_factor_authentication" = "双重验证";
@@ -505,6 +517,7 @@
 "id_version_1s" = "版本：%1$@";
 "id_version_1s_2s" = "版本%1$@ %2$@";
 "id_view_in_explorer" = "在探索者中查看";
+"id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "等待交易...";
 "id_wallet_backup" = "Wallet Backup";
 "id_wallet_creation_failed" = "钱包创建失败";

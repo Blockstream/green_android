@@ -10,7 +10,7 @@
 "id_a_new_transaction_has_just" = "貴方のウォレットに新しいトランザクションが届きました。";
 "id_a_screen_lock_must_be_enabled" = "A screen lock must be enabled from Android settings";
 "id_a_wallet_is_detected_on_this" = "このデバイスにウォレットが検知されました:";
-"id_about" = "GreenAddressについて";
+"id_about" = "About";
 "id_accept" = "承諾";
 "id_access" = "Access";
 "id_account" = "アカウント";
@@ -44,6 +44,7 @@
 "id_attempts_remaining_d" = "残り: %d 回";
 "id_auto_logout_timeout" = "自動ログアウト時間";
 "id_autolock_after" = "オートロック制限";
+"id_back" = "Back";
 "id_be_aware_other_apps_can_read_or" = "他のアプリがクリップボードを読み取り、変更可能ですので注意してください。";
 "id_bitcoin_denomination" = "ビットコイン単位";
 "id_bitcoin_wallet" = "ビットコイン・ウォレット";
@@ -62,6 +63,7 @@
 "id_cannot_remove_enabled_network" = "使用中のネットワークは削除できません。未使用に変更後もう一度お試しください。";
 "id_cant_connect_to_this_url" = "URLに接続できません。";
 "id_change" = "変更";
+"id_change_pin" = "Change PIN";
 "id_choose" = "選択";
 "id_choose_method_to_authorize_the" = "認可方法を選択する";
 "id_choose_twofactor_authentication" = "2段階認証方法の選択";
@@ -88,6 +90,7 @@
 "id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "生成";
 "id_create_a_pin_to_access_your" = "ウォレット接続の為のPINを生成する";
+"id_create_a_wallet_for_bitcoin" = "Create a wallet for Bitcoin, Liquid or Testnet";
 "id_create_new_wallet" = "新規ウォレットの生成";
 "id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "貨幣";
@@ -114,6 +117,7 @@
 "id_displays_the_progress_of_spv" = "SPVシンクロナイゼーションの進展度を表示";
 "id_dispute_twofactor_reset" = "2段階認証リセット";
 "id_disputed" = "論争中";
+"id_distributed_under_the_s_see" = "Distributed under the %@, see LICENSE for more information or visit %@";
 "id_domain" = "Domain";
 "id_done" = "完了";
 "id_dont_ask_me_again" = "これ以上聞かない";
@@ -173,6 +177,7 @@
 "id_for_securities_investors" = "For securities investors";
 "id_from" = "送信者";
 "id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
+"id_general" = "General";
 "id_generate_new_address" = "新しいアドレスを生成する";
 "id_get_code" = "コードを貰う";
 "id_go_to_account" = "Go to Account";
@@ -190,6 +195,7 @@
 "id_green_uses_multisig_with_one" = "GreenはBlockstreamのサーバーと貴方のデバイスで生成された署名の二つを活用しマルチ署名を利用します。2段階認証を設定する場合、サーバー側の署名のセキュリティにもう一段層加えることになります。";
 "id_hardware_wallet_support_for" = "Hardware wallet support for Confidential Transactions coming soon.";
 "id_hash" = "ハッシュ";
+"id_help" = "Help";
 "id_here" = "here";
 "id_hex" = "HEX";
 "id_high" = "高い";
@@ -228,13 +234,13 @@
 "id_last_ping_1d_ms" = "最終Ping: %1$d ms";
 "id_later" = "後";
 "id_learn_more_about_s" = "Learn more about %@.";
-"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Ledgerダッシュボードを検知しました。正しいアプリを使ってアクセスして下さい。";
+"id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.";
 "id_lets_get_you_set_up" = "設定してみましょう。";
 "id_liquid_securities" = "Liquid Securities";
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
-"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
 "id_loading_transactions" = "トランザクションを読み込んでいます…";
 "id_log_in" = "ログイン";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -311,6 +317,7 @@
 "id_pin" = "PIN";
 "id_pin_has_to_be_between_4_and_15" = "PINは4から15文字で無くてはなりません";
 "id_pins_do_not_match_please_try" = "PINが一致しません、もう一度お試しください。";
+"id_please_contribute_if_you_find" = "Please contribute if you find Blockstream Green useful";
 "id_please_disable_biometric" = "PINの削除の前に生体認証を無効にして下さい。";
 "id_please_disconnect_your_ledger" = "Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN";
 "id_please_enable_another" = "資金へのアクセスを維持するにはもう一つの認証方法を有効にして下さい。";
@@ -329,7 +336,7 @@
 "id_precision" = "Precision";
 "id_privacy_policy" = "プライバシー政策";
 "id_problem_with_key_1s" = "キー%1$@ の問題";
-"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
 "id_providing_an_email_enables" = "Eメールを入力すると告知事項を受け取ることができ、また、トランザクション・リカバリーもできます。";
 "id_proxy_settings" = "プロキシー設定";
 "id_qr_scanner" = "QRスキャナー";
@@ -338,6 +345,7 @@
 "id_received" = "受け取り済み";
 "id_received_on" = "受け取り先";
 "id_recipient" = "受信者";
+"id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "リカバリーと告知";
 "id_recovery_transaction_emails" = "復元トランザクションEメール";
 "id_recovery_transaction_request" = "復元トランザクションが要請されました";
@@ -378,6 +386,7 @@
 "id_security" = "セキュリティ";
 "id_see_our_privacy_policy_s" = "See our privacy policy %@";
 "id_see_our_terms_of_service_s" = "See our Terms of Service %@";
+"id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "Select Account";
 "id_select_asset" = "Select asset";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
@@ -437,6 +446,7 @@
 "id_standard_account" = "Standard Account";
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_start_a_2fa_reset_process_if" = "Start a 2FA reset process if you lost access to all your two-factor authentication methods.";
+"id_support" = "Support";
 "id_sweep" = "Sweep";
 "id_sweep_from_paper_wallet" = "ペーパーウォレットをSweepする";
 "id_sweep_into_s" = "Sweep into %@";
@@ -457,6 +467,7 @@
 "id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_password_cant_be_empty" = "パスワードが空欄です";
 "id_the_recovery_key_below_will_not" = "下の復元キーは二度とご覧になられません。資金のアクセスの為にバックアップをお願いします。";
+"id_the_source_code_is_available_at" = "The source code is available at %@";
 "id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = "%@ウォレットには既にPINが設定されています。続ける場合、PINの設定は不可能でありログインするには24個のmnemonic単語が必要です。PINの無効化は設定、または、ログインを3回失敗した場合できます。";
 "id_this_transaction_spent" = "This transaction spent non-confidential funds.";
@@ -479,6 +490,7 @@
 "id_transaction_details" = "トランザクション詳細";
 "id_transaction_id" = "トランザクションID";
 "id_transaction_sent" = "トランザクション送信完了";
+"id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "試す";
 "id_two_factor_authentication" = "2段階認証";
@@ -505,6 +517,7 @@
 "id_version_1s" = "バージョン: %1$@";
 "id_version_1s_2s" = "バージョン %1$@ %2$@";
 "id_view_in_explorer" = "エクスプローラで見る";
+"id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "トランザクション待機中…";
 "id_wallet_backup" = "Wallet Backup";
 "id_wallet_creation_failed" = "Wallet creation failed";

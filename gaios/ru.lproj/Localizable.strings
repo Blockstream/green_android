@@ -10,7 +10,7 @@
 "id_a_new_transaction_has_just" = "Новая транзакция только что поступила на ваш кошелек.";
 "id_a_screen_lock_must_be_enabled" = "Блокировка экрана должна быть включена в настройках Android";
 "id_a_wallet_is_detected_on_this" = "На этом устройстве обнаружен кошелек:";
-"id_about" = "О GREEN";
+"id_about" = "About";
 "id_accept" = "ПРИНЯТЬ";
 "id_access" = "Доступ";
 "id_account" = "АККАУНТ";
@@ -44,6 +44,7 @@
 "id_attempts_remaining_d" = "Осталось попыток: %d";
 "id_auto_logout_timeout" = "Автоматический выход";
 "id_autolock_after" = "Автоматическая блокировка";
+"id_back" = "Back";
 "id_be_aware_other_apps_can_read_or" = "Помните, что другие приложения могут читать или изменять буфер обмена";
 "id_bitcoin_denomination" = "Деноминация биткоина";
 "id_bitcoin_wallet" = "Биткоин-кошелек";
@@ -62,6 +63,7 @@
 "id_cannot_remove_enabled_network" = "Не удается удалить включенную сеть, сначала отключите ее.";
 "id_cant_connect_to_this_url" = "Не удается подключиться к этому URL";
 "id_change" = "СДАЧА";
+"id_change_pin" = "Change PIN";
 "id_choose" = "Выбрать";
 "id_choose_method_to_authorize_the" = "Выберите метод для авторизации действия";
 "id_choose_twofactor_authentication" = "Выберите метод двухфакторной аутентификации";
@@ -88,6 +90,7 @@
 "id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "Создать";
 "id_create_a_pin_to_access_your" = "Создайте PIN-код для доступа к вашему кошельку";
+"id_create_a_wallet_for_bitcoin" = "Create a wallet for Bitcoin, Liquid or Testnet";
 "id_create_new_wallet" = "Создать новый кошелек";
 "id_create_temporary_wallet" = "Create temporary wallet";
 "id_currency" = "Валюта";
@@ -114,6 +117,7 @@
 "id_displays_the_progress_of_spv" = "Отображает ход синхронизации SPV";
 "id_dispute_twofactor_reset" = "Оспорить двухфакторное восстановление";
 "id_disputed" = "Оспоримо";
+"id_distributed_under_the_s_see" = "Distributed under the %@, see LICENSE for more information or visit %@";
 "id_domain" = "Domain";
 "id_done" = "Сделано";
 "id_dont_ask_me_again" = "Больше не спрашивать";
@@ -173,6 +177,7 @@
 "id_for_securities_investors" = "For securities investors";
 "id_from" = "ОТ";
 "id_funds_received_in_this" = "Средства полученные в данной транзакции не конфиденцеальны";
+"id_general" = "General";
 "id_generate_new_address" = "Сгенерировать новый адрес";
 "id_get_code" = "Получить код";
 "id_go_to_account" = "Go to Account";
@@ -190,6 +195,7 @@
 "id_green_uses_multisig_with_one" = "Green использует мультиподпись с подписью, сгенерированной вашим устройством, и подписью, сгенерированной серверами Blockstream. Настройка двухфакторной аутентификации обеспечивает дополнительный уровень безопасности для подписи на сервере.";
 "id_hardware_wallet_support_for" = "Поддержка конфиденциальных транзакций в аппаратных кошельках находится в разработке.";
 "id_hash" = "Хеш";
+"id_help" = "Help";
 "id_here" = "here";
 "id_hex" = "HEX";
 "id_high" = "Высокий";
@@ -228,13 +234,13 @@
 "id_last_ping_1d_ms" = "Последний сигнал: %1$d мс";
 "id_later" = "ПОЗЖЕ";
 "id_learn_more_about_s" = "Learn more about %@.";
-"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Обнаружена панель Ledger, пожалуйста, откройте правильное приложение для доступа.";
+"id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.";
 "id_lets_get_you_set_up" = "Давайте произведем настройку.";
 "id_liquid_securities" = "Liquid Securities";
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
-"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
 "id_loading_transactions" = "Идет загрузка транзакций...";
 "id_log_in" = "Войти";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -311,6 +317,7 @@
 "id_pin" = "PIN-код";
 "id_pin_has_to_be_between_4_and_15" = "PIN-код должен содержать от 4 до 15 символов";
 "id_pins_do_not_match_please_try" = "PIN-коды не совпадают, повторите попытку.";
+"id_please_contribute_if_you_find" = "Please contribute if you find Blockstream Green useful";
 "id_please_disable_biometric" = "Пожалуйста, отключите биометрическую аутентификацию перед удалением PIN-кода";
 "id_please_disconnect_your_ledger" = "Please disconnect your Ledger Nano X, power it off by long-pressing both buttons, then reconnect it and enter its PIN";
 "id_please_enable_another" = "Пожалуйста, включите еще один метод аутентификации во избежание потери доступа к вашим средствам.";
@@ -329,7 +336,7 @@
 "id_precision" = "Precision";
 "id_privacy_policy" = "Политика конфиденциальности";
 "id_problem_with_key_1s" = "Проблема с ключом %1$@";
-"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
 "id_providing_an_email_enables" = "Предоставление электронной почты позволяет получать уведомления и восстанавливать транзакции.";
 "id_proxy_settings" = "НАСТРОЙКИ ПРОКСИ-СЕРВЕРА";
 "id_qr_scanner" = "QR-сканер";
@@ -338,6 +345,7 @@
 "id_received" = "Получено";
 "id_received_on" = "Получено";
 "id_recipient" = "Получатель";
+"id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Восстановление и уведомления";
 "id_recovery_transaction_emails" = "Электронные письма транзакций восстановления";
 "id_recovery_transaction_request" = "Запрос о восстановительной транзакции отправлен";
@@ -378,6 +386,7 @@
 "id_security" = "БЕЗОПАСНОСТЬ";
 "id_see_our_privacy_policy_s" = "See our privacy policy %@";
 "id_see_our_terms_of_service_s" = "See our Terms of Service %@";
+"id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "Select Account";
 "id_select_asset" = "Выберите актив";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
@@ -437,6 +446,7 @@
 "id_standard_account" = "Standard Account";
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_start_a_2fa_reset_process_if" = "Start a 2FA reset process if you lost access to all your two-factor authentication methods.";
+"id_support" = "Support";
 "id_sweep" = "Смести";
 "id_sweep_from_paper_wallet" = "Смести с бумажного кошелька";
 "id_sweep_into_s" = "Sweep into %@";
@@ -457,6 +467,7 @@
 "id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
 "id_the_password_cant_be_empty" = "Поле пароля не может быть пустым";
 "id_the_recovery_key_below_will_not" = "Ключ восстановления больше не будет показан. Сделайте резервное копирование для того, чтобы всегда иметь доступ к своим средствам.";
+"id_the_source_code_is_available_at" = "The source code is available at %@";
 "id_the_transaction_contains" = "The transaction contains non-confidential funds.";
 "id_there_is_already_a_pin_set_for" = " PIN-код установлен для %@кошелька.  В дальнейшем вы не сможете устанавливать PIN-код и логин, для входа потребуется мнемоническая фраза из 24 слов. Вы можете отключить PIN-код удалением его в настройках или 3-кратным ошибочным введением.";
 "id_this_transaction_spent" = "This transaction spent non-confidential funds.";
@@ -479,6 +490,7 @@
 "id_transaction_details" = "Детали транзакции";
 "id_transaction_id" = " ID транзакции";
 "id_transaction_sent" = "Транзакция отправлена";
+"id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "Попробовать сейчас";
 "id_two_factor_authentication" = "ДВУХФАКТОРНАЯ АУТЕНТИФИКАЦИЯ";
@@ -505,6 +517,7 @@
 "id_version_1s" = "Версия: %1$@";
 "id_version_1s_2s" = "Версия %1$@ %2$@";
 "id_view_in_explorer" = "Просмотреть в обозревателе";
+"id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "Ожидание транзакции ...";
 "id_wallet_backup" = "Wallet Backup";
 "id_wallet_creation_failed" = "Не удалось создать кошелек";

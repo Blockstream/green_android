@@ -10,7 +10,7 @@
 "id_a_new_transaction_has_just" = "Sua carteira acabou de receber uma nova transação.";
 "id_a_screen_lock_must_be_enabled" = "O bloqueio de tela deve ser habilitado nas configurações do Android";
 "id_a_wallet_is_detected_on_this" = "Uma carteira foi detectada neste dispositivo:";
-"id_about" = "SOBRE";
+"id_about" = "Sobre";
 "id_accept" = "ACEITAR";
 "id_access" = "Acesso";
 "id_account" = "CONTA";
@@ -44,6 +44,7 @@
 "id_attempts_remaining_d" = "Tentativas restantes: %d";
 "id_auto_logout_timeout" = "Tempo de espera para encerrar a sessão automaticamente";
 "id_autolock_after" = "Bloquear depois de";
+"id_back" = "Voltar";
 "id_be_aware_other_apps_can_read_or" = "Cuidado, outros aplicativos podem ler ou alterar a área de transferência";
 "id_bitcoin_denomination" = "Denominação de Bitcoin";
 "id_bitcoin_wallet" = "Carteira de Bitcoin.";
@@ -62,6 +63,7 @@
 "id_cannot_remove_enabled_network" = "Impossível remover uma rede ativa, por favor, desative-a primeiro";
 "id_cant_connect_to_this_url" = "Impossível conectar-se a essa URL";
 "id_change" = "ALTERAR";
+"id_change_pin" = "Alterar PIN";
 "id_choose" = "Escolha";
 "id_choose_method_to_authorize_the" = "Escolha um método para autorizar a ação";
 "id_choose_twofactor_authentication" = "Escolha o método de autenticação de dois fatores";
@@ -71,7 +73,7 @@
 "id_confidential" = "Confidencial";
 "id_confirm_code" = "Confirme o código";
 "id_confirm_passphrase" = "Confirmar senha";
-"id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
+"id_confirm_transaction_details_on" = "Confirmar detalhes da transação na sua carteira hardware";
 "id_confirmation_in_d_blocks" = "Confirmação em%d blocos";
 "id_congratulations" = "Parabéns!";
 "id_connect_through_a_proxy" = "Conectar-se através de um proxy";
@@ -88,6 +90,7 @@
 "id_copy_transaction_id" = "Copiar ID da transação";
 "id_create" = "Criar";
 "id_create_a_pin_to_access_your" = "Criar um PIN para acessar sua carteira";
+"id_create_a_wallet_for_bitcoin" = "Criar uma carteira Bitcoin, Liquid ou Testnet";
 "id_create_new_wallet" = "Criar Nova Carteira";
 "id_create_temporary_wallet" = "Criar carteira temporária";
 "id_currency" = "Moeda";
@@ -98,7 +101,7 @@
 "id_d6_confirmations" = "%d/6 confirmações";
 "id_d_asset_in_this_account" = "%dativo nesta conta";
 "id_d_assets" = "%dativos";
-"id_d_assets_in_this_account" = "%dativos nesta conta";
+"id_d_assets_in_this_account" = "%d ativos nesta conta";
 "id_date" = "Data";
 "id_day" = "dia";
 "id_days" = "dias";
@@ -114,6 +117,7 @@
 "id_displays_the_progress_of_spv" = "Mostra o progresso da sincronização SPV";
 "id_dispute_twofactor_reset" = "Disputar reset da autenticação de dois fatores";
 "id_disputed" = "Disputado";
+"id_distributed_under_the_s_see" = "Distributed under the %@, see LICENSE for more information or visit %@";
 "id_domain" = "Domínio";
 "id_done" = "Feito";
 "id_dont_ask_me_again" = "Não perguntar novamente";
@@ -127,7 +131,7 @@
 "id_enable" = "Ativar";
 "id_enable_custom_networks_debug" = "Ativar opções de debug para rede personalizada";
 "id_enable_face_id" = "Ativar Face ID";
-"id_enable_or_change_your_pin_to" = "Habilite ou mude seu PIN para ter acesso rápido a sua carteira";
+"id_enable_or_change_your_pin_to" = "Habilite ou altere seu PIN para ter acesso rápido a sua carteira";
 "id_enable_spv" = "Ativar SPV";
 "id_enable_spv_and_modify_spv" = "Ativar SPV e modificar as configurações de SPV";
 "id_enable_touch_id" = "Ativar Touch ID";
@@ -173,6 +177,7 @@
 "id_for_securities_investors" = "Para investidores em valores mobiliários";
 "id_from" = "DE";
 "id_funds_received_in_this" = "Fundos recebidos nesta transação não são confidenciais.";
+"id_general" = "General";
 "id_generate_new_address" = "Gerar Novo Endereço";
 "id_get_code" = "Obter Código";
 "id_go_to_account" = "Ir para Conta";
@@ -190,6 +195,7 @@
 "id_green_uses_multisig_with_one" = "Green usa multisig com uma assinatura gerada por seu dispositivo, e uma pelos servidores da Blockstream. Configurar a autenticação de dois fatores ativa uma camada extra de segurança para a assinatura do servidor.";
 "id_hardware_wallet_support_for" = "Em breve, suporte para Transações Confidenciais em Carteiras Físicas. ";
 "id_hash" = "Hash";
+"id_help" = "Ajuda";
 "id_here" = "aqui";
 "id_hex" = "HEX";
 "id_high" = "Alta";
@@ -206,7 +212,7 @@
 "id_information_not_available" = "Informação não disponível.";
 "id_insufficient_funds" = "Fundos insuficientes";
 "id_insufficient_lbtc_for_fees" = "L-BTC insuficiente para pagar taxas";
-"id_insufficient_lbtc_to_send_a" = "Não há suficiente L-BTC para enviar a transação. Na rede Liquid, L-BTC são necessários para pagar taxas de transação. Gere um endereço para receber L-BTC";
+"id_insufficient_lbtc_to_send_a" = "Você não possui L-BTC suficiente para enviar a transação. Na rede Liquid, L-BTC são necessários para pagar taxas de transação. Clique em receber para gerar um endereço L-BTC";
 "id_invalid_address" = "Endereço inválido";
 "id_invalid_amount" = "Quantidade inválida";
 "id_invalid_mnemonic" = "Mnemônico inválido";
@@ -228,13 +234,13 @@
 "id_last_ping_1d_ms" = "Último ping: %1$d ms";
 "id_later" = "MAIS TARDE";
 "id_learn_more_about_s" = "Aprenda mais sobre %@.";
-"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Ledger Dashboard detectada, por favor, abra o aplicativo correto para acessar.";
+"id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.";
 "id_lets_get_you_set_up" = "Vamos preparar sua carteira.";
 "id_liquid_securities" = "Liquid Securities";
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
-"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
 "id_loading_transactions" = "Carregando transações…";
 "id_log_in" = "Entrar";
 "id_log_in_into_your_s_wallet" = "Acessar sua %@carteira";
@@ -311,6 +317,7 @@
 "id_pin" = "PIN";
 "id_pin_has_to_be_between_4_and_15" = "O PIN deve ter entre 4 e 15 dígitos";
 "id_pins_do_not_match_please_try" = "Os PINs não coincidem, por favor, tente novamente.";
+"id_please_contribute_if_you_find" = "Please contribute if you find Blockstream Green useful";
 "id_please_disable_biometric" = "Por favor, desabilite a autenticação biométrica antes de remover o PIN";
 "id_please_disconnect_your_ledger" = "Por favor desconecte sua Ledger Nano X, desligue-a pressionando os dois botões por um certo período de tempo, depois reconecte e insira o PIN";
 "id_please_enable_another" = "Por favor, habilite outro método de autenticação para evitar perder acesso aos seus fundos.";
@@ -329,7 +336,7 @@
 "id_precision" = "Precisão";
 "id_privacy_policy" = "Política de Privacidade";
 "id_problem_with_key_1s" = "Problema com a chave %1$@";
-"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
 "id_providing_an_email_enables" = "Fornecer um email ativa notificações e a recuperação de transações.";
 "id_proxy_settings" = "CONFIGURAÇÕES DE PROXY";
 "id_qr_scanner" = "Escâner de QR";
@@ -338,6 +345,7 @@
 "id_received" = "Recebido";
 "id_received_on" = "Recebido em";
 "id_recipient" = "Destinatário";
+"id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Recuperação e Notificações";
 "id_recovery_transaction_emails" = "Recuperar emails de transação";
 "id_recovery_transaction_request" = "Recuperar solicitações de transação enviadas";
@@ -378,6 +386,7 @@
 "id_security" = "SEGURANÇA";
 "id_see_our_privacy_policy_s" = "Veja nossa política de privacidade %@";
 "id_see_our_terms_of_service_s" = "Veja nosso Termos de Serviço %@";
+"id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "Selecionar ´Conta";
 "id_select_asset" = "Selecionar ativo";
 "id_select_duration_of_twofactor" = "Selecione um intervalo de tempo em que suas moedas estarão protegidas com a Autenticação de Dois Fatores. A nova opção se aplica às moedas recém-recebidas.";
@@ -389,7 +398,7 @@
 "id_send_to" = "Enviar Para";
 "id_sending" = "ENVIANDO";
 "id_sending_request" = "Enviando Solicitação…";
-"id_sent" = "Enviado";
+"id_sent" = "Você enviou";
 "id_sent_to" = "Enviar para";
 "id_set_a_limit_to_spend_without" = "Defina um limite para gastar sem autenticação de dois fatores";
 "id_set_a_new_pin" = "Configurar novo PIN";
@@ -437,6 +446,7 @@
 "id_standard_account" = "Conta Padrão";
 "id_standard_accounts_allow_you_to" = "Contas padrão permitem você separar os fundos. Cada conta terá seu próprio endereço de recebimento, e para mover fundos entre diferentes contas é necessário realizar transação.";
 "id_start_a_2fa_reset_process_if" = "Comece o processo para resetar o 2FA caso você tenha perdido o acesso a todos os seus métodos se autenticação de dois fatores.";
+"id_support" = "Support";
 "id_sweep" = "Varrer";
 "id_sweep_from_paper_wallet" = "Varrer Carteira de Papel";
 "id_sweep_into_s" = "Resgatar para%@";
@@ -457,6 +467,7 @@
 "id_the_network_selected_on_the" = "A rede selecionada no aplicativo Green é diferente da rede selecionada na carteira física. Selecione a mesma carteira em ambos aparelhos.";
 "id_the_password_cant_be_empty" = "A senha não pode ficar em branco";
 "id_the_recovery_key_below_will_not" = "A chave de recuperação abaixo não será mostrada novamente. Por favor mantenha uma cópia segura agora para se certificar de que você sempre terá acesso aos seus fundos.";
+"id_the_source_code_is_available_at" = "The source code is available at %@";
 "id_the_transaction_contains" = "A transação contém fundos não confidenciais.";
 "id_there_is_already_a_pin_set_for" = "Já há um PIN configurado para a carteira %@. Preceder não permitirá a configuração de um novo PIN e será necessário o mnemônico de 24 palavras para entrar. Você pode desabilitar o PIN nas configurações ou com 3 tentativas falhas.";
 "id_this_transaction_spent" = "Esta transação gastou fundos não confidenciais.";
@@ -479,6 +490,7 @@
 "id_transaction_details" = "Detalhes da transação";
 "id_transaction_id" = "ID da transação";
 "id_transaction_sent" = "Transação Enviada";
+"id_transaction_status" = "Status da transação";
 "id_transactions" = "Transações";
 "id_try_now" = "Tente agora";
 "id_two_factor_authentication" = "AUTENTICAÇÃO DE DOIS FATORES";
@@ -505,6 +517,7 @@
 "id_version_1s" = "Versão: %1$@";
 "id_version_1s_2s" = "Versão %1$@ %2$@";
 "id_view_in_explorer" = "Ver no Explorador";
+"id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "Aguardando transação…";
 "id_wallet_backup" = "Backup da Carteira";
 "id_wallet_creation_failed" = "Falha ao criar carteira";

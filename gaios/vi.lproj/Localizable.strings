@@ -10,7 +10,7 @@
 "id_a_new_transaction_has_just" = "Một giao dịch mới tới ví bạn";
 "id_a_screen_lock_must_be_enabled" = "A screen lock must be enabled from Android settings";
 "id_a_wallet_is_detected_on_this" = "Một ví đã được xóa trên thiết bị này:";
-"id_about" = "VỀ CHÚNG TÔI";
+"id_about" = "About";
 "id_accept" = "CHẤP NHẬN";
 "id_access" = "Access";
 "id_account" = "TÀI KHOẢN";
@@ -44,6 +44,7 @@
 "id_attempts_remaining_d" = "Nỗ lực còn lại: %d";
 "id_auto_logout_timeout" = "Thời gian tự đăng xuất";
 "id_autolock_after" = "Tự khoá sau thời gian";
+"id_back" = "Back";
 "id_be_aware_other_apps_can_read_or" = "Cẩn thận, các ứng dụng khác có thể đọc hoặc thay đổi thông tin trên clipboard";
 "id_bitcoin_denomination" = "Thị phần của Bitcoin Core";
 "id_bitcoin_wallet" = "Ví Bitcoin.";
@@ -62,6 +63,7 @@
 "id_cannot_remove_enabled_network" = "Không thể loại bỏ mạng lưới đang sử dụng, làm ơn tắt nó trước.";
 "id_cant_connect_to_this_url" = "Không thể nối tới địa chỉ URL";
 "id_change" = "THAY ĐỔI";
+"id_change_pin" = "Change PIN";
 "id_choose" = "Chọn";
 "id_choose_method_to_authorize_the" = "Chọn phương pháp cấp ủy quyền cho hành động‭";
 "id_choose_twofactor_authentication" = "Chọn phương pháp được ủy quyền để bảo mật 2 lớp";
@@ -88,6 +90,7 @@
 "id_copy_transaction_id" = "Copy transaction ID";
 "id_create" = "Tạo";
 "id_create_a_pin_to_access_your" = "Tạo mã PIN để vào ví của bạn";
+"id_create_a_wallet_for_bitcoin" = "Create a wallet for Bitcoin, Liquid or Testnet";
 "id_create_new_wallet" = "Tạo một ví mới";
 "id_create_temporary_wallet" = "Tạo một ví tạm thời";
 "id_currency" = "Đơn vị tiền tệ";
@@ -114,6 +117,7 @@
 "id_displays_the_progress_of_spv" = "Hiển thị quá trình của việc đồng bộ hóa SPV ";
 "id_dispute_twofactor_reset" = "Thiết lập lại tranh chấp bảo mật 2 lớp";
 "id_disputed" = "Có tranh chấp";
+"id_distributed_under_the_s_see" = "Distributed under the %@, see LICENSE for more information or visit %@";
 "id_domain" = "Tên miền";
 "id_done" = "Xong";
 "id_dont_ask_me_again" = "Không hỏi lại tôi";
@@ -173,6 +177,7 @@
 "id_for_securities_investors" = "For securities investors";
 "id_from" = "TỪ";
 "id_funds_received_in_this" = "Tiền nhận được trong giao dịch này không được bảo mật.";
+"id_general" = "General";
 "id_generate_new_address" = "Tạo địa chỉ mới";
 "id_get_code" = "Nhận mã số";
 "id_go_to_account" = "Go to Account";
@@ -190,6 +195,7 @@
 "id_green_uses_multisig_with_one" = "Green sử dụng ví nhiều khóa với một khóa tạo bởi thiết bị của bạn, và một khóa bới máy chủ của Blockstream. Đặt cài  đặt bảo mật 2 lớp để cho phép thêm lớp bảo mật của phía máy chủ.";
 "id_hardware_wallet_support_for" = "Việc hỗ trợ ví cứng để giao dịch bí mật sẽ có trong tương lai gần";
 "id_hash" = "Băm Hash";
+"id_help" = "Help";
 "id_here" = "here";
 "id_hex" = "HEX";
 "id_high" = "Cao";
@@ -228,13 +234,13 @@
 "id_last_ping_1d_ms" = "Lần ping cuối: %1$d phần nghìn của một giây";
 "id_later" = " SAU ĐÓ";
 "id_learn_more_about_s" = "Learn more about %@.";
-"id_ledger_currently_supports_a" = "Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC";
 "id_ledger_dashboard_detected" = "Bảng điều khiên Ledger đã tìm thấy, làm ơn mở ứng dụng đúng để vào.";
+"id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.";
 "id_lets_get_you_set_up" = "Bạn hãy cài đặt";
 "id_liquid_securities" = "Liquid Securities";
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
-"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.";
+"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
 "id_loading_transactions" = "Đang tải giao dịch...";
 "id_log_in" = "Đăng nhập";
 "id_log_in_into_your_s_wallet" = "Đăng nhập vào ví %@ ";
@@ -311,6 +317,7 @@
 "id_pin" = "Mã PIN";
 "id_pin_has_to_be_between_4_and_15" = "Mã PIN phải có 4 đến 15 số";
 "id_pins_do_not_match_please_try" = "Mã PIN không trùng khớp, làm ơn thử lại.";
+"id_please_contribute_if_you_find" = "Please contribute if you find Blockstream Green useful";
 "id_please_disable_biometric" = "Làm ơn tắt xác thực sinh trắc trước khi xóa mã PIN";
 "id_please_disconnect_your_ledger" = "Vui lòng ngắt kết nối Ledger Nano X của bạn, tắt nguồn bằng cách nhấn và giữ cả hai nút, sau đó kết nối lại và nhập mã PIN của nó";
 "id_please_enable_another" = "Làm ơn cho phép các phương pháp xác thực khác để tránh việc mất truy cập vào tiền quỹ của bạn.";
@@ -329,7 +336,7 @@
 "id_precision" = "Độ chính xác";
 "id_privacy_policy" = "Chính sách bảo mật";
 "id_problem_with_key_1s" = "Có vấn đề với khóa %1$@";
-"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive Liquid Securities.";
+"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
 "id_providing_an_email_enables" = "Cung cấp một địa chỉ thư điện tử để gửi thông báo và phục hồi  giao dịch.";
 "id_proxy_settings" = "CÀI ĐẶT PROXY";
 "id_qr_scanner" = "Máy quét mã QR";
@@ -338,6 +345,7 @@
 "id_received" = "Đã nhận";
 "id_received_on" = "Đã nhận trên";
 "id_recipient" = "Người nhận";
+"id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Khôi phục và thông báo";
 "id_recovery_transaction_emails" = "Các email phục hồi giao dịch";
 "id_recovery_transaction_request" = "Yêu cầu phục hồi giao dịch đã gửi di";
@@ -378,6 +386,7 @@
 "id_security" = "AN NINH";
 "id_see_our_privacy_policy_s" = "See our privacy policy %@";
 "id_see_our_terms_of_service_s" = "See our Terms of Service %@";
+"id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "Chọn tài khoản";
 "id_select_asset" = "Chọn tài sản số";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
@@ -437,6 +446,7 @@
 "id_standard_account" = "Standard Account";
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_start_a_2fa_reset_process_if" = "Start a 2FA reset process if you lost access to all your two-factor authentication methods.";
+"id_support" = "Support";
 "id_sweep" = "Quẹt để nạp tiền";
 "id_sweep_from_paper_wallet" = "Quẹt nạp tiền từ ví giấy";
 "id_sweep_into_s" = "Quẹt vào  %@";
@@ -457,6 +467,7 @@
 "id_the_network_selected_on_the" = "Mạng được chọn trên ứng dụng Green khác với mạng được chọn trên ví  cứng. Chọn cùng một mạng trên cả hai thiết bị.";
 "id_the_password_cant_be_empty" = "Mật khẩu không thể trống";
 "id_the_recovery_key_below_will_not" = "Khóa khôi phục bên dưới không hiện lại lần thứ 2. Làm ơn lưu trữ sao lưu cẩn thận nó từ bây giờ để chắc chắn bạn luôn mở được tiền của bạn.";
+"id_the_source_code_is_available_at" = "The source code is available at %@";
 "id_the_transaction_contains" = "Giao dịch chứa tiền quỹ không bí mật.";
 "id_there_is_already_a_pin_set_for" = "Đã có mã PIN cho ví %@. Không thể thiết lập mã PIN và khi đăng nhập sẽ hỏi 24 chữ gợi nhớ mnemonic. Bạn có thể hủy số PIN từ cài đặt hoặc với việc cố làm 3 lần ";
 "id_this_transaction_spent" = "Giao dịch này đã tiêu tiền không bí mật.";
@@ -479,6 +490,7 @@
 "id_transaction_details" = "Chi tiết của giao dịch";
 "id_transaction_id" = "Số ID giao dịch";
 "id_transaction_sent" = "Giao địch đã gửi đi";
+"id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "Thử bây giờ";
 "id_two_factor_authentication" = "XÁC THỰC 2 LỚP";
@@ -505,6 +517,7 @@
 "id_version_1s" = "Phiên bản: %1$@";
 "id_version_1s_2s" = "Phiên bản %1$@ %2$@";
 "id_view_in_explorer" = "Xem ở trang xem xét các giao dịch của mạng lưới ";
+"id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "Đang chờ giao dịch...";
 "id_wallet_backup" = "Wallet Backup";
 "id_wallet_creation_failed" = "Việc tạo ví bị lỗi";
