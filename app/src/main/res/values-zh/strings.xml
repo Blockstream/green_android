@@ -12,7 +12,7 @@
   <string name="id_a_new_transaction_has_just">收到一笔新交易</string>
   <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">本设备上检测到了一个钱包：</string>
-  <string name="id_about">关于</string>
+  <string name="id_about">About</string>
   <string name="id_accept">接受</string>
   <string name="id_access">Access</string>
   <string name="id_account">账户</string>
@@ -46,6 +46,7 @@
   <string name="id_attempts_remaining_d">剩余尝试机会：%d</string>
   <string name="id_auto_logout_timeout">自动登出超时</string>
   <string name="id_autolock_after">自动锁定之后</string>
+  <string name="id_back">Back</string>
   <string name="id_be_aware_other_apps_can_read_or">请注意，其他应用能够读取或改变剪贴板</string>
   <string name="id_bitcoin_denomination">比特币面值</string>
   <string name="id_bitcoin_wallet">比特币钱包。</string>
@@ -64,6 +65,7 @@
   <string name="id_cannot_remove_enabled_network">无法移除已启用的网络，请先禁用该网络</string>
   <string name="id_cant_connect_to_this_url">无法连接至此URL</string>
   <string name="id_change">改变</string>
+  <string name="id_change_pin">Change PIN</string>
   <string name="id_choose">选择</string>
   <string name="id_choose_method_to_authorize_the">选择批准该操作的方法</string>
   <string name="id_choose_twofactor_authentication">选择双重验证方法</string>
@@ -90,6 +92,7 @@
   <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_create">创建</string>
   <string name="id_create_a_pin_to_access_your">创建一个新的PIN来接入你的钱包</string>
+  <string name="id_create_a_wallet_for_bitcoin">Create a wallet for Bitcoin, Liquid or Testnet</string>
   <string name="id_create_new_wallet">创建新钱包</string>
   <string name="id_create_temporary_wallet">Create temporary wallet</string>
   <string name="id_currency">币种</string>
@@ -116,6 +119,7 @@
   <string name="id_displays_the_progress_of_spv">显示SPV同步进程</string>
   <string name="id_dispute_twofactor_reset">免除重置双重认证</string>
   <string name="id_disputed">以免除</string>
+  <string name="id_distributed_under_the_s_see">Distributed under the %s, see LICENSE for more information or visit %s</string>
   <string name="id_domain">域</string>
   <string name="id_done">完成</string>
   <string name="id_dont_ask_me_again">不再询问</string>
@@ -175,6 +179,7 @@
   <string name="id_for_securities_investors">For securities investors</string>
   <string name="id_from">来自</string>
   <string name="id_funds_received_in_this">Funds received in this transaction are not confidential.</string>
+  <string name="id_general">General</string>
   <string name="id_generate_new_address">创建新的地址</string>
   <string name="id_get_code">获取代码</string>
   <string name="id_go_to_account">Go to Account</string>
@@ -192,6 +197,7 @@
   <string name="id_green_uses_multisig_with_one">Green使用multisig，其中一个签名由你的设备生成，另一个由Blockstream服务器生成。设置双重验证将能为服务器生成的签名增添更多一层保护。</string>
   <string name="id_hardware_wallet_support_for">硬件钱包即将支持保密交易。</string>
   <string name="id_hash">哈希</string>
+  <string name="id_help">Help</string>
   <string name="id_here">here</string>
   <string name="id_hex">HEX</string>
   <string name="id_high">高</string>
@@ -230,13 +236,13 @@
   <string name="id_last_ping_1d_ms">最后一次ping：%1$d ms</string>
   <string name="id_later">稍后</string>
   <string name="id_learn_more_about_s">Learn more about %s.</string>
-  <string name="id_ledger_currently_supports_a">Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC</string>
   <string name="id_ledger_dashboard_detected">检测到Ledger Dashboard，请打开正确的应用来获取。</string>
+  <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.</string>
   <string name="id_lets_get_you_set_up">立即开始设置。</string>
   <string name="id_liquid_securities">Liquid Securities</string>
   <string name="id_liquid_securities_account">Liquid Securities Account</string>
   <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
-  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.</string>
+  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.</string>
   <string name="id_loading_transactions">正在加载交易…</string>
   <string name="id_log_in">登录</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -313,6 +319,7 @@
   <string name="id_pin">PIN</string>
   <string name="id_pin_has_to_be_between_4_and_15">PIN必须为4到15位</string>
   <string name="id_pins_do_not_match_please_try">PIN不匹配，请再试一次。</string>
+  <string name="id_please_contribute_if_you_find">Please contribute if you find Blockstream Green useful</string>
   <string name="id_please_disable_biometric">删除PIN前请关闭生物识别验证</string>
   <string name="id_please_disconnect_your_ledger">请断开Ledger Nano X的连接，长按两个按钮将其关闭，然后重新连接并输入PIN</string>
   <string name="id_please_enable_another">请开启另一个验证方法，以避免失去资金的访问权限。</string>
@@ -331,7 +338,7 @@
   <string name="id_precision">精确</string>
   <string name="id_privacy_policy">隐私政策</string>
   <string name="id_problem_with_key_1s">密钥%1$s出现了问题</string>
-  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive Liquid Securities.</string>
+  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive a Liquid Security.</string>
   <string name="id_providing_an_email_enables">提供邮箱地址将能收到通知以及交易恢复。</string>
   <string name="id_proxy_settings">PROXY设置</string>
   <string name="id_qr_scanner">二维码扫描器</string>
@@ -340,6 +347,7 @@
   <string name="id_received">已接收</string>
   <string name="id_received_on">接收平台为</string>
   <string name="id_recipient">接收方</string>
+  <string name="id_recovery">Recovery</string>
   <string name="id_recovery_and_notifications">恢复与通知</string>
   <string name="id_recovery_transaction_emails">恢复交易邮件</string>
   <string name="id_recovery_transaction_request">恢复交易请求已发送</string>
@@ -380,6 +388,7 @@
   <string name="id_security">安全</string>
   <string name="id_see_our_privacy_policy_s">See our privacy policy %s</string>
   <string name="id_see_our_terms_of_service_s">See our Terms of Service %s</string>
+  <string name="id_select_a_fiat_currency_and">Select a fiat currency and bitcoin denomination to show amounts in your wallet</string>
   <string name="id_select_account">选择账户</string>
   <string name="id_select_asset">选择资产</string>
   <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
@@ -439,6 +448,7 @@
   <string name="id_standard_account">Standard Account</string>
   <string name="id_standard_accounts_allow_you_to">Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_start_a_2fa_reset_process_if">Start a 2FA reset process if you lost access to all your two-factor authentication methods.</string>
+  <string name="id_support">Support</string>
   <string name="id_sweep">扫描</string>
   <string name="id_sweep_from_paper_wallet">从纸钱包中提取</string>
   <string name="id_sweep_into_s">已扫描%s</string>
@@ -459,6 +469,7 @@
   <string name="id_the_network_selected_on_the">在Green应用程序上选择的网络与在硬件钱包上选择的网络不同。请在两台设备上选择相同的网络。</string>
   <string name="id_the_password_cant_be_empty">密码不能为空</string>
   <string name="id_the_recovery_key_below_will_not">恢复密钥将不再显示。请立即创建该密钥的安全副本，以确保随时能够获得资金的访问权限。</string>
+  <string name="id_the_source_code_is_available_at">The source code is available at %s</string>
   <string name="id_the_transaction_contains">The transaction contains non-confidential funds.</string>
   <string name="id_there_is_already_a_pin_set_for">钱包%s已设置PIN。继续进行将无法设置PIN，登录需要24字助记词。可在设置中关闭PIN，或输入错误3次也可关闭PIN。</string>
   <string name="id_this_transaction_spent">This transaction spent non-confidential funds.</string>
@@ -481,6 +492,7 @@
   <string name="id_transaction_details">交易细节</string>
   <string name="id_transaction_id">交易ID</string>
   <string name="id_transaction_sent">交易已发送</string>
+  <string name="id_transaction_status">Transaction status</string>
   <string name="id_transactions">Transactions</string>
   <string name="id_try_now">立即尝试</string>
   <string name="id_two_factor_authentication">双重验证</string>
@@ -507,6 +519,7 @@
   <string name="id_version_1s">版本：%1$s</string>
   <string name="id_version_1s_2s">版本%1$s %2$s</string>
   <string name="id_view_in_explorer">在探索者中查看</string>
+  <string name="id_visit_s_for_further_information">Visit %s for further information about the software</string>
   <string name="id_waiting_for_transaction">等待交易...</string>
   <string name="id_wallet_backup">Wallet Backup</string>
   <string name="id_wallet_creation_failed">钱包创建失败</string>

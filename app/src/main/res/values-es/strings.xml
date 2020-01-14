@@ -12,7 +12,7 @@
   <string name="id_a_new_transaction_has_just">Una nueva transacción acaba de llegar a tu cartera.</string>
   <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">Se ha detectado una cartera en este dispositivo:</string>
-  <string name="id_about">ACERCA DE</string>
+  <string name="id_about">About</string>
   <string name="id_accept">ACEPTAR</string>
   <string name="id_access">Access</string>
   <string name="id_account">CUENTA</string>
@@ -46,6 +46,7 @@
   <string name="id_attempts_remaining_d">Intentos restantes: %d</string>
   <string name="id_auto_logout_timeout">Tiempo de espera para cierre de sesión automático</string>
   <string name="id_autolock_after">Bloquear automáticamente después de</string>
+  <string name="id_back">Back</string>
   <string name="id_be_aware_other_apps_can_read_or">Ten en cuenta que otras apps pueden leer o cambiar el portapapeles</string>
   <string name="id_bitcoin_denomination">Denominación de Bitcoin</string>
   <string name="id_bitcoin_wallet">Cartera Bitcoin.</string>
@@ -64,6 +65,7 @@
   <string name="id_cannot_remove_enabled_network">No se puede eliminar una red habilitada. Primero tienes que deshabilitarla.</string>
   <string name="id_cant_connect_to_this_url">Es imposible conectarse con esta URL</string>
   <string name="id_change">CAMBIAR</string>
+  <string name="id_change_pin">Change PIN</string>
   <string name="id_choose">Seleccionar</string>
   <string name="id_choose_method_to_authorize_the">Seleccionar método para autorizar la acción</string>
   <string name="id_choose_twofactor_authentication">Seleccionar método de autenticación de dos factores</string>
@@ -90,6 +92,7 @@
   <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_create">Crear</string>
   <string name="id_create_a_pin_to_access_your">Crear un PIN para acceder a tu cartera</string>
+  <string name="id_create_a_wallet_for_bitcoin">Create a wallet for Bitcoin, Liquid or Testnet</string>
   <string name="id_create_new_wallet">Crear una nueva cartera</string>
   <string name="id_create_temporary_wallet">Crear cartera temporaria</string>
   <string name="id_currency">Moneda</string>
@@ -116,6 +119,7 @@
   <string name="id_displays_the_progress_of_spv">Muestra el progreso de la sincronización con SPV</string>
   <string name="id_dispute_twofactor_reset">Disputar restablecimiento de autenticación de dos factores</string>
   <string name="id_disputed">Disputado</string>
+  <string name="id_distributed_under_the_s_see">Distributed under the %s, see LICENSE for more information or visit %s</string>
   <string name="id_domain">Dominio</string>
   <string name="id_done">Listo</string>
   <string name="id_dont_ask_me_again">No volver a preguntar</string>
@@ -175,6 +179,7 @@
   <string name="id_for_securities_investors">For securities investors</string>
   <string name="id_from">DESDE</string>
   <string name="id_funds_received_in_this">Los fondos recibidos en esta transacción no son confidenciales.</string>
+  <string name="id_general">General</string>
   <string name="id_generate_new_address">Generar Dirección Nueva</string>
   <string name="id_get_code">Conseguir Código</string>
   <string name="id_go_to_account">Go to Account</string>
@@ -192,6 +197,7 @@
   <string name="id_green_uses_multisig_with_one">Green utiliza las multifirmas con una firma generada por tu dispositivo y otra generada por los servidores de Blockstream. Establecer una autenticación de dos factores añade un nivel de seguridad adicional para la firma originada en el servidor.</string>
   <string name="id_hardware_wallet_support_for">Próximamente, ofreceremos una hardware wallet compatible con Confidential Transactions.</string>
   <string name="id_hash">Hash</string>
+  <string name="id_help">Help</string>
   <string name="id_here">here</string>
   <string name="id_hex">HEX</string>
   <string name="id_high">Altura</string>
@@ -230,13 +236,13 @@
   <string name="id_last_ping_1d_ms">Último pin: %1$d ms</string>
   <string name="id_later">LUEGO</string>
   <string name="id_learn_more_about_s">Learn more about %s.</string>
-  <string name="id_ledger_currently_supports_a">Ledger currently supports a limited set of assets: check with the vendor before receiving assets other than L-BTC</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detectado. Abre la app correcta para acceder.</string>
+  <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.</string>
   <string name="id_lets_get_you_set_up">Empecemos.</string>
   <string name="id_liquid_securities">Liquid Securities</string>
   <string name="id_liquid_securities_account">Liquid Securities Account</string>
   <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
-  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive them.</string>
+  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.</string>
   <string name="id_loading_transactions">Cargando transacciones...</string>
   <string name="id_log_in">Iniciar sesión</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -313,6 +319,7 @@
   <string name="id_pin">PIN</string>
   <string name="id_pin_has_to_be_between_4_and_15">El PIN debe tener entre 4 y 15 dígitos</string>
   <string name="id_pins_do_not_match_please_try">Los PIN no coinciden. Reintentar.</string>
+  <string name="id_please_contribute_if_you_find">Please contribute if you find Blockstream Green useful</string>
   <string name="id_please_disable_biometric">Deshabilita la autenticación biométrica antes de borrar el PIN</string>
   <string name="id_please_disconnect_your_ledger">Desconecta tu Ledger Nano X, apágalo manteniendo presionados ambos botones y luego vuelve a conectarlo e ingresa su PIN</string>
   <string name="id_please_enable_another">Habilita otro método de autenticación para evitar perder acceso a tus fondos.</string>
@@ -331,7 +338,7 @@
   <string name="id_precision">Precisión</string>
   <string name="id_privacy_policy">Política de privacidad</string>
   <string name="id_problem_with_key_1s">Problema con clave %1$s</string>
-  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive Liquid Securities.</string>
+  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive a Liquid Security.</string>
   <string name="id_providing_an_email_enables">Proporcionar un correo electrónico habilita las notificaciones y la recuperación de transacciones.</string>
   <string name="id_proxy_settings">CONFIGURACIÓN DEL PROXY</string>
   <string name="id_qr_scanner">Escáner QR</string>
@@ -340,6 +347,7 @@
   <string name="id_received">Recibido</string>
   <string name="id_received_on">Recibido el</string>
   <string name="id_recipient">Receptor</string>
+  <string name="id_recovery">Recovery</string>
   <string name="id_recovery_and_notifications">Recuperación y notificaciones</string>
   <string name="id_recovery_transaction_emails">Correos electrónicos de recuperación de transacciones</string>
   <string name="id_recovery_transaction_request">Solicitud de recuperación de transacción enviada</string>
@@ -380,6 +388,7 @@
   <string name="id_security">SEGURIDAD</string>
   <string name="id_see_our_privacy_policy_s">See our privacy policy %s</string>
   <string name="id_see_our_terms_of_service_s">See our Terms of Service %s</string>
+  <string name="id_select_a_fiat_currency_and">Select a fiat currency and bitcoin denomination to show amounts in your wallet</string>
   <string name="id_select_account">Seleccionar cuenta</string>
   <string name="id_select_asset">Seleccionar activo</string>
   <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
@@ -439,6 +448,7 @@
   <string name="id_standard_account">Standard Account</string>
   <string name="id_standard_accounts_allow_you_to">Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_start_a_2fa_reset_process_if">Start a 2FA reset process if you lost access to all your two-factor authentication methods.</string>
+  <string name="id_support">Support</string>
   <string name="id_sweep">Barrer</string>
   <string name="id_sweep_from_paper_wallet">Barrer fondos desde una cartera de papel</string>
   <string name="id_sweep_into_s">Deslizar a %s</string>
@@ -459,6 +469,7 @@
   <string name="id_the_network_selected_on_the">La red seleccionada en la app de Green es diferente de la red seleccionada en la hardware wallet. Selecciona la misma red en ambos dispositivos.</string>
   <string name="id_the_password_cant_be_empty">La contraseña no puede quedar vacía</string>
   <string name="id_the_recovery_key_below_will_not">La Frase de Recuperación que aparece abajo no se volverá a mostrar. Haz una copia de seguridad de la clave para asegurarte de siempre tener acceso a tus fondos.</string>
+  <string name="id_the_source_code_is_available_at">The source code is available at %s</string>
   <string name="id_the_transaction_contains">La transacción contiene fondos no confidenciales.</string>
   <string name="id_there_is_already_a_pin_set_for">Ya se ha establecido un PIN para la cartera %s. Si continúas, no podrás establecer un PIN y deberás ingresar con la Frase de Recuperación de 24 palabras. El PIN puede desactivarse desde el panel de configuración o si se ingresa el PIN equivocado 3 veces.</string>
   <string name="id_this_transaction_spent">En esta transacción se utilizaron fondos no confidenciales.</string>
@@ -481,6 +492,7 @@
   <string name="id_transaction_details">Detalles de la transacción</string>
   <string name="id_transaction_id">Identificación de la transacción</string>
   <string name="id_transaction_sent">Transacción enviada</string>
+  <string name="id_transaction_status">Transaction status</string>
   <string name="id_transactions">Transactions</string>
   <string name="id_try_now">Intenta ahora</string>
   <string name="id_two_factor_authentication">AUTENTICACIÓN DE DOS FACTORES</string>
@@ -507,6 +519,7 @@
   <string name="id_version_1s">Versión: %1$s</string>
   <string name="id_version_1s_2s">Versión %1$s %2$s</string>
   <string name="id_view_in_explorer">Ver en el explorador</string>
+  <string name="id_visit_s_for_further_information">Visit %s for further information about the software</string>
   <string name="id_waiting_for_transaction">Esperando transacción...</string>
   <string name="id_wallet_backup">Wallet Backup</string>
   <string name="id_wallet_creation_failed">Imposible crear la cartera</string>

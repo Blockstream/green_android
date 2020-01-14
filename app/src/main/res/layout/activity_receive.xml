@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/btcButtonBg"
-            android:text="@string/id_ledger_currently_supports_a"
+            android:text="@string/id_ledger_supports_a_limited_set"
             android:textSize="16sp" />
     </LinearLayout>
 
