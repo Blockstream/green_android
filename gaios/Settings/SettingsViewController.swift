@@ -63,6 +63,7 @@ class SettingsViewController: UIViewController {
                 self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
             }
             return ()
+        }.recover { _ in
         }.done {
             self.sections = self.getSections()
             self.items = self.getSettings()
@@ -70,7 +71,9 @@ class SettingsViewController: UIViewController {
                 return item.section
             }
             self.tableView.reloadData()
-        }.catch { _ in }
+        }.catch { e in
+            print(e.localizedDescription)
+        }
     }
 
     func getSections() -> [SettingsSections] {
