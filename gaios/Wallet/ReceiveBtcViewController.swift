@@ -105,7 +105,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     @objc func fiatSwitchButtonClick(_ sender: Any) {
-        guard let satoshi = getSatoshi() else { return }
+        let satoshi = getSatoshi() ?? 0
         let balance = Balance.convert(details: ["satoshi": satoshi])
         if selectedType == TransactionType.BTC {
             selectedType = TransactionType.FIAT
