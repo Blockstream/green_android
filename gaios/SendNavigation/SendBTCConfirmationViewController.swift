@@ -35,6 +35,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.feeTitle.text = NSLocalizedString("id_total_with_fee", comment: "")
         content.assetsTitle.text = NSLocalizedString("id_sending", comment: "")
         content.assetsFeeTitle.text = NSLocalizedString("id_fee", comment: "")
+        content.changeAddressTitle.text = NSLocalizedString("id_change", comment: "")
         content.load()
 
         // setup liquid view
@@ -94,6 +95,20 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         if let balance = Balance.convert(details: ["satoshi": addressee.satoshi + transaction.fee]) {
             let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
             content.feeLabel.text = amount
+        }
+
+        // Show change address only for hardware wallet transaction
+        content.changeAddressView.isHidden = !Ledger.shared.connected
+        if let outputs = transaction.transactionOutputs, !outputs.isEmpty, !Ledger.shared.connected {
+            var changeAddress = [String]()
+            outputs.forEach { output in
+                let isChange = output["is_change"] as? Bool ?? false
+                let isFee = output["is_fee"] as? Bool ?? false
+                if isChange && !isFee, let address = output["address"] as? String {
+                    changeAddress.append(address)
+                }
+            }
+            content.changeAddressValue.text = changeAddress.map { "- \($0)"}.joined(separator: "\n")
         }
     }
 
@@ -225,6 +240,10 @@ class SendBTCConfirmationView: UIView {
     @IBOutlet weak var assetsFeeTitle: UILabel!
     @IBOutlet weak var assetsFeeLabel: UILabel!
     @IBOutlet weak var assetsCell: UIView!
+    @IBOutlet weak var changeAddressView: UIView!
+    @IBOutlet weak var changeAddressTitle: UILabel!
+    @IBOutlet weak var changeAddressValue: UILabel!
+
     var assetTableCell: AssetTableCell?
     var gradientLayer = CAGradientLayer()
 

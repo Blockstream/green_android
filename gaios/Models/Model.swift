@@ -146,6 +146,9 @@ struct Transaction {
         get { return get("type") ?? String() }
     }
 
+    var transactionOutputs: [[String: Any]]? {
+        get { return get("transaction_outputs") }
+    }
     func address() -> String? {
         let out: [String] = get("addressees") ?? []
         guard !out.isEmpty else {

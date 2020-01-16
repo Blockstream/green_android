@@ -9,6 +9,7 @@ final class Ledger: LedgerCommands {
     let hwDevice: [String: Any] = ["name": "Ledger", "supports_arbitrary_scripts": true, "supports_low_r": false]
     var xPubsCached = [String: String]()
     let SIGHASH_ALL: UInt8 = 1
+    var connected: Bool { get { !self.xPubsCached.isEmpty }}
 
     func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],
                          transactions: [String: String], addressTypes: [String]) -> Observable<[String]> {
