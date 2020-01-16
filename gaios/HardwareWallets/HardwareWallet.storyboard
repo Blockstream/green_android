@@ -1,148 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="XAs-UA-Jr0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="XAs-UA-Jr0">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Hardware Wallet View Controller-->
-        <scene sceneID="tSx-Wg-iT6">
-            <objects>
-                <viewController restorationIdentifier="HardwareWalletViewController" storyboardIdentifier="HardwareWalletViewController" id="vgW-mv-Ob3" customClass="HardwareWalletViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="5y2-9A-FWc">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K2P-Dx-skK">
-                                <rect key="frame" x="16" y="800" width="382" height="42"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="42" id="qjJ-eT-tav"/>
-                                </constraints>
-                                <state key="normal" title="Pair New Hardware Wallet" image="bluetooth-small">
-                                    <color key="titleColor" name="customMatrixGreen"/>
-                                </state>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                        <color key="value" name="customMatrixGreen"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                                <connections>
-                                    <action selector="pairButtonTapped:" destination="vgW-mv-Ob3" eventType="touchUpInside" id="raK-B6-tWg"/>
-                                </connections>
-                            </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Xf-hg-bM2">
-                                <rect key="frame" x="40" y="702" width="334" height="78"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qeq-ZH-HFF">
-                                        <rect key="frame" x="16" y="16" width="302" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Edm-hz-OfG">
-                                        <rect key="frame" x="16" y="45" width="302" height="17"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="rightArrow" translatesAutoresizingMaskIntoConstraints="NO" id="aSZ-fd-F6n">
-                                        <rect key="frame" x="300" y="25" width="18" height="28"/>
-                                    </imageView>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="aSZ-fd-F6n" firstAttribute="centerY" secondItem="4Xf-hg-bM2" secondAttribute="centerY" id="3R8-0e-CZf"/>
-                                    <constraint firstItem="qeq-ZH-HFF" firstAttribute="top" secondItem="4Xf-hg-bM2" secondAttribute="top" constant="16" id="Bvg-d8-otZ"/>
-                                    <constraint firstAttribute="trailing" secondItem="Edm-hz-OfG" secondAttribute="trailing" constant="16" id="WAj-mE-rvG"/>
-                                    <constraint firstAttribute="trailing" secondItem="qeq-ZH-HFF" secondAttribute="trailing" constant="16" id="ZdC-Bh-xd6"/>
-                                    <constraint firstItem="Edm-hz-OfG" firstAttribute="leading" secondItem="4Xf-hg-bM2" secondAttribute="leading" constant="16" id="bkC-ou-2Fe"/>
-                                    <constraint firstItem="qeq-ZH-HFF" firstAttribute="leading" secondItem="4Xf-hg-bM2" secondAttribute="leading" constant="16" id="dMH-4P-MZl"/>
-                                    <constraint firstItem="Edm-hz-OfG" firstAttribute="top" secondItem="qeq-ZH-HFF" secondAttribute="bottom" constant="8" id="jHg-Ap-2a2"/>
-                                    <constraint firstAttribute="trailing" secondItem="aSZ-fd-F6n" secondAttribute="trailing" constant="16" id="oML-n7-CNv"/>
-                                    <constraint firstAttribute="bottom" secondItem="Edm-hz-OfG" secondAttribute="bottom" constant="16" id="q57-MF-2QW"/>
-                                </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="4"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="4"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                        <color key="value" name="customMatrixGreen"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="shadowRadius">
-                                        <real key="value" value="4"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enabling Bluetooth..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B7J-1m-27C">
-                                <rect key="frame" x="20" y="586" width="374" height="17"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" name="customMatrixGreenDark"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pairnew" translatesAutoresizingMaskIntoConstraints="NO" id="2o0-5U-Zks">
-                                <rect key="frame" x="32" y="228" width="350" height="350"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" secondItem="2o0-5U-Zks" secondAttribute="height" multiplier="1:1" id="91M-T5-uyk"/>
-                                </constraints>
-                            </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use Green with a Hardware Wallet" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k1e-eg-lvh">
-                                <rect key="frame" x="85" y="120" width="244" height="48"/>
-                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <constraints>
-                            <constraint firstItem="5U9-Ek-KuK" firstAttribute="bottom" secondItem="K2P-Dx-skK" secondAttribute="bottom" constant="20" id="3UC-dt-D6h"/>
-                            <constraint firstItem="K2P-Dx-skK" firstAttribute="top" secondItem="4Xf-hg-bM2" secondAttribute="bottom" constant="20" id="3fp-uJ-Hfp"/>
-                            <constraint firstItem="k1e-eg-lvh" firstAttribute="top" secondItem="5U9-Ek-KuK" secondAttribute="top" constant="32" id="43X-JS-E1k"/>
-                            <constraint firstItem="K2P-Dx-skK" firstAttribute="leading" secondItem="5U9-Ek-KuK" secondAttribute="leading" constant="16" id="5Pp-wf-Xca"/>
-                            <constraint firstItem="2o0-5U-Zks" firstAttribute="centerX" secondItem="5y2-9A-FWc" secondAttribute="centerX" id="5xS-Tp-hrN"/>
-                            <constraint firstItem="5U9-Ek-KuK" firstAttribute="trailing" secondItem="4Xf-hg-bM2" secondAttribute="trailing" constant="40" id="Sf1-7q-gyV"/>
-                            <constraint firstItem="2o0-5U-Zks" firstAttribute="top" secondItem="k1e-eg-lvh" secondAttribute="bottom" constant="60" id="TBF-41-lp0"/>
-                            <constraint firstItem="5U9-Ek-KuK" firstAttribute="trailing" secondItem="B7J-1m-27C" secondAttribute="trailing" constant="20" id="UZX-AR-gGS"/>
-                            <constraint firstItem="2o0-5U-Zks" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="5U9-Ek-KuK" secondAttribute="leading" constant="32" id="XdJ-lz-mOH"/>
-                            <constraint firstItem="5U9-Ek-KuK" firstAttribute="trailing" secondItem="k1e-eg-lvh" secondAttribute="trailing" constant="85" id="ZdN-Jv-lbg"/>
-                            <constraint firstItem="4Xf-hg-bM2" firstAttribute="leading" secondItem="5U9-Ek-KuK" secondAttribute="leading" constant="40" id="bEh-W7-fy9"/>
-                            <constraint firstItem="k1e-eg-lvh" firstAttribute="leading" secondItem="5U9-Ek-KuK" secondAttribute="leading" constant="85" id="eWh-dM-OgB"/>
-                            <constraint firstItem="5U9-Ek-KuK" firstAttribute="trailing" secondItem="K2P-Dx-skK" secondAttribute="trailing" constant="16" id="fQy-94-LTE"/>
-                            <constraint firstItem="5U9-Ek-KuK" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="2o0-5U-Zks" secondAttribute="trailing" constant="32" id="jxq-Tv-y7p"/>
-                            <constraint firstItem="B7J-1m-27C" firstAttribute="top" secondItem="2o0-5U-Zks" secondAttribute="bottom" constant="8" id="nN6-AJ-5NQ"/>
-                            <constraint firstItem="B7J-1m-27C" firstAttribute="leading" secondItem="5U9-Ek-KuK" secondAttribute="leading" constant="20" id="tvh-Ja-h44"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="5U9-Ek-KuK"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="gsz-Lw-svI">
-                        <barButtonItem key="backBarButtonItem" title=" " id="NuQ-ng-0tR"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="descriptionLabel" destination="Edm-hz-OfG" id="dcm-5s-HZu"/>
-                        <outlet property="deviceView" destination="4Xf-hg-bM2" id="eV9-I0-phl"/>
-                        <outlet property="nameLabel" destination="qeq-ZH-HFF" id="f8c-CC-2ur"/>
-                        <outlet property="pairButton" destination="K2P-Dx-skK" id="bLe-1E-lCf"/>
-                        <outlet property="stateLabel" destination="B7J-1m-27C" id="eft-YU-nQp"/>
-                        <segue destination="XXM-RV-cC0" kind="show" identifier="scan" id="QmR-YU-S2x"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="YF0-mU-Acr" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="463.768115942029" y="-1876.3392857142856"/>
-        </scene>
         <!--Hardware Wallet Scan View Controller-->
         <scene sceneID="HQE-jh-C39">
             <objects>
-                <viewController id="XXM-RV-cC0" customClass="HardwareWalletScanViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="HardwareWalletScanViewController" id="XXM-RV-cC0" customClass="HardwareWalletScanViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8e1-ZP-Y48">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -212,7 +82,7 @@
                                 <rect key="frame" x="56" y="225.5" width="302" height="302"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bluetooth" translatesAutoresizingMaskIntoConstraints="NO" id="k5R-5d-7t7">
-                                        <rect key="frame" x="124" y="106" width="54" height="90"/>
+                                        <rect key="frame" x="137.5" y="128.5" width="27" height="45"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="k5R-5d-7t7" secondAttribute="height" multiplier="3:5" id="S3D-hB-Rjb"/>
                                         </constraints>
@@ -271,7 +141,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="vgW-mv-Ob3" kind="relationship" relationship="rootViewController" id="bYl-4i-U46"/>
+                        <segue destination="XXM-RV-cC0" kind="relationship" relationship="rootViewController" id="g7h-Gd-aYU"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VPf-rK-2rl" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -281,18 +151,9 @@
     </scenes>
     <resources>
         <image name="bluetooth" width="27" height="45"/>
-        <image name="bluetooth-small" width="14" height="23"/>
-        <image name="pairnew" width="177" height="120"/>
         <image name="radar" width="262" height="262"/>
-        <image name="rightArrow" width="9" height="14"/>
         <namedColor name="customGreyDark">
-            <color red="0.19200000166893005" green="0.23100000619888306" blue="0.27099999785423279" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customMatrixGreenDark">
-            <color red="0.10599999874830246" green="0.46700000762939453" blue="0.27099999785423279" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.19215686274509805" green="0.23137254901960785" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customModalMedium">
             <color red="0.16500000655651093" green="0.20800000429153442" blue="0.25099998712539673" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

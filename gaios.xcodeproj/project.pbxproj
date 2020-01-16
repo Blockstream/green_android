@@ -136,7 +136,6 @@
 		81BF4E3122E9E9EA005A04C6 /* LedgerCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */; };
 		81BF4E3222E9E9EA005A04C6 /* LedgerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */; };
 		81BF4E3322E9E9EA005A04C6 /* LedgerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E2C22E9E9EA005A04C6 /* LedgerProtocol.swift */; };
-		81BF4E3522E9EF4B005A04C6 /* HardwareWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81BF4E3422E9EF4B005A04C6 /* HardwareWalletViewController.swift */; };
 		81C208A32201ED6A00F4BC1F /* Toast+SnackBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C208A22201ED6A00F4BC1F /* Toast+SnackBar.swift */; };
 		81C602A522A553D3004E26E1 /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C602A422A553D3004E26E1 /* Assets.swift */; };
 		81C602AB22A55A47004E26E1 /* AssetDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81C602AA22A55A47004E26E1 /* AssetDetailTableViewController.swift */; };
@@ -354,7 +353,6 @@
 		81BF4E2A22E9E9EA005A04C6 /* LedgerCommands.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerCommands.swift; sourceTree = "<group>"; };
 		81BF4E2B22E9E9EA005A04C6 /* LedgerWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerWrapper.swift; sourceTree = "<group>"; };
 		81BF4E2C22E9E9EA005A04C6 /* LedgerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LedgerProtocol.swift; sourceTree = "<group>"; };
-		81BF4E3422E9EF4B005A04C6 /* HardwareWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareWalletViewController.swift; sourceTree = "<group>"; };
 		81C208A22201ED6A00F4BC1F /* Toast+SnackBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Toast+SnackBar.swift"; sourceTree = "<group>"; };
 		81C602A422A553D3004E26E1 /* Assets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
 		81C602AA22A55A47004E26E1 /* AssetDetailTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailTableViewController.swift; sourceTree = "<group>"; };
@@ -781,7 +779,6 @@
 			children = (
 				6D75A3D7238F502100EEA148 /* TableViewCells */,
 				816153C0230302B500FB9BC1 /* HardwareWallet.storyboard */,
-				81BF4E3422E9EF4B005A04C6 /* HardwareWalletViewController.swift */,
 				816153C22303048300FB9BC1 /* HardwareWalletScanViewController.swift */,
 				8107BB4D2306B2A6002FA980 /* LedgerResolver.swift */,
 				81BF4E2722E9E9EA005A04C6 /* Ledger.swift */,
@@ -1140,7 +1137,6 @@
 				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
 				6D50841C239970530063804F /* AccountCreateViewController.swift in Sources */,
 				6DD813B722BDA4F2002DCC8B /* AssetDetailTableCell.swift in Sources */,
-				81BF4E3522E9EF4B005A04C6 /* HardwareWalletViewController.swift in Sources */,
 				81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */,
@@ -1442,8 +1438,14 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a";
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1476,8 +1478,14 @@
 					"$(inherited)",
 					"-lc++",
 				);
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = "$(inherited) $(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = "$(inherited) $(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a";
+				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk-iphone/lib/iphone/libgreenaddress_full.a",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(SRCROOT)/gdk-iphone/lib/iphonesim/libgreenaddress_full.a",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.blockstream.green;
 				PRODUCT_NAME = "$(TARGET_NAME)";
