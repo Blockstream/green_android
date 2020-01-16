@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.ToastObservable;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
@@ -129,13 +130,37 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         return getModel().getUnitKey();
     }
 
+    // for btc and fiat
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount) {
+        final NumberFormat btcNf = getModel().getNumberFormat();
+        setAmountText(amountText, isFiat, currentAmount, btcNf, false);
+
+    }
+
+    // for liquid assets and l-btc
+    protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
+                                 final String asset) {
+
+        NumberFormat nf = getModel().getNumberFormat();
+        boolean isAsset = false;
+        if (!"btc".equals(asset) && asset != null) {
+            final AssetInfoData assetInfoData = getModel().getAssetsObservable().getAssetsInfos().get(asset);
+            int precision = assetInfoData == null ? 0 : assetInfoData.getPrecision();
+            nf = Model.getNumberFormat(precision);
+            isAsset = true;
+        }
+
+        setAmountText(amountText, isFiat, currentAmount, nf, isAsset);
+    }
+
+    protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
+                                 final NumberFormat btcOrAssetNf, final boolean isAsset) {
         try {
             final NumberFormat us = Model.getNumberFormat(8, Locale.US);
             final NumberFormat fiatNf = Model.getNumberFormat(2);
-            final NumberFormat btcNf = getModel().getNumberFormat();
             final String fiat = fiatNf.format( us.parse(currentAmount.get("fiat").asText()) );
-            final String btc = btcNf.format( us.parse(currentAmount.get(getBitcoinUnitClean()).asText()));
+            final String source = currentAmount.get(isAsset ? "btc" : getBitcoinUnitClean()).asText();
+            final String btc = btcOrAssetNf.format( us.parse(source));
             amountText.setText(isFiat ? fiat : btc);
         } catch (ParseException e) {
             Log.e(TAG,e.getMessage());

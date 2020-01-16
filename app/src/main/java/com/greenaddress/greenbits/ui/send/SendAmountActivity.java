@@ -169,9 +169,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             if (node != null && node.asLong() != 0L) {
                 final long newSatoshi = node.asLong();
                 try {
-                    final String unit = mSelectedAsset.isEmpty() ||
-                                        mSelectedAsset.equals("btc") ? getBitcoinUnitClean() : mSelectedAsset;
-                    mAmountText.setText(convert(newSatoshi).get(isFiat() ? "fiat" : unit).asText());
+                    setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
                 } catch (final RuntimeException | IOException e) {
                     Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
                 }
@@ -465,9 +463,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                     final long newSatoshi = addressee.get("satoshi").asLong();
                     // avoid updating view if value hasn't changed
                     if (mSendAll || (mCurrentAmount != null && mCurrentAmount.get("satoshi").asLong() != newSatoshi)) {
-                        final String unit = mSelectedAsset.isEmpty() ||
-                                            mSelectedAsset.equals("btc") ? getBitcoinUnitClean() : mSelectedAsset;
-                        mAmountText.setText(convert(newSatoshi).get(isFiat() ? "fiat" : unit).asText());
+                        setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
