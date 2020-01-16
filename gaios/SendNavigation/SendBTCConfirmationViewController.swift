@@ -99,7 +99,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
 
         // Show change address only for hardware wallet transaction
         content.changeAddressView.isHidden = !Ledger.shared.connected
-        if let outputs = transaction.transactionOutputs, !outputs.isEmpty, !Ledger.shared.connected {
+        if let outputs = transaction.transactionOutputs, !outputs.isEmpty, Ledger.shared.connected {
             var changeAddress = [String]()
             outputs.forEach { output in
                 let isChange = output["is_change"] as? Bool ?? false
@@ -151,7 +151,10 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
 
         firstly {
             uiErrorLabel.isHidden = true
-            self.startAnimating()
+            content.slidingButton.isUserInteractionEnabled = false
+            if Ledger.shared.connected {
+                Toast.show(NSLocalizedString("id_please_follow_the_instructions", comment: ""), timeout: Toast.LONG)
+            }
             return Guarantee()
         }.then(on: bgq) {
             signTransaction(transaction: self.transaction)
@@ -173,8 +176,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
-            self.stopAnimating()
             self.content.slidingButton.reset()
+            self.content.slidingButton.isUserInteractionEnabled = true
             self.uiErrorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {

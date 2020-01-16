@@ -251,16 +251,16 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FaN-Vp-rcs" userLabel="Change View">
-                                    <rect key="frame" x="8" y="452.5" width="359" height="54.5"/>
+                                    <rect key="frame" x="8" y="452.5" width="359" height="32"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CHANGE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YuT-gs-GeG">
-                                            <rect key="frame" x="8" y="8" width="343" height="18"/>
+                                            <rect key="frame" x="8" y="0.0" width="343" height="18"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                             <color key="textColor" red="0.3921568627" green="0.42745098040000001" blue="0.45098039220000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="change address" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C4D-1M-gSx">
-                                            <rect key="frame" x="8" y="40" width="343" height="14.5"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C4D-1M-gSx">
+                                            <rect key="frame" x="8" y="32" width="343" height="0.0"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
@@ -272,12 +272,12 @@
                                         <constraint firstItem="C4D-1M-gSx" firstAttribute="top" secondItem="YuT-gs-GeG" secondAttribute="bottom" constant="14" id="EEi-Fc-ULu"/>
                                         <constraint firstItem="C4D-1M-gSx" firstAttribute="leading" secondItem="FaN-Vp-rcs" secondAttribute="leading" constant="8" id="KBt-pw-uG9"/>
                                         <constraint firstItem="YuT-gs-GeG" firstAttribute="leading" secondItem="FaN-Vp-rcs" secondAttribute="leading" constant="8" id="W9z-Jn-cUB"/>
-                                        <constraint firstItem="YuT-gs-GeG" firstAttribute="top" secondItem="FaN-Vp-rcs" secondAttribute="top" constant="8" id="bMm-Fg-oSE"/>
+                                        <constraint firstItem="YuT-gs-GeG" firstAttribute="top" secondItem="FaN-Vp-rcs" secondAttribute="top" id="bMm-Fg-oSE"/>
                                         <constraint firstAttribute="trailing" secondItem="YuT-gs-GeG" secondAttribute="trailing" constant="8" id="bkS-DP-Blc"/>
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pXC-7E-clO" userLabel="Note View">
-                                    <rect key="frame" x="0.0" y="515" width="375" height="142"/>
+                                    <rect key="frame" x="0.0" y="492.5" width="375" height="142"/>
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Ivy-dd-zOP">
                                             <rect key="frame" x="20" y="34" width="335" height="88"/>
