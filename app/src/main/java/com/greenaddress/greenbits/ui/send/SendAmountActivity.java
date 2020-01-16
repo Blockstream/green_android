@@ -155,7 +155,17 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 mTx = call.resolve(null, getConnectionManager().getHWResolver());
             }
 
-            final JsonNode node = mTx.get("satoshi");
+            // Retrieve assets list
+            updateAssetSelected();
+
+            JsonNode node = mTx.get("satoshi");
+            try {
+                final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
+                node = addressee.get("satoshi");
+            } catch (final Exception e) {
+                // Asset not passed, default "btc"
+            }
+
             if (node != null && node.asLong() != 0L) {
                 final long newSatoshi = node.asLong();
                 try {
@@ -210,9 +220,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             // FIXME: Toast and go back to main activity since we must be disconnected
             throw new RuntimeException(e);
         }
-
-        // Retrieve assets list
-        updateAssetSelected();
 
         final View contentView = findViewById(android.R.id.content);
         UI.attachHideKeyboardListener(this, contentView);

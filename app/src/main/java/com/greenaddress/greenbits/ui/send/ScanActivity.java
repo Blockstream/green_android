@@ -386,6 +386,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         result.putExtra("internal_qr", true);
         final Integer subaccount = model.getCurrentSubaccount();
         final NetworkData networkData = getNetwork();
+        boolean skip_assets = false;
 
         if (isSweep) {
             result.putExtra(PrefKeys.SWEEP, true);
@@ -421,7 +422,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
 
         } else {
             final boolean startWithBitcoin = scanned.toLowerCase().startsWith("bitcoin:");
-            if (networkData.getLiquid() && startWithBitcoin) {
+            final boolean startsWithLiquid = scanned.toLowerCase().startsWith("liquidnetwork:");
+            if ((networkData.getLiquid() && startWithBitcoin) || (!networkData.getLiquid() && startsWithLiquid)) {
                 UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
                 return;
             }
@@ -449,6 +451,10 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                     cameraHandler.post(fetchAndDecodeRunnable);
                     return;
                 }
+                if (transactionFromUri.get("addressees_have_assets") != null &&
+                    transactionFromUri.get("addressees_have_assets").asBoolean(false)) {
+                    skip_assets = true;
+                }
                 removeUtxosIfTooBig(transactionFromUri);
                 result.putExtra(PrefKeys.INTENT_STRING_TX, transactionFromUri.toString());
             } catch (final Exception e) {
@@ -458,7 +464,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 return;
             }
         }
-        if (networkData.getLiquid()) {
+        if (networkData.getLiquid() && !skip_assets) {
             result.setClass(this, AssetsSelectActivity.class);
         } else {
             result.setClass(this, SendAmountActivity.class);
