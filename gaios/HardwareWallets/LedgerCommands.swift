@@ -38,7 +38,7 @@ class LedgerCommands: LedgerDeviceBLE {
                         return self.exchangeAdpu(cla: self.CLA_BOLOS, ins: self.INS_HASH_INPUT_FINALIZE_FULL, p1: p1, p2: 0x00, data: item.element)
                     }
                     .asObservable()
-                    .timeoutIfNoEvent(RxTimeInterval.seconds(30))
+                    .timeoutIfNoEvent(RxTimeInterval.seconds(TIMEOUT))
                     .take(1)
             }
         return Observable<Data>.concat(allObservables).reduce(Data(), accumulator: { _, element in

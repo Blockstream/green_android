@@ -42,6 +42,8 @@ class LedgerResolver {
             let txOutputs = json["transaction_outputs"] as? [[String: Any]]
             let signingAddressTypes = json["signing_address_types"] as? [String]
             let signingTxs = json["signing_transactions"] as? [String: String]
+            // Increment connection timeout for sign transaction command
+            Ledger.shared.TIMEOUT = 120
             _ = ledger.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
                 .flatMapLatest { data -> Observable<String> in
                     let value = "{\"signatures\":\(data.description)}"
@@ -49,6 +51,7 @@ class LedgerResolver {
                     return Observable.just(value)
                 }.subscribe { data in
                     print(data)
+                    Ledger.shared.TIMEOUT = 30
                     seal.reject(LedgerWrapper.LedgerError.IOError)
             }
         }

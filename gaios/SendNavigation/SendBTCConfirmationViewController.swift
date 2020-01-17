@@ -24,6 +24,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.fromLabel.text = transaction.isSweep ?  NSLocalizedString("id_sweep_from_paper_wallet", comment: "") : wallet?.localizedName()
         content.slidingButton.delegate = self
         content.slidingButton.buttonText = NSLocalizedString("id_slide_to_send", comment: "")
+        content.slidingButton.buttonUnlockedText = NSLocalizedString("id_sending", comment: "")
         uiErrorLabel = UIErrorLabel(self.view)
         content.textView.delegate = self
         content.textView.text = NSLocalizedString("id_add_a_note_only_you_can_see_it", comment: "")

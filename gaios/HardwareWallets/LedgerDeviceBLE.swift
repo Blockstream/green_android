@@ -16,6 +16,7 @@ class LedgerDeviceBLE: LedgerProtocol {
     let NOTIFY_CHARACTERISTIC_UUID = CBUUID(string: "13D63400-2C97-0004-0001-4C6564676572")
     let CLIENT_CHARACTERISTIC_CONFIG = CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
     var MTU: UInt8 = 128
+    var TIMEOUT: Int = 30
 
     // Status codes
     enum SWCode: UInt16 {
@@ -100,7 +101,7 @@ class LedgerDeviceBLE: LedgerProtocol {
         }
         return self.characteristicWrite!.writeValue(buffer, type: .withResponse).asObservable()
             .flatMap { _ in return self.characteristicNotify!.observeValueUpdate() }
-            .timeoutIfNoEvent(RxTimeInterval.seconds(30))
+            .timeoutIfNoEvent(RxTimeInterval.seconds(TIMEOUT))
             .take(1)
             .flatMap { characteristic -> Observable<Data> in
                 guard let buffer = characteristic.value else {
