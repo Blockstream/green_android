@@ -29,11 +29,11 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.textView.delegate = self
         content.textView.text = NSLocalizedString("id_add_a_note_only_you_can_see_it", comment: "")
         content.textView.textColor = UIColor.customTitaniumLight()
-        content.sendingTitle.text = NSLocalizedString("id_sending", comment: "")
+        content.sendingTitle.text = NSLocalizedString("id_send", comment: "")
         content.fromTitle.text = NSLocalizedString("id_from", comment: "")
         content.toTitle.text = NSLocalizedString("id_to", comment: "")
         content.myNotesTitle.text = NSLocalizedString("id_my_notes", comment: "")
-        content.feeTitle.text = NSLocalizedString("id_total_with_fee", comment: "")
+        content.feeTitle.text = NSLocalizedString("id_fee", comment: "")
         content.assetsTitle.text = NSLocalizedString("id_sending", comment: "")
         content.assetsFeeTitle.text = NSLocalizedString("id_fee", comment: "")
         content.changeAddressTitle.text = NSLocalizedString("id_change", comment: "")
@@ -86,16 +86,13 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: addressee.satoshi)
         }
         if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
-            let (amount, denom) = balance.get(tag: "btc")
+            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : "btc")
             content.assetsFeeLabel.text = "\(amount) \(denom)"
+            content.feeLabel.text = "\(amount) \(denom)"
         }
         if let balance = Balance.convert(details: ["satoshi": addressee.satoshi]) {
             let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
             content.amountText.text = amount
-        }
-        if let balance = Balance.convert(details: ["satoshi": addressee.satoshi + transaction.fee]) {
-            let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
-            content.feeLabel.text = amount
         }
 
         // Show change address only for hardware wallet transaction
