@@ -6,6 +6,8 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
 
     @IBOutlet weak var tableview: UITableView!
     @IBOutlet weak var walletButton: UIButton!
+    private var connected = true
+    private var updateToken: NSObjectProtocol?
 
     struct FactorItem {
         var name: String
@@ -24,6 +26,19 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
         navigationItem.setHidesBackButton(!isHiddenWalletButton, animated: false)
 
         self.tableview.rowHeight = 70
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
+        reloadData()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = updateToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -66,14 +81,14 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
         }
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        reloadData()
-    }
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         walletButton.updateGradientLayerFrame()
+    }
+
+    func updateConnection(_ notification: Notification) {
+        let connected = notification.userInfo?["connected"] as? Bool
+        self.connected = connected ?? false
     }
 
     func reloadData() {
@@ -114,7 +129,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
         }.compactMap(on: bgq) { details in
             try getGAService().getSession().changeSettingsTwoFactor(method: type.rawValue, details: details)
         }.then(on: bgq) { call in
-            call.resolve()
+            call.resolve(connected: { self.connected })
         }.ensure {
             self.stopAnimating()
         }.done { _ in

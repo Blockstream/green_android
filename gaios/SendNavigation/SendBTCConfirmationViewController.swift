@@ -65,8 +65,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     }
 
     func updateConnection(_ notification: Notification) {
-        guard let connected = notification.userInfo?["connected"] as? Bool else { return }
-        self.connected = connected
+        let connected = notification.userInfo?["connected"] as? Bool
+        self.connected = connected ?? false
     }
 
     deinit {

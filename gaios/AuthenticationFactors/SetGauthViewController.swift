@@ -5,7 +5,9 @@ import PromiseKit
 class SetGauthViewController: UIViewController {
 
     @IBOutlet var content: SetGauthView!
-    fileprivate var gauthData: String?
+    private var gauthData: String?
+    private var connected = true
+    private var updateToken: NSObjectProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,9 +34,26 @@ class SetGauthViewController: UIViewController {
         content.nextButton.setGradient(true)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = updateToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
     @objc func copyToClipboard(_ sender: UIButton) {
         UIPasteboard.general.string = content.secretLabel.text
         Toast.show(NSLocalizedString("id_copy_to_clipboard", comment: ""), timeout: Toast.SHORT)
+    }
+
+    func updateConnection(_ notification: Notification) {
+        let connected = notification.userInfo?["connected"] as? Bool
+        self.connected = connected ?? false
     }
 
     @objc func click(_ sender: UIButton) {
@@ -50,7 +69,7 @@ class SetGauthViewController: UIViewController {
         }.compactMap(on: bgq) { details in
             try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
         }.then(on: bgq) { call in
-            call.resolve()
+            call.resolve(connected: { self.connected })
         }.ensure {
             self.stopAnimating()
         }.done { _ in

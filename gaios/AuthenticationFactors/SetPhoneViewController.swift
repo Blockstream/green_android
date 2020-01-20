@@ -7,6 +7,8 @@ class SetPhoneViewController: KeyboardViewController {
     @IBOutlet var content: SetPhoneView!
     var sms = false
     var phoneCall = false
+    private var connected = true
+    private var updateToken: NSObjectProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +21,18 @@ class SetPhoneViewController: KeyboardViewController {
         content.nextButton.setGradient(true)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = updateToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         content.nextButton.updateGradientLayerFrame()
@@ -27,6 +41,11 @@ class SetPhoneViewController: KeyboardViewController {
     override func keyboardWillShow(notification: Notification) {
         let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect ?? .zero
         content.nextButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -keyboardFrame.height).isActive = true
+    }
+
+    func updateConnection(_ notification: Notification) {
+        let connected = notification.userInfo?["connected"] as? Bool
+        self.connected = connected ?? false
     }
 
     @objc func click(_ sender: UIButton) {
@@ -47,7 +66,7 @@ class SetPhoneViewController: KeyboardViewController {
         }.compactMap(on: bgq) { details in
             try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: details)
         }.then(on: bgq) { call in
-            call.resolve()
+            call.resolve(connected: { self.connected })
         }.ensure {
             self.stopAnimating()
         }.done { _ in
