@@ -62,6 +62,7 @@ final class LedgerWrapper {
      * @param hasChannel set to true if this bearer includes channel information
      * @param reassembled response or null if not enough data is available
      */
+    //swiftlint:disable cyclomatic_complexity
     static func unwrapResponseAPDUInternal(channel: UInt8, data: Data, packetSize: UInt8, hasChannel: Bool) throws -> Data {
         var buffer = [UInt8]()
         var offset = 0

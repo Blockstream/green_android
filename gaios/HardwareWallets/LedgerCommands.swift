@@ -97,6 +97,7 @@ class LedgerCommands: LedgerDeviceBLE {
         }
     }
 
+    //swiftlint:disable function_parameter_count
     func startUntrustedTransaction(txVersion: UInt, newTransaction: Bool, inputIndex: Int64, usedInputList: [[String: Any]], redeemScript: Data, segwit: Bool) -> Observable<Bool> {
         // Start building a fake transaction with the passed inputs
         let buffer = txVersion.uint32LE() + UInt(usedInputList.count).varint()
@@ -116,6 +117,7 @@ class LedgerCommands: LedgerDeviceBLE {
                     .asObservable()
                     .take(1)
         }
+        //swiftlint:disable reduce_boolean
         return Observable<Bool>.concat(allObservables).reduce(true, accumulator: { _, element in
             element
         })
