@@ -11,11 +11,12 @@ extension TwoFactorCall {
 
     func resolve(connected: @escaping() -> Bool = { true }) -> Promise<[String: Any]> {
         func step() -> Promise<[String: Any]> {
-            return Guarantee().map {
+            let bgq = DispatchQueue.global(qos: .background)
+            return Guarantee().map(on: bgq) {
                 try self.getStatus()!
             }.then { json in
                 try self.resolving(json: json, connected: connected).map { _ in json }
-            }.then { json -> Promise<[String: Any]> in
+            }.then(on: bgq) { json -> Promise<[String: Any]> in
                 guard let status = json["status"] as? String else { throw GaError.GenericError }
                 if status == "done" {
                     return Promise<[String: Any]> { seal in seal.fulfill(json) }
@@ -29,6 +30,7 @@ extension TwoFactorCall {
 
     private func resolving(json: [String: Any], connected: @escaping() -> Bool = { true }) throws -> Promise<Void> {
         guard let status = json["status"] as? String else { throw GaError.GenericError }
+        let bgq = DispatchQueue.global(qos: .background)
         switch status {
         case "done":
             return Guarantee().asVoid()
@@ -46,8 +48,8 @@ extension TwoFactorCall {
                     .map { sender?.stopAnimating() }
                     .then { popup.method(methods) }
                     .map { method in sender?.startAnimating(); return method }
-                    .then { code in self.waitConnection(connected).map { return code} }
-                    .then { method in
+                    .then(on: bgq) { code in self.waitConnection(connected).map { return code} }
+                    .then(on: bgq) { method in
                         try self.requestCode(method: method)
                     }
             } else {
@@ -58,7 +60,7 @@ extension TwoFactorCall {
             if let requiredData = json["required_data"] as? [String: Any] {
                 let action = requiredData["action"] as? String
                 let ledgerResolver = LedgerResolver()
-                return Promise().then {_ -> Promise<String> in
+                return Promise().then(on: bgq) {_ -> Promise<String> in
                     if action == "get_xpubs" {
                         return ledgerResolver.getXpubs(requiredData)
                     } else if action == "sign_message" {
@@ -80,8 +82,8 @@ extension TwoFactorCall {
                 .map { sender?.stopAnimating() }
                 .then { popup.code(method) }
                 .map { code in sender?.startAnimating(); return code }
-                .then { code in self.waitConnection(connected).map { return code} }
-                .then { code in
+                .then(on: bgq) { code in self.waitConnection(connected).map { return code} }
+                .then(on: bgq) { code in
                     return try self.resolveCode(code: code)
                 }
         default:
@@ -98,7 +100,7 @@ extension TwoFactorCall {
                     throw GaError.TimeoutError
                 }
             }.recover { error -> Promise<Void> in
-                guard attempts < 3 else { throw error }
+                guard attempts < 5 else { throw error }
                 return after(DispatchTimeInterval.seconds(3)).then(on: nil, attempt)
             }
         }
