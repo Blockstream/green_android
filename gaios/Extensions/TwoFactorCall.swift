@@ -38,7 +38,7 @@ extension TwoFactorCall {
             let error = json["error"] as? String ?? ""
             throw TwoFactorCallError.failure(localizedDescription: NSLocalizedString(error, comment: ""))
         case "call":
-            return try self.call()
+            return Promise().map(on: bgq) { try self.call() }
         case "request_code":
             let methods = json["methods"] as? [String] ?? []
             if methods.count > 1 {
@@ -49,11 +49,9 @@ extension TwoFactorCall {
                     .then { popup.method(methods) }
                     .map { method in sender?.startAnimating(); return method }
                     .then(on: bgq) { code in self.waitConnection(connected).map { return code} }
-                    .then(on: bgq) { method in
-                        try self.requestCode(method: method)
-                    }
+                    .map(on: bgq) { method in try self.requestCode(method: method) }
             } else {
-                return try self.requestCode(method: methods[0])
+                return Promise().map(on: bgq) { try self.requestCode(method: methods[0]) }
             }
         case "resolve_code":
             // Ledger interface resolver
@@ -71,7 +69,7 @@ extension TwoFactorCall {
                         throw GaError.GenericError
                     }
                 }.then { code in
-                    return try self.resolveCode(code: code)
+                    return Promise().map(on: bgq) { try self.resolveCode(code: code) }
                 }
             }
             // User interface resolver
@@ -84,7 +82,7 @@ extension TwoFactorCall {
                 .map { code in sender?.startAnimating(); return code }
                 .then(on: bgq) { code in self.waitConnection(connected).map { return code} }
                 .then(on: bgq) { code in
-                    return try self.resolveCode(code: code)
+                    return Promise().map(on: bgq) { try self.resolveCode(code: code) }
                 }
         default:
             return Guarantee().asVoid()
