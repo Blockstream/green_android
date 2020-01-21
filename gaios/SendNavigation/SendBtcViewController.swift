@@ -99,6 +99,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         if let next = segue.destination as? SendBtcDetailsViewController {
             next.wallet = wallet
             next.transaction = sender as? Transaction
+            next.assetTag = next.transaction?.addressees.first?.assetTag ?? "btc"
         } else if let next = segue.destination as? AssetsListTableViewController {
             next.isSend = true
             next.wallet = wallet
@@ -130,7 +131,8 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
             if !tx.error.isEmpty && tx.error != "id_invalid_amount" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
-            if self.isLiquid {
+            let haveAssets = tx.details["addressees_have_assets"] as? Bool
+            if self.isLiquid && !(haveAssets ?? false) {
                 self.performSegue(withIdentifier: "asset_select", sender: tx)
             } else {
                 self.performSegue(withIdentifier: "next", sender: tx)
