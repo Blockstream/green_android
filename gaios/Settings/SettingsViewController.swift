@@ -25,6 +25,7 @@ class SettingsViewController: UIViewController {
     }
     var isWatchOnly: Bool { get { return getGAService().isWatchOnly } }
     var isLiquid: Bool { get { return getGdkNetwork(getNetwork()).liquid } }
+    var isHW: Bool { get { return Ledger.shared.connected } }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,7 +100,7 @@ class SettingsViewController: UIViewController {
         if isLiquid {
             return [setupPin]
         }
-        return !isWatchOnly && !isResetActive ? [setupPin, watchOnly] : []
+        return !isWatchOnly && !isResetActive && !isHW ? [setupPin, watchOnly] : []
     }
 
     func getAccount() -> [SettingsItem] {
@@ -211,7 +212,13 @@ class SettingsViewController: UIViewController {
             subtitle: settings.autolock.string,
             section: .security,
             type: .Autolock)
-        return !isWatchOnly && !isResetActive ? [mnemonic, autolock] : []
+        if isHW {
+            return [autolock]
+        } else if !isWatchOnly && !isResetActive {
+            return [mnemonic, autolock]
+        } else {
+            return []
+        }
     }
 
     func getAdvanced() -> [SettingsItem] {
