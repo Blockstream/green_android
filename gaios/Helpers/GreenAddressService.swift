@@ -138,7 +138,23 @@ class GreenAddressService {
             do {
                 let json = try JSONSerialization.data(withJSONObject: data, options: [])
                 let connection = try JSONDecoder().decode(Connection.self, from: json)
-                if connection.loginRequired == true {
+                let loginRequired = connection.loginRequired ?? false
+                if loginRequired && Ledger.shared.connected {
+                    let bgq = DispatchQueue.global(qos: .background)
+                    let session = getSession()
+                    Guarantee().map(on: bgq) {_ -> TwoFactorCall in
+                        try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice])
+                    }.then(on: bgq) { call in
+                        call.resolve()
+                    }.done { _ in
+                        print("reconnected with hw")
+                        self.post(event: EventType.Network, data: data)
+                    }.catch { err in
+                        print("Error on reconnected with hw: \(err.localizedDescription)")
+                        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                        appDelegate?.logout(with: false)
+                    }
+                } else if loginRequired {
                     DispatchQueue.main.async {
                         let appDelegate = UIApplication.shared.delegate as? AppDelegate
                         appDelegate?.logout(with: false)

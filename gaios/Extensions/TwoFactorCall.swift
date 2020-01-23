@@ -94,7 +94,8 @@ extension TwoFactorCall {
         func attempt() -> Promise<Void> {
             attempts += 1
             return Guarantee().map {
-                if !connected() {
+                let status = connected()
+                if !status {
                     throw GaError.TimeoutError
                 }
             }.recover { error -> Promise<Void> in

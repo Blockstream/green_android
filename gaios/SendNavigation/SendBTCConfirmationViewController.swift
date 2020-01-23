@@ -158,7 +158,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             signTransaction(transaction: self.transaction)
         }.then(on: bgq) { call in
             call.resolve(connected: {
-                return self.connected })
+                return self.connected
+            })
         }.map(on: bgq) { resultDict in
             let result = resultDict["result"] as? [String: Any]
             if self.transaction.isSweep {
@@ -171,6 +172,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
             call?.resolve(connected: {
                 return self.connected }) ?? Promise<[String: Any]> { seal in seal.fulfill([:]) }
+        }.ensure {
+            self.stopAnimating()
         }.done { _ in
             self.executeOnDone()
         }.catch { error in
