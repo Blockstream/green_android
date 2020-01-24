@@ -120,6 +120,7 @@ extension HardwareWalletScanViewController {
                 }
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in
+                appDelegate?.disconnect()
                 try appDelegate?.connect()
                 _ = try session.registerUser(mnemonic: "", hw_device: ["device": (Ledger.shared.hwDevice as Any) ]).resolve().wait()
                 _ = try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice]).resolve().wait()
