@@ -22,7 +22,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="separatorColor" name="customTitaniumLight"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="HardwareDeviceCell" rowHeight="50" id="JyD-K6-crc" customClass="HardwareDeviceCell" customModule="gaios" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="HardwareDeviceCell" rowHeight="50" id="JyD-K6-crc" customClass="HardwareDeviceCell" customModule="gaios" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="414" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="JyD-K6-crc" id="qPt-kr-BFo">
@@ -82,7 +82,7 @@
                                 <rect key="frame" x="56" y="225.5" width="302" height="302"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bluetooth" translatesAutoresizingMaskIntoConstraints="NO" id="k5R-5d-7t7">
-                                        <rect key="frame" x="137.5" y="128.5" width="27" height="45"/>
+                                        <rect key="frame" x="124" y="106" width="54" height="90"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="k5R-5d-7t7" secondAttribute="height" multiplier="3:5" id="S3D-hB-Rjb"/>
                                         </constraints>
