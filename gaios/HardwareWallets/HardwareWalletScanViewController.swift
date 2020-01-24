@@ -33,7 +33,6 @@ class HardwareWalletScanViewController: UIViewController {
 
         // wait bluetooth is ready
         scanningDispose = manager.observeState()
-            .do(onNext: { print("do: \($0.rawValue)") })
             .filter { $0 == .poweredOn }
             .take(1)
             .subscribe(onNext: { _ in
@@ -143,6 +142,8 @@ extension HardwareWalletScanViewController {
                 case is AuthenticationTypeHandler.AuthError:
                     let authErr = err as? AuthenticationTypeHandler.AuthError
                     self.showAlert(authErr?.localizedDescription ?? "")
+                case is Ledger.SWError:
+                    self.showAlert("Invalid status. Check device is unlocked and try again.")
                 default:
                     self.showAlert(err.localizedDescription)
                 }

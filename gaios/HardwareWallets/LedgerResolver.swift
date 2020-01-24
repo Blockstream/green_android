@@ -14,9 +14,11 @@ class LedgerResolver {
                     let xpubs = "{\"xpubs\":\(data.description)}"
                     seal.fulfill(xpubs)
                     return Observable.just(xpubs)
-                }.subscribe { data in
-                    print(data)
-            }
+            }.subscribe(onNext: {data in
+                print(data)
+            }, onError: { err in
+                seal.reject(err)
+            })
         }
     }
 
