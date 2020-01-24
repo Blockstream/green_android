@@ -98,66 +98,50 @@ extension HardwareWalletScanViewController {
     }
 
     func connect(peripheral: Peripheral) {
-       enstablishDispose = peripheral.establishConnection()
-            .timeoutIfNoEvent(self.timeout)
+        startAnimating()
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let session = getGAService().getSession()
+
+        enstablishDispose = peripheral.establishConnection()
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { Ledger.shared.open($0) }
-            .timeoutIfNoEvent(self.timeout)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Ledger.shared.application() }
-            .flatMap { res -> Observable<Bool> in
-                let name = res["name"] as? String
-                if name!.contains("OLOS") {
-                    // open app from dashboard
-                    return Observable<Bool>.error(DeviceError.dashboard)
-                } else if name! != self.network() {
-                    // change app
-                    return Observable<Bool>.error(DeviceError.wrong_app)
+            .compactMap { res in
+                let name = res["name"] as? String ?? ""
+                if name.contains("OLOS") {
+                    throw DeviceError.dashboard // open app from dashboard
+                } else if name != self.network() {
+                    throw DeviceError.wrong_app // change app
                 }
-                // correct open app
-                return Observable.just(true)
-            }
+            }.observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .compactMap { _ in
+                try appDelegate?.connect()
+                _ = try session.registerUser(mnemonic: "", hw_device: ["device": (Ledger.shared.hwDevice as Any) ]).resolve().wait()
+                _ = try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice]).resolve().wait()
+            }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                print("Login on progress")
-                self.login()
+                self.stopAnimating()
+                getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
             }, onError: { err in
+                self.stopAnimating()
                 switch err {
                 case is BluetoothError:
-                    self.showAlert("Connection to unit failed! Move closer to the unit and try again.")
+                    let bleErr = err as? BluetoothError
+                    self.showAlert("Bluetooth error: \(bleErr?.localizedDescription ?? "")")
                 case RxError.timeout:
                     self.showAlert("Communication with the device timed out. Make sure the unit is powered on, move closer to it, and try again.")
                 case DeviceError.dashboard:
                     self.showAlert("Open \(self.network()) app on your Ledger")
                 case DeviceError.wrong_app:
                     self.showAlert("Quit current app and open \(self.network()) app on your Ledger")
+                case is AuthenticationTypeHandler.AuthError:
+                    let authErr = err as? AuthenticationTypeHandler.AuthError
+                    self.showAlert(authErr?.localizedDescription ?? "")
                 default:
-                    self.showAlert("Uncaught error: \(err.localizedDescription).")
+                    self.showAlert(err.localizedDescription)
                 }
-            }, onCompleted: {}, onDisposed: {})
-    }
-
-    func login() {
-        let bgq = DispatchQueue.global(qos: .background)
-        let session = getGAService().getSession()
-        let appDelegate = getAppDelegate()!
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap(on: bgq) {
-            try appDelegate.connect()
-        }.compactMap(on: bgq) { _ -> TwoFactorCall in
-            return try session.registerUser(mnemonic: "", hw_device: ["device": (Ledger.shared.hwDevice as Any) ])
-        }.then(on: bgq) { call in
-            call.resolve()
-        }.compactMap(on: bgq) {_ -> TwoFactorCall in
-            try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice])
-        }.then(on: bgq) { call in
-            call.resolve()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
-        }.catch { e in
-            self.showAlert("error \(e.localizedDescription)")
-        }
+            })
     }
 
     func showAlert(_ message: String) {
