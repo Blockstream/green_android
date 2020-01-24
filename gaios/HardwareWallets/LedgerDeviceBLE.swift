@@ -100,6 +100,7 @@ class LedgerDeviceBLE: LedgerProtocol {
             return Observable.error(SWError(SWCode.SW_ABORT))
         }
         return self.characteristicWrite!.writeValue(buffer, type: .withResponse).asObservable()
+            .subscribeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in return self.characteristicNotify!.observeValueUpdate() }
             .timeoutIfNoEvent(RxTimeInterval.seconds(TIMEOUT))
             .take(1)

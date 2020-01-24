@@ -4,21 +4,20 @@ import PromiseKit
 import RxSwift
 
 class LedgerResolver {
-    var ledger = Ledger.shared
 
     func getXpubs(_ json: [String: Any]) -> Promise<String> {
         return Promise { seal in
             let paths = json["paths"] as? [[Int]]
-            _ = ledger.xpubs(paths: paths!)
+            _ = Observable.just(paths)
+                .observeOn(SerialDispatchQueueScheduler(qos: .background))
+                .flatMap { _ in Ledger.shared.xpubs(paths: paths!) }
                 .flatMapLatest { data -> Observable<String> in
                     let xpubs = "{\"xpubs\":\(data.description)}"
                     seal.fulfill(xpubs)
                     return Observable.just(xpubs)
-            }.subscribe(onNext: {data in
-                print(data)
-            }, onError: { err in
-                seal.reject(err)
-            })
+                }.subscribe(onError: { err in
+                    seal.reject(err)
+                })
         }
     }
 
@@ -26,14 +25,16 @@ class LedgerResolver {
         return Promise { seal in
             let path = json["path"] as? [Int]
             let message = json["message"] as? String
-            _ = ledger.signMessage(path: path!, message: message!)
+            _ = Observable.just(message)
+                .observeOn(SerialDispatchQueueScheduler(qos: .background))
+                .flatMap { _ in Ledger.shared.signMessage(path: path!, message: message!) }
                 .flatMapLatest { data -> Observable<String> in
                     let value = "{\"signature\":\"\(data.description)\"}"
                     seal.fulfill(value)
                     return Observable.just(value)
-                }.subscribe { data in
-                    print(data)
-            }
+                }.subscribe(onError: { _ in
+                    seal.reject(LedgerWrapper.LedgerError.IOError)
+                })
         }
     }
 
@@ -46,16 +47,18 @@ class LedgerResolver {
             let signingTxs = json["signing_transactions"] as? [String: String]
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
-            _ = ledger.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
-                .flatMapLatest { data -> Observable<String> in
+            _ = Observable.just(json)
+                .observeOn(SerialDispatchQueueScheduler(qos: .background))
+                .flatMap { _ in Ledger.shared.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
+                }.flatMapLatest { data -> Observable<String> in
                     let value = "{\"signatures\":\(data.description)}"
                     seal.fulfill(value)
                     return Observable.just(value)
-                }.subscribe { data in
-                    print(data)
+                }.subscribe(onNext: { _ in
                     Ledger.shared.TIMEOUT = 30
+                }, onError: { _ in
                     seal.reject(LedgerWrapper.LedgerError.IOError)
-            }
+                })
         }
     }
 }
