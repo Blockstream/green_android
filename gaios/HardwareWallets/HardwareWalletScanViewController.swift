@@ -21,9 +21,14 @@ class HardwareWalletScanViewController: UIViewController {
         tableView.tableFooterView = UIView()
 
         let manager = AppDelegate.manager
-        if manager.state == .poweredOn {
+        switch manager.state {
+        case .poweredOn:
             scanningDispose = scan()
             return
+        case .poweredOff:
+            showAlert("Turn on bleutooth from System Settings")
+        default:
+            break
         }
 
         // wait bluetooth is ready
