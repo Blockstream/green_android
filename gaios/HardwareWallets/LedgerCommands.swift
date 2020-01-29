@@ -2,6 +2,7 @@ import Foundation
 import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
+import ga.wally
 
 class LedgerCommands: LedgerDeviceBLE {
 
@@ -73,16 +74,17 @@ class LedgerCommands: LedgerDeviceBLE {
     func inputBytes(_ input: [String: Any], isSegwit: Bool) -> Data? {
         let txHashHex = input["txhash"] as? String
         let ptIdx = input["pt_idx"] as? UInt
-        let txId: [UInt8]? = txHashHex?.hexadecimal()?.reversed()
+        let txId: [UInt8]? = hexToData(txHashHex!).reversed()
         return Data(txId! + ptIdx!.uint32LE() + (isSegwit ? (input["satoshi"] as? UInt64)!.uint64LE() : []))
     }
 
     func outputBytes(_ outputs: [[String: Any]]) -> Data? {
         var buffer = outputs.count.varInt()
         for out in outputs {
-            let satoshi = (out["satoshi"] as? UInt64)!.uint64LE()
-            let script = (out["script"] as? String)!.hexadecimal()
-            buffer += satoshi + script!.count.varInt() + script!
+            let satoshi = out["satoshi"] as? UInt64
+            let script = out["script"] as? String
+            let hex = hexToData(script!)
+            buffer += satoshi!.uint64LE() + hex.count.varInt() + hex
         }
         return Data(buffer)
     }
@@ -253,4 +255,17 @@ class LedgerCommands: LedgerDeviceBLE {
                 return Observable.just(true)
         }
     }
+}
+
+public func hexToData(_ hex: String) -> Data {
+    let hex_bytes: UnsafePointer<Int8> = UnsafePointer(hex)
+    precondition(hex.count%2 == 0)
+    let length = hex.count/2
+    let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: length)
+    var written = 0
+    wally_hex_to_bytes(hex_bytes, buffer, length, &written)
+    precondition(written == length)
+    return Data(bytesNoCopy: buffer, count: length, deallocator: .custom({ (_, _)  in
+        buffer.deallocate()
+    }))
 }

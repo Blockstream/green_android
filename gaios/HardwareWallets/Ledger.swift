@@ -25,9 +25,10 @@ final class Ledger: LedgerCommands {
         // Prepare the pseudo transaction
         // Provide the first script instead of a null script to initialize the P2SH confirmation logic
         let version = tx["transaction_version"] as? UInt
-        let script0 = (inputs.first?["prevout_script"] as? String)!.hexadecimal()
+        let prevoutScript = inputs.first?["prevout_script"] as? String
+        let script0 = hexToData(prevoutScript!)
         let locktime = tx["transaction_locktime"] as? UInt
-        return startUntrustedTransaction(txVersion: version!, newTransaction: true, inputIndex: 0, usedInputList: hwInputs, redeemScript: script0!, segwit: true)
+        return startUntrustedTransaction(txVersion: version!, newTransaction: true, inputIndex: 0, usedInputList: hwInputs, redeemScript: script0, segwit: true)
         .flatMap { _ -> Observable<[String: Any]> in
             let bytes = self.outputBytes(outputs)
             return self.finalizeInputFull(data: bytes!)
@@ -58,8 +59,9 @@ final class Ledger: LedgerCommands {
     }
 
     func signSWInput(hwInput: [String: Any], input: [String: Any], version: UInt, locktime: UInt) -> Observable<Data> {
-        let script = (input["prevout_script"] as? String)!.hexadecimal()
-        return startUntrustedTransaction(txVersion: version, newTransaction: false, inputIndex: 0, usedInputList: [hwInput], redeemScript: script!, segwit: true)
+        let prevoutScript = input["prevout_script"] as? String
+        let script = hexToData(prevoutScript!)
+        return startUntrustedTransaction(txVersion: version, newTransaction: false, inputIndex: 0, usedInputList: [hwInput], redeemScript: script, segwit: true)
         .flatMap { _ -> Observable <Data> in
             let paths = input["user_path"] as? [Int64]
             let userPaths: [Int] = paths!.map { Int($0) }

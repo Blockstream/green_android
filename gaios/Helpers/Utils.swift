@@ -1,18 +1,5 @@
 import Foundation
 
-extension String {
-    func hexadecimal() -> Data? {
-        var data = Data(capacity: self.count / 2)
-        let regex = try! NSRegularExpression(pattern: "[0-9a-f]{1,2}", options: .caseInsensitive)
-        regex.enumerateMatches(in: self, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: utf16.count), using: ({ match, _, _ in
-            let byteString = (self as NSString).substring(with: match!.range)
-            var num = UInt8(byteString, radix: 16)!
-            data.append(&num, count: 1)
-        }))
-        return data.count > 0 ? data : nil
-    }
-}
-
 extension UInt {
     func uint32BE() -> [UInt8] {
         return [UInt8((self >> 24) & 0xff), UInt8((self >> 16) & 0xff),
