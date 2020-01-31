@@ -66,6 +66,7 @@ class GreenAddressService {
         blockHeight = 0
         isWatchOnly = false
         GreenAddressService.isTemporary = false
+        Ledger.shared.xPubsCached.removeAll()
     }
 
     func getSession() -> Session {
