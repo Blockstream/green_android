@@ -384,9 +384,6 @@ class SendBtcDetailsViewController: UIViewController {
             self.showAlert(error)
         }
     }
-}
-
-extension SendBtcDetailsViewController {
 
     func showAlert(_ error: Error) {
         let text: String
@@ -397,12 +394,6 @@ extension SendBtcDetailsViewController {
             }
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
         }
-    }
-
-    func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
-        self.present(alert, animated: true, completion: nil)
     }
 }
 

@@ -26,7 +26,7 @@ class HardwareWalletScanViewController: UIViewController {
             scanningDispose = scan()
             return
         case .poweredOff:
-            showAlert("Turn on bleutooth from System Settings")
+            showError("Turn on bleutooth from System Settings")
         default:
             break
         }
@@ -38,7 +38,7 @@ class HardwareWalletScanViewController: UIViewController {
             .subscribe(onNext: { _ in
                 self.scanningDispose = self.scan()
             }, onError: { err in
-                self.showAlert(err.localizedDescription)
+                self.showError(err.localizedDescription)
             })
     }
 
@@ -50,7 +50,7 @@ class HardwareWalletScanViewController: UIViewController {
                 self.peripherals.append(p)
                 self.tableView.reloadData()
             }, onError: { err in
-                self.showAlert(err.localizedDescription)
+                self.showError(err.localizedDescription)
             })
     }
 
@@ -133,28 +133,22 @@ extension HardwareWalletScanViewController {
                 switch err {
                 case is BluetoothError:
                     let bleErr = err as? BluetoothError
-                    self.showAlert("Bluetooth error: \(bleErr?.localizedDescription ?? "")")
+                    self.showError("Bluetooth error: \(bleErr?.localizedDescription ?? "")")
                 case RxError.timeout:
-                    self.showAlert("Communication with the device timed out. Make sure the unit is powered on, move closer to it, and try again.")
+                    self.showError("Communication with the device timed out. Make sure the unit is powered on, move closer to it, and try again.")
                 case DeviceError.dashboard:
-                    self.showAlert("Open \(self.network()) app on your Ledger")
+                    self.showError("Open \(self.network()) app on your Ledger")
                 case DeviceError.wrong_app:
-                    self.showAlert("Quit current app and open \(self.network()) app on your Ledger")
+                    self.showError("Quit current app and open \(self.network()) app on your Ledger")
                 case is AuthenticationTypeHandler.AuthError:
                     let authErr = err as? AuthenticationTypeHandler.AuthError
-                    self.showAlert(authErr?.localizedDescription ?? "")
+                    self.showError(authErr?.localizedDescription ?? "")
                 case is Ledger.SWError:
-                    self.showAlert("Invalid status. Check device is unlocked and try again.")
+                    self.showError("Invalid status. Check device is unlocked and try again.")
                 default:
-                    self.showAlert(err.localizedDescription)
+                    self.showError(err.localizedDescription)
                 }
             })
-    }
-
-    func showAlert(_ message: String) {
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel))
-        self.present(alert, animated: true, completion: nil)
     }
 }
 

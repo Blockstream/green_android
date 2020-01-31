@@ -404,14 +404,8 @@ extension SettingsViewController {
             case .failure(let localizedDescription), .cancel(let localizedDescription):
                 text = localizedDescription
             }
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: text)
+            self.showError(text)
         }
-    }
-
-    func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
-        self.present(alert, animated: true, completion: nil)
     }
 
     func showLockTimeRecovery() {

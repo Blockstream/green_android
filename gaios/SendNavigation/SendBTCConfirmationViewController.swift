@@ -8,7 +8,6 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     var transaction: Transaction!
 
     @IBOutlet var content: SendBTCConfirmationView!
-    private var uiErrorLabel: UIErrorLabel!
     private var isFiat = false
     private var connected = true
 
@@ -25,7 +24,6 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.slidingButton.delegate = self
         content.slidingButton.buttonText = NSLocalizedString("id_slide_to_send", comment: "")
         content.slidingButton.buttonUnlockedText = NSLocalizedString("id_sending", comment: "")
-        uiErrorLabel = UIErrorLabel(self.view)
         content.textView.delegate = self
         content.textView.text = NSLocalizedString("id_add_a_note_only_you_can_see_it", comment: "")
         content.textView.textColor = UIColor.customTitaniumLight()
@@ -148,7 +146,6 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         let bgq = DispatchQueue.global(qos: .background)
 
         firstly {
-            uiErrorLabel.isHidden = true
             content.slidingButton.isUserInteractionEnabled = false
             if Ledger.shared.connected {
                 Toast.show(NSLocalizedString("id_please_follow_the_instructions", comment: ""), timeout: Toast.LONG)
@@ -179,14 +176,13 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }.catch { error in
             self.content.slidingButton.reset()
             self.content.slidingButton.isUserInteractionEnabled = true
-            self.uiErrorLabel.isHidden = false
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
                 case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    self.uiErrorLabel.text = localizedDescription
+                    self.showError(localizedDescription)
                 }
             } else {
-                self.uiErrorLabel.text = error.localizedDescription
+                self.showError(error.localizedDescription)
             }
         }
     }
