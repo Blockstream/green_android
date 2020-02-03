@@ -62,7 +62,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         if (observable instanceof ConnectionManager) {
             final ConnectionManager cm = getConnectionManager();
             if (cm.isLoginRequired() || cm.isDisconnected()) {
-                exit();
+                runOnUiThread(() -> exit());
             }
         } else if (observable instanceof ToastObservable) {
             final ToastObservable tObs = (ToastObservable) observable;
@@ -83,8 +83,8 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         if (!mChangingActivity) {
             mChangingActivity = true;
             final Intent intent = GaActivity.createToFirstIntent(this);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-            finishAffinity();
         }
     }
 
@@ -109,7 +109,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                exit();
+                runOnUiThread(() -> exit());
             }
         }, delayLogoutTimer());
         mTimer = timer;
