@@ -27,9 +27,9 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Green uses biometric authentication to allow easy access to the wallet</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Green uses bluetooth to connect to hardware wallets</string>
+	<string>Green uses Bluetooth for communication with hardware wallets</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Green uses blutetooth to connect to hardware wallets</string>
+	<string>Green uses bluetooth to connect to hardware wallets</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

@@ -41,6 +41,7 @@
 "id_asset_details" = "Asset Details";
 "id_asset_id" = "Asset ID";
 "id_asset_name" = "Asset Name";
+"id_assets" = "Assets";
 "id_attempts_remaining_d" = "Залишилося спроб: %d";
 "id_auto_logout_timeout" = "Автоматичний вихід";
 "id_autolock_after" = "Автоблокування";
@@ -59,16 +60,20 @@
 "id_call" = "Дзвінок";
 "id_camera_problem" = "Проблема з камерою";
 "id_cancel" = "Відмінити";
+"id_cancel_a_reset_to_unlock_your" = "Cancel a reset to unlock your wallet if you recovered access to an old Two-Factor Authentication method.";
 "id_cancel_twofactor_reset" = "Відмінити двофакторне відновлення";
 "id_cannot_remove_enabled_network" = "Не вдається видалити підключену мережу, спочатку вимкніть її.";
 "id_cant_connect_to_this_url" = "Не вдається з'єднатися з цим URL";
 "id_change" = "РЕШТА";
 "id_change_pin" = "Change PIN";
 "id_choose" = "Обрати";
+"id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "Оберіть метод для авторизації дії";
 "id_choose_twofactor_authentication" = "Виберіть метод двофакторної аутентифікації";
 "id_choose_your_network" = "Виберіть мережу";
 "id_clear" = "ОЧИСТИТИ";
+"id_click_to_receive_an_email_with" = "Click to receive an email with your encrypted recovery data.";
+"id_communication_timed_out_make" = "Communication timed out. Make sure the device is powered on and try again.";
 "id_completed" = "Завершено";
 "id_confidential" = "Confidential";
 "id_confirm_code" = "Підтвердіть код";
@@ -76,11 +81,14 @@
 "id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "Confirmation in %d blocks";
 "id_congratulations" = "Вітаємо!";
+"id_connect_hardware_wallet" = "Connect hardware wallet";
 "id_connect_through_a_proxy" = "Встановити з’єднання через проксі-сервер";
 "id_connect_with_tor" = "Встановити з’єднання з Tor";
 "id_connecting_to_a_trusted_node" = "Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)";
 "id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Підключення до Tor (.onion) вузлів забезпечує максимальну конфіденційність і безпеку. Натисніть \"OK\", щоб продовжити.";
+"id_connection_failed" = "Connection failed";
+"id_connection_to_device_failed" = "Connection to device failed! Move closer to the device and try again.";
 "id_contact_support_at_s_or_visit_s" = "Contact support at %@ or visit %@";
 "id_continue" = "Продовжити";
 "id_copied_to_clipboard" = "Copied to clipboard";
@@ -192,6 +200,8 @@
 "id_green_only_supports_one_pin_for" = "Green підтримує лише один PIN-код для кожної мережі. Новий гаманець вимагає введення мнемонічної фрази кожного разу при вході в систему.";
 "id_green_only_supports_one_pin_per" = "Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.";
 "id_green_uses_biometric" = "Green використовує біометричну аутентифікацію для того, щоб забезпечити легкий доступ до гаманця ";
+"id_green_uses_bluetooth_for" = "Green uses Bluetooth for communication with hardware wallets";
+"id_green_uses_bluetooth_to_connect" = "Green uses Bluetooth to connect to hardware wallets";
 "id_green_uses_multisig_with_one" = "Green використовує мультипідпис з підписом, створеним вашим пристроєм, та підписом, згенерованим за допомогою серверів Blockstream. Налаштування двофакторної аутентифікації дає змогу отримати додатковий рівень безпеки для підпису на сервері.";
 "id_hardware_wallet_support_for" = "Hardware wallet support for Confidential Transactions coming soon.";
 "id_hash" = "Хеш";
@@ -218,6 +228,7 @@
 "id_invalid_mnemonic" = "Неправильна мнемонічна фраза";
 "id_invalid_mnemonic_must_be_24_or" = "Неправильна мнемонічна фраза (має бути 24 або 27 слів)";
 "id_invalid_network_configuration" = "Неправильна конфігурація мережі";
+"id_invalid_payment_request_assetid" = "Invalid payment request, AssetID has to be specified";
 "id_invalid_pgp_key" = "Неправильний PGP-ключ";
 "id_invalid_phone_number_format" = "Неправильний формат телефонного номера";
 "id_invalid_pin_remaining_attempts" = "Неправильний PIN-код. Залишилось спроб: %1$d.";
@@ -225,6 +236,7 @@
 "id_invalid_pin_you_have_1d" = "Неправильний PIN-код, залишилось спроб %1$d";
 "id_invalid_private_key" = "Неправильний приватний ключ";
 "id_invalid_replacement_fee_rate" = "Неправильна заміна комісії";
+"id_invalid_status_check_that_your" = "Invalid status. Check that your device is unlocked and try again.";
 "id_invalid_twofactor_code" = "Неправильний двофакторний код";
 "id_invalid_url" = "Неправильний URL";
 "id_is_a_noncustodial" = "керується тільки власником";
@@ -337,7 +349,6 @@
 "id_privacy_policy" = "Політика конфіденційності";
 "id_problem_with_key_1s" = "Проблема з ключем %1$@";
 "id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
-"id_providing_an_email_enables" = "Надання електронної адреси дозволяє отримувати повідомлення і відновлювати транзакції.";
 "id_proxy_settings" = "НАЛАШТУВАННЯ ПРОКСІ-СЕРВЕРУ";
 "id_qr_scanner" = "QR-сканер";
 "id_receive" = "Отримати";
@@ -351,6 +362,7 @@
 "id_recovery_transaction_request" = "Запит про транзакцію відновлення надіслано";
 "id_recovery_transactions" = "Транзакції відновлення";
 "id_recovery_words" = "Слова відновлення";
+"id_redeem_your_deposited_funds" = "Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.";
 "id_redeposited" = "Внесений повторно";
 "id_reference_exchange_rate" = "Курс обміну";
 "id_refresh" = "Оновити";
@@ -367,6 +379,7 @@
 "id_reset_spv" = "Скинути SPV";
 "id_resetting_your_twofactor_takes" = "Скидання двофакторки триватиме мінімум 12 місяців. Якщо ви впевнені, що втратили свою двофакторку,  вкажіть нову адресу електронної пошти нижче, щоб здійснити перезавантаження.";
 "id_restore" = "Відновити";
+"id_restore_a_blockstream_green" = "Restore a Blockstream Green wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream Green app.";
 "id_restore_green_wallet" = "Відновити Green-гаманець";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_review" = "Огляд";
@@ -391,6 +404,7 @@
 "id_select_asset" = "Select asset";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
 "id_select_network" = "Оберіть мережу";
+"id_select_the_s_app_on_your_ledger" = "Select the %@ app on your Ledger and retry.";
 "id_select_word_number_d" = "Виберіть слово номер %d";
 "id_send" = "Надіслати";
 "id_send_all_funds" = "Надіслати всі кошти";
@@ -406,14 +420,17 @@
 "id_set_an_email_address_to_receive" = "Set an email address to receive transaction notifications";
 "id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "Встановити розмір комісії";
+"id_set_locktime" = "Set Locktime";
 "id_set_twofactor_threshold" = "Встановити двофакторний поріг";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
+"id_set_up_an_email_to_get" = "Set up an email to get pre-signed transactions for recovery. Email notifications contain your encrypted recovery data.";
 "id_set_up_credentials_to_access_in" = "Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app";
 "id_set_up_pgp_key_for" = "Встановити PGP-ключ для зв'язку";
 "id_set_up_twofactor_authentication" = "Встановити двофакторну аутентифікацію";
 "id_set_up_watchonly" = "Налаштувати холодний гаманець";
 "id_set_up_watchonly_credentials" = "Встановити параметри холодного гаманця";
+"id_set_wallet_name" = "Set wallet name";
 "id_setting_updated" = "Налаштування оновлене";
 "id_settings" = "Налаштування";
 "id_setup_pin" = "Встановити PIN-код";
@@ -462,9 +479,11 @@
 "id_thank_you_for_downloading_green" = "Дякуємо вам за завантаження гаманця Green! Будь ласка, залиште свій відгук, якщо у вас буде така можливість";
 "id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "Проблеми з камерою. Можливо, вам потрібно перезавантажити пристрій.";
+"id_the_default_value_is_90_days_if" = "The default value is 90 days. If you set an email, you will receive an updated copy of your recovery data.";
 "id_the_easier_safer_and_faster" = "простіший, безпечніший та більш швидкий гаманець";
 "id_the_hardware_wallet_you_are" = "Апаратний гаманець, який ви використовуєте, ще не підтримується";
 "id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
+"id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
 "id_the_password_cant_be_empty" = "Поле пароля не може залишатись порожнім";
 "id_the_recovery_key_below_will_not" = "Ключ відновлення більше не буде показано. Виконайте резервне копіювання для того, щоб завжди мати доступ до власних коштів. ";
 "id_the_source_code_is_available_at" = "The source code is available at %@";
@@ -493,6 +512,7 @@
 "id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "Спробувати зараз";
+"id_turn_on_bluetooth_to_connect" = "Turn on bluetooth to connect your hardware wallet.";
 "id_two_factor_authentication" = "ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ";
 "id_twofactor" = "ДВОФАКТОРНА АУТЕНТИФІКАЦІЯ";
 "id_twofactor_authentication" = "Двофакторна аутентифікація";
@@ -528,7 +548,6 @@
 "id_warning_resetting_twofactor" = "УВАГА: скидання двофакторної аутентифікації заблокує ваш гаманець";
 "id_warning_there_is_already_a" = "УВАГА: Надійшов запит на скидання двофакторної аутентифікації вашого гаманця. Якщо ви повторно надішлете запит з новим email-ом, ваш гаманець стане оскаржуваним, і, ймовірно, недоступним для вас назавжди.";
 "id_warning_wallet_locked_by" = "УВАГА: Гаманець заблоковано через двофакторне оскарження. Зверніться до служби підтримки за додатковою інформацією.";
-"id_warning_wallet_locked_for" = "УВАГА: Гаманець заблоковано для двофакторного скидання через %d днів. Зверніться до служби підтримки за додатковою інформацією.";
 "id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
 "id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
 "id_watchonly" = "Холодний гаманець";
@@ -550,7 +569,6 @@
 "id_years" = "років";
 "id_you_are_not_connected" = "З'єднання відсутнє";
 "id_you_are_not_connected_please" = "Ви не підключені, будь ласка, зачекайте";
-"id_you_are_not_connected_to_the" = "Ви не підключені до мережі Інтернет. Підключіться і повторіть спробу.";
 "id_you_are_now_connected" = "З'єднання є";
 "id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "Ваші кошти у вас під контролем";
@@ -567,5 +585,6 @@
 "id_your_transactions_will_be_shown" = "Ваші транзакції будуть показані тут.";
 "id_your_twofactor_threshold_is_s" = "Ваша межа двофакторки %@.";
 "id_your_wallet_backup_is_made_of" = "Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.";
+"id_your_wallet_is_locked_for_a" = "Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %@ days.";
 "id_your_wallet_is_not_yet_fully" = "Ваш гаманець ще не надійно захищений.\nБудь ласка, увімкніть двофакторну аутентифікацію.";
 "id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";

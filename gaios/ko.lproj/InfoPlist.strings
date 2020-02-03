@@ -1,2 +1,4 @@
 NSFaceIDUsageDescription = "Green 은 지갑에 쉽게 접근하기 위하여 생체인증 기술을 사용합니다.";
+NSBluetoothAlwaysUsageDescription = "Green uses Bluetooth for communication with hardware wallets";
+NSBluetoothPeripheralUsageDescription = "Green uses Bluetooth to connect to hardware wallets";
 NSCameraUsageDescription = "Green은 카메라를 사용하여 QR 코드를 스캔합니다.";

@@ -63,7 +63,7 @@ extension PopoverMenuViewController: UITableViewDataSource, UITableViewDelegate 
                 cell.textLabel?.text = NSLocalizedString("id_watchonly", comment: "")
                 return cell
             case .hardwareWallets:
-                cell.textLabel?.text = NSLocalizedString("id_hardware_wallets", comment: "")
+                cell.textLabel?.text = NSLocalizedString("id_connect_hardware_wallet", comment: "")
                 return cell
             case .tempRestore:
                 cell.textLabel?.text = NSLocalizedString("id_restore_temporary_wallet", comment: "")

@@ -41,6 +41,7 @@
 "id_asset_details" = "Details asset";
 "id_asset_id" = "Asset-ID";
 "id_asset_name" = "Naam asset";
+"id_assets" = "Assets";
 "id_attempts_remaining_d" = "Resterende pogingen: %d";
 "id_auto_logout_timeout" = "Time-out auto-afmelding";
 "id_autolock_after" = "Auto-vergrendeling na";
@@ -59,16 +60,20 @@
 "id_call" = "Bellen";
 "id_camera_problem" = "Probleem met camera";
 "id_cancel" = "Annuleren";
+"id_cancel_a_reset_to_unlock_your" = "Cancel a reset to unlock your wallet if you recovered access to an old Two-Factor Authentication method.";
 "id_cancel_twofactor_reset" = "Resetten tweetrapsauthenticatie annuleren";
 "id_cannot_remove_enabled_network" = "Het ingeschakelde netwerk moet eerst worden uitgeschakeld voor het kan worden verwijderd";
 "id_cant_connect_to_this_url" = "Kan geen verbinding maken met URL";
 "id_change" = "VERANDEREN";
 "id_change_pin" = "Change PIN";
 "id_choose" = "Kiezen";
+"id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "Kies methode om actie te autoriseren";
 "id_choose_twofactor_authentication" = "Kies methode tweetrapsauthenticatie";
 "id_choose_your_network" = "Kies je netwerk";
 "id_clear" = "WISSEN";
+"id_click_to_receive_an_email_with" = "Click to receive an email with your encrypted recovery data.";
+"id_communication_timed_out_make" = "Communication timed out. Make sure the device is powered on and try again.";
 "id_completed" = "Voltooid";
 "id_confidential" = "Confidential";
 "id_confirm_code" = "Bevestig code";
@@ -76,11 +81,14 @@
 "id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "Bevestigd in %d blocks";
 "id_congratulations" = "Gefeliciteerd!";
+"id_connect_hardware_wallet" = "Connect hardware wallet";
 "id_connect_through_a_proxy" = "Via proxy verbinden";
 "id_connect_with_tor" = "Met Tor verbinden";
 "id_connecting_to_a_trusted_node" = "Om met een vertrouwde node via Tor te verbinden, moet je eerst de proxyinstellingen in de app en een Socks5-proxy instellen (Orbot-app voor Android)";
 "id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Door te verbinden met Tor (.onion) nodes, verzeker je jezelf van maximale privacy en veiligheid. Druk op \"OK\" om door te gaan.";
+"id_connection_failed" = "Connection failed";
+"id_connection_to_device_failed" = "Connection to device failed! Move closer to the device and try again.";
 "id_contact_support_at_s_or_visit_s" = "Contact support at %@ or visit %@";
 "id_continue" = "Doorgaan";
 "id_copied_to_clipboard" = "Copied to clipboard";
@@ -192,6 +200,8 @@
 "id_green_only_supports_one_pin_for" = "Green ondersteunt maar één PIN voor elk netwerk. Nieuwe wallets vereisen een woordenlijst bij elke aanmelding.";
 "id_green_only_supports_one_pin_per" = "Green ondersteunt maar één PIN per netwerk. Om een nieuwe PIN voor deze wallet in te stellen, moet eerst de PIN van je originele wallet worden uitgeschakeld.";
 "id_green_uses_biometric" = "Green ondersteunt biometrische authenticatie voor een makkelijk te gebruiken wallet";
+"id_green_uses_bluetooth_for" = "Green uses Bluetooth for communication with hardware wallets";
+"id_green_uses_bluetooth_to_connect" = "Green uses Bluetooth to connect to hardware wallets";
 "id_green_uses_multisig_with_one" = "Green gebruikt multisig met één signature van je apparaat, en één signature van de servers van Blockstream. Het instellen van tweetrapsauthenticatie zorgt voor meer veiligheid bij het verkrijgen van de signature van de server.";
 "id_hardware_wallet_support_for" = "Er verschijnt binnenkort ondersteuning voor Confidential Transactions via hardware wallets.";
 "id_hash" = "Hash";
@@ -218,6 +228,7 @@
 "id_invalid_mnemonic" = "Ongeldige woordenlijst";
 "id_invalid_mnemonic_must_be_24_or" = "Ongeldige woordenlijst (24 of 27 woorden vereist)";
 "id_invalid_network_configuration" = "Ongeldige netwerkconfiguratie";
+"id_invalid_payment_request_assetid" = "Invalid payment request, AssetID has to be specified";
 "id_invalid_pgp_key" = "Ongeldige PGP-sleutel";
 "id_invalid_phone_number_format" = "Ongeldig telefoonnummer";
 "id_invalid_pin_remaining_attempts" = "Ongeldige PIN. Resterende pogingen: %1$d.";
@@ -225,6 +236,7 @@
 "id_invalid_pin_you_have_1d" = "Ongeldige PIN, je hebt nog %1$d poging(en)";
 "id_invalid_private_key" = "Ongeldige privé-sleutel";
 "id_invalid_replacement_fee_rate" = "Ongeldig vervangend tarief";
+"id_invalid_status_check_that_your" = "Invalid status. Check that your device is unlocked and try again.";
 "id_invalid_twofactor_code" = "Ongeldige code tweetrapsauthenticatie";
 "id_invalid_url" = "Ongeldige URL";
 "id_is_a_noncustodial" = "is een zelf-management";
@@ -337,7 +349,6 @@
 "id_privacy_policy" = "Privacybeleid";
 "id_problem_with_key_1s" = "Probleem met sleutel %1$@";
 "id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
-"id_providing_an_email_enables" = "Door een e-mailadres toe te voegen, wordt het mogelijk om notificaties te ontvangen en transacties te herstellen.";
 "id_proxy_settings" = "PROXYINSTELLINGEN";
 "id_qr_scanner" = "QR-scanner";
 "id_receive" = "Ontvangen";
@@ -351,6 +362,7 @@
 "id_recovery_transaction_request" = "Verzoek hersteltransactie verzonden";
 "id_recovery_transactions" = "Hersteltransacties";
 "id_recovery_words" = "Herstelwoorden";
+"id_redeem_your_deposited_funds" = "Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.";
 "id_redeposited" = "Opnieuw gestort";
 "id_reference_exchange_rate" = "Standaard wisselkoers";
 "id_refresh" = "Vernieuwen";
@@ -367,6 +379,7 @@
 "id_reset_spv" = "SPV resetten";
 "id_resetting_your_twofactor_takes" = "Het resetten van de tweetrapsauthenticatie duurt minimaal 12 maanden. Als je er zeker van bent dat je je tweetrapsauthenticatie bent kwijtgeraakt, vul dan hieronder een nieuw e-mailadres in om de reset te ontvangen.";
 "id_restore" = "Herstellen";
+"id_restore_a_blockstream_green" = "Restore a Blockstream Green wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream Green app.";
 "id_restore_green_wallet" = "Green Wallet herstellen";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_review" = "Overzicht";
@@ -391,6 +404,7 @@
 "id_select_asset" = "Selecteer asset";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
 "id_select_network" = "Netwerk selecteren";
+"id_select_the_s_app_on_your_ledger" = "Select the %@ app on your Ledger and retry.";
 "id_select_word_number_d" = "Selecteer woord nummer %d";
 "id_send" = "Verzenden";
 "id_send_all_funds" = "Alles verzenden";
@@ -406,14 +420,17 @@
 "id_set_an_email_address_to_receive" = "Set an email address to receive transaction notifications";
 "id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "Aangepast transactietarief instellen";
+"id_set_locktime" = "Set Locktime";
 "id_set_twofactor_threshold" = "Limiet tweetrapsauthenticatie instellen";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
+"id_set_up_an_email_to_get" = "Set up an email to get pre-signed transactions for recovery. Email notifications contain your encrypted recovery data.";
 "id_set_up_credentials_to_access_in" = "Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app";
 "id_set_up_pgp_key_for" = "PGP-sleutel voor communicatie instellen";
 "id_set_up_twofactor_authentication" = "Tweetrapsauthenticatie instellen";
 "id_set_up_watchonly" = "Watch-only instellen";
 "id_set_up_watchonly_credentials" = "Watch-only instellen voor deze wallet";
+"id_set_wallet_name" = "Set wallet name";
 "id_setting_updated" = "Instellingen bijgewerkt";
 "id_settings" = "Instellingen";
 "id_setup_pin" = "PIN instellen";
@@ -462,9 +479,11 @@
 "id_thank_you_for_downloading_green" = "Bedankt voor het downloaden van Green! We zouden een beoordeling op prijs stellen.";
 "id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "Er zijn problemen met de camera. Het is wellicht nodig om het apparaat opnieuw te starten.";
+"id_the_default_value_is_90_days_if" = "The default value is 90 days. If you set an email, you will receive an updated copy of your recovery data.";
 "id_the_easier_safer_and_faster" = "de simpelere, veiligere, en snellere wallet";
 "id_the_hardware_wallet_you_are" = "De hardware wallet die je gebruikt wordt niet ondersteund";
 "id_the_network_selected_on_the" = "Het geselecteerde netwerk op de Green-app verschilt van wat er is geselecteerd op de hardware wallet. Selecteer hetzelfde netwerk op beide apparaten.";
+"id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
 "id_the_password_cant_be_empty" = "Het wachtwoord mag niet leeg zijn";
 "id_the_recovery_key_below_will_not" = "De onderstaande herstelsleutel zal niet opnieuw worden getoond. Maak er nu een veilige back-up van om te zorgen dat je altijd toegang hebt tot je bezittingen.";
 "id_the_source_code_is_available_at" = "The source code is available at %@";
@@ -493,6 +512,7 @@
 "id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "Nu proberen";
+"id_turn_on_bluetooth_to_connect" = "Turn on bluetooth to connect your hardware wallet.";
 "id_two_factor_authentication" = "TWEETRAPSAUTHENTICATIE";
 "id_twofactor" = "TWEETRAPSAUTHENTICATIE";
 "id_twofactor_authentication" = "Tweetrapsauthenticatie";
@@ -528,7 +548,6 @@
 "id_warning_resetting_twofactor" = "WAARSCHUWING: het resetten van tweetrapsauthenticatie vergrendelt je wallet";
 "id_warning_there_is_already_a" = "WAARSCHUWING: er is al een verzoek gaande om je tweetrapsauthenticatie te resetten. Als je het nu aanvraagt met een nieuw e-mailadres, ontstaat er een dispuut en wordt je wallet waarschijnlijk permanent onbeschikbaar.";
 "id_warning_wallet_locked_by" = "WAARSCHUWING: wallet vergrendeld door dispuut tweetrapsauthenticatie. Neem contact op met onze klantendienst voor meer informatie.";
-"id_warning_wallet_locked_for" = "WAARSCHUWING: wallet vergrendeld voor resetten tweetrapsauthenticatie in %d dagen. Neem contact op met onze klantendienst voor meer informatie.";
 "id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
 "id_warning_you_need_a_positive" = "Waarschuwing! Je hebt een positieve L-BTC-balans nodig om transacties te versturen.";
 "id_watchonly" = "Watch-only";
@@ -550,7 +569,6 @@
 "id_years" = "jaar";
 "id_you_are_not_connected" = "Je bent niet verbonden";
 "id_you_are_not_connected_please" = "Een moment, je bent niet verbonden";
-"id_you_are_not_connected_to_the" = "Je bent niet verbonden met het internet. Maak verbinding en probeer het opnieuw.";
 "id_you_are_now_connected" = "Je bent nu verbonden";
 "id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "Je hebt toegang tot je balans";
@@ -567,5 +585,6 @@
 "id_your_transactions_will_be_shown" = "Je transacties verschijnen hier.";
 "id_your_twofactor_threshold_is_s" = "Je limiet voor tweetrapsauthenticatie is %@.";
 "id_your_wallet_backup_is_made_of" = "Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.";
+"id_your_wallet_is_locked_for_a" = "Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %@ days.";
 "id_your_wallet_is_not_yet_fully" = "Je wallet is nog niet volledig beveiligd.\nSchakel tweetrapsauthenticatie in.";
 "id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";

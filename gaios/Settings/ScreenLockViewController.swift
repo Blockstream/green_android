@@ -137,7 +137,7 @@ class ScreenLockViewController: UIViewController {
             self.stopAnimating()
         }.catch { error in
             if let err = error as? GaError, err != GaError.GenericError {
-                self.onAuthError(message: NSLocalizedString("id_you_are_not_connected_to_the", comment: ""))
+                self.onAuthError(message: NSLocalizedString("id_connection_failed", comment: ""))
             } else if let err = error as? AuthenticationTypeHandler.AuthError {
                 self.onBioAuthError(message: err.localizedDescription)
             } else if !error.localizedDescription.isEmpty {

@@ -1,2 +1,4 @@
 NSFaceIDUsageDescription = "Green使用生物识别验证来使得用户能够更轻松地打开钱包";
+NSBluetoothAlwaysUsageDescription = "Green uses Bluetooth for communication with hardware wallets";
+NSBluetoothPeripheralUsageDescription = "Green uses Bluetooth to connect to hardware wallets";
 NSCameraUsageDescription = "请使用摄像头扫描二维码";

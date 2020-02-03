@@ -156,7 +156,7 @@ class ReceiveBtcViewController: KeyboardViewController {
             self.content.walletAddressLabel.text = uri
             self.content.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: self.content.walletQRCode.frame)
         }.catch { _ in
-            Toast.show(NSLocalizedString("id_you_are_not_connected_to_the", comment: ""), timeout: Toast.SHORT)
+            Toast.show(NSLocalizedString("id_connection_failed", comment: ""), timeout: Toast.SHORT)
         }
     }
 

@@ -22,7 +22,7 @@ class AuthenticationTypeHandler {
                 case .PasscodeNotSet:
                     return NSLocalizedString("id_set_up_a_passcode_for_your_ios", comment: "")
                 case .ConnectionFailed:
-                    return NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+                    return NSLocalizedString("id_connection_failed", comment: "")
                 case .KeychainError(let status):
                     if #available(iOS 11.3, *) {
                         let text = SecCopyErrorMessageString(status, nil) ?? "" as CFString

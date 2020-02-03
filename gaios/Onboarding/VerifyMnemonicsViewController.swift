@@ -112,7 +112,7 @@ class VerifyMnemonicsViewController: UIViewController {
         }.catch { error in
             let message: String
             if let err = error as? GaError, err != GaError.GenericError {
-                message = NSLocalizedString("id_you_are_not_connected_to_the", comment: "")
+                message = NSLocalizedString("id_connection_failed", comment: "")
             } else {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }

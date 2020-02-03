@@ -26,7 +26,7 @@ class HardwareWalletScanViewController: UIViewController {
             scanningDispose = scan()
             return
         case .poweredOff:
-            showError("Turn on bleutooth from System Settings")
+            showError(NSLocalizedString("id_turn_on_bluetooth_to_connect", comment: ""))
         default:
             break
         }
@@ -133,18 +133,18 @@ extension HardwareWalletScanViewController {
                 switch err {
                 case is BluetoothError:
                     let bleErr = err as? BluetoothError
-                    self.showError("Bluetooth error: \(bleErr?.localizedDescription ?? "")")
+                    self.showError(NSLocalizedString("id_communication_timed_out_make", comment: "") + ": \(bleErr?.localizedDescription ?? "")")
                 case RxError.timeout:
-                    self.showError("Communication with the device timed out. Make sure the unit is powered on, move closer to it, and try again.")
+                    self.showError(NSLocalizedString("id_communication_timed_out_make", comment: ""))
                 case DeviceError.dashboard:
-                    self.showError("Open \(self.network()) app on your Ledger")
+                    self.showError(String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
                 case DeviceError.wrong_app:
-                    self.showError("Quit current app and open \(self.network()) app on your Ledger")
+                self.showError(String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
                 case is AuthenticationTypeHandler.AuthError:
                     let authErr = err as? AuthenticationTypeHandler.AuthError
                     self.showError(authErr?.localizedDescription ?? "")
                 case is Ledger.SWError:
-                    self.showError("Invalid status. Check device is unlocked and try again.")
+                    self.showError(NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
                 default:
                     self.showError(err.localizedDescription)
                 }

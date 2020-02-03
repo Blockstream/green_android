@@ -41,6 +41,7 @@
 "id_asset_details" = "Chi tiết tài sản";
 "id_asset_id" = "Số ID tài sản";
 "id_asset_name" = "Tên tài sản";
+"id_assets" = "Assets";
 "id_attempts_remaining_d" = "Nỗ lực còn lại: %d";
 "id_auto_logout_timeout" = "Thời gian tự đăng xuất";
 "id_autolock_after" = "Tự khoá sau thời gian";
@@ -59,16 +60,20 @@
 "id_call" = "Gọi";
 "id_camera_problem" = "Camera có vấn đề";
 "id_cancel" = "Hủy";
+"id_cancel_a_reset_to_unlock_your" = "Cancel a reset to unlock your wallet if you recovered access to an old Two-Factor Authentication method.";
 "id_cancel_twofactor_reset" = "Hủy việc reset cài đặt bảo mật 2 lớp";
 "id_cannot_remove_enabled_network" = "Không thể loại bỏ mạng lưới đang sử dụng, làm ơn tắt nó trước.";
 "id_cant_connect_to_this_url" = "Không thể nối tới địa chỉ URL";
 "id_change" = "THAY ĐỔI";
 "id_change_pin" = "Change PIN";
 "id_choose" = "Chọn";
+"id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "Chọn phương pháp cấp ủy quyền cho hành động‭";
 "id_choose_twofactor_authentication" = "Chọn phương pháp được ủy quyền để bảo mật 2 lớp";
 "id_choose_your_network" = "Chọn Mạng của bạn";
 "id_clear" = "XÓA";
+"id_click_to_receive_an_email_with" = "Click to receive an email with your encrypted recovery data.";
+"id_communication_timed_out_make" = "Communication timed out. Make sure the device is powered on and try again.";
 "id_completed" = "Hoàn thành";
 "id_confidential" = "Bí mật";
 "id_confirm_code" = "Mã xác nhận";
@@ -76,11 +81,14 @@
 "id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "Xác nhận trong %d khối tiếp theo";
 "id_congratulations" = "Chúc mừng bạn!";
+"id_connect_hardware_wallet" = "Connect hardware wallet";
 "id_connect_through_a_proxy" = "Nối thông qua một địa chỉ proxy";
 "id_connect_with_tor" = "Kết nối qua mạng Tor";
 "id_connecting_to_a_trusted_node" = "Kết nối với nút đáng tin cậy thông qua Tor yêu cầu bật cài đặt proxy trong ứng dụng trước khi đăng nhập và proxy  SockS5 (ứng dụng Orbot cho Android)";
 "id_connecting_to_peers" = "Đang nối với các nốt mạng khác...";
 "id_connecting_to_tor_onion_nodes" = "Đang nối tới nốt mạng Tor( có tên miền .onion)  cho phép bảo mật và quyền riêng tư tối đa. Ấn \"OK\" để tiếp tục.";
+"id_connection_failed" = "Connection failed";
+"id_connection_to_device_failed" = "Connection to device failed! Move closer to the device and try again.";
 "id_contact_support_at_s_or_visit_s" = "Contact support at %@ or visit %@";
 "id_continue" = "Tiếp tục";
 "id_copied_to_clipboard" = "Copied to clipboard";
@@ -192,6 +200,8 @@
 "id_green_only_supports_one_pin_for" = "Green chỉ hổ trợ một mã số PIN cho mỗi mạng. Các ví mới sẽ yêu cầu chữ gợi nhớ mnemonic mỗi lần bạn đăng nhập.";
 "id_green_only_supports_one_pin_per" = "Green chỉ hỗ trợ một mã số PIN cho một thiết bị. Để đặt mã PIN cho ví này, tắt mã PIN trong ví gốc bạn trước tiên.";
 "id_green_uses_biometric" = "Green sử dụng xác thực sinh trắc để cho phép vào ví dễ dàng";
+"id_green_uses_bluetooth_for" = "Green uses Bluetooth for communication with hardware wallets";
+"id_green_uses_bluetooth_to_connect" = "Green uses Bluetooth to connect to hardware wallets";
 "id_green_uses_multisig_with_one" = "Green sử dụng ví nhiều khóa với một khóa tạo bởi thiết bị của bạn, và một khóa bới máy chủ của Blockstream. Đặt cài  đặt bảo mật 2 lớp để cho phép thêm lớp bảo mật của phía máy chủ.";
 "id_hardware_wallet_support_for" = "Việc hỗ trợ ví cứng để giao dịch bí mật sẽ có trong tương lai gần";
 "id_hash" = "Băm Hash";
@@ -218,6 +228,7 @@
 "id_invalid_mnemonic" = "Chữ gợi nhớ mnemonic không hợp lệ";
 "id_invalid_mnemonic_must_be_24_or" = "Chữ gợi nhớ mnemonic không hợp lệ ( phải có 24 hoặc 27 từ )";
 "id_invalid_network_configuration" = "Cài đặt mạng không hợp lệ";
+"id_invalid_payment_request_assetid" = "Invalid payment request, AssetID has to be specified";
 "id_invalid_pgp_key" = "Khóa PGP không hợp lệ";
 "id_invalid_phone_number_format" = "Định dạng số Điện thoại không hợp lệ";
 "id_invalid_pin_remaining_attempts" = "Mã PIN không hợp lệ. Số lần thử còn lại: %1$d";
@@ -225,6 +236,7 @@
 "id_invalid_pin_you_have_1d" = "Mã PIN không hợp lệ, bạn còn %1$d lần nhập nữa";
 "id_invalid_private_key" = "Khóa riêng tư không hợp lệ";
 "id_invalid_replacement_fee_rate" = "Lệ phí thay thế không hợp lệ";
+"id_invalid_status_check_that_your" = "Invalid status. Check that your device is unlocked and try again.";
 "id_invalid_twofactor_code" = "Mã xác thực 2 lớp không hợp lệ";
 "id_invalid_url" = "Đường dẫn URL không hợp lệ";
 "id_is_a_noncustodial" = "là không tạm giữ tiền";
@@ -337,7 +349,6 @@
 "id_privacy_policy" = "Chính sách bảo mật";
 "id_problem_with_key_1s" = "Có vấn đề với khóa %1$@";
 "id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
-"id_providing_an_email_enables" = "Cung cấp một địa chỉ thư điện tử để gửi thông báo và phục hồi  giao dịch.";
 "id_proxy_settings" = "CÀI ĐẶT PROXY";
 "id_qr_scanner" = "Máy quét mã QR";
 "id_receive" = "Nhận";
@@ -351,6 +362,7 @@
 "id_recovery_transaction_request" = "Yêu cầu phục hồi giao dịch đã gửi di";
 "id_recovery_transactions" = "Các giao dich khôi phục";
 "id_recovery_words" = "Các từ  khôi phục";
+"id_redeem_your_deposited_funds" = "Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.";
 "id_redeposited" = "Gửi tiền lại";
 "id_reference_exchange_rate" = "Tỉ giá sàn tham chiếu";
 "id_refresh" = "Làm mới";
@@ -367,6 +379,7 @@
 "id_reset_spv" = "Cài lại xác minh thanh toán đơn giản SPV";
 "id_resetting_your_twofactor_takes" = "Việc cài lại xác minh 2 bước cần ít nhất 12 tháng. Nếu bạn chắc là bạn đã mất xác thực 2 bước, làm ơn cung cấp địa chỉ email mới để nhận link cài lại.";
 "id_restore" = "Khôi phục";
+"id_restore_a_blockstream_green" = "Restore a Blockstream Green wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream Green app.";
 "id_restore_green_wallet" = "Khôi phục ví Green";
 "id_restore_temporary_wallet" = "Khôi phục ví tạm thời";
 "id_review" = "Xem lại";
@@ -391,6 +404,7 @@
 "id_select_asset" = "Chọn tài sản số";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
 "id_select_network" = "Chọn mạng";
+"id_select_the_s_app_on_your_ledger" = "Select the %@ app on your Ledger and retry.";
 "id_select_word_number_d" = "Chọn chữ cái số %d";
 "id_send" = "Gửi";
 "id_send_all_funds" = "Gửi tất cả tiền";
@@ -406,14 +420,17 @@
 "id_set_an_email_address_to_receive" = "Set an email address to receive transaction notifications";
 "id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "Đặt phí tùy biến";
+"id_set_locktime" = "Set Locktime";
 "id_set_twofactor_threshold" = "Đặt ngưỡng xác thực 2 lớp";
 "id_set_up_a_passcode_for_your_ios" = "Thiết lập mật mã cho thiết bị iOS của bạn để đặt mã PIN cho ví Blockstream Green";
 "id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
+"id_set_up_an_email_to_get" = "Set up an email to get pre-signed transactions for recovery. Email notifications contain your encrypted recovery data.";
 "id_set_up_credentials_to_access_in" = "Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app";
 "id_set_up_pgp_key_for" = "Cài đặt khóa PGP để trao đổi thông tin";
 "id_set_up_twofactor_authentication" = "Cài đặt xác thực 2 lớp";
 "id_set_up_watchonly" = "Cài đặt ví chỉ xem";
 "id_set_up_watchonly_credentials" = "Thiết lập thông tin xác thực chỉ xem cho ví này";
+"id_set_wallet_name" = "Set wallet name";
 "id_setting_updated" = "Cài đặt đã được cập nhật";
 "id_settings" = "Cài đặt";
 "id_setup_pin" = "Cài mã PIN";
@@ -462,9 +479,11 @@
 "id_thank_you_for_downloading_green" = "Cảm ơn bạn đã tải xuống ví Green! Làm ơn để lại xem xét đánh giá của bạn khi bạn có cơ hội";
 "id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "Camera có vấn đề. Bạn có lẽ cần khởi động lại thiết bị.";
+"id_the_default_value_is_90_days_if" = "The default value is 90 days. If you set an email, you will receive an updated copy of your recovery data.";
 "id_the_easier_safer_and_faster" = "Ví dễ hơn, an toàn hơn và nhanh hơn";
 "id_the_hardware_wallet_you_are" = "VÍ cứng bạn không được hổ trợ";
 "id_the_network_selected_on_the" = "Mạng được chọn trên ứng dụng Green khác với mạng được chọn trên ví  cứng. Chọn cùng một mạng trên cả hai thiết bị.";
+"id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
 "id_the_password_cant_be_empty" = "Mật khẩu không thể trống";
 "id_the_recovery_key_below_will_not" = "Khóa khôi phục bên dưới không hiện lại lần thứ 2. Làm ơn lưu trữ sao lưu cẩn thận nó từ bây giờ để chắc chắn bạn luôn mở được tiền của bạn.";
 "id_the_source_code_is_available_at" = "The source code is available at %@";
@@ -493,6 +512,7 @@
 "id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "Thử bây giờ";
+"id_turn_on_bluetooth_to_connect" = "Turn on bluetooth to connect your hardware wallet.";
 "id_two_factor_authentication" = "XÁC THỰC 2 LỚP";
 "id_twofactor" = "XÁC THỰC 2 LỚP";
 "id_twofactor_authentication" = "Xác thực 2 lớp";
@@ -528,7 +548,6 @@
 "id_warning_resetting_twofactor" = "CẢNH BÁO: đang thiết lập lại xác thực 2 lớp sẽ khóa ví của bạn";
 "id_warning_there_is_already_a" = "CẢNH BẢO: đã có yêu cầu đặt lại xác thực 2 lớp cho ví của bạn. Nếu bạn bây giờ yêu cầu một email mới, ví của bạn sẽ trở thành tranh chấp và bạn sẽ mất vĩnh viễn ví tiền của bạn.";
 "id_warning_wallet_locked_by" = "CẢNH BÁO: Ví đã bị khóa bới việc tranh chấp xác thực 2 lớp. Liên lạc với bộ phận hổ trợ để có thêm thông tin.";
-"id_warning_wallet_locked_for" = "CẢNH BÁO: ví bạn bị khóa để đặt lại xác thực 2 lớp trong thời gian %dngày. Liên lạc với bộ phận hổ trợ để có thêm thông tin";
 "id_warning_watchonly_credentials" = "Cảnh báo: Thông tin chỉ xem sẽ được lưu trên thiết bị của bạn";
 "id_warning_you_need_a_positive" = "Cảnh báo!Bạn cần số dư L-BTC dương để có thể gửi giao dịch.";
 "id_watchonly" = "Ví chỉ xem";
@@ -550,7 +569,6 @@
 "id_years" = "năm";
 "id_you_are_not_connected" = "Bạn không kết nối";
 "id_you_are_not_connected_please" = "Bạn không có kết nối, làm ơn chờ đợi";
-"id_you_are_not_connected_to_the" = "Bạn không có kết nối internet. Làm ơn nối và thử lại.";
 "id_you_are_now_connected" = "Bạn đã kết nối";
 "id_you_cannot_create_or_restore_a" = "Bạn không thể tạo hoặc khôi phục ví trên  %@ vì bạn đã có ví được bảo vệ bằng mã PIN.";
 "id_you_have_control_on_your_funds" = "Bạn có quyền kiểm soát tiền của bạn";
@@ -567,5 +585,6 @@
 "id_your_transactions_will_be_shown" = "Các giao dịch của bạn được hiện ra ở đây";
 "id_your_twofactor_threshold_is_s" = "Ngưỡng xác thực 2 lớp của bạn là %@.";
 "id_your_wallet_backup_is_made_of" = "Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.";
+"id_your_wallet_is_locked_for_a" = "Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %@ days.";
 "id_your_wallet_is_not_yet_fully" = "Ví của bạn chưa bảo mật đầy đủ\nLàm ơn kích hoạt xác thực 2 lớp";
 "id_your_watchonly_username_and" = "Tên người dùng và mật khẩu chỉ xem của bạn sẽ được lưu trữ không được mã hóa trên thiết bị này. Nếu thiết bị của bạn bị xâm phạm, bên thứ ba có thể truy cập vào lịch sử giao dịch của bạn. Nhấn \"OK\" để tiếp tục.";

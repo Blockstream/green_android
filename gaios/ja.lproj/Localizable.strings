@@ -41,6 +41,7 @@
 "id_asset_details" = "Asset Details";
 "id_asset_id" = "Asset ID";
 "id_asset_name" = "Asset Name";
+"id_assets" = "Assets";
 "id_attempts_remaining_d" = "残り: %d 回";
 "id_auto_logout_timeout" = "自動ログアウト時間";
 "id_autolock_after" = "オートロック制限";
@@ -59,16 +60,20 @@
 "id_call" = "通話する";
 "id_camera_problem" = "カメラ問題";
 "id_cancel" = "キャンセル";
+"id_cancel_a_reset_to_unlock_your" = "Cancel a reset to unlock your wallet if you recovered access to an old Two-Factor Authentication method.";
 "id_cancel_twofactor_reset" = "2段階認証の解除";
 "id_cannot_remove_enabled_network" = "使用中のネットワークは削除できません。未使用に変更後もう一度お試しください。";
 "id_cant_connect_to_this_url" = "URLに接続できません。";
 "id_change" = "変更";
 "id_change_pin" = "Change PIN";
 "id_choose" = "選択";
+"id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "認可方法を選択する";
 "id_choose_twofactor_authentication" = "2段階認証方法の選択";
 "id_choose_your_network" = "ネットワークの選択";
 "id_clear" = "クリア";
+"id_click_to_receive_an_email_with" = "Click to receive an email with your encrypted recovery data.";
+"id_communication_timed_out_make" = "Communication timed out. Make sure the device is powered on and try again.";
 "id_completed" = "完了";
 "id_confidential" = "Confidential";
 "id_confirm_code" = "コードを確認";
@@ -76,11 +81,14 @@
 "id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "Confirmation in %d blocks";
 "id_congratulations" = "おめでとうございます。";
+"id_connect_hardware_wallet" = "Connect hardware wallet";
 "id_connect_through_a_proxy" = "プロキシを使って接続する";
 "id_connect_with_tor" = "Torを使って接続する";
 "id_connecting_to_a_trusted_node" = "Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)";
 "id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Tor(.onion)ノードに接続することで最高のセキュリティとプライバシーを保証します。このまま進めるには \"OK\" を押してください。";
+"id_connection_failed" = "Connection failed";
+"id_connection_to_device_failed" = "Connection to device failed! Move closer to the device and try again.";
 "id_contact_support_at_s_or_visit_s" = "Contact support at %@ or visit %@";
 "id_continue" = "進める";
 "id_copied_to_clipboard" = "Copied to clipboard";
@@ -192,6 +200,8 @@
 "id_green_only_supports_one_pin_for" = "Greenは各ネットワークにつきひとつのPINをサポートします。新規ウォレットはログインの度にmnemonicが必要となります。";
 "id_green_only_supports_one_pin_per" = "Green only supports one PIN per network. To set a PIN for this wallet, disable the PIN on your original wallet first.";
 "id_green_uses_biometric" = "Greenはウォレットへの簡単なアクセスの為に生体認証技術を使用します。";
+"id_green_uses_bluetooth_for" = "Green uses Bluetooth for communication with hardware wallets";
+"id_green_uses_bluetooth_to_connect" = "Green uses Bluetooth to connect to hardware wallets";
 "id_green_uses_multisig_with_one" = "GreenはBlockstreamのサーバーと貴方のデバイスで生成された署名の二つを活用しマルチ署名を利用します。2段階認証を設定する場合、サーバー側の署名のセキュリティにもう一段層加えることになります。";
 "id_hardware_wallet_support_for" = "Hardware wallet support for Confidential Transactions coming soon.";
 "id_hash" = "ハッシュ";
@@ -218,6 +228,7 @@
 "id_invalid_mnemonic" = "無効なmnemonic";
 "id_invalid_mnemonic_must_be_24_or" = "無効なmnemonic(24から27個の単語である必要があります)";
 "id_invalid_network_configuration" = "無効なネットワーク設定";
+"id_invalid_payment_request_assetid" = "Invalid payment request, AssetID has to be specified";
 "id_invalid_pgp_key" = "無効なPGPキー";
 "id_invalid_phone_number_format" = "無効な電話番号";
 "id_invalid_pin_remaining_attempts" = "無効なPIN. 残り%1$d 回";
@@ -225,6 +236,7 @@
 "id_invalid_pin_you_have_1d" = "無効なPIN、残り回数 %1$d 回";
 "id_invalid_private_key" = "無効な秘密鍵";
 "id_invalid_replacement_fee_rate" = "無効の手数料率";
+"id_invalid_status_check_that_your" = "Invalid status. Check that your device is unlocked and try again.";
 "id_invalid_twofactor_code" = "無効な2段階認証コード";
 "id_invalid_url" = "無効なURL";
 "id_is_a_noncustodial" = "保管されない";
@@ -337,7 +349,6 @@
 "id_privacy_policy" = "プライバシー政策";
 "id_problem_with_key_1s" = "キー%1$@ の問題";
 "id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
-"id_providing_an_email_enables" = "Eメールを入力すると告知事項を受け取ることができ、また、トランザクション・リカバリーもできます。";
 "id_proxy_settings" = "プロキシー設定";
 "id_qr_scanner" = "QRスキャナー";
 "id_receive" = "受け取る";
@@ -351,6 +362,7 @@
 "id_recovery_transaction_request" = "復元トランザクションが要請されました";
 "id_recovery_transactions" = "復元トランザクション";
 "id_recovery_words" = "リカバリー単語";
+"id_redeem_your_deposited_funds" = "Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.";
 "id_redeposited" = "再お預け";
 "id_reference_exchange_rate" = "取引レート参照先";
 "id_refresh" = "リフレッシュ";
@@ -367,6 +379,7 @@
 "id_reset_spv" = "SPVリセット";
 "id_resetting_your_twofactor_takes" = "2段階認証をリセットするには最低12ヶ月を要します。2段階認証に必要な情報を忘れたと確信する場合、リセットの為に新しいEメールアドレスをお知らせください。";
 "id_restore" = "修復";
+"id_restore_a_blockstream_green" = "Restore a Blockstream Green wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream Green app.";
 "id_restore_green_wallet" = "Greenウォレットの修復";
 "id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_review" = "レビュー";
@@ -391,6 +404,7 @@
 "id_select_asset" = "Select asset";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
 "id_select_network" = "ネットワーク選択";
+"id_select_the_s_app_on_your_ledger" = "Select the %@ app on your Ledger and retry.";
 "id_select_word_number_d" = "文字数の選択%d";
 "id_send" = "送金";
 "id_send_all_funds" = "全ての資金を送金する";
@@ -406,14 +420,17 @@
 "id_set_an_email_address_to_receive" = "Set an email address to receive transaction notifications";
 "id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "カスタム手数料の設定";
+"id_set_locktime" = "Set Locktime";
 "id_set_twofactor_threshold" = "Set Two-Factor threshold";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
+"id_set_up_an_email_to_get" = "Set up an email to get pre-signed transactions for recovery. Email notifications contain your encrypted recovery data.";
 "id_set_up_credentials_to_access_in" = "Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app";
 "id_set_up_pgp_key_for" = "コミュニケーションの為にPGPキーを設定する";
 "id_set_up_twofactor_authentication" = "2段階認証を設定する";
 "id_set_up_watchonly" = "監視-Onlyの設定";
 "id_set_up_watchonly_credentials" = "このウォレットの監視-Only証明書を設定する";
+"id_set_wallet_name" = "Set wallet name";
 "id_setting_updated" = "設定が保存されました。";
 "id_settings" = "設定";
 "id_setup_pin" = "PIN設定";
@@ -462,9 +479,11 @@
 "id_thank_you_for_downloading_green" = "Greenをダウンロードして下さり誠にありがとうございます。お時間があればレビューもお願いします。";
 "id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "カメラに問題が発生しました。デバイスの再起動をお願いします。";
+"id_the_default_value_is_90_days_if" = "The default value is 90 days. If you set an email, you will receive an updated copy of your recovery data.";
 "id_the_easier_safer_and_faster" = "より簡単、安全で早いウォレット";
 "id_the_hardware_wallet_you_are" = "ご使用中のハードウェア・ウォレットは現在支援されておりません。";
 "id_the_network_selected_on_the" = "The network selected on the Green app is different from the one selected on the hardware wallet. Select the same network on both devices.";
+"id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
 "id_the_password_cant_be_empty" = "パスワードが空欄です";
 "id_the_recovery_key_below_will_not" = "下の復元キーは二度とご覧になられません。資金のアクセスの為にバックアップをお願いします。";
 "id_the_source_code_is_available_at" = "The source code is available at %@";
@@ -493,6 +512,7 @@
 "id_transaction_status" = "Transaction status";
 "id_transactions" = "Transactions";
 "id_try_now" = "試す";
+"id_turn_on_bluetooth_to_connect" = "Turn on bluetooth to connect your hardware wallet.";
 "id_two_factor_authentication" = "2段階認証";
 "id_twofactor" = "2段階認証";
 "id_twofactor_authentication" = "2段階認証";
@@ -528,7 +548,6 @@
 "id_warning_resetting_twofactor" = "注意: 2段階認証を再設定する場合、ウォレットをロックすることになります。";
 "id_warning_there_is_already_a" = "警告: 2段階認証を再設定する要請が既にありました。新しいEメールアドレスで再要請する場合、紛争プロセスに進むことになり、ウォレットが永久的に使えない状態になる可能性があります。";
 "id_warning_wallet_locked_by" = "注意: ウォレットが2段階認証の紛争中です。サポートにお問い合わせして下さい。";
-"id_warning_wallet_locked_for" = "注意: ウォレットが2段階認証の再設定の為、%d 日後ロックされます。より詳しい情報はカスタマーサポートにお問い合わせ下さい。";
 "id_warning_watchonly_credentials" = "Warning: Watch-only credentials will be saved on your device";
 "id_warning_you_need_a_positive" = "Warning! You need a positive L-BTC balance to be able to send transactions.";
 "id_watchonly" = "監視-Only";
@@ -550,7 +569,6 @@
 "id_years" = "年";
 "id_you_are_not_connected" = "接続できません。";
 "id_you_are_not_connected_please" = "接続できません。しばらくお待ちください。";
-"id_you_are_not_connected_to_the" = "インターネットに接続されていません。接続後お試しください。";
 "id_you_are_now_connected" = "接続しました。";
 "id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
 "id_you_have_control_on_your_funds" = "資金は貴方によって完全に管理されます。";
@@ -567,5 +585,6 @@
 "id_your_transactions_will_be_shown" = "トランザクションはこちらから確認できます。";
 "id_your_twofactor_threshold_is_s" = "Your Two-Factor threshold is %@.";
 "id_your_wallet_backup_is_made_of" = "Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.";
+"id_your_wallet_is_locked_for_a" = "Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %@ days.";
 "id_your_wallet_is_not_yet_fully" = "ウォレットが安全ではありません。\n2段階認証を設定してください。";
 "id_your_watchonly_username_and" = "Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press \"OK\" to continue.";
