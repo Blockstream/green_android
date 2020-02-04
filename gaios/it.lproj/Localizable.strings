@@ -73,7 +73,7 @@
 "id_choose_your_network" = "Scegli la rete";
 "id_clear" = "CANCELLA";
 "id_click_to_receive_an_email_with" = "Clicca per ricevere una email contenente i tuoi dati per il recupero del wallet";
-"id_communication_timed_out_make" = "Comunicazione scaduta. Assicurati che il dispositivo sia accesso e riprova.";
+"id_communication_timed_out_make" = "Comunicazione scaduta. Assicurati che il dispositivo sia acceso e riprova.";
 "id_completed" = "Completo";
 "id_confidential" = "Confidenziale";
 "id_confirm_code" = "Conferma codice";
@@ -404,7 +404,7 @@
 "id_select_asset" = "Seleziona asset";
 "id_select_duration_of_twofactor" = "Seleziona la durata del Secondo Fattore d'Autenticazione per i tuoi coin. La nuova selezione verrà applicata a tutti i nuovi coin ricevuti.";
 "id_select_network" = "Scegli il network";
-"id_select_the_s_app_on_your_ledger" = "Selezione l'app %@ sul tuo Ledger e riprova.";
+"id_select_the_s_app_on_your_ledger" = "Seleziona l'app %@ sul tuo Ledger e riprova.";
 "id_select_word_number_d" = "Seleziona la parola numero %d";
 "id_send" = "Invia";
 "id_send_all_funds" = "Invia Tutti i Fondi";
