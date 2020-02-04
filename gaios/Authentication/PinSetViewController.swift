@@ -116,7 +116,10 @@ class PinSetViewController: UIViewController {
             }
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_ok", comment: ""), style: .default) { _ in
-                if self.mode == .restore {
+                switch self.mode {
+                case .create, .restore:
+                    self.navigationController?.popViewController(animated: true)
+                case .edit:
                     self.navigationController?.popToRootViewController(animated: true)
                 }
             })
