@@ -81,7 +81,7 @@ class SettingsViewController: UIViewController {
         if isWatchOnly {
             return [.network, .about]
         } else if isResetActive {
-            return [.network, .twoFactor, .about]
+            return [.network, .twoFactor, .security,.about]
         }
         return [.network, .account, .twoFactor, .security, .advanced, .about]
     }
@@ -217,7 +217,7 @@ class SettingsViewController: UIViewController {
         } else if !isWatchOnly && !isResetActive {
             return [mnemonic, autolock]
         } else {
-            return []
+            return isResetActive ? [mnemonic] : []
         }
     }
 
