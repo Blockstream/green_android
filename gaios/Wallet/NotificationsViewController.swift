@@ -27,12 +27,6 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         reloadData(nil)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        guard let controller = self.tabBarController as? TabViewController else { return }
-        controller.snackbar.isHidden = false
-    }
-
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let token = transactionToken {
@@ -41,8 +35,6 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         if let token = twoFactorResetToken {
             NotificationCenter.default.removeObserver(token)
         }
-        guard let controller = self.tabBarController as? TabViewController else { return }
-        controller.snackbar.isHidden = true
     }
 
     func reloadData(_ notification: Notification?) {

@@ -57,12 +57,6 @@ class TransactionsController: UITableViewController {
         handleRefresh()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        guard let controller = self.tabBarController as? TabViewController else { return }
-        controller.snackbar.isHidden = false
-    }
-
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
@@ -75,8 +69,6 @@ class TransactionsController: UITableViewController {
         if let token = assetsUpdatedToken {
             NotificationCenter.default.removeObserver(token)
         }
-        guard let controller = self.tabBarController as? TabViewController else { return }
-        controller.snackbar.isHidden = true
     }
 
     override func viewDidLayoutSubviews() {

@@ -43,11 +43,11 @@
             <objects>
                 <viewController storyboardIdentifier="notifications" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vNx-TR-xnv" customClass="NotificationsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mCE-9M-o95">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="499"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wlu-fe-63L">
-                                <rect key="frame" x="0.0" y="44" width="320" height="475"/>
+                                <rect key="frame" x="0.0" y="44" width="320" height="455"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <color key="separatorColor" name="customGreyDark"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -140,7 +140,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="TransactionsController" id="nnX-e3-FvS" customClass="TransactionsController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="lOc-MI-e19">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="519"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="499"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <color key="separatorColor" name="customGreyDark"/>
@@ -180,7 +180,9 @@
         <!--AssetsListTableViewController-->
         <scene sceneID="TfI-YR-20x">
             <objects>
-                <viewControllerPlaceholder storyboardName="Assets" referencedIdentifier="AssetsListTableViewController" id="fuN-54-EEf" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="Assets" referencedIdentifier="AssetsListTableViewController" id="fuN-54-EEf" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="0yg-Ud-yQb"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oGk-nC-Yp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6245" y="627"/>
@@ -190,7 +192,7 @@
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="R7F-mq-oqL" customClass="ReceiveBtcViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="UDg-yk-7Wh" customClass="ReceiveBtcView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="qlN-GG-xcs"/>
@@ -225,7 +227,7 @@
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="Toc-gk-72n" customClass="SystemMessageViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8yK-ot-Ile" customClass="SystemMessageView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="yMu-2w-bwU"/>
@@ -263,10 +265,83 @@
             </objects>
             <point key="canvasLocation" x="4399" y="1705"/>
         </scene>
-        <!--Tab View Controller-->
+        <!--Navigation Controller-->
+        <scene sceneID="IaK-fn-phY">
+            <objects>
+                <navigationController storyboardIdentifier="TabViewController" navigationBarHidden="YES" id="cNI-tS-uJU" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5BR-Ca-4jb">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="CjA-G8-x6K" kind="relationship" relationship="rootViewController" id="IIt-LF-QLk"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NWA-KT-Ozn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="428" y="752"/>
+        </scene>
+        <!--Container View Controller-->
+        <scene sceneID="UMu-Ls-yjZ">
+            <objects>
+                <viewController id="CjA-G8-x6K" customClass="ContainerViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="lIa-en-Hri">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Eyp-hM-WIP">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gue-4M-nav" userLabel="NetworkView">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="20"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Network status" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0yy-Sc-xJs">
+                                                <rect key="frame" x="20" y="0.0" width="280" height="20"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="0yy-Sc-xJs" secondAttribute="bottom" id="89x-e8-gIL"/>
+                                            <constraint firstAttribute="height" constant="20" id="D9q-uL-9W8"/>
+                                            <constraint firstItem="0yy-Sc-xJs" firstAttribute="leading" secondItem="Gue-4M-nav" secondAttribute="leading" constant="20" id="ZjK-8D-3CO"/>
+                                            <constraint firstItem="0yy-Sc-xJs" firstAttribute="top" secondItem="Gue-4M-nav" secondAttribute="top" id="ash-qp-4iK"/>
+                                            <constraint firstAttribute="trailing" secondItem="0yy-Sc-xJs" secondAttribute="trailing" constant="20" id="v10-C8-WDt"/>
+                                        </constraints>
+                                    </view>
+                                    <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GVC-MA-XMp">
+                                        <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                                        <connections>
+                                            <segue destination="a1Y-U2-SN0" kind="embed" id="O2x-hj-8f0"/>
+                                        </connections>
+                                    </containerView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="Eyp-hM-WIP" firstAttribute="leading" secondItem="qbj-po-6Ot" secondAttribute="leading" id="BtH-dR-aTV"/>
+                            <constraint firstItem="qbj-po-6Ot" firstAttribute="trailing" secondItem="Eyp-hM-WIP" secondAttribute="trailing" id="COR-2y-BgN"/>
+                            <constraint firstItem="qbj-po-6Ot" firstAttribute="bottom" secondItem="Eyp-hM-WIP" secondAttribute="bottom" id="IOC-Vo-s3g"/>
+                            <constraint firstItem="Eyp-hM-WIP" firstAttribute="top" secondItem="qbj-po-6Ot" secondAttribute="top" id="jSs-nv-qEO"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="qbj-po-6Ot"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="mJP-B9-rxm"/>
+                    <connections>
+                        <outlet property="networkText" destination="0yy-Sc-xJs" id="rBl-ho-m6i"/>
+                        <outlet property="networkView" destination="Gue-4M-nav" id="wNi-Zg-6on"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BLU-ca-SoF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1331.25" y="754.22535211267609"/>
+        </scene>
+        <!--Tab Bar Controller-->
         <scene sceneID="yZa-4t-FRc">
             <objects>
-                <tabBarController storyboardIdentifier="TabViewController" id="a1Y-U2-SN0" customClass="TabViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                <tabBarController id="a1Y-U2-SN0" propertyAccessControl="none" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="4Mg-Af-a3n"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" barStyle="black" translucent="NO" itemPositioning="fill" id="laP-MM-Auq">
                         <rect key="frame" x="0.0" y="975" width="768" height="49"/>
@@ -308,7 +383,9 @@
         <!--TransactionDetailViewController-->
         <scene sceneID="7vp-m2-ZHT">
             <objects>
-                <viewControllerPlaceholder storyboardName="TransactionDetail" referencedIdentifier="TransactionDetailViewController" id="4Ad-Du-Nja" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="TransactionDetail" referencedIdentifier="TransactionDetailViewController" id="4Ad-Du-Nja" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="2kZ-D3-DmN"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Fb-p9-zis" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6256" y="683"/>
@@ -339,7 +416,7 @@
         <image name="settings" width="25" height="25"/>
         <image name="settingsSelected" width="25" height="25"/>
         <namedColor name="customGreyDark">
-            <color red="0.19200000166893005" green="0.23100000619888306" blue="0.27099999785423279" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.19215686274509805" green="0.23137254901960785" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
