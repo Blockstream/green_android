@@ -34,17 +34,12 @@ class AccountCreateViewController: UIViewController {
         tableView.selectRow(at: IndexPath.init(row: 0, section: 0), animated: true, scrollPosition: .none)
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        nextButton.updateGradientLayerFrame()
-    }
-
     func configureView() {
-        nextButton.setGradient(true)
         if isReview {
             headerLabel.text = NSLocalizedString("id_review_account_information", comment: "")
             nextButton.setTitle(NSLocalizedString("id_add_new_account", comment: ""), for: .normal)
         } else {
+            nextButton.backgroundColor = UIColor.customTitaniumLight()
             nextButton.isUserInteractionEnabled = false
             headerLabel.text = NSLocalizedString("id_what_type_of_account_would_you", comment: "")
             nextButton.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
@@ -136,10 +131,14 @@ extension AccountCreateViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let cell = tableView.cellForRow(at: indexPath) {
-            if !isReview {
+        if let cell = tableView.cellForRow(at: indexPath) as? AccountTypeCell {
+            if cell.accountType == .advanced && !canCreateAdvanced {
+                cell.accessoryType = .none
+                cell.delegate?.didTapInfo(for: .advanced)
+            } else if !isReview {
                 cell.accessoryType = .checkmark
                 selectedAccountType = accountTypes[indexPath.row]
+                nextButton.backgroundColor = UIColor.customMatrixGreen()
                 nextButton.isUserInteractionEnabled = true
             }
         }

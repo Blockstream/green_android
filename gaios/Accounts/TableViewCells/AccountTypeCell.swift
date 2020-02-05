@@ -29,6 +29,11 @@ class AccountTypeCell: UITableViewCell {
         accessoryType = .none
     }
 
+    override func selectable(_ selectable: Bool) {
+        super.selectable(selectable)
+        isUserInteractionEnabled = true
+    }
+
     func configure(for accountType: AccountType, indexPath: IndexPath, delegate: AccountTypeInfoDelegate) {
         self.delegate = delegate
         self.accountType = accountType
