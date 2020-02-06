@@ -61,8 +61,10 @@ public class FirstScreenActivity extends LoginActivity {
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == NETWORK_SELECTOR_REQUEST && resultCode == RESULT_OK)
+        if (requestCode == NETWORK_SELECTOR_REQUEST && resultCode == RESULT_OK) {
             onSelectNetwork();
+            recreate();
+        }
     }
 
     public void onSelectNetwork() {
