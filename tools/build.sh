@@ -22,18 +22,6 @@ while true; do
     esac
 done
 
-if [ ! -d gdk-iphone ]; then
-    if [ ! -d gdk ]; then
-        git clone https://github.com/Blockstream/gdk.git
-    fi
-    cd gdk
-    git fetch origin -t
-    git checkout release_0.0.27
-    rm -rf build-*
-    ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone
-    cd ..
-fi
-
 export GEM_HOME=$HOME/.gem
 export PATH=$GEM_HOME/bin:$PATH
 
@@ -46,7 +34,20 @@ if [ ! -d Pods ]; then
 fi
 
 # Call linter
-Pods/SwiftLint/swiftlint
+Pods/SwiftLint/swiftlint --strict
+
+# check gdk build
+if [ ! -d gdk-iphone ]; then
+    if [ ! -d gdk ]; then
+        git clone https://github.com/Blockstream/gdk.git
+    fi
+    cd gdk
+    git fetch origin -t
+    git checkout release_0.0.27
+    rm -rf build-*
+    ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone
+    cd ..
+fi
 
 SDK=$(xcodebuild -showsdks | grep $DEVICE | tr -s ' ' | tr -d '\-' | cut -f 3-)
 if [[ "$SIGN_EXPORT" -eq 1 ]]; then
