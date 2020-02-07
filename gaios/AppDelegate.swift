@@ -135,7 +135,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
         DispatchQueue.global(qos: .background).async {
-            try? AppDelegate.service.getSession().reconnectHint(hint: ["tor_sleep_hint": "wakeup", "hint": "start"])
+            try? AppDelegate.service.getSession().reconnectHint(hint: ["tor_sleep_hint": "wakeup", "hint": "now"])
         }
     }
 
