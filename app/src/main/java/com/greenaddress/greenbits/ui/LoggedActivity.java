@@ -24,7 +24,6 @@ import java.util.TimerTask;
 
 public abstract class LoggedActivity extends GaActivity implements Observer {
 
-    private boolean mChangingActivity = false;
     private Timer mTimer = new Timer();
     private long mStart = System.currentTimeMillis();
 
@@ -80,12 +79,12 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     private void exit() {
-        if (!mChangingActivity) {
-            mChangingActivity = true;
-            final Intent intent = GaActivity.createToFirstIntent(this);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-        }
+        if (isFinishing())
+            return;
+        final Intent intent = GaActivity.createToFirstIntent(this);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     @Override
