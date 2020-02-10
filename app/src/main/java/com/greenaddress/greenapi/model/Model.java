@@ -210,8 +210,12 @@ public class Model {
     }
 
     public String getFiat(final BalanceData balanceData, final boolean withUnit) {
-        final Double number = Double.parseDouble(balanceData.getFiat());
-        return getNumberFormat(2).format(number) + (withUnit ? " " + getFiatCurrency() : "");
+        try {
+            final Double number = Double.parseDouble(balanceData.getFiat());
+            return getNumberFormat(2).format(number) + (withUnit ? " " + getFiatCurrency() : "");
+        } catch (final Exception e) {
+            return "N.A." + (withUnit ? " " + getFiatCurrency() : "");
+        }
     }
 
     public String getBtc(final BalanceData balanceData, final boolean withUnit) {

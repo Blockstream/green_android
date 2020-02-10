@@ -54,11 +54,11 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final Account h = (Account) holder;
             final SubaccountData subaccount = mSubaccountList.get(position);
             final long satoshi = subaccount.getSatoshi().get("btc");
+            h.name.setText(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.string.
+                                                                                                  id_main_account)));
             try {
                 final String valueBitcoin = mModel.getBtc(satoshi, false);
                 final String valueFiat = mModel.getFiat(satoshi, true);
-                h.name.setText(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.string.
-                                                                                                      id_main_account)));
                 h.mainBalanceText.setText(valueBitcoin);
                 h.mainBalanceUnitText.setText(" " + mModel.getBitcoinOrLiquidUnit());
                 h.mainLocalBalanceText.setText("≈  " + valueFiat);
