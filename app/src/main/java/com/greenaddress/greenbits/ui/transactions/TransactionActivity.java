@@ -138,19 +138,18 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // Set amount
         final boolean negative = mTxItem.getTxType() != TransactionData.TYPE.IN;
-        String btc;
-        String fiat;
-        try {
-            final BalanceData balance = getSession().convertBalance(mTxItem.getSatoshi().get("btc"));
-            btc = getModel().getBtc(balance, true);
-            fiat = getModel().getFiat(balance, true);
-        } catch (final Exception e) {
-            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-            btc = "";
-            fiat = "";
-        }
         final String neg = negative ? "-" : "";
         final TextView amountText = UI.find(this, R.id.txAmountText);
+
+        try {
+            final BalanceData balance = getSession().convertBalance(mTxItem.getSatoshi().get("btc"));
+            final String btc = getModel().getBtc(balance, true);
+            final String fiat = getModel().getFiat(balance, true);
+            amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
         if (networkData.getLiquid()) {
             amountText.setVisibility(View.GONE);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
@@ -159,9 +158,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                                                             getNetwork(),this, getModel());
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
-
-        } else {
-            amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
         }
 
         // Set date/time
