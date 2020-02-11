@@ -1,75 +1,34 @@
 # Green - A native Blockstream wallet for iOS
 
+Blockstream Green is a non-custodial Bitcoin wallet - it allows you to safely store, send, and receive your Bitcoin.
+
+It's a mobile app available for [Android](https://github.com/Blockstream/green_android) and [iOS](https://github.com/Blockstream/green_ios), based on [gdk](https://github.com/blockstream/gdk), our cross-platform wallet library.
+
+We offer a variety of advanced features, such as letting our users set their own spending limits, watch-only access for observers, and our unique multisig security model.
+All of these (and more) are explained in more detail [here](https://docs.blockstream.com/green/getting-started/intro.html).
+
 <a href="https://itunes.apple.com/app/id1402243590" target="_blank">
-<img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-example-preferred_2x.png" alt="Get it on Apple Store" height="90"/></a>
+<img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-example-preferred_2x.png" alt="Get it on Apple Store" height="50"/></a>
 
-Blockstream Green is also available for [Android](https://github.com/Blockstream/green_android).
+## Build
 
-## Clone the repo
+For instructions on how to build Blockstream Green please refer to [BUILD.md](BUILD.md)
 
-```
-git clone https://github.com/Blockstream/green_ios.git
-cd green_ios
-```
+## Contributing
 
-## Build requirements
+Guidelines for contributions can be found in [CONTRIBUTING.md](CONTRIBUTING.md)
 
-### Global requirements
+## Translations
 
-Install Xcode.
+You can help translating this app [here](https://www.transifex.com/blockstream/blockstream-green/)
 
-Get the command line tools with: (ensure to use "Software Update" to install updates)
+## Support
 
-`sudo xcode-select --install`
+Need help?
 
-Make sure `xcode-select --print-path` returns `/Applications/Xcode.app/Contents/Developer` . Otherwise run:
+Read [our FAQ](https://greenaddress.it/en/faq.html) or contact us at [info@greenaddress.it](mailto:info@greenaddress.it).
 
-`sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer`
+## License
 
-On macOS 10.14 Mojave, you have to run another step after installing the command line tools:
+Blockstream Green is released under the terms of the GNU General Public License. See [LICENSE](LICENSE) for more information or see https://opensource.org/licenses/GPL-3.0
 
-`sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /`
-
-
-### Local requirements
-
-Install CocoaPods dependencies locally
-
-`pod install`
-
-## Build GDK for Mac OSX
-
-Get sources from GDK repository
-```
-git clone https://github.com/Blockstream/gdk.git
-cd gdk
-```
-
-Build GDK dependencies for Mac OSX (virtualenv optional if you already have python3 as default)
-```
-brew update && brew install ninja automake autoconf libtool gnu-sed python3 wget pkg-config swig gnu-getopt gnu-tar
-pip3 install virtualenv
-virtualenv -p python3 ./venv
-source ./venv/bin/activate
-pip install meson
-```
-
-Build for physical device
-```
-./tools/build.sh --iphone static
-```
-
-Build for IPhone simulator
-```
-./tools/build.sh --iphonesim static
-```
-
-Deactivate virtualenv
-```
-deactivate
-cd ..
-```
-
-#### Contribution guidelines
-
-See CONTRIBUTING.md for contribution guidelines
