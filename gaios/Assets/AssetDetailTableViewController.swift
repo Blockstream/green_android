@@ -21,6 +21,11 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
 
     private var assetDetailCellTypes = DetailCellType.allCases
     private var isReadOnly = true
+    private var isLiquid: Bool {
+        get {
+            return tag == "btc"
+        }
+    }
     private var assetTableCell: AssetTableCell?
     private var keyboardDismissGesture: UIGestureRecognizer?
 
@@ -40,6 +45,7 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if isLiquid { assetDetailCellTypes.remove(at: 1) }
         showKeyboardToken = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main, using: keyboardWillShow)
         hideKeyboardToken = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main, using: keyboardWillHide)
         assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
@@ -111,7 +117,7 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
             switch cellType {
             case .name:
                 cell.titleLabel.text = NSLocalizedString("id_asset_name", comment: "")
-                cell.detailLabel.text = asset?.name ?? NSLocalizedString("id_no_registered_name_for_this", comment: "")
+                cell.detailLabel.text = isLiquid ? "Liquid Bitcoin" : asset?.name ?? NSLocalizedString("id_no_registered_name_for_this", comment: "")
             case .identifier:
                 cell.titleLabel.text = NSLocalizedString("id_asset_id", comment: "")
                 cell.detailLabel.text = tag
@@ -122,17 +128,27 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
                 cell.detailLabel.text = balance?.get(tag: tag).0 ?? ""
             case .precision:
                 cell.titleLabel.text = NSLocalizedString("id_precision", comment: "")
-                cell.detailLabel.text = String(asset?.precision ?? 0)
+                cell.detailLabel.text = isLiquid ? "8" : String(asset?.precision ?? 0)
             case .ticker:
                 cell.titleLabel.text = NSLocalizedString("id_ticker", comment: "")
-                cell.detailLabel.text = asset?.ticker ?? NSLocalizedString("id_no_registered_ticker_for_this", comment: "")
+                cell.detailLabel.text = isLiquid ? "L-BTC" : asset?.ticker ?? NSLocalizedString("id_no_registered_ticker_for_this", comment: "")
             case .issuer:
                 cell.titleLabel.text = NSLocalizedString("id_issuer", comment: "")
-                cell.detailLabel.text = asset?.entity?.domain ?? NSLocalizedString("id_unknown", comment: "")
+                cell.detailLabel.text = isLiquid ? NSLocalizedString("id_liquid_watchmen_via_pegin_tap", comment: "") : asset?.entity?.domain ?? NSLocalizedString("id_unknown", comment: "")
             }
             return cell
         }
         return UITableViewCell()
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if assetDetailCellTypes[indexPath.row] == .issuer && isLiquid {
+            if let url = URL(string: "https://docs.blockstream.com/liquid/technical_overview.html#watchmen") {
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }
+        }
     }
 
     @objc func dismissKeyboard() {

@@ -79,7 +79,6 @@ class AssetsListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let tag = assets[indexPath.row].key
-        if !isSend && tag == "btc" { return }
         if isSend {
             performSegue(withIdentifier: "asset_send", sender: tag)
         } else {

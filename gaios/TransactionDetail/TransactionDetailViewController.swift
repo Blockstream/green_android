@@ -253,9 +253,7 @@ extension TransactionDetailViewController: UITableViewDelegate, UITableViewDataS
         case .asset:
             if isLiquid {
                 if let amount = isIncoming ? amounts[indexPath.row - 1] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
-                    if amount.key != "btc" {
-                        self.performSegue(withIdentifier: "asset", sender: amount.key)
-                    }
+                   self.performSegue(withIdentifier: "asset", sender: amount.key)
                 }
             }
         case .notes:
