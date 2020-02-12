@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B5O-7h-VGM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B5O-7h-VGM">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -71,6 +71,7 @@
                         <segue destination="wmg-xs-3of" kind="push" identifier="createWallet" id="ffv-Da-0EK"/>
                         <segue destination="4zv-ju-TOq" kind="modal" identifier="network" id="MVe-he-OPo"/>
                         <segue destination="k1O-1U-exG" kind="push" identifier="ble" id="6vw-kK-Jzl"/>
+                        <segue destination="Mbf-LQ-77o" kind="modal" identifier="help" id="hBQ-tH-ogD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uYz-un-mGa" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -86,6 +87,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tQN-Cd-3FK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-608" y="-210"/>
+        </scene>
+        <!--HelpViewController-->
+        <scene sceneID="sxl-7W-qlX">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6zg-kF-cQt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="Help" referencedIdentifier="HelpViewController" id="Mbf-LQ-77o" sceneMemberID="viewController"/>
+            </objects>
+            <point key="canvasLocation" x="-649" y="-140"/>
         </scene>
         <!--Pin Set View Controller-->
         <scene sceneID="aHV-SQ-KCX">
@@ -308,7 +317,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bAy-aI-vxZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-581" y="-357"/>
+            <point key="canvasLocation" x="-556" y="-357"/>
         </scene>
     </scenes>
     <resources>

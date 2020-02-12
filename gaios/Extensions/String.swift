@@ -68,4 +68,9 @@ extension NSMutableAttributedString {
         let range: NSRange = self.mutableString.range(of: stringValue, options: .caseInsensitive)
         self.addAttributes([NSAttributedString.Key.font: font], range: range)
     }
+
+    func setAttributes(_ attrs: [NSAttributedString.Key: Any], for substring: String) {
+        let range: NSRange = self.mutableString.range(of: substring, options: .caseInsensitive)
+        self.addAttributes(attrs, range: range)
+    }
 }

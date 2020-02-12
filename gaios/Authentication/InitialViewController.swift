@@ -99,6 +99,8 @@ extension InitialViewController: PopoverMenuDelegate {
         case .tempRestore:
             tempRestore = true
             performSegue(withIdentifier: "enterMnemonic", sender: nil)
+        case .help:
+            performSegue(withIdentifier: "help", sender: nil)
         }
     }
 }
