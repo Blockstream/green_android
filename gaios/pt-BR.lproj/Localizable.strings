@@ -66,6 +66,7 @@
 "id_cant_connect_to_this_url" = "Impossível conectar-se a essa URL";
 "id_change" = "ALTERAR";
 "id_change_pin" = "Alterar PIN";
+"id_check_your_backup" = "Check your backup";
 "id_choose" = "Escolha";
 "id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "Escolha um método para autorizar a ação";
@@ -121,6 +122,7 @@
 "id_denomination" = "Denominação";
 "id_deposit" = "Depósito";
 "id_disable" = "Desabilitar";
+"id_disable_s_for_twofactor" = "Disable %@ for Two-Factor Authentication";
 "id_disabled" = "Desabilitado";
 "id_displays_the_progress_of_spv" = "Mostra o progresso da sincronização SPV";
 "id_dispute_twofactor_reset" = "Disputar reset da autenticação de dois fatores";
@@ -253,6 +255,7 @@
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
 "id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
+"id_liquid_watchmen_via_pegin_tap" = "Liquid watchmen via peg-in. Tap here to read more about Liquid";
 "id_loading_transactions" = "Carregando transações…";
 "id_log_in" = "Entrar";
 "id_log_in_into_your_s_wallet" = "Acessar sua %@carteira";
@@ -266,6 +269,7 @@
 "id_look_at_the_device_for_the" = "Olhe no dispositivo para a posição dos números";
 "id_low" = "Baixa";
 "id_main_account" = "Conta Principal";
+"id_make_sure_you_made_a_proper" = "Make sure you made a proper backup of your wallet mnemonic.";
 "id_malleated" = "maleada";
 "id_medium" = "Média";
 "id_memo" = "Memo";
@@ -441,6 +445,7 @@
 "id_show_coins_with_expiring" = "Mostrar moedas com proteção de autenticação de dois fatores perto de expirar.";
 "id_show_fiat" = "Mostrar fiat";
 "id_show_my_wallet_backup" = "Mostrar meu backup da carteira";
+"id_show_qr_code" = "Show QR code";
 "id_signup_in_progress" = "Registro em progresso";
 "id_simplified_payment_verification" = "A Verificação Simplificada de Pagamentos (SPV) verifica suas transações e balanço usando a rede Bitcoin, fora dos servidores da Green. Ativar aumenta os requisitos de banda e processamento.";
 "id_skip" = "PULAR";

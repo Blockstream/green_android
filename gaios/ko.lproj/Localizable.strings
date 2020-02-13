@@ -66,6 +66,7 @@
 "id_cant_connect_to_this_url" = "URL 연결 불가";
 "id_change" = "거스름돈";
 "id_change_pin" = "Change PIN";
+"id_check_your_backup" = "Check your backup";
 "id_choose" = "선택";
 "id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "권한부여 방식 선택";
@@ -121,6 +122,7 @@
 "id_denomination" = "단위";
 "id_deposit" = "입금";
 "id_disable" = "비활성화";
+"id_disable_s_for_twofactor" = "Disable %@ for Two-Factor Authentication";
 "id_disabled" = "비활성화됨";
 "id_displays_the_progress_of_spv" = "SPV 동기화 진행을 표시합니다";
 "id_dispute_twofactor_reset" = "2FA 재설정 분쟁";
@@ -253,6 +255,7 @@
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
 "id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
+"id_liquid_watchmen_via_pegin_tap" = "Liquid watchmen via peg-in. Tap here to read more about Liquid";
 "id_loading_transactions" = "거래 로딩중...";
 "id_log_in" = "로그인";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -266,6 +269,7 @@
 "id_look_at_the_device_for_the" = "번호 배열은 기기에 나와 있습니다";
 "id_low" = "낮음";
 "id_main_account" = "주 계정";
+"id_make_sure_you_made_a_proper" = "Make sure you made a proper backup of your wallet mnemonic.";
 "id_malleated" = "바뀜";
 "id_medium" = "중간";
 "id_memo" = "메모";
@@ -441,6 +445,7 @@
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
 "id_show_fiat" = "명목화폐 보기";
 "id_show_my_wallet_backup" = "Show my wallet backup";
+"id_show_qr_code" = "Show QR code";
 "id_signup_in_progress" = "회원가입 진행 중";
 "id_simplified_payment_verification" = "Simplified Payment Verification 은 Green 서버 대신 비트코인 네트워크를 활용하여 거래 및 잔액을 검증합니다. SPV 모드를 활성화 하면 더 많은 대역폭 및 프로세싱 파워가 요구됩니다.";
 "id_skip" = "넘기기";

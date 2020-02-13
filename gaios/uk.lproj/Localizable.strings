@@ -66,6 +66,7 @@
 "id_cant_connect_to_this_url" = "Не вдається з'єднатися з цим URL";
 "id_change" = "РЕШТА";
 "id_change_pin" = "Change PIN";
+"id_check_your_backup" = "Check your backup";
 "id_choose" = "Обрати";
 "id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "Оберіть метод для авторизації дії";
@@ -121,6 +122,7 @@
 "id_denomination" = "Номінал";
 "id_deposit" = "Депозит";
 "id_disable" = "Вимкнути";
+"id_disable_s_for_twofactor" = "Disable %@ for Two-Factor Authentication";
 "id_disabled" = "Вимкнено";
 "id_displays_the_progress_of_spv" = "Відображує хід синхронізації SPV";
 "id_dispute_twofactor_reset" = "Оскаржити двофакторне відновлення";
@@ -253,6 +255,7 @@
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
 "id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
+"id_liquid_watchmen_via_pegin_tap" = "Liquid watchmen via peg-in. Tap here to read more about Liquid";
 "id_loading_transactions" = "Завантаження транзакцій... ";
 "id_log_in" = "Увійти";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -266,6 +269,7 @@
 "id_look_at_the_device_for_the" = "Подивіться на розташування чисел на пристрої";
 "id_low" = "Низький";
 "id_main_account" = "Основний акаунт";
+"id_make_sure_you_made_a_proper" = "Make sure you made a proper backup of your wallet mnemonic.";
 "id_malleated" = "деформована";
 "id_medium" = "Середня";
 "id_memo" = "Пам'ятка";
@@ -441,6 +445,7 @@
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
 "id_show_fiat" = "Показати фіат";
 "id_show_my_wallet_backup" = "Show my wallet backup";
+"id_show_qr_code" = "Show QR code";
 "id_signup_in_progress" = "Реєстрація продовжується";
 "id_simplified_payment_verification" = "Спрощена верифікація платежів SPV перевіряє ваші транзакції і баланс за допомогою мережі Біткоїн поза межами Green-серверів. Увімкнення підвищує системні вимоги до пропускної спроможності і обробки.";
 "id_skip" = "ПРОПУСТИТИ";

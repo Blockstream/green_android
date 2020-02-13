@@ -66,6 +66,7 @@
 "id_cant_connect_to_this_url" = "无法连接至此URL";
 "id_change" = "改变";
 "id_change_pin" = "Change PIN";
+"id_check_your_backup" = "Check your backup";
 "id_choose" = "选择";
 "id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "选择批准该操作的方法";
@@ -121,6 +122,7 @@
 "id_denomination" = "面值";
 "id_deposit" = "充值";
 "id_disable" = "关闭";
+"id_disable_s_for_twofactor" = "Disable %@ for Two-Factor Authentication";
 "id_disabled" = "已关闭";
 "id_displays_the_progress_of_spv" = "显示SPV同步进程";
 "id_dispute_twofactor_reset" = "免除重置双重认证";
@@ -253,6 +255,7 @@
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
 "id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
+"id_liquid_watchmen_via_pegin_tap" = "Liquid watchmen via peg-in. Tap here to read more about Liquid";
 "id_loading_transactions" = "正在加载交易…";
 "id_log_in" = "登录";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -266,6 +269,7 @@
 "id_look_at_the_device_for_the" = "请查看设备以获取数字位置";
 "id_low" = "低";
 "id_main_account" = "主账号";
+"id_make_sure_you_made_a_proper" = "Make sure you made a proper backup of your wallet mnemonic.";
 "id_malleated" = "已延展";
 "id_medium" = "中";
 "id_memo" = "备忘录";
@@ -441,6 +445,7 @@
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
 "id_show_fiat" = "显示法币";
 "id_show_my_wallet_backup" = "Show my wallet backup";
+"id_show_qr_code" = "Show QR code";
 "id_signup_in_progress" = "正在登录";
 "id_simplified_payment_verification" = "简单付款验证（SPV）在Green服务器之外使用比特币网络来验证用户交易与余额。开启将增加带宽与处理要求。";
 "id_skip" = "跳过";

@@ -66,6 +66,7 @@
 "id_cant_connect_to_this_url" = "Impossibile connettersi a questo URL";
 "id_change" = "RESTO";
 "id_change_pin" = "Cambia il PIN";
+"id_check_your_backup" = "Controlla il tuo backup";
 "id_choose" = "Scegli";
 "id_choose_a_name_for_your_new" = "Scegli un nome per il tuo nuovo wallet Blockstream Green.";
 "id_choose_method_to_authorize_the" = "Selezione un metodo per autorizzare l'azione";
@@ -121,6 +122,7 @@
 "id_denomination" = "Denominazione";
 "id_deposit" = "Deposita";
 "id_disable" = "Disabilita";
+"id_disable_s_for_twofactor" = "Disattiva  l' Autenticazione a Due Fattori via %@";
 "id_disabled" = "Disabilitato";
 "id_displays_the_progress_of_spv" = "Mostra il progresso della sincronizzazione SPV";
 "id_dispute_twofactor_reset" = "Contesta il reset del Secondo Fattore";
@@ -253,6 +255,7 @@
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account è disponibile solo su Liquid";
 "id_liquid_securities_accounts_are" = "Liquid securities account sono disponibili solo nei wallet Liquid. Sarà necessario ottenere l'autorizzazione dell'emittente per ricevere un titolo Liquid Security.";
+"id_liquid_watchmen_via_pegin_tap" = "Watchmen di liquid via peg-in. Tocca qui per saperne di più su Liquid";
 "id_loading_transactions" = "Caricamento transazioni...";
 "id_log_in" = "Accedi";
 "id_log_in_into_your_s_wallet" = "Accedi al tuo %@ wallet";
@@ -266,6 +269,7 @@
 "id_look_at_the_device_for_the" = "Guarda la disposizione dei numeri sul dispositivo";
 "id_low" = "Bassa";
 "id_main_account" = "Account principale";
+"id_make_sure_you_made_a_proper" = "Assicurati di aver fatto un backup corretto della tua mnemonica.";
 "id_malleated" = "malleata";
 "id_medium" = "Medio";
 "id_memo" = "Memo";
@@ -441,6 +445,7 @@
 "id_show_coins_with_expiring" = "Mostra i coin con Secondo Fattore d'Autenticazione in scadenza.";
 "id_show_fiat" = "Mostra valuta corrente";
 "id_show_my_wallet_backup" = "Mostrami il backup del mio wallet";
+"id_show_qr_code" = "Mostra il QR code";
 "id_signup_in_progress" = "Registrazione in corso";
 "id_simplified_payment_verification" = "La Simplified Payment Verification verifica le tue transazioni e il tuo bilancio utilizzando la rete Bitcoin, al di fuori dei server di Green. L'abilitazione comporta maggiore utilizzo di banda e potenza di calcolo";
 "id_skip" = "SALTA";

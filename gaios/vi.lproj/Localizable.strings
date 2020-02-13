@@ -66,6 +66,7 @@
 "id_cant_connect_to_this_url" = "Không thể nối tới địa chỉ URL";
 "id_change" = "THAY ĐỔI";
 "id_change_pin" = "Change PIN";
+"id_check_your_backup" = "Check your backup";
 "id_choose" = "Chọn";
 "id_choose_a_name_for_your_new" = "Choose a name for your new Blockstream Green wallet.";
 "id_choose_method_to_authorize_the" = "Chọn phương pháp cấp ủy quyền cho hành động‭";
@@ -121,6 +122,7 @@
 "id_denomination" = "Mệnh giá";
 "id_deposit" = "Nạp tiền";
 "id_disable" = "Ẩn/Hủy";
+"id_disable_s_for_twofactor" = "Disable %@ for Two-Factor Authentication";
 "id_disabled" = "Đã ẩn/ Đã hủy";
 "id_displays_the_progress_of_spv" = "Hiển thị quá trình của việc đồng bộ hóa SPV ";
 "id_dispute_twofactor_reset" = "Thiết lập lại tranh chấp bảo mật 2 lớp";
@@ -253,6 +255,7 @@
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
 "id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
+"id_liquid_watchmen_via_pegin_tap" = "Liquid watchmen via peg-in. Tap here to read more about Liquid";
 "id_loading_transactions" = "Đang tải giao dịch...";
 "id_log_in" = "Đăng nhập";
 "id_log_in_into_your_s_wallet" = "Đăng nhập vào ví %@ ";
@@ -266,6 +269,7 @@
 "id_look_at_the_device_for_the" = "Nhìn vào khóa cứng để biết vị trí các chữ số";
 "id_low" = "Thấp";
 "id_main_account" = "Tài khoản chính";
+"id_make_sure_you_made_a_proper" = "Make sure you made a proper backup of your wallet mnemonic.";
 "id_malleated" = "vồ vập";
 "id_medium" = "Trung bình";
 "id_memo" = "Memo";
@@ -441,6 +445,7 @@
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
 "id_show_fiat" = "Nhìn số tiền giấy";
 "id_show_my_wallet_backup" = "Show my wallet backup";
+"id_show_qr_code" = "Show QR code";
 "id_signup_in_progress" = "Đang trong quá trình đăng ký";
 "id_simplified_payment_verification" = "Xác minh thanh toán đơn giản SPV xác minh giao dịch và số dư của bạn bằng mạng lưới Bitcoin, ngoài máy chủ của Green. Đang cho phép thêm băng thông quá trình yêu cầu";
 "id_skip" = "DỪNG";
