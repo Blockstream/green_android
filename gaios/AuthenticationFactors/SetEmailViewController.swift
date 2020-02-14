@@ -8,6 +8,8 @@ class SetEmailViewController: KeyboardViewController {
     private var connected = true
     private var updateToken: NSObjectProtocol?
 
+    var isSetRecovery: Bool = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
         content.headerTitle.text = NSLocalizedString("id_enter_your_email_address", comment: "")
@@ -17,6 +19,9 @@ class SetEmailViewController: KeyboardViewController {
         content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         content.nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         content.nextButton.setGradient(true)
+        content.setRecoveryLabel.text = isSetRecovery ?
+            NSLocalizedString("id_set_up_an_email_to_get", comment: "") :
+            NSLocalizedString("This email will also be used for recovery and notifications", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -48,7 +53,7 @@ class SetEmailViewController: KeyboardViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap {
-            TwoFactorConfigItem(enabled: true, confirmed: true, data: text)
+            TwoFactorConfigItem(enabled: self.isSetRecovery ? false : true, confirmed: true, data: text)
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
@@ -79,6 +84,7 @@ class SetEmailView: UIView {
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var buttonConstraint: NSLayoutConstraint!
     @IBOutlet weak var headerTitle: UILabel!
+    @IBOutlet weak var setRecoveryLabel: UILabel!
 
     override init(frame: CGRect) {
         super.init(frame: frame)

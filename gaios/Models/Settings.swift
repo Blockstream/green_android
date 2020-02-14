@@ -22,6 +22,7 @@ enum SettingsType: String, Codable {
     case ThresholdTwoFactor
     case LockTimeRecovery
     case LockTimeRequest
+    case SetRecoveryEmail
     case ResetTwoFactor
     case DisputeTwoFactor
     case CancelTwoFactor

@@ -166,6 +166,11 @@ class SettingsViewController: UIViewController {
             subtitle: "",
             section: .twoFactor,
             type: .CancelTwoFactor)
+        let setRecoveryEmail = SettingsItem(
+            title: NSLocalizedString("id_set_an_email_for_recovery", comment: ""),
+            subtitle: "",
+            section: .twoFactor,
+            type: .SetRecoveryEmail)
 
         if isWatchOnly {
             return []
@@ -179,12 +184,9 @@ class SettingsViewController: UIViewController {
         var menu = [SettingsItem]()
         menu.append(contentsOf: [setupTwoFactor])
         if twoFactorConfig?.anyEnabled ?? false {
-            menu.append(contentsOf: [thresholdTwoFactor])
-            if twoFactorConfig?.enableMethods.contains("email") ?? false {
-                menu.append(contentsOf: [locktimeRecovery, locktimeRequest])
-            }
-            menu.append(contentsOf: [resetTwoFactor])
+            menu.append(contentsOf: [thresholdTwoFactor, resetTwoFactor])
         }
+        menu.append(contentsOf: [locktimeRecovery, locktimeRequest, setRecoveryEmail])
         return menu
     }
 
@@ -203,6 +205,9 @@ class SettingsViewController: UIViewController {
         if isHW {
             return [autolock]
         } else if !isWatchOnly && !isResetActive {
+            if let confirmed = twoFactorConfig?.email.confirmed, confirmed == true {
+                return [mnemonic, autolock]
+            }
             return [mnemonic, autolock]
         } else {
             return isResetActive ? [mnemonic] : []
@@ -330,6 +335,10 @@ extension SettingsViewController {
     }
 
     func setLockTimeRequest() {
+        guard twoFactorConfig?.enableMethods.contains("email") == true else {
+            showAlert(title: "Error", message: "You need to set a recovery email first")
+            return
+        }
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()
@@ -397,6 +406,10 @@ extension SettingsViewController {
     }
 
     func showLockTimeRecovery() {
+        guard twoFactorConfig?.enableMethods.contains("email") == true else {
+            showAlert(title: "Error", message: "You need to set a recovery email first")
+            return
+        }
         let settings = getGAService().getSettings()!
         var enabled = false
         if let notifications = settings.notifications {
@@ -498,6 +511,10 @@ extension SettingsViewController {
         if let controller = segue.destination as? EnableTwoFactorViewController {
             controller.isHiddenWalletButton = true
         }
+        if let controller = segue.destination as? SetEmailViewController,
+            let settingsType = sender as? SettingsType, settingsType == .SetRecoveryEmail {
+                controller.isSetRecovery = true
+        }
 
         if let controller = segue.destination as? AccountsViewController {
             controller.isSweep = true
@@ -544,6 +561,7 @@ extension SettingsViewController: UITableViewDelegate {
         case .Logout: logout()
         case .WatchOnly: showWatchOnly()
         case .ReferenceExchangeRate: performSegue(withIdentifier: "currency", sender: nil)
+        case .SetRecoveryEmail: performSegue(withIdentifier: "setRecoveryEmail", sender: SettingsType.SetRecoveryEmail)
         case .SetupTwoFactor: performSegue(withIdentifier: "setupTwoFactor", sender: nil)
         case .ThresholdTwoFactor: performSegue(withIdentifier: "twoFactorLimit", sender: nil)
         case .ResetTwoFactor: showResetTwoFactor()
