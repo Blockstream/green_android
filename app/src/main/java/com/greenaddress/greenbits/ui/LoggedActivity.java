@@ -197,7 +197,8 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     // for btc and fiat
-    protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount) {
+    protected void setAmountText(final EditText amountText, final boolean isFiat,
+                                 final ObjectNode currentAmount) throws ParseException {
         final NumberFormat btcNf = getModel().getNumberFormat();
         setAmountText(amountText, isFiat, currentAmount, btcNf, false);
 
@@ -205,7 +206,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
 
     // for liquid assets and l-btc
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
-                                 final String asset) {
+                                 final String asset) throws ParseException {
 
         NumberFormat nf = getModel().getNumberFormat();
         boolean isAsset = false;
@@ -220,17 +221,13 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
-                                 final NumberFormat btcOrAssetNf, final boolean isAsset) {
-        try {
-            final NumberFormat us = Model.getNumberFormat(8, Locale.US);
-            final NumberFormat fiatNf = Model.getNumberFormat(2);
-            final String fiat = fiatNf.format( us.parse(currentAmount.get("fiat").asText()) );
-            final String source = currentAmount.get(isAsset ? "btc" : getBitcoinUnitClean()).asText();
-            final String btc = btcOrAssetNf.format( us.parse(source));
-            amountText.setText(isFiat ? fiat : btc);
-        } catch (ParseException e) {
-            Log.e(TAG,e.getMessage());
-        }
+                                 final NumberFormat btcOrAssetNf, final boolean isAsset) throws ParseException {
+        final NumberFormat us = Model.getNumberFormat(8, Locale.US);
+        final NumberFormat fiatNf = Model.getNumberFormat(2);
+        final String fiat = fiatNf.format(us.parse(currentAmount.get("fiat").asText()));
+        final String source = currentAmount.get(isAsset ? "btc" : getBitcoinUnitClean()).asText();
+        final String btc = btcOrAssetNf.format(us.parse(source));
+        amountText.setText(isFiat ? fiat : btc);
     }
 
     protected void removeUtxosIfTooBig(final ObjectNode transactionFromUri) {

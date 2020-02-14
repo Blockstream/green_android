@@ -32,6 +32,7 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.SubaccountPopup;
 
+import java.text.ParseException;
 import java.util.Locale;
 import java.util.Observable;
 
@@ -203,15 +204,23 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     public void afterTextChanged(final Editable s) {}
 
     public void onCurrencyClick() {
-        // Toggle unit display and selected state
-        mIsFiat = !mIsFiat;
-        mUnitButton.setText(mIsFiat ? getModel().getFiatCurrency() : getModel().getBitcoinOrLiquidUnit());
-        mUnitButton.setPressed(!mIsFiat);
-        mUnitButton.setSelected(!mIsFiat);
+        if (mCurrentAmount == null)
+            return;
 
-        if (mCurrentAmount != null) {
+        mIsFiat = !mIsFiat;
+        try {
             setAmountText(mAmountText, mIsFiat, mCurrentAmount);
             update(null, null);
+
+            // Toggle unit display and selected state
+            mUnitButton.setText(mIsFiat ? getModel().getFiatCurrency() : getModel().getBitcoinOrLiquidUnit());
+            mUnitButton.setPressed(!mIsFiat);
+            mUnitButton.setSelected(!mIsFiat);
+        } catch (final ParseException e) {
+            mIsFiat = !mIsFiat;
+            UI.popup(this,
+                     "Your preferred exchange rate from is not available at the moment. You can change it from settings.")
+            .show();
         }
     }
 

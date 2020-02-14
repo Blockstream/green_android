@@ -36,6 +36,7 @@ import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -340,15 +341,23 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             mSendAllButton.setPressed(mSendAll);
             mSendAllButton.setSelected(mSendAll);
         } else if (view == mUnitButton) {
-            // Toggle unit display and selected state
-            mIsFiat = !mIsFiat;
-            mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
-            mUnitButton.setPressed(!isFiat());
-            mUnitButton.setSelected(!isFiat());
-            updateFeeSummaries();
 
             if (mCurrentAmount != null) {
-                setAmountText(mAmountText, mIsFiat, mCurrentAmount);
+                try {
+                    final boolean isFiat = !mIsFiat;
+                    setAmountText(mAmountText, isFiat, mCurrentAmount);
+
+                    // Toggle unit display and selected state
+                    mIsFiat = isFiat;
+                    mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
+                    mUnitButton.setPressed(!isFiat());
+                    mUnitButton.setSelected(!isFiat());
+                    updateFeeSummaries();
+                } catch (final ParseException e) {
+                    UI.popup(this,
+                             "Your preferred exchange rate from is not available at the moment. You can change it from settings.")
+                    .show();
+                }
             }
         } else {
             final boolean isLiquid = networkData.getLiquid();
