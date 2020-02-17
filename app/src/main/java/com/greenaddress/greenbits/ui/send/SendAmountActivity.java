@@ -140,8 +140,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         // Create the initial transaction
-        try {
-            if (mTx == null) {
+        if (mTx == null) {
+            try {
                 final String tx = getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX);
                 final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
                 // Fee
@@ -154,70 +154,80 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 // the background and display a wait icon until it returns
                 final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
                 mTx = call.resolve(null, getConnectionManager().getHWResolver());
+            } catch (final Exception e) {
+                UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
+                finishOnUiThread();
+                return;
             }
-
+        }
+        try {
             // Retrieve assets list
             updateAssetSelected();
-
-            JsonNode node = mTx.get("satoshi");
+        } catch (final Exception e) {
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
+            finishOnUiThread();
+            return;
+        }
+        JsonNode node = mTx.get("satoshi");
+        try {
+            final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
+            node = addressee.get("satoshi");
+        } catch (final Exception e) {
+            // Asset not passed, default "btc"
+        }
+        if (node != null && node.asLong() != 0L) {
+            final long newSatoshi = node.asLong();
             try {
-                final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
-                node = addressee.get("satoshi");
+                setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
             } catch (final Exception e) {
-                // Asset not passed, default "btc"
+                Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             }
+        }
 
-            if (node != null && node.asLong() != 0L) {
-                final long newSatoshi = node.asLong();
-                try {
-                    setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
-                } catch (final RuntimeException | IOException e) {
-                    Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-                }
+        final JsonNode readOnlyNode = mTx.get("addressees_read_only");
+        if (readOnlyNode != null && readOnlyNode.asBoolean()) {
+            mAmountText.setEnabled(false);
+            mSendAllButton.setVisibility(View.GONE);
+            mAccountBalance.setVisibility(View.GONE);
+        } else {
+            mAmountText.requestFocus();
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        }
+
+        // Select the fee button that is the next highest rate from the old tx
+        final Long oldRate = getOldFeeRate(mTx);
+        if (oldRate != null) {
+            mFeeEstimates[mButtonIds.length - 1] = oldRate + 1;
+            boolean found = false;
+            for (int i = 0; i < mButtonIds.length - 1; ++i) {
+                if ((oldRate + mMinFeeRate) < mFeeEstimates[i]) {
+                    mSelectedFee = i;
+                    found = true;
+                } else
+                    mFeeButtons[i].setEnabled(false);
             }
-
-            final JsonNode readOnlyNode = mTx.get("addressees_read_only");
-            if (readOnlyNode != null && readOnlyNode.asBoolean()) {
-                mAmountText.setEnabled(false);
-                mSendAllButton.setVisibility(View.GONE);
-                mAccountBalance.setVisibility(View.GONE);
-            } else {
-                mAmountText.requestFocus();
-                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            if (!found) {
+                // Set custom rate to 1 satoshi higher than the old rate
+                mSelectedFee = mButtonIds.length - 1;
             }
+        }
 
-            // Select the fee button that is the next highest rate from the old tx
-            final Long oldRate = getOldFeeRate(mTx);
-            if (oldRate != null) {
-                mFeeEstimates[mButtonIds.length - 1] = oldRate + 1;
-                boolean found = false;
-                for (int i = 0; i < mButtonIds.length -1; ++i) {
-                    if ((oldRate + mMinFeeRate) < mFeeEstimates[i]) {
-                        mSelectedFee = i;
-                        found = true;
-                    } else
-                        mFeeButtons[i].setEnabled(false);
-                }
-                if (!found) {
-                    // Set custom rate to 1 satoshi higher than the old rate
-                    mSelectedFee = mButtonIds.length - 1;
-                }
-            }
+        final String defaultFeerate = cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
+        final boolean isBump = mTx.get("previous_transaction") != null;
+        if (isBump) {
+            mFeeEstimates[3] = getOldFeeRate(mTx) + mMinFeeRate;
+        } else if (defaultFeerate != null) {
+            final Double mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
+            mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate * 1000.0).longValue();
+            updateFeeSummaries();
+        }
 
-            final String defaultFeerate = cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
-            final boolean isBump = mTx.get("previous_transaction") != null;
-            if (isBump) {
-                mFeeEstimates[3] = getOldFeeRate(mTx) + mMinFeeRate;
-            } else if (defaultFeerate != null) {
-                final Double mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
-                mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate *1000.0).longValue();
-                updateFeeSummaries();
-            }
-
+        try {
             updateTransaction(mRecipientText);
         } catch (final Exception e) {
-            // FIXME: Toast and go back to main activity since we must be disconnected
-            throw new RuntimeException(e);
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
+            finishOnUiThread();
+            return;
         }
 
         final View contentView = findViewById(android.R.id.content);

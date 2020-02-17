@@ -446,8 +446,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 final ObjectNode transactionFromUri =
                     call.resolve(null, getConnectionManager().getHWResolver());
                 final String error = transactionFromUri.get("error").asText();
-                if ("id_invalid_address".equals(error)) {
-                    UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
+                if (!"id_invalid_amount".equals(error)) {
+                    UI.toast(this, error, Toast.LENGTH_SHORT);
                     cameraHandler.post(fetchAndDecodeRunnable);
                     return;
                 }
