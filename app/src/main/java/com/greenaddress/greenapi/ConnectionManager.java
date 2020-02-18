@@ -13,6 +13,7 @@ import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 
 import java.util.Locale;
 import java.util.Observable;
@@ -39,6 +40,7 @@ public class ConnectionManager extends Observable {
     private String mWatchOnlyUsername;
     private boolean mLoginWithPin;
     private HWDeviceData mHWDevice;
+    private HWWallet mHWWallet;
     private CodeResolver mHWResolver;
     private boolean pinJustSaved = false;
 
@@ -99,6 +101,10 @@ public class ConnectionManager extends Observable {
         return mHWDevice;
     }
 
+    public HWWallet getHWWallet() {
+        return mHWWallet;
+    }
+
     public String getWatchOnlyUsername() {
         return mWatchOnlyUsername;
     }
@@ -136,11 +142,12 @@ public class ConnectionManager extends Observable {
         setState(ConnState.CONNECTED);
     }
 
-    public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver) throws Exception {
+    public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver, final HWWallet hwWallet) throws Exception {
         try {
             setState(ConnState.LOGGINGIN);
             mHWDevice = hwDevice;
             mHWResolver = hwResolver;
+            mHWWallet = hwWallet;
             getSession().login(parent, hwDevice, "", "").resolve(null, hwResolver);
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {

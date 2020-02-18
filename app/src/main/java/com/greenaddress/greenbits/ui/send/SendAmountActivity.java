@@ -364,9 +364,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                     mUnitButton.setSelected(!isFiat());
                     updateFeeSummaries();
                 } catch (final ParseException e) {
-                    UI.popup(this,
-                             "Your preferred exchange rate from is not available at the moment. You can change it from settings.")
-                    .show();
+                    UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
                 }
             }
         } else {

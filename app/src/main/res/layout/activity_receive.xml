@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.greenaddress.greenbits.ui.receive.ReceiveActivity">
 
     <LinearLayout
@@ -34,12 +35,39 @@
             android:textSize="16sp" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/addressWarning"
+        android:background="@color/buttonJungleGreen"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️"
+            android:textColor="@color/red"
+            android:contentDescription="@string/id_warning"
+            android:layout_gravity="center_vertical"
+            android:paddingEnd="8dp">
+        </TextView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/btcButtonBg"
+            android:text="@string/id_please_verify_that_the_address"
+            android:textSize="16sp" />
+    </LinearLayout>
+
     <ScrollView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/assetWhitelistWarning"
-        android:layout_above="@+id/shareAddressButton"
+        android:layout_weight="1"
         android:padding="@dimen/card_padding">
 
         <LinearLayout
@@ -185,4 +213,4 @@
         android:layout_alignParentBottom="true"
         android:text="@string/id_share_address" />
 
-</RelativeLayout>
+</LinearLayout>

@@ -247,7 +247,7 @@
   <string name="id_invalid_url">Ungültige URL</string>
   <string name="id_is_a_noncustodial">ist eine selbstverwahrende (non-custodial)</string>
   <string name="id_issuer">Ausgeber</string>
-  <string name="id_label">LABEL</string>
+  <string name="id_label">KENNUNG</string>
   <string name="id_last_attempt_if_failed_you_will">Letzter Versuch: Wenn dieser Versuch fehlschlägt, musst du deine Wallet mit dem 24-Wörter-Merksatz wiederherstellen.</string>
   <string name="id_last_ping_1d_ms">Letzter Ping: %1$d ms</string>
   <string name="id_later">SPÄTER</string>

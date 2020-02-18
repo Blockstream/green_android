@@ -120,7 +120,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     final int subaccount = jsonNode.asInt();
                     Log.d("OBSNTF", "subaccount involved " + subaccount);
                     mModel.getBalanceDataObservable(subaccount).refresh();
-                    mModel.getReceiveAddressObservable(subaccount).refresh();
                     mModel.getTransactionDataObservable(subaccount).refresh();
                     try {
                         final TransactionData transactionData = mObjectMapper.convertValue(transaction,

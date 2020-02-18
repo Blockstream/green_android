@@ -92,9 +92,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             final BalanceData balanceData = getSession().convertBalance(0);
             Double.parseDouble(balanceData.getFiat());
         } catch (final Exception e) {
-            UI.popup(this,
-                     "Your preferred exchange rate from is not available at the moment. You can change it from settings.")
-            .show();
+            UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
         }
     }
 

@@ -25,7 +25,6 @@ public class SubaccountsDataObservable extends Observable {
 
     private SparseArray<TransactionDataObservable> mTransactionDataObservables;
     private SparseArray<TransactionDataObservable> mUTXODataObservables;
-    private SparseArray<ReceiveAddressObservable> mReceiveAddressObservables;
     private SparseArray<BalanceDataObservable> mBalanceDataObservables;
     private ActiveAccountObservable mActiveAccountObservable;
     private BlockchainHeightObservable mBlockchainHeightObservable;
@@ -42,7 +41,6 @@ public class SubaccountsDataObservable extends Observable {
 
         mTransactionDataObservables = model.getTransactionDataObservables();
         mBalanceDataObservables = model.getBalanceDataObservables();
-        mReceiveAddressObservables = model.getReceiveAddressObservables();
         mActiveAccountObservable = model.getActiveAccountObservable();
         mBlockchainHeightObservable = model.getBlockchainHeightObservable();
         mUTXODataObservables = model.getUTXODataObservables();
@@ -90,12 +88,6 @@ public class SubaccountsDataObservable extends Observable {
             mBlockchainHeightObservable.addObserver(balanceDataObservable);
             mBalanceDataObservables.put(pointer, balanceDataObservable);
         }
-        if (mReceiveAddressObservables.get(pointer) == null) {
-            final ReceiveAddressObservable addressObservable =
-                new ReceiveAddressObservable(mExecutor, mCodeResolver, pointer);
-            mReceiveAddressObservables.put(pointer, addressObservable);
-            mActiveAccountObservable.addObserver(addressObservable);
-        }
         if (mUTXODataObservables.get(pointer) == null) {
             final TransactionDataObservable utxoDataObservable = new TransactionDataObservable(mExecutor,
                                                                                                mCodeResolver,
@@ -130,7 +122,6 @@ public class SubaccountsDataObservable extends Observable {
         mSubaccountsData.add(newSubAccount);
         final Integer newPointer = newSubAccount.getPointer();
         initObservables(newPointer);
-        mReceiveAddressObservables.get(newPointer).refresh();
         mBalanceDataObservables.get(newPointer).refresh();
         setSubaccountsData(mSubaccountsData);
     }

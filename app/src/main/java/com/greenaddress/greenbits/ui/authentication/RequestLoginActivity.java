@@ -282,7 +282,7 @@ public class RequestLoginActivity extends LoginActivity {
             try {
                 cm.connect(this);
                 getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
-                cm.login(parent, mHwDeviceData, mHwResolver);
+                cm.login(parent, mHwDeviceData, mHwResolver, mHwWallet);
                 onPostLogin();
                 runOnUiThread(() -> {
                     stopLoading();

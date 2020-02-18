@@ -973,6 +973,18 @@ public class BTChipDongle implements BTChipConstants {
 		return this.application;
 	}
 
+	public String getGreenAddress(final boolean csv, final long subaccount, final long branch, final long pointer, final long csvBlocks) throws BTChipException {
+		final ByteArrayOutputStream data = new ByteArrayOutputStream();
+		BufferUtils.writeUint32BE(data, subaccount);
+		BufferUtils.writeUint32BE(data, branch);
+		BufferUtils.writeUint32BE(data, pointer);
+		if (csv)
+			BufferUtils.writeUint32BE(data, csvBlocks);
+
+		final byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_GREEN_ADDRESS, (byte)0x01, csv ? (byte)0x00 : (byte)0x01, data.toByteArray(), OK_OR_NOT_SUPPORTED);
+		return  BTChipDongle.readString(response, 0, response.length);
+	}
+
 	public void setKeymapEncoding(byte[] keymapEncoding) throws BTChipException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		BufferUtils.writeBuffer(data, keymapEncoding);

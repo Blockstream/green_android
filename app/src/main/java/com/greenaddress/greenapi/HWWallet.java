@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi;
 
+import com.btchip.BTChipException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
@@ -70,6 +71,8 @@ public abstract class HWWallet {
     public abstract String getBlindingNonce(final GaActivity parent, final String pubkey, final String scriptHex);
 
     public abstract int getIconResourceId();
+
+    public abstract String getGreenAddress(final boolean csv, final long subaccount, final long branch, final long pointer, final long csvBlocks) throws BTChipException;
 
     public NetworkData getNetwork() {
         return mNetwork;

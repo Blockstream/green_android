@@ -347,4 +347,10 @@ public class TrezorHWWallet extends HWWallet {
     public int getIconResourceId() {
         return R.drawable.ic_trezor;
     }
+
+    @Override
+    public String getGreenAddress(final boolean csv, final long subaccount, final long branch, final long pointer,
+                                  final long csvBlocks) {
+        return null;
+    }
 }

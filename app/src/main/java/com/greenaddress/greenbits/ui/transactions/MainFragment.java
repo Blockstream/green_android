@@ -13,13 +13,11 @@ import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.BalanceDataObservable;
-import com.greenaddress.greenapi.model.ReceiveAddressObservable;
 import com.greenaddress.greenapi.model.SubaccountsDataObservable;
 import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GAFragment;
 import com.greenaddress.greenbits.ui.GaActivity;
-import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.AccountView;
@@ -168,8 +166,6 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
     public void update(final Observable observable, final Object o) {
         if (observable instanceof BalanceDataObservable) {
             onUpdateBalance((BalanceDataObservable) observable);
-        } else if (observable instanceof ReceiveAddressObservable) {
-            onUpdateReceiveAddress((ReceiveAddressObservable) observable);
         } else if (observable instanceof TransactionDataObservable) {
             onUpdateTransactions((TransactionDataObservable) observable);
             //toast(R.string.id_a_new_transaction_has_just);
@@ -331,9 +327,6 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
             mAccountView.setBalance(getModel(), satoshi);
         });
     }
-
-    @Override
-    public void onUpdateReceiveAddress(final ReceiveAddressObservable observable) {}
 
     @Override
     public void onUpdateTransactions(final TransactionDataObservable observable) {

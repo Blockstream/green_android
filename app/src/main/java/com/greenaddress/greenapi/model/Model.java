@@ -28,7 +28,6 @@ public class Model {
     private AssetsDataObservable mAssetsObservable;
     private SparseArray<TransactionDataObservable> mTransactionDataObservables = new SparseArray<>();
     private SparseArray<TransactionDataObservable> mUTXODataObservables = new SparseArray<>();
-    private SparseArray<ReceiveAddressObservable> mReceiveAddressObservables = new SparseArray<>();
     private SparseArray<BalanceDataObservable> mBalanceDataObservables = new SparseArray<>();
     private ActiveAccountObservable mActiveAccountObservable = new ActiveAccountObservable();
     private SettingsObservable mSettingsObservable;
@@ -70,10 +69,6 @@ public class Model {
 
     public TransactionDataObservable getUTXODataObservable(final Integer pointer) {
         return mUTXODataObservables.get(pointer);
-    }
-
-    public ReceiveAddressObservable getReceiveAddressObservable(final Integer pointer) {
-        return mReceiveAddressObservables.get(pointer);
     }
 
     public BalanceDataObservable getBalanceDataObservable(final Integer pointer) {
@@ -118,10 +113,6 @@ public class Model {
 
     public SparseArray<TransactionDataObservable> getUTXODataObservables() {
         return mUTXODataObservables;
-    }
-
-    public SparseArray<ReceiveAddressObservable> getReceiveAddressObservables() {
-        return mReceiveAddressObservables;
     }
 
     public SparseArray<BalanceDataObservable> getBalanceDataObservables() {
@@ -258,10 +249,6 @@ public class Model {
 
     public SubaccountData getSubaccountsData(final int subAccount) {
         return getSubaccountsDataObservable().getSubaccountsDataWithPointer(subAccount);
-    }
-
-    public String getAddress(final int subAccount) {
-        return getReceiveAddressObservable(subAccount).getReceiveAddress();
     }
 
     public BalanceData getBalanceData(final int subAccount) {

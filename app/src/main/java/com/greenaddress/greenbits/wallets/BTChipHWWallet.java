@@ -112,6 +112,12 @@ public class BTChipHWWallet extends HWWallet {
         }
     }
 
+    @Override
+    public String getGreenAddress(final boolean csv, final long subaccount, final long branch, final long pointer,
+                                  final long csvBlocks) throws BTChipException {
+        return mDongle.getGreenAddress(csv, subaccount, branch, pointer, csvBlocks);
+    }
+
     public String signMessage(final GaActivity parent, final List<Integer> path, final String message) {
         try {
             mDongle.signMessagePrepare(path, message.getBytes(StandardCharsets.UTF_8));

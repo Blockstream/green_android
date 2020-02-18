@@ -38,6 +38,7 @@ public interface BTChipConstants {
     byte BTCHIP_INS_GET_LIQUID_COMMITMENTS = (byte) 0xE0;
     byte BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR = (byte) 0xE8;
     byte BTCHIP_INS_GET_LIQUID_ISSUANCE_INFORMATION = (byte) 0xE6;
+    byte BTCHIP_INS_GET_LIQUID_GREEN_ADDRESS = (byte) 0xEA;
     byte BTCHIP_INS_GET_TRUSTED_INPUT = (byte)0x42;
     byte BTCHIP_INS_HASH_INPUT_START = (byte)0x44;
     byte BTCHIP_INS_HASH_INPUT_FINALIZE = (byte)0x46;
