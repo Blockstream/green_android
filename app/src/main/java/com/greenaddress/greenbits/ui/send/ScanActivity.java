@@ -421,28 +421,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             }
 
         } else {
-            final boolean startWithBitcoin = scanned.toLowerCase().startsWith("bitcoin:");
-            final boolean startsWithLiquid = scanned.toLowerCase().startsWith("liquidnetwork:");
-            if ((networkData.getLiquid() && startWithBitcoin) || (!networkData.getLiquid() && startsWithLiquid)) {
-                UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);
-                return;
-            }
-            String text;
-
-            if (networkData.getLiquid()) {
-                text = scanned;
-            } else {
-                text = startWithBitcoin ? scanned : String.format("bitcoin:%s", scanned);
-                // qrcodes of bech32 addresses that use alphanumeric mode may be read as uppercase
-                final int i = text.indexOf("1");
-                final String hrp = i == -1 ? "" : text.substring(8, i).toLowerCase();
-                if (!networkData.getLiquid() && text.substring(8).equals(text.substring(8).toUpperCase()) &&
-                    (hrp.equals("bc") || hrp.equals("tb"))) {
-                    text = text.toLowerCase();
-                }
-            }
             try {
-                final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, text, subaccount);
+                final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
                 final ObjectNode transactionFromUri =
                     call.resolve(null, getConnectionManager().getHWResolver());
                 final String error = transactionFromUri.get("error").asText();
