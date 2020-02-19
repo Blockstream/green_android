@@ -162,12 +162,23 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             settings.getPricing().setCurrency(currency);
             settings.getPricing().setExchange(exchange);
             setPricingSummary(null);
-            getGAApp().getExecutor().execute(() -> updateSettings(settings));
-
-            final TwoFactorConfigDataObservable twoFaData = model.getTwoFactorConfigDataObservable();
-            if (twoFaData.getTwoFactorConfigData() != null) {
-                setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
-            }
+            getGAApp().getExecutor().execute(() -> {
+                updateSettings(settings);
+                final TwoFactorConfigDataObservable twoFaData = model.getTwoFactorConfigDataObservable();
+                if (twoFaData.getTwoFactorConfigData() != null) {
+                    final ObjectNode limitsData = twoFaData.getTwoFactorConfigData().getLimits();
+                    final Integer satoshi = limitsData.get("satoshi").asInt(0);
+                    setLimitsText(limitsData);
+                    if (satoshi > 0) {
+                        getActivity().runOnUiThread(() -> {
+                            UI.popup(
+                                getActivity(),
+                                "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to top-up the 2FA threshold after continuing.")
+                            .show();
+                        });
+                    }
+                }
+            });
             return true;
         });
 
