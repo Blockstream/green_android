@@ -23,6 +23,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.greenaddress.gdk.GDKTwoFactorCall;
+import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
 import com.greenaddress.greenapi.model.EventDataObservable;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
@@ -84,6 +85,16 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         if (mIsBitcoinUri && !isResetActive) {
             // If logged in, open send activity
             onBitcoinUri();
+        }
+
+        // check available preferred exchange rate
+        try {
+            final BalanceData balanceData = getSession().convertBalance(0);
+            Double.parseDouble(balanceData.getFiat());
+        } catch (final Exception e) {
+            UI.popup(this,
+                     "Your preferred exchange rate from is not available at the moment. You can change it from settings.")
+            .show();
         }
     }
 
