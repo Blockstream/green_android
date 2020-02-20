@@ -186,7 +186,10 @@ class SettingsViewController: UIViewController {
         if twoFactorConfig?.anyEnabled ?? false {
             menu.append(contentsOf: [thresholdTwoFactor, resetTwoFactor])
         }
-        menu.append(contentsOf: [locktimeRecovery, locktimeRequest, setRecoveryEmail])
+        menu.append(contentsOf: [locktimeRecovery, locktimeRequest])
+        if !(twoFactorConfig?.email.confirmed ?? false) {
+            menu.append(setRecoveryEmail)
+        }
         return menu
     }
 
@@ -406,10 +409,6 @@ extension SettingsViewController {
     }
 
     func showLockTimeRecovery() {
-        guard twoFactorConfig?.enableMethods.contains("email") == true else {
-            showAlert(title: "Error", message: "You need to set a recovery email first")
-            return
-        }
         let settings = getGAService().getSettings()!
         var enabled = false
         if let notifications = settings.notifications {
