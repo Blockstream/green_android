@@ -19,8 +19,6 @@ import com.greenaddress.greenbits.ui.R;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class NotificationHandlerImpl implements GDK.NotificationHandler {
 
@@ -29,8 +27,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     private Queue<Object> mTemp = new LinkedList<>();
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private TorProgressObservable mTorProgressObservable;
-    private Timer mOfflineTimer = new Timer();
-    private Long mTryingAt;
 
     public NotificationHandlerImpl() {
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -61,13 +57,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         }
     }
 
-    private void cancelTimer() {
-        if (mOfflineTimer != null) {
-            mOfflineTimer.cancel();
-            mOfflineTimer.purge();
-        }
-    }
-
 //{"reset_2fa_active":true,"reset_2fa_days_remaining":90,"reset_2fa_disputed":false}
     private void process(final Object jsonObject) {
         Log.d("OBSNTF", "notification " + jsonObject);
@@ -87,37 +76,19 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 final JsonNode networkNode = objectNode.get("network");
                 final boolean connected = networkNode.get("connected").asBoolean();
 
-                cancelTimer();
                 Log.d("OBSNTF", "NETWORKEVENT connected:" + connected);
 
                 if (connected) {
                     final boolean loginRequired = networkNode.get("login_required").asBoolean(false);
-                    mModel.getConnMsgObservable().setOnline();
                     if (loginRequired) {
                         mConnectionManager.goLoginRequired();
                     } else {
                         mConnectionManager.goPostLogin();
                     }
                 } else {
-                    final long waitingMs = networkNode.get("waiting").asLong() * 1000;
-                    if (waitingMs > 3000) {
-                        mTryingAt = System.currentTimeMillis() + waitingMs;
-                        mOfflineTimer = new Timer();
-                        mOfflineTimer.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    final int remainingSec = (int) ((mTryingAt - System.currentTimeMillis()) / 1000);
-                                    if (remainingSec >= 0)
-                                        mModel.getConnMsgObservable().setMessage(R.string.
-                                                                                 id_not_connected_connecting_in_ds_,
-                                                                                 new Object[] {remainingSec});
-                                    else
-                                        cancelTimer();
-                                }
-                            }, 0, 100);
-                    }
                     mConnectionManager.goOffline();
                 }
+                mModel.getConnMsgObservable().setNetworkNode(networkNode);
                 break;
             }
             case "block": {

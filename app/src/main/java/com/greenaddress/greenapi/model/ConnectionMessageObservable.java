@@ -1,47 +1,31 @@
 package com.greenaddress.greenapi.model;
 
-import android.content.res.Resources;
-import android.util.Log;
+import com.fasterxml.jackson.databind.JsonNode;
 
-import java.util.Objects;
 import java.util.Observable;
 
 public class ConnectionMessageObservable extends Observable {
-    private boolean offline=false;
-    private int messageId;
-    private Object[] args;
+    private JsonNode networkNode;
 
-    public String getMessage(final Resources resources) {
-        if (args == null)
-            return resources.getString(messageId);
-        else
-            return resources.getString(messageId, args);
-    }
-
-    public boolean isOffline() {
-        return offline;
-    }
-
-    public void setOnline() {
-        this.messageId = 0;
-        this.args = null;
-        this.offline = false;
+    public void setNetworkNode(final JsonNode network) {
+        networkNode = network;
         setChanged();
         notifyObservers();
     }
 
-    public void setMessage(final int messageId) {
-        setMessage(messageId, null);
+    public boolean isValid() {
+        return networkNode != null;
     }
 
-    public void setMessage(final int messageId, final Object[] args) {
-        if (args == null || !(messageId == this.messageId && Objects.deepEquals(args,this.args))) {
-            Log.d("OBS", "ConnectionMessageObservable.setMessage(" + messageId + "," + args + ")");
-            this.messageId = messageId;
-            this.args = args;
-            this.offline = true;
-            setChanged();
-            notifyObservers();
-        }
+    public boolean isOnline() {
+        return networkNode.get("connected").asBoolean();
+    }
+
+    public long waitingMs() {
+        return networkNode.get("waiting").asLong() * 1000;
+    }
+
+    public boolean isLoginRequired() {
+        return networkNode.get("login_required").asBoolean(false);
     }
 }

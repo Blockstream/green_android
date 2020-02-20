@@ -6,10 +6,11 @@ import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.android.material.snackbar.Snackbar;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.model.ConnectionMessageObservable;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenapi.model.ToastObservable;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
@@ -22,10 +23,15 @@ import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.greenaddress.gdk.GDKSession.getSession;
+
 public abstract class LoggedActivity extends GaActivity implements Observer {
 
     private Timer mTimer = new Timer();
     private long mStart = System.currentTimeMillis();
+    private Snackbar mSnackbar;
+    private Timer mOfflineTimer = new Timer();
+    private Long mTryingAt = 0L;
 
     @Override
     public void onResume() {
@@ -39,7 +45,21 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
 
         getConnectionManager().addObserver(this);
         getModel().getToastObservable().addObserver(this);
+        getModel().getConnMsgObservable().addObserver(this);
+
         startLogoutTimer();
+        update(getModel().getConnMsgObservable());
+
+        // try to reconnect if offline
+        if (getConnectionManager().isOffline()) {
+            getGAApp().getExecutor().submit(() -> {
+                try {
+                    getSession().reconnectNow();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     @Override
@@ -50,10 +70,16 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
             return;
         }
 
+        cancelOfflineTimer();
         stopLogoutTimer();
         mStart = System.currentTimeMillis();
         getConnectionManager().deleteObserver(this);
         getModel().getToastObservable().deleteObserver(this);
+        getModel().getConnMsgObservable().deleteObserver(this);
+
+        if (mSnackbar != null) {
+            mSnackbar.dismiss();
+        }
     }
 
     @Override
@@ -66,6 +92,47 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         } else if (observable instanceof ToastObservable) {
             final ToastObservable tObs = (ToastObservable) observable;
             UI.toast(this, tObs.getMessage(getResources()), Toast.LENGTH_LONG);
+        } else if (observable instanceof ConnectionMessageObservable) {
+            final ConnectionMessageObservable obs = (ConnectionMessageObservable) observable;
+            update(obs);
+        }
+    }
+
+    private void update(final ConnectionMessageObservable obs) {
+        cancelOfflineTimer();
+
+        if (!obs.isValid() || obs.isOnline()) {
+            runOnUiThread(() -> { if (mSnackbar != null) { mSnackbar.dismiss(); }});
+            return;
+        }
+
+        mTryingAt = System.currentTimeMillis() + obs.waitingMs();
+        mOfflineTimer = new Timer();
+        mOfflineTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                final long remainingSec = (mTryingAt - System.currentTimeMillis()) / 1000;
+                if (remainingSec < 0) {
+                    cancelOfflineTimer();
+                    return;
+                }
+                runOnUiThread(() -> {
+                    // Update snackbar message on main thread
+                    if (mSnackbar == null)
+                        mSnackbar = Snackbar.make(findViewById(
+                                                      android.R.id.content), R.string.id_you_are_not_connected,
+                                                  Snackbar.LENGTH_INDEFINITE);
+                    mSnackbar.setText(getString(R.string.id_not_connected_connecting_in_ds_, remainingSec));
+                    mSnackbar.show();
+                });
+            }
+        }, 0, 100);
+    }
+
+    private void cancelOfflineTimer() {
+        if (mOfflineTimer != null) {
+            mOfflineTimer.cancel();
+            mOfflineTimer.purge();
         }
     }
 

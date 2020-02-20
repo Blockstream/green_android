@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -10,9 +9,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
@@ -25,10 +22,8 @@ import androidx.viewpager.widget.ViewPager;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
-import com.greenaddress.greenapi.model.ConnectionMessageObservable;
 import com.greenaddress.greenapi.model.EventDataObservable;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
@@ -61,7 +56,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     private BottomNavigationView mNavigation;
     private MaterialDialog mSubaccountDialog;
     private boolean mIsBitcoinUri = false;
-    private Snackbar mSnackbar;
 
     static boolean isBitcoinScheme(final Intent intent) {
         final Uri uri = intent.getData();
@@ -142,22 +136,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         setSupportActionBar(toolbar);
         setTitleWithNetwork(R.string.id_wallets);
 
-        mSnackbar = Snackbar.make(findViewById(
-                                      R.id.placeSnackBar), R.string.id_you_are_not_connected,
-                                  Snackbar.LENGTH_INDEFINITE);
-        final View snackbarView = mSnackbar.getView();
-        final TextView textView = snackbarView.findViewById(R.id.snackbar_text);
-        textView.setTextColor(Color.RED);
-        mSnackbar.setAction(R.string.id_try_now, v -> {
-            getGAApp().getExecutor().submit(() -> {
-                try {
-                    getSession().reconnectNow();
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        });
-
         // Set up the action bar.
         final SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -193,10 +171,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             return;
         getModel().getActiveAccountObservable().addObserver(this);
         getModel().getEventDataObservable().addObserver(this);
-        getModel().getConnMsgObservable().addObserver(this);
-        getConnectionManager().addObserver(this);
-
-        updateSnackBar(getModel().getConnMsgObservable());
 
         final SectionsPagerAdapter adapter = getPagerAdapter();
 
@@ -273,25 +247,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
             onUpdateActiveAccount();
         else if (observable instanceof EventDataObservable) {
             updateBottomNavigationView();
-        } else if (observable instanceof ConnectionMessageObservable) {
-            final ConnectionMessageObservable obs = (ConnectionMessageObservable) observable;
-            updateSnackBar(obs);
         } else {
             invalidateOptionsMenu();
-        }
-    }
-
-    private void updateSnackBar(final ConnectionMessageObservable cmo) {
-        if (mSnackbar != null && cmo != null) {
-            runOnUiThread(() -> {
-                if (cmo.isOffline()) {
-                    final TextView text = mSnackbar.getView().findViewById(R.id.snackbar_text);
-                    text.setText(cmo.getMessage(getResources()));
-                    mSnackbar.show();
-                } else {
-                    mSnackbar.dismiss();
-                }
-            });
         }
     }
 

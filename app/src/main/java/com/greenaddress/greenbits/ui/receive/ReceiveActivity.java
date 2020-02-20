@@ -164,6 +164,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
     @Override
     public void update(final Observable observable, final Object o) {
+        super.update(observable, o);
         final int subaccount = getModel().getCurrentSubaccount();
         mCurrentAddress = getModel().getReceiveAddressObservable(subaccount).getReceiveAddress();
         if (mCurrentAmount == null || mCurrentAmount.get("satoshi").asLong() == 0)
