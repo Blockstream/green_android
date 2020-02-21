@@ -10,7 +10,7 @@
 "id_a_new_transaction_has_just" = "收到一笔新交易";
 "id_a_screen_lock_must_be_enabled" = "A screen lock must be enabled from Android settings";
 "id_a_wallet_is_detected_on_this" = "本设备上检测到了一个钱包：";
-"id_about" = "About";
+"id_about" = "关于";
 "id_accept" = "接受";
 "id_access" = "Access";
 "id_account" = "账户";
@@ -349,12 +349,14 @@
 "id_please_select_the_checkbox" = "请进行勾选";
 "id_please_set_and_enable_socks5" = "请设置并启用SOCKS5代理和端口以使用Tor";
 "id_please_tap_card" = "请点击卡片";
+"id_please_verify_that_the_address" = "Please verify that the address shown on your hardware wallet matches the one on your phone.";
 "id_precision" = "精确";
 "id_privacy_policy" = "隐私政策";
 "id_problem_with_key_1s" = "密钥%1$@出现了问题";
 "id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
 "id_proxy_settings" = "PROXY设置";
 "id_qr_scanner" = "二维码扫描器";
+"id_read_more_at_our_s" = "Read more at our %@";
 "id_receive" = "接收";
 "id_receive_email_notifications_for" = "Receive email notifications for sent and received transactions";
 "id_received" = "已接收";
@@ -468,7 +470,9 @@
 "id_standard_account" = "Standard Account";
 "id_standard_accounts_allow_you_to" = "Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.";
 "id_start_a_2fa_reset_process_if" = "Start a 2FA reset process if you lost access to all your two-factor authentication methods.";
+"id_start_receiving_funds_and_set" = "Start receiving funds and set an email to receive recovery data for your wallet";
 "id_support" = "Support";
+"id_support_page" = "Support Page";
 "id_sweep" = "扫描";
 "id_sweep_from_paper_wallet" = "从纸钱包中提取";
 "id_sweep_into_s" = "已扫描%@";
@@ -482,10 +486,13 @@
 "id_terms_of_service" = "服务协议";
 "id_terms_of_use" = "用户协议";
 "id_thank_you_for_downloading_green" = "感谢下载Green！有空请给我们打分评价";
+"id_the_address_is_valid" = "The address is valid.";
+"id_the_addresses_dont_match" = "The addresses don't match.";
 "id_the_asset_registry_is_currently" = "The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.";
 "id_the_camera_has_a_problem_you" = "摄像头出现故障，可能需要重启设备。";
 "id_the_default_value_is_90_days_if" = "The default value is 90 days. If you set an email, you will receive an updated copy of your recovery data.";
 "id_the_easier_safer_and_faster" = "更易用、更安全、更快捷的钱包";
+"id_the_email_will_also_be_used_to" = "The email will also be used to receive recovery data and transaction notifications";
 "id_the_hardware_wallet_you_are" = "你所使用的硬件钱包还不支持";
 "id_the_network_selected_on_the" = "在Green应用程序上选择的网络与在硬件钱包上选择的网络不同。请在两台设备上选择相同的网络。";
 "id_the_new_email_will_be_used_for" = "The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.";
