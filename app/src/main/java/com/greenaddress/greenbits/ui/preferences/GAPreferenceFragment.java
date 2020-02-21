@@ -105,7 +105,7 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
 
     public boolean warnIfOffline(final Activity activity) {
         if (getConnectionManager().isOffline()) {
-            UI.toast(activity, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+            UI.toast(activity, R.string.id_connection_failed, Toast.LENGTH_LONG);
             return true;
         }
         return false;

@@ -288,7 +288,7 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             runOnUiThread(() -> {
                 stopLoading();
                 if (getCode(e) == GDK.GA_RECONNECT) {
-                    UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+                    UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
                 } else {
                     UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
                 }

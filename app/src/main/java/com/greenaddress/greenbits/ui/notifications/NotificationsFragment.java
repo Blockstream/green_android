@@ -149,7 +149,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
             return getString(d, formatArgs);
         }
         if (d == R.string.notification_format_string ||
-            d == R.string.id_warning_wallet_locked_for ||
+            d == R.string.id_your_wallet_is_locked_for_a ||
             d == R.string.id_days_remaining_s ||
             d == R.string.id_s_blocks_left) {
             return getString(d, event.getValue());

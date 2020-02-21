@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="10sp"
-                    android:text="@string/id_providing_an_email_enables" />
+                    android:text="@string/id_set_an_email_address_to_receive" />
 
                 <TextView
                     android:layout_width="wrap_content"

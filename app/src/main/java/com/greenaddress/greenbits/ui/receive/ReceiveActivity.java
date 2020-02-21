@@ -236,7 +236,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
     public void onNewAddressClicked() {
         if (getConnectionManager().isOffline()) {
-            UI.toast(this, R.string.id_you_are_not_connected_to_the, Toast.LENGTH_LONG);
+            UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
         } else {
             final int subaccount = getModel().getCurrentSubaccount();
             getModel().getReceiveAddressObservable(subaccount).refresh();

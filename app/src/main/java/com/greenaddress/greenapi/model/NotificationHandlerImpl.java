@@ -206,7 +206,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     } else{
                         final Integer days = resetData.get("days_remaining").asInt();
                         ev = new EventData(R.string.id_twofactor_authentication,
-                                           R.string.id_warning_wallet_locked_for, days);
+                                           R.string.id_your_wallet_is_locked_for_a, days);
                     }
                     mModel.getEventDataObservable().pushEvent(ev);
                 }
