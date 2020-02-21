@@ -43,6 +43,7 @@
   <string name="id_asset_details">자산 세부 정보</string>
   <string name="id_asset_id">자산 ID</string>
   <string name="id_asset_name">자산 이름</string>
+  <string name="id_assets">Assets</string>
   <string name="id_attempts_remaining_d">남은 시도: %d</string>
   <string name="id_auto_logout_timeout">자동 로그아웃 시간</string>
   <string name="id_autolock_after">자동 잠금 시간</string>
@@ -61,16 +62,21 @@
   <string name="id_call">전화</string>
   <string name="id_camera_problem">카메라 문제</string>
   <string name="id_cancel">취소</string>
+  <string name="id_cancel_a_reset_to_unlock_your">Cancel a reset to unlock your wallet if you recovered access to an old Two-Factor Authentication method.</string>
   <string name="id_cancel_twofactor_reset">2FA 재설정 취소</string>
   <string name="id_cannot_remove_enabled_network">활성화 된 네트워크는 제거할 수 없으므로 먼저 비활성화 하세요.</string>
   <string name="id_cant_connect_to_this_url">URL 연결 불가</string>
   <string name="id_change">거스름돈</string>
   <string name="id_change_pin">Change PIN</string>
+  <string name="id_check_your_backup">Check your backup</string>
   <string name="id_choose">선택</string>
+  <string name="id_choose_a_name_for_your_new">Choose a name for your new Blockstream Green wallet.</string>
   <string name="id_choose_method_to_authorize_the">권한부여 방식 선택</string>
   <string name="id_choose_twofactor_authentication">2FA 방식 선택</string>
   <string name="id_choose_your_network">사용자 지정 네트워크 선택</string>
   <string name="id_clear">새로고침</string>
+  <string name="id_click_to_receive_an_email_with">Click to receive an email with your encrypted recovery data.</string>
+  <string name="id_communication_timed_out_make">Communication timed out. Make sure the device is powered on and try again.</string>
   <string name="id_completed">완료</string>
   <string name="id_confidential">기밀</string>
   <string name="id_confirm_code">코드 컨펌</string>
@@ -78,11 +84,14 @@
   <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
   <string name="id_confirmation_in_d_blocks">%d 블록 내에 컨펌</string>
   <string name="id_congratulations">축하합니다!</string>
+  <string name="id_connect_hardware_wallet">Connect hardware wallet</string>
   <string name="id_connect_through_a_proxy">프록시를 사용하여 연결하기</string>
   <string name="id_connect_with_tor">Tor를 사용하여 연결하기</string>
   <string name="id_connecting_to_a_trusted_node">Tor를 통해 신뢰하는 노드에 연결하려면 로그인 전, 설정에서 프록시를 활성화 하여야 하고 Socks5 프록시(안드로이드용 Orbot 앱)도 있어야 합니다.</string>
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Tor (.onion)에 연결하면 최고의 보안과 프라이버시를 가능케 합니다. 계속하시려면 "확인"을 눌러주세요.</string>
+  <string name="id_connection_failed">Connection failed</string>
+  <string name="id_connection_to_device_failed">Connection to device failed! Move closer to the device and try again.</string>
   <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>
   <string name="id_continue">계속</string>
   <string name="id_copied_to_clipboard">Copied to clipboard</string>
@@ -115,6 +124,7 @@
   <string name="id_denomination">단위</string>
   <string name="id_deposit">입금</string>
   <string name="id_disable">비활성화</string>
+  <string name="id_disable_s_for_twofactor">Disable %s for Two-Factor Authentication</string>
   <string name="id_disabled">비활성화됨</string>
   <string name="id_displays_the_progress_of_spv">SPV 동기화 진행을 표시합니다</string>
   <string name="id_dispute_twofactor_reset">2FA 재설정 분쟁</string>
@@ -194,6 +204,8 @@
   <string name="id_green_only_supports_one_pin_for">Green 은 각 네트워크 별로 한 개의 PIN을 지원합니다. 새로운 지갑은 로그인 시 니모닉(복원 코드)이 필요합니다.</string>
   <string name="id_green_only_supports_one_pin_per">Green은 네트워크당 하나의 비밀번호만 지원합니다. 이 지갑에 비밀번호를 설정하시려면 원래 지갑의 비밀번호를 설정에서 비활성화 하세요.</string>
   <string name="id_green_uses_biometric">Green 은 지갑에 쉽게 접근하기 위하여 생체인증 기술을 사용합니다.</string>
+  <string name="id_green_uses_bluetooth_for">Green uses Bluetooth for communication with hardware wallets</string>
+  <string name="id_green_uses_bluetooth_to_connect">Green uses Bluetooth to connect to hardware wallets</string>
   <string name="id_green_uses_multisig_with_one">Green 은 Blockstream 서버의 서명과 사용자의 매체에서 생성되는 서명으로 멀티서명 기술을 사용합니다. 2FA를 설정할 경우, 서버측 서명을 더욱 안전하게 만듭니다.</string>
   <string name="id_hardware_wallet_support_for">기밀 자산의 하드웨어 지갑 지원이 곧 출시 될 예정입니다.</string>
   <string name="id_hash">해시</string>
@@ -220,6 +232,7 @@
   <string name="id_invalid_mnemonic">유효하지 않은 니모닉(복원 코드)</string>
   <string name="id_invalid_mnemonic_must_be_24_or">유효하지 않은 니모닉(복원 코드) (24개 또는 27 단어여야 합니다)</string>
   <string name="id_invalid_network_configuration">유효하지 않은 네트워크 설정</string>
+  <string name="id_invalid_payment_request_assetid">Invalid payment request, AssetID has to be specified</string>
   <string name="id_invalid_pgp_key">유효하지 않은 PGP 키</string>
   <string name="id_invalid_phone_number_format">유효하지 않은 휴대폰 번호 형식</string>
   <string name="id_invalid_pin_remaining_attempts">잘못된 비밀번호입니다. 남은 시도: %1$d.</string>
@@ -227,6 +240,7 @@
   <string name="id_invalid_pin_you_have_1d">잘못된 비밀번호입니다. %1$d의 시도 남음</string>
   <string name="id_invalid_private_key">유효하지 않은 private 키</string>
   <string name="id_invalid_replacement_fee_rate">유효하지 않은 대체 수수료율</string>
+  <string name="id_invalid_status_check_that_your">Invalid status. Check that your device is unlocked and try again.</string>
   <string name="id_invalid_twofactor_code">유효하지 않은 2FA 코드</string>
   <string name="id_invalid_url">유효하지 않은 URL</string>
   <string name="id_is_a_noncustodial">자산을 맡겨 신뢰를 요구하지 않는 지갑입니다.</string>
@@ -243,6 +257,7 @@
   <string name="id_liquid_securities_account">Liquid Securities Account</string>
   <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
   <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.</string>
+  <string name="id_liquid_watchmen_via_pegin_tap">Liquid watchmen via peg-in. Tap here to read more about Liquid</string>
   <string name="id_loading_transactions">거래 로딩중...</string>
   <string name="id_log_in">로그인</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -256,6 +271,7 @@
   <string name="id_look_at_the_device_for_the">번호 배열은 기기에 나와 있습니다</string>
   <string name="id_low">낮음</string>
   <string name="id_main_account">주 계정</string>
+  <string name="id_make_sure_you_made_a_proper">Make sure you made a proper backup of your wallet mnemonic.</string>
   <string name="id_malleated">바뀜</string>
   <string name="id_medium">중간</string>
   <string name="id_memo">메모</string>
@@ -335,13 +351,14 @@
   <string name="id_please_select_the_checkbox">확인란을 선택해주세요</string>
   <string name="id_please_set_and_enable_socks5">Tor를 사용하기 위해서 SOCKS5 프록시와 포트를 활성화/설정해 주세요</string>
   <string name="id_please_tap_card">카드를 터치해 주세요</string>
+  <string name="id_please_verify_that_the_address">Please verify that the address shown on your hardware wallet matches the one on your phone.</string>
   <string name="id_precision">정확도</string>
   <string name="id_privacy_policy">개인정보처리방침</string>
   <string name="id_problem_with_key_1s">키 %1$s에 문제있음</string>
   <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive a Liquid Security.</string>
-  <string name="id_providing_an_email_enables">이메일을 제공하시면 알람과 거래 복구를 가능케 합니다.</string>
   <string name="id_proxy_settings">프록시 설정</string>
   <string name="id_qr_scanner">QR 스캐너</string>
+  <string name="id_read_more_at_our_s">Read more at our %s</string>
   <string name="id_receive">받기</string>
   <string name="id_receive_email_notifications_for">Receive email notifications for sent and received transactions</string>
   <string name="id_received">받음</string>
@@ -353,6 +370,7 @@
   <string name="id_recovery_transaction_request">복구 거래 요청 보냄</string>
   <string name="id_recovery_transactions">복구 거래</string>
   <string name="id_recovery_words">복구 단어들</string>
+  <string name="id_redeem_your_deposited_funds">Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.</string>
   <string name="id_redeposited">재예치됨</string>
   <string name="id_reference_exchange_rate">기준 환율</string>
   <string name="id_refresh">새로고침</string>
@@ -369,6 +387,7 @@
   <string name="id_reset_spv">SPV 새로고침</string>
   <string name="id_resetting_your_twofactor_takes">2FA 재설정에는 최소 12개월이 걸립니다. 2FA 인증방법을 잃어버린 것이 확실한 경우, 재설정을 하기 위해 새로운 이메일 주소를 보내주세요.</string>
   <string name="id_restore">복구</string>
+  <string name="id_restore_a_blockstream_green">Restore a Blockstream Green wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream Green app.</string>
   <string name="id_restore_green_wallet">Green Wallet 복원</string>
   <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_review">검토</string>
@@ -393,6 +412,7 @@
   <string name="id_select_asset">자산 선택</string>
   <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">네트워크 선택</string>
+  <string name="id_select_the_s_app_on_your_ledger">Select the %s app on your Ledger and retry.</string>
   <string name="id_select_word_number_d">단어 %d번째 단어를 선택하십시오</string>
   <string name="id_send">보내기</string>
   <string name="id_send_all_funds">모든 자산 보내기</string>
@@ -408,14 +428,17 @@
   <string name="id_set_an_email_address_to_receive">Set an email address to receive transaction notifications</string>
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">사용자 지정 수수료 설정</string>
+  <string name="id_set_locktime">Set Locktime</string>
   <string name="id_set_twofactor_threshold">2FA 한도 정하기</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
+  <string name="id_set_up_an_email_to_get">Set up an email to get pre-signed transactions for recovery. Email notifications contain your encrypted recovery data.</string>
   <string name="id_set_up_credentials_to_access_in">Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app</string>
   <string name="id_set_up_pgp_key_for">커뮤니케이션을 위해 PGP 키 설정하기</string>
   <string name="id_set_up_twofactor_authentication">2FA 설정하기</string>
   <string name="id_set_up_watchonly">조회전용 모드 설정</string>
   <string name="id_set_up_watchonly_credentials">지갑의 조회전용 증명서 설정</string>
+  <string name="id_set_wallet_name">Set wallet name</string>
   <string name="id_setting_updated">설정 업데이트됨</string>
   <string name="id_settings">설정</string>
   <string name="id_setup_pin">비밀번호 설정하기</string>
@@ -426,6 +449,7 @@
   <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">명목화폐 보기</string>
   <string name="id_show_my_wallet_backup">Show my wallet backup</string>
+  <string name="id_show_qr_code">Show QR code</string>
   <string name="id_signup_in_progress">회원가입 진행 중</string>
   <string name="id_simplified_payment_verification">Simplified Payment Verification 은 Green 서버 대신 비트코인 네트워크를 활용하여 거래 및 잔액을 검증합니다. SPV 모드를 활성화 하면 더 많은 대역폭 및 프로세싱 파워가 요구됩니다.</string>
   <string name="id_skip">넘기기</string>
@@ -448,7 +472,9 @@
   <string name="id_standard_account">Standard Account</string>
   <string name="id_standard_accounts_allow_you_to">Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_start_a_2fa_reset_process_if">Start a 2FA reset process if you lost access to all your two-factor authentication methods.</string>
+  <string name="id_start_receiving_funds_and_set">Start receiving funds and set an email to receive recovery data for your wallet</string>
   <string name="id_support">Support</string>
+  <string name="id_support_page">Support Page</string>
   <string name="id_sweep">Sweep</string>
   <string name="id_sweep_from_paper_wallet">종이 지갑에서 자산 Sweep 하기</string>
   <string name="id_sweep_into_s">%s로 자산 sweep 하기</string>
@@ -462,11 +488,16 @@
   <string name="id_terms_of_service">서비스 약관</string>
   <string name="id_terms_of_use">이용약관</string>
   <string name="id_thank_you_for_downloading_green">Green을 다운로드 해주셔서 감사합니다! 시간 되시면 리뷰를 남겨주세요.</string>
+  <string name="id_the_address_is_valid">The address is valid.</string>
+  <string name="id_the_addresses_dont_match">The addresses don\'t match.</string>
   <string name="id_the_asset_registry_is_currently">The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.</string>
   <string name="id_the_camera_has_a_problem_you">카메라에 문제가 있습니다. 기기를 다시 시작하셔야 될 것 같습니다.</string>
+  <string name="id_the_default_value_is_90_days_if">The default value is 90 days. If you set an email, you will receive an updated copy of your recovery data.</string>
   <string name="id_the_easier_safer_and_faster">더 쉽고, 더 안전하고, 더 빠른 지갑</string>
+  <string name="id_the_email_will_also_be_used_to">The email will also be used to receive recovery data and transaction notifications</string>
   <string name="id_the_hardware_wallet_you_are">지금 사용하시는 하드웨어 지갑은 아직 지원되지 않습니다.</string>
   <string name="id_the_network_selected_on_the">Green 앱에서 선택한 네트워크는 하드웨어 지갑에서 선택한 네트워크랑 일치하지 않습니다. 두 기기에서 동일한 네트워크를 선택해 주세요.</string>
+  <string name="id_the_new_email_will_be_used_for">The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.</string>
   <string name="id_the_password_cant_be_empty">비밀번호는 비워 둘 수 없습니다</string>
   <string name="id_the_recovery_key_below_will_not">밑의 복원 키는 다시 표시되지 않습니다. 자산을 잃어버리지 않도록 안전하게 보관해두세요.</string>
   <string name="id_the_source_code_is_available_at">The source code is available at %s</string>
@@ -495,6 +526,7 @@
   <string name="id_transaction_status">Transaction status</string>
   <string name="id_transactions">Transactions</string>
   <string name="id_try_now">지금 시도하기</string>
+  <string name="id_turn_on_bluetooth_to_connect">Turn on bluetooth to connect your hardware wallet.</string>
   <string name="id_two_factor_authentication">2FA </string>
   <string name="id_twofactor">2FA</string>
   <string name="id_twofactor_authentication">2FA</string>
@@ -530,7 +562,6 @@
   <string name="id_warning_resetting_twofactor">경고: 2FA 재설정은 지갑을 잠금 시킵니다.</string>
   <string name="id_warning_there_is_already_a">경고: 2FA 재설정 요청이 이미 되어 있습니다. 만약 새로운 이메일 주소로 요청하시면 지갑은 분쟁 상태로 전환되며 영원히 이용하실 수 없게 될 가능성이 높습니다.</string>
   <string name="id_warning_wallet_locked_by">경고: 지갑은 2FA 분쟁으로 잠금 상태입니다. 자세한 내용은 고객센터에 문의해주시길 바랍니다.</string>
-  <string name="id_warning_wallet_locked_for">경고: 지갑은 %d일 안에 있을 2FA 재설정으로 잠금 상태입니다. 자세한 내용은 고객센터에 문의해주시길 바랍니다.</string>
   <string name="id_warning_watchonly_credentials">Warning: Watch-only credentials will be saved on your device</string>
   <string name="id_warning_you_need_a_positive">경고! L-BTC 잔액이 남아있어야 거래를 보낼 수 있습니다.</string>
   <string name="id_watchonly">조회전용</string>
@@ -552,7 +583,6 @@
   <string name="id_years">년</string>
   <string name="id_you_are_not_connected">연결되지 않았습니다.</string>
   <string name="id_you_are_not_connected_please">아직 연결 되지 않았습니다. 잠시만 기다려 주세요.</string>
-  <string name="id_you_are_not_connected_to_the">인터넷에 연결되어 있지 않습니다. 연결하고 다시 시도해주세요.</string>
   <string name="id_you_are_now_connected">연결되었습니다.</string>
   <string name="id_you_cannot_create_or_restore_a">You cannot create or restore a wallet on %s as you already have a PIN protected wallet.</string>
   <string name="id_you_have_control_on_your_funds">자산의 모든 권한을 가지고 계십니다. </string>
@@ -569,6 +599,7 @@
   <string name="id_your_transactions_will_be_shown">거래 내역은 여기에 표시됩니다.</string>
   <string name="id_your_twofactor_threshold_is_s">지갑의 2FA 한도는 %s입니다.</string>
   <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
+  <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %s days.</string>
   <string name="id_your_wallet_is_not_yet_fully">지갑의 보안이 낮습니다.\n2FA를 설정해주세요.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
 </resources>

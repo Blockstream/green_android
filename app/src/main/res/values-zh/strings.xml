@@ -12,7 +12,7 @@
   <string name="id_a_new_transaction_has_just">收到一笔新交易</string>
   <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">本设备上检测到了一个钱包：</string>
-  <string name="id_about">About</string>
+  <string name="id_about">关于</string>
   <string name="id_accept">接受</string>
   <string name="id_access">Access</string>
   <string name="id_account">账户</string>
@@ -43,6 +43,7 @@
   <string name="id_asset_details">资产详情</string>
   <string name="id_asset_id">资产ID</string>
   <string name="id_asset_name">资产名</string>
+  <string name="id_assets">Assets</string>
   <string name="id_attempts_remaining_d">剩余尝试机会：%d</string>
   <string name="id_auto_logout_timeout">自动登出超时</string>
   <string name="id_autolock_after">自动锁定之后</string>
@@ -61,16 +62,21 @@
   <string name="id_call">呼叫</string>
   <string name="id_camera_problem">摄像头问题</string>
   <string name="id_cancel">取消</string>
+  <string name="id_cancel_a_reset_to_unlock_your">Cancel a reset to unlock your wallet if you recovered access to an old Two-Factor Authentication method.</string>
   <string name="id_cancel_twofactor_reset">取消重置双重认证</string>
   <string name="id_cannot_remove_enabled_network">无法移除已启用的网络，请先禁用该网络</string>
   <string name="id_cant_connect_to_this_url">无法连接至此URL</string>
   <string name="id_change">改变</string>
   <string name="id_change_pin">Change PIN</string>
+  <string name="id_check_your_backup">Check your backup</string>
   <string name="id_choose">选择</string>
+  <string name="id_choose_a_name_for_your_new">Choose a name for your new Blockstream Green wallet.</string>
   <string name="id_choose_method_to_authorize_the">选择批准该操作的方法</string>
   <string name="id_choose_twofactor_authentication">选择双重验证方法</string>
   <string name="id_choose_your_network">选择你的网络</string>
   <string name="id_clear">清除</string>
+  <string name="id_click_to_receive_an_email_with">Click to receive an email with your encrypted recovery data.</string>
+  <string name="id_communication_timed_out_make">Communication timed out. Make sure the device is powered on and try again.</string>
   <string name="id_completed">完成</string>
   <string name="id_confidential">保密</string>
   <string name="id_confirm_code">确认码</string>
@@ -78,11 +84,14 @@
   <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
   <string name="id_confirmation_in_d_blocks">确认%d个区块</string>
   <string name="id_congratulations">恭喜！</string>
+  <string name="id_connect_hardware_wallet">Connect hardware wallet</string>
   <string name="id_connect_through_a_proxy">通过proxy连接</string>
   <string name="id_connect_with_tor">连接Tor</string>
   <string name="id_connecting_to_a_trusted_node">通过Tor连接到受信任节点需要在登录前在应用程序中启用代理设置以及Socks5代理（适用于Android的Orbot应用程序）</string>
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">连接至Tor (.onion)节点将使得隐私及安全性能最大化。点击"OK"继续。</string>
+  <string name="id_connection_failed">Connection failed</string>
+  <string name="id_connection_to_device_failed">Connection to device failed! Move closer to the device and try again.</string>
   <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>
   <string name="id_continue">继续</string>
   <string name="id_copied_to_clipboard">Copied to clipboard</string>
@@ -115,6 +124,7 @@
   <string name="id_denomination">面值</string>
   <string name="id_deposit">充值</string>
   <string name="id_disable">关闭</string>
+  <string name="id_disable_s_for_twofactor">Disable %s for Two-Factor Authentication</string>
   <string name="id_disabled">已关闭</string>
   <string name="id_displays_the_progress_of_spv">显示SPV同步进程</string>
   <string name="id_dispute_twofactor_reset">免除重置双重认证</string>
@@ -194,6 +204,8 @@
   <string name="id_green_only_supports_one_pin_for">Green对于每个网络只能支持1个PIN。每次登录新建钱包都需要输入助记符。</string>
   <string name="id_green_only_supports_one_pin_per">Green对于每个网络只支持1个PIN。要为这个钱包设置PIN，需要先关闭原有钱包的PIN。</string>
   <string name="id_green_uses_biometric">Green使用生物识别验证来使得用户能够更轻松地打开钱包</string>
+  <string name="id_green_uses_bluetooth_for">Green uses Bluetooth for communication with hardware wallets</string>
+  <string name="id_green_uses_bluetooth_to_connect">Green uses Bluetooth to connect to hardware wallets</string>
   <string name="id_green_uses_multisig_with_one">Green使用multisig，其中一个签名由你的设备生成，另一个由Blockstream服务器生成。设置双重验证将能为服务器生成的签名增添更多一层保护。</string>
   <string name="id_hardware_wallet_support_for">硬件钱包即将支持保密交易。</string>
   <string name="id_hash">哈希</string>
@@ -220,6 +232,7 @@
   <string name="id_invalid_mnemonic">助记符无效</string>
   <string name="id_invalid_mnemonic_must_be_24_or">助记符无效（必须为24或27个单词）</string>
   <string name="id_invalid_network_configuration">网络配置无效</string>
+  <string name="id_invalid_payment_request_assetid">Invalid payment request, AssetID has to be specified</string>
   <string name="id_invalid_pgp_key">PGP密钥无效</string>
   <string name="id_invalid_phone_number_format">电话号码格式无效</string>
   <string name="id_invalid_pin_remaining_attempts">PIN无效。剩余尝试次数：%1$d.</string>
@@ -227,6 +240,7 @@
   <string name="id_invalid_pin_you_have_1d">PIN无效，还有%1$d次尝试机会</string>
   <string name="id_invalid_private_key">私钥无效</string>
   <string name="id_invalid_replacement_fee_rate">费率无效</string>
+  <string name="id_invalid_status_check_that_your">Invalid status. Check that your device is unlocked and try again.</string>
   <string name="id_invalid_twofactor_code">双重验证码无效</string>
   <string name="id_invalid_url">URL无效</string>
   <string name="id_is_a_noncustodial">是一个非托管的</string>
@@ -243,6 +257,7 @@
   <string name="id_liquid_securities_account">Liquid Securities Account</string>
   <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
   <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.</string>
+  <string name="id_liquid_watchmen_via_pegin_tap">Liquid watchmen via peg-in. Tap here to read more about Liquid</string>
   <string name="id_loading_transactions">正在加载交易…</string>
   <string name="id_log_in">登录</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -256,6 +271,7 @@
   <string name="id_look_at_the_device_for_the">请查看设备以获取数字位置</string>
   <string name="id_low">低</string>
   <string name="id_main_account">主账号</string>
+  <string name="id_make_sure_you_made_a_proper">Make sure you made a proper backup of your wallet mnemonic.</string>
   <string name="id_malleated">已延展</string>
   <string name="id_medium">中</string>
   <string name="id_memo">备忘录</string>
@@ -335,13 +351,14 @@
   <string name="id_please_select_the_checkbox">请进行勾选</string>
   <string name="id_please_set_and_enable_socks5">请设置并启用SOCKS5代理和端口以使用Tor</string>
   <string name="id_please_tap_card">请点击卡片</string>
+  <string name="id_please_verify_that_the_address">Please verify that the address shown on your hardware wallet matches the one on your phone.</string>
   <string name="id_precision">精确</string>
   <string name="id_privacy_policy">隐私政策</string>
   <string name="id_problem_with_key_1s">密钥%1$s出现了问题</string>
   <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive a Liquid Security.</string>
-  <string name="id_providing_an_email_enables">提供邮箱地址将能收到通知以及交易恢复。</string>
   <string name="id_proxy_settings">PROXY设置</string>
   <string name="id_qr_scanner">二维码扫描器</string>
+  <string name="id_read_more_at_our_s">Read more at our %s</string>
   <string name="id_receive">接收</string>
   <string name="id_receive_email_notifications_for">Receive email notifications for sent and received transactions</string>
   <string name="id_received">已接收</string>
@@ -353,6 +370,7 @@
   <string name="id_recovery_transaction_request">恢复交易请求已发送</string>
   <string name="id_recovery_transactions">恢复交易</string>
   <string name="id_recovery_words">恢复词</string>
+  <string name="id_redeem_your_deposited_funds">Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.</string>
   <string name="id_redeposited">已重新充值</string>
   <string name="id_reference_exchange_rate">参考汇率</string>
   <string name="id_refresh">刷新</string>
@@ -369,6 +387,7 @@
   <string name="id_reset_spv">重置SPV</string>
   <string name="id_resetting_your_twofactor_takes">重置双重验证需要等待最少12个月。如果确认已经丢失双重验证设备，请在下方输入新的邮件地址以接收重置邮件。</string>
   <string name="id_restore">恢复</string>
+  <string name="id_restore_a_blockstream_green">Restore a Blockstream Green wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream Green app.</string>
   <string name="id_restore_green_wallet">恢复Green钱包</string>
   <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_review">审查</string>
@@ -393,6 +412,7 @@
   <string name="id_select_asset">选择资产</string>
   <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">选择网络</string>
+  <string name="id_select_the_s_app_on_your_ledger">Select the %s app on your Ledger and retry.</string>
   <string name="id_select_word_number_d">选择词语数字%d</string>
   <string name="id_send">发送</string>
   <string name="id_send_all_funds">发送所有资金</string>
@@ -408,14 +428,17 @@
   <string name="id_set_an_email_address_to_receive">Set an email address to receive transaction notifications</string>
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">设置自定义费率</string>
+  <string name="id_set_locktime">Set Locktime</string>
   <string name="id_set_twofactor_threshold">设置双验证阈值</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
+  <string name="id_set_up_an_email_to_get">Set up an email to get pre-signed transactions for recovery. Email notifications contain your encrypted recovery data.</string>
   <string name="id_set_up_credentials_to_access_in">Set up credentials to access in watch-only mode to receive coins without putting your private keys at risk. Access from any device using a Blockstream Green app</string>
   <string name="id_set_up_pgp_key_for">设置PGP密钥以进行沟通</string>
   <string name="id_set_up_twofactor_authentication">设置双重验证</string>
   <string name="id_set_up_watchonly">设置watch-only</string>
   <string name="id_set_up_watchonly_credentials">为此钱包设置watch-only证书</string>
+  <string name="id_set_wallet_name">Set wallet name</string>
   <string name="id_setting_updated">已更新设置</string>
   <string name="id_settings">设置</string>
   <string name="id_setup_pin">设置PIN</string>
@@ -426,6 +449,7 @@
   <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">显示法币</string>
   <string name="id_show_my_wallet_backup">Show my wallet backup</string>
+  <string name="id_show_qr_code">Show QR code</string>
   <string name="id_signup_in_progress">正在登录</string>
   <string name="id_simplified_payment_verification">简单付款验证（SPV）在Green服务器之外使用比特币网络来验证用户交易与余额。开启将增加带宽与处理要求。</string>
   <string name="id_skip">跳过</string>
@@ -448,7 +472,9 @@
   <string name="id_standard_account">Standard Account</string>
   <string name="id_standard_accounts_allow_you_to">Standard accounts allow you to separate your funds. Each account will have its own receiving addresses, and moving funds across accounts requires a transaction.</string>
   <string name="id_start_a_2fa_reset_process_if">Start a 2FA reset process if you lost access to all your two-factor authentication methods.</string>
+  <string name="id_start_receiving_funds_and_set">Start receiving funds and set an email to receive recovery data for your wallet</string>
   <string name="id_support">Support</string>
+  <string name="id_support_page">Support Page</string>
   <string name="id_sweep">扫描</string>
   <string name="id_sweep_from_paper_wallet">从纸钱包中提取</string>
   <string name="id_sweep_into_s">已扫描%s</string>
@@ -462,11 +488,16 @@
   <string name="id_terms_of_service">服务协议</string>
   <string name="id_terms_of_use">用户协议</string>
   <string name="id_thank_you_for_downloading_green">感谢下载Green！有空请给我们打分评价</string>
+  <string name="id_the_address_is_valid">The address is valid.</string>
+  <string name="id_the_addresses_dont_match">The addresses don\'t match.</string>
   <string name="id_the_asset_registry_is_currently">The asset registry is currently unavailable: proceed carefully since asset amounts might be shown with a decimal precision different from what intended by the issuers.</string>
   <string name="id_the_camera_has_a_problem_you">摄像头出现故障，可能需要重启设备。</string>
+  <string name="id_the_default_value_is_90_days_if">The default value is 90 days. If you set an email, you will receive an updated copy of your recovery data.</string>
   <string name="id_the_easier_safer_and_faster">更易用、更安全、更快捷的钱包</string>
+  <string name="id_the_email_will_also_be_used_to">The email will also be used to receive recovery data and transaction notifications</string>
   <string name="id_the_hardware_wallet_you_are">你所使用的硬件钱包还不支持</string>
   <string name="id_the_network_selected_on_the">在Green应用程序上选择的网络与在硬件钱包上选择的网络不同。请在两台设备上选择相同的网络。</string>
+  <string name="id_the_new_email_will_be_used_for">The new email will be used for Two-Factor Authentication when the reset is complete. The reset takes 12 months plus any remaining timelock.</string>
   <string name="id_the_password_cant_be_empty">密码不能为空</string>
   <string name="id_the_recovery_key_below_will_not">恢复密钥将不再显示。请立即创建该密钥的安全副本，以确保随时能够获得资金的访问权限。</string>
   <string name="id_the_source_code_is_available_at">The source code is available at %s</string>
@@ -495,6 +526,7 @@
   <string name="id_transaction_status">Transaction status</string>
   <string name="id_transactions">Transactions</string>
   <string name="id_try_now">立即尝试</string>
+  <string name="id_turn_on_bluetooth_to_connect">Turn on bluetooth to connect your hardware wallet.</string>
   <string name="id_two_factor_authentication">双重验证</string>
   <string name="id_twofactor">双重验证</string>
   <string name="id_twofactor_authentication">双重验证</string>
@@ -530,7 +562,6 @@
   <string name="id_warning_resetting_twofactor">警告：重置双重验证将锁定你的钱包</string>
   <string name="id_warning_there_is_already_a">警告：该钱包已发送重置双重验证请求。如果现在再次使用新的邮件地址发送请求，你的钱包将进入争议状态，你可能将永远无法获得访问权限。</string>
   <string name="id_warning_wallet_locked_by">警告：钱包已被双重验证争议锁定。请联系客服以获取更多信息。</string>
-  <string name="id_warning_wallet_locked_for">警告：双重验证重置已将钱包锁定，锁定时间为%d天。请联系客服以获取更多信息。</string>
   <string name="id_warning_watchonly_credentials">Warning: Watch-only credentials will be saved on your device</string>
   <string name="id_warning_you_need_a_positive">警告！您需要有效的L-BTC余额方能发送交易。</string>
   <string name="id_watchonly">Watch-only</string>
@@ -552,7 +583,6 @@
   <string name="id_years">年</string>
   <string name="id_you_are_not_connected">未连接</string>
   <string name="id_you_are_not_connected_please">未连接，请稍候</string>
-  <string name="id_you_are_not_connected_to_the">未连接到网络。请连接至网络并重试。</string>
   <string name="id_you_are_now_connected">现已连接</string>
   <string name="id_you_cannot_create_or_restore_a">You cannot create or restore a wallet on %s as you already have a PIN protected wallet.</string>
   <string name="id_you_have_control_on_your_funds">你对自己的资金拥有完全的掌控</string>
@@ -569,6 +599,7 @@
   <string name="id_your_transactions_will_be_shown">你的交易将在此显示。</string>
   <string name="id_your_twofactor_threshold_is_s">您的双重验证阈值是%s。</string>
   <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
+  <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %s days.</string>
   <string name="id_your_wallet_is_not_yet_fully">你的钱包尚未完全安全。\n请开启双重验证。</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
 </resources>
