@@ -86,7 +86,7 @@ class AccountCreateViewController: UIViewController {
         }.done { _ in
             self.dismissModal()
         }.catch { e in
-            Toast.show(e.localizedDescription)
+            DropAlert().error(message: e.localizedDescription)
             print(e.localizedDescription)
         }
     }

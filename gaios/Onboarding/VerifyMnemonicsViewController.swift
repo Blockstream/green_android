@@ -80,7 +80,7 @@ class VerifyMnemonicsViewController: UIViewController {
                 content.viewTitle.text = getTitle()
             }
         } else {
-            Toast.show(NSLocalizedString("id_wrong_choice_check_your", comment: ""), timeout: Toast.LONG)
+            DropAlert().warning(message: NSLocalizedString("id_wrong_choice_check_your", comment: ""), delay: 4)
             navigationController?.popViewController(animated: true)
         }
     }
@@ -116,7 +116,7 @@ class VerifyMnemonicsViewController: UIViewController {
             } else {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }
-            Toast.show(message, timeout: Toast.SHORT)
+            DropAlert().error(message: message)
         }
     }
 

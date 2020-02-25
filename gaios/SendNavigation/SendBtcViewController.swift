@@ -140,11 +140,11 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         }.catch { error in
             switch error {
             case TransactionError.invalid(let localizedDescription):
-                Toast.show(localizedDescription, timeout: Toast.SHORT)
+                DropAlert().error(message: localizedDescription)
             case GaError.ReconnectError, GaError.SessionLost, GaError.TimeoutError:
-                Toast.show(NSLocalizedString("id_you_are_not_connected", comment: ""), timeout: Toast.SHORT)
+                DropAlert().error(message: NSLocalizedString("id_you_are_not_connected", comment: ""))
             default:
-                Toast.show(error.localizedDescription, timeout: Toast.SHORT)
+                DropAlert().error(message: error.localizedDescription)
             }
             self.qrCodeReaderBackgroundView.startScan()
         }.finally {

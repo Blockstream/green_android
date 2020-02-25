@@ -178,7 +178,7 @@ class WatchOnlySignIn: KeyboardViewController {
             } else {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }
-            Toast.show(message, timeout: Toast.SHORT)
+            DropAlert().error(message: message)
         }
     }
 }

@@ -139,10 +139,10 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
                 case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    Toast.show(localizedDescription)
+                    DropAlert().error(message: localizedDescription)
                 }
             } else {
-                Toast.show(error.localizedDescription)
+                DropAlert().error(message: error.localizedDescription)
             }
         }
     }

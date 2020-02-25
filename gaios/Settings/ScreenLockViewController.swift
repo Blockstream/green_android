@@ -37,7 +37,7 @@ class ScreenLockViewController: UIViewController {
     func updateValues() {
         content.helpLabel.text = ""
         guard let screenlock = getGAService().getSettings()?.getScreenLock() else {
-            Toast.show(NSLocalizedString("id_operation_failure", comment: ""))
+            DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return
         }
         if GreenAddressService.isTemporary {

@@ -77,4 +77,12 @@ extension UIColor {
     class func errorRed() -> UIColor {
         return UIColor(named: "errorRed")!
     }
+
+    class func warningYellow() -> UIColor {
+        return UIColor(named: "warningYellow")!
+    }
+
+    class func infoBlue() -> UIColor {
+        return UIColor(named: "infoBlue")!
+    }
 }

@@ -330,7 +330,7 @@ class SendBtcDetailsViewController: UIViewController {
             if 1000 * number >= Double(UInt64.max) { return }
             let feeRate = UInt64(1000 * number)
             if feeRate < self.minFeeRate {
-                Toast.show(String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(self.minFeeRate)))
+                DropAlert().warning(message: String(format: NSLocalizedString("id_fee_rate_must_be_at_least_s", comment: ""), String(self.minFeeRate)))
                 return
             }
             self.selectedFee = self.content.feeRateButtons.count - 1

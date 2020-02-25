@@ -18,7 +18,7 @@ class SetGauthViewController: UIViewController {
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         gauthData = twoFactorConfig.gauth.data
         guard let secret = twoFactorConfig.gauthSecret() else {
-            Toast.show(NSLocalizedString("id_operation_failure", comment: ""))
+            DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return
         }
         content.secretLabel.text = secret
@@ -48,7 +48,7 @@ class SetGauthViewController: UIViewController {
 
     @objc func copyToClipboard(_ sender: UIButton) {
         UIPasteboard.general.string = content.secretLabel.text
-        Toast.show(NSLocalizedString("id_copy_to_clipboard", comment: ""), timeout: Toast.SHORT)
+        DropAlert().info(message: NSLocalizedString("id_copy_to_clipboard", comment: ""))
     }
 
     func updateConnection(_ notification: Notification) {
@@ -79,10 +79,10 @@ class SetGauthViewController: UIViewController {
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
                 case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    Toast.show(localizedDescription)
+                    DropAlert().error(message: localizedDescription)
                 }
             } else {
-                Toast.show(error.localizedDescription)
+                DropAlert().error(message: error.localizedDescription)
             }
         }
     }

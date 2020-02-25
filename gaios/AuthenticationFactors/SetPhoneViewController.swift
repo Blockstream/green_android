@@ -53,7 +53,7 @@ class SetPhoneViewController: KeyboardViewController {
         let method = self.sms == true ? TwoFactorType.sms : TwoFactorType.phone
         guard let countryCode = content.countryCodeField.text, let phone = content.textField.text else { return }
         if countryCode.isEmpty || phone.isEmpty {
-            Toast.show(NSLocalizedString("id_invalid_phone_number_format", comment: ""))
+            DropAlert().warning(message: NSLocalizedString("id_invalid_phone_number_format", comment: ""))
             return
         }
         firstly {
@@ -76,10 +76,10 @@ class SetPhoneViewController: KeyboardViewController {
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
                 case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    Toast.show(localizedDescription)
+                    DropAlert().error(message: localizedDescription)
                 }
             } else {
-                Toast.show(error.localizedDescription)
+                DropAlert().error(message: error.localizedDescription)
             }
         }
     }

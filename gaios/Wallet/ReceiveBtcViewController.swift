@@ -90,7 +90,7 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     @objc func copyAccountIdToClipboard(_ sender: Any) {
         UIPasteboard.general.string = wallet?.receivingId ?? ""
-        Toast.show(NSLocalizedString("id_copied_to_clipboard", comment: ""), timeout: Toast.SHORT)
+        DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""))
     }
 
     @objc func copyToClipboard(_ sender: Any) {
@@ -100,7 +100,7 @@ class ReceiveBtcViewController: KeyboardViewController {
             return wallet.getAddress()
         }.done { address in
             UIPasteboard.general.string = self.uriBitcoin(address: address)
-            Toast.show(NSLocalizedString("id_address_copied_to_clipboard", comment: ""), timeout: Toast.SHORT)
+            DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""))
         }.catch { _ in }
     }
 
@@ -156,7 +156,7 @@ class ReceiveBtcViewController: KeyboardViewController {
             self.content.walletAddressLabel.text = uri
             self.content.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: self.content.walletQRCode.frame)
         }.catch { _ in
-            Toast.show(NSLocalizedString("id_connection_failed", comment: ""), timeout: Toast.SHORT)
+            DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
         }
     }
 

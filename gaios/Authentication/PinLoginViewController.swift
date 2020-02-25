@@ -139,7 +139,7 @@ class PinLoginViewController: UIViewController {
             self.pinCode = ""
             self.updateAttemptsLabel()
             self.reload()
-            Toast.show(message, timeout: Toast.SHORT)
+            DropAlert().error(message: message)
         }
     }
 

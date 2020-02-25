@@ -112,7 +112,7 @@ class GreenAddressService {
                         post(event: .AddressChanged, data: ["pointer": UInt32(pointer)])
                     }
                     DispatchQueue.main.async {
-                        Toast.show(NSLocalizedString("id_new_transaction", comment: ""), timeout: Toast.SHORT)
+                        DropAlert().success(message: NSLocalizedString("id_new_transaction", comment: ""))
                     }
                 }
             } catch { break }
