@@ -339,7 +339,7 @@ extension SettingsViewController {
 
     func setLockTimeRequest() {
         guard twoFactorConfig?.enableMethods.contains("email") == true else {
-            showAlert(title: "Error", message: "You need to set a recovery email first")
+            showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_set_an_email_for_recovery", comment: ""))
             return
         }
         let bgq = DispatchQueue.global(qos: .background)

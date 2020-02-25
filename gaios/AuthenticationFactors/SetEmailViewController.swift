@@ -21,7 +21,7 @@ class SetEmailViewController: KeyboardViewController {
         content.nextButton.setGradient(true)
         content.setRecoveryLabel.text = isSetRecovery ?
             NSLocalizedString("id_set_up_an_email_to_get", comment: "") :
-            NSLocalizedString("This email will also be used for recovery and notifications", comment: "")
+            NSLocalizedString("id_the_email_will_also_be_used_to", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {
