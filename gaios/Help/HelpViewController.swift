@@ -66,8 +66,8 @@ extension HelpViewController: UITableViewDataSource, UITableViewDelegate {
                 cell.detailLabel.attributedText = attributedDetailString
             case .support:
                 cell.titleLabel.text = NSLocalizedString("id_support", comment: "")
-                let supportPageString = NSLocalizedString("Support Page", comment: "")
-                let supportDetailString = String(format: NSLocalizedString("Read more at our %@", comment: ""), supportPageString)
+                let supportPageString = NSLocalizedString("id_support_page", comment: "")
+                let supportDetailString = String(format: NSLocalizedString("id_read_more_at_our_s", comment: ""), supportPageString)
                 let attributedSupportString = NSMutableAttributedString(string: supportDetailString)
                 attributedSupportString.setAttributes(linkAttributes, for: supportPageString)
                 cell.detailLabel.attributedText = attributedSupportString
