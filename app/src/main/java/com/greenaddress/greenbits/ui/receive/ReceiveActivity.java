@@ -206,17 +206,17 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         if (mCurrentAmount == null)
             return;
 
+        mIsFiat = !mIsFiat;
         try {
-            final boolean isFiat = !mIsFiat;
-            setAmountText(mAmountText, isFiat, mCurrentAmount);
+            setAmountText(mAmountText, mIsFiat, mCurrentAmount);
             update(null, null);
 
             // Toggle unit display and selected state
-            mIsFiat = isFiat;
             mUnitButton.setText(mIsFiat ? getModel().getFiatCurrency() : getModel().getBitcoinOrLiquidUnit());
             mUnitButton.setPressed(!mIsFiat);
             mUnitButton.setSelected(!mIsFiat);
         } catch (final ParseException e) {
+            mIsFiat = !mIsFiat;
             UI.popup(this,
                      "Your preferred exchange rate from is not available at the moment. You can change it from settings.")
             .show();
