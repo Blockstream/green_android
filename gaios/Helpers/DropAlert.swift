@@ -3,7 +3,7 @@ import UIKit
 class DropAlert: UIView {
 
     var delay: Double = 2.0
-    var height: CGFloat = 80
+    var height: CGFloat = 90
     var duration = 0.3
 
     var messageFont: UIFont = UIFont.boldSystemFont(ofSize: 16) {
@@ -25,11 +25,12 @@ class DropAlert: UIView {
         messageFrame = CGRect(x: 10, y: statusBarHeight, width: frame.size.width - 10, height: 20)
         messageLabel = UILabel(frame: messageFrame)
         messageLabel.textAlignment = .center
-        messageLabel.numberOfLines = 0
+        messageLabel.numberOfLines = 5
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.textColor = UIColor.white
         messageLabel.font = messageFont
         addSubview(messageLabel)
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
         let dismissTap = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
         self.addGestureRecognizer(dismissTap)
     }
@@ -92,9 +93,31 @@ class DropAlert: UIView {
     }
 
     private func configure(message: String, textColor: UIColor, backgroundColor: UIColor) {
-        messageLabel.text = message
-        messageLabel.frame.origin.y = height / 2
+        addConstraint(NSLayoutConstraint(item: messageLabel,
+                                         attribute: .leading,
+                                         relatedBy: .equal,
+                                         toItem: self,
+                                         attribute: .leading,
+                                         multiplier: 1,
+                                         constant: 8))
 
+        addConstraint(NSLayoutConstraint(item: messageLabel,
+                                         attribute: .bottom,
+                                         relatedBy: .equal,
+                                         toItem: self,
+                                         attribute: .bottom,
+                                         multiplier: 1,
+                                         constant: -2))
+
+        addConstraint(NSLayoutConstraint(item: messageLabel,
+                                         attribute: .trailing,
+                                         relatedBy: .equal,
+                                         toItem: self,
+                                         attribute: .trailing,
+                                         multiplier: 1,
+                                         constant: 8))
+
+        messageLabel.text = message
         messageLabel.textColor = textColor
         self.backgroundColor = backgroundColor
     }
