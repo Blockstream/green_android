@@ -5,8 +5,8 @@ set -e
 # The version of gdk to fetch and its sha256 checksum for integrity checking
 NAME="gdk-iphone"
 TARBALL="${NAME}.tar.gz"
-URL="https://github.com/Blockstream/gdk/releases/download/release_0.0.27/${TARBALL}"
-SHA256="f27c0a48030877d05dbfc1a8e2a8215dde63d2c3741f4d6ead39b44c81b6c902"
+URL="https://github.com/Blockstream/gdk/releases/download/release_0.0.28/${TARBALL}"
+SHA256="a5fa155c92e20ff510ad362d502e3c34ea104a9ef17fb2e1ac49f816cffc857c"
 # Pre-requisites
 function check_command() {
     command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 not found, exiting."; exit 1; }
