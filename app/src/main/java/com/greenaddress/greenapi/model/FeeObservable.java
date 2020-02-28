@@ -20,14 +20,14 @@ public class FeeObservable extends Observable {
     }
 
     public void refresh() {
-        mExecutor.submit(() -> {
-            try {
-                final List<Long> feeEstimates = getSession().getFeeEstimates();
-                setFees(feeEstimates);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+
+        try {
+            final List<Long> feeEstimates = getSession().getFeeEstimates();
+            setFees(feeEstimates);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
