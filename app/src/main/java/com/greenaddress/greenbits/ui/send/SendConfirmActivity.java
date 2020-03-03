@@ -34,9 +34,7 @@ import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
@@ -179,7 +177,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
                 // send transaction
                 final boolean isSweep = mTxJson.get("is_sweep").asBoolean();
-                if (isSweep) {
+                final boolean isElectrum = getNetwork().isElectrum();
+                if (isSweep || isElectrum) {
                     getSession().broadcastTransactionRaw(mTxJson.get("transaction").asText());
                 } else {
                     final GDKTwoFactorCall sendCall = getSession().sendTransactionRaw(activity, mTxJson);
