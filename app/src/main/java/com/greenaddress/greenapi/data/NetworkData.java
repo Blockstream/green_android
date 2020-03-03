@@ -40,6 +40,7 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
     private Integer ctBits;
     private Integer ctExponent;
     private String policyAsset;
+    private String serverType;
 
     @JsonIgnore
     public NetworkParameters getNetworkParameters() {
@@ -300,5 +301,17 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
     @Override
     public int compareTo(@NonNull NetworkData o) {
         return getName().compareTo(o.getName());
+    }
+
+    public boolean isElectrum() {
+        return "electrum".equals(getServerType());
+    }
+
+    public String getServerType() {
+        return serverType;
+    }
+
+    public void setServerType(String serverType) {
+        this.serverType = serverType;
     }
 }

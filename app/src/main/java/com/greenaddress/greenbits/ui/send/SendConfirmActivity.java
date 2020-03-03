@@ -187,7 +187,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         })
                          .map((tx) -> {
             final boolean isSweep = tx.get("is_sweep").asBoolean();
-            if (isSweep) {
+            final boolean isElectrum = getNetwork().isElectrum();
+            if (isSweep || isElectrum) {
                 getSession().broadcastTransactionRaw(tx.get("transaction").asText());
             } else {
                 getSession().sendTransactionRaw(activity, tx).resolve(new PopupMethodResolver(activity),
