@@ -353,21 +353,21 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             mSendAllButton.setSelected(mSendAll);
             updateTransaction(null);
         } else if (view == mUnitButton) {
+            try {
+                mIsFiat = !mIsFiat;
+                if (mCurrentAmount != null)
+                    setAmountText(mAmountText, mIsFiat, mCurrentAmount);
 
-            if (mCurrentAmount != null) {
-                try {
-                    final boolean isFiat = !mIsFiat;
-                    setAmountText(mAmountText, isFiat, mCurrentAmount);
-
-                    // Toggle unit display and selected state
-                    mIsFiat = isFiat;
-                    mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
-                    mUnitButton.setPressed(!isFiat());
-                    mUnitButton.setSelected(!isFiat());
-                    updateFeeSummaries();
-                } catch (final ParseException e) {
-                    UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
-                }
+                // Toggle unit display and selected state
+                mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
+                mUnitButton.setPressed(!isFiat());
+                mUnitButton.setSelected(!isFiat());
+                updateFeeSummaries();
+            } catch (final ParseException e) {
+                mIsFiat = !mIsFiat;
+                UI.popup(this,
+                         "Your preferred exchange rate from is not available at the moment. You can change it from settings.")
+                .show();
             }
         } else {
             final boolean isLiquid = networkData.getLiquid();
