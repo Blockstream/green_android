@@ -346,10 +346,12 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             }
         } else if (view == mSendAllButton) {
             mSendAll = !mSendAll;
-            updateTransaction(null);
+            mAmountText.setText(mSendAll ? R.string.id_all : R.string.empty);
+            mCurrentAmount = null;
             mAmountText.setEnabled(!mSendAll);
             mSendAllButton.setPressed(mSendAll);
             mSendAllButton.setSelected(mSendAll);
+            updateTransaction(null);
         } else if (view == mUnitButton) {
 
             if (mCurrentAmount != null) {
@@ -479,7 +481,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 try {
                     final long newSatoshi = addressee.get("satoshi").asLong();
                     // avoid updating view if value hasn't changed
-                    if (mSendAll || (mCurrentAmount != null && mCurrentAmount.get("satoshi").asLong() != newSatoshi)) {
+                    if (!mSendAll || (mCurrentAmount != null && mCurrentAmount.get("satoshi").asLong() != newSatoshi)) {
                         setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
                     }
                 } catch (final Exception e) {
