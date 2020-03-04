@@ -200,8 +200,7 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     protected void setAmountText(final EditText amountText, final boolean isFiat,
                                  final ObjectNode currentAmount) throws ParseException {
         final NumberFormat btcNf = getModel().getNumberFormat();
-        setAmountText(amountText, isFiat, currentAmount, btcNf, false);
-
+        setAmountText(amountText, isFiat, currentAmount, btcNf, "btc");
     }
 
     // for liquid assets and l-btc
@@ -209,23 +208,21 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
                                  final String asset) throws ParseException {
 
         NumberFormat nf = getModel().getNumberFormat();
-        boolean isAsset = false;
         if (!"btc".equals(asset) && asset != null) {
             final AssetInfoData assetInfoData = getModel().getAssetsObservable().getAssetsInfos().get(asset);
-            int precision = assetInfoData == null ? 0 : assetInfoData.getPrecision();
+            final int precision = assetInfoData == null ? 0 : assetInfoData.getPrecision();
             nf = Model.getNumberFormat(precision);
-            isAsset = true;
         }
 
-        setAmountText(amountText, isFiat, currentAmount, nf, isAsset);
+        setAmountText(amountText, isFiat, currentAmount, nf, asset);
     }
 
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
-                                 final NumberFormat btcOrAssetNf, final boolean isAsset) throws ParseException {
+                                 final NumberFormat btcOrAssetNf, final String asset) throws ParseException {
         final NumberFormat us = Model.getNumberFormat(8, Locale.US);
         final NumberFormat fiatNf = Model.getNumberFormat(2);
         final String fiat = fiatNf.format(us.parse(currentAmount.get("fiat").asText()));
-        final String source = currentAmount.get(isAsset ? "btc" : getBitcoinUnitClean()).asText();
+        final String source = currentAmount.get("btc".equals(asset) ? getBitcoinUnitClean() : asset).asText();
         final String btc = btcOrAssetNf.format(us.parse(source));
         amountText.setText(isFiat ? fiat : btc);
     }
