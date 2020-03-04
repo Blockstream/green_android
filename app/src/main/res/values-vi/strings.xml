@@ -95,10 +95,12 @@
   <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>
   <string name="id_continue">Tiếp tục</string>
   <string name="id_copied_to_clipboard">Copied to clipboard</string>
+  <string name="id_copy_address">Copy address</string>
   <string name="id_copy_details">Copy details</string>
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Sao chép vào clipboard</string>
   <string name="id_copy_transaction_id">Copy transaction ID</string>
+  <string name="id_copy_uri">Copy URI</string>
   <string name="id_create">Tạo</string>
   <string name="id_create_a_pin_to_access_your">Tạo mã PIN để vào ví của bạn</string>
   <string name="id_create_a_wallet_for_bitcoin">Create a wallet for Bitcoin, Liquid or Testnet</string>
@@ -352,6 +354,7 @@
   <string name="id_please_set_and_enable_socks5">Làm ơn đặt và mở SOCK5 proxy và cổng mạng để dùng Tor</string>
   <string name="id_please_tap_card">Làm ơn chạm thẻ</string>
   <string name="id_please_verify_that_the_address">Please verify that the address shown on your hardware wallet matches the one on your phone.</string>
+  <string name="id_please_wait_while_your_ledger">Please wait while your Ledger validates your address and shows it on the screen.</string>
   <string name="id_precision">Độ chính xác</string>
   <string name="id_privacy_policy">Chính sách bảo mật</string>
   <string name="id_problem_with_key_1s">Có vấn đề với khóa %1$s</string>
@@ -591,6 +594,7 @@
   <string name="id_you_must_save_this_mnemonic_now">Bạn PHẢI lưu các chữ gợi nhớ mnemonic NGÂY BAY GIỜ</string>
   <string name="id_you_only_have_one_twofactor">Bạn chí có thể có 1 cách xác thực 2 lớp được kích hoạt.</string>
   <string name="id_you_will_need_to_reenter_your">Bạn sẽ cần nhập loại các chữ gợi nhớ mnemonic để đăng nhập lại nếu bạn không cài mã số PIN. Ấn "OK" để tiếp tục.</string>
+  <string name="id_your_favourite_exchange_rate_is">Your favourite exchange rate is not available at the moment. You can change it from settings.</string>
   <string name="id_your_green_wallet_is_now_ready">Ví Green của bạn bây giờ đã sẵn sàng để sử dụng</string>
   <string name="id_your_ios_device_might_not_be">Thiết bị iOS bạn có thể không được hổ trợ</string>
   <string name="id_your_notifications_will_be">Các thông báo sẽ hiện ở đây</string>

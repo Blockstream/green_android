@@ -95,10 +95,12 @@
   <string name="id_contact_support_at_s_or_visit_s">Contatta il supporto presso %s oppure visita %s</string>
   <string name="id_continue">Continua</string>
   <string name="id_copied_to_clipboard">Copiato in clipboard</string>
+  <string name="id_copy_address">Copia indirizzo</string>
   <string name="id_copy_details">Copia i dettagli</string>
   <string name="id_copy_raw_transaction">Copia raw transaction</string>
   <string name="id_copy_to_clipboard">Copia in Clipboard</string>
   <string name="id_copy_transaction_id">Copia ID di transazione</string>
+  <string name="id_copy_uri">Copia URI</string>
   <string name="id_create">Crea</string>
   <string name="id_create_a_pin_to_access_your">Crea un PIN per l\'accesso al wallet</string>
   <string name="id_create_a_wallet_for_bitcoin">Crea un nuovo waller per Bitcoin, Liquid o Testnet</string>
@@ -352,6 +354,7 @@
   <string name="id_please_set_and_enable_socks5">Specifica ed abilita SOCKS5 proxy e porta per usare Tor</string>
   <string name="id_please_tap_card">Please tap card</string>
   <string name="id_please_verify_that_the_address">Assicurati che l\'indirizzo mostrato sul tuo hardware wallet coincida con quello sul tuo telefono.</string>
+  <string name="id_please_wait_while_your_ledger">Attendi mentre Ledger valida il tuo indirizzo e lo mostra sullo schermo.</string>
   <string name="id_precision">Precisione</string>
   <string name="id_privacy_policy">Privacy Policy</string>
   <string name="id_problem_with_key_1s">Problema con il tasto %1$s</string>
@@ -591,6 +594,7 @@
   <string name="id_you_must_save_this_mnemonic_now">DEVI conservare la mnemonica ORA</string>
   <string name="id_you_only_have_one_twofactor">Hai attivato un solo metodo di autenticazione a due fattori</string>
   <string name="id_you_will_need_to_reenter_your">Se non imposti un PIN dovrai utilizzare la mnemonica per accedere. Premi "OK" per continuare.</string>
+  <string name="id_your_favourite_exchange_rate_is">Il tuo tasso di cambio preferito non è disponibile al momento. Puoi cambiarlo dalle impostazioni.</string>
   <string name="id_your_green_wallet_is_now_ready">Il tuo wallet Green è ora pronto all\'uso.</string>
   <string name="id_your_ios_device_might_not_be">Il tuo device iOS potrebbe essere non supportato</string>
   <string name="id_your_notifications_will_be">Vedrai qui le tue notifiche.</string>

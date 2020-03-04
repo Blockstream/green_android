@@ -95,10 +95,12 @@
   <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>
   <string name="id_continue">계속</string>
   <string name="id_copied_to_clipboard">Copied to clipboard</string>
+  <string name="id_copy_address">Copy address</string>
   <string name="id_copy_details">Copy details</string>
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">클립보드에 복사</string>
   <string name="id_copy_transaction_id">Copy transaction ID</string>
+  <string name="id_copy_uri">Copy URI</string>
   <string name="id_create">생성</string>
   <string name="id_create_a_pin_to_access_your">지갑을 사용하기 전 비밀번호를 설정하세요</string>
   <string name="id_create_a_wallet_for_bitcoin">Create a wallet for Bitcoin, Liquid or Testnet</string>
@@ -352,6 +354,7 @@
   <string name="id_please_set_and_enable_socks5">Tor를 사용하기 위해서 SOCKS5 프록시와 포트를 활성화/설정해 주세요</string>
   <string name="id_please_tap_card">카드를 터치해 주세요</string>
   <string name="id_please_verify_that_the_address">Please verify that the address shown on your hardware wallet matches the one on your phone.</string>
+  <string name="id_please_wait_while_your_ledger">Please wait while your Ledger validates your address and shows it on the screen.</string>
   <string name="id_precision">정확도</string>
   <string name="id_privacy_policy">개인정보처리방침</string>
   <string name="id_problem_with_key_1s">키 %1$s에 문제있음</string>
@@ -591,6 +594,7 @@
   <string name="id_you_must_save_this_mnemonic_now">지금 당장 이 니모닉(복원 코드)을 꼭 저장하여야 합니다.</string>
   <string name="id_you_only_have_one_twofactor">2FA 설정을 한 가지만 하였습니다.</string>
   <string name="id_you_will_need_to_reenter_your">비밀번호를 설정하지 않으시면 니모닉(복원 코드)을 사용하여 로그인 하여야 합니다. 계속하시려면 "확인"을 눌러주세요.</string>
+  <string name="id_your_favourite_exchange_rate_is">Your favourite exchange rate is not available at the moment. You can change it from settings.</string>
   <string name="id_your_green_wallet_is_now_ready">이제 Green 지갑을 사용하실 수 있습니다</string>
   <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>
   <string name="id_your_notifications_will_be">알람은 여기에 표시됩니다.</string>

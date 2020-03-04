@@ -95,10 +95,12 @@
   <string name="id_contact_support_at_s_or_visit_s">Contact support at %s or visit %s</string>
   <string name="id_continue">進める</string>
   <string name="id_copied_to_clipboard">Copied to clipboard</string>
+  <string name="id_copy_address">Copy address</string>
   <string name="id_copy_details">Copy details</string>
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">クリップボードにコピーする</string>
   <string name="id_copy_transaction_id">Copy transaction ID</string>
+  <string name="id_copy_uri">Copy URI</string>
   <string name="id_create">生成</string>
   <string name="id_create_a_pin_to_access_your">ウォレット接続の為のPINを生成する</string>
   <string name="id_create_a_wallet_for_bitcoin">Create a wallet for Bitcoin, Liquid or Testnet</string>
@@ -352,6 +354,7 @@
   <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">カードをタップして下さい</string>
   <string name="id_please_verify_that_the_address">Please verify that the address shown on your hardware wallet matches the one on your phone.</string>
+  <string name="id_please_wait_while_your_ledger">Please wait while your Ledger validates your address and shows it on the screen.</string>
   <string name="id_precision">Precision</string>
   <string name="id_privacy_policy">プライバシー政策</string>
   <string name="id_problem_with_key_1s">キー%1$s の問題</string>
@@ -591,6 +594,7 @@
   <string name="id_you_must_save_this_mnemonic_now">このMnemonicを直ちに保存して下さい</string>
   <string name="id_you_only_have_one_twofactor">2段階認証の一つだけ設定されています。</string>
   <string name="id_you_will_need_to_reenter_your">PINを設定しない場合、ログインするにはもう一度mnemonicを入力しなければなりません。続けるには"OK"を押してください。 </string>
+  <string name="id_your_favourite_exchange_rate_is">Your favourite exchange rate is not available at the moment. You can change it from settings.</string>
   <string name="id_your_green_wallet_is_now_ready">Green ウォレットを使用できます。</string>
   <string name="id_your_ios_device_might_not_be">Your iOS device might not be supported</string>
   <string name="id_your_notifications_will_be">告示情報はこちらから確認できます。</string>

@@ -95,10 +95,12 @@
   <string name="id_contact_support_at_s_or_visit_s">Contate o suporte no %s ou  visite %s</string>
   <string name="id_continue">Continuar</string>
   <string name="id_copied_to_clipboard">Copiado para a área de transferência</string>
+  <string name="id_copy_address">Copy address</string>
   <string name="id_copy_details">Copiar detalhes</string>
   <string name="id_copy_raw_transaction">Copie o raw da transação</string>
   <string name="id_copy_to_clipboard">Copiar para a área de transferênca</string>
   <string name="id_copy_transaction_id">Copiar ID da transação</string>
+  <string name="id_copy_uri">Copy URI</string>
   <string name="id_create">Criar</string>
   <string name="id_create_a_pin_to_access_your">Criar um PIN para acessar sua carteira</string>
   <string name="id_create_a_wallet_for_bitcoin">Criar uma carteira Bitcoin, Liquid ou Testnet</string>
@@ -352,6 +354,7 @@
   <string name="id_please_set_and_enable_socks5">Please set and enable SOCKS5 proxy and port to use Tor</string>
   <string name="id_please_tap_card">Por favor, encoste o cartão</string>
   <string name="id_please_verify_that_the_address">Please verify that the address shown on your hardware wallet matches the one on your phone.</string>
+  <string name="id_please_wait_while_your_ledger">Please wait while your Ledger validates your address and shows it on the screen.</string>
   <string name="id_precision">Precisão</string>
   <string name="id_privacy_policy">Política de Privacidade</string>
   <string name="id_problem_with_key_1s">Problema com a chave %1$s</string>
@@ -591,6 +594,7 @@
   <string name="id_you_must_save_this_mnemonic_now">Você DEVE salvar este mnemônico AGORA</string>
   <string name="id_you_only_have_one_twofactor">Você tem apenas um método de autenticação de dois fatores ativado</string>
   <string name="id_you_will_need_to_reenter_your">Você precisará redigitar seu mnemônico para entrar novamente se não configurar um PIN. Pressione "OK" para continuar.</string>
+  <string name="id_your_favourite_exchange_rate_is">Your favourite exchange rate is not available at the moment. You can change it from settings.</string>
   <string name="id_your_green_wallet_is_now_ready">Sua carteira Green está pronta para uso agora.</string>
   <string name="id_your_ios_device_might_not_be">Pode não haver suporte para seu aparelho iOS</string>
   <string name="id_your_notifications_will_be">Suas notificações serão mostradas aqui.</string>
