@@ -61,7 +61,6 @@ public class RequestLoginActivity extends LoginActivity {
     private Boolean mInLedgerDashboard;
 
     private HWWallet mHwWallet;
-    private HWDeviceData mHwDeviceData;
     private TextView mActiveNetwork;
     private NetworkData networkData;
 
@@ -151,9 +150,9 @@ public class RequestLoginActivity extends LoginActivity {
     private void onTrezorConnected(final Trezor t) {
 
         Log.d(TAG, "Creating Trezor HW wallet");
-        mHwWallet = new TrezorHWWallet(t, networkData);
-
-        mHwDeviceData = new HWDeviceData("Trezor", false, false, HWDeviceData.HWDeviceDataLiquidSupport.None);
+        final HWDeviceData hwDeviceData = new HWDeviceData("Trezor", false, false,
+                                                           HWDeviceData.HWDeviceDataLiquidSupport.None);
+        mHwWallet = new TrezorHWWallet(t, networkData, hwDeviceData);
 
         doLogin(this);
     }
@@ -266,21 +265,22 @@ public class RequestLoginActivity extends LoginActivity {
 
         final boolean havePin = !TextUtils.isEmpty(pin);
         Log.d(TAG, "Creating Ledger HW wallet" + (havePin ? " with PIN" : ""));
-        mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData);
-
-        mHwDeviceData = new HWDeviceData("Ledger", false, true, HWDeviceData.HWDeviceDataLiquidSupport.Lite);
+        final HWDeviceData hwDeviceData = new HWDeviceData("Ledger", false, true,
+                                                           HWDeviceData.HWDeviceDataLiquidSupport.Lite);
+        mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData, hwDeviceData);
 
         doLogin(this);
     }
 
     private void doLogin(final Activity parent) {
         final ConnectionManager cm = getConnectionManager();
+        getGAApp().setHWWallet(mHwWallet);
         final CodeResolver hwResolver = new HardwareCodeResolver(this, mHwWallet);
         getGAApp().getExecutor().execute(() -> {
             try {
                 cm.connect(this);
-                getSession().registerUser(mHwDeviceData, "").resolve(null, hwResolver);
-                cm.login(mHwDeviceData, hwResolver, mHwWallet);
+                getSession().registerUser(mHwWallet.getHWDeviceData(), "").resolve(null, hwResolver);
+                cm.login(mHwWallet.getHWDeviceData(), hwResolver, mHwWallet);
                 onPostLogin();
                 runOnUiThread(() -> {
                     stopLoading();

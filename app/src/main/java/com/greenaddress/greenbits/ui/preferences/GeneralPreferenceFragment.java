@@ -245,7 +245,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Mnemonic
         mMemonicPref = find(PrefKeys.MNEMONIC_PASSPHRASE);
-        if (!getGAApp().getConnectionManager().isHW()) {
+        if (getGAApp().getHWWallet() != null) {
             final String touchToDisplay = getString(R.string.id_touch_to_display);
             mMemonicPref.setSummary(touchToDisplay);
             mMemonicPref.setOnPreferenceClickListener(preference -> {
@@ -584,7 +584,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             getModel().getTwoFactorConfig() == null)
             return;
 
-        final boolean isHW = getGAApp().getConnectionManager().isHW();
+        final boolean isHW = getGAApp().getHWWallet() != null;
         mPinPref.setVisible(!isHW);
         mMemonicPref.setVisible(!isHW);
 

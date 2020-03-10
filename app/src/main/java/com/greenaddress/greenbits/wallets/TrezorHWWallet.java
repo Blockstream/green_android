@@ -8,6 +8,7 @@ import com.google.common.base.Joiner;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
 import com.greenaddress.greenapi.HWWallet;
+import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -33,9 +34,10 @@ public class TrezorHWWallet extends HWWallet {
     private final Map<String, TrezorType.HDNodeType> mRecoveryXPubs = new HashMap<>();
     private final Map<String, Object> mPrevTxs = new HashMap<>();
 
-    public TrezorHWWallet(final Trezor t, final NetworkData network) {
+    public TrezorHWWallet(final Trezor t, final NetworkData network, final HWDeviceData hwDeviceData) {
         mTrezor = t;
         mNetwork = network;
+        mHWDeviceData = hwDeviceData;
     }
 
     @Override

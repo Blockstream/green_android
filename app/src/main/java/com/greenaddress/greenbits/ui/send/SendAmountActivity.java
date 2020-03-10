@@ -563,8 +563,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         intent.putExtra(PrefKeys.INTENT_STRING_TX, transactionData.toString());
         intent.putExtra("asset_info", info);
         intent.putExtra(PrefKeys.SWEEP, isSweep);
-        if (getConnectionManager().isHW())
-            intent.putExtra("hww", getGAApp().mHWDevice.toString());
+        if (getGAApp().getHWWallet() != null)
+            intent.putExtra("hww", getGAApp().getHWWallet().getHWDeviceData().toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
     }
 

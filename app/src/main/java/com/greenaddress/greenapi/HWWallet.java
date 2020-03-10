@@ -2,6 +2,7 @@ package com.greenaddress.greenapi;
 
 import com.btchip.BTChipException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 public abstract class HWWallet {
     protected NetworkData mNetwork;
+    protected HWDeviceData mHWDeviceData;
 
     // Return the base58check encoded xpubs for each path in paths
     public abstract List<String> getXpubs(final GaActivity parent, final List<List<Integer>> paths);
@@ -76,5 +78,9 @@ public abstract class HWWallet {
 
     public NetworkData getNetwork() {
         return mNetwork;
+    }
+
+    public HWDeviceData getHWDeviceData() {
+        return mHWDeviceData;
     }
 }
