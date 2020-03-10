@@ -13,13 +13,11 @@ import com.greenaddress.greenapi.data.TwoFactorStatusData;
 import com.greenaddress.greenbits.ui.GaActivity;
 
 public class GDKTwoFactorCall {
-    private Activity mParent;
     private Object mTwoFactorCall;
     private TwoFactorStatusData mStatus;
     private static ObjectMapper mObjectMapper = new ObjectMapper();
 
-    GDKTwoFactorCall(final Activity parent, final Object twoFactorCall) {
-        mParent = parent;
+    GDKTwoFactorCall(final Object twoFactorCall) {
         mTwoFactorCall = twoFactorCall;
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
@@ -60,7 +58,7 @@ public class GDKTwoFactorCall {
                     Log.d("RSV", "resolve_code " + mStatus);
                     final String value;
                     if (mStatus.getDevice() != null) {
-                        value = codeResolver.hardwareRequest((GaActivity) mParent, mStatus.getRequiredData()).get();
+                        value = codeResolver.hardwareRequest(mStatus.getRequiredData()).get();
                     } else {
                         value = codeResolver.code(mStatus.getMethod()).get();
                     }

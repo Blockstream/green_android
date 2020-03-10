@@ -117,9 +117,9 @@ public class GDKSession {
         return GDK.get_watch_only_username(mNativeSession);
     }
 
-    public GDKTwoFactorCall login(final Activity parent, final HWDeviceData hwDevice, final String mnemonic, final String mnemonicPassword) throws Exception {
+    public GDKTwoFactorCall login(final HWDeviceData hwDevice, final String mnemonic, final String mnemonicPassword) throws Exception {
         final ObjectNode hw = hwDevice == null ? mObjectMapper.createObjectNode() : mObjectMapper.valueToTree(hwDevice);
-        return new GDKTwoFactorCall(parent, GDK.login(mNativeSession, hw, mnemonic, mnemonicPassword));
+        return new GDKTwoFactorCall(GDK.login(mNativeSession, hw, mnemonic, mnemonicPassword));
     }
 
     public void loginWatchOnly(final String username, final String password) throws Exception {
@@ -143,28 +143,28 @@ public class GDKSession {
         return null;
     }
 
-    public GDKTwoFactorCall getTransactionsRaw(final Activity parent, final int subAccount, final int first, final int count) throws Exception {
+    public GDKTwoFactorCall getTransactionsRaw(final int subAccount, final int first, final int count) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("first", first);
         details.put("count", count);
         details.put("num_confs", 0);
-        return new GDKTwoFactorCall(parent, GDK.get_transactions(mNativeSession, details));
+        return new GDKTwoFactorCall(GDK.get_transactions(mNativeSession, details));
     }
 
     public void setWatchOnly(final String username, final String password) throws Exception {
         GDK.set_watch_only(mNativeSession, username, password);
     }
 
-    public GDKTwoFactorCall getSubAccounts(final Activity parent) {
-        return new GDKTwoFactorCall(parent, GDK.get_subaccounts(mNativeSession));
+    public GDKTwoFactorCall getSubAccounts() {
+        return new GDKTwoFactorCall(GDK.get_subaccounts(mNativeSession));
     }
 
-    public GDKTwoFactorCall createSubAccount(final Activity parent, final String name, final String type) throws Exception {
+    public GDKTwoFactorCall createSubAccount(final String name, final String type) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.set("name", new TextNode(name));
         details.set("type", new TextNode(type));
-        return new GDKTwoFactorCall(parent, GDK.create_subaccount(mNativeSession, details));
+        return new GDKTwoFactorCall(GDK.create_subaccount(mNativeSession, details));
     }
 
     public TwoFactorConfigData getTwoFactorConfig() throws Exception  {
@@ -174,11 +174,11 @@ public class GDKSession {
         return twoFactorConfigData;
     }
 
-    public GDKTwoFactorCall getBalance(final Activity parent, final Integer subAccount, final long confirmations) {
+    public GDKTwoFactorCall getBalance(final Integer subAccount, final long confirmations) {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
-        return new GDKTwoFactorCall(parent, GDK.get_balance(mNativeSession, details));
+        return new GDKTwoFactorCall( GDK.get_balance(mNativeSession, details));
     }
 
     public Map<String, Bitmap> getAssetsIcons(final boolean refresh) throws Exception {
@@ -246,11 +246,11 @@ public class GDKSession {
     }
 
     public GDKTwoFactorCall createTransactionRaw(final Activity parent, final JSONData createTransactionData) throws Exception {
-        return new GDKTwoFactorCall(parent, GDK.create_transaction(mNativeSession, createTransactionData));
+        return new GDKTwoFactorCall(GDK.create_transaction(mNativeSession, createTransactionData));
     }
 
     public GDKTwoFactorCall createTransactionRaw(final Activity parent, final ObjectNode tx) throws Exception {
-        return new GDKTwoFactorCall(parent, GDK.create_transaction(mNativeSession, tx));
+        return new GDKTwoFactorCall(GDK.create_transaction(mNativeSession, tx));
     }
 
     public GDKTwoFactorCall createTransactionFromUri(final Activity parent, final String uri, final int subaccount) throws Exception {
@@ -264,13 +264,13 @@ public class GDKSession {
         return createTransactionRaw(parent, tx);
     }
 
-    public GDKTwoFactorCall signTransactionRaw(final Activity parent, final ObjectNode createTransactionData) throws Exception {
-        return new GDKTwoFactorCall(parent, GDK.sign_transaction(mNativeSession, createTransactionData));
+    public GDKTwoFactorCall signTransactionRaw(final ObjectNode createTransactionData) throws Exception {
+        return new GDKTwoFactorCall(GDK.sign_transaction(mNativeSession, createTransactionData));
     }
 
     public GDKTwoFactorCall sendTransactionRaw(final Activity parent, final ObjectNode txDetails) throws Exception {
         final Object twoFactorCall = GDK.send_transaction(mNativeSession, txDetails);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
+        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
         return gdkTwoFactorCall;
     }
 
@@ -283,11 +283,11 @@ public class GDKSession {
         return mObjectMapper.treeToValue(feeEstimates, EstimatesData.class).getFees();
     }
 
-    public GDKTwoFactorCall getUTXO(final Activity parent, final long subAccount, final long confirmations) throws Exception {
+    public GDKTwoFactorCall getUTXO(final long subAccount, final long confirmations) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
-        return new GDKTwoFactorCall(parent, GDK.get_unspent_outputs(mNativeSession, details));
+        return new GDKTwoFactorCall(GDK.get_unspent_outputs(mNativeSession, details));
     }
 
     public Map<String, Object> getAvailableCurrencies() throws Exception {
@@ -320,10 +320,10 @@ public class GDKSession {
         GDK.register_network(name, networkJson);
     }
 
-    public GDKTwoFactorCall getReceiveAddress(final Activity parent, final int subAccount) throws Exception {
+    public GDKTwoFactorCall getReceiveAddress(final int subAccount) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
-        return new GDKTwoFactorCall(parent, GDK.get_receive_address(mNativeSession, details));
+        return new GDKTwoFactorCall(GDK.get_receive_address(mNativeSession, details));
     }
 
     public static boolean isEnabled() {
@@ -334,9 +334,9 @@ public class GDKSession {
         return GDK.generate_mnemonic();
     }
 
-    public GDKTwoFactorCall registerUser(final Activity parent, final HWDeviceData hwDevice, final String mnemonic) throws Exception {
+    public GDKTwoFactorCall registerUser(final HWDeviceData hwDevice, final String mnemonic) throws Exception {
         final ObjectNode hw = hwDevice == null ? mObjectMapper.createObjectNode() : mObjectMapper.valueToTree(hwDevice);
-        return new GDKTwoFactorCall(parent, GDK.register_user(mNativeSession, hw, mnemonic));
+        return new GDKTwoFactorCall(GDK.register_user(mNativeSession, hw, mnemonic));
     }
 
     public PinData setPin(final String mnemonic, final String pin, final String device) throws Exception {
@@ -362,8 +362,8 @@ public class GDKSession {
         return GDK.get_system_message(mNativeSession);
     }
 
-    public GDKTwoFactorCall ackSystemMessage(final Activity parent, final String message) throws Exception {
-        return new GDKTwoFactorCall(parent, GDK.ack_system_message(mNativeSession, message));
+    public GDKTwoFactorCall ackSystemMessage(final String message) throws Exception {
+        return new GDKTwoFactorCall(GDK.ack_system_message(mNativeSession, message));
     }
 
     public String getMnemonicPassphrase() {
@@ -384,26 +384,26 @@ public class GDKSession {
         }
     }
 
-    public GDKTwoFactorCall changeSettingsTwoFactor(final Activity parent, final String method, final TwoFactorDetailData details) throws Exception  {
+    public GDKTwoFactorCall changeSettingsTwoFactor(final String method, final TwoFactorDetailData details) throws Exception  {
         final Object twoFactorCall = GDK.change_settings_twofactor(mNativeSession, method, details);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
+        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
         return gdkTwoFactorCall;
     }
 
-    public GDKTwoFactorCall twoFactorReset(final Activity parent, final String email, final boolean isDispute) throws Exception  {
+    public GDKTwoFactorCall twoFactorReset(final String email, final boolean isDispute) throws Exception  {
         final Object twoFactorCall = GDK.twofactor_reset(mNativeSession, email, isDispute ? GDK.GA_TRUE : GDK.GA_FALSE);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
+        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
         return gdkTwoFactorCall;
     }
 
-    public GDKTwoFactorCall twofactorCancelReset(final Activity parent) throws Exception  {
+    public GDKTwoFactorCall twofactorCancelReset() throws Exception  {
         final Object twoFactorCall = GDK.twofactor_cancel_reset(mNativeSession);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(parent, twoFactorCall);
+        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
         return gdkTwoFactorCall;
     }
 
-    public GDKTwoFactorCall twoFactorChangeLimits(final Activity parent, final ObjectNode limitsData) throws Exception  {
-        return new GDKTwoFactorCall(parent, GDK.twofactor_change_limits(mNativeSession, limitsData));
+    public GDKTwoFactorCall twoFactorChangeLimits(final ObjectNode limitsData) throws Exception  {
+        return new GDKTwoFactorCall(GDK.twofactor_change_limits(mNativeSession, limitsData));
     }
 
     public void sendNlocktimes() throws Exception  {
@@ -414,7 +414,7 @@ public class GDKSession {
         return mNotification;
     }
 
-    public GDKTwoFactorCall changeSettings(final Activity parent, final ObjectNode setting) throws Exception  {
-        return new GDKTwoFactorCall(parent, GDK.change_settings(mNativeSession, setting));
+    public GDKTwoFactorCall changeSettings(final ObjectNode setting) throws Exception  {
+        return new GDKTwoFactorCall(GDK.change_settings(mNativeSession, setting));
     }
 }

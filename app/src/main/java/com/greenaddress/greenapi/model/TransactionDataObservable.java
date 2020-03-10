@@ -66,7 +66,7 @@ public class TransactionDataObservable extends Observable implements Observer {
         try {
             List<TransactionData> transactions;
             if (mUTXOOnly) {
-                final GDKTwoFactorCall call = getSession().getUTXO(null, mSubaccount, 0);
+                final GDKTwoFactorCall call = getSession().getUTXO(mSubaccount, 0);
                 JsonNode unspentOutputs = call.resolve(null, mCodeResolver).get("unspent_outputs");
 
                 transactions = new ArrayList<>();
@@ -82,7 +82,7 @@ public class TransactionDataObservable extends Observable implements Observer {
                                                            new TypeReference<List<TransactionData>>() {});
                 }
             } else {
-                final GDKTwoFactorCall call = getSession().getTransactionsRaw(null, mSubaccount,
+                final GDKTwoFactorCall call = getSession().getTransactionsRaw(mSubaccount,
                                                                               mPageLoaded * TX_PER_PAGE, TX_PER_PAGE);
                 ObjectNode txListObject = call.resolve(null, mCodeResolver);
                 transactions = getSession().parseTransactions((ArrayNode) txListObject.get("transactions"));

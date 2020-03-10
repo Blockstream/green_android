@@ -203,7 +203,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         final JsonNode jsonResp;
         try {
             final int subaccount = getModel().getCurrentSubaccount();
-            final GDKTwoFactorCall call = getSession().getReceiveAddress(null, subaccount);
+            final GDKTwoFactorCall call = getSession().getReceiveAddress(subaccount);
             jsonResp = call.resolve(null, getConnectionManager().getHWResolver());
         } catch (final Exception e) {
             e.printStackTrace();

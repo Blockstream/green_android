@@ -142,13 +142,13 @@ public class ConnectionManager extends Observable {
         setState(ConnState.CONNECTED);
     }
 
-    public void login(final Activity parent, final HWDeviceData hwDevice, final CodeResolver hwResolver, final HWWallet hwWallet) throws Exception {
+    public void login(final HWDeviceData hwDevice, final CodeResolver hwResolver, final HWWallet hwWallet) throws Exception {
         try {
             setState(ConnState.LOGGINGIN);
             mHWDevice = hwDevice;
             mHWResolver = hwResolver;
             mHWWallet = hwWallet;
-            getSession().login(parent, hwDevice, "", "").resolve(null, hwResolver);
+            getSession().login(hwDevice, "", "").resolve(null, hwResolver);
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {
             Log.e(TAG, "Error while logging in " + e.getMessage() );
@@ -177,7 +177,7 @@ public class ConnectionManager extends Observable {
                 Log.d(TAG, "logging with mnemonic");
                 mWatchOnlyUsername = null;
                 mLoginWithPin = false;
-                getSession().login(parent, null, mnenonic, mnemonicPassword).resolve(null, null);
+                getSession().login(null, mnenonic, mnemonicPassword).resolve(null, null);
             } else if (!TextUtils.isEmpty(pin) && pinData != null) {
                 Log.d(TAG, "logging with pin");
                 mWatchOnlyUsername = null;
