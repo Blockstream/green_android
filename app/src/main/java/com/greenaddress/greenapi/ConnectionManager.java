@@ -39,9 +39,6 @@ public class ConnectionManager extends Observable {
     private ConnState mState = ConnState.DISCONNECTED;
     private String mWatchOnlyUsername;
     private boolean mLoginWithPin;
-    private HWDeviceData mHWDevice;
-    private HWWallet mHWWallet;
-    private CodeResolver mHWResolver;
     private boolean pinJustSaved = false;
 
     public boolean isConnected() { return mState == ConnState.CONNECTED; }
@@ -85,24 +82,8 @@ public class ConnectionManager extends Observable {
         return mWatchOnlyUsername != null;
     }
 
-    public boolean isHW() {
-        return mHWDevice != null;
-    }
-
     public boolean isLoginWithPin() {
         return mLoginWithPin;
-    }
-
-    public CodeResolver getHWResolver() {
-        return mHWResolver;
-    }
-
-    public HWDeviceData getHWDeviceData() {
-        return mHWDevice;
-    }
-
-    public HWWallet getHWWallet() {
-        return mHWWallet;
     }
 
     public String getWatchOnlyUsername() {
@@ -145,9 +126,6 @@ public class ConnectionManager extends Observable {
     public void login(final HWDeviceData hwDevice, final CodeResolver hwResolver, final HWWallet hwWallet) throws Exception {
         try {
             setState(ConnState.LOGGINGIN);
-            mHWDevice = hwDevice;
-            mHWResolver = hwResolver;
-            mHWWallet = hwWallet;
             getSession().login(hwDevice, "", "").resolve(null, hwResolver);
             setState(ConnState.LOGGEDIN);
         } catch (final Exception e) {
@@ -203,8 +181,6 @@ public class ConnectionManager extends Observable {
         setState(ConnState.DISCONNECTING);
         mWatchOnlyUsername = null;
         mLoginWithPin = false;
-        mHWDevice = null;
-        mHWResolver = null;
         try {
             getSession().disconnect();
             getSession().destroy();

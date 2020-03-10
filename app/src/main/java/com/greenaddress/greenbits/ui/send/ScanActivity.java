@@ -55,6 +55,7 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -394,7 +395,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             final Long feeRate = getGAApp().getModel().getFeeObservable().getFees().get(0);
             final BalanceData balanceData = new BalanceData();
             final ObjectNode jsonResp = getSession().getReceiveAddress(subaccount).resolve(null,
-                                                                                           getConnectionManager().getHWResolver());
+                                                                                           new HardwareCodeResolver(
+                                                                                               this));
             final String address = jsonResp.get("address").asText();
             balanceData.setAddress(address);
             final List<BalanceData> balanceDataList = new ArrayList<>();
@@ -407,7 +409,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
 
             try {
                 final GDKTwoFactorCall call = getSession().createTransactionRaw(null, sweepData);
-                final ObjectNode transactionRaw = call.resolve(null, getConnectionManager().getHWResolver());
+                final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
                 final String error = transactionRaw.get("error").asText();
                 if (error.isEmpty()) {
                     removeUtxosIfTooBig(transactionRaw);
@@ -425,7 +427,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             try {
                 final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
                 final ObjectNode transactionFromUri =
-                    call.resolve(null, getConnectionManager().getHWResolver());
+                    call.resolve(null, new HardwareCodeResolver(this));
                 final String error = transactionFromUri.get("error").asText();
                 if (!error.isEmpty() && !"id_invalid_amount".equals(error)) {
                     UI.toast(this, error, Toast.LENGTH_SHORT);

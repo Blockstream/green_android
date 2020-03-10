@@ -40,6 +40,7 @@ import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -380,7 +381,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final int subaccount = mTxItem.getSubaccount() ==
                                    null ? model.getCurrentSubaccount() : mTxItem.getSubaccount();
             final GDKTwoFactorCall call = getSession().getTransactionsRaw(subaccount, 0, 30);
-            ObjectNode txListObject = call.resolve(null, getConnectionManager().getHWResolver());
+            ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(this));
             final JsonNode txToBump = getSession().findTransactionRaw((ArrayNode) txListObject.get(
                                                                           "transactions"), txhash);
             final JsonNode feeRate = txToBump.get("fee_rate");
@@ -390,7 +391,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             bumpTxData.setSubaccount(subaccount);
             Log.d(TAG,"createTransactionRaw(" + bumpTxData.toString() + ")");
             final GDKTwoFactorCall signCall = getSession().createTransactionRaw(null, bumpTxData);
-            final ObjectNode tx = signCall.resolve(null, getConnectionManager().getHWResolver());
+            final ObjectNode tx = signCall.resolve(null, new HardwareCodeResolver(this));
             final Intent intent = new Intent(this, SendAmountActivity.class);
             removeUtxosIfTooBig(tx);
             intent.putExtra(PrefKeys.INTENT_STRING_TX, tx.toString());

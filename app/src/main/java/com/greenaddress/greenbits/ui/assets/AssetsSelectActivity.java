@@ -19,6 +19,7 @@ import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Map;
 
@@ -118,6 +119,6 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         final ObjectNode addressee = (ObjectNode) txJson.get("addressees").get(0);
         addressee.put("asset_tag", assetId);
         final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
-        return call.resolve(null, getConnectionManager().getHWResolver());
+        return call.resolve(null, new HardwareCodeResolver(this));
     }
 }

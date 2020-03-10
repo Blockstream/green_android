@@ -31,6 +31,7 @@ import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,7 +76,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
             // recreating json, since some field could be elided during activity change (eg used_utxos)
             mTxJson = getSession().createTransactionRaw(this, mTxJson)
-                      .resolve(null,getConnectionManager().getHWResolver());
+                      .resolve(null, new HardwareCodeResolver(this));
             mAssetInfo = (AssetInfoData) getIntent().getSerializableExtra("asset_info");
         } catch (final Exception e) {
             e.printStackTrace();
@@ -175,7 +176,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
                 // sign transaction
                 final ConnectionManager cm = getConnectionManager();
                 final GDKTwoFactorCall signCall = getSession().signTransactionRaw(mTxJson);
-                mTxJson = signCall.resolve(null, cm.getHWResolver());
+                mTxJson = signCall.resolve(null, new HardwareCodeResolver(this));
 
                 // send transaction
                 final boolean isSweep = mTxJson.get("is_sweep").asBoolean();

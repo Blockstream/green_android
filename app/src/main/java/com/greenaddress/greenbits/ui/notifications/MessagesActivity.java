@@ -15,6 +15,7 @@ import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import static com.greenaddress.gdk.GDKSession.getSession;
 
@@ -69,7 +70,7 @@ public class MessagesActivity extends LoggedActivity
                     try {
                         final ConnectionManager cm = getConnectionManager();
                         final GDKTwoFactorCall call = getSession().ackSystemMessage(mCurrentMessage);
-                        call.resolve(null, cm.getHWResolver());
+                        call.resolve(null, new HardwareCodeResolver(this));
                     } catch (final Exception e) {
                         Log.e(TAG, e.getMessage());
                     }
