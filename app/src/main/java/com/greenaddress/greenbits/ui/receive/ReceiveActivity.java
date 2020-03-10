@@ -44,6 +44,7 @@ import com.greenaddress.greenbits.ui.R.layout;
 import com.greenaddress.greenbits.ui.R.string;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.SubaccountPopup;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -123,8 +124,8 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
 
         String hwDeviceName = null;
-        if (getConnectionManager().getHWDeviceData() != null) {
-            hwDeviceName = getConnectionManager().getHWDeviceData().getDevice().getName();
+        if (getGAApp().mHWDevice != null) {
+            hwDeviceName = getGAApp().mHWDevice.getDevice().getName();
         }
 
         // only show if we are on Liquid and we are using Ledger
@@ -204,7 +205,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         try {
             final int subaccount = getModel().getCurrentSubaccount();
             final GDKTwoFactorCall call = getSession().getReceiveAddress(subaccount);
-            jsonResp = call.resolve(null, getConnectionManager().getHWResolver());
+            jsonResp = call.resolve(null, new HardwareCodeResolver(this));
         } catch (final Exception e) {
             e.printStackTrace();
             UI.toast(this, string.id_operation_failure, Toast.LENGTH_LONG);
@@ -238,8 +239,8 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
     private void validateAddress(final String address, final long pointer) {
         boolean isLedger = false;
-        if (getConnectionManager().getHWDeviceData() != null) {
-            final String hwDeviceName = getConnectionManager().getHWDeviceData().getDevice().getName();
+        if (getGAApp().mHWDevice != null) {
+            final String hwDeviceName = getGAApp().mHWDevice.getDevice().getName();
             isLedger = "Ledger".equals(hwDeviceName);
         }
 
@@ -263,8 +264,8 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     private String generateHW(final long pointer) throws Exception {
         final int subaccount = getModel().getCurrentSubaccount();
         final SubaccountData subaccountData = getModel().getSubaccountsData(subaccount);
-        final HWDeviceData hwDeviceData = getConnectionManager().getHWDeviceData();
-        final HWWallet hwWallet = getConnectionManager().getHWWallet();
+        final HWDeviceData hwDeviceData = getGAApp().mHWDevice;
+        final HWWallet hwWallet = getGAApp().mHWWallet;
         if (hwDeviceData != null &&
             hwDeviceData.getDevice().getSupportsLiquid() != HWDeviceDataLiquidSupport.None) {
             final boolean csv = !subaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]);

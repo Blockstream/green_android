@@ -32,6 +32,7 @@ import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.preferences.GAPreferenceFragment;
 import com.greenaddress.greenbits.ui.transactions.TransactionActivity;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.List;
 import java.util.Observable;
@@ -79,29 +80,6 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                 preference.setOnPreferenceClickListener(preference1 -> {
                     final Intent intent = new Intent(getActivity(), SecurityActivity.class);
                     startActivity(intent);
-                    return false;
-                });
-            } else if (e.getTitle() == R.string.id_new_transaction) {
-                preference.setOnPreferenceClickListener(preference1 -> {
-                    Log.d("TAG", "" + e.getValue());
-                    try {
-                        final TransactionData txData = (TransactionData) e.getValue();
-                        final GDKTwoFactorCall call =
-                            getSession().getTransactionsRaw(txData.getSubaccount(), 0, 30);
-                        ObjectNode txListObject = call.resolve(null, getConnectionManager().getHWResolver());
-                        final JsonNode transactionRaw =
-                            getSession().findTransactionRaw((ArrayNode) txListObject.get("transactions"),
-                                                            txData.getTxhash());
-                        final ObjectMapper objectMapper = new ObjectMapper();
-                        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                        final TransactionData fullTxData =
-                            objectMapper.convertValue(transactionRaw, TransactionData.class);
-                        final Intent transactionActivity = new Intent(getActivity(), TransactionActivity.class);
-                        transactionActivity.putExtra("TRANSACTION", fullTxData);
-                        startActivity(transactionActivity);
-                    } catch (final Exception e1) {
-                        e1.printStackTrace();
-                    }
                     return false;
                 });
             }

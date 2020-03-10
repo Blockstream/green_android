@@ -34,6 +34,7 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -153,7 +154,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 // then this call will go to the server. So, we should do it in
                 // the background and display a wait icon until it returns
                 final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
-                mTx = call.resolve(null, getConnectionManager().getHWResolver());
+                mTx = call.resolve(null, new HardwareCodeResolver(this));
             } catch (final Exception e) {
                 UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
                 finishOnUiThread();
@@ -459,7 +460,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             // Our tx has changed, so recreate it
             try {
                 final GDKTwoFactorCall call = getSession().createTransactionRaw(null, mTx);
-                mTx = call.resolve(null, getConnectionManager().getHWResolver());
+                mTx = call.resolve(null, new HardwareCodeResolver(this));
             } catch (final Exception e) {
                 // FIXME: Toast and go back to main activity since we must be disconnected
                 throw new RuntimeException(e);
@@ -563,7 +564,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         intent.putExtra("asset_info", info);
         intent.putExtra(PrefKeys.SWEEP, isSweep);
         if (getConnectionManager().isHW())
-            intent.putExtra("hww", getConnectionManager().getHWDeviceData().toString());
+            intent.putExtra("hww", getGAApp().mHWDevice.toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
     }
 

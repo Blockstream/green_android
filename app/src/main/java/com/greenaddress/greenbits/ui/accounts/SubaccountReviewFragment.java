@@ -16,6 +16,7 @@ import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenbits.ui.GAFragment;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import androidx.fragment.app.FragmentTransaction;
 
@@ -100,8 +101,8 @@ public class SubaccountReviewFragment extends GAFragment {
         mApp.getExecutor().execute(() -> {
             try {
                 GDKSession.getSession().createSubAccount(input.toString(), type).resolve(null,
-                                                                                         getConnectionManager()
-                                                                                         .getHWResolver());
+                                                                                         new HardwareCodeResolver(
+                                                                                             getGaActivity()));
                 getModel().getSubaccountsDataObservable().refresh();
             } catch (final Exception e) {
                 getGaActivity().runOnUiThread(() -> { Toast.makeText(getContext(), R.string.id_operation_failure,

@@ -22,6 +22,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.model.ActiveAccountObservable;
@@ -35,6 +36,7 @@ import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.WatchOnlyPreferenceFragment;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.ui.transactions.MainFragment;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Arrays;
 import java.util.Observable;
@@ -120,7 +122,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         try {
             final int subaccount = getModel().getCurrentSubaccount();
             final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, text, subaccount);
-            final ObjectNode transactionFromUri = call.resolve(null, getConnectionManager().getHWResolver());
+            final ObjectNode transactionFromUri = call.resolve(null, new HardwareCodeResolver(this));
             final String error = transactionFromUri.get("error").asText();
             if ("id_invalid_address".equals(error)) {
                 UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);

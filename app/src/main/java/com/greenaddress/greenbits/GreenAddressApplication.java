@@ -19,6 +19,8 @@ import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.JSONConverterImpl;
 import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.CryptoHelper;
+import com.greenaddress.greenapi.HWWallet;
+import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.spv.SPV;
@@ -41,6 +43,8 @@ public class GreenAddressApplication extends MultiDexApplication {
     private final ConnectionManager mConnectionManager = new ConnectionManager();
     private static AtomicBoolean isRunningTest;
     private final SPV mSPV = new SPV();
+    public HWDeviceData mHWDevice;
+    public HWWallet mHWWallet;
 
     private void failHard(final String title, final String message) {
         final Intent fail = new Intent(this, FailHardActivity.class);

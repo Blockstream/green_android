@@ -10,6 +10,7 @@ import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.BlindedScriptsData;
 import com.greenaddress.greenapi.data.HWDeviceRequiredData;
 import com.greenaddress.greenapi.data.HardwareCodeResolverData;
+import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GaActivity;
 
 import org.bitcoinj.core.Context;
@@ -26,6 +27,11 @@ public class HardwareCodeResolver implements CodeResolver {
     private HWWallet hwWallet;
     private GaActivity parent;
     private final Map<Pair<String, String>, String> mNoncesCache = new ConcurrentHashMap<>();
+
+    public HardwareCodeResolver(final GaActivity activity) {
+        this.parent = activity;
+        this.hwWallet = ((GreenAddressApplication)activity.getApplication()).mHWWallet;
+    }
 
     public HardwareCodeResolver(final GaActivity activity, final HWWallet hwWallet) {
         this.parent = activity;
