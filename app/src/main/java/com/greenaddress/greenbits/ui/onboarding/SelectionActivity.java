@@ -66,7 +66,7 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
             try {
                 cm.disconnect();
                 cm.connect(this);
-                getSession().registerUser(this, null, mnemonic).resolve(null, null);
+                getSession().registerUser(null, mnemonic).resolve(null, null);
                 cm.loginWithMnemonic(mnemonic, "");
                 onPostLogin();
                 runOnUiThread(() -> {

@@ -87,7 +87,7 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
                     try {
                         final TransactionData txData = (TransactionData) e.getValue();
                         final GDKTwoFactorCall call =
-                            getSession().getTransactionsRaw(null, txData.getSubaccount(), 0, 30);
+                            getSession().getTransactionsRaw(txData.getSubaccount(), 0, 30);
                         ObjectNode txListObject = call.resolve(null, getConnectionManager().getHWResolver());
                         final JsonNode transactionRaw =
                             getSession().findTransactionRaw((ArrayNode) txListObject.get("transactions"),

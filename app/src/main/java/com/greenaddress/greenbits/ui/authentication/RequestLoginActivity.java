@@ -155,7 +155,7 @@ public class RequestLoginActivity extends LoginActivity {
         mHwWallet = new TrezorHWWallet(t, networkData);
 
         mHwDeviceData = new HWDeviceData("Trezor", false, false, HWDeviceData.HWDeviceDataLiquidSupport.None);
-        mHwResolver = new HardwareCodeResolver(mHwWallet);
+        mHwResolver = new HardwareCodeResolver(this, mHwWallet);
 
         doLogin(this);
     }
@@ -271,7 +271,7 @@ public class RequestLoginActivity extends LoginActivity {
         mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData);
 
         mHwDeviceData = new HWDeviceData("Ledger", false, true, HWDeviceData.HWDeviceDataLiquidSupport.Lite);
-        mHwResolver = new HardwareCodeResolver(mHwWallet);
+        mHwResolver = new HardwareCodeResolver(this, mHwWallet);
 
         doLogin(this);
     }
@@ -281,8 +281,8 @@ public class RequestLoginActivity extends LoginActivity {
         getGAApp().getExecutor().execute(() -> {
             try {
                 cm.connect(this);
-                getSession().registerUser(this, mHwDeviceData, "").resolve(null, mHwResolver);
-                cm.login(parent, mHwDeviceData, mHwResolver, mHwWallet);
+                getSession().registerUser(mHwDeviceData, "").resolve(null, mHwResolver);
+                cm.login(mHwDeviceData, mHwResolver, mHwWallet);
                 onPostLogin();
                 runOnUiThread(() -> {
                     stopLoading();

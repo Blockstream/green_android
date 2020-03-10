@@ -23,7 +23,7 @@ public class PopupCodeResolver implements CodeResolver {
     }
 
     @Override
-    public SettableFuture<String> hardwareRequest(final GaActivity parent, final HWDeviceRequiredData requiredData) {
+    public SettableFuture<String> hardwareRequest(final HWDeviceRequiredData requiredData) {
         return null;
     }
 

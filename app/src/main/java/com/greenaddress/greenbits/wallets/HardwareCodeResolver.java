@@ -12,6 +12,8 @@ import com.greenaddress.greenapi.data.HWDeviceRequiredData;
 import com.greenaddress.greenapi.data.HardwareCodeResolverData;
 import com.greenaddress.greenbits.ui.GaActivity;
 
+import org.bitcoinj.core.Context;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,15 +24,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HardwareCodeResolver implements CodeResolver {
     private final static String TAG = "HWC";
     private HWWallet hwWallet;
+    private GaActivity parent;
     private final Map<Pair<String, String>, String> mNoncesCache = new ConcurrentHashMap<>();
 
-    public HardwareCodeResolver(final HWWallet hwWallet) {
+    public HardwareCodeResolver(final GaActivity activity, final HWWallet hwWallet) {
+        this.parent = activity;
         this.hwWallet = hwWallet;
     }
 
     @Override
-    public synchronized SettableFuture<String> hardwareRequest(final GaActivity parent,
-                                                               final HWDeviceRequiredData requiredData) {
+    public synchronized SettableFuture<String> hardwareRequest(final HWDeviceRequiredData requiredData) {
         final SettableFuture<String> future = SettableFuture.create();
         final HardwareCodeResolverData data = new HardwareCodeResolverData();
 

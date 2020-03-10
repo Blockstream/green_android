@@ -379,7 +379,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             final String txhash = mTxItem.getTxhash();
             final int subaccount = mTxItem.getSubaccount() ==
                                    null ? model.getCurrentSubaccount() : mTxItem.getSubaccount();
-            final GDKTwoFactorCall call = getSession().getTransactionsRaw(null, subaccount, 0, 30);
+            final GDKTwoFactorCall call = getSession().getTransactionsRaw(subaccount, 0, 30);
             ObjectNode txListObject = call.resolve(null, getConnectionManager().getHWResolver());
             final JsonNode txToBump = getSession().findTransactionRaw((ArrayNode) txListObject.get(
                                                                           "transactions"), txhash);

@@ -393,8 +393,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             // See if the address is a private key, and if so, sweep it
             final Long feeRate = getGAApp().getModel().getFeeObservable().getFees().get(0);
             final BalanceData balanceData = new BalanceData();
-            final ObjectNode jsonResp = getSession().getReceiveAddress(null, subaccount).resolve(null,
-                                                                                                 getConnectionManager().getHWResolver());
+            final ObjectNode jsonResp = getSession().getReceiveAddress(subaccount).resolve(null,
+                                                                                           getConnectionManager().getHWResolver());
             final String address = jsonResp.get("address").asText();
             balanceData.setAddress(address);
             final List<BalanceData> balanceDataList = new ArrayList<>();

@@ -54,7 +54,7 @@ public class SubaccountsDataObservable extends Observable {
         // this call is syncronous, because other observables depends on this to be initialized
         try {
             final long millis=System.currentTimeMillis();
-            final GDKTwoFactorCall call = getSession().getSubAccounts(null);
+            final GDKTwoFactorCall call = getSession().getSubAccounts();
             final ObjectNode accounts = call.resolve(null, mCodeResolver);
             final List<SubaccountData> subAccounts =
                 mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts.get("subaccounts")),

@@ -46,7 +46,7 @@ public class BalanceDataObservable extends Observable implements Observer {
     public void refresh() {
         mExecutor.submit(() -> {
             try {
-                final GDKTwoFactorCall call = getSession().getBalance(null, mSubaccount, 0);
+                final GDKTwoFactorCall call = getSession().getBalance(mSubaccount, 0);
                 final ObjectNode response = call.resolve(null, mCodeResolver);
                 final Map<String,Long> balance = processResponse(response);
                 setBalanceData(balance);
@@ -61,7 +61,7 @@ public class BalanceDataObservable extends Observable implements Observer {
         if (mSatoshiData == null) {
             Log.e("OBS", "Balance observable does not hold the data yet, asking syncronously");
             try {
-                final GDKTwoFactorCall call = getSession().getBalance(null, mSubaccount, 0);
+                final GDKTwoFactorCall call = getSession().getBalance(mSubaccount, 0);
                 final ObjectNode response = call.resolve(null, mCodeResolver);
                 mSatoshiData = processResponse(response);
             } catch (Exception e) {

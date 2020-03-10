@@ -358,7 +358,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private void updateSettings(final SettingsData settings) {
         try {
             final GDKTwoFactorCall gdkTwoFactorCall = getSession().changeSettings(
-                getActivity(), settings.toObjectNode());
+                settings.toObjectNode());
             gdkTwoFactorCall.resolve(null, null);
             getModel().getSettingsObservable().setSettings(settings);
             getModel().getSubaccountsDataObservable().refresh();
@@ -746,7 +746,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         getGAApp().getExecutor().execute(() -> {
             try {
-                final GDKTwoFactorCall call = getSession().twoFactorChangeLimits(getActivity(), limitsData);
+                final GDKTwoFactorCall call = getSession().twoFactorChangeLimits(limitsData);
                 final ObjectNode newLimits =
                     call.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
                 getModel().getTwoFactorConfigDataObservable().updateLimits(newLimits);

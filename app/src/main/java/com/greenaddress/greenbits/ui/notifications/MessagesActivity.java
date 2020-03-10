@@ -68,7 +68,7 @@ public class MessagesActivity extends LoggedActivity
                 getGAApp().getExecutor().execute(() -> {
                     try {
                         final ConnectionManager cm = getConnectionManager();
-                        final GDKTwoFactorCall call = getSession().ackSystemMessage(this, mCurrentMessage);
+                        final GDKTwoFactorCall call = getSession().ackSystemMessage(mCurrentMessage);
                         call.resolve(null, cm.getHWResolver());
                     } catch (final Exception e) {
                         Log.e(TAG, e.getMessage());

@@ -298,7 +298,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 twoFactorDetail.setEnabled(false);
                 twoFactorDetail.setConfirmed(true);
                 final GDKTwoFactorCall twoFactorCall =
-                    getSession().changeSettingsTwoFactor(this, "email", twoFactorDetail);
+                    getSession().changeSettingsTwoFactor("email", twoFactorDetail);
                 twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
                 UI.toast(this, "Email set", Toast.LENGTH_LONG);
                 setEnableDisableResult(false);
@@ -327,7 +327,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 twoFactorDetail.setData(data);
                 twoFactorDetail.setConfirmed(true);
                 final GDKTwoFactorCall twoFactorCall =
-                    getSession().changeSettingsTwoFactor(this, method, twoFactorDetail);
+                    getSession().changeSettingsTwoFactor(method, twoFactorDetail);
                 twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
                 UI.toast(this, "Two factor enabled", Toast.LENGTH_LONG);
                 setEnableDisableResult(true);
@@ -365,7 +365,7 @@ public class TwoFactorActivity extends LoggedActivity {
                     twoFactorDetail.setConfirmed(false);
                 }
                 final GDKTwoFactorCall twoFactorCall =
-                    getSession().changeSettingsTwoFactor(this, method, twoFactorDetail);
+                    getSession().changeSettingsTwoFactor(method, twoFactorDetail);
                 twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
                 UI.toast(this, "Two factor disabled", Toast.LENGTH_LONG);
                 setEnableDisableResult(false);
@@ -389,7 +389,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
         getGAApp().getExecutor().execute(() -> {
             try {
-                final GDKTwoFactorCall twoFactorCall = getSession().twoFactorReset(this, email, isDispute);
+                final GDKTwoFactorCall twoFactorCall = getSession().twoFactorReset(email, isDispute);
                 twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
                 UI.toast(this, R.string.id_request_twofactor_reset, Toast.LENGTH_LONG);
                 final Intent intent = getIntent();
@@ -413,7 +413,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
         getGAApp().getExecutor().execute(() -> {
             try {
-                final GDKTwoFactorCall twoFactorCall = getSession().twofactorCancelReset(this);
+                final GDKTwoFactorCall twoFactorCall = getSession().twofactorCancelReset();
                 twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
                 UI.toast(this, R.string.id_cancel_twofactor_reset, Toast.LENGTH_LONG);
                 setResult(Activity.RESULT_OK);
