@@ -30,7 +30,7 @@ public class HardwareCodeResolver implements CodeResolver {
 
     public HardwareCodeResolver(final GaActivity activity) {
         this.parent = activity;
-        this.hwWallet = ((GreenAddressApplication)activity.getApplication()).mHWWallet;
+        this.hwWallet = ((GreenAddressApplication)activity.getApplication()).getHWWallet();
     }
 
     public HardwareCodeResolver(final GaActivity activity, final HWWallet hwWallet) {

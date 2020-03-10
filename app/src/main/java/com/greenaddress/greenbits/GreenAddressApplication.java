@@ -43,8 +43,7 @@ public class GreenAddressApplication extends MultiDexApplication {
     private final ConnectionManager mConnectionManager = new ConnectionManager();
     private static AtomicBoolean isRunningTest;
     private final SPV mSPV = new SPV();
-    public HWDeviceData mHWDevice;
-    public HWWallet mHWWallet;
+    private HWWallet mHWWallet = null;
 
     private void failHard(final String title, final String message) {
         final Intent fail = new Intent(this, FailHardActivity.class);
@@ -211,5 +210,13 @@ public class GreenAddressApplication extends MultiDexApplication {
     public void onLowMemory() {
         super.onLowMemory();
         Log.i("LoggedActivity","onLowMemory app");
+    }
+
+    public HWWallet getHWWallet() {
+        return mHWWallet;
+    }
+
+    public void setHWWallet(final HWWallet hwWallet) {
+        this.mHWWallet = mHWWallet;
     }
 }
