@@ -351,9 +351,9 @@ extension SettingsViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.showAlert(title: NSLocalizedString("id_request_sent", comment: ""), message: NSLocalizedString("id_recovery_transaction_request", comment: ""))
+            DropAlert().success(message: NSLocalizedString("id_recovery_transaction_request", comment: ""))
         }.catch {_ in
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_request_failed", comment: ""))
+            DropAlert().error(message: NSLocalizedString("id_request_failed", comment: ""))
         }
     }
 

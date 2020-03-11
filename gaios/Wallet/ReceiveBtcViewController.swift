@@ -90,7 +90,7 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     @objc func copyAccountIdToClipboard(_ sender: Any) {
         UIPasteboard.general.string = wallet?.receivingId ?? ""
-        DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""))
+        DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
     }
 
     @objc func copyToClipboard(_ sender: Any) {
@@ -100,7 +100,7 @@ class ReceiveBtcViewController: KeyboardViewController {
             return wallet.getAddress()
         }.done { address in
             UIPasteboard.general.string = self.uriBitcoin(address: address)
-            DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""))
+            DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 1.0)
         }.catch { _ in }
     }
 
