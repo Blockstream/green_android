@@ -35,7 +35,7 @@ android {
         exclude 'com/mysql/jdbc/configs/solarisMaxPerformance.properties'
     }
     compileSdkVersion 29
-    buildToolsVersion '29.0.2'
+    buildToolsVersion '29.0.3'
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
@@ -117,7 +117,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation "androidx.preference:preference:1.1.0"
@@ -125,6 +125,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'com.google.zxing:core:3.3.3' // API <=24 compatibility
+    //noinspection GradleDependency
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.9.6'
 
