@@ -19,10 +19,17 @@
             android:layout_height="50dp" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:contentDescription="@string/id_green_logo"
-            android:src="@drawable/ic_logo_big" />
+            android:src="@drawable/ic_icon_cs" />
+
+        <ImageView
+            android:layout_marginTop="50dp"
+            android:layout_width="200dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_cs_title" />
 
         <View
             android:layout_width="fill_parent"

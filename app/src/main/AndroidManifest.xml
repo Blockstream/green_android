@@ -40,9 +40,8 @@
     <application
         android:name="com.greenaddress.greenbits.GreenAddressApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_icon_cs_black"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/BitcoinTheme">
         <activity
@@ -51,7 +50,6 @@
             android:screenOrientation="portrait"
             android:label="@string/id_restore"
             />
-
         <activity-alias
             android:name=".NFC"
             android:label="@string/app_name"
