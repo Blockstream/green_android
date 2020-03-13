@@ -93,10 +93,12 @@
 "id_contact_support_at_s_or_visit_s" = "Contact support at %@ or visit %@";
 "id_continue" = "Continuar";
 "id_copied_to_clipboard" = "Copied to clipboard";
+"id_copy_address" = "Copy address";
 "id_copy_details" = "Copy details";
 "id_copy_raw_transaction" = "Copy raw transaction";
 "id_copy_to_clipboard" = "Copiar al portapapeles";
 "id_copy_transaction_id" = "Copy transaction ID";
+"id_copy_uri" = "Copy URI";
 "id_create" = "Crear";
 "id_create_a_pin_to_access_your" = "Crear un PIN para acceder a tu cartera";
 "id_create_a_wallet_for_bitcoin" = "Create a wallet for Bitcoin, Liquid or Testnet";
@@ -122,7 +124,7 @@
 "id_denomination" = "Denominación";
 "id_deposit" = "Depósito";
 "id_disable" = "Deshabilitar";
-"id_disable_s_for_twofactor" = "Disable %@ for Two-Factor Authentication";
+"id_disable_s_twofactor" = "Disable %@ Two-Factor Authentication";
 "id_disabled" = "Deshabilitado";
 "id_displays_the_progress_of_spv" = "Muestra el progreso de la sincronización con SPV";
 "id_dispute_twofactor_reset" = "Disputar restablecimiento de autenticación de dos factores";
@@ -247,6 +249,7 @@
 "id_last_attempt_if_failed_you_will" = "Último intento: en caso de otro fallo, deberá restaurar la cartera con la frase de recuperación de 24 palabras.";
 "id_last_ping_1d_ms" = "Último pin: %1$d ms";
 "id_later" = "LUEGO";
+"id_lbtc_has_no_issuer_and_is" = "L-BTC has no issuer and is instead created on the network via a peg-in.";
 "id_learn_more_about_s" = "Learn more about %@.";
 "id_ledger_dashboard_detected" = "Ledger Dashboard detectado. Abre la app correcta para acceder.";
 "id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.";
@@ -255,7 +258,6 @@
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
 "id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
-"id_liquid_watchmen_via_pegin_tap" = "Liquid watchmen via peg-in. Tap here to read more about Liquid";
 "id_loading_transactions" = "Cargando transacciones...";
 "id_log_in" = "Iniciar sesión";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -350,6 +352,7 @@
 "id_please_set_and_enable_socks5" = "Configura y activa el proxy de SOCKS5 y el puerto para utilizar Tor";
 "id_please_tap_card" = "Toca con tu tarjeta";
 "id_please_verify_that_the_address" = "Please verify that the address shown on your hardware wallet matches the one on your phone.";
+"id_please_wait_while_your_ledger" = "Please wait while your Ledger validates your address and shows it on the screen.";
 "id_precision" = "Precisión";
 "id_privacy_policy" = "Política de privacidad";
 "id_problem_with_key_1s" = "Problema con clave %1$@";
@@ -589,6 +592,7 @@
 "id_you_must_save_this_mnemonic_now" = "DEBES guardar la Frase de Recuperación AHORA.";
 "id_you_only_have_one_twofactor" = "Solo tienes un método de autenticación de dos factores habilitado";
 "id_you_will_need_to_reenter_your" = "Tendrás que volver a ingresar tu Frase de Recuperación para iniciar sesión si no estableces un PIN. Presiona \"OK\" para continuar.";
+"id_your_favourite_exchange_rate_is" = "Your favourite exchange rate is not available at the moment. You can change it from settings.";
 "id_your_green_wallet_is_now_ready" = "Tu Green Wallet está lista para usarse.";
 "id_your_ios_device_might_not_be" = "Your iOS device might not be supported";
 "id_your_notifications_will_be" = "Tus notificaciones aparecerán aquí.";

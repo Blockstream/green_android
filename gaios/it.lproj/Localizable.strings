@@ -93,10 +93,12 @@
 "id_contact_support_at_s_or_visit_s" = "Contatta il supporto presso %@ oppure visita %@";
 "id_continue" = "Continua";
 "id_copied_to_clipboard" = "Copiato in clipboard";
+"id_copy_address" = "Copia indirizzo";
 "id_copy_details" = "Copia i dettagli";
 "id_copy_raw_transaction" = "Copia raw transaction";
 "id_copy_to_clipboard" = "Copia in Clipboard";
 "id_copy_transaction_id" = "Copia ID di transazione";
+"id_copy_uri" = "Copia URI";
 "id_create" = "Crea";
 "id_create_a_pin_to_access_your" = "Crea un PIN per l'accesso al wallet";
 "id_create_a_wallet_for_bitcoin" = "Crea un nuovo waller per Bitcoin, Liquid o Testnet";
@@ -122,7 +124,7 @@
 "id_denomination" = "Denominazione";
 "id_deposit" = "Deposita";
 "id_disable" = "Disabilita";
-"id_disable_s_for_twofactor" = "Disattiva  l' Autenticazione a Due Fattori via %@";
+"id_disable_s_twofactor" = "Disable %@ Two-Factor Authentication";
 "id_disabled" = "Disabilitato";
 "id_displays_the_progress_of_spv" = "Mostra il progresso della sincronizzazione SPV";
 "id_dispute_twofactor_reset" = "Contesta il reset del Secondo Fattore";
@@ -247,6 +249,7 @@
 "id_last_attempt_if_failed_you_will" = "Ultimo tentativo: in caso di fallimento dovrai rigenerare il tuo wallet utilizzando la mnemonica di 24 parole.";
 "id_last_ping_1d_ms" = "Ultimo ping: %1$d ms";
 "id_later" = "PIÙ TARDI";
+"id_lbtc_has_no_issuer_and_is" = "L-BTC has no issuer and is instead created on the network via a peg-in.";
 "id_learn_more_about_s" = "Scopri di più su %@.";
 "id_ledger_dashboard_detected" = "Dashboard Ledger rilevata, avvia l'app corretta per accedere.";
 "id_ledger_supports_a_limited_set" = "Ledger supporta un set limitato di asset: verifica sulla nostra documentazione prima di ricevere asset diversi da L-BTC e USDt";
@@ -255,7 +258,6 @@
 "id_liquid_securities_account" = "Liquid Securities Account";
 "id_liquid_securities_account_is" = "Liquid securities account è disponibile solo su Liquid";
 "id_liquid_securities_accounts_are" = "Liquid securities account sono disponibili solo nei wallet Liquid. Sarà necessario ottenere l'autorizzazione dell'emittente per ricevere un titolo Liquid Security.";
-"id_liquid_watchmen_via_pegin_tap" = "Watchmen di liquid via peg-in. Tocca qui per saperne di più su Liquid";
 "id_loading_transactions" = "Caricamento transazioni...";
 "id_log_in" = "Accedi";
 "id_log_in_into_your_s_wallet" = "Accedi al tuo %@ wallet";
@@ -350,6 +352,7 @@
 "id_please_set_and_enable_socks5" = "Specifica ed abilita SOCKS5 proxy e porta per usare Tor";
 "id_please_tap_card" = "Please tap card";
 "id_please_verify_that_the_address" = "Assicurati che l'indirizzo mostrato sul tuo hardware wallet coincida con quello sul tuo telefono.";
+"id_please_wait_while_your_ledger" = "Attendi mentre Ledger valida il tuo indirizzo e lo mostra sullo schermo.";
 "id_precision" = "Precisione";
 "id_privacy_policy" = "Privacy Policy";
 "id_problem_with_key_1s" = "Problema con il tasto %1$@";
@@ -589,6 +592,7 @@
 "id_you_must_save_this_mnemonic_now" = "DEVI conservare la mnemonica ORA";
 "id_you_only_have_one_twofactor" = "Hai attivato un solo metodo di autenticazione a due fattori";
 "id_you_will_need_to_reenter_your" = "Se non imposti un PIN dovrai utilizzare la mnemonica per accedere. Premi \"OK\" per continuare.";
+"id_your_favourite_exchange_rate_is" = "Il tuo tasso di cambio preferito non è disponibile al momento. Puoi cambiarlo dalle impostazioni.";
 "id_your_green_wallet_is_now_ready" = "Il tuo wallet Green è ora pronto all'uso.";
 "id_your_ios_device_might_not_be" = "Il tuo device iOS potrebbe essere non supportato";
 "id_your_notifications_will_be" = "Vedrai qui le tue notifiche.";
