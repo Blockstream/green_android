@@ -134,7 +134,7 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
                 cell.detailLabel.text = isLiquid ? "L-BTC" : asset?.ticker ?? NSLocalizedString("id_no_registered_ticker_for_this", comment: "")
             case .issuer:
                 cell.titleLabel.text = NSLocalizedString("id_issuer", comment: "")
-                cell.detailLabel.text = isLiquid ? NSLocalizedString("id_liquid_watchmen_via_pegin_tap", comment: "") : asset?.entity?.domain ?? NSLocalizedString("id_unknown", comment: "")
+                cell.detailLabel.text = isLiquid ? NSLocalizedString("id_lbtc_has_no_issuer_and_is", comment: "") : asset?.entity?.domain ?? NSLocalizedString("id_unknown", comment: "")
             }
             return cell
         }
