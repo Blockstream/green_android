@@ -23,7 +23,7 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TransactionData.TYPE;
-import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.R.color;
 import com.greenaddress.greenbits.ui.R.drawable;
@@ -39,6 +39,7 @@ import java.text.DateFormat;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.greenaddress.greenapi.Registry.getRegistry;
 
 public class ListTransactionsAdapter extends
     Adapter<ViewHolder> {
@@ -49,22 +50,31 @@ public class ListTransactionsAdapter extends
     private final List<TransactionData> mTxItems;
     private final Activity mActivity;
     private final NetworkData mNetworkData;
-    private final Model mModel;
     private final SPV mSPV;
     private final boolean isSpvEnabled;
+    private int currentBlock = 0;
+    private final OnTxSelected mOnTxSelected;
+
+    @FunctionalInterface
+    public interface OnTxSelected {
+        void onSelected(final TransactionData tx);
+    }
 
     public ListTransactionsAdapter(final Activity activity,
                                    final NetworkData networkData,
                                    final List<TransactionData> txItems,
-                                   final Model model,
-                                   final SPV spv) {
+                                   final SPV spv, final OnTxSelected selector) {
         mTxItems = txItems;
         mActivity = activity;
         mNetworkData = networkData;
-        mModel = model;
         final SharedPreferences preferences = activity.getSharedPreferences(mNetworkData.getNetwork(), MODE_PRIVATE);
         isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
         mSPV = spv;
+        mOnTxSelected = selector;
+    }
+
+    public void setCurrentBlock(final int currentBlock) {
+        this.currentBlock = currentBlock;
     }
 
     @Override
@@ -91,7 +101,7 @@ public class ListTransactionsAdapter extends
         final int assetsNumber = txItem.getSatoshi().size();
         if (assetsNumber == 1) {
             final String assetId = txItem.getSatoshi().keySet().iterator().next();
-            holder.textValue.setText(getAmountWithUnit(txItem, mModel, assetId));
+            holder.textValue.setText(getAmountWithUnit(txItem, assetId));
         } else {
             holder.textValue.setText(mActivity.getString(string.id_d_assets, assetsNumber));
         }
@@ -118,7 +128,7 @@ public class ListTransactionsAdapter extends
             else if (mNetworkData.getLiquid() && txItem.isAsset()) {
                 final String assetId =
                     txItem.getSatoshi().keySet().iterator().next();
-                final AssetInfoData assetInfo = mModel.getAssetsObservable().getAssetsInfos().get(assetId);
+                final AssetInfoData assetInfo = getRegistry().getInfos().get(assetId);
                 message = assetInfo != null ? assetInfo.getEntity().getDomain() : assetId;
             } else if (txItem.getTxType() == TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(
@@ -143,7 +153,6 @@ public class ListTransactionsAdapter extends
 
         final String confirmations;
         final int confirmationsColor;
-        final int currentBlock = mModel.getBlockchainHeightObservable().getHeight();
         if (txItem.getConfirmations(currentBlock) == 0) {
             confirmations = mActivity.getString(string.id_unconfirmed);
             confirmationsColor = color.red;
@@ -177,28 +186,26 @@ public class ListTransactionsAdapter extends
             holder.sentOrReceive.setImageDrawable(mActivity.getResources().getDrawable(sentOrReceive));
         }
         holder.textValue.setTextColor(getColor(amountColor));
-
         holder.mainLayout.setOnClickListener(v -> {
-            final Intent transactionActivity = new Intent(mActivity, TransactionActivity.class);
-            transactionActivity.putExtra("TRANSACTION", txItem);
-            mActivity.startActivityForResult(transactionActivity, REQUEST_TX_DETAILS);
+            if (mOnTxSelected != null)
+                mOnTxSelected.onSelected(txItem);
         });
     }
 
-    public String getAmountWithUnit(final TransactionData tx, final Model model, final String assetId) {
+    public String getAmountWithUnit(final TransactionData tx, final String assetId) {
         try {
             if (tx.getTxType() == TYPE.REDEPOSIT) {
-                final String fee = model.getBtc(tx.getFee(), true);
+                final String fee = Conversion.getBtc(tx.getFee(), true);
                 return String.format("-%s", fee);
             }
             if ("btc".equals(assetId)) {
-                final String amount = model.getBtc(tx.getSatoshi().get("btc"), true);
+                final String amount = Conversion.getBtc(tx.getSatoshi().get("btc"), true);
                 return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
             }
-            AssetInfoData info = model.getAssetsObservable().getAssetsInfos().get(assetId);
+            AssetInfoData info = getRegistry().getInfos().get(assetId);
             if (info == null)
                 info = new AssetInfoData(assetId);
-            final String amount = model.getAsset(tx.getSatoshi().get(assetId), assetId, info, true);
+            final String amount = Conversion.getAsset(tx.getSatoshi().get(assetId), assetId, info, true);
             return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
         } catch (final Exception e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());

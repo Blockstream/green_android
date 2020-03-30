@@ -1,5 +1,7 @@
 package com.greenaddress.greenbits.ui.notifications;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -10,14 +12,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.greenaddress.gdk.GDKTwoFactorCall;
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
+import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class MessagesActivity extends LoggedActivity
     implements View.OnClickListener {
@@ -27,8 +35,8 @@ public class MessagesActivity extends LoggedActivity
     private CheckBox mAckedCheckBox;
     private Button mContinueButton;
     private Button mSkipButton;
-    private EventData mCurrentEvent;
     private String mCurrentMessage;
+    private Disposable mDisposable;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -44,7 +52,6 @@ public class MessagesActivity extends LoggedActivity
         UI.mapClick(this, R.id.system_message_continue, this);
         UI.mapClick(this, R.id.system_message_skip, this);
 
-        mCurrentEvent = (EventData) getIntent().getSerializableExtra("event");
         mCurrentMessage = getIntent().getStringExtra("message");
 
         mMessageText.setText(mCurrentMessage);
@@ -56,6 +63,8 @@ public class MessagesActivity extends LoggedActivity
         UI.unmapClick(mContinueButton);
         UI.unmapClick(mSkipButton);
         mAckedCheckBox.setOnCheckedChangeListener(null);
+        if (mDisposable != null)
+            mDisposable.dispose();
     }
 
     @Override
@@ -66,18 +75,20 @@ public class MessagesActivity extends LoggedActivity
             if (mAckedCheckBox.isChecked()) {
                 // Sign and ack the current message, then move to the next
                 startLoading();
-                getGAApp().getExecutor().execute(() -> {
-                    try {
-                        final ConnectionManager cm = getConnectionManager();
-                        final GDKTwoFactorCall call = getSession().ackSystemMessage(mCurrentMessage);
-                        call.resolve(null, new HardwareCodeResolver(this));
-                    } catch (final Exception e) {
-                        Log.e(TAG, e.getMessage());
-                    }
-                    //FIXME put this inside the try block when testing with real system messages
-                    getModel().getEventDataObservable().remove(mCurrentEvent);
+
+                mDisposable = Observable.just(getSession())
+                              .subscribeOn(Schedulers.computation())
+                              .map((session) -> {
+                    final GDKTwoFactorCall call = getSession().ackSystemMessage(mCurrentMessage);
+                    call.resolve(null, new HardwareCodeResolver(this));
+                    return session;
+                }).observeOn(AndroidSchedulers.mainThread())
+                              .subscribe((session) -> {
                     stopLoading();
                     finishOnUiThread();
+                }, (final Throwable e) -> {
+                    stopLoading();
+                    UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
                 });
             } else {
                 UI.toast(this, R.string.id_please_select_the_checkbox, Toast.LENGTH_LONG);

@@ -4,30 +4,29 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
-import com.greenaddress.greenapi.ConnectionManager;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SettingsData;
-import com.greenaddress.greenapi.model.AssetsDataObservable;
-import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenapi.model.SettingsObservable;
-import com.greenaddress.greenapi.model.TorProgressObservable;
 import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.Locale;
+import java.util.UUID;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
-public abstract class LoginActivity extends GaActivity implements Observer {
+import static com.greenaddress.greenapi.Registry.getRegistry;
+import static com.greenaddress.greenapi.Session.getSession;
 
-    private final TorProgressObservable mTorProgressObservable = new TorProgressObservable();
+public abstract class LoginActivity extends GaActivity {
 
     protected void onLoggedIn() {
         final Intent intent = new Intent(LoginActivity.this, TabbedMainActivity.class);
@@ -41,34 +40,17 @@ public abstract class LoginActivity extends GaActivity implements Observer {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSession().getNotificationModel().setTorProgressObservable(mTorProgressObservable);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mTorProgressObservable.addObserver(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mTorProgressObservable.deleteObserver(this);
-    }
-
-    @Override
-    public void update(final Observable observable, final Object o) {
-        if (observable instanceof TorProgressObservable) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final int progress = ((TorProgressObservable) observable).get().get("progress").asInt(0);
-                    final ProgressBarHandler pbar = getProgressBarHandler();
-                    if (pbar != null)
-                        pbar.setMessage(String.format("%s %d %%",getString(R.string.id_tor_status), progress));
-                }
-            });
-        }
+        getSession().getNotificationModel().getTorObservable().observeOn(AndroidSchedulers.mainThread()).subscribe((
+                                                                                                                       JsonNode
+                                                                                                                       jsonNode) -> {
+            final int progress = jsonNode.get(
+                "progress").asInt(0);
+            final ProgressBarHandler pbar = getProgressBarHandler();
+            if (pbar != null)
+                pbar.setMessage(String.format("%s %d %%",getString(R.string.id_tor_status), progress));
+        }, (err) -> {
+            Log.d(TAG, err.getLocalizedMessage());
+        });
     }
 
     protected int getCode(final Exception e) {
@@ -85,42 +67,36 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
 
         // setup data observers
-        final ConnectionManager connectionManager = getConnectionManager();
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
-        final Model model = new Model(getGAApp().getExecutor(), new HardwareCodeResolver(this), networkData);
         final SharedPreferences preferences = getSharedPreferences(networkData.getNetwork(), MODE_PRIVATE);
-        final int activeAccount =
-            connectionManager.isLoginWithPin() ? preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0) : 0;
-        if (model.getSubaccountsDataObservable().getSubaccountsDataWithPointer(activeAccount) != null)
-            model.getActiveAccountObservable().setActiveAccount(activeAccount);
-        else
-            model.getActiveAccountObservable().setActiveAccount(0);
-        getGAApp().setModel(model);
-        getSession().getNotificationModel().setModel(model);
-        getSession().getNotificationModel().setConnectionManager(connectionManager);
         initSettings();
-        connectionManager.goPostLogin();
 
         // refresh assets in liquid network
         if (networkData.getLiquid()) {
-            model.getAssetsObservable().addObserver((observable, o) -> {
-                final AssetsDataObservable assetsDataObservable = (AssetsDataObservable) observable;
-                if (!assetsDataObservable.isAssetsLoaded() && !assetsDataObservable.isShownErrorPopup()) {
-
-                    final Intent intent = new Intent();
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setClass(this, RegistryErrorActivity.class);
-                    startActivity(intent);
-
-                    assetsDataObservable.setShownErrorPopup();
-                }
+            Observable.just(getSession())
+            .subscribeOn(Schedulers.computation())
+            .map((session) -> {
+                getRegistry().cached();
+                return session;
+            })
+            .map((session) -> {
+                getRegistry().refresh();
+                return session;
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe((session) -> {
+                Log.d(TAG, "Assets refreshed");
+            }, (final Throwable e) -> {
+                final Intent intent = new Intent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setClass(this, RegistryErrorActivity.class);
+                startActivity(intent);
             });
-            model.getAssetsObservable().refresh();
         }
 
         // check and start spv if enabled
         final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
-        if (!connectionManager.isWatchOnly() && isSpvEnabled) {
+        if (!getSession().isWatchOnly() && isSpvEnabled) {
             try {
                 getGAApp().getSpv().startService(getGAApp());
             } catch (final Exception e) {
@@ -132,7 +108,7 @@ public abstract class LoginActivity extends GaActivity implements Observer {
 
     private void initSettings() {
         Log.d(TAG,"initSettings");
-        final SettingsData settings = getModel().getSettings();
+        final SettingsData settings = getSession().getSettings();
         final SharedPreferences pref =
             PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final SharedPreferences.Editor edit = pref.edit();
@@ -150,5 +126,37 @@ public abstract class LoginActivity extends GaActivity implements Observer {
         if (settings.getPgp() != null)
             edit.putString(PrefKeys.PGP_KEY, settings.getPgp());
         edit.apply();
+    }
+
+    public void connect() throws Exception {
+        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(
+            PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        final SharedPreferences preferences = this.getSharedPreferences(network, MODE_PRIVATE);
+        final String proxyHost = preferences.getString(PrefKeys.PROXY_HOST, "");
+        final String proxyPort = preferences.getString(PrefKeys.PROXY_PORT, "");
+        final Boolean proxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
+        final Boolean torEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
+
+        String deviceId = preferences.getString(PrefKeys.DEVICE_ID, null);
+        if (deviceId == null) {
+            // Generate a unique device id
+            deviceId = UUID.randomUUID().toString();
+            preferences.edit().putString(PrefKeys.DEVICE_ID, deviceId).apply();
+        }
+
+        final boolean isDebug = BuildConfig.DEBUG;
+        Log.d(TAG,"connecting to " + network + (isDebug ? " in DEBUG mode" : "") + (torEnabled ? " with TOR" : ""));
+        if (proxyEnabled || torEnabled) {
+            final String proxyString;
+            if (!proxyEnabled || TextUtils.isEmpty(proxyHost)) {
+                proxyString = "";
+            } else {
+                proxyString = String.format(Locale.US, "%s:%s", proxyHost, proxyPort);
+                Log.d(TAG, "connecting with proxy " + proxyString);
+            }
+            getSession().connectWithProxy(network, proxyString, torEnabled, isDebug);
+        } else {
+            getSession().connect(network, isDebug);
+        }
     }
 }

@@ -14,7 +14,8 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
-import com.greenaddress.greenapi.model.Model;
+
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
@@ -96,14 +97,14 @@ public class AccountView extends CardView {
         mTitleText.setText(text);
     }
 
-    public void setBalance(final Model model, final long satoshi) {
+    public void setBalance(final long satoshi) {
         mBalanceText.setVisibility(VISIBLE);
         mBalanceUnitText.setVisibility(VISIBLE);
         try {
-            final String valueBitcoin = model.getBtc(satoshi, false);
-            final String valueFiat = model.getFiat(satoshi, true);
+            final String valueBitcoin = Conversion.getBtc(satoshi, false);
+            final String valueFiat = Conversion.getFiat(satoshi, true);
             mBalanceText.setText(valueBitcoin);
-            mBalanceUnitText.setText(" " + model.getBitcoinOrLiquidUnit());
+            mBalanceUnitText.setText(" " + Conversion.getBitcoinOrLiquidUnit());
             mBalanceFiatText.setText("≈  " + valueFiat);
         } catch (final Exception e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());

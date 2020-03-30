@@ -13,9 +13,11 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
-import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -24,11 +26,11 @@ import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
-public class SecurityActivity extends LoggedActivity implements View.OnClickListener, Observer {
+import static com.greenaddress.greenapi.Session.getSession;
+
+public class SecurityActivity extends LoggedActivity implements View.OnClickListener {
     private static final int REQUEST_2FA = 100;
     private ViewAdapter mMethodsAdapter;
 
@@ -62,7 +64,6 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
         wordsRecyclerView.setHasFixedSize(true);
         wordsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         wordsRecyclerView.setAdapter(mMethodsAdapter);
-        initEnabledMethods();
     }
 
     private boolean isFromOnboarding() {
@@ -75,8 +76,18 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
         if (isFinishing())
             return;
         UI.mapClick(this, R.id.nextButton, this);
-        initEnabledMethods();
-        getModel().getTwoFactorConfigDataObservable().addObserver(this);
+
+        Observable.just(getSession())
+        .subscribeOn(Schedulers.computation())
+        .map((session) -> {
+            return session.getTwoFactorConfig();
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe((twoFactorConfigData) -> {
+            initEnabledMethods(twoFactorConfigData);
+        }, (final Throwable e) -> {
+            e.printStackTrace();
+        });
     }
 
     @Override
@@ -85,7 +96,6 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
         if (isFinishing())
             return;
         UI.unmapClick(UI.find(this, R.id.nextButton));
-        getModel().getTwoFactorConfigDataObservable().deleteObserver(this);
     }
 
     @Override
@@ -103,25 +113,8 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
         goToTabbedMainActivity();
     }
 
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_2FA && resultCode == RESULT_OK) {
-            getModel().getTwoFactorConfigDataObservable().refresh();
-        }
-    }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof TwoFactorConfigDataObservable) {
-            initEnabledMethods();
-        }
-    }
-
-    private void initEnabledMethods() {
-        if (getModel() == null)
-            return;
-        final TwoFactorConfigData twoFactorConfig = getModel().getTwoFactorConfig();
+    private void initEnabledMethods(final TwoFactorConfigData twoFactorConfig) {
         if (twoFactorConfig == null)
             return;
         final List<String> enabledMethods = twoFactorConfig.getEnabledMethods();

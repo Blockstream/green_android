@@ -29,10 +29,6 @@ import com.greenaddress.greenapi.data.TwoFactorDetailData;
 import com.greenaddress.greenapi.model.NotificationHandlerImpl;
 import com.greenaddress.greenbits.ui.BuildConfig;
 
-import org.bitcoinj.core.AddressFormatException;
-
-import java.util.ArrayList;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,11 +36,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static com.blockstream.libgreenaddress.GDK.GA_ERROR;
+
 public class GDKSession {
 
     // Fine to have a static objectMapper according to docs if using always same configuration
-    private final static ObjectMapper mObjectMapper = new ObjectMapper();
-    private static GDKSession instance;
+    private static final ObjectMapper mObjectMapper = new ObjectMapper();
+    private static GDKSession instance = new GDKSession();
 
     private Object mNativeSession;
     private final NotificationHandlerImpl mNotification;
@@ -53,9 +51,8 @@ public class GDKSession {
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    private GDKSession() {
+    protected GDKSession() {
         mNotification = new NotificationHandlerImpl();
-        GDK.setNotificationHandler(mNotification);
         mNativeSession = GDK.create_session();
     }
 
@@ -63,10 +60,10 @@ public class GDKSession {
      * YOU SHOULD NEVER KEEP A REFERENCE TO THE INSTANCE RETURNED HERE. IT COULD BE DESTROYED
      * AND LEAD TO ITS USAGE AFTER ITS DESTRUCTOR HAS BEEN CALLED
      */
-    public static GDKSession getSession() {
-        if (instance == null) {
-            instance = new GDKSession();
-        }
+    public static GDKSession get() {
+        return instance;
+    }
+    public static GDKSession getGDKSession() {
         return instance;
     }
 
@@ -75,6 +72,7 @@ public class GDKSession {
         details.put("name", network);
         details.put("use_tor", false);
         details.put("log_level", isDebug ? "debug" : "none");
+        GDK.setNotificationHandler(mNotification);
         GDK.connect(mNativeSession, details);
     }
 
@@ -84,6 +82,7 @@ public class GDKSession {
         details.put("proxy", proxyAsString);
         details.put("use_tor", useTor);
         details.put("log_level", isDebug ? "debug" : "none");
+        GDK.setNotificationHandler(mNotification);
         GDK.connect(mNativeSession, details);
     }
 
@@ -103,10 +102,20 @@ public class GDKSession {
 
     public void disconnect() throws Exception {
         GDK.disconnect(mNativeSession);
+        GDK.setNotificationHandler(null);
+        mNotification.reset();
     }
 
     public void loginWithPin(final String pin, final PinData pinData) throws Exception {
         GDK.login_with_pin(mNativeSession, pin, pinData);
+    }
+
+    public void loginWithMnemonic(final String mnemonic, final String password) throws Exception {
+        final Object res = GDK.login(mNativeSession, mObjectMapper.createObjectNode(), mnemonic, password);
+        final GDKTwoFactorCall call = new GDKTwoFactorCall(res);
+        final ObjectNode node =  call.resolve(null, null);
+        if (node != null && node.has("error"))
+            throw new Exception(node.get("error").asText());
     }
 
     public String getTorSocks5() throws Exception {
@@ -154,6 +163,10 @@ public class GDKSession {
 
     public void setWatchOnly(final String username, final String password) throws Exception {
         GDK.set_watch_only(mNativeSession, username, password);
+    }
+
+    public GDKTwoFactorCall getSubAccount(final long subAccount) {
+        return new GDKTwoFactorCall(GDK.get_subaccount(mNativeSession, subAccount));
     }
 
     public GDKTwoFactorCall getSubAccounts() {
@@ -348,9 +361,7 @@ public class GDKSession {
 
     public void destroy() throws Exception {
         GDK.destroy_session(mNativeSession);
-        mNativeSession = null;
-
-        instance = null;
+        mNativeSession = GDK.create_session();
     }
 
     public Boolean changeMemo(final String txHashHex, final String memo) throws Exception {
@@ -371,7 +382,7 @@ public class GDKSession {
         return GDK.get_mnemonic_passphrase(mNativeSession, "");
     }
 
-    public ObjectNode getSettings() throws Exception  {
+    public ObjectNode getGDKSettings() throws Exception  {
         return (ObjectNode) GDK.get_settings(mNativeSession);
     }
 
@@ -416,5 +427,14 @@ public class GDKSession {
 
     public GDKTwoFactorCall changeSettings(final ObjectNode setting) throws Exception  {
         return new GDKTwoFactorCall(GDK.change_settings(mNativeSession, setting));
+    }
+
+    public static Integer getErrorCode(final String message) {
+        try {
+            final String stringCode = message.split(" ")[1];
+            return Integer.parseInt(stringCode);
+        } catch (final Exception e) {
+            return GA_ERROR;
+        }
     }
 }

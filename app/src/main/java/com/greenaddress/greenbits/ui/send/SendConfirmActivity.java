@@ -12,16 +12,17 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.gdk.GDKTwoFactorCall;
-import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.HWDeviceData;
-import com.greenaddress.greenapi.data.SubaccountData;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -35,82 +36,79 @@ import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class SendConfirmActivity extends LoggedActivity implements SwipeButton.OnActiveListener {
     private static final String TAG = SendConfirmActivity.class.getSimpleName();
+    private final ObjectMapper mObjectMapper = new ObjectMapper();
 
     private HWDeviceData mHwData;
     private ObjectNode mTxJson;
     private SwipeButton mSwipeButton;
-    private AssetInfoData mAssetInfo;
+
+    private Disposable setupDisposable;
+    private Disposable sendDisposable;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (modelIsNullOrDisconnected())
-            return;
-
-        final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
-
-        if (isSweep) {
-            final int account = getModel().getActiveAccountObservable().getActiveAccount();
-            final String accountName = getModel().getSubaccountsData(account).getName();
-            setTitle(String.format(getString(R.string.id_sweep_into_s),
-                                   accountName.equals("") ? getString(R.string.id_main_account) : accountName));
-        }
-
-        try {
-
-            final String hwwJson = getIntent().getStringExtra("hww");
-            final ObjectMapper mObjectMapper = new ObjectMapper();
-            mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            if (hwwJson != null)
-                mHwData = mObjectMapper.readValue(hwwJson, HWDeviceData.class);
-            mTxJson = mObjectMapper.readValue(getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX), ObjectNode.class);
-
-            // recreating json, since some field could be elided during activity change (eg used_utxos)
-            mTxJson = getSession().createTransactionRaw(this, mTxJson)
-                      .resolve(null, new HardwareCodeResolver(this));
-            mAssetInfo = (AssetInfoData) getIntent().getSerializableExtra("asset_info");
-        } catch (final Exception e) {
-            e.printStackTrace();
-            UI.toast(this, e.getLocalizedMessage(), Toast.LENGTH_LONG);
-            setResult(Activity.RESULT_CANCELED);
-            finishOnUiThread();
-            return;
-        }
-
-        // Bin Ui views
         setContentView(R.layout.activity_send_confirm);
         UI.preventScreenshots(this);
         setTitleBackTransparent();
+        mSwipeButton = UI.find(this, R.id.swipeButton);
+
+        mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
+        final String hwwJson = getIntent().getStringExtra("hww");
+
+        setTitle(isSweep ? R.string.id_sweep : R.string.id_send);
+
+        startLoading();
+        setupDisposable = Observable.just(getSession())
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .map((session) -> {
+            if (hwwJson != null)
+                mHwData = mObjectMapper.readValue(hwwJson, HWDeviceData.class);
+            return mObjectMapper.readValue(getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX), ObjectNode.class);
+        })
+                          .observeOn(Schedulers.computation())
+                          .map((tx) -> {
+            // FIXME: If we didn't pass in the full transaction (with utxos)
+            // then this call will go to the server. So, we should do it in
+            // the background and display a wait icon until it returns
+            return getSession().createTransactionRaw(this, tx)
+            .resolve(null, new HardwareCodeResolver(this));
+        })
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .subscribe((tx) -> {
+            mTxJson = tx;
+            stopLoading();
+            setup();
+        }, (e) -> {
+            e.printStackTrace();
+            stopLoading();
+            UI.toast(this, e.getLocalizedMessage(), Toast.LENGTH_LONG);
+            setResult(Activity.RESULT_CANCELED);
+            finishOnUiThread();
+        });
+    }
+
+    private void setup() {
+        // Setup views fields
         final TextView noteTextTitle = UI.find(this, R.id.sendMemoTitle);
         final TextView noteText = UI.find(this, R.id.noteText);
         final TextView addressText = UI.find(this, R.id.addressText);
-        final TextView subaccountText = UI.find(this, R.id.subaccountText);
-        mSwipeButton = UI.find(this, R.id.swipeButton);
 
-        // Setup views fields
         final JsonNode address = mTxJson.withArray("addressees").get(0);
         final String currentRecipient = address.get("address").asText();
         final boolean isSweeping = mTxJson.get("is_sweep").asBoolean();
         final Integer subaccount = mTxJson.get("subaccount").asInt();
         UI.hideIf(isSweeping, noteTextTitle);
         UI.hideIf(isSweeping, noteText);
-        if (isSweeping)
-            subaccountText.setText(R.string.id_sweep_from_paper_wallet);
-        else {
-            final int subAccount = subaccount;
-            final SubaccountData subaccountData =
-                getModel().getSubaccountsDataObservable().getSubaccountsDataWithPointer(subAccount);
-            subaccountText.setText(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
-        }
+
         addressText.setText(currentRecipient);
         noteText.setText(mTxJson.get("memo") == null ? "" : mTxJson.get("memo").asText());
         CharInputFilter.setIfNecessary(noteText);
@@ -121,7 +119,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
         final TextView sendFee = UI.find(this, R.id.sendFee);
         final JsonNode assetTag = address.get("asset_tag");
-        if (getGAApp().getCurrentNetworkData().getLiquid()) {
+        if (getSession().getNetworkData().getLiquid()) {
             sendAmount.setVisibility(View.GONE);
             UI.find(this, R.id.amountWordSending).setVisibility(View.GONE);
             final String asset = assetTag.asText();
@@ -129,7 +127,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             balances.put(asset, address.get("satoshi").asLong());
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null, getModel());
+            final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null);
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
         } else {
@@ -155,8 +153,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     private String getFormatAmount(final long amount) {
         try {
             return String.format("%s / %s",
-                                 getModel().getBtc(amount, true),
-                                 getModel().getFiat(amount, true));
+                                 Conversion.getBtc(amount, true),
+                                 Conversion.getFiat(amount, true));
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             return "";
@@ -164,56 +162,58 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (setupDisposable != null)
+            setupDisposable.dispose();
+        if (sendDisposable != null)
+            sendDisposable.dispose();
+    }
+
+    @Override
     public void onActive() {
         startLoading();
         mSwipeButton.setEnabled(false);
+
+        final GaActivity activity = this;
         final TextView noteText = UI.find(this, R.id.noteText);
         final String memo = noteText.getText().toString();
-        final GaActivity activity = SendConfirmActivity.this;
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                // mTxJson.set("memo", new TextNode(memo));
-                // sign transaction
-                final ConnectionManager cm = getConnectionManager();
-                final GDKTwoFactorCall signCall = getSession().signTransactionRaw(mTxJson);
-                mTxJson = signCall.resolve(null, new HardwareCodeResolver(this));
+        mTxJson.put("memo", memo);
 
-                // send transaction
-                final boolean isSweep = mTxJson.get("is_sweep").asBoolean();
-                if (isSweep) {
-                    getSession().broadcastTransactionRaw(mTxJson.get("transaction").asText());
-                } else {
-                    final GDKTwoFactorCall sendCall = getSession().sendTransactionRaw(activity, mTxJson);
-                    sendCall.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
-                    getModel().getTwoFactorConfigDataObservable().refresh();
-                }
-                if (mTxJson.has("previous_transaction")) {
-                    //emptying list to avoid showing replaced txs
-                    getModel().getTransactionDataObservable(mTxJson.get("subaccount").asInt())
-                    .setTransactionDataList(new ArrayList<>());
-                    final String hash = mTxJson.get("previous_transaction").get("txhash").asText();
-                    getModel().getEventDataObservable().removeTx(hash);
-                }
-                UI.toast(activity, R.string.id_transaction_sent, Toast.LENGTH_LONG);
-                getModel().getBalanceDataObservable(mTxJson.get("subaccount").asInt()).refresh();
-                stopLoading();
+        sendDisposable = Observable.just(getSession())
+                         .observeOn(Schedulers.computation())
+                         .map((session) -> {
+            return session.signTransactionRaw(mTxJson).resolve(null, new HardwareCodeResolver(activity));
+        })
+                         .map((tx) -> {
+            final boolean isSweep = tx.get("is_sweep").asBoolean();
+            if (isSweep) {
+                getSession().broadcastTransactionRaw(tx.get("transaction").asText());
+            } else {
+                getSession().sendTransactionRaw(activity, tx).resolve(new PopupMethodResolver(activity),
+                                                                      new PopupCodeResolver(activity));
+            }
+            return tx;
+        })
+                         .observeOn(AndroidSchedulers.mainThread())
+                         .subscribe((tx) -> {
+            mTxJson = tx;
+            UI.toast(activity, R.string.id_transaction_sent, Toast.LENGTH_LONG);
+            stopLoading();
+            activity.setResult(Activity.RESULT_OK);
+            activity.finishOnUiThread();
+        }, (e) -> {
+            e.printStackTrace();
+            stopLoading();
+            final Resources res = getResources();
+            final String msg = UI.i18n(res, e.getMessage());
+            UI.toast(activity, msg, Toast.LENGTH_LONG);
+            if (msg.equals(res.getString(R.string.id_transaction_already_confirmed))) {
                 activity.setResult(Activity.RESULT_OK);
                 activity.finishOnUiThread();
-            } catch (final Exception e) {
-                final Resources res = getResources();
-                final String msg = UI.i18n(res, e.getMessage());
-                e.printStackTrace();
-                UI.toast(activity, msg, Toast.LENGTH_LONG);
-                if (msg.equals(res.getString(R.string.id_transaction_already_confirmed))) {
-                    activity.setResult(Activity.RESULT_OK);
-                    activity.finishOnUiThread();
-                    return;
-                }
-                activity.runOnUiThread(() -> {
-                    mSwipeButton.setEnabled(true);
-                    mSwipeButton.moveButtonBack();
-                    activity.stopLoading();
-                });
+            } else {
+                mSwipeButton.setEnabled(true);
+                mSwipeButton.moveButtonBack();
             }
         });
     }

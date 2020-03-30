@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -17,9 +18,12 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -31,28 +35,30 @@ import com.greenaddress.greenapi.data.NotificationsData;
 import com.greenaddress.greenapi.data.PricingData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
-import com.greenaddress.greenapi.model.AvailableCurrenciesObservable;
-import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenapi.model.SettingsObservable;
-import com.greenaddress.greenapi.model.TwoFactorConfigDataObservable;
+import com.greenaddress.greenapi.model.Conversion;
+import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.SweepSelectActivity;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.authentication.FirstScreenActivity.NETWORK_SELECTOR_REQUEST;
 
-public class GeneralPreferenceFragment extends GAPreferenceFragment implements Observer {
+public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
 
     private static final int PINSAVE = 1337;
@@ -78,6 +84,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private PreferenceCategory mAccountTitle;
     private Preference mSPV;
     private NetworkData networkData;
+    private Disposable mSetupDisposable, mUpdateDisposable;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
@@ -86,14 +93,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         setHasOptionsMenu(true);
         networkData = getNetwork();
 
-        if (getModel() == null) {
-            logout();
-            return;
-        }
-
         // Pin submenu
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
-        if (!getConnectionManager().isLoginWithPin() && !getConnectionManager().isPinJustSaved()) {
+        if (!AuthenticationHandler.hasPin(getActivity()) && !getSession().isPinJustSaved()) {
             mPinPref.setEnabled(false);
             mPinPref.setSummary(getString(R.string.id_green_only_supports_one_pin_per));
         }
@@ -106,7 +108,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Watch-Only Login
         mWatchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
-        initWatchOnlySummary();
+        setupWatchOnlySummary();
         mWatchOnlyLogin.setOnPreferenceClickListener((preference) -> onWatchOnlyLoginClicked());
         mAccountTitle = find("account_title");
 
@@ -126,21 +128,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mUnitPref.setEntries(networkData.getLiquid() ? UI.LIQUID_UNITS : UI.UNITS);
         mUnitPref.setEntryValues(UI.UNITS);
         mUnitPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (warnIfOffline(getActivity())) {
-                return false;
-            }
-            final SettingsData settings = getModel().getSettings();
+            final SettingsData settings = getSession().getSettings();
             if (!newValue.equals(settings.getUnit())) {
                 settings.setUnit(newValue.toString());
-                setUnitSummary(null);
-                getGAApp().getExecutor().execute(() -> {
-                    updateSettings(settings);
-                    final TwoFactorConfigDataObservable twoFaData =
-                        getModel().getTwoFactorConfigDataObservable();
-                    if (twoFaData.getTwoFactorConfigData() != null) {
-                        setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
-                    }
-                });
+                ((TabbedMainActivity) getActivity()).recreate();
                 return true;
             }
             return false;
@@ -156,28 +147,34 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             final String[] split = o.toString().split(" ");
             final String currency = split[0];
             final String exchange = split[1];
-            final Model model = getModel();
-            final SettingsData settings = model.getSettings();
+            final SettingsData settings = getSession().getSettings();
 
             settings.getPricing().setCurrency(currency);
             settings.getPricing().setExchange(exchange);
             setPricingSummary(null);
-            getGAApp().getExecutor().execute(() -> {
-                updateSettings(settings);
-                final TwoFactorConfigDataObservable twoFaData = model.getTwoFactorConfigDataObservable();
-                if (twoFaData.getTwoFactorConfigData() != null) {
-                    final ObjectNode limitsData = twoFaData.getTwoFactorConfigData().getLimits();
-                    final Integer satoshi = limitsData.get("satoshi").asInt(0);
-                    setLimitsText(limitsData);
-                    if (satoshi > 0) {
-                        getActivity().runOnUiThread(() -> {
-                            UI.popup(
-                                getActivity(),
-                                "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to top-up the 2FA threshold after continuing.")
-                            .show();
-                        });
-                    }
+
+            mSetupDisposable = Observable.just(getSession())
+                               .subscribeOn(Schedulers.computation())
+                               .map((session) -> {
+                session.changeSettings(
+                    settings.toObjectNode()).resolve(null, null);
+                return session;
+            }).map((session) -> {
+                final TwoFactorConfigData twoFaData = session.getTwoFactorConfig();
+                final ObjectNode limitsData = twoFaData.getLimits();
+                setLimitsText(limitsData);
+                return limitsData;
+            }).observeOn(AndroidSchedulers.mainThread())
+                               .subscribe((limitsData) -> {
+                final Integer satoshi = limitsData.get("satoshi").asInt(0);
+                if (satoshi > 0) {
+                    UI.popup(getActivity(),
+                             "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to top-up the 2FA threshold after continuing.")
+                    .show();
                 }
+                ((TabbedMainActivity) getActivity()).recreate();
+            }, (final Throwable e) -> {
+                UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
             });
             return true;
         });
@@ -191,10 +188,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 return false;
             }
             final int index = mTxPriorityPref.findIndexOfValue(newValue.toString());
-            final SettingsData settings = getModel().getSettings();
+            final SettingsData settings = getSession().getSettings();
             settings.setRequiredNumBlocks(Integer.parseInt(priorityValues[index]));
             setRequiredNumBlocksSummary(null);
-            getGAApp().getExecutor().execute(() -> updateSettings(settings));
+            updateSettings(settings);
             return true;
         });
 
@@ -222,12 +219,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 return false;
             }
             final boolean value = (Boolean) o;
-            final SettingsData settings = getModel().getSettings();
+            final SettingsData settings = getSession().getSettings();
             if (settings.getNotifications() == null)
                 settings.setNotifications(new NotificationsData());
             settings.getNotifications().setEmailOutgoing(value);
             settings.getNotifications().setEmailIncoming(value);
-            getGAApp().getExecutor().execute(() -> updateSettings(settings));
+            updateSettings(settings);
             return true;
         });
 
@@ -245,7 +242,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         // Mnemonic
         mMemonicPref = find(PrefKeys.MNEMONIC_PASSPHRASE);
-        if (getGAApp().getHWWallet() != null) {
+        if (getSession().getHWWallet() == null) {
             final String touchToDisplay = getString(R.string.id_touch_to_display);
             mMemonicPref.setSummary(touchToDisplay);
             mMemonicPref.setOnPreferenceClickListener(preference -> {
@@ -256,7 +253,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         }
 
         // Auto logout timeout
-        final int timeout = getModel().getSettings().getAltimeout();
+        final int timeout = getSession().getSettings().getAltimeout();
         mTimeoutPref = find(PrefKeys.ALTIMEOUT);
         mTimeoutPref.setEntryValues(getResources().getStringArray(R.array.auto_logout_values));
         setTimeoutValues(mTimeoutPref);
@@ -266,10 +263,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 return false;
             }
             final Integer altimeout = Integer.parseInt(newValue.toString());
-            final SettingsData settings = getModel().getSettings();
+            final SettingsData settings = getSession().getSettings();
             settings.setAltimeout(altimeout);
             setTimeoutSummary(null);
-            getGAApp().getExecutor().execute(() -> updateSettings(settings));
+            updateSettings(settings);
             cfg().edit().putString(PrefKeys.ALTIMEOUT, newValue.toString()).apply(); // need to save this, for scheduleDisconnect
             return true;
         });
@@ -315,62 +312,78 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                                                    BuildConfig.BUILD_TYPE)));
     }
 
-    private void initSummaries() {
-        final Model model = getModel();
-        final AvailableCurrenciesObservable currenciesObservable = model.getAvailableCurrenciesObservable();
-        final SettingsObservable settingsObservable = model.getSettingsObservable();
-        final TwoFactorConfigDataObservable twoFaData = model.getTwoFactorConfigDataObservable();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mSetupDisposable != null)
+            mSetupDisposable.dispose();
+        if (mUpdateDisposable != null)
+            mUpdateDisposable.dispose();
+    }
 
-        if (currenciesObservable.getAvailableCurrencies() != null)
-            setPricingEntries(currenciesObservable);
-        if (settingsObservable.getSettings() != null) {
-            setPricingSummary(settingsObservable.getSettings().getPricing());
-            mUnitPref.setSummary(model.getBitcoinOrLiquidUnit());
-            setRequiredNumBlocksSummary(model.getSettings().getRequiredNumBlocks());
-            if (twoFaData.getTwoFactorConfigData() != null) {
-                setLimitsText(twoFaData.getTwoFactorConfigData().getLimits());
-            }
+    private void initSummaries() {
+
+        try {
+            final Map<String, Object> availableCurrencies = getSession().getAvailableCurrencies();
+            setPricingEntries(availableCurrencies);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            final TwoFactorConfigData twoFaData = getSession().getTwoFactorConfig();
+            setLimitsText(twoFaData.getLimits());
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+        if (getSession().getSettings() != null) {
+            setPricingSummary(getSession().getSettings().getPricing());
+            mUnitPref.setSummary(Conversion.getBitcoinOrLiquidUnit());
+            setRequiredNumBlocksSummary(getSession().getSettings().getRequiredNumBlocks());
         }
     }
 
-    private void initWatchOnlySummary() {
-        final String username = getGAApp().getWatchOnlyUsername();
-        if (username != null) {
-            mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username));
-        } else {
-            mWatchOnlyLogin.setSummary("");
-            getGAApp().getExecutor().submit(() -> {
-                try {
-                    final String username2 = getSession().getWatchOnlyUsername();
-                    getActivity().runOnUiThread(() -> {
-                        if (username2.isEmpty())
-                            mWatchOnlyLogin.setSummary(R.string.id_set_up_watchonly_credentials);
-                        else
-                            mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username2));
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        }
+    private void setupWatchOnlySummary() {
+        mWatchOnlyLogin.setSummary("");
+        mUpdateDisposable = Observable.just(getSession())
+                            .observeOn(Schedulers.computation())
+                            .map((session) -> {
+            return session.getWatchOnlyUsername();
+        })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((username) -> {
+            if (username.isEmpty())
+                mWatchOnlyLogin.setSummary(R.string.id_set_up_watchonly_credentials);
+            else
+                mWatchOnlyLogin.setSummary(getString(R.string.id_enabled_1s, username));
+        }, (e) -> {
+            e.printStackTrace();
+            UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
+        });
     }
 
     private void updateSettings(final SettingsData settings) {
-        try {
-            final GDKTwoFactorCall gdkTwoFactorCall = getSession().changeSettings(
+        mUpdateDisposable = Observable.just(getSession())
+                            .observeOn(Schedulers.computation())
+                            .map((session) -> {
+            final GDKTwoFactorCall gdkTwoFactorCall = session.changeSettings(
                 settings.toObjectNode());
             gdkTwoFactorCall.resolve(null, null);
-            getModel().getSettingsObservable().setSettings(settings);
-            getModel().getSubaccountsDataObservable().refresh();
+            session.refreshSettings();
+            return session;
+        })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((res) -> {
             UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
-        } catch (final Exception e) {
+        }, (e) -> {
             e.printStackTrace();
             UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
-        }
+        });
     }
 
     private String getDefaultFeeRate() {
-        final Long minFeeRateKB = getModel().getFeeObservable().getFees().get(0);
+        final Long minFeeRateKB = getSession().getFees().get(0);
         final String minFeeRateText = String.valueOf(minFeeRateKB / 1000.0);
         return cfg().getString( PrefKeys.DEFAULT_FEERATE_SATBYTE, minFeeRateText);
     }
@@ -383,7 +396,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         final EditText inputUser = UI.find(v, R.id.input_user);
         try {
             // refetch username
-            inputUser.setText(getGAApp().getWatchOnlyUsername());
+            inputUser.setText(getSession().getWatchOnlyUsername());
         } catch (final Exception e) {}
         final EditText inputPassword = UI.find(v, R.id.input_password);
         final MaterialDialog dialog = UI.popup(getActivity(), R.string.id_watchonly_login)
@@ -396,12 +409,17 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 UI.toast(getActivity(), R.string.id_the_password_cant_be_empty, Toast.LENGTH_LONG);
                 return;
             }
-            try {
-                getSession().setWatchOnly(username, password);
-                initWatchOnlySummary();
-            } catch (final Exception e) {
+            mUpdateDisposable = Observable.just(getSession())
+                                .observeOn(Schedulers.computation())
+                                .map((session) -> {
+                session.setWatchOnly(username, password);
+                return session;
+            }).observeOn(AndroidSchedulers.mainThread())
+                                .subscribe((session) -> {
+                setupWatchOnlySummary();
+            }, (e) -> {
                 UI.toast(getActivity(), R.string.id_username_not_available, Toast.LENGTH_LONG);
-            }
+            });
         }).build();
         UI.showDialog(dialog);
         return false;
@@ -413,7 +431,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         }
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_pgp_key);
         final EditText inputPGPKey = UI.find(v, R.id.input_pgp_key);
-        final SettingsData settings = getModel().getSettings();
+        final SettingsData settings = getSession().getSettings();
         final String oldValue = settings.getPgp() == null ? "" : settings.getPgp();
         try {
             inputPGPKey.setText(oldValue);
@@ -426,7 +444,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             final String newValue = UI.getText(inputPGPKey);
             if (!newValue.equals(oldValue)) {
                 settings.setPgp(newValue);
-                getGAApp().getExecutor().execute(() -> updateSettings(settings));
+                updateSettings(settings);
             }
         }).build();
         UI.showDialog(dialog);
@@ -443,7 +461,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
 
         final Double aDouble = Double.valueOf(getDefaultFeeRate());
 
-        rateEdit.setText(Model.getNumberFormat(2).format(aDouble));
+        rateEdit.setText(Conversion.getNumberFormat(2).format(aDouble));
         rateEdit.selectAll();
 
         final MaterialDialog dialog;
@@ -452,9 +470,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                  .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                  .onPositive((dlg, which) -> {
             try {
-                final Long minFeeRateKB = getModel().getFeeObservable().getFees().get(0);
+                final Long minFeeRateKB = getSession().getFees().get(0);
                 final String enteredFeeRate = UI.getText(rateEdit);
-                final Number parsed = Model.getNumberFormat(2).parse(enteredFeeRate);
+                final Number parsed = Conversion.getNumberFormat(2).parse(enteredFeeRate);
                 final Double enteredFeeRateKB = parsed.doubleValue();
 
                 if (enteredFeeRateKB * 1000 < minFeeRateKB) {
@@ -519,14 +537,45 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         preference.setEntries(entryValues);
     }
 
-    private void setPricingEntries(final AvailableCurrenciesObservable observable) {
-        final List<String> values = observable.getAvailableCurrenciesAsList();
+    private void setPricingEntries(final Map<String, Object> currencies) {
+        final List<String> values = getAvailableCurrenciesAsList(currencies);
         final List<String> formatted =
-            observable.getAvailableCurrenciesAsFormattedList(getString(R.string.id_s_from_s));
+            getAvailableCurrenciesAsFormattedList(currencies, getString(R.string.id_s_from_s));
         final String[] valuesArr = values.toArray(new String[0]);
         final String[] formattedArr = formatted.toArray(new String[0]);
         mPriceSourcePref.setEntries(formattedArr);
         mPriceSourcePref.setEntryValues(valuesArr);
+    }
+
+    public List<String> getAvailableCurrenciesAsFormattedList(final Map<String, Object> currencies,
+                                                              final String format) {
+        final List<String> list = new ArrayList<>();
+        for (Pair<String,String> pair : getAvailableCurrenciesAsPairs(currencies)) {
+            list.add(String.format(format, pair.first, pair.second));
+        }
+        return list;
+    }
+
+    public List<String> getAvailableCurrenciesAsList(final Map<String, Object> currencies) {
+        if (getAvailableCurrenciesAsPairs(currencies) == null)
+            return null;
+        final List<String> list = new ArrayList<>();
+        for (Pair<String,String> pair : getAvailableCurrenciesAsPairs(currencies)) {
+            list.add(String.format("%s %s", pair.first, pair.second));
+        }
+        return list;
+    }
+
+    private List<Pair<String, String>> getAvailableCurrenciesAsPairs(final Map<String, Object> currencies) {
+        final List<Pair<String, String>> ret = new LinkedList<>();
+        final Map<String, ArrayList<String>> perExchange = (Map) currencies.get("per_exchange");
+
+        for (final String exchange : perExchange.keySet())
+            for (final String currency : perExchange.get(exchange))
+                ret.add(new Pair<>(currency, exchange));
+
+        Collections.sort(ret, (lhs, rhs) -> lhs.first.compareTo(rhs.first));
+        return ret;
     }
 
     private void setPricingSummary(final PricingData pricing) {
@@ -547,26 +596,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mCustomRatePref.setSummary(feeRateString);
     }
 
-    private void attachObservers() {
-        if (getModel() != null) {
-            getModel().getAvailableCurrenciesObservable().addObserver(this);
-            getModel().getSettingsObservable().addObserver(this);
-            getModel().getTwoFactorConfigDataObservable().addObserver( this);
-        }
-    }
-    private void detachObservers() {
-        getModel().getAvailableCurrenciesObservable().deleteObserver(this);
-        getModel().getSettingsObservable().deleteObserver(this);
-        getModel().getTwoFactorConfigDataObservable().deleteObserver( this);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         if (isZombie())
             return;
         initSummaries();
-        attachObservers();
         updatesVisibilities();
     }
 
@@ -575,16 +610,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         super.onPause();
         if (isZombie())
             return;
-        detachObservers();
     }
 
     public void updatesVisibilities() {
-        if (getGAApp().getConnectionManager() == null ||
-            getModel() == null ||
-            getModel().getTwoFactorConfig() == null)
-            return;
 
-        final boolean isHW = getGAApp().getHWWallet() != null;
+        final boolean isHW = getSession().getHWWallet() != null;
         mPinPref.setVisible(!isHW);
         mMemonicPref.setVisible(!isHW);
 
@@ -596,35 +626,34 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         mAccountTitle.setVisible(!isLiquid);
         mSPV.setVisible(!isLiquid);
 
-        final boolean anyEnabled = getModel().getTwoFactorConfig().isAnyEnabled();
-        mLimitsPref.setVisible(anyEnabled && !isLiquid);
-        mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
-
-        final boolean emailConfirmed = getModel().getTwoFactorConfig().getEmail().isConfirmed();
-        mLocktimePref.setVisible(emailConfirmed && !isLiquid);
-        mSendLocktimePref.setVisible(emailConfirmed && !isLiquid);
-        mSetEmail.setVisible(!emailConfirmed && !isLiquid);
+        try {
+            final boolean anyEnabled = getSession().getTwoFactorConfig().isAnyEnabled();
+            mLimitsPref.setVisible(anyEnabled && !isLiquid);
+            mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            final boolean emailConfirmed = getSession().getTwoFactorConfig().getEmail().isConfirmed();
+            mLocktimePref.setVisible(emailConfirmed && !isLiquid);
+            mSendLocktimePref.setVisible(emailConfirmed && !isLiquid);
+            mSetEmail.setVisible(!emailConfirmed && !isLiquid);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public void update(final Observable observable, final Object o) {
-        getActivity().runOnUiThread(() -> {
-            if (observable instanceof AvailableCurrenciesObservable) {
-                setPricingEntries((AvailableCurrenciesObservable) observable);
-            } else if (observable instanceof SettingsObservable) {
-                final SettingsData settings = ((SettingsObservable) observable).getSettings();
-                setPricingSummary(settings.getPricing());
-                setRequiredNumBlocksSummary(settings.getRequiredNumBlocks());
-                setUnitSummary(getModel().getBitcoinOrLiquidUnit());
-                setTimeoutSummary(settings.getAltimeout());
-                getModel().fireBalances();  // TODO should be just if unit or pricing changes
-                updatesVisibilities();
-            } else if (observable instanceof TwoFactorConfigDataObservable) {
-                final TwoFactorConfigData twoFaData = ((TwoFactorConfigDataObservable) observable).getTwoFactorConfigData();
-                setLimitsText(twoFaData.getLimits());
-                updatesVisibilities();
-            }
-        });
+    private void update(final TwoFactorConfigData twoFaData) {
+        setLimitsText(twoFaData.getLimits());
+        updatesVisibilities();
+    }
+
+    private void update(final SettingsData settings) {
+        setPricingSummary(settings.getPricing());
+        setRequiredNumBlocksSummary(settings.getRequiredNumBlocks());
+        setUnitSummary(Conversion.getBitcoinOrLiquidUnit());
+        setTimeoutSummary(settings.getAltimeout());
+        updatesVisibilities();
     }
 
     private boolean prompt2FAChange(final String method, final Boolean newValue) {
@@ -647,9 +676,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
                 if (!isFiat && balance.getSatoshi() == 0) {
                     mLimitsPref.setSummary(R.string.id_set_twofactor_threshold);
                 } else if (isFiat) {
-                    mLimitsPref.setSummary(getModel().getFiat(balance, true));
+                    mLimitsPref.setSummary(Conversion.getFiat(balance, true));
                 } else {
-                    mLimitsPref.setSummary(getModel().getBtc(balance, true));
+                    mLimitsPref.setSummary(Conversion.getBtc(balance, true));
                 }
             } catch (final Exception e) {
                 // We can throw because we have been logged out here, e.g. when
@@ -669,26 +698,26 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         UI.localeDecimalInput(amountEdit);
 
         final String[] currencies;
-        currencies = new String[] {getModel().getBitcoinOrLiquidUnit(), getModel().getFiatCurrency()};
+        currencies = new String[] {Conversion.getBitcoinOrLiquidUnit(), Conversion.getFiatCurrency()};
 
         final ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, currencies);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         unitSpinner.setAdapter(adapter);
 
-        final ObjectNode limitsData = getModel().getTwoFactorConfig().getLimits();
-        final boolean isFiat = limitsData.get("is_fiat").asBoolean();
-        unitSpinner.setSelection(isFiat ? 1 : 0);
-        amountEdit.selectAll();
-        final BalanceData balance;
         try {
+            final ObjectNode limitsData = getSession().getTwoFactorConfig().getLimits();
+            final boolean isFiat = limitsData.get("is_fiat").asBoolean();
+            unitSpinner.setSelection(isFiat ? 1 : 0);
+            amountEdit.selectAll();
+            final BalanceData balance;
             balance = mObjectMapper.treeToValue(limitsData, BalanceData.class);
             if (isFiat) {
-                amountEdit.setText(getModel().getFiat(balance, false));
+                amountEdit.setText(Conversion.getFiat(balance, false));
             } else {
-                amountEdit.setText(getModel().getBtc(balance, false));
+                amountEdit.setText(Conversion.getBtc(balance, false));
             }
-        } catch (final JsonProcessingException e) {
+        } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
 
@@ -701,7 +730,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
             try {
                 final String unit = unitSpinner.getSelectedItem().toString();
                 final String value = UI.getText(amountEdit);
-                final Double doubleValue = getModel().getNumberFormat().parse(value).doubleValue();
+                final Double doubleValue = Conversion.getNumberFormat().parse(value).doubleValue();
                 setSpendingLimits(unit, doubleValue.toString());
             } catch (final Exception e) {
                 UI.toast(getActivity(), "Error setting limits", Toast.LENGTH_LONG);
@@ -715,14 +744,19 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
         if (warnIfOffline(getActivity())) {
             return false;
         }
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                getSession().sendNlocktimes();
-            } catch (final Exception e) {
-                // Ignore, user can send again if email fails to arrive
-            }
+        mUpdateDisposable = Observable.just(getSession())
+                            .observeOn(Schedulers.computation())
+                            .map((session) -> {
+            session.sendNlocktimes();
+            return session;
+        })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((username) -> {
+            UI.toast(getActivity(), R.string.id_recovery_transaction_request, Toast.LENGTH_SHORT);
+        }, (e) -> {
+            e.printStackTrace();
+            UI.toast(getActivity(), R.string.id_operation_failure, Toast.LENGTH_LONG);
         });
-        UI.toast(getActivity(), R.string.id_recovery_transaction_request, Toast.LENGTH_SHORT);
         return false;
     }
 
@@ -737,24 +771,28 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment implements O
     private void setSpendingLimits(final String unit, final String amount) {
         final Activity activity = getActivity();
 
-        final boolean isFiat = unit.equals(getModel().getFiatCurrency());
+        final boolean isFiat = unit.equals(Conversion.getFiatCurrency());
         final String amountStr = TextUtils.isEmpty(amount) ? "0" : amount;
 
         final ObjectNode limitsData = new ObjectMapper().createObjectNode();
         limitsData.set("is_fiat", isFiat ? BooleanNode.TRUE : BooleanNode.FALSE);
-        limitsData.set(isFiat ? "fiat" : getModel().getUnitKey(), new TextNode(amountStr));
-
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                final GDKTwoFactorCall call = getSession().twoFactorChangeLimits(limitsData);
-                final ObjectNode newLimits =
-                    call.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
-                getModel().getTwoFactorConfigDataObservable().updateLimits(newLimits);
-                setLimitsText(newLimits);
-                UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
-            } catch (Exception e) {
-                UI.toast(activity, R.string.id_operation_failure, Toast.LENGTH_LONG);
-            }
+        limitsData.set(isFiat ? "fiat" : Conversion.getUnitKey(), new TextNode(amountStr));
+        mUpdateDisposable = Observable.just(getSession())
+                            .observeOn(Schedulers.computation())
+                            .map((session) -> {
+            final GDKTwoFactorCall call = getSession().twoFactorChangeLimits(limitsData);
+            final ObjectNode newLimits =
+                call.resolve(new PopupMethodResolver(activity), new PopupCodeResolver(activity));
+            getSession().getTwoFactorConfig().setLimits(newLimits);
+            return newLimits;
+        })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((newLimits) -> {
+            setLimitsText(newLimits);
+            UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
+        }, (e) -> {
+            e.printStackTrace();
+            UI.toast(getActivity(), R.string.id_operation_failure, Toast.LENGTH_LONG);
         });
     }
 

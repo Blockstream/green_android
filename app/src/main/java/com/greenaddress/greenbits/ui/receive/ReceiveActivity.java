@@ -23,18 +23,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentTransaction;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.HWDeviceData.HWDeviceDataLiquidSupport;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -50,11 +51,13 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
 import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.AUTHORIZED_ACCOUNT;
 
 public class ReceiveActivity extends LoggedActivity implements TextWatcher {
+
+    final ObjectMapper mObjectMapper = new ObjectMapper();
 
     private TextView mAddressText;
     private ImageView mAddressImage;
@@ -65,14 +68,12 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     private String mCurrentAddress = "";
     private ObjectNode mCurrentAmount;
     private BitmapWorkerTask mBitmapWorkerTask;
+    private SubaccountData mSubaccountData;
     private boolean isGenerationOnProgress = false;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (modelIsNullOrDisconnected()) {
-            return;
-        }
 
         setContentView(layout.activity_receive);
         UI.preventScreenshots(this);
@@ -85,30 +86,39 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         mUnitButton = UI.find(this, id.unitButton);
 
         mAmountText.addTextChangedListener(this);
-        mUnitButton.setOnClickListener((final View v) -> { onCurrencyClick(); });
+        mUnitButton.setOnClickListener((final View v) -> {
+            onCurrencyClick();
+        });
 
-        mUnitButton.setText(mIsFiat ? getModel().getFiatCurrency() : getModel().getBitcoinOrLiquidUnit());
+        mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
         mUnitButton.setPressed(!mIsFiat);
         mUnitButton.setSelected(!mIsFiat);
 
-        UI.find(this, id.shareAddressButton).setOnClickListener((final View v) -> { onShareClicked(); });
+        UI.find(this, id.shareAddressButton).setOnClickListener((final View v) -> {
+            onShareClicked();
+        });
 
-        final int subaccount = getModel().getCurrentSubaccount();
-        final SubaccountData subaccountData = getModel().getSubaccountsData(subaccount);
+        try {
+            final String subaccount = getIntent().getStringExtra("SUBACCOUNT");
+            mSubaccountData = mObjectMapper.readValue(subaccount, SubaccountData.class);
+        } catch (final Exception e) {
+            finishOnUiThread();
+            return;
+        }
 
         UI.attachHideKeyboardListener(this, UI.find(this, id.content));
         UI.hideIf(getNetwork().getLiquid(), UI.find(this, id.amountLayout));
         final TextView receivingIdValue = UI.find(this, id.receivingIdValue);
 
         // Show information only for authorized accounts
-        if (subaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT])) {
-            final String receivingID = subaccountData.getReceivingId();
+        if (mSubaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT])) {
+            final String receivingID = mSubaccountData.getReceivingId();
             receivingIdValue.setText(receivingID);
             receivingIdValue.setOnClickListener(
                 v -> onCopyClicked("auth_code", receivingID, string.id_address_copied_to_clipboard));
 
             UI.find(this, id.copy).setOnClickListener(
-                v -> onCopyClicked("auth_code", receivingID, string.id_address_copied_to_clipboard)); // FIXME fix string
+                v -> onCopyClicked("auth_code", receivingID, string.id_address_copied_to_clipboard));     // FIXME fix string
 
             UI.find(this, id.receivingIdTitle).setOnClickListener(v -> {
                 final SubaccountPopup s = SubaccountPopup.getInstance(getString(string.id_account_id),
@@ -124,8 +134,8 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
 
         String hwDeviceName = null;
-        if (getGAApp().getHWWallet() != null) {
-            hwDeviceName = getGAApp().getHWWallet().getHWDeviceData().getDevice().getName();
+        if (getSession().getHWWallet() != null) {
+            hwDeviceName = getSession().getHWWallet().getHWDeviceData().getDevice().getName();
         }
 
         // only show if we are on Liquid and we are using Ledger
@@ -134,9 +144,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         UI.showIf(getNetwork().getLiquid() && "Ledger".equals(hwDeviceName),
                   UI.find(this, id.addressWarning));
 
-        getGAApp().getExecutor().submit(() -> {
-            generateAddress();
-        });
+        generateAddress();
     }
 
     @Override
@@ -162,9 +170,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
             finish();
             return true;
         case id.action_generate_new:
-            getGAApp().getExecutor().submit(() -> {
-                generateAddress();
-            });
+            generateAddress();
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -180,7 +186,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
     private void updateAddressText() {
         final Integer satoshi = mCurrentAmount != null ? mCurrentAmount.get("satoshi").asInt(0) : 0;
-        mAddressText.setText( satoshi == 0 ? mCurrentAddress : getAddressUri(mCurrentAddress, mCurrentAmount));
+        mAddressText.setText(satoshi == 0 ? mCurrentAddress : getAddressUri(mCurrentAddress, mCurrentAmount));
     }
 
     private void updateQR() {
@@ -191,85 +197,76 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     }
 
     public void generateAddress() {
-        // check to be online
-        if (getConnectionManager().isOffline()) {
-            UI.toast(this, string.id_connection_failed, Toast.LENGTH_LONG);
-            return;
-        }
-
         // mark generation new address as ongoing
         isGenerationOnProgress = true;
-
-        // generate new address
-        final JsonNode jsonResp;
-        try {
-            final int subaccount = getModel().getCurrentSubaccount();
+        Observable.just(getSession())
+        .subscribeOn(Schedulers.computation())
+        .map((session) -> {
+            final int subaccount = getActiveAccount();
             final GDKTwoFactorCall call = getSession().getReceiveAddress(subaccount);
-            jsonResp = call.resolve(null, new HardwareCodeResolver(this));
-        } catch (final Exception e) {
-            e.printStackTrace();
-            UI.toast(this, string.id_operation_failure, Toast.LENGTH_LONG);
-            isGenerationOnProgress = false;
-            return;
-        }
-
-        final String address = jsonResp.get("address").asText();
-        final Long pointer = jsonResp.get("pointer").asLong(0);
-
-        // update UI
-        runOnUiThread(() -> {
+            final JsonNode jsonResp = call.resolve(null, new HardwareCodeResolver(this));
+            return jsonResp;
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe((res) -> {
+            final String address = res.get("address").asText();
+            final Long pointer = res.get("pointer").asLong(0);
+            mCurrentAddress = address;
             try {
-                mCurrentAddress = address;
                 updateAddressText();
                 updateQR();
             } catch (final Exception e) {
                 Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             }
-        });
 
-        // Validate address only for ledger liquid HW
-        if (getGAApp().getHWWallet() == null) {
+            // Validate address only for ledger liquid HW
+            if (!getSession().getNetworkData().getLiquid() || getSession().getHWWallet() == null) {
+                isGenerationOnProgress = false;
+                return;
+            }
+            validateAddress(address, pointer);
+        }, (final Throwable e) -> {
+            UI.toast(this, string.id_operation_failure, Toast.LENGTH_LONG);
             isGenerationOnProgress = false;
-            return;
-        }
-
-        validateAddress(address, pointer);
-        isGenerationOnProgress = false;
+        });
     }
 
     private void validateAddress(final String address, final long pointer) {
         boolean isLedger = false;
-        if (getGAApp().getHWWallet() != null) {
-            final String hwDeviceName = getGAApp().getHWWallet().getHWDeviceData().getDevice().getName();
+        if (getSession().getHWWallet() != null) {
+            final String hwDeviceName = getSession().getHWWallet().getHWDeviceData().getDevice().getName();
             isLedger = "Ledger".equals(hwDeviceName);
         }
+        if (!getNetwork().getLiquid() || !isLedger)
+            return;
 
-        if (getNetwork().getLiquid() && isLedger) {
-            try {
-                final String addressHW = generateHW(pointer);
-                if (addressHW == null)
-                    throw new Exception();
-                else if (addressHW.equals(address))
-                    UI.toast(this, R.string.id_the_address_is_valid, Toast.LENGTH_LONG);
-                else
-                    runOnUiThread(() -> {
-                        UI.popup(this, R.string.id_the_addresses_dont_match).show();
-                    });
-            } catch (final Exception e) {
-                UI.toast(this, string.id_operation_failure, Toast.LENGTH_LONG);
-            }
-        }
+        Observable.just(getSession())
+        .subscribeOn(Schedulers.computation())
+        .map((session) -> {
+            return generateHW(pointer);
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe((addressHW) -> {
+            if (addressHW == null)
+                throw new Exception();
+            else if (addressHW.equals(address))
+                UI.toast(this, R.string.id_the_address_is_valid, Toast.LENGTH_LONG);
+            else
+                UI.popup(this, R.string.id_the_addresses_dont_match).show();
+            isGenerationOnProgress = false;
+        }, (err) -> {
+            UI.toast(this, string.id_operation_failure, Toast.LENGTH_LONG);
+            isGenerationOnProgress = false;
+        });
     }
 
     private String generateHW(final long pointer) throws Exception {
-        final int subaccount = getModel().getCurrentSubaccount();
-        final SubaccountData subaccountData = getModel().getSubaccountsData(subaccount);
-        final HWWallet hwWallet = getGAApp().getHWWallet();
+        final HWWallet hwWallet = getSession().getHWWallet();
         final HWDeviceData hwDeviceData = hwWallet.getHWDeviceData();
         if (hwDeviceData != null &&
             hwDeviceData.getDevice().getSupportsLiquid() != HWDeviceDataLiquidSupport.None) {
-            final boolean csv = !subaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]);
-            final String address = hwWallet.getGreenAddress(csv, subaccountData.getPointer(), 1L, pointer, 65535L);
+            final boolean csv = !mSubaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]);
+            final String address = hwWallet.getGreenAddress(csv, mSubaccountData.getPointer(), 1L, pointer, 65535L);
             Log.d(TAG, "HWWallet address: " + address);
             return address;
         }
@@ -283,7 +280,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
         final String key = mIsFiat ? "fiat" : getBitcoinUnitClean();
         try {
-            final NumberFormat us = Model.getNumberFormat(8, Locale.US);
+            final NumberFormat us = Conversion.getNumberFormat(8, Locale.US);
             final Number number = us.parse(mAmountText.getText().toString());
             final String value = String.valueOf(number);
             final ObjectMapper mapper = new ObjectMapper();
@@ -317,7 +314,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         }
 
         // Toggle unit display and selected state
-        mUnitButton.setText(mIsFiat ? getModel().getFiatCurrency() : getModel().getBitcoinOrLiquidUnit());
+        mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
         mUnitButton.setPressed(!mIsFiat);
         mUnitButton.setSelected(!mIsFiat);
     }

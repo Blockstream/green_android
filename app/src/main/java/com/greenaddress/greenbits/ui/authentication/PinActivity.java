@@ -13,9 +13,13 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import com.blockstream.libgreenaddress.GDK;
-import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.AuthenticationHandler;
@@ -40,11 +44,15 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
+import static com.greenaddress.gdk.GDKSession.getErrorCode;
+import static com.greenaddress.greenapi.Session.getSession;
+
 public class PinActivity extends LoginActivity implements PinFragment.OnPinListener {
 
     private static final int ACTIVITY_REQUEST_CODE = 1;
     private PinFragment mPinFragment;
     private SharedPreferences mPin;
+    private Disposable loginDisposable;
 
     private void login(final String pin) {
 
@@ -62,33 +70,36 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
         if (mPinFragment != null)
             mPinFragment.setEnabled(false);
 
-        final PinData pinData = PinData.fromPreferenceValues(mPin);
-        final ConnectionManager cm = getConnectionManager();
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                cm.disconnect();
-                cm.connect(this);
-                cm.loginWithPin(pin, pinData);
-                onPostLogin();
-                runOnUiThread(() -> {
-                    stopLoading();
-                    mPin.edit().putInt("counter", 0).apply();
-                    goToTabbedMainActivity();
-                });
-            } catch (final Exception e) {
-                cm.disconnect();
-                runOnUiThread(() -> { onLoginFailure(e); });
-            }
+        loginDisposable = Observable.just(getSession())
+                          .subscribeOn(Schedulers.computation())
+                          .map((session) -> {
+            session.disconnect();
+            connect();
+            final PinData pinData = PinData.fromPreferenceValues(mPin);
+            session.loginWithPin(pin, pinData);
+            return session;
+        })
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .subscribe((session) -> {
+            stopLoading();
+            mPin.edit().putInt("counter", 0).apply();
+            onPostLogin();
+            goToTabbedMainActivity();
+        }, (final Throwable e) -> {
+            stopLoading();
+            GDKSession.get().disconnect();
+            onLoginFailure(e);
         });
     }
 
-    void onLoginFailure(final Exception e) {
-        stopLoading();
-        final String message;
+    void onLoginFailure(final Throwable e) {
+        final Integer code = getErrorCode(e.getMessage());
         final int counter = mPin.getInt("counter", 0) + 1;
-        final SharedPreferences.Editor editor = mPin.edit();
-        final int code = getCode(e);
-        if (getCode(e) == GDK.GA_NOT_AUTHORIZED) {
+        if (code == GDK.GA_ERROR) {
+            UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+        } else if (code == GDK.GA_NOT_AUTHORIZED) {
+            final SharedPreferences.Editor editor = mPin.edit();
+            String message = "";
             if (counter < 3) {
                 editor.putInt("counter", counter);
                 message = (counter == 2) ? getString(R.string.id_last_attempt_if_failed_you_will) :
@@ -98,27 +109,21 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
                 editor.clear();
             }
             editor.apply();
-        } else if (code == GDK.GA_RECONNECT || code == GDK.GA_ERROR) {
-            message = getString(R.string.id_connection_failed);
-        } else {
-            // Should not happen
-            message = getString(R.string.id_error);
+            UI.toast(this, message, Toast.LENGTH_LONG);
+        }  else{
+            UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
         }
 
-        runOnUiThread(() -> {
-            UI.toast(this, message, Toast.LENGTH_LONG);
+        if (counter >= 3) {
+            startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
+            finish();
+            return;
+        }
 
-            if (counter >= 3) {
-                startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
-                finish();
-                return;
-            }
-            stopLoading();
-            if (mPinFragment != null) {
-                mPinFragment.clear();
-                mPinFragment.setEnabled(true);
-            }
-        });
+        if (mPinFragment != null) {
+            mPinFragment.clear();
+            mPinFragment.setEnabled(true);
+        }
     }
 
     @Override
@@ -185,8 +190,10 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
+        if (loginDisposable != null)
+            loginDisposable.dispose();
     }
 
     @Override

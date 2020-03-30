@@ -7,19 +7,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.LoggedActivity;
-import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.UI;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -95,26 +90,16 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
         return mApp;
     }
 
-    public Model getModel() {
-        return mApp.getModel();
-    }
-
-    protected ConnectionManager getConnectionManager() {
-        return getGAApp().getConnectionManager();
-    }
-
     public boolean warnIfOffline(final Activity activity) {
-        if (getConnectionManager().isOffline()) {
+        /*if (getConnectionManager().isOffline()) {
             UI.toast(activity, R.string.id_connection_failed, Toast.LENGTH_LONG);
             return true;
-        }
+           }*/
         return false;
     }
 
     // Returns true if we are being restored without an activity or service
     protected boolean isZombie() {
-        if (((LoggedActivity) getActivity()).modelIsNullOrDisconnected())
-            return true;
         return getActivity() == null;
     }
 }

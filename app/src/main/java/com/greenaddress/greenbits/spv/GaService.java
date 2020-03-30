@@ -49,13 +49,7 @@ public class GaService extends Service  {
     }
 
     public File getSPVChainFile(final String networkName) {
-        final String dirName;
-        if (getNetwork().IsNetworkMainnet()) {
-            dirName = "blockstore_" + getGAApp().getModel().getReceivingId(0);
-        } else {
-            dirName = "blockstore_" + networkName;
-        }
-
+        final String dirName = "blockstore_" + networkName;
         Log.i(TAG, "dirName:" + dirName);
         return new File(getDir(dirName, Context.MODE_PRIVATE), "blockchain.spvchain");
     }

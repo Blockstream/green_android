@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.ui.transactions;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,12 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
-import com.greenaddress.greenapi.model.ActiveAccountObservable;
-import com.greenaddress.greenapi.model.BalanceDataObservable;
-import com.greenaddress.greenapi.model.SubaccountsDataObservable;
-import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GAFragment;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -26,7 +24,6 @@ import com.greenaddress.greenbits.ui.accounts.SwitchNetworkFragment;
 import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
-import com.greenaddress.greenbits.ui.components.OnGdkListener;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
@@ -37,31 +34,52 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
+import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
+import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
+import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_SUBACCOUNT;
+import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_TX_DETAILS;
 
-public class MainFragment extends GAFragment implements View.OnClickListener, Observer, OnGdkListener {
+public class MainFragment extends GAFragment implements View.OnClickListener, ListTransactionsAdapter.OnTxSelected {
+
     private static final String TAG = MainFragment.class.getSimpleName();
-    private AccountView mAccountView;
+    private static final int TX_PER_PAGE = 15;
+
     private final List<TransactionData> mTxItems = new ArrayList<>();
-    private Map<Sha256Hash, List<Sha256Hash>> replacedTxs;
+    private int mActiveAccount = 0;
+    private SubaccountData mSubaccount;
+    private Integer mPageLoaded = 0;
+    private Integer mLastPage = Integer.MAX_VALUE;
+    private boolean isLoading = false;
+
+    private AccountView mAccountView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private boolean justClicked = false;
     private ListTransactionsAdapter mTransactionsAdapter;
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
     private TextView mAssetsSelection;
     private TextView mSwitchNetwork;
     private View mView;
+
+    private Disposable newTransactionDisposable;
+    private Disposable blockDisposable;
+    private Disposable subaccountDisposable;
+    private Disposable transactionDisposable;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -83,8 +101,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
         final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems, getModel(),
-                                                           getSpv());
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems,
+                                                           getSpv(), this);
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
 
@@ -94,19 +112,17 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.accent));
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
             Log.d(TAG, "onRefresh -> " + TAG);
-            final int subaccount = getModel().getCurrentSubaccount();
-            getModel().getTransactionDataObservable(subaccount).refresh();
-            updateAssetSelection();
+            update();
         });
 
         // Setup account card view
         mAccountView = UI.find(mView, R.id.accountView);
         mAccountView.listMode(true);
         mAccountView.setOnClickListener(this);
-        if (getModel().isTwoFAReset())
+        if (getSession().isTwoFAReset())
             mAccountView.hideActions();
         else
-            mAccountView.showActions(getConnectionManager().isWatchOnly());
+            mAccountView.showActions(getSession().isWatchOnly());
 
         mAssetsSelection = UI.find(mView, R.id.assetsSelection);
         mAssetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(),
@@ -120,6 +136,10 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         final Drawable arrow = getContext().getResources().getDrawable(R.drawable.ic_expand_more_24dp);
         mSwitchNetwork.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null);
 
+
+        final SharedPreferences preferences = getActivity().getSharedPreferences(network(), MODE_PRIVATE);
+        mActiveAccount = preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0);
+
         return mView;
     }
 
@@ -128,7 +148,14 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         super.onPause();
         if (isZombie())
             return;
-        detachObservers();
+        if (blockDisposable != null)
+            blockDisposable.dispose();
+        if (transactionDisposable != null)
+            transactionDisposable.dispose();
+        if (subaccountDisposable != null)
+            subaccountDisposable.dispose();
+        if (newTransactionDisposable != null)
+            newTransactionDisposable.dispose();
     }
 
     @Override
@@ -136,77 +163,116 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         super.onResume();
         if (isZombie())
             return;
-        attachObservers();
 
-        justClicked = false;
-        mTransactionsAdapter.notifyDataSetChanged();
-        UI.find(mView, R.id.loadingList).setVisibility(View.VISIBLE);
-        updateAssetSelection();
+        // on new block received
+        blockDisposable = getSession().getNotificationModel().getBlockObservable()
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .subscribe((blockHeight) -> {
+            mTransactionsAdapter.setCurrentBlock(blockHeight);
+            mTransactionsAdapter.notifyDataSetChanged();
+        });
 
-        update(getModel().getSubaccountsDataObservable(), null);
-    }
+        // on new transaction received
+        newTransactionDisposable = getSession().getNotificationModel().getTransactionObservable()
+                                   .observeOn(AndroidSchedulers.mainThread())
+                                   .subscribe((transaction) -> {
+            update();
+        });
 
-    private void attachObservers() {
-        final int subaccount = getModel().getActiveAccountObservable().getActiveAccount();
-        getModel().getBalanceDataObservable(subaccount).addObserver(this);
-        getModel().getTransactionDataObservable(subaccount).addObserver(this);
-        getModel().getActiveAccountObservable().addObserver(this);
-        getModel().getSubaccountsDataObservable().addObserver(this);
-    }
+        // Update information
+        if (mSwipeRefreshLayout != null)
+            mSwipeRefreshLayout.setRefreshing(true);
 
-    private void detachObservers() {
-        final int subaccount = getModel().getActiveAccountObservable().getActiveAccount();
-        getModel().getBalanceDataObservable(subaccount).deleteObserver(this);
-        getModel().getTransactionDataObservable(subaccount).deleteObserver(this);
-        getModel().getActiveAccountObservable().deleteObserver(this);
-        getModel().getSubaccountsDataObservable().deleteObserver(this);
+        update();
     }
 
     @Override
-    public void update(final Observable observable, final Object o) {
-        if (observable instanceof BalanceDataObservable) {
-            onUpdateBalance((BalanceDataObservable) observable);
-        } else if (observable instanceof TransactionDataObservable) {
-            onUpdateTransactions((TransactionDataObservable) observable);
-            //toast(R.string.id_a_new_transaction_has_just);
-        } else if (observable instanceof ActiveAccountObservable) {
-            detachObservers();
-            attachObservers();
-            onUpdateActiveSubaccount((ActiveAccountObservable) observable);
-        } else if (observable instanceof SubaccountsDataObservable) {
-            final int subaccount = getModel().getActiveAccountObservable().getActiveAccount();
-            onUpdateBalance(getModel().getBalanceDataObservable(subaccount));
-            onUpdateTransactions(getModel().getTransactionDataObservable(subaccount));
+    public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SELECT_SUBACCOUNT && resultCode == RESULT_OK) {
+            final SharedPreferences preferences = getActivity().getSharedPreferences(network(), MODE_PRIVATE);
+            mActiveAccount = preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0);
         }
     }
 
-    private void updateAssetSelection() {
-        try {
-            Log.d(TAG, "updateAssetSelection");
-            if (getNetwork().getLiquid()) {
-                final int size = getModel().getCurrentAccountBalanceData().size();
-                mAssetsSelection.setText(size == 1 ?
-                                         getString(R.string.id_d_asset_in_this_account, size) :
-                                         getString(R.string.id_d_assets_in_this_account, size));
-            } else {
-                mAssetsSelection.setVisibility(View.GONE);
+    private void update() {
+        subaccountDisposable = Observable.just(getSession())
+                               .observeOn(Schedulers.computation())
+                               .map((session) -> {
+            return getSession().getSubAccount(getGaActivity(), mActiveAccount);
+        })
+                               .observeOn(AndroidSchedulers.mainThread())
+                               .subscribe((subaccount) -> {
+            mSubaccount = subaccount;
+            final Map<String, Long> balance = getBalance();
+            mAccountView.setTitle(subaccount.getNameWithDefault(getString(R.string.id_main_account)));
+            mAccountView.setBalance(balance.get("btc").longValue());
+            mAssetsSelection.setVisibility(getNetwork().getLiquid() ? View.VISIBLE : View.GONE);
+            mAssetsSelection.setText(balance.size() == 1 ?
+                                     getString(R.string.id_d_asset_in_this_account, balance.size()) :
+                                     getString(R.string.id_d_assets_in_this_account, balance.size()));
+            // Load transactions after subaccount data because
+            // ledger HW doesn't support parallel operations
+            updateTransactions(true);
+        }, (final Throwable e) -> {
+            Log.d(TAG, e.getLocalizedMessage());
+        });
+    }
+
+    private void updateTransactions(final boolean clean) {
+        if (clean) {
+            mPageLoaded = 0;
+            mLastPage = Integer.MAX_VALUE;
+        }
+        transactionDisposable = Observable.just(getSession())
+                                .observeOn(Schedulers.computation())
+                                .map((session) -> {
+            return getTransactions(mActiveAccount);
+        })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe((transactions) -> {
+            isLoading = false;
+            if (mSwipeRefreshLayout != null)
+                mSwipeRefreshLayout.setRefreshing(false);
+
+            final Sha256Hash oldTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhashAsSha256Hash() : null;
+            if (clean)
+                mTxItems.clear();
+            mTxItems.addAll(transactions);
+            mTransactionsAdapter.setCurrentBlock(getSession().getNotificationModel().getBlockHeight());
+            mTransactionsAdapter.notifyDataSetChanged();
+            showTxView(!mTxItems.isEmpty());
+
+            final Sha256Hash newTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhashAsSha256Hash() : null;
+            if (oldTop != null && newTop != null && !oldTop.equals(newTop)) {
+                // A new tx has arrived; scroll to the top to show it
+                final RecyclerView recyclerView = UI.find(mView, R.id.mainTransactionList);
+                recyclerView.smoothScrollToPosition(0);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }, (final Throwable e) -> {
+            Log.d(TAG, e.getLocalizedMessage());
+            isLoading = false;
+            if (mSwipeRefreshLayout != null)
+                mSwipeRefreshLayout.setRefreshing(false);
+        });
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    private List<TransactionData> getTransactions(final int subaccount) throws Exception {
+        final List<TransactionData> txs = getSession().getTransactions(
+            getGaActivity(), subaccount, mPageLoaded * TX_PER_PAGE, TX_PER_PAGE);
+        if (txs.size() < TX_PER_PAGE)
+            mLastPage = mPageLoaded;
+        mPageLoaded++;
+        return txs;
     }
 
-    // Called when a new transaction is seen
-    @Override
-    public void onNewTx(final Observer observer) { }
+    private Map<String, Long> getBalance() {
+        if (mSubaccount == null)
+            return new HashMap<String, Long>();
+        return mSubaccount.getSatoshi();
+    }
 
-    // Called when a new verified transaction is seen
-    @Override
+    // TODO: Called when a new verified transaction is seen
     public void onVerifiedTx(final Observer observer) {
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
@@ -223,52 +289,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
     }
 
     private void showTxView(final boolean doShowTxList) {
-        UI.find(mView, R.id.loadingList).setVisibility(View.GONE);
         UI.showIf(doShowTxList, UI.find(mView, R.id.mainTransactionList));
         UI.showIf(!doShowTxList, UI.find(mView, R.id.emptyListText));
-    }
-
-    private void reloadTransactions(final List<TransactionData> txList, final boolean showWaitDialog) {
-        final int subaccount = getModel().getCurrentSubaccount();
-        final RecyclerView txView;
-
-        if (isZombie())
-            return;
-
-        txView = UI.find(mView, R.id.mainTransactionList);
-        final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
-
-        if (replacedTxs == null)
-            replacedTxs = new HashMap<>();
-
-        try {
-            final int currentBlock = getModel().getBlockchainHeightObservable().getHeight();
-
-            if (mSwipeRefreshLayout != null)
-                mSwipeRefreshLayout.setRefreshing(false);
-
-            showTxView(!txList.isEmpty());
-
-            final Sha256Hash oldTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhashAsSha256Hash() : null;
-            mTxItems.clear();
-            replacedTxs.clear();
-
-            for (final TransactionData tx : txList) {
-                mTxItems.add(tx);
-            }
-            txView.getAdapter().notifyDataSetChanged();
-
-            final Sha256Hash newTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhashAsSha256Hash() : null;
-            if (oldTop != null && newTop != null && !oldTop.equals(newTop)) {
-                // A new tx has arrived; scroll to the top to show it
-                txView.smoothScrollToPosition(0);
-            }
-
-        } catch (final Exception e) {
-            e.printStackTrace();
-            if (mSwipeRefreshLayout != null)
-                mSwipeRefreshLayout.setRefreshing(false);
-        }
     }
 
     @Override
@@ -282,18 +304,21 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
 
     @Override
     public void onClick(final View view) {
-        if (justClicked) {
-            justClicked = false;
-            return;
-        }
+        view.setEnabled(false);
         if (view.getId() == R.id.receiveButton) {
-            justClicked = true;
+            view.setEnabled(true);
             final Intent intent = new Intent(getActivity(), ReceiveActivity.class);
-            getActivity().startActivity(intent);
+            final ObjectMapper mObjectMapper = new ObjectMapper();
+            try {
+                final String text = mObjectMapper.writeValueAsString(mSubaccount);
+                intent.putExtra("SUBACCOUNT", text);
+                getActivity().startActivity(intent);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
         } else if (view.getId() == R.id.sendButton) {
-            justClicked = true;
-
-            if (getNetwork().getLiquid() && getModel().getCurrentAccountBalanceData().get("btc") == 0L) {
+            view.setEnabled(true);
+            if (getNetwork().getLiquid() && (getBalance() != null && getBalance().get("btc") == 0L)) {
                 UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
                 .content(R.string.id_insufficient_lbtc_to_send_a)
                 .onPositive((dialog, which) -> {
@@ -303,53 +328,21 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
                 .build().show();
             } else {
                 final Intent intent = new Intent(getActivity(), ScanActivity.class);
-                intent.putExtra(PrefKeys.SWEEP, getConnectionManager().isWatchOnly());
-                getActivity().startActivity(intent);
+                intent.putExtra(PrefKeys.SWEEP, getSession().isWatchOnly());
+                startActivity(intent);
             }
         } else if (view.getId() == R.id.selectSubaccount) {
+            view.setEnabled(true);
             final Intent intent = new Intent(getActivity(), SubaccountSelectActivity.class);
             intent.setFlags(FLAG_ACTIVITY_NO_ANIMATION);
-            getActivity().startActivity(intent);
+            startActivityForResult(intent, REQUEST_SELECT_SUBACCOUNT);
         }
     }
 
-    @Override
-    public void onUpdateBalance(final BalanceDataObservable observable) {
-        Log.d(TAG, "Updating balance");
-        final Long satoshi = observable.getBtcBalanceData();
-        if (isZombie() || satoshi == null)
-            return;
-
-        getGaActivity().runOnUiThread(() -> {
-            final int subaccount = getModel().getCurrentSubaccount();
-            final SubaccountData subaccountData = getModel().getSubaccountsData(subaccount);
-            mAccountView.setTitle(subaccountData.getNameWithDefault(getString(R.string.id_main_account)));
-            mAccountView.setBalance(getModel(), satoshi);
-        });
-    }
-
-    @Override
-    public void onUpdateTransactions(final TransactionDataObservable observable) {
-        isLoading=false;
-        List<TransactionData> txList = observable.getTransactionDataList();
-        if (isZombie() || txList == null || !observable.isExecutedOnce())
-            return;
-        Log.d(TAG, "Updating transactions");
-        isLastPage=observable.isLastPage();
-        getGaActivity().runOnUiThread(() -> reloadTransactions(txList, false));
-    }
-
-    @Override
-    public void onUpdateActiveSubaccount(final ActiveAccountObservable observable) {}
-
-    private boolean isLoading = false;
-    private boolean isLastPage = false;
-
     private void loadMoreItems() {
         Log.d(TAG, "loadMoreItems");
-        isLoading=true;
-        final int subaccount = getModel().getCurrentSubaccount();
-        getModel().getTransactionDataObservable(subaccount).refresh(false);
+        isLoading = true;
+        updateTransactions(false);
     }
 
     private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
@@ -361,15 +354,10 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
         @Override
         public void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            int visibleItemCount = mLayoutManager.getChildCount();
-            int totalItemCount = mLayoutManager.getItemCount();
-            int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
-
-            /*Log.d(TAG, "visible: " + visibleItemCount +
-                    " total:  " +totalItemCount +
-                    " first: " +firstVisibleItemPosition +
-                    " isLoading: " + isLoading +
-                    " isLastPage: " + isLastPage);*/
+            final int visibleItemCount = mLayoutManager.getChildCount();
+            final int totalItemCount = mLayoutManager.getItemCount();
+            final int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+            final boolean isLastPage = mPageLoaded >= mLastPage;
             if (!isLoading && !isLastPage) {
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                     && firstVisibleItemPosition >= 0) {
@@ -378,4 +366,13 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Ob
             }
         }
     };
+
+    @Override
+    public void onSelected(final TransactionData tx) {
+        final Intent txIntent = new Intent(getActivity(), TransactionActivity.class);
+        final HashMap<String, Long> balance = new HashMap<String, Long>(getBalance());
+        txIntent.putExtra("TRANSACTION", tx);
+        txIntent.putExtra("BALANCE", balance);
+        startActivityForResult(txIntent, REQUEST_TX_DETAILS);
+    }
 }

@@ -22,11 +22,6 @@ public class SettingsActivity extends GaPreferenceActivity {
             return;
         }
 
-        if (getGAApp().getModel() == null) {
-            logout();
-            return;
-        }
-
         if (preference.equals(SPVPreferenceFragment.class.getName()))
             fragment = new SPVPreferenceFragment();
         else if (preference.equals(PinPreferenceFragment.class.getName()))

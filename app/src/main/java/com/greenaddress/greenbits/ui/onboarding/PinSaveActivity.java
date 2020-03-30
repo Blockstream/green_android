@@ -7,14 +7,19 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.authentication.PinFragment;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class PinSaveActivity extends GaActivity implements PinFragment.OnPinListener {
 
@@ -23,6 +28,7 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
     private PinFragment mPinFragment;
     private PinFragment mPinFragmentVerify;
     private TextView mTitleText;
+    private Disposable saveDisposable;
 
     static public Intent createIntent(final Context ctx, final String mnemonic) {
         final Intent intent = new Intent(ctx, PinSaveActivity.class);
@@ -42,29 +48,25 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
 
         final Intent intent = new Intent(this, SecurityActivity.class);
         intent.putExtra("from_onboarding",true);
-
         final String mnemonic = getIntent().getStringExtra(NEW_PIN_MNEMONIC);
-        final ListenableFuture<Void> future = getGAApp().getExecutor().submit(() -> {
-            getConnectionManager().setPin(mnemonic, pin, AuthenticationHandler.getNewAuth(this));
-            return null;
-        });
-        Futures.addCallback(future, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                setResult(RESULT_OK);
-                stopLoading();
-                startActivity(intent);
-            }
 
-            @Override
-            public void onFailure(final Throwable t) {
-                runOnUiThread(() -> {
-                    stopLoading();
-                    mPinFragment.setEnabled(true);
-                    UI.popup(PinSaveActivity.this, R.string.id_warning).content(t.getLocalizedMessage()).show();
-                });
-            }
-        }, getGAApp().getExecutor());
+        saveDisposable = Observable.just(getSession())
+                         .observeOn(Schedulers.computation())
+                         .map((session) -> {
+            return session.setPin(mnemonic, pin, "default");
+        })
+                         .observeOn(AndroidSchedulers.mainThread())
+                         .subscribe((pinData) -> {
+            AuthenticationHandler.setPin(pinData, pin.length() == 6, AuthenticationHandler.getNewAuth(this));
+            getSession().setPinJustSaved(true);
+            setResult(RESULT_OK);
+            stopLoading();
+            startActivity(intent);
+        }, (e) -> {
+            stopLoading();
+            mPinFragment.setEnabled(true);
+            UI.popup(this, R.string.id_warning).content(e.getLocalizedMessage()).show();
+        });
     }
 
     @Override
@@ -85,6 +87,13 @@ public class PinSaveActivity extends GaActivity implements PinFragment.OnPinList
         getSupportFragmentManager().beginTransaction()
         .add(R.id.fragment_container, mPinFragment).commit();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (saveDisposable != null)
+            saveDisposable.dispose();
     }
 
     private void onSaveNonNativePin() {

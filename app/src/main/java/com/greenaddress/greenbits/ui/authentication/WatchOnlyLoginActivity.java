@@ -6,16 +6,23 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.widget.SwitchCompat;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import com.blockstream.libgreenaddress.GDK;
-import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.CircularButton;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+
+import static com.greenaddress.gdk.GDKSession.getErrorCode;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClickListener {
 
@@ -89,32 +96,32 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
             return;
         }
 
+        onLoginBegin();
         final String username = UI.getText(mUsernameText);
         final String password = UI.getText(mPasswordText);
 
-        onLoginBegin();
-
-        final ConnectionManager cm = getConnectionManager();
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                cm.disconnect();
-                cm.connect(this);
-                cm.loginWatchOnly(username, password);
-                onPostLogin();
-                runOnUiThread(() -> {
-                    onLoginStop();
-                    goToTabbedMainActivity();
-                });
-            } catch (final Exception e) {
-                cm.disconnect();
-                runOnUiThread(() -> {
-                    onLoginStop();
-                    if (getCode(e) == GDK.GA_RECONNECT) {
-                        mPasswordText.setError(getString(R.string.id_connection_failed));
-                    } else {
-                        mPasswordText.setError(getString(R.string.id_user_not_found_or_invalid));
-                    }
-                });
+        Observable.just(getSession())
+        .observeOn(Schedulers.computation())
+        .map((session) -> {
+            session.disconnect();
+            connect();
+            session.loginWatchOnly(username, password);
+            return session;
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe((session) -> {
+            onPostLogin();
+            stopLoading();
+            onLoggedIn();
+        }, (final Throwable e) -> {
+            stopLoading();
+            GDKSession.get().disconnect();
+            onLoginStop();
+            final Integer code = getErrorCode(e.getMessage());
+            if (code == GDK.GA_ERROR) {
+                UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+            } else {
+                UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
             }
         });
     }

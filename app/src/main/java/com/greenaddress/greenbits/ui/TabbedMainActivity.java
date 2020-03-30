@@ -22,11 +22,8 @@ import androidx.viewpager.widget.ViewPager;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
-import com.greenaddress.greenapi.model.ActiveAccountObservable;
-import com.greenaddress.greenapi.model.EventDataObservable;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
 import com.greenaddress.greenbits.ui.notifications.NotificationsFragment;
@@ -39,13 +36,11 @@ import com.greenaddress.greenbits.ui.transactions.MainFragment;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Arrays;
-import java.util.Observable;
-import java.util.Observer;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Session.getSession;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
-public class TabbedMainActivity extends LoggedActivity implements Observer,
+public class TabbedMainActivity extends LoggedActivity implements
     BottomNavigationView.OnNavigationItemSelectedListener  {
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
@@ -54,7 +49,8 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         REQUEST_BITCOIN_URL_LOGIN = 1,
         REQUEST_TX_DETAILS = 2,
         REQUEST_BITCOIN_URL_SEND = 3,
-        REQUEST_SELECT_ASSET = 4;
+        REQUEST_SELECT_ASSET = 4,
+        REQUEST_SELECT_SUBACCOUNT = 5;
     private ViewPager mViewPager;
     private BottomNavigationView mNavigation;
     private MaterialDialog mSubaccountDialog;
@@ -68,22 +64,20 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (modelIsNullOrDisconnected())
-            return;
         UI.preventScreenshots(this);
         final Intent intent = getIntent();
         mIsBitcoinUri = isBitcoinScheme(intent) ||
                         intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
                         NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
 
-        if (mIsBitcoinUri && !getConnectionManager().isLoggingInOrMore()) {
+        if (mIsBitcoinUri) {
             // Not logged in, force the user to login
             final Intent login = new Intent(this, RequestLoginActivity.class);
             startActivityForResult(login, REQUEST_BITCOIN_URL_LOGIN);
             return;
         }
         launch();
-        final boolean isResetActive = getModel().isTwoFAReset();
+        final boolean isResetActive = getSession().isTwoFAReset();
         if (mIsBitcoinUri && !isResetActive) {
             // If logged in, open send activity
             onBitcoinUri();
@@ -120,7 +114,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         final Intent intent = new Intent(this, SendAmountActivity.class);
         final String text = uri.toString();
         try {
-            final int subaccount = getModel().getCurrentSubaccount();
+            final int subaccount = getActiveAccount();
             final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, text, subaccount);
             final ObjectNode transactionFromUri = call.resolve(null, new HardwareCodeResolver(this));
             final String error = transactionFromUri.get("error").asText();
@@ -180,8 +174,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         super.onResume();
         if (isFinishing())
             return;
-        getModel().getActiveAccountObservable().addObserver(this);
-        getModel().getEventDataObservable().addObserver(this);
 
         final SectionsPagerAdapter adapter = getPagerAdapter();
 
@@ -199,7 +191,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
     private void updateBottomNavigationView() {
         final MenuItem item = mNavigation.getMenu().findItem(R.id.navigation_notifications);
         runOnUiThread(() ->
-                      item.setIcon(getModel() != null && getModel().getEventDataObservable().hasEvents() ?
+                      item.setIcon(!getSession().getNotificationModel().getEvents().isEmpty() ?
                                    R.drawable.bottom_navigation_notifications_2 :
                                    R.drawable.bottom_navigation_notifications)
                       );
@@ -211,8 +203,6 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         if (isFinishing())
             return;
         mSubaccountDialog = UI.dismiss(this, mSubaccountDialog);
-        getModel().getActiveAccountObservable().deleteObserver(this);
-        getModel().getEventDataObservable().deleteObserver(this);
     }
 
     @Override
@@ -251,8 +241,9 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         this.moveTaskToBack(true);
     }
 
-    @Override
-    public void update(final Observable observable, final Object data) {
+    /*
+       @Override
+       public void update(final Observable observable, final Object data) {
         super.update(observable,data);
         if (observable instanceof ActiveAccountObservable)
             onUpdateActiveAccount();
@@ -261,7 +252,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         } else {
             invalidateOptionsMenu();
         }
-    }
+       }*/
 
     public void onUpdateActiveAccount() {
         getPagerAdapter().notifyDataSetChanged();
@@ -291,9 +282,9 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
         public Fragment getItem(final int index) {
             Log.d(TAG, "SectionsPagerAdapter -> getItem " + index);
             final Fragment preferenceFragment;
-            if (getModel().isTwoFAReset())
+            if (getSession().isTwoFAReset())
                 preferenceFragment = new ResetActivePreferenceFragment();
-            else if (getConnectionManager().isWatchOnly())
+            else if (getSession().isWatchOnly())
                 preferenceFragment = new WatchOnlyPreferenceFragment();
             else
                 preferenceFragment = new GeneralPreferenceFragment();
@@ -342,7 +333,7 @@ public class TabbedMainActivity extends LoggedActivity implements Observer,
 
         @Override
         public CharSequence getPageTitle(final int index) {
-            if (getModel().isTwoFAReset())
+            if (getSession().isTwoFAReset())
                 return " " + getString(R.string.id_wallets);
             final String networkName = getNetwork().getName();
             switch (index) {

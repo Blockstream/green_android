@@ -1,17 +1,14 @@
 package com.greenaddress.greenbits.ui.components;
 
-import com.greenaddress.greenapi.model.ActiveAccountObservable;
-import com.greenaddress.greenapi.model.BalanceDataObservable;
-import com.greenaddress.greenapi.model.TransactionDataObservable;
-
+import java.util.Observable;
 import java.util.Observer;
 
 public interface OnGdkListener {
-    void onUpdateTransactions(final TransactionDataObservable observable);
+    void onUpdateTransactions(final Observable observable);
 
-    void onUpdateActiveSubaccount(final ActiveAccountObservable observable);
+    void onUpdateActiveSubaccount(final Observable observable);
 
-    void onUpdateBalance(final BalanceDataObservable observable);
+    void onUpdateBalance(final Observable observable);
 
     void onNewTx(final Observer observable);
 

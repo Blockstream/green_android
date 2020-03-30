@@ -10,20 +10,22 @@ import android.widget.Toast;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.KeyStoreAES;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import androidx.preference.Preference;
 import androidx.preference.SwitchPreference;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class PinPreferenceFragment extends GAPreferenceFragment {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
@@ -33,17 +35,13 @@ public class PinPreferenceFragment extends GAPreferenceFragment {
 
     private SwitchPreference mPinPref;
     private SwitchPreference mNativePref;
+    private Disposable saveDisposable;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         addPreferencesFromResource(R.xml.preference_pin);
         setHasOptionsMenu(true);
-
-        if (getGAApp().getModel() == null) {
-            logout();
-            return;
-        }
 
         mPinPref = find(PrefKeys.PIN_AUTH);
         mNativePref = find(PrefKeys.NATIVE_AUTH);
@@ -60,6 +58,13 @@ public class PinPreferenceFragment extends GAPreferenceFragment {
                 mNativePref.setSummary(R.string.id_a_screen_lock_must_be_enabled);
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (saveDisposable != null)
+            saveDisposable.dispose();
     }
 
     private void reload() {
@@ -121,23 +126,22 @@ public class PinPreferenceFragment extends GAPreferenceFragment {
         }
 
         try {
-            final String mnemonic = getSession().getMnemonicPassphrase();
             final String network = getNetwork().getNetwork();
             final SharedPreferences preferences = AuthenticationHandler.getNewAuth(getContext());
             final String pin = KeyStoreAES.tryEncrypt(network, preferences);
-            final ListenableFuture<Void> future = getGAApp().getExecutor().submit(() -> {
-                getConnectionManager().setPin(mnemonic, pin, preferences);
-                return null;
+            saveDisposable = Observable.just(getSession())
+                             .observeOn(Schedulers.computation())
+                             .map((session) -> {
+                final String mnemonic = getSession().getMnemonicPassphrase();
+                return session.setPin(mnemonic, pin, "default");
+            })
+                             .observeOn(AndroidSchedulers.mainThread())
+                             .subscribe((pinData) -> {
+                AuthenticationHandler.setPin(pinData, pin.length() == 6, preferences);
+                getSession().setPinJustSaved(true);
+            }, (e) -> {
+                UI.popup(getActivity(), R.string.id_warning).content(e.getMessage()).show();
             });
-            Futures.addCallback(future, new FutureCallback<Void>() {
-                @Override
-                public void onSuccess(final Void result) {}
-
-                @Override
-                public void onFailure(final Throwable t) {
-                    UI.popup(getActivity(), R.string.id_warning).content(t.getMessage()).show();
-                }
-            }, getGAApp().getExecutor());
         } catch (final KeyStoreAES.RequiresAuthenticationScreen e) {
             try {
                 KeyStoreAES.showAuthenticationScreen(getActivity(), "");

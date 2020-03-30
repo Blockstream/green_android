@@ -12,14 +12,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenbits.ui.GAFragment;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import androidx.fragment.app.FragmentTransaction;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
+import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.*;
 
 public class SubaccountReviewFragment extends GAFragment {
@@ -56,7 +60,6 @@ public class SubaccountReviewFragment extends GAFragment {
 
         button.setOnClickListener(v -> {
             createAccount(ACCOUNT_TYPES[accountType], textInputEditText.getText());
-            getActivity().finish();
         });
 
         if (accountType == AUTHORIZED_ACCOUNT) {
@@ -98,16 +101,19 @@ public class SubaccountReviewFragment extends GAFragment {
     }
 
     private void createAccount(final String type, final Editable input) {
-        mApp.getExecutor().execute(() -> {
-            try {
-                GDKSession.getSession().createSubAccount(input.toString(), type).resolve(null,
-                                                                                         new HardwareCodeResolver(
-                                                                                             getGaActivity()));
-                getModel().getSubaccountsDataObservable().refresh();
-            } catch (final Exception e) {
-                getGaActivity().runOnUiThread(() -> { Toast.makeText(getContext(), R.string.id_operation_failure,
-                                                                     Toast.LENGTH_LONG).show(); });
-            }
+        final GaActivity activity = getGaActivity();
+        Observable.just(getSession())
+        .subscribeOn(Schedulers.computation())
+        .map((session) -> {
+            return getSession().createSubAccount(input.toString(), type).resolve(null,
+                                                                                 new HardwareCodeResolver(activity));
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe((session) -> {
+            activity.finish();
+        }, (final Throwable e) -> {
+            Toast.makeText(getContext(), R.string.id_operation_failure,
+                           Toast.LENGTH_LONG).show();
         });
     }
 }

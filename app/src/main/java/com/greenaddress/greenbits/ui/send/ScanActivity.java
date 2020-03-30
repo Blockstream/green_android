@@ -48,8 +48,6 @@ import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SweepData;
-import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -66,8 +64,12 @@ import java.util.List;
 import java.util.Map;
 
 import de.schildbach.wallet.ui.scan.CameraManager;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class ScanActivity extends LoggedActivity implements TextureView.SurfaceTextureListener, View.OnClickListener,
@@ -82,6 +84,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
     private de.schildbach.wallet.ui.scan.ScannerView scannerView;
     private TextureView previewView;
     private TextInputEditText mAddressEditText;
+    private Disposable disposable;
 
     private volatile boolean surfaceCreated = false;
     private Animator sceneTransition = null;
@@ -191,6 +194,9 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         if (previewView != null) {
             previewView.setSurfaceTextureListener(null);
         }
+
+        if (disposable != null)
+            disposable.dispose();
 
         // We're removing the requested orientation because if we don't, somehow the requested orientation is
         // bleeding through to the calling activity, forcing it into a locked state until it is restarted.
@@ -370,34 +376,26 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         }
 
         scannerView.setIsResult(true);
-        try {
-            onInserted(scanResult.getText());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        onInserted(scanResult.getText());
     }
 
-    public void onInserted(final String scanned) throws Exception {
-        final Model model = ((GreenAddressApplication) getApplication()).getModel();
-
-        if (model == null)
-            return;
-
+    private void onSweep(final String scanned) {
+        final Integer subaccount = getActiveAccount();
         final Intent result = new Intent();
         result.putExtra("internal_qr", true);
-        final Integer subaccount = model.getCurrentSubaccount();
-        final NetworkData networkData = getNetwork();
-        boolean skip_assets = false;
+        result.putExtra(PrefKeys.SWEEP, true);
 
-        if (isSweep) {
-            result.putExtra(PrefKeys.SWEEP, true);
-            // See if the address is a private key, and if so, sweep it
-            final Long feeRate = getGAApp().getModel().getFeeObservable().getFees().get(0);
+        disposable = Observable.just(getSession())
+                     .observeOn(Schedulers.computation())
+                     .map((session) -> {
+            final ObjectNode jsonResp = session.getReceiveAddress(subaccount).resolve(null,
+                                                                                      new HardwareCodeResolver(
+                                                                                          this));
+            return jsonResp.get("address").asText();
+        })
+                     .map((address) -> {
+            final Long feeRate = getSession().getFees().get(0);
             final BalanceData balanceData = new BalanceData();
-            final ObjectNode jsonResp = getSession().getReceiveAddress(subaccount).resolve(null,
-                                                                                           new HardwareCodeResolver(
-                                                                                               this));
-            final String address = jsonResp.get("address").asText();
             balanceData.setAddress(address);
             final List<BalanceData> balanceDataList = new ArrayList<>();
             balanceDataList.add(balanceData);
@@ -406,54 +404,71 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             sweepData.setFeeRate(feeRate);
             sweepData.setAddressees(balanceDataList);
             sweepData.setSubaccount(subaccount);
-
-            try {
-                final GDKTwoFactorCall call = getSession().createTransactionRaw(null, sweepData);
-                final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
-                final String error = transactionRaw.get("error").asText();
-                if (error.isEmpty()) {
-                    removeUtxosIfTooBig(transactionRaw);
-                    result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
-                } else {
-                    throw new Exception(error);
-                }
-            } catch (Exception e) {
-                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
-                cameraHandler.post(fetchAndDecodeRunnable);
-                return;
-            }
-
-        } else {
-            try {
-                final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
-                final ObjectNode transactionFromUri =
-                    call.resolve(null, new HardwareCodeResolver(this));
-                final String error = transactionFromUri.get("error").asText();
-                if (!error.isEmpty() && !"id_invalid_amount".equals(error)) {
-                    UI.toast(this, error, Toast.LENGTH_SHORT);
-                    cameraHandler.post(fetchAndDecodeRunnable);
-                    return;
-                }
-                if (transactionFromUri.get("addressees_have_assets") != null &&
-                    transactionFromUri.get("addressees_have_assets").asBoolean(false)) {
-                    skip_assets = true;
-                }
-                removeUtxosIfTooBig(transactionFromUri);
-                result.putExtra(PrefKeys.INTENT_STRING_TX, transactionFromUri.toString());
-            } catch (final Exception e) {
-                if (e.getMessage() != null)
-                    UI.toast(this, e.getMessage(), Toast.LENGTH_SHORT);
-                cameraHandler.post(fetchAndDecodeRunnable);
-                return;
-            }
-        }
-        if (networkData.getLiquid() && !skip_assets) {
-            result.setClass(this, AssetsSelectActivity.class);
-        } else {
+            return sweepData;
+        })
+                     .map((sweepData) -> {
+            final GDKTwoFactorCall call = getSession().createTransactionRaw(null, sweepData);
+            final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
+            final String error = transactionRaw.get("error").asText();
+            if (!error.isEmpty())
+                throw new Exception(error);
+            return transactionRaw;
+        })
+                     .observeOn(AndroidSchedulers.mainThread())
+                     .subscribe((transactionRaw) -> {
+            removeUtxosIfTooBig(transactionRaw);
+            result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
             result.setClass(this, SendAmountActivity.class);
-        }
-        // Open send activity
-        startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
+            startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
+        }, (e) -> {
+            e.printStackTrace();
+            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+            cameraHandler.post(fetchAndDecodeRunnable);
+        });
+    }
+
+    private void onTransaction(final String scanned) {
+        final Integer subaccount = getActiveAccount();
+        final NetworkData networkData = getNetwork();
+        final Intent result = new Intent();
+        result.putExtra("internal_qr", true);
+
+        disposable = Observable.just(getSession())
+                     .observeOn(Schedulers.computation())
+                     .map((session) -> {
+            final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
+            final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
+            final String error = transactionRaw.get("error").asText();
+            if (!error.isEmpty() && !"id_invalid_amount".equals(error))
+                throw new Exception(error);
+            return transactionRaw;
+        })
+                     .observeOn(AndroidSchedulers.mainThread())
+                     .subscribe((transactionRaw) -> {
+            removeUtxosIfTooBig(transactionRaw);
+            boolean skip_assets = false;
+            if (networkData.getLiquid() && transactionRaw.get("addressees_have_assets") != null &&
+                transactionRaw.get("addressees_have_assets").asBoolean(false)) {
+                skip_assets = true;
+            }
+            if (networkData.getLiquid() && !skip_assets)
+                result.setClass(this, AssetsSelectActivity.class);
+            else
+                result.setClass(this, SendAmountActivity.class);
+            result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
+            startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
+        }, (e) -> {
+            e.printStackTrace();
+            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+            cameraHandler.post(fetchAndDecodeRunnable);
+        });
+    }
+
+    public void onInserted(final String scanned) {
+        if (isSweep)
+            onSweep(scanned);
+        else
+            onTransaction(scanned);
     }
 
     @Override
@@ -465,11 +480,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
 
     @Override
     public void onClick(final View view) {
-        try {
-            onInserted(mAddressEditText.getText() == null ? "" : mAddressEditText.getText().toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        onInserted(mAddressEditText.getText() == null ? "" : mAddressEditText.getText().toString());
     }
 
 

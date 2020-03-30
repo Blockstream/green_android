@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
@@ -18,7 +18,6 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private final List<SubaccountData> mSubaccountList;
     private final OnAccountSelected mOnAccountSelected;
-    private final Model mModel;
     private final boolean showNewButton;
 
     public interface OnAccountSelected {
@@ -27,11 +26,9 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public AccountAdapter(final List<SubaccountData> subaccountList,
-                          final OnAccountSelected cb, final boolean showNewAccount,
-                          final Model model) {
+                          final OnAccountSelected cb, final boolean showNewAccount) {
         mSubaccountList = subaccountList;
         mOnAccountSelected = cb;
-        mModel = model;
         showNewButton = showNewAccount;
     }
 
@@ -57,10 +54,10 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             h.name.setText(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.string.
                                                                                                   id_main_account)));
             try {
-                final String valueBitcoin = mModel.getBtc(satoshi, false);
-                final String valueFiat = mModel.getFiat(satoshi, true);
+                final String valueBitcoin = Conversion.getBtc(satoshi, false);
+                final String valueFiat = Conversion.getFiat(satoshi, true);
                 h.mainBalanceText.setText(valueBitcoin);
-                h.mainBalanceUnitText.setText(" " + mModel.getBitcoinOrLiquidUnit());
+                h.mainBalanceUnitText.setText(" " + Conversion.getBitcoinOrLiquidUnit());
                 h.mainLocalBalanceText.setText("≈  " + valueFiat);
             } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
