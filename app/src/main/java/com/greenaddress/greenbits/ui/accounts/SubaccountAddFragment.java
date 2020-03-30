@@ -21,6 +21,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import static com.greenaddress.greenapi.Session.getSession;
+
 public class SubaccountAddFragment extends GAFragment {
 
     private final int[] mRadioButtonIDs = {R.id.simpleAccountRadio, R.id.authorizedAccountRadio};
@@ -102,12 +104,15 @@ public class SubaccountAddFragment extends GAFragment {
     }
 
     private boolean hasAnyAASubaccount() {
-        final List<SubaccountData> accounts = getModel().getSubaccountsDataObservable().getSubaccountsDataList();
-        for (final SubaccountData account: accounts) {
-            if (account.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]))
-                return true;
+        try {
+            final List<SubaccountData> accounts = getSession().getSubAccounts(getGaActivity());
+            for (final SubaccountData account: accounts) {
+                if (account.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]))
+                    return true;
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
         }
-
         return false;
     }
 }

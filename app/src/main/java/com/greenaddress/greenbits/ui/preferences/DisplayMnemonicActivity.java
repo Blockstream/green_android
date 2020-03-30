@@ -11,7 +11,7 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.authentication.MnemonicActivity.MNEMONIC_LENGTH;
 
 public class DisplayMnemonicActivity extends LoggedActivity {

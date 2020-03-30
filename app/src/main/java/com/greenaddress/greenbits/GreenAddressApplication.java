@@ -3,9 +3,10 @@ package com.greenaddress.greenbits;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Debug;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.multidex.MultiDexApplication;
 
@@ -17,16 +18,13 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.JSONConverterImpl;
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.List;
@@ -37,13 +35,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GreenAddressApplication extends MultiDexApplication {
 
-    private static final String TAG = GreenAddressApplication.class.getSimpleName();
-    private final ListeningExecutorService mExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(8));
-    private Model mModel;
-    private final ConnectionManager mConnectionManager = new ConnectionManager();
     private static AtomicBoolean isRunningTest;
     private final SPV mSPV = new SPV();
-    private HWWallet mHWWallet = null;
 
     private void failHard(final String title, final String message) {
         final Intent fail = new Intent(this, FailHardActivity.class);
@@ -56,6 +49,18 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     @Override
     public void onCreate() {
+        // Enable StrictMode if a debugger is connected
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectDiskWrites()
+                    .detectNetwork()
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .penaltyLog()
+                    .penaltyDeath()
+                    .build());
+        }
         super.onCreate();
 
         if(isRunningTest())
@@ -170,36 +175,12 @@ public class GreenAddressApplication extends MultiDexApplication {
         return getNetworkData(getCurrentNetwork());
     }
 
-    public Model getModel() {
-        return mModel;
-    }
-
-    public void setModel(final Model model) {
-        mModel = model;
-    }
-
-    public ConnectionManager getConnectionManager() {
-        return mConnectionManager;
-    }
-
-    public boolean isWatchOnly() {
-        return mConnectionManager.isWatchOnly();
-    }
-
-    public String getWatchOnlyUsername() {
-        return mConnectionManager.getWatchOnlyUsername();
-    }
-
     public boolean warnIfOffline(final Activity activity) {
-        if(getConnectionManager().isOffline()) {
+        /*if(getConnectionManager().isOffline()) {
             UI.toast(activity, R.string.id_connection_failed, Toast.LENGTH_LONG);
             return true;
-        }
+        }*/
         return false;
-    }
-
-    public ListeningExecutorService getExecutor() {
-        return mExecutor;
     }
 
     public SPV getSpv() {
@@ -210,13 +191,5 @@ public class GreenAddressApplication extends MultiDexApplication {
     public void onLowMemory() {
         super.onLowMemory();
         Log.i("LoggedActivity","onLowMemory app");
-    }
-
-    public HWWallet getHWWallet() {
-        return mHWWallet;
-    }
-
-    public void setHWWallet(final HWWallet hwWallet) {
-        this.mHWWallet = mHWWallet;
     }
 }

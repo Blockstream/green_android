@@ -13,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -22,10 +21,8 @@ import androidx.preference.PreferenceManager;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity;
@@ -166,10 +163,6 @@ public abstract class GaActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-    public Model getModel() {
-        return getGAApp().getModel();
-    }
-
     public void startLoading() {
         startLoading("");
     }
@@ -274,9 +267,5 @@ public abstract class GaActivity extends AppCompatActivity {
 
     protected NetworkData getNetwork() {
         return getGAApp().getCurrentNetworkData();
-    }
-
-    public ConnectionManager getConnectionManager() {
-        return getGAApp().getConnectionManager();
     }
 }

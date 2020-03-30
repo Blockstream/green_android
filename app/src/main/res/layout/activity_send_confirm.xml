@@ -61,28 +61,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/sections_spacing" />
 
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/SectionTitle"
-                android:text="@string/id_from"/>
-
-            <TextView
-                android:id="@+id/subaccountText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:background="?attr/themeCardview"
-                android:height="40dp"
-                android:paddingStart="15dp"
-                android:textColor="@color/white"
-                />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/sections_spacing" />
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

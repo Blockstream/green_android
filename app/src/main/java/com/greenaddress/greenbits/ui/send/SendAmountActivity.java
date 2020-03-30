@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,6 +19,10 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,10 +30,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.AssetInfoData;
-import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.data.SubaccountData;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -43,7 +47,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Registry.getRegistry;
+import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
@@ -69,7 +74,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private long mMinFeeRate;
     private Long mVsize;
     private String mSelectedAsset = "btc";
-    private Long mAssetBalances;
+    private SubaccountData mSubaccount;
     private boolean isSweep;
 
     private static final int[] mButtonIds =
@@ -77,25 +82,21 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private static final int[] mFeeButtonsText =
     {R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom};
     private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
-    private NetworkData networkData;
+
+    private Disposable setupDisposable;
+    private Disposable updateDisposable;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (modelIsNullOrDisconnected())
-            return;
 
         Log.d(TAG, "onCreateView -> " + TAG);
         final int[] mBlockTargets = getBlockTargets();
-        networkData = getGAApp().getCurrentNetworkData();
 
         isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
 
         if (isSweep) {
-            final int account = getModel().getActiveAccountObservable().getActiveAccount();
-            final String accountName = getModel().getSubaccountsData(account).getName();
-            setTitle(String.format(getString(R.string.id_sweep_into_s),
-                                   accountName.equals("") ? getString(R.string.id_main_account) : accountName));
+            setTitle(getString(R.string.id_sweep));
         }
 
         // Create UI views
@@ -123,9 +124,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         UI.disable(mNextButton);
 
         // Setup fee buttons
-        mSelectedFee = getModel().getSettings().getFeeBuckets(mBlockTargets);
+        mSelectedFee = getSession().getSettings().getFeeBuckets(mBlockTargets);
 
-        final List<Long> estimates = getGAApp().getModel().getFeeObservable().getFees();
+        final List<Long> estimates = getSession().getFees();
         mMinFeeRate = estimates.get(0);
 
         for (int i = 0; i < mButtonIds.length; ++i) {
@@ -133,7 +134,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             mFeeButtons[i] = this.findViewById(mButtonIds[i]);
             final String summary = String.format("(%s)", UI.getFeeRateString(estimates.get(mBlockTargets[i])));
             final String expectedConfirmationTime = getExpectedConfirmationTime(this,
-                                                                                networkData.getLiquid() ? 60 : 6,
+                                                                                getSession().getNetworkData().getLiquid() ? 60 : 6,
                                                                                 mBlockTargets[i]);
             final String buttonText = getString(mFeeButtonsText[i]) + (i == 3 ? "" : expectedConfirmationTime);
             mFeeButtons[i].init(buttonText, summary, i == 3);
@@ -141,96 +142,55 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         // Create the initial transaction
-        if (mTx == null) {
-            try {
-                final String tx = getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX);
-                final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
-                // Fee
-                // FIXME: If default fee is custom then fetch it here
-                final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
-                txJson.set("fee_rate", fee_rate);
-
-                // FIXME: If we didn't pass in the full transaction (with utxos)
-                // then this call will go to the server. So, we should do it in
-                // the background and display a wait icon until it returns
-                final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
-                mTx = call.resolve(null, new HardwareCodeResolver(this));
-            } catch (final Exception e) {
-                UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
-                finishOnUiThread();
-                return;
-            }
-        }
+        final String text = getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX);
+        final ObjectNode txJson;
         try {
-            // Retrieve assets list
+            txJson = new ObjectMapper().readValue(text, ObjectNode.class);
+        } catch (final IOException e) {
+            e.printStackTrace();
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            finishOnUiThread();
+            return;
+        }
+
+        // FIXME: If default fee is custom then fetch it here
+        final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
+        txJson.set("fee_rate", fee_rate);
+
+        // Update transaction
+        setupKeyboard();
+        startLoading();
+        setupDisposable = Observable.just(getSession())
+                          .observeOn(Schedulers.computation())
+                          .map((session) -> {
+            // FIXME: If we didn't pass in the full transaction (with utxos)
+            // then this call will go to the server. So, we should do it in
+            // the background and display a wait icon until it returns
+            if (mTx != null)
+                return mTx;
+            return session.createTransactionRaw(null, txJson).resolve(null, new HardwareCodeResolver(this));
+        })
+                          .map((tx) -> {
+            final SubaccountData subAccount = getSession().getSubAccount(this, getActiveAccount());
+            return new Pair<SubaccountData, ObjectNode>(subAccount, tx);
+        })
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .subscribe((pair) -> {
+            stopLoading();
+            mSubaccount = pair.first;
+            mTx = pair.second;
+            setup(mTx);
+            updateTransaction();
             updateAssetSelected();
-        } catch (final Exception e) {
+        }, (e) -> {
+            e.printStackTrace();
+            stopLoading();
             UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
             finishOnUiThread();
-            return;
-        }
-        JsonNode node = mTx.get("satoshi");
-        try {
-            final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
-            node = addressee.get("satoshi");
-        } catch (final Exception e) {
-            // Asset not passed, default "btc"
-        }
-        if (node != null && node.asLong() != 0L) {
-            final long newSatoshi = node.asLong();
-            try {
-                setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
-            } catch (final Exception e) {
-                Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-            }
-        }
+        });
+    }
 
-        final JsonNode readOnlyNode = mTx.get("addressees_read_only");
-        if (readOnlyNode != null && readOnlyNode.asBoolean()) {
-            mAmountText.setEnabled(false);
-            mSendAllButton.setVisibility(View.GONE);
-            mAccountBalance.setVisibility(View.GONE);
-        } else {
-            mAmountText.requestFocus();
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        }
-
-        // Select the fee button that is the next highest rate from the old tx
-        final Long oldRate = getOldFeeRate(mTx);
-        if (oldRate != null) {
-            mFeeEstimates[mButtonIds.length - 1] = oldRate + 1;
-            boolean found = false;
-            for (int i = 0; i < mButtonIds.length - 1; ++i) {
-                if ((oldRate + mMinFeeRate) < mFeeEstimates[i]) {
-                    mSelectedFee = i;
-                    found = true;
-                } else
-                    mFeeButtons[i].setEnabled(false);
-            }
-            if (!found) {
-                // Set custom rate to 1 satoshi higher than the old rate
-                mSelectedFee = mButtonIds.length - 1;
-            }
-        }
-
-        final String defaultFeerate = cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
-        final boolean isBump = mTx.get("previous_transaction") != null;
-        if (isBump) {
-            mFeeEstimates[3] = getOldFeeRate(mTx) + mMinFeeRate;
-        } else if (defaultFeerate != null) {
-            final Double mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
-            mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate * 1000.0).longValue();
-            updateFeeSummaries();
-        }
-
-        try {
-            updateTransaction(mRecipientText);
-        } catch (final Exception e) {
-            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
-            finishOnUiThread();
-            return;
-        }
-
+    private void setupKeyboard() {
         final View contentView = findViewById(android.R.id.content);
         UI.attachHideKeyboardListener(this, contentView);
 
@@ -249,6 +209,73 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         });
     }
 
+    private void hideKeyboard() {
+        final InputMethodManager inputManager = (InputMethodManager)
+                                                this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        final View currentFocus = getCurrentFocus();
+        inputManager.hideSoftInputFromWindow(currentFocus == null ? null : currentFocus.getWindowToken(),
+                                             InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    private void setup(final ObjectNode tx) {
+        // Setup address and amount text
+        JsonNode node = tx.get("satoshi");
+        try {
+            final ObjectNode addressee = (ObjectNode) tx.get("addressees").get(0);
+            mRecipientText.setText(addressee.get("address").asText());
+            node = addressee.get("satoshi");
+        } catch (final Exception e) {
+            // Asset not passed, default "btc"
+        }
+        if (node != null && node.asLong() != 0L) {
+            final long newSatoshi = node.asLong();
+            try {
+                setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
+            } catch (final Exception e) {
+                Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            }
+        }
+
+        // Setup read-only
+        final JsonNode readOnlyNode = tx.get("addressees_read_only");
+        if (readOnlyNode != null && readOnlyNode.asBoolean()) {
+            mAmountText.setEnabled(false);
+            mSendAllButton.setVisibility(View.GONE);
+            mAccountBalance.setVisibility(View.GONE);
+        } else {
+            mAmountText.requestFocus();
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        }
+
+        // Select the fee button that is the next highest rate from the old tx
+        final Long oldRate = getOldFeeRate(tx);
+        if (oldRate != null) {
+            mFeeEstimates[mButtonIds.length - 1] = oldRate + 1;
+            boolean found = false;
+            for (int i = 0; i < mButtonIds.length - 1; ++i) {
+                if ((oldRate + mMinFeeRate) < mFeeEstimates[i]) {
+                    mSelectedFee = i;
+                    found = true;
+                } else
+                    mFeeButtons[i].setEnabled(false);
+            }
+            if (!found) {
+                // Set custom rate to 1 satoshi higher than the old rate
+                mSelectedFee = mButtonIds.length - 1;
+            }
+        }
+
+        final String defaultFeerate = cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
+        final boolean isBump = tx.get("previous_transaction") != null;
+        if (isBump) {
+            mFeeEstimates[3] = getOldFeeRate(tx) + mMinFeeRate;
+        } else if (defaultFeerate != null) {
+            final Double mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
+            mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate * 1000.0).longValue();
+            updateFeeSummaries();
+        }
+    }
+
     private void updateAssetSelected() {
         try {
             final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
@@ -257,14 +284,14 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             // Asset not passed, default "btc"
         }
 
-        final long satoshi = getModel().getCurrentAccountBalanceData().get(mSelectedAsset);
-        final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+        final long satoshi = mSubaccount.getSatoshi().get(mSelectedAsset);
+        final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
 
         final Map<String, Long> balances = new HashMap<>();
         balances.put(mSelectedAsset, satoshi);
 
         final RecyclerView assetsList = findViewById(R.id.assetsList);
-        final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null, getModel());
+        final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null);
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         assetsList.setAdapter(adapter);
         UI.showIf(!isAsset(), mUnitButton);
@@ -272,9 +299,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         UI.showIf(isAsset(), assetsList);
         try {
             if (!isAsset())
-                mAccountBalance.setText(getModel().getBtc(satoshi, true));
+                mAccountBalance.setText(Conversion.getBtc(satoshi, true));
             else
-                mAccountBalance.setText(getModel().getAsset(satoshi, mSelectedAsset, info, true));
+                mAccountBalance.setText(Conversion.getAsset(satoshi, mSelectedAsset, info, true));
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
@@ -308,7 +335,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         if (isFinishing())
             return;
 
-        final boolean isLiquid = networkData.getLiquid();
+        final boolean isLiquid = getSession().getNetworkData().getLiquid();
         mSendAllButton.setPressed(mSendAll);
         mSendAllButton.setSelected(mSendAll);
         mSendAllButton.setOnClickListener(this);
@@ -333,15 +360,19 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (setupDisposable != null)
+            setupDisposable.dispose();
+        if (updateDisposable != null)
+            updateDisposable.dispose();
+    }
+
+    @Override
     public void onClick(final View view) {
         if (view == mNextButton) {
             if (isKeyboardOpen) {
-                InputMethodManager inputManager = (InputMethodManager)
-                                                  this.getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                final View currentFocus = getCurrentFocus();
-                inputManager.hideSoftInputFromWindow(currentFocus == null ? null : currentFocus.getWindowToken(),
-                                                     InputMethodManager.HIDE_NOT_ALWAYS);
+                hideKeyboard();
             } else {
                 onFinish(mTx);
             }
@@ -352,7 +383,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             mAmountText.setEnabled(!mSendAll);
             mSendAllButton.setPressed(mSendAll);
             mSendAllButton.setSelected(mSendAll);
-            updateTransaction(null);
+            updateTransaction();
         } else if (view == mUnitButton) {
             try {
                 mIsFiat = !mIsFiat;
@@ -369,7 +400,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
             }
         } else {
-            final boolean isLiquid = networkData.getLiquid();
+            final boolean isLiquid = getSession().getNetworkData().getLiquid();
 
             // Fee Button
             for (int i = 0; i < mButtonIds.length; ++i) {
@@ -382,14 +413,14 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             if (mSelectedFee == mButtonIds.length -1)
                 onCustomFeeClicked();
             else
-                updateTransaction(view);
+                updateTransaction();
         }
     }
 
     private void onCustomFeeClicked() {
         long customValue = mFeeEstimates[mButtonIds.length - 1];
 
-        final String initValue = Model.getNumberFormat(2).format(customValue/1000.0);
+        final String initValue = Conversion.getNumberFormat(2).format(customValue/1000.0);
 
         final View v = UI.inflateDialog(this, R.layout.dialog_set_custom_feerate);
         final EditText rateEdit = UI.find(v, R.id.set_custom_feerate_amount);
@@ -405,7 +436,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 final String rateText = rateEdit.getText().toString().trim();
                 if (rateText.isEmpty())
                     throw new Exception();
-                final double feePerByte = Model.getNumberFormat(2).parse(rateText).doubleValue();
+                final double feePerByte = Conversion.getNumberFormat(2).parse(rateText).doubleValue();
                 final long feePerKB = (long) (feePerByte * 1000);
                 if (feePerKB < mMinFeeRate) {
                     UI.toast(this, getString(R.string.id_fee_rate_must_be_at_least_s,
@@ -422,70 +453,54 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 mFeeEstimates[mButtonIds.length - 1] = feePerKB;
                 updateFeeSummaries();
                 // FIXME: Probably want to do this in the background
-                updateTransaction(mFeeButtons[mSelectedFee]);
+                updateTransaction();
+                hideKeyboard();
             } catch (final Exception e) {
                 e.printStackTrace();
                 onClick(mFeeButtons[1]);          // FIXME: Get from user config
+                hideKeyboard();
             }
         }).build();
         UI.showDialog(dialog);
     }
 
-    private void updateTransaction(final View caller) {
-        if (isFinishing())
+    private void updateTransaction() {
+        if (isFinishing() || mTx == null)
             return;
 
-        ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
-        boolean changed;
-
-        final BooleanNode send_all = mSendAll ? BooleanNode.TRUE : BooleanNode.FALSE;
-        changed = !send_all.equals(mTx.replace("send_all", send_all));
-
-        if (mSendAll) {
-            // Send all was clicked and enabled. Mark changed to update amounts
-            changed |= mSendAllButton == caller;
-        } else if (mCurrentAmount != null) {
-            // We are only changed if the amount entered has changed
-            final LongNode satoshi = new LongNode(mCurrentAmount.get("satoshi").asLong());
-            final JsonNode replacedValue = addressee.replace("satoshi", satoshi);
-            changed |= !satoshi.toString().equals(replacedValue == null ? "" : replacedValue.toString());
+        if (getSession().getNetworkData().getLiquid() && mSelectedAsset.isEmpty()) {
+            mNextButton.setText(R.string.id_select_asset);
+            return;
         }
 
+        if (mCurrentAmount == null && !mSendAll) {
+            mNextButton.setText(R.string.id_invalid_amount);
+            return;
+        }
+
+        if (updateDisposable != null)
+            updateDisposable.dispose();
+
+        mTx.replace("send_all", mSendAll ? BooleanNode.TRUE : BooleanNode.FALSE);
+        final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
+        if (mCurrentAmount != null) {
+            final LongNode satoshi = new LongNode(mCurrentAmount.get("satoshi").asLong());
+            addressee.replace("satoshi", satoshi);
+        }
         final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
-        final JsonNode replacedValue = mTx.replace("fee_rate", fee_rate);
-        changed |= !fee_rate.toString().equals(replacedValue == null ? "" : replacedValue.toString());
+        mTx.replace("fee_rate", fee_rate);
 
-        // If the caller is mRecipientText, this is the initial creation so re-populate everything
-        if (changed || caller == mRecipientText) {
-            // Our tx has changed, so recreate it
-            try {
-                final GDKTwoFactorCall call = getSession().createTransactionRaw(null, mTx);
-                mTx = call.resolve(null, new HardwareCodeResolver(this));
-            } catch (final Exception e) {
-                // FIXME: Toast and go back to main activity since we must be disconnected
-                throw new RuntimeException(e);
-            }
-            addressee = (ObjectNode) mTx.get("addressees").get(0);
-            mRecipientText.setText(addressee.get("address").asText());
-
+        updateDisposable = Observable.just(mTx)
+                           .observeOn(Schedulers.computation())
+                           .map((tx) -> {
+            return getSession().createTransactionRaw(null, tx).resolve(null, new HardwareCodeResolver(this));
+        })
+                           .observeOn(AndroidSchedulers.mainThread())
+                           .subscribe((tx) -> {
+            mTx = tx;
             // TODO this should be removed when handled in gdk
-            if (networkData.getLiquid() && mSelectedAsset.isEmpty()) {
-                mNextButton.setText(R.string.id_select_asset);
-                return;
-            }
-
             final String error = mTx.get("error").asText();
             if (error.isEmpty()) {
-                // The tx is valid so show the updated amount
-                try {
-                    final long newSatoshi = addressee.get("satoshi").asLong();
-                    // avoid updating view if value hasn't changed
-                    if (!mSendAll || (mCurrentAmount != null && mCurrentAmount.get("satoshi").asLong() != newSatoshi)) {
-                        setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
-                    }
-                } catch (final Exception e) {
-                    Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-                }
                 if (mTx.get("transaction_vsize") != null)
                     mVsize = mTx.get("transaction_vsize").asLong();
                 updateFeeSummaries();
@@ -494,14 +509,18 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 mNextButton.setText(UI.i18n(getResources(), error));
             }
             UI.enableIf(error.isEmpty(), mNextButton);
-        }
+        }, (e) -> {
+            e.printStackTrace();
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
+            finishOnUiThread();
+        });
     }
 
     public ObjectNode convert(final long satoshi) throws Exception {
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
         if (!"btc".equals(mSelectedAsset)) {
-            final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+            final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
             details.set("asset_info", info.toObjectNode());
         }
         mCurrentAmount = getSession().convert(details);
@@ -517,7 +536,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 long currentEstimate = mFeeEstimates[i];
                 final String feeRateString = UI.getFeeRateString(currentEstimate);
                 final long amount = (currentEstimate * mVsize)/1000L;
-                final String formatted = isFiat() ? getModel().getFiat(amount, true) : getModel().getBtc(amount, true);
+                final String formatted = isFiat() ? Conversion.getFiat(amount, true) : Conversion.getBtc(amount, true);
                 mFeeButtons[i].setSummary(mVsize == null ?
                                           String.format("(%s)", feeRateString) :
                                           String.format("%s (%s)", formatted, feeRateString));
@@ -558,13 +577,13 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     public void onFinish(final ObjectNode transactionData) {
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
-        final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+        final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
         removeUtxosIfTooBig(transactionData);
         intent.putExtra(PrefKeys.INTENT_STRING_TX, transactionData.toString());
         intent.putExtra("asset_info", info);
         intent.putExtra(PrefKeys.SWEEP, isSweep);
-        if (getGAApp().getHWWallet() != null)
-            intent.putExtra("hww", getGAApp().getHWWallet().getHWDeviceData().toString());
+        if (getSession().getHWWallet() != null)
+            intent.putExtra("hww", getSession().getHWWallet().getHWDeviceData().toString());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
     }
 
@@ -573,11 +592,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private String getFiatCurrency() {
-        return getModel().getFiatCurrency();
+        return Conversion.getFiatCurrency();
     }
 
     private String getBitcoinOrLiquidUnit() {
-        return getModel().getBitcoinOrLiquidUnit();
+        return Conversion.getBitcoinOrLiquidUnit();
     }
 
     @Override
@@ -591,7 +610,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final String localizedValue = mAmountText.getText().toString();
         String value = "0";
         try {
-            value = Model.getNumberFormat(8).parse(localizedValue).toString();
+            value = Conversion.getNumberFormat(8).parse(localizedValue).toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -602,7 +621,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         amount.put(key, value);
         if (isAsset()) {
             final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
-            final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(mSelectedAsset);
+            final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
             amount.set("asset_info", (info == null ? assetInfoDefault : info).toObjectNode());
         }
         try {
@@ -611,7 +630,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 (mCurrentAmount == null || mCurrentAmount.get(key) == null ||
                  !mCurrentAmount.get(key).asText().equals(value))) {
                 mCurrentAmount = getSession().convert(amount);
-                updateTransaction(null);
+                updateTransaction();
             }
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
@@ -619,7 +638,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private boolean isAsset() {
-        return networkData.getLiquid() && !"btc".equals(mSelectedAsset);
+        return getSession().getNetworkData().getLiquid() && !"btc".equals(mSelectedAsset);
     }
 
     @Override

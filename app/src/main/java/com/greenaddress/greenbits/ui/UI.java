@@ -38,7 +38,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
-import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.model.Conversion;
 
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
@@ -63,7 +63,7 @@ public abstract class UI {
         @NullableDecl
         @Override
         public String apply(@NullableDecl String input) {
-            return input != null ? Model.toUnitKey(input) : null;
+            return input != null ? Conversion.toUnitKey(input) : null;
         }
     };
     public static final List<String> UNIT_KEYS_LIST = Lists.transform(Arrays.asList(UNITS), UI.toUnitKeyFunc);
@@ -389,7 +389,7 @@ public abstract class UI {
 
     public static String getFeeRateString(final long feePerKB) {
         final double feePerByte = feePerKB / 1000.0;
-        return Model.getNumberFormat(2).format(feePerByte) + " satoshi / vbyte";
+        return Conversion.getNumberFormat(2).format(feePerByte) + " satoshi / vbyte";
     }
 
     public static Spannable getColoredString(final String string, final int color) {

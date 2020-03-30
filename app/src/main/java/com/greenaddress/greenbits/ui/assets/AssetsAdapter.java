@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.EntityData;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.greenaddress.greenapi.Registry.getRegistry;
 
 public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
@@ -27,7 +29,6 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;
     private final NetworkData mNetworkData;
-    private final Model mModel;
 
     @FunctionalInterface
     public interface OnAssetSelected {
@@ -36,11 +37,10 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
 
     public AssetsAdapter(final Map<String, Long> assets,
                          final NetworkData networkData,
-                         final OnAssetSelected cb, final Model model) {
+                         final OnAssetSelected cb) {
         mAssets = assets;
         mOnAccountSelected = cb;
         mNetworkData = networkData;
-        mModel = model;
         mAssetsIds = new ArrayList<>(mAssets.keySet());
         if (mAssetsIds.contains("btc")) {
             // Move btc as first in the list
@@ -61,14 +61,14 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final String assetId = mAssetsIds.get(position);
         final boolean isBTC = "btc".equals(assetId);
         final Long satoshi = mAssets.get(assetId);
-        final AssetInfoData assetInfo = mModel.getAssetsObservable().getAssetsInfos().get(assetId);
+        final AssetInfoData assetInfo = getRegistry().getInfos().get(assetId);
         if (mOnAccountSelected != null)
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         if (isBTC) {
             holder.mAssetName.setText("L-BTC");
             holder.mAssetDomain.setVisibility(View.GONE);
             try {
-                holder.mAssetValue.setText(mModel.getBtc(satoshi, true));
+                holder.mAssetValue.setText(Conversion.getBtc(satoshi, true));
             } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
             }
@@ -82,13 +82,13 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
                 holder.mAssetDomain.setVisibility(View.GONE);
             }
             try {
-                holder.mAssetValue.setText(mModel.getAsset(satoshi, assetId, assetInfo, true));
+                holder.mAssetValue.setText(Conversion.getAsset(satoshi, assetId, assetInfo, true));
             } catch (final Exception e) {
                 e.printStackTrace();
             }
         }
         // Get l-btc & asset icon from asset icon map
-        final Map<String, Bitmap> icons =  mModel.getAssetsObservable().getAssetsIcons();
+        final Map<String, Bitmap> icons =  getRegistry().getIcons();
         final String asset = isBTC ? mNetworkData.getPolicyAsset() : assetId;
         if (icons.containsKey(asset)) {
             holder.mAssetIcon.setImageBitmap(icons.get(asset));

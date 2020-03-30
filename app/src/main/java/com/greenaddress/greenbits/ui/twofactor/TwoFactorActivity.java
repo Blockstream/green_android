@@ -25,12 +25,19 @@ import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 
 import java.util.Formatter;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.greenaddress.greenapi.Registry.getRegistry;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class TwoFactorActivity extends LoggedActivity {
 
@@ -44,6 +51,7 @@ public class TwoFactorActivity extends LoggedActivity {
     private boolean settingEmail; // setting email without enabling 2FA
 
     private TwoFactorConfigData twoFactorConfigData;
+    private Disposable disposable;
 
     private void setView(final int layoutId, final int viewId) {
         setContentView(layoutId);
@@ -73,9 +81,6 @@ public class TwoFactorActivity extends LoggedActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (modelIsNullOrDisconnected()) {
-            return;
-        }
         setTitleBackTransparent();
 
         // 2FA method to localized description
@@ -84,7 +89,13 @@ public class TwoFactorActivity extends LoggedActivity {
         mMethod = mMethodName.toLowerCase(Locale.US);
         settingEmail = getIntent().getBooleanExtra("settingEmail", false);
         final boolean mEnable = getIntent().getBooleanExtra("enable", true);
-        twoFactorConfigData = getModel().getTwoFactorConfigDataObservable().getTwoFactorConfigData();
+        try {
+            twoFactorConfigData = getSession().getTwoFactorConfig();
+        } catch (final Exception e) {
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            finishOnUiThread();
+            return;
+        }
         setTitle(getString(mEnable ? R.string.id_1s_twofactor_set_up : R.string.id_delete_s_twofactor,
                            mLocalizedMap.get(mMethod)));
 
@@ -219,7 +230,7 @@ public class TwoFactorActivity extends LoggedActivity {
         final ImageView imageView = UI.find(this, R.id.imageView);
         final TextView textCode = UI.find(this, R.id.textCode);
         final LinearLayout layoutCode = UI.find(this, R.id.layoutCode);
-        final String gauthUrl = getModel().getTwoFactorConfig().getGauth().getData();
+        final String gauthUrl = twoFactorConfigData.getGauth().getData();
 
         try {
             final BitmapDrawable bd =
@@ -291,25 +302,24 @@ public class TwoFactorActivity extends LoggedActivity {
     }
 
     public void setEmail(String data) {
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                final TwoFactorDetailData twoFactorDetail = new TwoFactorDetailData();
-                twoFactorDetail.setData(data);
-                twoFactorDetail.setEnabled(false);
-                twoFactorDetail.setConfirmed(true);
-                final GDKTwoFactorCall twoFactorCall =
-                    getSession().changeSettingsTwoFactor("email", twoFactorDetail);
-                twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
-                UI.toast(this, "Email set", Toast.LENGTH_LONG);
-                setEnableDisableResult(false);
-                try {
-                    getModel().getTwoFactorConfigDataObservable().refresh();
-                } catch (final Exception ignore) { }
-            } catch (final Exception e) {
-                e.printStackTrace();
-                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
-            }
+        disposable = Observable.just(getSession())
+                     .subscribeOn(Schedulers.computation())
+                     .map((session) -> {
+            final TwoFactorDetailData twoFactorDetail = new TwoFactorDetailData();
+            twoFactorDetail.setData(data);
+            twoFactorDetail.setEnabled(false);
+            twoFactorDetail.setConfirmed(true);
+            session.changeSettingsTwoFactor("email", twoFactorDetail).resolve(new PopupMethodResolver(this),
+                                                                              new PopupCodeResolver(this));
+            return session;
+        })
+                     .observeOn(AndroidSchedulers.mainThread())
+                     .subscribe((session) -> {
+            UI.toast(this, "Email set", Toast.LENGTH_LONG);
+            setEnableDisableResult(false);
             finishOnUiThread();
+        }, (final Throwable e) -> {
+            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
         });
     }
 
@@ -320,22 +330,24 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                final TwoFactorDetailData twoFactorDetail = new TwoFactorDetailData();
-                twoFactorDetail.setEnabled(true);
-                twoFactorDetail.setData(data);
-                twoFactorDetail.setConfirmed(true);
-                final GDKTwoFactorCall twoFactorCall =
-                    getSession().changeSettingsTwoFactor(method, twoFactorDetail);
-                twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
-                UI.toast(this, "Two factor enabled", Toast.LENGTH_LONG);
-                setEnableDisableResult(true);
-            } catch (final Exception e) {
-                e.printStackTrace();
-                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
-            }
+        disposable = Observable.just(getSession())
+                     .subscribeOn(Schedulers.computation())
+                     .map((session) -> {
+            final TwoFactorDetailData twoFactorDetail = new TwoFactorDetailData();
+            twoFactorDetail.setEnabled(true);
+            twoFactorDetail.setData(data);
+            twoFactorDetail.setConfirmed(true);
+            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(new PopupMethodResolver(this),
+                                                                             new PopupCodeResolver(this));
+            return session;
+        })
+                     .observeOn(AndroidSchedulers.mainThread())
+                     .subscribe((session) -> {
+            UI.toast(this, "Two factor enabled", Toast.LENGTH_LONG);
+            setEnableDisableResult(true);
             finishOnUiThread();
+        }, (final Throwable e) -> {
+            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
         });
     }
 
@@ -354,29 +366,27 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                final TwoFactorDetailData twoFactorDetail = twoFactorConfigData.getMethod(method);
-                twoFactorDetail.setEnabled(false);
-                if (method.equals("email")) {
-                    // FIXME:  GDK currently doesn't correctly handle email disabling
-                    // unless we set confirmed: false while disabling, so work around
-                    // it here
-                    twoFactorDetail.setConfirmed(false);
-                }
-                final GDKTwoFactorCall twoFactorCall =
-                    getSession().changeSettingsTwoFactor(method, twoFactorDetail);
-                twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
-                UI.toast(this, "Two factor disabled", Toast.LENGTH_LONG);
-                setEnableDisableResult(false);
-            } catch (final Exception e) {
-                e.printStackTrace();
-                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
-                try {
-                    getModel().getTwoFactorConfigDataObservable().refresh();
-                } catch (final Exception ignore) {}
+        disposable = Observable.just(getSession())
+                     .subscribeOn(Schedulers.computation())
+                     .map((session) -> {
+            final TwoFactorDetailData twoFactorDetail = twoFactorConfigData.getMethod(method);
+            twoFactorDetail.setEnabled(false);
+            if (method.equals("email")) {
+                // FIXME:  GDK currently doesn't correctly handle email disabling
+                // unless we set confirmed: false while disabling, so work around
+                // it here
+                twoFactorDetail.setConfirmed(false);
             }
+            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(new PopupMethodResolver(this),
+                                                                             new PopupCodeResolver(this));
+            return session;
+        }).observeOn(AndroidSchedulers.mainThread())
+                     .subscribe((session) -> {
+            UI.toast(this, "Two factor disabled", Toast.LENGTH_LONG);
+            setEnableDisableResult(false);
             finishOnUiThread();
+        }, (final Throwable e) -> {
+            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
         });
     }
 
@@ -387,20 +397,22 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                final GDKTwoFactorCall twoFactorCall = getSession().twoFactorReset(email, isDispute);
-                twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
-                UI.toast(this, R.string.id_request_twofactor_reset, Toast.LENGTH_LONG);
-                final Intent intent = getIntent();
-                intent.putExtra("method","reset");
-                intent.putExtra("enable", true);
-                setResult(Activity.RESULT_OK, intent);
-            } catch (final Exception e) {
-                e.printStackTrace();
-                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
-            }
+        disposable = Observable.just(getSession())
+                     .subscribeOn(Schedulers.computation())
+                     .map((session) -> {
+            final GDKTwoFactorCall twoFactorCall = getSession().twoFactorReset(email, isDispute);
+            twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
+            return session;
+        }).observeOn(AndroidSchedulers.mainThread())
+                     .subscribe((session) -> {
+            UI.toast(this, R.string.id_request_twofactor_reset, Toast.LENGTH_LONG);
+            final Intent intent = getIntent();
+            intent.putExtra("method","reset");
+            intent.putExtra("enable", true);
+            setResult(Activity.RESULT_OK, intent);
             finishOnUiThread();
+        }, (final Throwable e) -> {
+            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
         });
     }
 
@@ -411,18 +423,28 @@ public class TwoFactorActivity extends LoggedActivity {
             return;
         }
 
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                final GDKTwoFactorCall twoFactorCall = getSession().twofactorCancelReset();
-                twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
-                UI.toast(this, R.string.id_cancel_twofactor_reset, Toast.LENGTH_LONG);
-                setResult(Activity.RESULT_OK);
-            } catch (final Exception e) {
-                e.printStackTrace();
-                UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
-            }
+        disposable = Observable.just(getSession())
+                     .subscribeOn(Schedulers.computation())
+                     .map((session) -> {
+            final GDKTwoFactorCall twoFactorCall = getSession().twofactorCancelReset();
+            twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
+            return session;
+        })
+                     .observeOn(AndroidSchedulers.mainThread())
+                     .subscribe((session) -> {
+            UI.toast(this, R.string.id_cancel_twofactor_reset, Toast.LENGTH_LONG);
+            setResult(Activity.RESULT_OK);
             finishOnUiThread();
+        }, (final Throwable e) -> {
+            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (disposable != null)
+            disposable.dispose();
     }
 
     @Override

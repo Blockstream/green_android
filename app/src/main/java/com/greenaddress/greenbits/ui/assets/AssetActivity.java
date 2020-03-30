@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.greenapi.data.AssetInfoData;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -91,7 +92,7 @@ public class AssetActivity extends LoggedActivity {
 
     private void refresh() {
         try {
-            final String amount = getModel().getAsset(mSatoshi, mAssetId, getAssetInfo(), true);
+            final String amount = Conversion.getAsset(mSatoshi, mAssetId, getAssetInfo(), true);
             mAssetBalanceText.setText(amount);
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());

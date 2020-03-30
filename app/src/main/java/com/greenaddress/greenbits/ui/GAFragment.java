@@ -5,9 +5,7 @@ import android.content.Context;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
-import com.greenaddress.greenapi.ConnectionManager;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.model.Model;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
@@ -40,14 +38,6 @@ public abstract class GAFragment extends Fragment {
         return ((GaActivity) getActivity()).getNetwork();
     }
 
-    protected Model getModel() {
-        return mApp.getModel();
-    }
-
-    protected ConnectionManager getConnectionManager() {
-        return mApp.getConnectionManager();
-    }
-
     protected SPV getSpv() {
         return mApp.getSpv();
     }
@@ -59,8 +49,7 @@ public abstract class GAFragment extends Fragment {
 
     // Returns true if we are being restored without an activity or service
     protected boolean isZombie() {
-        if (((LoggedActivity) getActivity()).modelIsNullOrDisconnected())
-            return true;
         return getActivity() == null;
     }
+
 }

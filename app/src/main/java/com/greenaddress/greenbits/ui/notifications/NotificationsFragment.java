@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui.notifications;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -14,35 +15,34 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import static com.greenaddress.greenapi.Session.getSession;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static com.greenaddress.gdk.GDKSession.getSession;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.EventData;
-import com.greenaddress.greenapi.data.TransactionData;
-import com.greenaddress.greenapi.model.EventDataObservable;
+import com.greenaddress.greenapi.data.TwoFactorConfigData;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.preferences.GAPreferenceFragment;
-import com.greenaddress.greenbits.ui.transactions.TransactionActivity;
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
-public class NotificationsFragment extends GAPreferenceFragment implements Observer {
+public class NotificationsFragment extends GAPreferenceFragment {
 
+    private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private ContextThemeWrapper mContextThemeWrapper;
     private PreferenceCategory mEmptyNotifications;
-
+    private Disposable eventsDisposable;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
@@ -59,8 +59,36 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         mEmptyNotifications.setTitle(R.string.id_your_notifications_will_be);
     }
 
-    private void setup(final EventDataObservable observable){
-        final List<EventData> events = observable.getEventDataList();
+    private List<EventData> getEvents() {
+        final List<EventData> events = new ArrayList<>(getSession().getNotificationModel().getEvents());
+        try {
+            final TwoFactorConfigData config = getSession().getTwoFactorConfig();
+            final boolean isReset = config.isTwoFactorResetActive();
+            final int numMethods = config.getEnabledMethods().size();
+            if (!isReset && numMethods == 0) {
+                events.add(0, new EventData(R.string.id_set_up_twofactor_authentication,
+                                            R.string.id_your_wallet_is_not_yet_fully));
+            } else if (!isReset && numMethods == 1) {
+                events.add(0,new EventData(R.string.id_you_only_have_one_twofactor,
+                                           R.string.id_please_enable_another));
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            final String systemMessage = getSession().getSystemMessage();
+            if (!TextUtils.isEmpty(systemMessage)) {
+                // Add to system messages
+                events.add(0, new EventData(R.string.id_system_message, R.string.notification_format_string,
+                                            systemMessage));
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return events;
+    }
+
+    private void showEvents(final List<EventData> events) {
         getPreferenceScreen().removeAll();
         for (final EventData e: events) {
             final Preference preference = new Preference(mContextThemeWrapper);
@@ -96,50 +124,39 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
 
     private String getDescription(final EventData event) {
         final int d = event.getDescription();
-
         if (d == R.string.id_new_incoming_transaction_in ||
             d == R.string.id_new_outgoing_transaction_from) {
-            TransactionData tx = (TransactionData) event.getValue();
-            final String accountName = getModel().getSubaccountsDataObservable().getSubaccountsDataWithPointer(
-                tx.getSubaccount()).getNameWithDefault(getString(R.string.id_main_account));
-            final long satoshi = tx.getSatoshi().get("btc");
-            String amount;
+            final JsonNode tx = (JsonNode) event.getValue();
             try {
-                amount = getModel().getBtc(satoshi, true);
+                final long satoshi = tx.get("satoshi").asLong(0);
+                final String amount = Conversion.getBtc(satoshi, true);
+                return getString(d, new Object[] {"", amount});
             } catch (final Exception e) {
-                Log.e("", "Conversion error: " + e.getLocalizedMessage());
-                amount = "";
+                Log.e("", "Liquid or Conversion error: " + e.getLocalizedMessage());
+                return getString(d, "", "");
             }
-            final Object[] formatArgs = {accountName, amount};
-            return getString(d, formatArgs);
-        }
-        if (d == R.string.id_new_transaction_involving) {
-            TransactionData tx = (TransactionData) event.getValue();
-            StringBuffer subaccounts = new StringBuffer();
-            for (final Integer subaccount : tx.getSubaccounts()) {
-                final String accountName =
-                    getModel().getSubaccountsDataObservable().getSubaccountsDataWithPointer(
-                        subaccount).getNameWithDefault(getString(R.string.id_main_account));
-                if (subaccounts.length() != 0) { subaccounts.append(", "); }
-                subaccounts.append(accountName);
-            }
-            final Object[] formatArgs = {subaccounts.toString()};
-            return getString(d, formatArgs);
-        }
-        if (d == R.string.notification_format_string ||
-            d == R.string.id_your_wallet_is_locked_for_a ||
-            d == R.string.id_days_remaining_s ||
-            d == R.string.id_s_blocks_left) {
+        } else if (d == R.string.id_new_transaction_involving) {
+            return getString(d, "");
+        } else if (d == R.string.notification_format_string ||
+                   d == R.string.id_your_wallet_is_locked_for_a ||
+                   d == R.string.id_days_remaining_s ||
+                   d == R.string.id_s_blocks_left) {
             return getString(d, event.getValue());
         }
 
         return getString(d);
     }
 
-    @Override
-    public void update(final Observable observable, final Object o) {
-        if (observable instanceof EventDataObservable)
-            setup((EventDataObservable) observable);
+    private void setup() {
+        Observable.just(getSession())
+        .observeOn(Schedulers.computation())
+        .map(session -> {
+            return getEvents();
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(events -> {
+            showEvents(events);
+        });
     }
 
     @Override
@@ -147,9 +164,8 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         super.onPause();
         if (isZombie())
             return;
-        final EventDataObservable observable = getModel().getEventDataObservable();
-        if (observable != null)
-            observable.deleteObserver(this);
+        if (eventsDisposable != null)
+            eventsDisposable.dispose();
     }
 
     @Override
@@ -157,10 +173,14 @@ public class NotificationsFragment extends GAPreferenceFragment implements Obser
         super.onResume();
         if (isZombie())
             return;
-        final EventDataObservable observable = getModel().getEventDataObservable();
-        if (observable != null)
-            observable.addObserver(this);
-        setup(observable);
+        eventsDisposable = getSession().getNotificationModel()
+                           .getEventsObservable()
+                           .observeOn(AndroidSchedulers.mainThread())
+                           .subscribe((list) -> {
+            setup();
+        });
+
+        setup();
     }
 
     @Override

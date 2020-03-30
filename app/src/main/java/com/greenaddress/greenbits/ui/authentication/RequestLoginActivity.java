@@ -22,8 +22,7 @@ import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.gdk.CodeResolver;
-import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.NetworkData;
@@ -40,7 +39,12 @@ import com.satoshilabs.trezor.Trezor;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class RequestLoginActivity extends LoginActivity {
 
@@ -63,6 +67,7 @@ public class RequestLoginActivity extends LoginActivity {
     private HWWallet mHwWallet;
     private TextView mActiveNetwork;
     private NetworkData networkData;
+    private Disposable loginDisposable;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
@@ -167,7 +172,11 @@ public class RequestLoginActivity extends LoginActivity {
                      .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                      .onPositive((dialog, which) -> {
             mPin = UI.getText(v, R.id.btchipPINValue);
-            getGAApp().getExecutor().submit((Callable<Void>)() -> { onLedger(false); return null; });
+            Observable.just(getSession())
+            .observeOn(Schedulers.computation())
+            .subscribe((session) -> {
+                onLedger(false);
+            });
         })
                      .onNegative((dialog, which) -> {
             UI.toast(this, R.string.id_no_pin_provided_exiting, Toast.LENGTH_LONG);
@@ -273,34 +282,37 @@ public class RequestLoginActivity extends LoginActivity {
     }
 
     private void doLogin(final Activity parent) {
-        final ConnectionManager cm = getConnectionManager();
-        getGAApp().setHWWallet(mHwWallet);
-        final CodeResolver hwResolver = new HardwareCodeResolver(this, mHwWallet);
-        getGAApp().getExecutor().execute(() -> {
-            try {
-                cm.connect(this);
-                getSession().registerUser(mHwWallet.getHWDeviceData(), "").resolve(null, hwResolver);
-                cm.login(mHwWallet.getHWDeviceData(), hwResolver, mHwWallet);
-                onPostLogin();
-                runOnUiThread(() -> {
-                    stopLoading();
-                    onLoggedIn();
-                });
-            } catch (final Exception e) {
-                e.printStackTrace();
-                cm.disconnect();
-                runOnUiThread(() -> {
-                    stopLoading();
-                    UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
-                    showInstructions(R.string.id_please_reconnect_your_hardware);
-                });
-            }
+        loginDisposable = Observable.just(getSession())
+                          .observeOn(Schedulers.computation())
+                          .map((session) -> {
+            session.disconnect();
+            connect();
+            session.registerUser(mHwWallet.getHWDeviceData(), "").resolve(null,
+                                                                          new HardwareCodeResolver(this, mHwWallet));
+            session.login(mHwWallet.getHWDeviceData(), "", "").resolve(null,
+                                                                       new HardwareCodeResolver(this, mHwWallet));
+            session.setHWWallet(mHwWallet);
+            return session;
+        })
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .subscribe((session) -> {
+            onPostLogin();
+            stopLoading();
+            onLoggedIn();
+        }, (final Throwable e) -> {
+            stopLoading();
+            GDKSession.get().disconnect();
+            UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
+            showInstructions(R.string.id_please_reconnect_your_hardware);
         });
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         mPinDialog = UI.dismiss(this, mPinDialog);
+        if (loginDisposable != null)
+            loginDisposable.dispose();
     }
 
     @Override

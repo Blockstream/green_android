@@ -24,11 +24,6 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
         addPreferencesFromResource(R.xml.preference_resetactive);
         setHasOptionsMenu(true);
 
-        if (getGAApp().getModel() == null) {
-            logout();
-            return;
-        }
-
         //  Logout
         final Preference logout = find(PrefKeys.LOGOUT);
         logout.setTitle(getString(R.string.id_s_network, getNetwork().getName()));

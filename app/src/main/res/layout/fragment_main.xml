@@ -86,13 +86,6 @@
                 style="@style/assetButton"
                  />
 
-            <ProgressBar
-                android:id="@+id/loadingList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:progressTint="?attr/colorAccent"
-                android:paddingTop="60dp"/>
-
             <TextView
                 android:id="@+id/emptyListText"
                 android:layout_width="match_parent"

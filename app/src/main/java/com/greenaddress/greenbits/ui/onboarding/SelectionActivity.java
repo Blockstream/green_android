@@ -11,14 +11,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
-import com.greenaddress.greenapi.ConnectionManager;
-import com.greenaddress.greenbits.AuthenticationHandler;
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.UI;
 
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.gdk.GDKSession.getErrorCode;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class SelectionActivity extends LoginActivity implements View.OnClickListener {
     private String mMnemonic;
@@ -60,36 +62,29 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
 
     private void onMnemonicVerified() {
         startLoading();
-        final ConnectionManager cm = getConnectionManager();
-        getGAApp().getExecutor().execute(() -> {
-            final String mnemonic = mMnemonic;
-            try {
-                cm.disconnect();
-                cm.connect(this);
-                getSession().registerUser(null, mnemonic).resolve(null, null);
-                cm.loginWithMnemonic(mnemonic, "");
-                onPostLogin();
-                runOnUiThread(() -> {
-                    stopLoading();
-                    if (AuthenticationHandler.hasPin(this)) {
-                        final Intent intent = new Intent(this, TabbedMainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    } else {
-                        final Intent savePin = PinSaveActivity.createIntent(this, mMnemonic);
-                        startActivity(savePin);
-                    }
-                });
-            } catch (final Exception e) {
-                cm.disconnect();
-                runOnUiThread(() -> {
-                    stopLoading();
-                    if (getCode(e) == GDK.GA_RECONNECT) {
-                        UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
-                    } else {
-                        UI.toast(this, R.string.id_wallet_creation_failed, Toast.LENGTH_LONG);
-                    }
-                });
+        Observable.just(getSession())
+        .observeOn(Schedulers.computation())
+        .map((session) -> {
+            session.disconnect();
+            connect();
+            getSession().registerUser(null, mMnemonic).resolve(null, null);
+            session.loginWithMnemonic(mMnemonic, "");
+            return session;
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe((session) -> {
+            onPostLogin();
+            stopLoading();
+            final Intent savePin = PinSaveActivity.createIntent(this, mMnemonic);
+            startActivity(savePin);
+        }, (final Throwable e) -> {
+            stopLoading();
+            GDKSession.get().disconnect();
+            final Integer code = getErrorCode(e.getMessage());
+            if (code == GDK.GA_ERROR) {
+                UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+            } else {
+                UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
             }
         });
     }

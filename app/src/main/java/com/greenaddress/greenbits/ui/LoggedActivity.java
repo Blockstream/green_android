@@ -1,31 +1,37 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
-import android.util.Log;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.snackbar.Snackbar;
-import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.gdk.GDKSession;
+import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.AssetInfoData;
-import com.greenaddress.greenapi.model.ConnectionMessageObservable;
-import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenapi.model.ToastObservable;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-public abstract class LoggedActivity extends GaActivity implements Observer {
+import static com.greenaddress.greenapi.Registry.getRegistry;
+import static com.greenaddress.greenapi.Session.getSession;
+
+public abstract class LoggedActivity extends GaActivity {
 
     private Timer mTimer = new Timer();
     private long mStart = System.currentTimeMillis();
@@ -33,81 +39,120 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     private Timer mOfflineTimer = new Timer();
     private Long mTryingAt = 0L;
 
+    private Disposable networkDisposable, transactionDisposable,
+                       loginDisposable, logoutDisposable;
+
+    @Override
+    protected void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        networkDisposable = getSession().getNotificationModel().getNetworkObservable()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(networkNode -> {
+            updateNetwork(networkNode);
+        });
+        transactionDisposable = getSession().getNotificationModel().getTransactionObservable()
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(txNode -> {
+            UI.toast(this, R.string.id_new_transaction, Toast.LENGTH_LONG);
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (networkDisposable != null)
+            networkDisposable.dispose();
+        if (transactionDisposable != null)
+            transactionDisposable.dispose();
+        if (loginDisposable != null)
+            loginDisposable.dispose();
+        if (logoutDisposable != null)
+            logoutDisposable.dispose();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
         final boolean timerExpired = mStart + delayLogoutTimer() < System.currentTimeMillis();
-        if (timerExpired || modelIsNullOrDisconnected()) {
+        if (timerExpired) {
             exit();
             return;
         }
 
-        getConnectionManager().addObserver(this);
-        getModel().getToastObservable().addObserver(this);
-        getModel().getConnMsgObservable().addObserver(this);
-
         startLogoutTimer();
-        update(getModel().getConnMsgObservable());
 
-        // try to reconnect if offline
-        if (getConnectionManager().isOffline()) {
-            getGAApp().getExecutor().submit(() -> {
-                try {
-                    getSession().reconnectNow();
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        }
+        // check network status on resume
+        final JsonNode networkNode = getSession().getNotificationModel().getNetworkNode();
+        if (networkNode != null)
+            updateNetwork(networkNode);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (modelIsNullOrDisconnected()) {
-            exit();
-            return;
-        }
 
         cancelOfflineTimer();
         stopLogoutTimer();
         mStart = System.currentTimeMillis();
-        getConnectionManager().deleteObserver(this);
-        getModel().getToastObservable().deleteObserver(this);
-        getModel().getConnMsgObservable().deleteObserver(this);
 
+        if (mSnackbar != null) {
+            mSnackbar.dismiss();
+            mSnackbar = null;
+        }
+    }
+
+    private void updateNetwork(final JsonNode networkNode) {
+        final boolean connected = networkNode.get("connected").asBoolean();
+        if (!connected) {
+            final long waitingMs = networkNode.get("waiting").asLong() * 1000;
+            onOffline(waitingMs);
+            return;
+        }
+
+        final boolean isLoginRequired = networkNode.get("login_required").asBoolean(false);
+        if (!isLoginRequired) {
+            onOnline();
+            return;
+        }
+
+        final HWWallet hwWallet = getSession().getHWWallet();
+        if (hwWallet == null) {
+            exit();
+            return;
+        }
+
+        // try to automatically login just in case of hw
+        loginDisposable = Observable.just(getSession())
+                          .observeOn(Schedulers.computation())
+                          .map((session) -> {
+            session.login(hwWallet.getHWDeviceData(), "", "").resolve(null,
+                                                                      new HardwareCodeResolver(this, hwWallet));
+            session.setHWWallet(hwWallet);
+            return session;
+        })
+                          .observeOn(AndroidSchedulers.mainThread())
+                          .subscribe((session) -> {
+            onOnline();
+        }, (final Throwable e) -> {
+            e.printStackTrace();
+            exit();
+        });
+    }
+
+    private void onOnline() {
+        cancelOfflineTimer();
         if (mSnackbar != null) {
             mSnackbar.dismiss();
         }
     }
 
-    @Override
-    public void update(final Observable observable, final Object o) {
-        if (observable instanceof ConnectionManager) {
-            final ConnectionManager cm = getConnectionManager();
-            if (cm.isLoginRequired() || cm.isDisconnected()) {
-                runOnUiThread(() -> exit());
-            }
-        } else if (observable instanceof ToastObservable) {
-            final ToastObservable tObs = (ToastObservable) observable;
-            UI.toast(this, tObs.getMessage(getResources()), Toast.LENGTH_LONG);
-        } else if (observable instanceof ConnectionMessageObservable) {
-            final ConnectionMessageObservable obs = (ConnectionMessageObservable) observable;
-            update(obs);
-        }
-    }
-
-    private void update(final ConnectionMessageObservable obs) {
+    private void onOffline(final long waitingMs) {
         cancelOfflineTimer();
-
-        if (!obs.isValid() || obs.isOnline()) {
-            runOnUiThread(() -> { if (mSnackbar != null) { mSnackbar.dismiss(); }});
-            return;
-        }
-
-        mTryingAt = System.currentTimeMillis() + obs.waitingMs();
+        mTryingAt = System.currentTimeMillis() + waitingMs;
         mOfflineTimer = new Timer();
+        mSnackbar = null;
+
         mOfflineTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -118,15 +163,16 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
                 }
                 runOnUiThread(() -> {
                     // Update snackbar message on main thread
-                    if (mSnackbar == null)
+                    if (mSnackbar == null) {
                         mSnackbar = Snackbar.make(findViewById(
                                                       android.R.id.content), R.string.id_you_are_not_connected,
                                                   Snackbar.LENGTH_INDEFINITE);
+                        mSnackbar.show();
+                    }
                     mSnackbar.setText(getString(R.string.id_not_connected_connecting_in_ds_, remainingSec));
-                    mSnackbar.show();
                 });
             }
-        }, 0, 100);
+        }, 0, 1000);
     }
 
     private void cancelOfflineTimer() {
@@ -137,11 +183,19 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     public void logout() {
-        getGAApp().getExecutor().execute(() -> {
-            startLoading();
-            getConnectionManager().disconnect();
+        startLoading();
+        logoutDisposable = Observable.just(getSession())
+                           .subscribeOn(AndroidSchedulers.mainThread())
+                           .observeOn(Schedulers.computation())
+                           .map(session -> {
+            session.disconnect();
+            return session;
+        }).subscribe(session -> {
             stopLoading();
-            runOnUiThread(() -> exit());
+            exit();
+        }, (final Throwable e) -> {
+            stopLoading();
+            exit();
         });
     }
 
@@ -162,8 +216,8 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     }
 
     private int delayLogoutTimer() {
-        if (getModel() != null && getModel().getSettings() != null) {
-            return getModel().getSettings().getAltimeout()  * 60 * 1000;
+        if (getSession() != null && getSession().getSettings() != null) {
+            return getSession().getSettings().getAltimeout()  * 60 * 1000;
         }
         final String altimeString = cfg().getString(PrefKeys.ALTIMEOUT, "5");
         return Integer.parseInt(altimeString) * 60 * 1000;
@@ -188,18 +242,15 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         }
     }
 
-    public boolean modelIsNullOrDisconnected() {
-        return getModel() == null || getConnectionManager() == null || getConnectionManager().isDisconnected();
-    }
 
     protected String getBitcoinUnitClean() {
-        return getModel().getUnitKey();
+        return Conversion.getUnitKey();
     }
 
     // for btc and fiat
     protected void setAmountText(final EditText amountText, final boolean isFiat,
                                  final ObjectNode currentAmount) throws ParseException {
-        final NumberFormat btcNf = getModel().getNumberFormat();
+        final NumberFormat btcNf = Conversion.getNumberFormat();
         setAmountText(amountText, isFiat, currentAmount, btcNf, "btc");
     }
 
@@ -207,11 +258,11 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
                                  final String asset) throws ParseException {
 
-        NumberFormat nf = getModel().getNumberFormat();
+        NumberFormat nf = Conversion.getNumberFormat();
         if (!"btc".equals(asset) && asset != null) {
-            final AssetInfoData assetInfoData = getModel().getAssetsObservable().getAssetsInfos().get(asset);
+            final AssetInfoData assetInfoData = getRegistry().getInfos().get(asset);
             final int precision = assetInfoData == null ? 0 : assetInfoData.getPrecision();
-            nf = Model.getNumberFormat(precision);
+            nf = Conversion.getNumberFormat(precision);
         }
 
         setAmountText(amountText, isFiat, currentAmount, nf, asset);
@@ -219,8 +270,8 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
 
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
                                  final NumberFormat btcOrAssetNf, final String asset) throws ParseException {
-        final NumberFormat us = Model.getNumberFormat(8, Locale.US);
-        final NumberFormat fiatNf = Model.getNumberFormat(2);
+        final NumberFormat us = Conversion.getNumberFormat(8, Locale.US);
+        final NumberFormat fiatNf = Conversion.getNumberFormat(2);
         final String fiat = fiatNf.format(us.parse(currentAmount.get("fiat").asText()));
         final String source = currentAmount.get("btc".equals(asset) ? getBitcoinUnitClean() : asset).asText();
         final String btc = btcOrAssetNf.format(us.parse(source));
@@ -236,5 +287,15 @@ public abstract class LoggedActivity extends GaActivity implements Observer {
         if (transactionFromUri.get("send_all").asBoolean() && transactionFromUri.has("used_utxos")) {
             transactionFromUri.remove("used_utxos");
         }
+    }
+
+    protected int getActiveAccount() {
+        final SharedPreferences preferences = getSharedPreferences(network(), MODE_PRIVATE);
+        return preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0);
+    }
+
+    protected void setActiveAccount(final int subaccount) {
+        final SharedPreferences preferences = getSharedPreferences(network(), MODE_PRIVATE);
+        preferences.edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
     }
 }

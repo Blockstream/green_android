@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener,
@@ -49,11 +50,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         addPreferencesFromResource(R.xml.preference_spv);
         setHasOptionsMenu(true);
 
-        if (getGAApp().getModel() == null) {
-            logout();
-            return;
-        }
-
         mTrustedPeer = find("trusted_peer");
         mResetSPV = find("reset_spv");
         mSPVEnabled = find("spvEnabled");
@@ -65,7 +61,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
         mSpv = getGAApp().getSpv();
         final boolean isSpvEnabled = cfg().getBoolean(PrefKeys.SPV_ENABLED, false);
 
-        if (getGAApp().isWatchOnly()) {
+        if (getSession().isWatchOnly()) {
             // Do not allow editing of SPV_SYNCRONIZATION prefs from watch only logins
             mTrustedPeer.setEnabled(false);
             mResetSPV.setEnabled(false);

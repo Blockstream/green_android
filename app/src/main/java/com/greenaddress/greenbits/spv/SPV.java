@@ -22,22 +22,25 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 
 import com.blockstream.libwally.Wally;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.gdk.GDKSession;
-import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.GAException;
 import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
-import com.greenaddress.greenapi.model.Model;
-import com.greenaddress.greenapi.model.TransactionDataObservable;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChain;
@@ -83,6 +86,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class SPV {
 
@@ -114,6 +118,7 @@ public class SPV {
     private int mNetWorkType;
     private final Object mStateLock = new Object();
     public final SettableFuture<Void> onServiceAttached = SettableFuture.create();
+    private List<SubaccountData> mSubaccounts = new ArrayList<>();
 
     public SPV() {
         mNetWorkType = ConnectivityManager.TYPE_DUMMY;
@@ -161,7 +166,7 @@ public class SPV {
 
     public boolean isEnabled() {
         final NetworkData networkData = mService.getNetwork();
-        return !getConnectionManager().isWatchOnly() && cfg().getBoolean(PrefKeys.SPV_ENABLED, false) &&
+        return !getSession().isWatchOnly() && cfg().getBoolean(PrefKeys.SPV_ENABLED, false) &&
                !networkData.getLiquid();
     }
 
@@ -267,18 +272,13 @@ public class SPV {
         Log.d(TAG, "updateUnspentOutputs: " + Var("currentlyEnabled", currentlyEnabled));
 
         final List<TransactionData> utxos = new ArrayList<>();
-        final Model model = getModel();
-        final List<SubaccountData> subaccountDataList = model.getSubaccountsDataObservable().getSubaccountsDataList();
-
-        for (final SubaccountData subaccountData : subaccountDataList) {
-            final TransactionDataObservable utxoDataObservable =
-                model.getUTXODataObservable(subaccountData.getPointer());
-            List<TransactionData> transactionDataList = utxoDataObservable.getTransactionDataList();
-            if (!utxoDataObservable.isExecutedOnce()) {
-                utxoDataObservable.refreshSync();
-                transactionDataList = utxoDataObservable.getTransactionDataList();
+        for (final SubaccountData subaccountData : mSubaccounts) {
+            try {
+                List<TransactionData> transactionDataList = getUtxos(subaccountData.getPointer());
+                utxos.addAll(transactionDataList);
+            } catch (final Exception e) {
+                e.printStackTrace();
             }
-            utxos.addAll(transactionDataList);
         }
 
         final Set<TransactionOutPoint> newUtxos = new HashSet<>();
@@ -329,23 +329,55 @@ public class SPV {
         if (updateVerified)
             cfgEdit().putBoolean(PrefKeys.VERIFIED_HASH_ + txHashHex, true).apply();
 
-        final Model model = getModel();
-        final List<SubaccountData> subaccountDataList = model.getSubaccountsDataObservable().getSubaccountsDataList();
-
-        for (final SubaccountData subaccountData : subaccountDataList) {
+        for (final SubaccountData subaccountData : mSubaccounts) {
             final Integer pointer = subaccountData.getPointer();
-            final TransactionDataObservable transactionDataObservable = model.getTransactionDataObservable(pointer);
-            if (transactionDataObservable.getTransactionDataList() == null)
-                transactionDataObservable.refreshSync();
-
-            //TODO called too many times
-            for (TransactionData tx : transactionDataObservable.getTransactionDataList()) {
-                if (txHashHex.equals(tx.getTxhash())) {
-                    transactionDataObservable.fire();
+            try {
+                final List<TransactionData> txs = getTransactions(pointer);
+                //TODO called too many times
+                for (final TransactionData tx : txs) {
+                    if (txHashHex.equals(tx.getTxhash())) {
+                        //transactionDataObservable.fire();
+                    }
                 }
+            } catch (final Exception e) {
+                e.printStackTrace();
             }
         }
     }
+
+    private List<SubaccountData> getSubAccounts() throws Exception {
+        final ObjectMapper mObjectMapper = new ObjectMapper();
+        final GDKTwoFactorCall call = getSession().getSubAccounts();
+        final ObjectNode accounts = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()));
+        final List<SubaccountData> subAccounts =
+            mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts.get("subaccounts")),
+                                    new TypeReference<List<SubaccountData>>() {});
+        return subAccounts;
+    }
+
+    private List<TransactionData> getTransactions(final int subaccount) throws Exception {
+        final GDKTwoFactorCall call = getSession().getTransactionsRaw(subaccount, 0,100);
+        final ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()));
+        final List<TransactionData> transactions =
+            getSession().parseTransactions((ArrayNode) txListObject.get("transactions"));
+        return transactions;
+    }
+
+    private List<TransactionData> getUtxos(final int subaccount) throws Exception {
+        final GDKTwoFactorCall call = getSession().getUTXO(subaccount, 0);
+        final ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()));
+        final JsonNode unspentOutputs = txListObject.get("unspent_outputs");
+        if (!unspentOutputs.has("btc"))
+            return new ArrayList<>();
+        final ArrayNode arrayNode = (ArrayNode) unspentOutputs.get("btc");
+        for (int i = 0; i < arrayNode.size(); i++) {
+            ((ObjectNode) arrayNode.get(i)).remove("satoshi");
+        }
+        final List<TransactionData> transactions =
+            getSession().parseTransactions((ArrayNode) arrayNode);
+        return transactions;
+    }
+
 
     int getBloomFilterElementCount() {
         final int count = mUnspentOutpoints.size();
@@ -614,14 +646,14 @@ public class SPV {
                 } else {
                     String proxyHost, proxyPort;
                     if (!isProxyEnabled()) {
-                        if (GDKSession.getSession() == null || GDKSession.getSession().getTorSocks5() == null) {
+                        if (getSession() == null || getSession().getTorSocks5() == null) {
                             throw new URISyntaxException("", "null session or TorSocks5");
                         }
 
-                        final String fullUrl = GDKSession.getSession().getTorSocks5().replaceFirst("socks5://", "");
+                        final String fullUrl = getSession().getTorSocks5().replaceFirst("socks5://", "");
                         if (fullUrl.split(":").length != 2) {
                             throw new URISyntaxException(
-                                      GDKSession.getSession().getTorSocks5(), "Invalid Tor SOCKS5 string");
+                                      getSession().getTorSocks5(), "Invalid Tor SOCKS5 string");
                         }
 
                         proxyHost = fullUrl.split(":")[0];
@@ -640,6 +672,7 @@ public class SPV {
 
                 disablePingMonitoring();
 
+                mSubaccounts = getSubAccounts();
                 updateUnspentOutputs();
                 mPeerGroup.addPeerFilterProvider(mPeerFilter);
 
@@ -815,12 +848,6 @@ public class SPV {
         }
     }
 
-    public Model getModel () {
-        return mService.getGAApp().getModel();
-    }
-    public ConnectionManager getConnectionManager () {
-        return mService.getGAApp().getConnectionManager();
-    }
     public SharedPreferences cfg() {
         final String network = PreferenceManager.getDefaultSharedPreferences(mService).getString(
             PrefKeys.NETWORK_ID_ACTIVE, "mainnet");

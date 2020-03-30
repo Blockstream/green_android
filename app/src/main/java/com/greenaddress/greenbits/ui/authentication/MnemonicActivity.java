@@ -35,19 +35,23 @@ import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.greenapi.ConnectionManager;
+import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ScanForResultActivity;
-import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.onboarding.PinSaveActivity;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
 import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.gdk.GDKSession.getErrorCode;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class MnemonicActivity extends LoginActivity implements View.OnClickListener,
     View.OnKeyListener, TextView.OnEditorActionListener {
@@ -242,12 +246,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         if (isLoading())
             return;
 
-        final ConnectionManager cm = getConnectionManager();
-        if (cm.isPostLogin()) {
-            UI.toast(this, R.string.id_you_must_first_log_out_before, Toast.LENGTH_LONG);
-            return;
-        }
-
         final String mnemonic = getMnemonic();
         final int errId = checkValid(mnemonic);
         if (errId != 0) {
@@ -256,46 +254,42 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
         }
 
         if (isHexSeed(mnemonic) || !mEncryptedSwitch.isChecked()) {
-            getGAApp().getExecutor().execute(() -> {
-                loginWithMnemonic(mnemonic, "");
-            });
+            loginWithMnemonic(mnemonic, "");
         } else {
             CB.after(askForPassphrase(), new CB.Toast<String>(this, mOkButton) {
                 @Override
                 public void onSuccess(final String mnemonicPassword) {
-                    getGAApp().getExecutor().execute(() -> {
-                        loginWithMnemonic(mnemonic, mnemonicPassword);
-                    });
+                    loginWithMnemonic(mnemonic, mnemonicPassword);
                 }
             });
         }
-
-        startLoading();
-        mOkButton.setEnabled(false);
     }
 
-    void loginWithMnemonic(String mnemonic, String password) {
-        try {
-            getConnectionManager().disconnect();
-            getConnectionManager().connect(this);
-            getConnectionManager().loginWithMnemonic(mnemonic, password);
+    void loginWithMnemonic(final String mnemonic, final String password) {
+        startLoading();
+        Observable.just(getSession())
+        .observeOn(Schedulers.computation())
+        .map((session) -> {
+            session.disconnect();
+            connect();
+            session.loginWithMnemonic(mnemonic, password);
+            return session;
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe((session) -> {
             onPostLogin();
-            runOnUiThread(() -> {
-                stopLoading();
-                onLoginSuccess();
-            });
-        } catch (final Exception e) {
-            getConnectionManager().disconnect();
-            runOnUiThread(() -> {
-                stopLoading();
-                if (getCode(e) == GDK.GA_RECONNECT) {
-                    UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
-                } else {
-                    UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
-                }
-                enableLogin();
-            });
-        }
+            stopLoading();
+            onLoginSuccess();
+        }, (final Throwable e) -> {
+            stopLoading();
+            GDKSession.get().disconnect();
+            final Integer code = getErrorCode(e.getMessage());
+            if (code == GDK.GA_ERROR) {
+                UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+            } else {
+                UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
+            }
+        });
     }
 
     private ListenableFuture<String> askForPassphrase() {
@@ -437,12 +431,9 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     }
 
     void onLoginSuccess() {
-        stopLoading();
         if (getCallingActivity() == null) {
             if (getIntent().getBooleanExtra(TEMPORARY_MODE, false)) {
-                final Intent intent = new Intent(this, TabbedMainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                goToTabbedMainActivity();
             } else {
                 final Intent savePin = PinSaveActivity.createIntent(MnemonicActivity.this,
                                                                     getSession().getMnemonicPassphrase());

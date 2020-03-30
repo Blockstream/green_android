@@ -7,6 +7,10 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -23,19 +27,19 @@ import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Map;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
+import static com.greenaddress.greenapi.Registry.getRegistry;
+import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
 
-    private RecyclerView assetsList;
+    private RecyclerView mRecyclerView;
     private Map<String, Long> mAssetsBalances;
+    private Disposable refreshDisposable;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (modelIsNullOrDisconnected())
-            return;
 
         UI.preventScreenshots(this);
 
@@ -44,23 +48,15 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
         final String callingActivity = getCallingActivity() != null ? getCallingActivity().getClassName() : "";
         if (callingActivity.equals(TabbedMainActivity.class.getName())) {
-            final String accountName = getModel().getSubaccountsDataObservable().getSubaccountsDataWithPointer(
-                getModel().getCurrentSubaccount()).getNameWithDefault(getString(R.string.id_main_account));
-            setTitle(accountName);
+            setTitle(R.string.id_total_balance);
         } else if (callingActivity.equals(ScanActivity.class.getName())) {
             setTitle(R.string.id_select_asset);
         }
 
-        assetsList = findViewById(R.id.assetsList);
-        assetsList.setLayoutManager(new LinearLayoutManager(this));
-        try {
-            mAssetsBalances = getModel().getCurrentAccountBalanceData();
+        mRecyclerView = findViewById(R.id.assetsList);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, getNetwork(), this, getModel());
-            assetsList.setAdapter(adapter);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        refresh();
     }
 
     @Override
@@ -97,7 +93,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        final AssetInfoData assetInfo = getModel().getAssetsObservable().getAssetsInfos().get(assetId);
+        final AssetInfoData assetInfo = getRegistry().getInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", assetInfo)
         .putExtra("SATOSHI", mAssetsBalances.get(assetId));
@@ -111,6 +107,31 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
             setResult(resultCode);
             finishOnUiThread();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (refreshDisposable != null)
+            refreshDisposable.dispose();
+    }
+
+    private void refresh() {
+        final Integer subaccount = getActiveAccount();
+        startLoading();
+        refreshDisposable = Observable.just(getSession())
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .map((session) -> {
+            return getSession().getBalance(this, subaccount);
+        }).subscribe((subaccounts) -> {
+            stopLoading();
+            mAssetsBalances = subaccounts;
+            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, getNetwork(), this);
+            mRecyclerView.setAdapter(adapter);
+        }, (final Throwable e) -> {
+            stopLoading();
+        });
     }
 
     private ObjectNode updateTransaction(final String assetId) throws Exception {

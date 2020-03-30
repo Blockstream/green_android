@@ -19,6 +19,10 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,7 +35,7 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.BumpTxData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
-import com.greenaddress.greenapi.model.Model;
+import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -45,10 +49,11 @@ import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
+import java.util.HashMap;
 import java.util.Map;
 
-import static com.greenaddress.gdk.GDKSession.getSession;
-
+import static com.greenaddress.greenapi.Registry.getRegistry;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class TransactionActivity extends LoggedActivity implements View.OnClickListener,
     AssetsAdapter.OnAssetSelected  {
@@ -67,7 +72,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private ImageView mStatusIcon;
 
     private TransactionData mTxItem;
-    private Map<String, Long> mAssetsBalances;
+    private NetworkData mNetworkData;
+    private Map<String, Long> mAssetsBalances = new HashMap<String, Long>();
+
+    private Disposable memoDisposable, bumpDisposable;
+
 
     @Override
     protected int getMainViewId() { return R.layout.activity_transaction; }
@@ -75,8 +84,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (modelIsNullOrDisconnected())
-            return;
 
         setResult(RESULT_OK);
         UI.preventScreenshots(this);
@@ -92,18 +99,24 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mStatusSPVUnverified = UI.find(this, R.id.status_spv_unverified);
         mStatusIcon = UI.find(this, R.id.status_icon);
 
-        mTxItem = (TransactionData) getIntent().getSerializableExtra("TRANSACTION");
-        final boolean isWatchOnly = getConnectionManager().isWatchOnly();
+        final boolean isWatchOnly = getSession().isWatchOnly();
 
-        mAssetsBalances = getModel().getCurrentAccountBalanceData();
+        try {
+            mTxItem = (TransactionData) getIntent().getSerializableExtra("TRANSACTION");
+            mAssetsBalances = (Map<String, Long>) getIntent().getSerializableExtra("BALANCE");
+            mNetworkData = getSession().getNetworkData();
+        } catch (final Exception e) {
+            Log.d(TAG, e.getLocalizedMessage());
+            finishOnUiThread();
+            return;
+        }
 
         // Set txid
         final TextView hashText = UI.find(this, R.id.txHashText);
         hashText.setText(mTxItem.getTxhash());
 
         // Set explorer button
-        final NetworkData networkData = getGAApp().getCurrentNetworkData();
-        final String blockExplorerTx = networkData.getTxExplorerUrl();
+        final String blockExplorerTx = mNetworkData.getTxExplorerUrl();
         openInBrowser(mExplorerButton, mTxItem.getTxhash(), blockExplorerTx, null);
 
         // Set title: incoming, outgoing, redeposited
@@ -118,20 +131,20 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         final String confirmations;
         final int confirmationsColor;
-        final int currentBlock = getModel().getBlockchainHeightObservable().getHeight();
+        final int currentBlock = getSession().getNotificationModel().getBlockHeight();
         mStatusIcon.setVisibility(View.GONE);
         if (mTxItem.getConfirmations(currentBlock) == 0) {
             confirmations = getString(R.string.id_unconfirmed);
             confirmationsColor = R.color.red;
-        } else if (networkData.getLiquid() && mTxItem.getConfirmations(currentBlock) < 2) {
+        } else if (mNetworkData.getLiquid() && mTxItem.getConfirmations(currentBlock) < 2) {
             confirmations = getString(R.string.id_12_confirmations);
             confirmationsColor = R.color.grey_light;
-        } else if (!networkData.getLiquid() && !mTxItem.hasEnoughConfirmations(currentBlock)) {
+        } else if (!mNetworkData.getLiquid() && !mTxItem.hasEnoughConfirmations(currentBlock)) {
             confirmations = getString(R.string.id_d6_confirmations, mTxItem.getConfirmations(currentBlock));
             confirmationsColor = R.color.grey_light;
         } else {
             confirmations = getString(R.string.id_completed);
-            confirmationsColor = networkData.getLiquid() ? R.color.liquidDark : R.color.green;
+            confirmationsColor = mNetworkData.getLiquid() ? R.color.liquidDark : R.color.green;
             mStatusIcon.setVisibility(View.VISIBLE);
         }
         mUnconfirmedText.setText(confirmations);
@@ -144,19 +157,19 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         try {
             final BalanceData balance = getSession().convertBalance(mTxItem.getSatoshi().get("btc"));
-            final String btc = getModel().getBtc(balance, true);
-            final String fiat = getModel().getFiat(balance, true);
+            final String btc = Conversion.getBtc(balance, true);
+            final String fiat = Conversion.getFiat(balance, true);
             amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
         } catch (final Exception e) {
             e.printStackTrace();
         }
 
-        if (networkData.getLiquid()) {
+        if (mNetworkData.getLiquid()) {
             amountText.setVisibility(View.GONE);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
             final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getSatoshi(),
-                                                            getNetwork(),this, getModel());
+                                                            getNetwork(),this);
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
         }
@@ -234,7 +247,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private void showFeeInfo(final long fee, final long vSize, final long feeRate) {
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
         try {
-            final String btcFee = getModel().getBtc(fee, true);
+            final String btcFee = Conversion.getBtc(fee, true);
             feeText.setText(String.format("%s (%s)", btcFee, UI.getFeeRateString(feeRate)));
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
@@ -242,12 +255,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     }
 
     private void showUnconfirmed() {
-        final NetworkData networkData = getGAApp().getCurrentNetworkData();
 
-        if (getConnectionManager().isWatchOnly() || networkData.getLiquid() || getModel().isTwoFAReset())
+        if (getSession().isWatchOnly() || mNetworkData.getLiquid() || getSession().isTwoFAReset())
             return; // FIXME: Implement RBF for elements
 
-        if (!networkData.getLiquid()) {
+        if (!mNetworkData.getLiquid()) {
             UI.show(mStatusIncreaseFee);
             mStatusIncreaseFee.setOnClickListener(this);
         }
@@ -267,6 +279,11 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         UI.unmapClick(mMemoText);
         UI.unmapClick(mMemoSave);
         UI.unmapClick(mStatusIncreaseFee);
+
+        if (memoDisposable != null)
+            memoDisposable.dispose();
+        if (bumpDisposable != null)
+            bumpDisposable.dispose();
     }
 
     @Override
@@ -287,10 +304,9 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_share:
-            final NetworkData networkData = getGAApp().getCurrentNetworkData();
             final Intent sendIntent = new Intent(Intent.ACTION_SEND);
             sendIntent.putExtra(Intent.EXTRA_TEXT,
-                                networkData.getTxExplorerUrl() + mTxItem.getTxhash());
+                                mNetworkData.getTxExplorerUrl() + mTxItem.getTxhash());
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
             return true;
@@ -308,8 +324,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             hideKeyboardFrom(mMemoText);
             mMemoTitle.requestFocus();
         });
-        // Force reload tx
-        getModel().getTransactionDataObservable(mTxItem.getSubaccount()).refresh();
     }
 
     private void onMemoSaveClicked() {
@@ -318,17 +332,21 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             onFinishedSavingMemo();
             return;
         }
-        getGAApp().getExecutor().submit(() -> {
-            try {
-                final boolean res = getSession().changeMemo(mTxItem.getTxhash(), newMemo);
-                if (res) {
-                    onFinishedSavingMemo();
-                } else {
-                    runOnUiThread(() -> { UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG); });
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
+        memoDisposable = Observable.just(getSession())
+                         .observeOn(Schedulers.computation())
+                         .map((session) -> {
+            return session.changeMemo(mTxItem.getTxhash(), newMemo);
+        })
+                         .observeOn(AndroidSchedulers.mainThread())
+                         .subscribe((res) -> {
+            if (res)
+                onFinishedSavingMemo();
+            else
+                UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
+        }, (e) -> {
+            e.printStackTrace();
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
         });
     }
 
@@ -374,36 +392,47 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     private void onBumpFeeButtonClicked() {
         Log.d(TAG,"onBumpFeeButtonClicked");
-        try {
-            startLoading();
-            final Model model = getModel();
-            final String txhash = mTxItem.getTxhash();
-            final int subaccount = mTxItem.getSubaccount() ==
-                                   null ? model.getCurrentSubaccount() : mTxItem.getSubaccount();
-            final GDKTwoFactorCall call = getSession().getTransactionsRaw(subaccount, 0, 30);
-            ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(this));
-            final JsonNode txToBump = getSession().findTransactionRaw((ArrayNode) txListObject.get(
-                                                                          "transactions"), txhash);
+
+        startLoading();
+        final String txhash = mTxItem.getTxhash();
+        final int subaccount = mTxItem.getSubaccount() ==
+                               null ? getActiveAccount() : mTxItem.getSubaccount();
+
+        bumpDisposable = Observable.just(getSession())
+                         .observeOn(Schedulers.computation())
+                         .map((session) -> {
+            return session.getTransactionsRaw(subaccount, 0, 30).resolve(null, new HardwareCodeResolver(this));
+        })
+                         .map((txListObject) -> {
+            return getSession().findTransactionRaw((ArrayNode) txListObject.get(
+                                                       "transactions"), txhash);
+        })
+                         .map((txToBump) -> {
             final JsonNode feeRate = txToBump.get("fee_rate");
             BumpTxData bumpTxData = new BumpTxData();
             bumpTxData.setPreviousTransaction(txToBump);
             bumpTxData.setFeeRate(feeRate.asLong());
             bumpTxData.setSubaccount(subaccount);
             Log.d(TAG,"createTransactionRaw(" + bumpTxData.toString() + ")");
-            final GDKTwoFactorCall signCall = getSession().createTransactionRaw(null, bumpTxData);
-            final ObjectNode tx = signCall.resolve(null, new HardwareCodeResolver(this));
+            return bumpTxData;
+        })
+                         .map((bumpTxData) -> {
+            return getSession().createTransactionRaw(null, bumpTxData).resolve(null, new HardwareCodeResolver(this));
+        })
+                         .observeOn(AndroidSchedulers.mainThread())
+                         .subscribe((tx) -> {
+            stopLoading();
             final Intent intent = new Intent(this, SendAmountActivity.class);
             removeUtxosIfTooBig(tx);
             intent.putExtra(PrefKeys.INTENT_STRING_TX, tx.toString());
-            stopLoading();
             startActivity(intent);
             finish();
-        } catch (Exception e) {
-            UI.toast(this,e.getMessage(), Toast.LENGTH_LONG);
-            stopLoading();
-            Log.e(TAG,e.getMessage());
+        }, (e) -> {
             e.printStackTrace();
-        }
+            stopLoading();
+            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+            Log.e(TAG,e.getMessage());
+        });
     }
 
     @Override
@@ -418,7 +447,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         if (mAssetsBalances.containsKey(assetId)) {
             satoshi = mAssetsBalances.get(assetId);
         }
-        final AssetInfoData info = getModel().getAssetsObservable().getAssetsInfos().get(assetId);
+        final AssetInfoData info = getRegistry().getInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", info)
         .putExtra("SATOSHI", satoshi);
