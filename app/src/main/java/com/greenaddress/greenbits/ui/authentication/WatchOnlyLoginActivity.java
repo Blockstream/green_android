@@ -119,7 +119,7 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
             onLoginStop();
             final Integer code = getErrorCode(e.getMessage());
             if (code == GDK.GA_ERROR) {
-                UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+                UI.toast(this, R.string.id_user_not_found_or_invalid, Toast.LENGTH_LONG);
             } else {
                 UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
             }
