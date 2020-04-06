@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.blockstream.libgreenaddress.GDK.GA_ERROR;
+import static com.blockstream.libgreenaddress.GDK.GA_RECONNECT;
 
 public class GDKSession {
 
@@ -432,7 +433,12 @@ public class GDKSession {
     public static Integer getErrorCode(final String message) {
         try {
             final String stringCode = message.split(" ")[1];
-            return Integer.parseInt(stringCode);
+            final String function = message.split(" ")[2];
+            final Integer code = Integer.parseInt(stringCode);
+            // remap gdk connection error
+            if (code == GA_ERROR && "GA_connect".equals(function))
+                return GA_RECONNECT;
+            return code;
         } catch (final Exception e) {
             return GA_ERROR;
         }
