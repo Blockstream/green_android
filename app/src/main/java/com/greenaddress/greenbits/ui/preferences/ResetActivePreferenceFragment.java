@@ -13,6 +13,7 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 
 import static android.app.Activity.RESULT_OK;
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class ResetActivePreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceClickListener {
@@ -34,6 +35,18 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
             logout();
             return false;
         });
+
+        // Mnemonic
+        final Preference mMemonicPref = find(PrefKeys.MNEMONIC_PASSPHRASE);
+        if (getSession().getHWWallet() == null) {
+            final String touchToDisplay = getString(R.string.id_touch_to_display);
+            mMemonicPref.setSummary(touchToDisplay);
+            mMemonicPref.setOnPreferenceClickListener(preference -> {
+                final Intent intent = new Intent(getActivity(), DisplayMnemonicActivity.class);
+                startActivity(intent);
+                return false;
+            });
+        }
 
         // Version
         final Preference version = find(PrefKeys.VERSION);

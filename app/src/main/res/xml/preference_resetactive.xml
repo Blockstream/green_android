@@ -13,8 +13,8 @@
         android:summary=""/>
 
     <PreferenceCategory
-        android:title="@string/id_account"
-        android:icon="@drawable/ic_account"
+        android:title="@string/id_twofactor"
+        android:icon="@drawable/ic_twofactor"
         android:layout="@layout/preference_category_green"/>
 
     <Preference
@@ -24,6 +24,16 @@
     <Preference
         android:key="dispute_twofactor_reset"
         android:title="@string/id_dispute_twofactor_reset" />
+
+    <PreferenceCategory
+        android:title="@string/id_security"
+        android:icon="@drawable/ic_security"
+        android:layout="@layout/preference_category_green"/>
+
+    <Preference
+        android:key="mnemonic_passphrase"
+        android:title="@string/id_mnemonic"
+        android:summary="@string/id_mnemonic_not_available" />
 
     <PreferenceCategory android:title="@string/id_about"
         android:icon="@drawable/ic_about"
