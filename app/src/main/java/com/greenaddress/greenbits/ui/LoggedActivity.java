@@ -74,6 +74,11 @@ public abstract class LoggedActivity extends GaActivity {
     public void onResume() {
         super.onResume();
 
+        if (getSession() == null || getSession().getSettings() == null) {
+            exit();
+            return;
+        }
+
         final boolean timerExpired = mStart + delayLogoutTimer() < System.currentTimeMillis();
         if (timerExpired) {
             exit();

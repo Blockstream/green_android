@@ -85,14 +85,9 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         UI.localeDecimalInput(mAmountText);
         mUnitButton = UI.find(this, id.unitButton);
 
-        mAmountText.addTextChangedListener(this);
         mUnitButton.setOnClickListener((final View v) -> {
             onCurrencyClick();
         });
-
-        mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
-        mUnitButton.setPressed(!mIsFiat);
-        mUnitButton.setSelected(!mIsFiat);
 
         UI.find(this, id.shareAddressButton).setOnClickListener((final View v) -> {
             onShareClicked();
@@ -150,6 +145,18 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isFinishing())
+            return;
+
+        mAmountText.addTextChangedListener(this);
+        mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
+        mUnitButton.setPressed(!mIsFiat);
+        mUnitButton.setSelected(!mIsFiat);
     }
 
     @Override

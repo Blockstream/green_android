@@ -82,14 +82,6 @@ public class TabbedMainActivity extends LoggedActivity implements
             // If logged in, open send activity
             onBitcoinUri();
         }
-
-        // check available preferred exchange rate
-        try {
-            final BalanceData balanceData = getSession().convertBalance(0);
-            Double.parseDouble(balanceData.getFiat());
-        } catch (final Exception e) {
-            UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
-        }
     }
 
     private void onBitcoinUri() {
@@ -182,6 +174,14 @@ public class TabbedMainActivity extends LoggedActivity implements
             startActivity(new Intent(this, FirstScreenActivity.class));
             finish();
             return;
+        }
+
+        // check available preferred exchange rate
+        try {
+            final BalanceData balanceData = getSession().convertBalance(0);
+            Double.parseDouble(balanceData.getFiat());
+        } catch (final Exception e) {
+            UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
         }
 
         updateBottomNavigationView();

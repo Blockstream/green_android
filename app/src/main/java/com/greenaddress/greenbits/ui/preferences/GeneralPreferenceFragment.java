@@ -91,6 +91,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         super.onCreatePreferences(savedInstanceState, rootKey);
         addPreferencesFromResource(R.xml.preference_general);
         setHasOptionsMenu(true);
+
+        if (getSession() == null || getSession().getSettings() == null) {
+            logout();
+            return;
+        }
+
         networkData = getNetwork();
 
         // Pin submenu
@@ -253,7 +259,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         }
 
         // Auto logout timeout
-        final int timeout = getSession().getSettings().getAltimeout();
+        int timeout = 5;
+        try {
+            timeout = getSession().getSettings().getAltimeout();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
         mTimeoutPref = find(PrefKeys.ALTIMEOUT);
         mTimeoutPref.setEntryValues(getResources().getStringArray(R.array.auto_logout_values));
         setTimeoutValues(mTimeoutPref);
@@ -383,7 +394,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
     }
 
     private String getDefaultFeeRate() {
-        final Long minFeeRateKB = getSession().getFees().get(0);
+        Long minFeeRateKB = 1000L;
+        try {
+            minFeeRateKB = getSession().getFees().get(0);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
         final String minFeeRateText = String.valueOf(minFeeRateKB / 1000.0);
         return cfg().getString( PrefKeys.DEFAULT_FEERATE_SATBYTE, minFeeRateText);
     }
@@ -601,6 +617,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         super.onResume();
         if (isZombie())
             return;
+        if (getSession() == null || getSession().getSettings() == null) {
+            logout();
+            return;
+        }
         initSummaries();
         updatesVisibilities();
     }
