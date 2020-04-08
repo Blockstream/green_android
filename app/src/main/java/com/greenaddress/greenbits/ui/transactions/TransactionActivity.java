@@ -103,7 +103,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         try {
             mTxItem = (TransactionData) getIntent().getSerializableExtra("TRANSACTION");
-            mAssetsBalances = (Map<String, Long>) getIntent().getSerializableExtra("BALANCE");
+            mAssetsBalances = (Map<String, Long>)getIntent().getSerializableExtra("BALANCE");
             mNetworkData = getSession().getNetworkData();
         } catch (final Exception e) {
             Log.d(TAG, e.getLocalizedMessage());
