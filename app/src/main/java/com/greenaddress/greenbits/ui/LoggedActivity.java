@@ -10,7 +10,6 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.snackbar.Snackbar;
-import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.model.Conversion;
@@ -49,6 +48,7 @@ public abstract class LoggedActivity extends GaActivity {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(networkNode -> {
             updateNetwork(networkNode);
+            restoreLogin(networkNode);
         });
         transactionDisposable = getSession().getNotificationModel().getTransactionObservable()
                                 .observeOn(AndroidSchedulers.mainThread())
@@ -114,13 +114,22 @@ public abstract class LoggedActivity extends GaActivity {
             onOffline(waitingMs);
             return;
         }
-
         final boolean isLoginRequired = networkNode.get("login_required").asBoolean(false);
         if (!isLoginRequired) {
             onOnline();
             return;
         }
+    }
 
+    private void restoreLogin(final JsonNode networkNode) {
+        final boolean connected = networkNode.get("connected").asBoolean();
+        if (!connected) {
+            return;
+        }
+        final boolean isLoginRequired = networkNode.get("login_required").asBoolean(false);
+        if (!isLoginRequired) {
+            return;
+        }
         final HWWallet hwWallet = getSession().getHWWallet();
         if (hwWallet == null) {
             exit();
