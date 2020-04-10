@@ -4,10 +4,9 @@
 
 You need to have the following Android developer tools installed:
 
-- "Android SDK Platform-tools" version 28.0.2 recommended
+- "Android SDK Platform-tools" version 29.0.3 recommended
 - "Android SDK Tools" version 26.1.1
-- "Android SDK Build-tools" version 28.0.3
-- "Android Support Library" version 28.0.0
+- "Android SDK Build-tools" version 29.0.3
 
 The above tools can be installed from the Android SDK manager.
 
@@ -23,6 +22,10 @@ The above tools can be installed from the Android SDK manager.
 
 The pre-built native libraries are the same versions used in the builds
 published by GreenAddress. Gradle/Android Studio will automatically use the latest.
+
+To download and update manually native libraries to the latest supported run:
+
+`cd app && ./fetch_gdk_binaries.sh && cd ..`
 
 #### Cross-compile the native libraries (advanced):
 
