@@ -46,7 +46,6 @@
                     android:maxLines="1"
                     android:padding="@dimen/card_padding"
                     android:paddingStart="0dp"
-                    android:text="name"
                     android:textColor="@color/white"
                     android:textSize="20sp" />
 
@@ -60,21 +59,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/mainBalanceText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:lines="1"
                     android:textColor="@color/secondaryTextColor"
-                    android:text="BTC"
                     android:textSize="36sp" />
+
                 <TextView
                     android:id="@+id/mainBalanceUnitText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:lines="1"
                     android:textColor="@color/secondaryTextColor"
-                    android:text="BTC"
                     android:textSize="20sp" />
             </LinearLayout>
 
@@ -87,8 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/secondaryTextColor"
-                android:text="USD"
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
 
 
         </LinearLayout>

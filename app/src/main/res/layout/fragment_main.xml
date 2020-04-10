@@ -80,11 +80,11 @@
 
             <TextView
                 android:id="@+id/assetsSelection"
+                style="@style/assetButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/id_select_asset"
-                style="@style/assetButton"
-                 />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/emptyListText"
