@@ -7,8 +7,10 @@
   <string name="id_1s_blocks_left_2d">%1$s blocchi rimanenti %2$d</string>
   <string name="id_1s_twofactor_set_up">%1$s setup</string>
   <string name="id_2_hours">~ 2 Ore</string>
+  <string name="id_2of3_account">2of3 Account</string>
   <string name="id_4_hours">~ 4 Ore</string>
   <string name="id_5_seconds_minimum">minimo 5 secondi</string>
+  <string name="id_a_2of3_account_requires_two_out">A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.</string>
   <string name="id_a_new_transaction_has_just">Hai appena ricevuto una transazione.</string>
   <string name="id_a_screen_lock_must_be_enabled">Necessario abilitare un blocco schermo nelle impostazioni Android</string>
   <string name="id_a_wallet_is_detected_on_this">Wallet presente sul dispositivo:</string>
@@ -48,6 +50,7 @@
   <string name="id_auto_logout_timeout">Timeout per auto logout</string>
   <string name="id_autolock_after">Autolock Dopo</string>
   <string name="id_back">Indietro</string>
+  <string name="id_backup_the_recovery_mnemonic">Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.</string>
   <string name="id_be_aware_other_apps_can_read_or">Attenzione, altre applicazioni potrebbero leggere o modificare ciò che hai copiato</string>
   <string name="id_bitcoin_denomination">Denominazione in bitcoin</string>
   <string name="id_bitcoin_wallet">Il wallet Bitcoin.</string>
@@ -101,6 +104,7 @@
   <string name="id_copy_to_clipboard">Copia in Clipboard</string>
   <string name="id_copy_transaction_id">Copia ID di transazione</string>
   <string name="id_copy_uri">Copia URI</string>
+  <string name="id_copy_xpub">Copy xpub</string>
   <string name="id_create">Crea</string>
   <string name="id_create_a_pin_to_access_your">Crea un PIN per l\'accesso al wallet</string>
   <string name="id_create_a_wallet_for_bitcoin">Crea un nuovo waller per Bitcoin, Liquid o Testnet</string>
@@ -126,7 +130,7 @@
   <string name="id_denomination">Denominazione</string>
   <string name="id_deposit">Deposita</string>
   <string name="id_disable">Disabilita</string>
-  <string name="id_disable_s_for_twofactor">Disattiva  l\' Autenticazione a Due Fattori via %s</string>
+  <string name="id_disable_s_twofactor">Disable %s Two-Factor Authentication</string>
   <string name="id_disabled">Disabilitato</string>
   <string name="id_displays_the_progress_of_spv">Mostra il progresso della sincronizzazione SPV</string>
   <string name="id_dispute_twofactor_reset">Contesta il reset del Secondo Fattore</string>
@@ -251,6 +255,7 @@
   <string name="id_last_attempt_if_failed_you_will">Ultimo tentativo: in caso di fallimento dovrai rigenerare il tuo wallet utilizzando la mnemonica di 24 parole.</string>
   <string name="id_last_ping_1d_ms">Ultimo ping: %1$d ms</string>
   <string name="id_later">PIÙ TARDI</string>
+  <string name="id_lbtc_has_no_issuer_and_is">L-BTC has no issuer and is instead created on the network via a peg-in.</string>
   <string name="id_learn_more_about_s">Scopri di più su %s.</string>
   <string name="id_ledger_dashboard_detected">Dashboard Ledger rilevata, avvia l\'app corretta per accedere.</string>
   <string name="id_ledger_supports_a_limited_set">Ledger supporta un set limitato di asset: verifica sulla nostra documentazione prima di ricevere asset diversi da L-BTC e USDt</string>
@@ -259,7 +264,6 @@
   <string name="id_liquid_securities_account">Liquid Securities Account</string>
   <string name="id_liquid_securities_account_is">Liquid securities account è disponibile solo su Liquid</string>
   <string name="id_liquid_securities_accounts_are">Liquid securities account sono disponibili solo nei wallet Liquid. Sarà necessario ottenere l\'autorizzazione dell\'emittente per ricevere un titolo Liquid Security.</string>
-  <string name="id_liquid_watchmen_via_pegin_tap">Watchmen di liquid via peg-in. Tocca qui per saperne di più su Liquid</string>
   <string name="id_loading_transactions">Caricamento transazioni...</string>
   <string name="id_log_in">Accedi</string>
   <string name="id_log_in_into_your_s_wallet">Accedi al tuo %s wallet</string>
@@ -345,6 +349,7 @@
   <string name="id_please_enable_pin">Abilita autenticazione tramite PIN prima di aggiungere o rimuovere l\'autenticazione biometrica</string>
   <string name="id_please_enter_the_passphrase_for">Inserisci la passphrase del tuo hardware wallet.</string>
   <string name="id_please_follow_the_instructions">Segui le istruzioni su tuo hardware wallet</string>
+  <string name="id_please_hold_on_while_your">Please hold on while your address is being generated</string>
   <string name="id_please_provide_your_1s">Inserisci il tuo %1$s.</string>
   <string name="id_please_provide_your_1s_code">Inserisci il tuo codice %1$s.</string>
   <string name="id_please_provide_your_passphrase">Inserisi la tua passphrase:</string>
@@ -358,7 +363,7 @@
   <string name="id_precision">Precisione</string>
   <string name="id_privacy_policy">Privacy Policy</string>
   <string name="id_problem_with_key_1s">Problema con il tasto %1$s</string>
-  <string name="id_provide_this_id_to_the_issuer">Fornisci questo ID all\'emittente per ottenere un titolo Liquid Security.</string>
+  <string name="id_provide_this_id_to_the_issuer">Fornisci questo ID all\'emittente per ottenere l\'autorizzazione a ricevere una loro Liquid Security.</string>
   <string name="id_proxy_settings">PROXY SETTINGS</string>
   <string name="id_qr_scanner">QR Scanner</string>
   <string name="id_read_more_at_our_s">Leggi di più presso la nostra %s</string>
@@ -369,10 +374,12 @@
   <string name="id_recipient">Destinatario</string>
   <string name="id_recovery">Recupero fondi</string>
   <string name="id_recovery_and_notifications">Recupero e Notifiche</string>
+  <string name="id_recovery_mnemonic">Recovery mnemonic</string>
   <string name="id_recovery_transaction_emails">Email con transazione di recupero</string>
   <string name="id_recovery_transaction_request">Richiesta transazione di recupero inviata</string>
   <string name="id_recovery_transactions">Transazioni di recupero</string>
   <string name="id_recovery_words">Parole per il ripristino</string>
+  <string name="id_recovery_xpub">Recovery xpub</string>
   <string name="id_redeem_your_deposited_funds">Recupera i tuoi fondi senza la firma di Blockstream Green dopo un periodo di tempo prestabilito.</string>
   <string name="id_redeposited">Rideposito</string>
   <string name="id_reference_exchange_rate">Tasso di cambio di riferimento</string>

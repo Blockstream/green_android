@@ -7,8 +7,10 @@
   <string name="id_1s_blocks_left_2d">%1$s blocks left %2$d</string>
   <string name="id_1s_twofactor_set_up">%1$s Two-Factor set up</string>
   <string name="id_2_hours">~ 2 Hours</string>
+  <string name="id_2of3_account">2of3 Account</string>
   <string name="id_4_hours">~ 4 Hours</string>
   <string name="id_5_seconds_minimum">5 seconds minimum</string>
+  <string name="id_a_2of3_account_requires_two_out">A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.</string>
   <string name="id_a_new_transaction_has_just">A new transaction has just arrived in your wallet.</string>
   <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">A wallet is detected on this device:</string>
@@ -48,6 +50,7 @@
   <string name="id_auto_logout_timeout">Auto logout timeout</string>
   <string name="id_autolock_after">Autolock After</string>
   <string name="id_back">Back</string>
+  <string name="id_backup_the_recovery_mnemonic">Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.</string>
   <string name="id_be_aware_other_apps_can_read_or">Be aware, other apps can read or change the clipboard</string>
   <string name="id_bitcoin_denomination">Bitcoin denomination</string>
   <string name="id_bitcoin_wallet">Bitcoin wallet.</string>
@@ -101,6 +104,7 @@
   <string name="id_copy_to_clipboard">Copy To Clipboard</string>
   <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_copy_uri">Copy URI</string>
+  <string name="id_copy_xpub">Copy xpub</string>
   <string name="id_create">Create</string>
   <string name="id_create_a_pin_to_access_your">Create a PIN to access your wallet</string>
   <string name="id_create_a_wallet_for_bitcoin">Create a wallet for Bitcoin, Liquid or Testnet</string>
@@ -126,7 +130,7 @@
   <string name="id_denomination">Denomination</string>
   <string name="id_deposit">Deposit</string>
   <string name="id_disable">Disable</string>
-  <string name="id_disable_s_for_twofactor">Disable %s for Two-Factor Authentication</string>
+  <string name="id_disable_s_twofactor">Disable %s Two-Factor Authentication</string>
   <string name="id_disabled">Disabled</string>
   <string name="id_displays_the_progress_of_spv">Displays the progress of SPV synchronization</string>
   <string name="id_dispute_twofactor_reset">Dispute Two-Factor reset</string>
@@ -251,6 +255,7 @@
   <string name="id_last_attempt_if_failed_you_will">Last attempt: if failed, you will have to restore your wallet using the 24-words mnemonic.</string>
   <string name="id_last_ping_1d_ms">Last ping: %1$d ms</string>
   <string name="id_later">LATER</string>
+  <string name="id_lbtc_has_no_issuer_and_is">L-BTC has no issuer and is instead created on the network via a peg-in.</string>
   <string name="id_learn_more_about_s">Learn more about %s.</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detected, please open the correct app to access.</string>
   <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.</string>
@@ -259,7 +264,6 @@
   <string name="id_liquid_securities_account">Liquid Securities Account</string>
   <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
   <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.</string>
-  <string name="id_liquid_watchmen_via_pegin_tap">Liquid watchmen via peg-in. Tap here to read more about Liquid</string>
   <string name="id_loading_transactions">Loading transactions…</string>
   <string name="id_log_in">Log In</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -345,6 +349,7 @@
   <string name="id_please_enable_pin">Please enable PIN authentication before adding or removing biometric authentication</string>
   <string name="id_please_enter_the_passphrase_for">Please enter the passphrase for your hardware wallet.</string>
   <string name="id_please_follow_the_instructions">Please follow the instructions on your hardware wallet</string>
+  <string name="id_please_hold_on_while_your">Please hold on while your address is being generated</string>
   <string name="id_please_provide_your_1s">Please provide your %1$s.</string>
   <string name="id_please_provide_your_1s_code">Please provide your %1$s code.</string>
   <string name="id_please_provide_your_passphrase">Please provide your passphrase:</string>
@@ -369,10 +374,12 @@
   <string name="id_recipient">Recipient</string>
   <string name="id_recovery">Recovery</string>
   <string name="id_recovery_and_notifications">Recovery and Notifications</string>
+  <string name="id_recovery_mnemonic">Recovery mnemonic</string>
   <string name="id_recovery_transaction_emails">Recovery transaction emails</string>
   <string name="id_recovery_transaction_request">Recovery transaction request sent</string>
   <string name="id_recovery_transactions">Recovery transactions</string>
   <string name="id_recovery_words">Recovery words</string>
+  <string name="id_recovery_xpub">Recovery xpub</string>
   <string name="id_redeem_your_deposited_funds">Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.</string>
   <string name="id_redeposited">Redeposited</string>
   <string name="id_reference_exchange_rate">Reference exchange rate</string>

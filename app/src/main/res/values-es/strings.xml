@@ -7,8 +7,10 @@
   <string name="id_1s_blocks_left_2d">Restan %1$s bloques %2$d</string>
   <string name="id_1s_twofactor_set_up">%1$s Configuración de dos factores</string>
   <string name="id_2_hours">~ 2 Horas</string>
+  <string name="id_2of3_account">2of3 Account</string>
   <string name="id_4_hours">~ 4 horas</string>
   <string name="id_5_seconds_minimum">5 segundos como mínimo</string>
+  <string name="id_a_2of3_account_requires_two_out">A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.</string>
   <string name="id_a_new_transaction_has_just">Una nueva transacción acaba de llegar a tu cartera.</string>
   <string name="id_a_screen_lock_must_be_enabled">A screen lock must be enabled from Android settings</string>
   <string name="id_a_wallet_is_detected_on_this">Se ha detectado una cartera en este dispositivo:</string>
@@ -48,6 +50,7 @@
   <string name="id_auto_logout_timeout">Tiempo de espera para cierre de sesión automático</string>
   <string name="id_autolock_after">Bloquear automáticamente después de</string>
   <string name="id_back">Back</string>
+  <string name="id_backup_the_recovery_mnemonic">Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.</string>
   <string name="id_be_aware_other_apps_can_read_or">Ten en cuenta que otras apps pueden leer o cambiar el portapapeles</string>
   <string name="id_bitcoin_denomination">Denominación de Bitcoin</string>
   <string name="id_bitcoin_wallet">Cartera Bitcoin.</string>
@@ -101,6 +104,7 @@
   <string name="id_copy_to_clipboard">Copiar al portapapeles</string>
   <string name="id_copy_transaction_id">Copy transaction ID</string>
   <string name="id_copy_uri">Copy URI</string>
+  <string name="id_copy_xpub">Copy xpub</string>
   <string name="id_create">Crear</string>
   <string name="id_create_a_pin_to_access_your">Crear un PIN para acceder a tu cartera</string>
   <string name="id_create_a_wallet_for_bitcoin">Create a wallet for Bitcoin, Liquid or Testnet</string>
@@ -126,7 +130,7 @@
   <string name="id_denomination">Denominación</string>
   <string name="id_deposit">Depósito</string>
   <string name="id_disable">Deshabilitar</string>
-  <string name="id_disable_s_for_twofactor">Disable %s for Two-Factor Authentication</string>
+  <string name="id_disable_s_twofactor">Disable %s Two-Factor Authentication</string>
   <string name="id_disabled">Deshabilitado</string>
   <string name="id_displays_the_progress_of_spv">Muestra el progreso de la sincronización con SPV</string>
   <string name="id_dispute_twofactor_reset">Disputar restablecimiento de autenticación de dos factores</string>
@@ -251,6 +255,7 @@
   <string name="id_last_attempt_if_failed_you_will">Último intento: en caso de otro fallo, deberá restaurar la cartera con la frase de recuperación de 24 palabras.</string>
   <string name="id_last_ping_1d_ms">Último pin: %1$d ms</string>
   <string name="id_later">LUEGO</string>
+  <string name="id_lbtc_has_no_issuer_and_is">L-BTC has no issuer and is instead created on the network via a peg-in.</string>
   <string name="id_learn_more_about_s">Learn more about %s.</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detectado. Abre la app correcta para acceder.</string>
   <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.</string>
@@ -259,7 +264,6 @@
   <string name="id_liquid_securities_account">Liquid Securities Account</string>
   <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
   <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.</string>
-  <string name="id_liquid_watchmen_via_pegin_tap">Liquid watchmen via peg-in. Tap here to read more about Liquid</string>
   <string name="id_loading_transactions">Cargando transacciones...</string>
   <string name="id_log_in">Iniciar sesión</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -345,6 +349,7 @@
   <string name="id_please_enable_pin">Habilita la autenticación con el PIN antes de añadir o eliminar la autenticación biométrica</string>
   <string name="id_please_enter_the_passphrase_for">Ingresa la frase de contraseña para tu hardware wallet.</string>
   <string name="id_please_follow_the_instructions">Sigue las instrucciones de tu hardware wallet.</string>
+  <string name="id_please_hold_on_while_your">Please hold on while your address is being generated</string>
   <string name="id_please_provide_your_1s">Proporciona tu %1$s.</string>
   <string name="id_please_provide_your_1s_code">Proporciona tu código %1$s.</string>
   <string name="id_please_provide_your_passphrase">Proporciona tu frase de contraseña:</string>
@@ -369,10 +374,12 @@
   <string name="id_recipient">Receptor</string>
   <string name="id_recovery">Recovery</string>
   <string name="id_recovery_and_notifications">Recuperación y notificaciones</string>
+  <string name="id_recovery_mnemonic">Recovery mnemonic</string>
   <string name="id_recovery_transaction_emails">Correos electrónicos de recuperación de transacciones</string>
   <string name="id_recovery_transaction_request">Solicitud de recuperación de transacción enviada</string>
   <string name="id_recovery_transactions">Transacciones de recuperación</string>
   <string name="id_recovery_words">Palabras de recuperación</string>
+  <string name="id_recovery_xpub">Recovery xpub</string>
   <string name="id_redeem_your_deposited_funds">Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.</string>
   <string name="id_redeposited">Redepositado</string>
   <string name="id_reference_exchange_rate">Tasa de cambio de referencia</string>
