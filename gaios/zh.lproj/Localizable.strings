@@ -5,8 +5,10 @@
 "id_1s_blocks_left_2d" = "剩余%1$@区块%2$d";
 "id_1s_twofactor_set_up" = "%1$@设置双重认证";
 "id_2_hours" = "~ 2小时";
+"id_2of3_account" = "2of3 Account";
 "id_4_hours" = "~ 4小时";
 "id_5_seconds_minimum" = "最少5秒";
+"id_a_2of3_account_requires_two_out" = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.";
 "id_a_new_transaction_has_just" = "收到一笔新的转账。";
 "id_a_screen_lock_must_be_enabled" = "需要在安卓系统设置中打开屏幕锁";
 "id_a_wallet_is_detected_on_this" = "本设备上检测到了一个钱包：";
@@ -46,6 +48,7 @@
 "id_auto_logout_timeout" = "超时自动退出登录";
 "id_autolock_after" = "自动锁定时间";
 "id_back" = "返回";
+"id_backup_the_recovery_mnemonic" = "Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.";
 "id_be_aware_other_apps_can_read_or" = "请注意，其他应用能够读取或改变剪贴板上已有的内容";
 "id_bitcoin_denomination" = "比特币面值";
 "id_bitcoin_wallet" = "比特币钱包。";
@@ -99,6 +102,7 @@
 "id_copy_to_clipboard" = "复制到剪贴板";
 "id_copy_transaction_id" = "复制转账ID";
 "id_copy_uri" = "复制URL";
+"id_copy_xpub" = "Copy xpub";
 "id_create" = "创建";
 "id_create_a_pin_to_access_your" = "创建一个新的PIN";
 "id_create_a_wallet_for_bitcoin" = "为Bitcoin，Liquid或Testnet创建钱包";
@@ -124,7 +128,7 @@
 "id_denomination" = "面值";
 "id_deposit" = "充值";
 "id_disable" = "关闭";
-"id_disable_s_twofactor" = "Disable %@ Two-Factor Authentication";
+"id_disable_s_twofactor" = "关闭%@双重验证";
 "id_disabled" = "已关闭";
 "id_displays_the_progress_of_spv" = "显示SPV同步进程";
 "id_dispute_twofactor_reset" = "免除重置双重认证";
@@ -184,6 +188,7 @@
 "id_fee_rate_must_be_at_least_s" = "转账手续费至少为%@ satoshi/vbyte。";
 "id_fee_rate_s" = "转账手续费：%@";
 "id_fee_s__s" = "费用： %@ / %@";
+"id_fees_are_too_low" = "Fees are too low";
 "id_for_long_term_storage" = "用于长期存储";
 "id_for_most_users" = "对于大部分用户";
 "id_for_securities_investors" = "对于证券投资者";
@@ -249,7 +254,7 @@
 "id_last_attempt_if_failed_you_will" = "最后一次尝试：如果失败，你将不得不使用24个单词的助记词来恢复你的钱包。";
 "id_last_ping_1d_ms" = "延迟：%1$d ms";
 "id_later" = "稍后";
-"id_lbtc_has_no_issuer_and_is" = "L-BTC has no issuer and is instead created on the network via a peg-in.";
+"id_lbtc_has_no_issuer_and_is" = "L-BTC并没有对应的发行方，是由锁入操作生成的。";
 "id_learn_more_about_s" = "了解更多%@。";
 "id_ledger_dashboard_detected" = "检测到Ledger Dashboard，请打开正确的应用来获取。";
 "id_ledger_supports_a_limited_set" = "Ledger支持的资产种类是有限的：接收除了L-BTC和USDt以外的资产前请先查看我们的文档。";
@@ -290,6 +295,7 @@
 "id_network_fee" = "网络费用";
 "id_network_monitor" = "网络监视器";
 "id_new_accounts_functionality" = "新的账户功能即将上线！";
+"id_new_fee" = "New fee";
 "id_new_incoming_transaction_in" = "账户%@正在接收新的转账（%@）。";
 "id_new_outgoing_transaction_from" = "账户%@发起新的转账（%@）。";
 "id_new_s_transaction_of_s_in" = "新的%@转账金额为%@，账户为%@。";
@@ -343,6 +349,7 @@
 "id_please_enable_pin" = "添加或删除生物识别验证前请开启PIN验证";
 "id_please_enter_the_passphrase_for" = "请输入硬件钱包密语。";
 "id_please_follow_the_instructions" = "请按照硬件钱包上的指示进行操作";
+"id_please_hold_on_while_your" = "Please hold on while your address is being generated";
 "id_please_provide_your_1s" = "请提供你的%1$@。";
 "id_please_provide_your_1s_code" = "请提供%1$@验证码。";
 "id_please_provide_your_passphrase" = "请提供密语：";
@@ -354,6 +361,7 @@
 "id_please_verify_that_the_address" = "请确认硬件钱包上的地址和你手机上的地址是一致的。";
 "id_please_wait_while_your_ledger" = "请稍等，你的Ledger正在验证你的地址，之后会将地址显示在屏幕上。";
 "id_precision" = "精确";
+"id_previous_fee" = "Previous fee";
 "id_privacy_policy" = "隐私政策";
 "id_problem_with_key_1s" = "密钥%1$@出现了问题";
 "id_provide_this_id_to_the_issuer" = "将这个ID提供给Liquid证券的发行方以获得授权。";
@@ -367,16 +375,19 @@
 "id_recipient" = "接收方";
 "id_recovery" = "恢复资金设置";
 "id_recovery_and_notifications" = "恢复与通知";
+"id_recovery_mnemonic" = "Recovery mnemonic";
 "id_recovery_transaction_emails" = "恢复转账邮件";
 "id_recovery_transaction_request" = "恢复转账请求已发送";
 "id_recovery_transactions" = "恢复转账";
 "id_recovery_words" = "恢复词";
+"id_recovery_xpub" = "Recovery xpub";
 "id_redeem_your_deposited_funds" = "预先设定的时间之后，在不用Blockstream Green的签名的情况下赎回你的资金。";
 "id_redeposited" = "已重新充值";
 "id_reference_exchange_rate" = "参考汇率";
 "id_refresh" = "刷新";
 "id_remember_me" = "记住账号";
 "id_remove_custom_network" = "删除自定义网络";
+"id_rename_account" = "Rename account";
 "id_replaceable" = "可替换";
 "id_request_amount" = "请求金额";
 "id_request_failed" = "请求失败";

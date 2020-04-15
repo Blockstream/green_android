@@ -5,8 +5,10 @@
 "id_1s_blocks_left_2d" = "%1$@ blocks left %2$d";
 "id_1s_twofactor_set_up" = "%1$@ Two-Factor set up";
 "id_2_hours" = "~ 2 Hours";
+"id_2of3_account" = "2of3 Account";
 "id_4_hours" = "~ 4 Hours";
 "id_5_seconds_minimum" = "5 seconds minimum";
+"id_a_2of3_account_requires_two_out" = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.";
 "id_a_new_transaction_has_just" = "A new transaction has just arrived in your wallet.";
 "id_a_screen_lock_must_be_enabled" = "A screen lock must be enabled from Android settings";
 "id_a_wallet_is_detected_on_this" = "A wallet is detected on this device:";
@@ -46,6 +48,7 @@
 "id_auto_logout_timeout" = "Auto logout timeout";
 "id_autolock_after" = "Autolock After";
 "id_back" = "Back";
+"id_backup_the_recovery_mnemonic" = "Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.";
 "id_be_aware_other_apps_can_read_or" = "Be aware, other apps can read or change the clipboard";
 "id_bitcoin_denomination" = "Bitcoin denomination";
 "id_bitcoin_wallet" = "Bitcoin wallet.";
@@ -99,6 +102,7 @@
 "id_copy_to_clipboard" = "Copy To Clipboard";
 "id_copy_transaction_id" = "Copy transaction ID";
 "id_copy_uri" = "Copy URI";
+"id_copy_xpub" = "Copy xpub";
 "id_create" = "Create";
 "id_create_a_pin_to_access_your" = "Create a PIN to access your wallet";
 "id_create_a_wallet_for_bitcoin" = "Create a wallet for Bitcoin, Liquid or Testnet";
@@ -184,6 +188,7 @@
 "id_fee_rate_must_be_at_least_s" = "Fee rate must be at least %@ satoshi/vbyte.";
 "id_fee_rate_s" = "Fee rate: %@";
 "id_fee_s__s" = "Fee: %@ / %@";
+"id_fees_are_too_low" = "Fees are too low";
 "id_for_long_term_storage" = "For long term storage";
 "id_for_most_users" = "For most users";
 "id_for_securities_investors" = "For securities investors";
@@ -290,6 +295,7 @@
 "id_network_fee" = "NETWORK FEE";
 "id_network_monitor" = "Network Monitor";
 "id_new_accounts_functionality" = "New accounts functionality coming soon!";
+"id_new_fee" = "New fee";
 "id_new_incoming_transaction_in" = "New incoming transaction in account %@ (%@).";
 "id_new_outgoing_transaction_from" = "New outgoing transaction from account %@ (%@).";
 "id_new_s_transaction_of_s_in" = "New %@ transaction of %@ in account %@.";
@@ -343,6 +349,7 @@
 "id_please_enable_pin" = "Please enable PIN authentication before adding or removing biometric authentication";
 "id_please_enter_the_passphrase_for" = "Please enter the passphrase for your hardware wallet.";
 "id_please_follow_the_instructions" = "Please follow the instructions on your hardware wallet";
+"id_please_hold_on_while_your" = "Please hold on while your address is being generated";
 "id_please_provide_your_1s" = "Please provide your %1$@.";
 "id_please_provide_your_1s_code" = "Please provide your %1$@ code.";
 "id_please_provide_your_passphrase" = "Please provide your passphrase:";
@@ -354,6 +361,7 @@
 "id_please_verify_that_the_address" = "Please verify that the address shown on your hardware wallet matches the one on your phone.";
 "id_please_wait_while_your_ledger" = "Please wait while your Ledger validates your address and shows it on the screen.";
 "id_precision" = "Precision";
+"id_previous_fee" = "Previous fee";
 "id_privacy_policy" = "Privacy Policy";
 "id_problem_with_key_1s" = "Problem with key %1$@";
 "id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
@@ -367,16 +375,19 @@
 "id_recipient" = "Recipient";
 "id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Recovery and Notifications";
+"id_recovery_mnemonic" = "Recovery mnemonic";
 "id_recovery_transaction_emails" = "Recovery transaction emails";
 "id_recovery_transaction_request" = "Recovery transaction request sent";
 "id_recovery_transactions" = "Recovery transactions";
 "id_recovery_words" = "Recovery words";
+"id_recovery_xpub" = "Recovery xpub";
 "id_redeem_your_deposited_funds" = "Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.";
 "id_redeposited" = "Redeposited";
 "id_reference_exchange_rate" = "Reference exchange rate";
 "id_refresh" = "Refresh";
 "id_remember_me" = "Remember me";
 "id_remove_custom_network" = "Remove custom network";
+"id_rename_account" = "Rename account";
 "id_replaceable" = "replaceable";
 "id_request_amount" = "REQUEST AMOUNT";
 "id_request_failed" = "Request Failed";

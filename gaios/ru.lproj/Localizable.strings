@@ -5,8 +5,10 @@
 "id_1s_blocks_left_2d" = "%1$@блоков осталось%2$d";
 "id_1s_twofactor_set_up" = "%1$@ Двухфакторная настройка";
 "id_2_hours" = "~ 2 Часа";
+"id_2of3_account" = "2of3 Account";
 "id_4_hours" = "~ 4 Часа";
 "id_5_seconds_minimum" = "5 секунд минимум";
+"id_a_2of3_account_requires_two_out" = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.";
 "id_a_new_transaction_has_just" = "Новая транзакция только что поступила на ваш кошелек.";
 "id_a_screen_lock_must_be_enabled" = "Блокировка экрана должна быть включена в настройках Android";
 "id_a_wallet_is_detected_on_this" = "На этом устройстве обнаружен кошелек:";
@@ -46,6 +48,7 @@
 "id_auto_logout_timeout" = "Автоматический выход";
 "id_autolock_after" = "Автоматическая блокировка";
 "id_back" = "Back";
+"id_backup_the_recovery_mnemonic" = "Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.";
 "id_be_aware_other_apps_can_read_or" = "Помните, что другие приложения могут читать или изменять буфер обмена";
 "id_bitcoin_denomination" = "Деноминация биткоина";
 "id_bitcoin_wallet" = "Биткоин-кошелек";
@@ -99,6 +102,7 @@
 "id_copy_to_clipboard" = "Скопировать в буфер обмена";
 "id_copy_transaction_id" = "Copy transaction ID";
 "id_copy_uri" = "Copy URI";
+"id_copy_xpub" = "Copy xpub";
 "id_create" = "Создать";
 "id_create_a_pin_to_access_your" = "Создайте PIN-код для доступа к вашему кошельку";
 "id_create_a_wallet_for_bitcoin" = "Create a wallet for Bitcoin, Liquid or Testnet";
@@ -184,6 +188,7 @@
 "id_fee_rate_must_be_at_least_s" = "Комиссия должна быть не менее %@ сатоши/vbyte.";
 "id_fee_rate_s" = "Комиссия: %@";
 "id_fee_s__s" = "Комиссия всего: %@/%@";
+"id_fees_are_too_low" = "Fees are too low";
 "id_for_long_term_storage" = "For long term storage";
 "id_for_most_users" = "For most users";
 "id_for_securities_investors" = "For securities investors";
@@ -290,6 +295,7 @@
 "id_network_fee" = "КОМИССИЯ СЕТИ";
 "id_network_monitor" = "Сетевой монитор";
 "id_new_accounts_functionality" = "Ожидается добавление новых аккаунтов!";
+"id_new_fee" = "New fee";
 "id_new_incoming_transaction_in" = "Новая входящая транзакция на аккаунте%@ (%@).";
 "id_new_outgoing_transaction_from" = "Новая исходящая транзакция с аккаунта %@ (%@).";
 "id_new_s_transaction_of_s_in" = "Новая %@ транзакция %@ на аккаунте %@.";
@@ -343,6 +349,7 @@
 "id_please_enable_pin" = "Пожалуйста, включите PIN-аутентификацию перед добавлением или удалением биометрической аутентификации";
 "id_please_enter_the_passphrase_for" = "Введите кодовую фразу для вашего аппаратного кошелька.";
 "id_please_follow_the_instructions" = "Следуйте инструкциям к вашему аппаратному кошельку";
+"id_please_hold_on_while_your" = "Please hold on while your address is being generated";
 "id_please_provide_your_1s" = "Введите ваш %1$@.";
 "id_please_provide_your_1s_code" = "Введите %1$@-код.";
 "id_please_provide_your_passphrase" = "Введите вашу кодовую фразу:";
@@ -354,6 +361,7 @@
 "id_please_verify_that_the_address" = "Please verify that the address shown on your hardware wallet matches the one on your phone.";
 "id_please_wait_while_your_ledger" = "Please wait while your Ledger validates your address and shows it on the screen.";
 "id_precision" = "Precision";
+"id_previous_fee" = "Previous fee";
 "id_privacy_policy" = "Политика конфиденциальности";
 "id_problem_with_key_1s" = "Проблема с ключом %1$@";
 "id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
@@ -367,16 +375,19 @@
 "id_recipient" = "Получатель";
 "id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Восстановление и уведомления";
+"id_recovery_mnemonic" = "Recovery mnemonic";
 "id_recovery_transaction_emails" = "Электронные письма транзакций восстановления";
 "id_recovery_transaction_request" = "Запрос о восстановительной транзакции отправлен";
 "id_recovery_transactions" = "Восстановительные транзакции";
 "id_recovery_words" = "Слова восстановления";
+"id_recovery_xpub" = "Recovery xpub";
 "id_redeem_your_deposited_funds" = "Redeem your deposited funds without Blockstream Green signature after a pre-defined period of time.";
 "id_redeposited" = "Внесенный повторно";
 "id_reference_exchange_rate" = "Обменный курс";
 "id_refresh" = "Обновление";
 "id_remember_me" = "Remember me";
 "id_remove_custom_network" = "Удалить настраиваемую сеть";
+"id_rename_account" = "Rename account";
 "id_replaceable" = "заменяемый";
 "id_request_amount" = "ЗАПРОСИТЬ СУММУ";
 "id_request_failed" = "Ошибка запроса";
