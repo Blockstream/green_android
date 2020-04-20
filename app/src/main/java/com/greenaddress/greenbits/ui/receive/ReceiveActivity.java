@@ -217,15 +217,15 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         // mark generation new address as ongoing
         isGenerationOnProgress = true;
         generateDisposte = Observable.just(getSession())
-        .subscribeOn(Schedulers.computation())
-        .map((session) -> {
+                           .subscribeOn(Schedulers.computation())
+                           .map((session) -> {
             final int subaccount = getActiveAccount();
             final GDKTwoFactorCall call = getSession().getReceiveAddress(subaccount);
             final JsonNode jsonResp = call.resolve(null, new HardwareCodeResolver(this));
             return jsonResp;
         })
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe((res) -> {
+                           .observeOn(AndroidSchedulers.mainThread())
+                           .subscribe((res) -> {
             final String address = res.get("address").asText();
             final Long pointer = res.get("pointer").asLong(0);
             mCurrentAddress = address;
@@ -258,12 +258,12 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
             return;
 
         validateDisposte = Observable.just(getSession())
-        .subscribeOn(Schedulers.computation())
-        .map((session) -> {
+                           .subscribeOn(Schedulers.computation())
+                           .map((session) -> {
             return generateHW(pointer);
         })
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe((addressHW) -> {
+                           .observeOn(AndroidSchedulers.mainThread())
+                           .subscribe((addressHW) -> {
             if (addressHW == null)
                 throw new Exception();
             else if (addressHW.equals(address))
