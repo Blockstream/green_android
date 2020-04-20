@@ -170,8 +170,10 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        if (isGenerationOnProgress)
+        if (isGenerationOnProgress) {
+            UI.toast(this, R.string.id_please_hold_on_while_your, Toast.LENGTH_LONG);
             return true;
+        }
         switch (item.getItemId()) {
         case android.R.id.home:
             finish();
@@ -186,8 +188,10 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
     @Override
     public void onBackPressed() {
-        if (isGenerationOnProgress)
+        if (isGenerationOnProgress) {
+            UI.toast(this, R.string.id_please_hold_on_while_your, Toast.LENGTH_LONG);
             return;
+        }
         super.onBackPressed();
     }
 
