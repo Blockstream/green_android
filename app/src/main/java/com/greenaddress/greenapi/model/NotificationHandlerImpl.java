@@ -37,6 +37,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     private final PublishSubject<JsonNode> mTorPublish = PublishSubject.create();
     private final PublishSubject<List<Long>> mFeesPublish = PublishSubject.create();
     private final PublishSubject<List<EventData>> mEventsPublish = PublishSubject.create();
+    private final PublishSubject<SettingsData> mSettingsPublish = PublishSubject.create();
 
     public NotificationHandlerImpl() {
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -64,6 +65,10 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
 
     public Observable<List<EventData>> getEventsObservable() {
         return mEventsPublish.hide();
+    }
+
+    public Observable<SettingsData> getSettingsObservable() {
+        return mSettingsPublish.hide();
     }
 
     public Integer getBlockHeight() {
@@ -167,6 +172,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                     mObjectMapper.convertValue(objectNode.get("settings"), SettingsData.class);
                 getSession().setSettings(settings);
                 Log.d("OBSNTF", "SettingsData " + settings);
+                mSettingsPublish.onNext(settings);
                 break;
             }
             case "subaccount": {

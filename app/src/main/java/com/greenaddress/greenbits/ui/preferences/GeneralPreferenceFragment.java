@@ -24,6 +24,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -39,14 +40,12 @@ import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.SweepSelectActivity;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +60,6 @@ import static com.greenaddress.greenbits.ui.authentication.FirstScreenActivity.N
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
 
-    private static final int PINSAVE = 1337;
     public static final int REQUEST_ENABLE_2FA = 2031;
     private static final int REQUEST_2FA = 101;
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
@@ -83,8 +81,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private ListPreference mTimeoutPref;
     private PreferenceCategory mAccountTitle;
     private Preference mSPV;
-    private NetworkData networkData;
-    private Disposable mSetupDisposable, mUpdateDisposable;
+    private NetworkData mNetworkData;
+    private Disposable mUpdateDisposable;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
@@ -97,7 +95,15 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             return;
         }
 
-        networkData = getNetwork();
+        mNetworkData = getNetwork();
+        final SettingsData settings = getSession().getSettings();
+        final boolean isLiquid = mNetworkData.getLiquid();
+        TwoFactorConfigData twoFaData = null;
+        try {
+            twoFaData = getSession().getTwoFactorConfig();
+        } catch (final Exception e) { }
+        final boolean anyEnabled = twoFaData != null ? twoFaData.isAnyEnabled() : false;
+        final boolean emailConfirmed = twoFaData != null ? twoFaData.getEmail().isConfirmed() : false;
 
         // Pin submenu
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
@@ -105,6 +111,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             mPinPref.setEnabled(false);
             mPinPref.setSummary(getString(R.string.id_green_only_supports_one_pin_per));
         }
+        mPinPref.setVisible(getSession().getHWWallet() == null);
         mPinPref.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SettingsActivity.class);
             intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, PinPreferenceFragment.class.getName() );
@@ -114,13 +121,16 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // Watch-Only Login
         mWatchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
-        setupWatchOnlySummary();
+        mWatchOnlyLogin.setVisible(!isLiquid);
         mWatchOnlyLogin.setOnPreferenceClickListener((preference) -> onWatchOnlyLoginClicked());
+        setupWatchOnlySummary();
+
         mAccountTitle = find("account_title");
+        mAccountTitle.setVisible(!isLiquid);
 
         // Network & Logout
         final Preference logout = find(PrefKeys.LOGOUT);
-        logout.setTitle(getString(R.string.id_s_network, networkData.getName()));
+        logout.setTitle(getString(R.string.id_s_network, mNetworkData.getName()));
         logout.setSummary(UI.getColoredString(
                               getString(R.string.id_log_out), ContextCompat.getColor(getContext(), R.color.red)));
         logout.setOnPreferenceClickListener(preference -> {
@@ -131,80 +141,61 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // Bitcoin denomination
         mUnitPref = find(PrefKeys.UNIT);
-        mUnitPref.setEntries(networkData.getLiquid() ? UI.LIQUID_UNITS : UI.UNITS);
+        mUnitPref.setEntries(mNetworkData.getLiquid() ? UI.LIQUID_UNITS : UI.UNITS);
         mUnitPref.setEntryValues(UI.UNITS);
         mUnitPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            final SettingsData settings = getSession().getSettings();
             if (!newValue.equals(settings.getUnit())) {
                 settings.setUnit(newValue.toString());
-                ((TabbedMainActivity) getActivity()).recreate();
+                mUpdateDisposable = updateSettings(settings).subscribe( (s) -> {
+                    setUnitSummary(newValue.toString());
+                }, (e) -> {
+                    UI.toast(getActivity(), R.string.id_operation_failure, Toast.LENGTH_LONG);
+                });
                 return true;
             }
             return false;
         });
+        setUnitSummary(Conversion.getBitcoinOrLiquidUnit());
 
         // Reference exchange rate
         mPriceSourcePref = find(PrefKeys.PRICING);
         mPriceSourcePref.setSingleLineTitle(false);
-        mPriceSourcePref.setOnPreferenceChangeListener((preference, o) -> {
-            if (warnIfOffline(getActivity())) {
-                return false;
-            }
-            final String[] split = o.toString().split(" ");
-            final String currency = split[0];
-            final String exchange = split[1];
-            final SettingsData settings = getSession().getSettings();
-
-            settings.getPricing().setCurrency(currency);
-            settings.getPricing().setExchange(exchange);
-            setPricingSummary(null);
-
-            mSetupDisposable = Observable.just(getSession())
-                               .subscribeOn(Schedulers.computation())
-                               .map((session) -> {
-                session.changeSettings(
-                    settings.toObjectNode()).resolve(null, null);
-                return session;
-            }).map((session) -> {
-                final TwoFactorConfigData twoFaData = session.getTwoFactorConfig();
-                final ObjectNode limitsData = twoFaData.getLimits();
-                setLimitsText(limitsData);
-                return limitsData;
-            }).observeOn(AndroidSchedulers.mainThread())
-                               .subscribe((limitsData) -> {
-                final Integer satoshi = limitsData.get("satoshi").asInt(0);
-                if (satoshi > 0) {
-                    UI.popup(getActivity(),
-                             "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to top-up the 2FA threshold after continuing.")
-                    .show();
-                }
-                ((TabbedMainActivity) getActivity()).recreate();
-            }, (final Throwable e) -> {
-                UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
-            });
-            return true;
-        });
+        mPriceSourcePref.setVisible(!isLiquid);
+        mPriceSourcePref.setOnPreferenceChangeListener((preference, o) -> onPriceSourceChanged(o));
+        setPricingSummary(settings.getPricing());
+        try {
+            final Map<String, Object> availableCurrencies = getSession().getAvailableCurrencies();
+            setPricingEntries(availableCurrencies);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
 
         // Transaction priority, i.e. default fees
         mTxPriorityPref = find(PrefKeys.REQUIRED_NUM_BLOCKS);
         mTxPriorityPref.setSingleLineTitle(false);
+        mTxPriorityPref.setVisible(!isLiquid);
+        setRequiredNumBlocksSummary(settings.getRequiredNumBlocks());
         final String[] priorityValues = getResources().getStringArray(R.array.fee_target_values);
         mTxPriorityPref.setOnPreferenceChangeListener((preference, newValue) -> {
             if (warnIfOffline(getActivity())) {
                 return false;
             }
             final int index = mTxPriorityPref.findIndexOfValue(newValue.toString());
-            final SettingsData settings = getSession().getSettings();
             settings.setRequiredNumBlocks(Integer.parseInt(priorityValues[index]));
             setRequiredNumBlocksSummary(null);
-            updateSettings(settings);
+            mUpdateDisposable = updateSettings(settings).subscribe((s) -> {
+                setRequiredNumBlocksSummary(Integer.parseInt(priorityValues[index]));
+            }, (e) -> {
+                UI.toast(getActivity(), R.string.id_operation_failure, Toast.LENGTH_LONG);
+            });
             return true;
         });
 
         // Default custom feerate
         mCustomRatePref = find(PrefKeys.DEFAULT_FEERATE_SATBYTE);
-        setFeeRateSummary();
+        mCustomRatePref.setVisible(!isLiquid);
         mCustomRatePref.setOnPreferenceClickListener(this::onFeeRatePreferenceClicked);
+        setFeeRateSummary();
 
         // Two-factor Authentication Submenu
         mTwoFactorPref = find(PrefKeys.TWO_FACTOR);
@@ -217,68 +208,68 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         // Set two-factor threshold
         mLimitsPref = find(PrefKeys.TWO_FAC_LIMITS);
         mLimitsPref.setOnPreferenceClickListener(this::onLimitsPreferenceClicked);
+        mLimitsPref.setVisible(anyEnabled && !isLiquid);
+        setLimitsText(twoFaData.getLimits());
 
         // Enable nlocktime recovery emails
         mLocktimePref = find(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS);
+        mLocktimePref.setVisible(emailConfirmed && !isLiquid);
         mLocktimePref.setOnPreferenceChangeListener((preference, o) -> {
             if (warnIfOffline(getActivity())) {
                 return false;
             }
             final boolean value = (Boolean) o;
-            final SettingsData settings = getSession().getSettings();
             if (settings.getNotifications() == null)
                 settings.setNotifications(new NotificationsData());
             settings.getNotifications().setEmailOutgoing(value);
             settings.getNotifications().setEmailIncoming(value);
-            updateSettings(settings);
+            mUpdateDisposable = updateSettings(settings).subscribe((s) -> { }, (e) -> {
+                UI.toast(getActivity(), R.string.id_operation_failure, Toast.LENGTH_LONG);
+            });
             return true;
         });
 
         // Set nlocktime email
         mSetEmail = find(PrefKeys.SET_EMAIL);
+        mSetEmail.setVisible(!emailConfirmed && !isLiquid);
         mSetEmail.setOnPreferenceClickListener((preference) -> onSetEmailClicked());
 
         // Send nlocktime recovery emails
         mSendLocktimePref = find(PrefKeys.SEND_NLOCKTIME);
+        mSendLocktimePref.setVisible(emailConfirmed && !isLiquid);
         mSendLocktimePref.setOnPreferenceClickListener(this::onSendNLocktimeClicked);
 
         // Cancel two factor reset
         mTwoFactorRequestResetPref = find(PrefKeys.RESET_TWOFACTOR);
         mTwoFactorRequestResetPref.setOnPreferenceClickListener(preference -> prompt2FAChange("reset", true));
+        mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
 
         // Mnemonic
         mMemonicPref = find(PrefKeys.MNEMONIC_PASSPHRASE);
-        if (getSession().getHWWallet() == null) {
-            final String touchToDisplay = getString(R.string.id_touch_to_display);
-            mMemonicPref.setSummary(touchToDisplay);
-            mMemonicPref.setOnPreferenceClickListener(preference -> {
-                final Intent intent = new Intent(getActivity(), DisplayMnemonicActivity.class);
-                startActivity(intent);
-                return false;
-            });
-        }
+        mMemonicPref.setVisible(getSession().getHWWallet() == null);
+        final String touchToDisplay = getString(R.string.id_touch_to_display);
+        mMemonicPref.setSummary(touchToDisplay);
+        mMemonicPref.setOnPreferenceClickListener(preference -> {
+            final Intent intent = new Intent(getActivity(), DisplayMnemonicActivity.class);
+            startActivity(intent);
+            return false;
+        });
 
         // Auto logout timeout
-        int timeout = 5;
-        try {
-            timeout = getSession().getSettings().getAltimeout();
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
+        final int timeout = settings.getAltimeout();
         mTimeoutPref = find(PrefKeys.ALTIMEOUT);
         mTimeoutPref.setEntryValues(getResources().getStringArray(R.array.auto_logout_values));
         setTimeoutValues(mTimeoutPref);
         setTimeoutSummary(timeout);
         mTimeoutPref.setOnPreferenceChangeListener((preference, newValue) -> {
-            if (warnIfOffline(getActivity())) {
-                return false;
-            }
             final Integer altimeout = Integer.parseInt(newValue.toString());
-            final SettingsData settings = getSession().getSettings();
             settings.setAltimeout(altimeout);
             setTimeoutSummary(null);
-            updateSettings(settings);
-            cfg().edit().putString(PrefKeys.ALTIMEOUT, newValue.toString()).apply(); // need to save this, for scheduleDisconnect
+            mUpdateDisposable = updateSettings(settings).subscribe((s) -> {
+                setTimeoutSummary(altimeout);
+            }, (e) -> {
+                UI.toast(getActivity(), R.string.id_operation_failure, Toast.LENGTH_LONG);
+            });
             return true;
         });
 
@@ -286,6 +277,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // SPV_SYNCRONIZATION Syncronization Submenu
         mSPV = findPreference(PrefKeys.SPV_SYNCRONIZATION);
+        mSPV.setVisible(!isLiquid);
         mSPV.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SettingsActivity.class);
             intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, SPVPreferenceFragment.class.getName() );
@@ -295,8 +287,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // sweep from paper wallet
         mSweepPref = find(PrefKeys.SWEEP);
-        if (networkData.getLiquid())
-            mSweepPref.setVisible(false);
+        mSweepPref.setVisible(!isLiquid);
         mSweepPref.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SweepSelectActivity.class);
             startActivity(intent);
@@ -326,33 +317,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mSetupDisposable != null)
-            mSetupDisposable.dispose();
         if (mUpdateDisposable != null)
             mUpdateDisposable.dispose();
-    }
-
-    private void initSummaries() {
-
-        try {
-            final Map<String, Object> availableCurrencies = getSession().getAvailableCurrencies();
-            setPricingEntries(availableCurrencies);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            final TwoFactorConfigData twoFaData = getSession().getTwoFactorConfig();
-            setLimitsText(twoFaData.getLimits());
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-
-        if (getSession().getSettings() != null) {
-            setPricingSummary(getSession().getSettings().getPricing());
-            mUnitPref.setSummary(Conversion.getBitcoinOrLiquidUnit());
-            setRequiredNumBlocksSummary(getSession().getSettings().getRequiredNumBlocks());
-        }
     }
 
     private void setupWatchOnlySummary() {
@@ -374,22 +340,23 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         });
     }
 
-    private void updateSettings(final SettingsData settings) {
-        mUpdateDisposable = Observable.just(getSession())
-                            .observeOn(Schedulers.computation())
-                            .map((session) -> {
-            final GDKTwoFactorCall gdkTwoFactorCall = session.changeSettings(
-                settings.toObjectNode());
-            gdkTwoFactorCall.resolve(null, null);
-            session.refreshSettings();
-            return session;
-        })
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe((res) -> {
+    private Observable<SettingsData> updateSettings(final SettingsData settings) {
+        final Activity activity = getActivity();
+        return Observable.just(getSession())
+               .observeOn(Schedulers.computation())
+               .map((session) -> {
+            session.changeSettings(settings.toObjectNode()).resolve(new PopupMethodResolver(activity),
+                                                                    new PopupCodeResolver(activity));
+            return session.refreshSettings();
+        }).observeOn(AndroidSchedulers.mainThread())
+               .map((settingsData) -> {
+            final String text = mObjectMapper.writeValueAsString(settingsData);
+            final ObjectNode node = (ObjectNode) mObjectMapper.readTree(text);
+            getSession().getNotificationModel().onNewNotification(getSession(), node);
+            return settingsData;
+        }).map((settingsData) -> {
             UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
-        }, (e) -> {
-            e.printStackTrace();
-            UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
+            return settingsData;
         });
     }
 
@@ -402,6 +369,46 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         }
         final String minFeeRateText = String.valueOf(minFeeRateKB / 1000.0);
         return cfg().getString( PrefKeys.DEFAULT_FEERATE_SATBYTE, minFeeRateText);
+    }
+
+    private boolean onPriceSourceChanged(final Object o) {
+        if (warnIfOffline(getActivity())) {
+            return false;
+        }
+        final String[] split = o.toString().split(" ");
+        final String currency = split[0];
+        final String exchange = split[1];
+        final SettingsData settings = getSession().getSettings();
+
+        settings.getPricing().setCurrency(currency);
+        settings.getPricing().setExchange(exchange);
+        setPricingSummary(null);
+
+        mUpdateDisposable = Observable.just(getSession())
+                            .subscribeOn(Schedulers.computation())
+                            .map((session) -> {
+            session.changeSettings(
+                settings.toObjectNode()).resolve(null, null);
+            return session;
+        }).map((session) -> {
+            final TwoFactorConfigData twoFaData = session.getTwoFactorConfig();
+            final ObjectNode limitsData = twoFaData.getLimits();
+            return limitsData;
+        }).observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((limitsData) -> {
+            setLimitsText(limitsData);
+            setPricingSummary(settings.getPricing());
+            final Integer satoshi = limitsData.get("satoshi").asInt(0);
+            if (satoshi > 0) {
+                UI.popup(
+                    getActivity(),
+                    "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to top-up the 2FA threshold after continuing.")
+                .show();
+            }
+        }, (final Throwable e) -> {
+            UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
+        });
+        return true;
     }
 
     private boolean onWatchOnlyLoginClicked() {
@@ -460,7 +467,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             final String newValue = UI.getText(inputPGPKey);
             if (!newValue.equals(oldValue)) {
                 settings.setPgp(newValue);
-                updateSettings(settings);
+                mUpdateDisposable = updateSettings(settings).subscribe((s) -> {
+                    inputPGPKey.setText(settings.getPgp());
+                }, (e) -> {
+                    UI.toast(getActivity(), R.string.id_invalid_pgp_key, Toast.LENGTH_LONG);
+                });
             }
         }).build();
         UI.showDialog(dialog);
@@ -519,7 +530,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
     }
 
     private String prioritySummary(final int blocks) {
-        final int blocksPerHour = networkData.getLiquid() ? 60 : 6;
+        final int blocksPerHour = mNetworkData.getLiquid() ? 60 : 6;
         final int n = blocks % blocksPerHour == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour);
         final String confirmationInBlocks = getResources().getString(R.string.id_confirmation_in_d_blocks, blocks);
         final int idTime = blocks % blocksPerHour ==
@@ -621,8 +632,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             logout();
             return;
         }
-        initSummaries();
-        updatesVisibilities();
     }
 
     @Override
@@ -630,50 +639,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         super.onPause();
         if (isZombie())
             return;
-    }
-
-    public void updatesVisibilities() {
-
-        final boolean isHW = getSession().getHWWallet() != null;
-        mPinPref.setVisible(!isHW);
-        mMemonicPref.setVisible(!isHW);
-
-        final boolean isLiquid = networkData.getLiquid();
-        mCustomRatePref.setVisible(!isLiquid);
-        mTxPriorityPref.setVisible(!isLiquid);
-        mPriceSourcePref.setVisible(!isLiquid);
-        mWatchOnlyLogin.setVisible(!isLiquid);
-        mAccountTitle.setVisible(!isLiquid);
-        mSPV.setVisible(!isLiquid);
-
-        try {
-            final boolean anyEnabled = getSession().getTwoFactorConfig().isAnyEnabled();
-            mLimitsPref.setVisible(anyEnabled && !isLiquid);
-            mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            final boolean emailConfirmed = getSession().getTwoFactorConfig().getEmail().isConfirmed();
-            mLocktimePref.setVisible(emailConfirmed && !isLiquid);
-            mSendLocktimePref.setVisible(emailConfirmed && !isLiquid);
-            mSetEmail.setVisible(!emailConfirmed && !isLiquid);
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void update(final TwoFactorConfigData twoFaData) {
-        setLimitsText(twoFaData.getLimits());
-        updatesVisibilities();
-    }
-
-    private void update(final SettingsData settings) {
-        setPricingSummary(settings.getPricing());
-        setRequiredNumBlocksSummary(settings.getRequiredNumBlocks());
-        setUnitSummary(Conversion.getBitcoinOrLiquidUnit());
-        setTimeoutSummary(settings.getAltimeout());
-        updatesVisibilities();
     }
 
     private boolean prompt2FAChange(final String method, final Boolean newValue) {
