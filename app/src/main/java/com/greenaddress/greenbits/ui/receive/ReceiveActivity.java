@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentTransaction;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -70,6 +71,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     private BitmapWorkerTask mBitmapWorkerTask;
     private SubaccountData mSubaccountData;
     private boolean isGenerationOnProgress = false;
+    private Disposable generateDisposte, validateDisposte;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -145,6 +147,10 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (generateDisposte != null)
+            generateDisposte.dispose();
+        if (validateDisposte != null)
+            validateDisposte.dispose();
     }
 
     @Override
@@ -210,7 +216,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     public void generateAddress() {
         // mark generation new address as ongoing
         isGenerationOnProgress = true;
-        Observable.just(getSession())
+        generateDisposte = Observable.just(getSession())
         .subscribeOn(Schedulers.computation())
         .map((session) -> {
             final int subaccount = getActiveAccount();
@@ -251,7 +257,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         if (!getNetwork().getLiquid() || !isLedger)
             return;
 
-        Observable.just(getSession())
+        validateDisposte = Observable.just(getSession())
         .subscribeOn(Schedulers.computation())
         .map((session) -> {
             return generateHW(pointer);
