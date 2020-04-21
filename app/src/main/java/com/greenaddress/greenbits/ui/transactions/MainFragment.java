@@ -25,7 +25,6 @@ import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 
 import org.bitcoinj.core.Sha256Hash;
@@ -47,6 +46,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
@@ -80,6 +80,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     private Disposable blockDisposable;
     private Disposable subaccountDisposable;
     private Disposable transactionDisposable;
+    private Disposable settingsDisposable;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -156,6 +157,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             subaccountDisposable.dispose();
         if (newTransactionDisposable != null)
             newTransactionDisposable.dispose();
+        if (settingsDisposable != null)
+            settingsDisposable.dispose();
     }
 
     @Override
@@ -170,6 +173,14 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
                           .subscribe((blockHeight) -> {
             mTransactionsAdapter.setCurrentBlock(blockHeight);
             mTransactionsAdapter.notifyDataSetChanged();
+        });
+
+        // on new transaction received
+        settingsDisposable = getSession().getNotificationModel().getSettingsObservable()
+                             .observeOn(AndroidSchedulers.mainThread())
+                             .subscribe((transaction) -> {
+            mTransactionsAdapter.notifyDataSetChanged();
+            update();
         });
 
         // on new transaction received

@@ -19,6 +19,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -350,9 +351,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             return session.refreshSettings();
         }).observeOn(AndroidSchedulers.mainThread())
                .map((settingsData) -> {
-            final String text = mObjectMapper.writeValueAsString(settingsData);
-            final ObjectNode node = (ObjectNode) mObjectMapper.readTree(text);
-            getSession().getNotificationModel().onNewNotification(getSession(), node);
+            final ObjectNode details = mObjectMapper.createObjectNode();
+            details.put("event", "settings");
+            details.set("settings", mObjectMapper.valueToTree(settingsData));
+            getSession().getNotificationModel().onNewNotification(getSession(), details);
             return settingsData;
         }).map((settingsData) -> {
             UI.toast(getActivity(), R.string.id_setting_updated, Toast.LENGTH_LONG);
@@ -384,14 +386,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         settings.getPricing().setExchange(exchange);
         setPricingSummary(null);
 
-        mUpdateDisposable = Observable.just(getSession())
-                            .subscribeOn(Schedulers.computation())
-                            .map((session) -> {
-            session.changeSettings(
-                settings.toObjectNode()).resolve(null, null);
-            return session;
-        }).map((session) -> {
-            final TwoFactorConfigData twoFaData = session.getTwoFactorConfig();
+        mUpdateDisposable = updateSettings(settings)
+                            .observeOn(Schedulers.computation())
+                            .map((s) -> {
+            final TwoFactorConfigData twoFaData = getSession().getTwoFactorConfig();
             final ObjectNode limitsData = twoFaData.getLimits();
             return limitsData;
         }).observeOn(AndroidSchedulers.mainThread())
