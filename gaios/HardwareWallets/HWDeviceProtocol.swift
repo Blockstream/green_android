@@ -3,7 +3,7 @@ import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
 
-protocol LedgerProtocol {
+protocol HWDeviceProtocol {
     /**
      * Open the communication channel to the device
      * @throw LedgerException if a communication error occurs

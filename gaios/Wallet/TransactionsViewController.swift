@@ -172,8 +172,10 @@ class TransactionsController: UITableViewController {
             return Guarantee()
         }.then(on: bgq) {
             Registry.shared.cache()
-        }.then(on: bgq) { _ -> Promise<Void> in
-            when(fulfilled: [self.loadWallet(), self.loadTransactions()])
+        }.then(on: bgq) {
+            self.loadWallet()
+        }.then(on: bgq) {
+            self.loadTransactions()
         }.ensure {
             self.stopAnimating()
             if self.tableView.refreshControl!.isRefreshing {

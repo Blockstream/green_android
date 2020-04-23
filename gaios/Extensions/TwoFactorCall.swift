@@ -57,15 +57,26 @@ extension TwoFactorCall {
             // Ledger interface resolver
             if let requiredData = json["required_data"] as? [String: Any] {
                 let action = requiredData["action"] as? String
-                let ledgerResolver = LedgerResolver()
                 return Promise().then(on: bgq) {_ -> Promise<String> in
-                    if action == "get_xpubs" {
-                        return ledgerResolver.getXpubs(requiredData)
-                    } else if action == "sign_message" {
-                        return ledgerResolver.signMessage(requiredData)
-                    } else if action == "sign_tx" {
-                        return ledgerResolver.signTransaction(requiredData)
-                    } else {
+                    switch action {
+                    case "get_xpubs":
+                        return HWResolver.shared.getXpubs(requiredData)
+                    case "sign_message":
+                        return HWResolver.shared.signMessage(requiredData)
+                    case "sign_tx":
+                        return HWResolver.shared.signTransaction(requiredData)
+                    case "get_balance", "get_transactions", "get_unspent_outputs", "get_subaccounts", "get_subaccount", "get_expired_deposits":
+                        return HWResolver.shared.getBlindingNonces(requiredData)
+                    case "create_transaction":
+                        return HWResolver.shared.getBlindingKeys(requiredData)
+                    case "get_receive_address":
+                        let address = requiredData["address"] as? [String: Any]
+                        let script = address?["blinding_script_hash"] as? String
+                        return HWResolver.shared.getBlindingKey(script: script!)
+                            .compactMap { bkey in
+                                return "{\"blinding_key\":\"\(bkey)\"}"
+                            }
+                    default:
                         throw GaError.GenericError
                     }
                 }.then { code in

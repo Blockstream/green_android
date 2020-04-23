@@ -3,7 +3,7 @@ import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
 
-final class Ledger: LedgerCommands {
+final class Ledger: LedgerCommands, HWResolverProtocol {
     public static let shared = Ledger()
 
     let hwDevice: [String: Any] = ["name": "Ledger", "supports_arbitrary_scripts": true, "supports_low_r": false]
@@ -109,4 +109,33 @@ final class Ledger: LedgerCommands {
                 return Observable.just(base58)
         }
     }
+
+    // Liquid not support
+    func getBlindingKey(scriptHex: String) -> Observable<String?> {
+        return Observable.error(JadeError.Abort(""))
+    }
+
+    func getBlindingNonce(pubkey: String, scriptHex: String) -> Observable<String?> {
+        return Observable.error(JadeError.Abort(""))
+    }
+
+    func signLiquidTransaction(pubkey: String, scriptHex: String) -> Observable<String?> {
+        return Observable.error(JadeError.Abort(""))
+    }
+
+    func signLiquidTransaction(inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<LiquidHWResult> {
+        return Observable.error(JadeError.Abort(""))
+    }
+
+    func nonces(bscripts: [[String: Any]]) -> Observable<[String?]> {
+        return Observable.error(JadeError.Abort(""))
+    }
+
+    func blindingKey(scriptHex: String) -> Observable<String?> {
+        return Observable.error(JadeError.Abort(""))
+    }
+    func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?> {
+        return Observable.error(JadeError.Abort(""))
+    }
+
 }

@@ -5,7 +5,7 @@ import CoreBluetooth
 
 // Communication class with a Ledger device connected using Bluetooth Low Energy (Nano X)
 
-class LedgerDeviceBLE: LedgerProtocol {
+class LedgerDeviceBLE: HWDeviceProtocol {
 
     var peripheral: Peripheral!
     var characteristicWrite: Characteristic?

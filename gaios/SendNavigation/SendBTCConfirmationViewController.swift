@@ -150,7 +150,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
 
         firstly {
             content.slidingButton.isUserInteractionEnabled = false
-            if Ledger.shared.connected {
+            if HWResolver.shared.hw?.connected ?? false {
                 DropAlert().success(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""), delay: 4)
             }
             return Guarantee()
