@@ -177,7 +177,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (isGenerationOnProgress) {
-            UI.toast(this, R.string.id_please_hold_on_while_your, Toast.LENGTH_LONG);
+            showWaitingToast();
             return true;
         }
         switch (item.getItemId()) {
@@ -195,10 +195,21 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     @Override
     public void onBackPressed() {
         if (isGenerationOnProgress) {
-            UI.toast(this, R.string.id_please_hold_on_while_your, Toast.LENGTH_LONG);
+            showWaitingToast();
             return;
         }
         super.onBackPressed();
+    }
+
+    private void showWaitingToast() {
+        if (getSession() != null && getSession().getHWWallet() != null) {
+            final String hwDeviceName = getSession().getHWWallet().getHWDeviceData().getDevice().getName();
+            if (getNetwork().getLiquid() && "Ledger".equals(hwDeviceName)) {
+                UI.toast(this, string.id_please_wait_while_your_ledger, Toast.LENGTH_LONG);
+                return;
+            }
+        }
+        UI.toast(this, R.string.id_please_hold_on_while_your, Toast.LENGTH_LONG);
     }
 
     private void updateAddressText() {
