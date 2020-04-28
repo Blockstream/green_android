@@ -114,8 +114,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         CharInputFilter.setIfNecessary(noteText);
 
         // Set currency & amount
-        final long amount = mTxJson.get("satoshi").asLong();
         final long fee = mTxJson.get("fee").asLong();
+        final long amount = mTxJson.get("satoshi").get("btc").asLong() - fee;
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
         final TextView sendFee = UI.find(this, R.id.sendFee);
         final JsonNode assetTag = address.get("asset_tag");
