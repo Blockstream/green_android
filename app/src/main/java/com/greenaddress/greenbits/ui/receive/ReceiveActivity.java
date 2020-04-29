@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -141,6 +142,11 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
                   UI.find(this, id.assetWhitelistWarning));
         UI.showIf(getNetwork().getLiquid() && "Ledger".equals(hwDeviceName),
                   UI.find(this, id.addressWarning));
+
+        findViewById(R.id.assetWhitelistWarning).setOnClickListener(v -> {
+            final Uri uri = Uri.parse("https://docs.blockstream.com/green/hww/hww-index.html#ledger-supported-assets");
+            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+        });
 
         generateAddress();
     }
