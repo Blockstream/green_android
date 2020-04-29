@@ -212,7 +212,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         if (getSession() != null && getSession().getHWWallet() != null) {
             final String hwDeviceName = getSession().getHWWallet().getHWDeviceData().getDevice().getName();
             if (getNetwork().getLiquid() && "Ledger".equals(hwDeviceName)) {
-                UI.toast(this, string.id_please_wait_while_your_ledger, Toast.LENGTH_LONG);
+                UI.toast(this, string.id_please_wait_until_your_ledger, Toast.LENGTH_LONG);
                 return;
             }
         }

@@ -190,6 +190,7 @@
   <string name="id_fee_rate_must_be_at_least_s">Gebührenrate muss mindestens %s satoshi/vbyte sein.</string>
   <string name="id_fee_rate_s">Gebührenrate: %s</string>
   <string name="id_fee_s__s">Gebühr: %s / %s</string>
+  <string name="id_fees_are_too_low">Fees are too low</string>
   <string name="id_for_long_term_storage">Zur langfristigen Aufbewahrung</string>
   <string name="id_for_most_users">Für die meisten Nutzer</string>
   <string name="id_for_securities_investors">Für Anleger und Investoren</string>
@@ -258,7 +259,7 @@
   <string name="id_lbtc_has_no_issuer_and_is">L-BTC has no issuer and is instead created on the network via a peg-in.</string>
   <string name="id_learn_more_about_s">Erfahre mehr über %s.</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard erkannt, für Zugriff bitte die richtige App öffnen.</string>
-  <string name="id_ledger_supports_a_limited_set">Ledger unterstützt nur eine begrenzte Anzahl an Assets: Bitte lies unsere Dokumentation, bevor du andere Assets als L-BTC oder USDt empfangen willst.</string>
+  <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: tap here to check the list.</string>
   <string name="id_lets_get_you_set_up">Beginnen wir mit dem Setup.</string>
   <string name="id_liquid_securities">Liquid-Wertpapiere</string>
   <string name="id_liquid_securities_account">Liquid-Wertpapier-Konto</string>
@@ -296,6 +297,7 @@
   <string name="id_network_fee">NETZWERK-GEBÜHR</string>
   <string name="id_network_monitor">Netzwerk-Monitor</string>
   <string name="id_new_accounts_functionality">Neue Kontofunktionalität in Kürze!</string>
+  <string name="id_new_fee">New fee</string>
   <string name="id_new_incoming_transaction_in">Neue Transaktion eingegangen auf Konto %s (%s).</string>
   <string name="id_new_outgoing_transaction_from">Neue ausgehende Transaktion von Konto %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">Neue %s Transaktion von %s auf Konto %s.</string>
@@ -359,8 +361,9 @@
   <string name="id_please_set_and_enable_socks5">Bitte setze und aktiviere den SOCKS5-Proxy und -Port um Tor zu benutzen</string>
   <string name="id_please_tap_card">Bitte tippen Sie die Karte an</string>
   <string name="id_please_verify_that_the_address">Bitte kontrolliere, dass die Adresse auf deiner Hardware-Wallet mit der Adresse auf deinem Smartphone übereinstimmt.</string>
-  <string name="id_please_wait_while_your_ledger">Please wait while your Ledger validates your address and shows it on the screen.</string>
+  <string name="id_please_wait_until_your_ledger">Please wait until your Ledger displays the address to validate it. This could take up to 20 seconds.</string>
   <string name="id_precision">Genauigkeit</string>
+  <string name="id_previous_fee">Previous fee</string>
   <string name="id_privacy_policy">Datenschutzerklärung</string>
   <string name="id_problem_with_key_1s">Problem mit Schlüssel %1$s</string>
   <string name="id_provide_this_id_to_the_issuer">Gib diese ID an den Herausgeber weiter, um die Genehmigung zum Erhalt eines Liquid-Wertpapiers zu erlangen.</string>
@@ -386,6 +389,7 @@
   <string name="id_refresh">Neu Laden</string>
   <string name="id_remember_me">An mich erinnern</string>
   <string name="id_remove_custom_network">Eigenes Netzwerk entfernen</string>
+  <string name="id_rename_account">Rename account</string>
   <string name="id_replaceable">austauschbar</string>
   <string name="id_request_amount">BETRAG ANFORDERN</string>
   <string name="id_request_failed">Anfrage gescheitert</string>

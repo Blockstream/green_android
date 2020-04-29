@@ -190,6 +190,7 @@
   <string name="id_fee_rate_must_be_at_least_s">转账手续费至少为%s satoshi/vbyte。</string>
   <string name="id_fee_rate_s">转账手续费：%s</string>
   <string name="id_fee_s__s">费用： %s / %s</string>
+  <string name="id_fees_are_too_low">Fees are too low</string>
   <string name="id_for_long_term_storage">用于长期存储</string>
   <string name="id_for_most_users">对于大部分用户</string>
   <string name="id_for_securities_investors">对于证券投资者</string>
@@ -258,7 +259,7 @@
   <string name="id_lbtc_has_no_issuer_and_is">L-BTC并没有对应的发行方，是由锁入操作生成的。</string>
   <string name="id_learn_more_about_s">了解更多%s。</string>
   <string name="id_ledger_dashboard_detected">检测到Ledger Dashboard，请打开正确的应用来获取。</string>
-  <string name="id_ledger_supports_a_limited_set">Ledger支持的资产种类是有限的：接收除了L-BTC和USDt以外的资产前请先查看我们的文档。</string>
+  <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: tap here to check the list.</string>
   <string name="id_lets_get_you_set_up">立即开始设置。</string>
   <string name="id_liquid_securities">Liquid证券型资产</string>
   <string name="id_liquid_securities_account">Liquid证券账户</string>
@@ -296,6 +297,7 @@
   <string name="id_network_fee">网络费用</string>
   <string name="id_network_monitor">网络监视器</string>
   <string name="id_new_accounts_functionality">新的账户功能即将上线！</string>
+  <string name="id_new_fee">New fee</string>
   <string name="id_new_incoming_transaction_in">账户%s正在接收新的转账（%s）。</string>
   <string name="id_new_outgoing_transaction_from">账户%s发起新的转账（%s）。</string>
   <string name="id_new_s_transaction_of_s_in">新的%s转账金额为%s，账户为%s。</string>
@@ -359,8 +361,9 @@
   <string name="id_please_set_and_enable_socks5">请设置并启用SOCKS5代理和端口以使用Tor</string>
   <string name="id_please_tap_card">请点击卡片</string>
   <string name="id_please_verify_that_the_address">请确认硬件钱包上的地址和你手机上的地址是一致的。</string>
-  <string name="id_please_wait_while_your_ledger">请稍等，你的Ledger正在验证你的地址，之后会将地址显示在屏幕上。</string>
+  <string name="id_please_wait_until_your_ledger">Please wait until your Ledger displays the address to validate it. This could take up to 20 seconds.</string>
   <string name="id_precision">精确</string>
+  <string name="id_previous_fee">Previous fee</string>
   <string name="id_privacy_policy">隐私政策</string>
   <string name="id_problem_with_key_1s">密钥%1$s出现了问题</string>
   <string name="id_provide_this_id_to_the_issuer">将这个ID提供给Liquid证券的发行方以获得授权。</string>
@@ -386,6 +389,7 @@
   <string name="id_refresh">刷新</string>
   <string name="id_remember_me">记住账号</string>
   <string name="id_remove_custom_network">删除自定义网络</string>
+  <string name="id_rename_account">Rename account</string>
   <string name="id_replaceable">可替换</string>
   <string name="id_request_amount">请求金额</string>
   <string name="id_request_failed">请求失败</string>

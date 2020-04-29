@@ -190,6 +190,7 @@
   <string name="id_fee_rate_must_be_at_least_s">Комиссия должна быть не менее %s сатоши/vbyte.</string>
   <string name="id_fee_rate_s">Комиссия: %s</string>
   <string name="id_fee_s__s">Комиссия всего: %s/%s</string>
+  <string name="id_fees_are_too_low">Fees are too low</string>
   <string name="id_for_long_term_storage">For long term storage</string>
   <string name="id_for_most_users">For most users</string>
   <string name="id_for_securities_investors">For securities investors</string>
@@ -258,7 +259,7 @@
   <string name="id_lbtc_has_no_issuer_and_is">L-BTC has no issuer and is instead created on the network via a peg-in.</string>
   <string name="id_learn_more_about_s">Learn more about %s.</string>
   <string name="id_ledger_dashboard_detected">Обнаружена панель Ledger, пожалуйста, откройте правильное приложение для доступа.</string>
-  <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: check our documentation before receiving assets other than L-BTC or USDt.</string>
+  <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: tap here to check the list.</string>
   <string name="id_lets_get_you_set_up">Давайте произведем настройку.</string>
   <string name="id_liquid_securities">Liquid Securities</string>
   <string name="id_liquid_securities_account">Liquid Securities Account</string>
@@ -296,6 +297,7 @@
   <string name="id_network_fee">КОМИССИЯ СЕТИ</string>
   <string name="id_network_monitor">Сетевой монитор</string>
   <string name="id_new_accounts_functionality">Ожидается добавление новых аккаунтов!</string>
+  <string name="id_new_fee">New fee</string>
   <string name="id_new_incoming_transaction_in">Новая входящая транзакция на аккаунте%s (%s).</string>
   <string name="id_new_outgoing_transaction_from">Новая исходящая транзакция с аккаунта %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">Новая %s транзакция %s на аккаунте %s.</string>
@@ -359,8 +361,9 @@
   <string name="id_please_set_and_enable_socks5">Пожалуйста, включите SOCKS5 прокси и задайте порт для использования Tor</string>
   <string name="id_please_tap_card">Пожалуйста, нажмите на карточку</string>
   <string name="id_please_verify_that_the_address">Please verify that the address shown on your hardware wallet matches the one on your phone.</string>
-  <string name="id_please_wait_while_your_ledger">Please wait while your Ledger validates your address and shows it on the screen.</string>
+  <string name="id_please_wait_until_your_ledger">Please wait until your Ledger displays the address to validate it. This could take up to 20 seconds.</string>
   <string name="id_precision">Precision</string>
+  <string name="id_previous_fee">Previous fee</string>
   <string name="id_privacy_policy">Политика конфиденциальности</string>
   <string name="id_problem_with_key_1s">Проблема с ключом %1$s</string>
   <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive a Liquid Security.</string>
@@ -386,6 +389,7 @@
   <string name="id_refresh">Обновление</string>
   <string name="id_remember_me">Remember me</string>
   <string name="id_remove_custom_network">Удалить настраиваемую сеть</string>
+  <string name="id_rename_account">Rename account</string>
   <string name="id_replaceable">заменяемый</string>
   <string name="id_request_amount">ЗАПРОСИТЬ СУММУ</string>
   <string name="id_request_failed">Ошибка запроса</string>

@@ -190,6 +190,7 @@
   <string name="id_fee_rate_must_be_at_least_s">A taxa de transação deve ser no mínimo %s satoshi/vbyte.</string>
   <string name="id_fee_rate_s">Taxa de transação: %s</string>
   <string name="id_fee_s__s">Taxa: %s / %s</string>
+  <string name="id_fees_are_too_low">Fees are too low</string>
   <string name="id_for_long_term_storage">Para armazenamento a longo prazo</string>
   <string name="id_for_most_users">Para a maioria dos usuários</string>
   <string name="id_for_securities_investors">Para investidores de valores mobiliários</string>
@@ -258,7 +259,7 @@
   <string name="id_lbtc_has_no_issuer_and_is">L-BTC não possui emissor e, em vez disso, é criado na rede por meio de um procedimento chamado peg-in.</string>
   <string name="id_learn_more_about_s">Aprenda mais sobre %s.</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard detectada, por favor, abra o aplicativo correto para acessar.</string>
-  <string name="id_ledger_supports_a_limited_set">A Ledger suporta um conjunto limitado de ativos: verifique nossa documentação antes de receber ativos que não sejam L-BTC ou USDt.</string>
+  <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: tap here to check the list.</string>
   <string name="id_lets_get_you_set_up">Vamos preparar sua carteira.</string>
   <string name="id_liquid_securities">Valores Mobiliários</string>
   <string name="id_liquid_securities_account">Conta de Valores Mobiliários</string>
@@ -296,6 +297,7 @@
   <string name="id_network_fee">TAXA DE TRANSAÇÃO</string>
   <string name="id_network_monitor">Monitor de Rede</string>
   <string name="id_new_accounts_functionality">Funcionalidade "novas contas" em breve!</string>
+  <string name="id_new_fee">New fee</string>
   <string name="id_new_incoming_transaction_in">Nova transação chegando na conta %s (%s).</string>
   <string name="id_new_outgoing_transaction_from">Nova transação saindo da conta %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">Nova %s transação de %s na conta %s.</string>
@@ -359,8 +361,9 @@
   <string name="id_please_set_and_enable_socks5">Defina e habilite o proxy SOCKS5 e a porta para usar o Tor</string>
   <string name="id_please_tap_card">Por favor, encoste o cartão</string>
   <string name="id_please_verify_that_the_address">Verifique se o endereço mostrado na sua carteira física corresponde ao endereço do seu telefone.</string>
-  <string name="id_please_wait_while_your_ledger">Aguarde enquanto a Ledger valida seu endereço e o mostre na tela.</string>
+  <string name="id_please_wait_until_your_ledger">Please wait until your Ledger displays the address to validate it. This could take up to 20 seconds.</string>
   <string name="id_precision">Precisão</string>
+  <string name="id_previous_fee">Previous fee</string>
   <string name="id_privacy_policy">Política de Privacidade</string>
   <string name="id_problem_with_key_1s">Problema com a chave %1$s</string>
   <string name="id_provide_this_id_to_the_issuer">Forneça esse ID ao emissor para obter autorização para receber um Valor Mobiliário na Liquid.</string>
@@ -386,6 +389,7 @@
   <string name="id_refresh">Atualizar</string>
   <string name="id_remember_me">Lembrar</string>
   <string name="id_remove_custom_network">Remover rede personalizada</string>
+  <string name="id_rename_account">Rename account</string>
   <string name="id_replaceable">substituível</string>
   <string name="id_request_amount">SOLICITAR MONTANTE</string>
   <string name="id_request_failed">Falha de Solicitação</string>
