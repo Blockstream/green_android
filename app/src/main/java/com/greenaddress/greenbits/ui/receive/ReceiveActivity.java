@@ -51,6 +51,7 @@ import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
@@ -270,6 +271,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
         validateDisposte = Observable.just(getSession())
                            .subscribeOn(Schedulers.computation())
+                           .timeout(30, TimeUnit.SECONDS)
                            .map((session) -> {
             return generateHW(pointer);
         })

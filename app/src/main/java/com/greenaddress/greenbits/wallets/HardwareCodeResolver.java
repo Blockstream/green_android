@@ -54,8 +54,13 @@ public class HardwareCodeResolver implements CodeResolver {
             break;
 
         case "sign_message":
-            final String derHex = hwWallet.signMessage(parent, requiredData.getPath(), requiredData.getMessage());
-            data.setSignature(derHex);
+            try {
+                final String derHex = hwWallet.signMessage(parent, requiredData.getPath(), requiredData.getMessage());
+                data.setSignature(derHex);
+            } catch (final Exception e) {
+                future.set(null);
+                return future;
+            }
             break;
 
         case "sign_tx":

@@ -61,7 +61,7 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 	}
 
 	@Override
-	public Future<byte[]> exchange(byte[] command) throws BTChipException {
+	public synchronized Future<byte[]> exchange(byte[] command) throws BTChipException {
 		ByteArrayOutputStream response = new ByteArrayOutputStream();
 		byte[] responseData;
 		int offset = 0;

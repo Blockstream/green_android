@@ -2,7 +2,7 @@ package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -39,36 +39,7 @@ public abstract class LoggedActivity extends GaActivity {
     private Long mTryingAt = 0L;
 
     private Disposable networkDisposable, transactionDisposable,
-                       loginDisposable, logoutDisposable;
-
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        networkDisposable = getSession().getNotificationModel().getNetworkObservable()
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(networkNode -> {
-            updateNetwork(networkNode);
-            restoreLogin(networkNode);
-        });
-        transactionDisposable = getSession().getNotificationModel().getTransactionObservable()
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(txNode -> {
-            UI.toast(this, R.string.id_new_transaction, Toast.LENGTH_LONG);
-        });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (networkDisposable != null)
-            networkDisposable.dispose();
-        if (transactionDisposable != null)
-            transactionDisposable.dispose();
-        if (loginDisposable != null)
-            loginDisposable.dispose();
-        if (logoutDisposable != null)
-            logoutDisposable.dispose();
-    }
+                       logoutDisposable;
 
     @Override
     public void onResume() {
@@ -91,6 +62,53 @@ public abstract class LoggedActivity extends GaActivity {
         final JsonNode networkNode = getSession().getNotificationModel().getNetworkNode();
         if (networkNode != null)
             updateNetwork(networkNode);
+
+        transactionDisposable = getSession().getNotificationModel().getTransactionObservable()
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(txNode -> {
+            UI.toast(this, R.string.id_new_transaction, Toast.LENGTH_LONG);
+        });
+
+        final Observable<JsonNode> networkObservable = getSession().getNotificationModel().getNetworkObservable()
+                                                       .observeOn(AndroidSchedulers.mainThread())
+                                                       .map(network -> {
+            updateNetwork(network);
+            return network;
+        }).filter(network -> {
+            return network.get("connected").asBoolean(false) &&
+            network.get("login_required").asBoolean(false);
+        }).observeOn(Schedulers.computation());
+
+        final HWWallet hwWallet = getSession().getHWWallet();
+        if (hwWallet == null) {
+            networkDisposable = networkObservable.map(network -> {
+                getSession().disconnect();
+                return network;
+            }).subscribe(res -> {
+                exit();
+            }, (final Throwable e) -> {
+                e.printStackTrace();
+                exit();
+            });
+        } else {
+            networkDisposable = networkObservable.map(network -> {
+                return getSession();
+            }).map(session -> {
+                return session.login(hwWallet.getHWDeviceData(), "", "");
+            }).flatMap(c -> {
+                return Observable.just(c).map(call -> {
+                    return call.resolve(null,
+                                        new HardwareCodeResolver(this, hwWallet));
+                }).doOnError(throwable -> {
+                    Log.e(TAG, "Throwable " + throwable.getMessage());
+                });
+            }).subscribe(res -> {
+                onOnline();
+            }, (final Throwable e) -> {
+                e.printStackTrace();
+                exit();
+            });
+        }
     }
 
     @Override
@@ -105,6 +123,13 @@ public abstract class LoggedActivity extends GaActivity {
             mSnackbar.dismiss();
             mSnackbar = null;
         }
+
+        if (networkDisposable != null)
+            networkDisposable.dispose();
+        if (transactionDisposable != null)
+            transactionDisposable.dispose();
+        if (logoutDisposable != null)
+            logoutDisposable.dispose();
     }
 
     private void updateNetwork(final JsonNode networkNode) {
@@ -119,39 +144,6 @@ public abstract class LoggedActivity extends GaActivity {
             onOnline();
             return;
         }
-    }
-
-    private void restoreLogin(final JsonNode networkNode) {
-        final boolean connected = networkNode.get("connected").asBoolean();
-        if (!connected) {
-            return;
-        }
-        final boolean isLoginRequired = networkNode.get("login_required").asBoolean(false);
-        if (!isLoginRequired) {
-            return;
-        }
-        final HWWallet hwWallet = getSession().getHWWallet();
-        if (hwWallet == null) {
-            exit();
-            return;
-        }
-
-        // try to automatically login just in case of hw
-        loginDisposable = Observable.just(getSession())
-                          .observeOn(Schedulers.computation())
-                          .map((session) -> {
-            session.login(hwWallet.getHWDeviceData(), "", "").resolve(null,
-                                                                      new HardwareCodeResolver(this, hwWallet));
-            session.setHWWallet(hwWallet);
-            return session;
-        })
-                          .observeOn(AndroidSchedulers.mainThread())
-                          .subscribe((session) -> {
-            onOnline();
-        }, (final Throwable e) -> {
-            e.printStackTrace();
-            exit();
-        });
     }
 
     private void onOnline() {
@@ -255,7 +247,6 @@ public abstract class LoggedActivity extends GaActivity {
             mTimer.purge();
         }
     }
-
 
     protected String getBitcoinUnitClean() {
         return Conversion.getUnitKey();

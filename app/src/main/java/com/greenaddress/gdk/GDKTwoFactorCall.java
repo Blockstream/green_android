@@ -58,7 +58,12 @@ public class GDKTwoFactorCall {
                     Log.d("RSV", "resolve_code " + mStatus);
                     final String value;
                     if (mStatus.getDevice() != null) {
-                        value = codeResolver.hardwareRequest(mStatus.getRequiredData()).get();
+                        try {
+                            value = codeResolver.hardwareRequest(mStatus.getRequiredData()).get();
+                        } catch (final Exception e) {
+                            Log.d("RSV", "error " + mStatus);
+                            throw new Exception("id_action_canceled");
+                        }
                     } else {
                         value = codeResolver.code(mStatus.getMethod()).get();
                     }
@@ -75,6 +80,9 @@ public class GDKTwoFactorCall {
                 case "done":
                     Log.d("RSV", "done " + mStatus);
                     destroyTwofactorCall();
+                    if (mStatus.getResult() == null) {
+                        return mObjectMapper.createObjectNode();
+                    }
                     return mStatus.getResult();
             }
         }
