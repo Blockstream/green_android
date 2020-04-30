@@ -99,17 +99,20 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mStatusSPVUnverified = UI.find(this, R.id.status_spv_unverified);
         mStatusIcon = UI.find(this, R.id.status_icon);
 
-        final boolean isWatchOnly = getSession().isWatchOnly();
-
         try {
             mTxItem = (TransactionData) getIntent().getSerializableExtra("TRANSACTION");
-            mAssetsBalances = (Map<String, Long>)getIntent().getSerializableExtra("BALANCE");
-            mNetworkData = getSession().getNetworkData();
+            mAssetsBalances = (Map<String, Long>) getIntent().getSerializableExtra("BALANCE");
         } catch (final Exception e) {
             Log.d(TAG, e.getLocalizedMessage());
             finishOnUiThread();
             return;
         }
+    }
+
+    public void refresh() {
+
+        mNetworkData = getSession().getNetworkData();
+        final boolean isWatchOnly = getSession().isWatchOnly();
 
         // Set txid
         final TextView hashText = UI.find(this, R.id.txHashText);
@@ -264,6 +267,14 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             mStatusIncreaseFee.setOnClickListener(this);
         }
         mStatusIcon.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!isFinishing()) {
+            refresh();
+        }
     }
 
     @Override
