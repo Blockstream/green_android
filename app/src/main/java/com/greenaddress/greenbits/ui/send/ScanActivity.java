@@ -438,6 +438,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                      .map((session) -> {
             final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
             final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
+            if (!transactionRaw.has("addressees"))
+                throw new Exception("Missing field addressees");
             final String error = transactionRaw.get("error").asText();
             if (!error.isEmpty() && !"id_invalid_amount".equals(error))
                 throw new Exception(error);
@@ -446,12 +448,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe((transactionRaw) -> {
             removeUtxosIfTooBig(transactionRaw);
-            boolean skip_assets = false;
-            if (networkData.getLiquid() && transactionRaw.get("addressees_have_assets") != null &&
-                transactionRaw.get("addressees_have_assets").asBoolean(false)) {
-                skip_assets = true;
-            }
-            if (networkData.getLiquid() && !skip_assets)
+            final boolean showAssets = !transactionRaw.get("addressees").get(0).has("asset_tag");
+            if (networkData.getLiquid() && showAssets)
                 result.setClass(this, AssetsSelectActivity.class);
             else
                 result.setClass(this, SendAmountActivity.class);
