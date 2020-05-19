@@ -10,6 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -25,6 +33,7 @@ import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 
 import org.bitcoinj.core.Sha256Hash;
@@ -35,18 +44,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observer;
 
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
@@ -217,7 +218,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             mSubaccount = subaccount;
             final Map<String, Long> balance = getBalance();
             mAccountView.setTitle(subaccount.getNameWithDefault(getString(R.string.id_main_account)));
-            mAccountView.setBalance(balance.get("btc").longValue());
+            mAccountView.setBalance(balance.get(getNetwork().getPolicyAsset()).longValue());
             mAssetsSelection.setVisibility(getNetwork().getLiquid() ? View.VISIBLE : View.GONE);
             mAssetsSelection.setText(balance.size() == 1 ?
                                      getString(R.string.id_d_asset_in_this_account, balance.size()) :
@@ -329,7 +330,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             }
         } else if (view.getId() == R.id.sendButton) {
             view.setEnabled(true);
-            if (getNetwork().getLiquid() && (getBalance() != null && getBalance().get("btc") == 0L)) {
+
+            if (getNetwork().getLiquid() && (getBalance() != null && getBalance().get(getNetwork().getPolicyAsset()) == 0L)) {
                 UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
                 .content(R.string.id_insufficient_lbtc_to_send_a)
                 .onPositive((dialog, which) -> {

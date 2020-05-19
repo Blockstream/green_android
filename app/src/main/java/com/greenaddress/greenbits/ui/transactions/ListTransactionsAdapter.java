@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui.transactions;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -129,7 +128,7 @@ public class ListTransactionsAdapter extends
                 final String assetId =
                     txItem.getSatoshi().keySet().iterator().next();
                 final AssetInfoData assetInfo = getRegistry().getInfos().get(assetId);
-                message = assetInfo != null ? assetInfo.getEntity().getDomain() : assetId;
+                message = assetInfo != null && assetInfo.getEntity() != null  ? assetInfo.getEntity().getDomain() : assetId;
             } else if (txItem.getTxType() == TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(
                                             string.id_redeposited),
