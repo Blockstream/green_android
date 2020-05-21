@@ -19,10 +19,6 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,6 +42,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.greenaddress.greenapi.Registry.getRegistry;
 import static com.greenaddress.greenapi.Session.getSession;
@@ -638,7 +639,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private boolean isAsset() {
-        return getSession().getNetworkData().getLiquid() && !"btc".equals(mSelectedAsset);
+        return getSession().getNetworkData().getLiquid() && !"btc".equals(mSelectedAsset) && !getNetwork().getPolicyAsset().equals(mSelectedAsset);
     }
 
     @Override

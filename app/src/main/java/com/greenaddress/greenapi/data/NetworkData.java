@@ -117,7 +117,7 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
     }
 
     public String getPolicyAsset() {
-        return policyAsset;
+        return policyAsset == null ? "btc" : policyAsset;
     }
 
     public void setPolicyAsset(String policyAsset) {

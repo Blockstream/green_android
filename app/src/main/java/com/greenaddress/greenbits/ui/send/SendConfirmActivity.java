@@ -12,10 +12,6 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,6 +34,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.greenaddress.greenapi.Session.getSession;
 
@@ -115,7 +116,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
         // Set currency & amount
         final long fee = mTxJson.get("fee").asLong();
-        final long amount = mTxJson.get("satoshi").get("btc").asLong() - fee;
+        final long amount = mTxJson.get("satoshi").get(getNetwork().getPolicyAsset()).asLong() - fee;
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
         final TextView sendFee = UI.find(this, R.id.sendFee);
         final JsonNode assetTag = address.get("asset_tag");

@@ -18,14 +18,8 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -53,6 +47,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
 import static com.greenaddress.greenapi.Session.getSession;
@@ -208,9 +207,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // Set two-factor threshold
         mLimitsPref = find(PrefKeys.TWO_FAC_LIMITS);
-        mLimitsPref.setOnPreferenceClickListener(this::onLimitsPreferenceClicked);
-        mLimitsPref.setVisible(anyEnabled && !isLiquid);
-        setLimitsText(twoFaData.getLimits());
+        final boolean limitsVisible = anyEnabled && !isLiquid;
+        if (limitsVisible) {
+            mLimitsPref.setOnPreferenceClickListener(this::onLimitsPreferenceClicked);
+            mLimitsPref.setVisible(limitsVisible);
+            setLimitsText(twoFaData.getLimits());
+        }
 
         // Enable nlocktime recovery emails
         mLocktimePref = find(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS);
@@ -243,7 +245,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         // Cancel two factor reset
         mTwoFactorRequestResetPref = find(PrefKeys.RESET_TWOFACTOR);
         mTwoFactorRequestResetPref.setOnPreferenceClickListener(preference -> prompt2FAChange("reset", true));
-        mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
+        mTwoFactorRequestResetPref.setVisible(limitsVisible);
 
         // Mnemonic
         mMemonicPref = find(PrefKeys.MNEMONIC_PASSPHRASE);
