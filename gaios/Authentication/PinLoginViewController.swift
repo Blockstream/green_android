@@ -99,8 +99,8 @@ class PinLoginViewController: UIViewController {
         }.map(on: bgq) {
             let jsonData = try JSONSerialization.data(withJSONObject: $0)
             let pin = withPIN ?? $0["plaintext_biometric"] as? String
-            let pinData = String(data: jsonData, encoding: .utf8)
-            try getSession().loginWithPin(pin: pin!, pin_data: pinData!)
+            let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+            try DummyResolve(call: getSession().loginWithPin(pin: pin!, pin_data: pinData!))
         }.then {
             Registry.shared.refresh().recover { _ in Guarantee() }
         }.ensure {
