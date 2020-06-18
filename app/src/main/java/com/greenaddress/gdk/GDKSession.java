@@ -108,7 +108,11 @@ public class GDKSession {
     }
 
     public void loginWithPin(final String pin, final PinData pinData) throws Exception {
-        GDK.login_with_pin(mNativeSession, pin, pinData);
+        final Object res = GDK.login_with_pin(mNativeSession, pin, pinData);
+        final GDKTwoFactorCall call = new GDKTwoFactorCall(res);
+        final ObjectNode node =  call.resolve(null, null);
+        if (node != null && node.has("error"))
+            throw new Exception(node.get("error").asText());
     }
 
     public void loginWithMnemonic(final String mnemonic, final String password) throws Exception {
