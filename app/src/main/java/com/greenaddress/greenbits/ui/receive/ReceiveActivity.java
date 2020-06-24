@@ -101,6 +101,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
             final String subaccount = getIntent().getStringExtra("SUBACCOUNT");
             mSubaccountData = mObjectMapper.readValue(subaccount, SubaccountData.class);
         } catch (final Exception e) {
+            Toast.makeText(this, string.id_operation_failure, Toast.LENGTH_LONG).show();
             finishOnUiThread();
             return;
         }
@@ -110,8 +111,13 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         final TextView receivingIdValue = UI.find(this, id.receivingIdValue);
 
         // Show information only for authorized accounts
-        if (mSubaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT])) {
+        if (mSubaccountData.getType() != null && mSubaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT])) {
             final String receivingID = mSubaccountData.getReceivingId();
+            if (receivingID == null || receivingID.isEmpty()) {
+                Toast.makeText(this, string.id_operation_failure, Toast.LENGTH_LONG).show();
+                finishOnUiThread();
+                return;
+            }
             receivingIdValue.setText(receivingID);
             receivingIdValue.setOnClickListener(
                 v -> onCopyClicked("auth_code", receivingID, string.id_address_copied_to_clipboard));
