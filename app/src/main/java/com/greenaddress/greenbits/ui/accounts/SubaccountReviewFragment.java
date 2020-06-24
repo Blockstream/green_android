@@ -112,7 +112,7 @@ public class SubaccountReviewFragment extends GAFragment {
         .subscribe((session) -> {
             activity.finish();
         }, (final Throwable e) -> {
-            Toast.makeText(getContext(), R.string.id_operation_failure,
+            Toast.makeText(activity, R.string.id_operation_failure,
                            Toast.LENGTH_LONG).show();
         });
     }
