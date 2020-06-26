@@ -95,6 +95,7 @@ extension HardwareWalletScanViewController {
     enum DeviceError: Error {
         case dashboard
         case wrong_app
+        case outdated_app
     }
 
     func network() -> String {
@@ -113,10 +114,14 @@ extension HardwareWalletScanViewController {
             .flatMap { _ in Ledger.shared.application() }
             .compactMap { res in
                 let name = res["name"] as? String ?? ""
+                let versionString = res["version"] as? String ?? ""
+                let version = versionString.split(separator: ".").map {Int($0)}
                 if name.contains("OLOS") {
                     throw DeviceError.dashboard // open app from dashboard
                 } else if name != self.network() {
                     throw DeviceError.wrong_app // change app
+                } else if name == "Bitcoin" && (version[0]! < 1 || version[1]! < 4) {
+                    throw DeviceError.outdated_app
                 }
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in
@@ -138,6 +143,8 @@ extension HardwareWalletScanViewController {
                     self.showError(NSLocalizedString("id_communication_timed_out_make", comment: ""))
                 case DeviceError.dashboard:
                     self.showError(String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
+                case DeviceError.outdated_app:
+                    self.showError("Outdated Ledger app: update the bitcoin app via Ledger Manager")
                 case DeviceError.wrong_app:
                 self.showError(String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
                 case is AuthenticationTypeHandler.AuthError:
