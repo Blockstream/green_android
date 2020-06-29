@@ -208,7 +208,6 @@ public class RequestLoginActivity extends LoginActivity {
         transport.setDebug(BuildConfig.DEBUG);
         try {
             final BTChipDongle dongle = new BTChipDongle(transport, hasScreen);
-            final BTChipFirmware fw = dongle.getFirmwareVersion();
             try {
                 // This should only be supported by the Nano X
                 final BTChipDongle.BTChipApplication application = dongle.getApplication();
@@ -229,6 +228,8 @@ public class RequestLoginActivity extends LoginActivity {
                 }
             } catch (BTChipException ignored) { }
 
+            // We don't ask for firmware version while in the dashboard, since the Ledger Nano X would return invalid status
+            final BTChipFirmware fw = dongle.getFirmwareVersion();
             final int major = fw.getMajor(), minor = fw.getMinor(), patch = fw.getPatch();
 
             Log.d(TAG, "BTChip/Ledger firmware version " + fw.toString() + '(' +
