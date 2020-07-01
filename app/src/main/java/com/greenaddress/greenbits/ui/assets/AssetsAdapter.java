@@ -65,7 +65,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         if (mOnAccountSelected != null)
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         if (isBTC) {
-            holder.mAssetName.setText("L-BTC");
+            holder.mAssetName.setText("Liquid Bitcoin");
             holder.mAssetDomain.setVisibility(View.GONE);
             try {
                 holder.mAssetValue.setText(Conversion.getBtc(satoshi, true));
