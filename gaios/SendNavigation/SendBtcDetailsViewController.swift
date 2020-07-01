@@ -113,7 +113,7 @@ class SendBtcDetailsViewController: UIViewController {
         if isLiquid {
             content.assetIconImageView.image = Registry.shared.image(for: asset?.assetId)
         }
-        content.assetNameLabel.text = assetTag == "btc" ? "L-BTC" : asset?.name
+        content.assetNameLabel.text = assetTag == "btc" ? "Liquid Bitcoin" : asset?.name
         content.domainNameLabel.text = asset?.entity?.domain ?? ""
         content.domainNameLabel.isHidden = asset?.entity?.domain.isEmpty ?? true
         content.currencySwitch.isHidden = assetTag != "btc"

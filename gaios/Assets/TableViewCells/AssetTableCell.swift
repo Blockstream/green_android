@@ -29,7 +29,7 @@ class AssetTableCell: UITableViewCell {
         }
         selectionStyle = .none
         headerLabel.isHidden = !isTransaction
-        nameLabel.text = isBtc ? "L-BTC" : info?.name ?? tag
+        nameLabel.text = isBtc ? "Liquid Bitcoin" : info?.name ?? tag
         domainLabel.text = info?.entity?.domain ?? ""
         domainLabel.isHidden = info?.entity?.domain.isEmpty ?? true
         assetIconImageView.image = icon
