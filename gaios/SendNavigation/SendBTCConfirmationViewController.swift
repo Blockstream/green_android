@@ -81,7 +81,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             let tag = addressee.assetTag ?? "btc"
             let info = Registry.shared.infos[tag]
             let icon = Registry.shared.image(for: tag)
-            content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: addressee.satoshi)
+            content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: addressee.satoshi, negative: false, isTransaction: false, sendAll: true)
         }
         if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
             let (amount, denom) = balance.get(tag: isFiat ? "fiat" : "btc")
@@ -91,6 +91,9 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         if let balance = Balance.convert(details: ["satoshi": addressee.satoshi]) {
             let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
             content.amountText.text = amount
+        }
+        if transaction.sendAll {
+            content.amountText.text = NSLocalizedString("id_all", comment: "")
         }
 
         // Show change address only for hardware wallet transaction
