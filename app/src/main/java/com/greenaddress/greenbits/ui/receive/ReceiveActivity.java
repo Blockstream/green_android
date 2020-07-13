@@ -111,7 +111,8 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         final TextView receivingIdValue = UI.find(this, id.receivingIdValue);
 
         // Show information only for authorized accounts
-        if (mSubaccountData.getType() != null && mSubaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT])) {
+        if (mSubaccountData != null && mSubaccountData.getType() != null &&
+            mSubaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT])) {
             final String receivingID = mSubaccountData.getReceivingId();
             if (receivingID == null || receivingID.isEmpty()) {
                 Toast.makeText(this, string.id_operation_failure, Toast.LENGTH_LONG).show();
@@ -307,7 +308,8 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         final HWDeviceData hwDeviceData = hwWallet.getHWDeviceData();
         if (hwDeviceData != null &&
             hwDeviceData.getDevice().getSupportsLiquid() != HWDeviceDataLiquidSupport.None) {
-            final boolean csv = !mSubaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]);
+            final boolean csv = mSubaccountData.getType() != null &&
+                                !mSubaccountData.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]);
             final String address = hwWallet.getGreenAddress(csv, mSubaccountData.getPointer(), 1L, pointer, 65535L);
             Log.d(TAG, "HWWallet address: " + address);
             return address;
