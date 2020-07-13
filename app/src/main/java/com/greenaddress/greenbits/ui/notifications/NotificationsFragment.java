@@ -143,8 +143,11 @@ public class NotificationsFragment extends GAPreferenceFragment {
                    d == R.string.id_s_blocks_left) {
             return getString(d, event.getValue());
         }
-
-        return getString(d);
+        try {
+            return getString(d);
+        } catch (final Exception e) {
+            return "";
+        }
     }
 
     private void setup() {
