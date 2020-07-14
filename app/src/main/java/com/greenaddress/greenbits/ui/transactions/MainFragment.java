@@ -333,7 +333,9 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             }
         } else if (view.getId() == R.id.sendButton) {
             view.setEnabled(true);
-            if (getNetwork().getLiquid() && (getBalance() != null && getBalance().get("btc") == 0L)) {
+            if (getBalance() == null || getBalance().get("btc") == null)
+                return;
+            if (getNetwork().getLiquid() && getBalance().get("btc") == 0L) {
                 UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
                 .content(R.string.id_insufficient_lbtc_to_send_a)
                 .onPositive((dialog, which) -> {
@@ -341,11 +343,11 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
                     getActivity().startActivity(intent);
                 })
                 .build().show();
-            } else {
-                final Intent intent = new Intent(getActivity(), ScanActivity.class);
-                intent.putExtra(PrefKeys.SWEEP, getSession().isWatchOnly());
-                startActivity(intent);
+                return;
             }
+            final Intent intent = new Intent(getActivity(), ScanActivity.class);
+            intent.putExtra(PrefKeys.SWEEP, getSession().isWatchOnly());
+            startActivity(intent);
         } else if (view.getId() == R.id.selectSubaccount) {
             view.setEnabled(true);
             final Intent intent = new Intent(getActivity(), SubaccountSelectActivity.class);
