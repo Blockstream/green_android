@@ -210,7 +210,11 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         subaccountDisposable = Observable.just(getSession())
                                .observeOn(Schedulers.computation())
                                .map((session) -> {
-            return getSession().getSubAccount(getGaActivity(), mActiveAccount);
+            try {
+                return session.getSubAccount(getGaActivity(), mActiveAccount);
+            } catch (final Exception e) {
+                return session.getSubAccount(getGaActivity(), 0);
+            }
         })
                                .observeOn(AndroidSchedulers.mainThread())
                                .subscribe((subaccount) -> {
