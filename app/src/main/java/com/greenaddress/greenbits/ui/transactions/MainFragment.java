@@ -319,11 +319,11 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
 
     @Override
     public void onClick(final View view) {
+        final ObjectMapper mObjectMapper = new ObjectMapper();
         view.setEnabled(false);
         if (view.getId() == R.id.receiveButton) {
             view.setEnabled(true);
             final Intent intent = new Intent(getActivity(), ReceiveActivity.class);
-            final ObjectMapper mObjectMapper = new ObjectMapper();
             try {
                 final String text = mObjectMapper.writeValueAsString(mSubaccount);
                 intent.putExtra("SUBACCOUNT", text);
@@ -339,8 +339,14 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
                 UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
                 .content(R.string.id_insufficient_lbtc_to_send_a)
                 .onPositive((dialog, which) -> {
-                    final Intent intent = new Intent(getActivity(), ReceiveActivity.class);
-                    getActivity().startActivity(intent);
+                    try {
+                        final Intent intent = new Intent(getActivity(), ReceiveActivity.class);
+                        final String text = mObjectMapper.writeValueAsString(mSubaccount);
+                        intent.putExtra("SUBACCOUNT", text);
+                        getActivity().startActivity(intent);
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
                 })
                 .build().show();
                 return;
