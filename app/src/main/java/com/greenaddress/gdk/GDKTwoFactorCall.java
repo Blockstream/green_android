@@ -62,7 +62,7 @@ public class GDKTwoFactorCall {
                             value = codeResolver.hardwareRequest(mStatus.getRequiredData()).get();
                         } catch (final Exception e) {
                             Log.d("RSV", "error " + mStatus);
-                            throw new Exception("id_action_canceled");
+                            throw new Exception(e.getMessage());
                         }
                     } else {
                         value = codeResolver.code(mStatus.getMethod()).get();
