@@ -103,6 +103,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final TextView addressText = UI.find(this, R.id.addressText);
 
         final JsonNode address = mTxJson.withArray("addressees").get(0);
+        final JsonNode amountsMap = mTxJson.get("satoshi");
+
         final String currentRecipient = address.get("address").asText();
         final boolean isSweeping = mTxJson.get("is_sweep").asBoolean();
         final Integer subaccount = mTxJson.get("subaccount").asInt();
@@ -114,8 +116,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         CharInputFilter.setIfNecessary(noteText);
 
         // Set currency & amount
-        final boolean sendAll = mTxJson.get("send_all").asBoolean(false);
-        final long amount = mTxJson.get("satoshi").asLong();
+        final String asset = address.get("asset_tag").asText();
+        final long amount = amountsMap.get(asset).asLong();
         final long fee = mTxJson.get("fee").asLong();
         final TextView sendAmount = UI.find(this, R.id.sendAmount);
         final TextView sendFee = UI.find(this, R.id.sendFee);
@@ -123,9 +125,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         if (getSession().getNetworkData().getLiquid()) {
             sendAmount.setVisibility(View.GONE);
             UI.find(this, R.id.amountWordSending).setVisibility(View.GONE);
-            final String asset = assetTag.asText();
             final Map<String, Long> balances = new HashMap<>();
-            balances.put(asset, sendAll ? -1 : address.get("satoshi").asLong());
+            balances.put(asset, amount);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
             final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null);

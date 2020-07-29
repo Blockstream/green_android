@@ -61,8 +61,6 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final String assetId = mAssetsIds.get(position);
         final boolean isBTC = "btc".equals(assetId);
         final Long satoshi = mAssets.get(assetId);
-        final boolean sendAll = -1 == satoshi;
-        final String all = holder.itemView.getResources().getText(R.string.id_all).toString();
         final AssetInfoData assetInfo = getRegistry().getInfos().get(assetId);
         if (mOnAccountSelected != null)
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
@@ -70,7 +68,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             holder.mAssetName.setText("Liquid Bitcoin");
             holder.mAssetDomain.setVisibility(View.GONE);
             try {
-                holder.mAssetValue.setText(sendAll ? all : Conversion.getBtc(satoshi, true));
+                holder.mAssetValue.setText(Conversion.getBtc(satoshi, true));
             } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
             }
@@ -84,7 +82,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
                 holder.mAssetDomain.setVisibility(View.GONE);
             }
             try {
-                holder.mAssetValue.setText(sendAll ? all : Conversion.getAsset(satoshi, assetId, assetInfo, true));
+                holder.mAssetValue.setText(Conversion.getAsset(satoshi, assetId, assetInfo, true));
             } catch (final Exception e) {
                 e.printStackTrace();
             }
