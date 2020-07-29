@@ -219,21 +219,16 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
     private void setup(final ObjectNode tx) {
         // Setup address and amount text
-        JsonNode node = tx.get("satoshi");
         try {
+            JsonNode assetsMap = tx.get("satoshi");
             final ObjectNode addressee = (ObjectNode) tx.get("addressees").get(0);
             mRecipientText.setText(addressee.get("address").asText());
-            node = addressee.get("satoshi");
+            // If addressee doesn't contain asset_tag, we are sending btc
+            final String asset = addressee.has("asset_tag") ? addressee.get("asset_tag").asText() : "btc";
+            final long newSatoshi = assetsMap.get(asset).asLong();
+            setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
         } catch (final Exception e) {
-            // Asset not passed, default "btc"
-        }
-        if (node != null && node.asLong() != 0L) {
-            final long newSatoshi = node.asLong();
-            try {
-                setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
-            } catch (final Exception e) {
-                Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-            }
+            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
 
         // Setup read-only
