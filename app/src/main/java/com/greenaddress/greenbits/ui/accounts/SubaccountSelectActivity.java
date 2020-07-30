@@ -42,8 +42,6 @@ public class SubaccountSelectActivity extends LoggedActivity implements AccountA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subaccount_select);
 
-        UI.preventScreenshots(this);
-
         mTotalAmountBtc = findViewById(R.id.total_amount_btc);
         mTotalAmountFiat = findViewById(R.id.total_amount_fiat);
 

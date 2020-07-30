@@ -82,7 +82,6 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         super.onCreate(savedInstanceState);
 
         setContentView(layout.activity_receive);
-        UI.preventScreenshots(this);
         setTitleBackTransparent();
 
         mAddressImage = UI.find(this, id.receiveQrImageView);

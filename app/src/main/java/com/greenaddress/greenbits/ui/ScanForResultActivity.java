@@ -75,8 +75,6 @@ public class ScanForResultActivity extends AppCompatActivity implements TextureV
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UI.preventScreenshots(this);
-
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

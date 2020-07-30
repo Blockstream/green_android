@@ -103,7 +103,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         // Create UI views
         setContentView(R.layout.activity_send_amount);
-        UI.preventScreenshots(this);
         setTitleBackTransparent();
         mRecipientText = UI.find(this, R.id.addressText);
         mAccountBalance = UI.find(this, R.id.accountBalanceText);

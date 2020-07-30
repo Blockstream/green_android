@@ -56,7 +56,6 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_confirm);
-        UI.preventScreenshots(this);
         setTitleBackTransparent();
         mSwipeButton = UI.find(this, R.id.swipeButton);
 

@@ -99,7 +99,6 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UI.preventScreenshots(this);
 
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

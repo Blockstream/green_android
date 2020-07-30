@@ -40,7 +40,6 @@ public class AssetActivity extends LoggedActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setResult(RESULT_OK);
-        UI.preventScreenshots(this);
 
         setTitleBackTransparent();
 

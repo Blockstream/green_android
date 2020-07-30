@@ -86,7 +86,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
 
         setResult(RESULT_OK);
-        UI.preventScreenshots(this);
 
         setTitleBackTransparent();
 

@@ -40,9 +40,6 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        UI.preventScreenshots(this);
-
         setTitleBackTransparent();
         setContentView(R.layout.activity_assets_selection);
 

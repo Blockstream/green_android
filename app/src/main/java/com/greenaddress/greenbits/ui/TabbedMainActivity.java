@@ -64,7 +64,6 @@ public class TabbedMainActivity extends LoggedActivity implements
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UI.preventScreenshots(this);
         final Intent intent = getIntent();
         mIsBitcoinUri = isBitcoinScheme(intent) ||
                         intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
