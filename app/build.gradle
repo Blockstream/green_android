@@ -75,6 +75,9 @@ android {
             output.versionCodeOverride = 22000000 + android.defaultConfig.versionCode
         }
     }
+    defaultConfig{
+        vectorDrawables.useSupportLibrary = true
+    }
     productFlavors {
         production {
         }

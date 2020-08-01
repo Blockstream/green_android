@@ -42,14 +42,31 @@
     </style>
 
     <style name="nextButton" parent="AppTheme.Button">
-        <item name="android:layout_margin">16dp</item>
-        <item name="android:background">?attr/materialButton</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:background">@drawable/material_button</item>
         <item name="android:drawableEnd">@drawable/ic_next</item>
         <!-- Negative padding matching the width of ic_next -->
         <item name="android:drawablePadding">-48dp</item>
-        <item name="android:paddingEnd">14dp</item>
-        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingStart">16dp</item>
     </style>
+
+    <style name="copyButton" parent="AppTheme.Button">
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:background">@drawable/material_button</item>
+        <item name="android:drawableEnd">@drawable/ic_baseline_file_copy_24</item>
+        <!-- Negative padding matching the width of ic_next -->
+        <item name="android:drawablePadding">-48dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingStart">16dp</item>
+    </style>
+
 
     <style name="pinKeyboardView">
         <item name="android:keyBackground">?attr/materialButtonKeyboard</item>

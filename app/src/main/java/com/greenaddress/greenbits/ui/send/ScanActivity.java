@@ -4,6 +4,8 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Dialog;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -21,6 +23,7 @@ import android.os.HandlerThread;
 import android.os.Process;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.Surface;
@@ -121,31 +124,31 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         scannerView = findViewById(R.id.scan_activity_mask);
         previewView = findViewById(R.id.scan_activity_preview);
         previewView.setSurfaceTextureListener(this);
-
         cameraThread = new HandlerThread("cameraThread", Process.THREAD_PRIORITY_BACKGROUND);
         cameraThread.start();
         cameraHandler = new Handler(cameraThread.getLooper());
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.CAMERA }, 0);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 0);
 
         mAddressEditText = UI.find(this, R.id.addressEdit);
         mAddressEditText.setHint(
-            isSweep ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
+                isSweep ? R.string.id_enter_a_private_key_to_sweep : R.string.id_enter_an_address);
 
         UI.find(this, R.id.nextButton).setEnabled(false);
-
         UI.attachHideKeyboardListener(this, findViewById(R.id.activity_send_scan));
+
+        UI.find(this, R.id.copyButton).setOnClickListener(event -> this.copyFromClipboard());
     }
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            onBackPressed();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -156,7 +159,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     getWindow()
-                    .setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.black)));
+                            .setBackgroundDrawable(new ColorDrawable(getResources().getColor(android.R.color.black)));
                 }
             });
             sceneTransition.start();
@@ -215,8 +218,8 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
 
     private void maybeOpenCamera() {
         if (surfaceCreated && ContextCompat.checkSelfPermission(this,
-                                                                Manifest.permission.CAMERA) ==
-            PackageManager.PERMISSION_GRANTED)
+                Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_GRANTED)
             cameraHandler.post(openRunnable);
     }
 
@@ -234,13 +237,16 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
     }
 
     @Override
-    public void onSurfaceTextureSizeChanged(final SurfaceTexture surface, final int width, final int height) {}
+    public void onSurfaceTextureSizeChanged(final SurfaceTexture surface, final int width, final int height) {
+    }
 
     @Override
-    public void onSurfaceTextureUpdated(final SurfaceTexture surface) {}
+    public void onSurfaceTextureUpdated(final SurfaceTexture surface) {
+    }
 
     @Override
-    public void onAttachedToWindow() {}
+    public void onAttachedToWindow() {
+    }
 
     @Override
     public void onBackPressed() {
@@ -252,14 +258,14 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
         switch (keyCode) {
-        case KeyEvent.KEYCODE_FOCUS:
-        case KeyEvent.KEYCODE_CAMERA:
-            // don't launch camera app
-            return true;
-        case KeyEvent.KEYCODE_VOLUME_DOWN:
-        case KeyEvent.KEYCODE_VOLUME_UP:
-            cameraHandler.post(() -> cameraManager.setTorch(keyCode == KeyEvent.KEYCODE_VOLUME_UP));
-            return true;
+            case KeyEvent.KEYCODE_FOCUS:
+            case KeyEvent.KEYCODE_CAMERA:
+                // don't launch camera app
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                cameraHandler.post(() -> cameraManager.setTorch(keyCode == KeyEvent.KEYCODE_VOLUME_UP));
+                return true;
         }
 
         return super.onKeyDown(keyCode, event);
@@ -278,13 +284,13 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 final int cameraRotation = cameraManager.getOrientation();
 
                 runOnUiThread(() ->
-                              scannerView.setFraming(framingRect, framingRectInPreview, displayRotation(),
-                                                     cameraRotation,
-                                                     cameraFlip));
+                        scannerView.setFraming(framingRect, framingRectInPreview, displayRotation(),
+                                cameraRotation,
+                                cameraFlip));
 
                 final String focusMode = camera.getParameters().getFocusMode();
                 final boolean nonContinuousAutoFocus = Camera.Parameters.FOCUS_MODE_AUTO.equals(focusMode)
-                                                       || Camera.Parameters.FOCUS_MODE_MACRO.equals(focusMode);
+                        || Camera.Parameters.FOCUS_MODE_MACRO.equals(focusMode);
 
                 if (nonContinuousAutoFocus)
                     cameraHandler.post(new AutoFocusRunnable(camera));
@@ -321,14 +327,32 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
     };
 
     @Override
-    public void beforeTextChanged(final CharSequence charSequence, final int i, final int i1, final int i2) {}
+    public void beforeTextChanged(final CharSequence charSequence, final int i, final int i1, final int i2) {
+    }
 
     @Override
-    public void onTextChanged(final CharSequence charSequence, final int i, final int i1, final int i2) {}
+    public void onTextChanged(final CharSequence charSequence, final int i, final int i1, final int i2) {
+    }
 
     @Override
     public void afterTextChanged(final Editable editable) {
         UI.enableIf(editable.length() > 0, UI.find(this, R.id.nextButton));
+        UI.enableIf(isClipboardEmpty(), UI.find(this, R.id.copyButton));
+        UI.enableIf(editable.length() == 0, UI.find(this, R.id.copyButton));
+    }
+
+    private void copyFromClipboard() {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null && clipboard.hasPrimaryClip()) {
+            Log.d(TAG, "****** Clipboard content: " + clipboard.getPrimaryClip().getItemAt(0).getText());
+            mAddressEditText.setText(clipboard.getPrimaryClip().getItemAt(0).getText());
+            this.onClick(this.contentView);
+        }
+    }
+
+    private boolean isClipboardEmpty(){
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        return clipboard.hasPrimaryClip();
     }
 
     private final class AutoFocusRunnable implements Runnable {
@@ -356,15 +380,13 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         };
     }
 
-    public void handleResult(final Result scanResult, final Bitmap thumbnailImage, final float thumbnailScaleFactor)
-    {
+    public void handleResult(final Result scanResult, final Bitmap thumbnailImage, final float thumbnailScaleFactor) {
         // vibrator.vibrate(VIBRATE_DURATION);
         //scannerView.drawResultBitmap(thumbnailImage);
 
         // superimpose dots to highlight the key features of the qr code
         final ResultPoint[] points = scanResult.getResultPoints();
-        if (points != null && points.length > 0)
-        {
+        if (points != null && points.length > 0) {
             final Paint paint = new Paint();
             paint.setColor(getResources().getColor(R.color.scan_result_dots));
             paint.setStrokeWidth(10.0f);
@@ -386,45 +408,45 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         result.putExtra(PrefKeys.SWEEP, true);
 
         disposable = Observable.just(getSession())
-                     .observeOn(Schedulers.computation())
-                     .map((session) -> {
-            final ObjectNode jsonResp = session.getReceiveAddress(subaccount).resolve(null,
-                                                                                      new HardwareCodeResolver(
-                                                                                          this));
-            return jsonResp.get("address").asText();
-        })
-                     .map((address) -> {
-            final Long feeRate = getSession().getFees().get(0);
-            final BalanceData balanceData = new BalanceData();
-            balanceData.setAddress(address);
-            final List<BalanceData> balanceDataList = new ArrayList<>();
-            balanceDataList.add(balanceData);
-            SweepData sweepData = new SweepData();
-            sweepData.setPrivateKey(scanned);
-            sweepData.setFeeRate(feeRate);
-            sweepData.setAddressees(balanceDataList);
-            sweepData.setSubaccount(subaccount);
-            return sweepData;
-        })
-                     .map((sweepData) -> {
-            final GDKTwoFactorCall call = getSession().createTransactionRaw(null, sweepData);
-            final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
-            final String error = transactionRaw.get("error").asText();
-            if (!error.isEmpty())
-                throw new Exception(error);
-            return transactionRaw;
-        })
-                     .observeOn(AndroidSchedulers.mainThread())
-                     .subscribe((transactionRaw) -> {
-            removeUtxosIfTooBig(transactionRaw);
-            result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
-            result.setClass(this, SendAmountActivity.class);
-            startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
-        }, (e) -> {
-            e.printStackTrace();
-            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
-            cameraHandler.post(fetchAndDecodeRunnable);
-        });
+                .observeOn(Schedulers.computation())
+                .map((session) -> {
+                    final ObjectNode jsonResp = session.getReceiveAddress(subaccount).resolve(null,
+                            new HardwareCodeResolver(
+                                    this));
+                    return jsonResp.get("address").asText();
+                })
+                .map((address) -> {
+                    final Long feeRate = getSession().getFees().get(0);
+                    final BalanceData balanceData = new BalanceData();
+                    balanceData.setAddress(address);
+                    final List<BalanceData> balanceDataList = new ArrayList<>();
+                    balanceDataList.add(balanceData);
+                    SweepData sweepData = new SweepData();
+                    sweepData.setPrivateKey(scanned);
+                    sweepData.setFeeRate(feeRate);
+                    sweepData.setAddressees(balanceDataList);
+                    sweepData.setSubaccount(subaccount);
+                    return sweepData;
+                })
+                .map((sweepData) -> {
+                    final GDKTwoFactorCall call = getSession().createTransactionRaw(null, sweepData);
+                    final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
+                    final String error = transactionRaw.get("error").asText();
+                    if (!error.isEmpty())
+                        throw new Exception(error);
+                    return transactionRaw;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((transactionRaw) -> {
+                    removeUtxosIfTooBig(transactionRaw);
+                    result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
+                    result.setClass(this, SendAmountActivity.class);
+                    startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
+                }, (e) -> {
+                    e.printStackTrace();
+                    UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+                    cameraHandler.post(fetchAndDecodeRunnable);
+                });
     }
 
     private void onTransaction(final String scanned) {
@@ -434,32 +456,32 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         result.putExtra("internal_qr", true);
 
         disposable = Observable.just(getSession())
-                     .observeOn(Schedulers.computation())
-                     .map((session) -> {
-            final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
-            final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
-            if (!transactionRaw.has("addressees"))
-                throw new Exception("Missing field addressees");
-            final String error = transactionRaw.get("error").asText();
-            if (!error.isEmpty() && !"id_invalid_amount".equals(error))
-                throw new Exception(error);
-            return transactionRaw;
-        })
-                     .observeOn(AndroidSchedulers.mainThread())
-                     .subscribe((transactionRaw) -> {
-            removeUtxosIfTooBig(transactionRaw);
-            final boolean showAssets = !transactionRaw.get("addressees").get(0).has("asset_tag");
-            if (networkData.getLiquid() && showAssets)
-                result.setClass(this, AssetsSelectActivity.class);
-            else
-                result.setClass(this, SendAmountActivity.class);
-            result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
-            startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
-        }, (e) -> {
-            e.printStackTrace();
-            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
-            cameraHandler.post(fetchAndDecodeRunnable);
-        });
+                .observeOn(Schedulers.computation())
+                .map((session) -> {
+                    final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
+                    final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
+                    if (!transactionRaw.has("addressees"))
+                        throw new Exception("Missing field addressees");
+                    final String error = transactionRaw.get("error").asText();
+                    if (!error.isEmpty() && !"id_invalid_amount".equals(error))
+                        throw new Exception(error);
+                    return transactionRaw;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((transactionRaw) -> {
+                    removeUtxosIfTooBig(transactionRaw);
+                    final boolean showAssets = !transactionRaw.get("addressees").get(0).has("asset_tag");
+                    if (networkData.getLiquid() && showAssets)
+                        result.setClass(this, AssetsSelectActivity.class);
+                    else
+                        result.setClass(this, SendAmountActivity.class);
+                    result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
+                    startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
+                }, (e) -> {
+                    e.printStackTrace();
+                    UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+                    cameraHandler.post(fetchAndDecodeRunnable);
+                });
     }
 
     public void onInserted(final String scanned) {
@@ -482,25 +504,22 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
     }
 
 
-    private final Runnable fetchAndDecodeRunnable = new Runnable()
-    {
+    private final Runnable fetchAndDecodeRunnable = new Runnable() {
         private final QRCodeReader reader = new QRCodeReader();
         private final Map<DecodeHintType, Object> hints = new EnumMap<DecodeHintType, Object>(DecodeHintType.class);
 
         @Override
-        public void run()
-        {
+        public void run() {
             cameraManager.requestPreviewFrame((data, camera) -> decode(data));
         }
 
-        private void decode(final byte[] data)
-        {
+        private void decode(final byte[] data) {
             final PlanarYUVLuminanceSource source = cameraManager.buildLuminanceSource(data);
             final BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
             try {
                 hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK,
-                          (ResultPointCallback) dot -> runOnUiThread(() -> scannerView.addDot(dot)));
+                        (ResultPointCallback) dot -> runOnUiThread(() -> scannerView.addDot(dot)));
                 final Result scanResult = reader.decode(bitmap, hints);
 
                 final int thumbnailWidth = source.getThumbnailWidth();
@@ -508,9 +527,9 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 final float thumbnailScaleFactor = (float) thumbnailWidth / source.getWidth();
 
                 final Bitmap thumbnailImage = Bitmap.createBitmap(thumbnailWidth, thumbnailHeight,
-                                                                  Bitmap.Config.ARGB_8888);
+                        Bitmap.Config.ARGB_8888);
                 thumbnailImage.setPixels(
-                    source.renderThumbnail(), 0, thumbnailWidth, 0, 0, thumbnailWidth, thumbnailHeight);
+                        source.renderThumbnail(), 0, thumbnailWidth, 0, 0, thumbnailWidth, thumbnailHeight);
 
                 runOnUiThread(() -> handleResult(scanResult, thumbnailImage, thumbnailScaleFactor));
             } catch (final ReaderException x) {
@@ -523,34 +542,32 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
     };
 
     @Override
-    protected Dialog onCreateDialog(final int id)
-    {
-        if (id == DIALOG_CAMERA_PROBLEM)
-        {
+    protected Dialog onCreateDialog(final int id) {
+        if (id == DIALOG_CAMERA_PROBLEM) {
             MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
-                                             .title(getResources().getString(R.string.id_camera_problem))
-                                             .content(getResources().getString(R.string.id_the_camera_has_a_problem_you))
-                                             .callback(new MaterialDialog.ButtonCallback() {
-                @Override
-                public void onPositive(MaterialDialog dialog) {
-                    super.onPositive(dialog);
-                    finish();
-                }
+                    .title(getResources().getString(R.string.id_camera_problem))
+                    .content(getResources().getString(R.string.id_the_camera_has_a_problem_you))
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                            finish();
+                        }
 
-                @Override
-                public void onNegative(MaterialDialog dialog) {
-                    super.onNegative(dialog);
-                    finish();
-                }
+                        @Override
+                        public void onNegative(MaterialDialog dialog) {
+                            super.onNegative(dialog);
+                            finish();
+                        }
 
-                @Override
-                public void onNeutral(MaterialDialog dialog) {
-                    super.onNeutral(dialog);
-                    finish();
-                }
-            });
+                        @Override
+                        public void onNeutral(MaterialDialog dialog) {
+                            super.onNeutral(dialog);
+                            finish();
+                        }
+                    });
             return builder.build();
-        }else {
+        } else {
             throw new IllegalArgumentException();
         }
     }
