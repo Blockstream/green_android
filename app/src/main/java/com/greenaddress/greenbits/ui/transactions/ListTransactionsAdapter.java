@@ -91,6 +91,7 @@ public class ListTransactionsAdapter extends
         final TransactionData txItem = mTxItems.get(position);
 
         // Remove to display fee as amount in liquid
+        Log.d("satoshi", txItem.getSatoshi().toString());
         final Long btc = txItem.getSatoshi().get("btc");
         final Long fee = txItem.getFee();
         if (btc != null && btc.equals(fee) && txItem.getSatoshi().size() > 1) {
