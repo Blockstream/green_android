@@ -100,7 +100,7 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             if (counter < 3) {
                 editor.putInt("counter", counter).apply();
                 UI.toast(this, (counter == 2) ? getString(R.string.id_last_attempt_if_failed_you_will) :
-                          getString(R.string.id_invalid_pin_you_have_1d, 3 - counter), Toast.LENGTH_LONG);
+                         getString(R.string.id_invalid_pin_you_have_1d, 3 - counter), Toast.LENGTH_LONG);
             } else {
                 UI.toast(this, getString(R.string.id_invalid_pin_you_dont_have_any), Toast.LENGTH_LONG);
                 editor.clear().apply();

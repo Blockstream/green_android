@@ -31,7 +31,7 @@ import static com.greenaddress.greenapi.Session.getSession;
 
 public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener,
-    Preference.OnPreferenceClickListener {
+                                           Preference.OnPreferenceClickListener {
 
     private static final String TAG = GAPreferenceFragment.class.getSimpleName();
     private static final int QRSCANNER = 1338;

@@ -54,7 +54,7 @@ import static com.greenaddress.gdk.GDKSession.getErrorCode;
 import static com.greenaddress.greenapi.Session.getSession;
 
 public class MnemonicActivity extends LoginActivity implements View.OnClickListener,
-    View.OnKeyListener, TextView.OnEditorActionListener {
+                                      View.OnKeyListener, TextView.OnEditorActionListener {
 
     private static final String TAG = MnemonicActivity.class.getSimpleName();
     public static final String TEMPORARY_MODE = "TEMPORANY_MODE";

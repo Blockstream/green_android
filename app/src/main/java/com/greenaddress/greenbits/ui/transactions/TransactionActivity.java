@@ -56,7 +56,7 @@ import static com.greenaddress.greenapi.Registry.getRegistry;
 import static com.greenaddress.greenapi.Session.getSession;
 
 public class TransactionActivity extends LoggedActivity implements View.OnClickListener,
-    AssetsAdapter.OnAssetSelected  {
+                                         AssetsAdapter.OnAssetSelected  {
 
     private static final String TAG = TransactionActivity.class.getSimpleName();
 

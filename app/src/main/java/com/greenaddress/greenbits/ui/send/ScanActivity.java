@@ -73,7 +73,7 @@ import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class ScanActivity extends LoggedActivity implements TextureView.SurfaceTextureListener, View.OnClickListener,
-    TextWatcher {
+                                  TextWatcher {
 
     private static final long AUTO_FOCUS_INTERVAL_MS = 2500L;
 
