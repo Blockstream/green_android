@@ -94,31 +94,24 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
 
     void onLoginFailure(final Throwable e) {
         final Integer code = getErrorCode(e.getMessage());
-        final int counter = mPin.getInt("counter", 0) + 1;
-        if (code == GDK.GA_ERROR) {
-            UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
-        } else if (code == GDK.GA_NOT_AUTHORIZED) {
+        if (code == GDK.GA_NOT_AUTHORIZED || e.getMessage().contains(":login failed:")) {
             final SharedPreferences.Editor editor = mPin.edit();
-            String message = "";
+            final int counter = mPin.getInt("counter", 0) + 1;
             if (counter < 3) {
-                editor.putInt("counter", counter);
-                message = (counter == 2) ? getString(R.string.id_last_attempt_if_failed_you_will) :
-                          getString(R.string.id_invalid_pin_you_have_1d, 3 - counter);
+                editor.putInt("counter", counter).apply();
+                UI.toast(this, (counter == 2) ? getString(R.string.id_last_attempt_if_failed_you_will) :
+                          getString(R.string.id_invalid_pin_you_have_1d, 3 - counter), Toast.LENGTH_LONG);
             } else {
-                message = getString(R.string.id_invalid_pin_you_dont_have_any);
-                editor.clear();
+                UI.toast(this, getString(R.string.id_invalid_pin_you_dont_have_any), Toast.LENGTH_LONG);
+                editor.clear().apply();
+                startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
+                finish();
+                return;
             }
-            editor.apply();
-            UI.toast(this, message, Toast.LENGTH_LONG);
-        }  else{
+        } else if (code == GDK.GA_ERROR)
+            UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
+        else
             UI.toast(this, R.string.id_connection_failed, Toast.LENGTH_LONG);
-        }
-
-        if (counter >= 3) {
-            startActivity(new Intent(PinActivity.this, FirstScreenActivity.class));
-            finish();
-            return;
-        }
 
         if (mPinFragment != null) {
             mPinFragment.clear();
