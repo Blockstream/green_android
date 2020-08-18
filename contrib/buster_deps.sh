@@ -5,7 +5,7 @@ SDK_FILENAME=sdk-tools-linux-4333796.zip
 
 apt-get -qq update
 apt-get -yqq --no-install-recommends upgrade
-apt-get -yqq --no-install-recommends install ca-certificates-java unzip curl gzip perl uncrustify git software-properties-common gnupg
+apt-get -yqq --no-install-recommends install ca-certificates-java unzip curl gzip perl git software-properties-common gnupg
 
 SHA256SUM_KEY=428ce45ffbc74e350d707d95c661de959a2e43129a869bd82d78d1556a936440
 curl -sL -o public.key https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
