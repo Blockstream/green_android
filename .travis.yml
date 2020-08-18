@@ -4,7 +4,7 @@ matrix:
   include:
     - services:
         - docker
-      script: docker run -v $PWD:/ga greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964 /bin/sh -c "cd /ga && tools/uncrustify && git diff && git diff --quiet && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew lintProductionRelease && ./gradlew assembleProductionRelease"
+      script: docker run -v $PWD:/ga greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964 /bin/sh -c "cd /ga && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew lintProductionRelease && ./gradlew assembleProductionRelease"
     - os: osx
       osx_image: xcode8.3
       env:
@@ -13,12 +13,11 @@ matrix:
         - HOMEBREW_NO_AUTO_UPDATE=1
       install:
         - mkdir -p $HOME/opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME} -d $HOME/opt &> /dev/null
-        - brew install uncrustify gnu-sed &> /dev/null
+        - brew install gnu-sed &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "tools" "platform-tools" &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "build-tools;29.0.2" &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "platforms;android-29" &> /dev/null
       script:
         - export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
-        - ./tools/uncrustify && git diff && git diff --quiet
         - ./gradlew lintProductionRelease
         - ./gradlew assembleProductionRelease

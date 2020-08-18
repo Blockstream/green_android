@@ -11,9 +11,6 @@ build_tag_release:
     - ga
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/uncrustify
-    - git diff
-    - git diff --quiet
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
@@ -22,9 +19,6 @@ build_tag_osx_release:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/uncrustify
-    - git diff
-    - git diff --quiet
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
