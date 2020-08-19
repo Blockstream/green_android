@@ -519,7 +519,17 @@ public class BTChipDongle implements BTChipConstants {
 		return new BTChipPublicKey(nonce, null, null);
 	}
 
-	public BTChipInput getTrustedInput(BitcoinTransaction transaction, long index, long sequence) throws BTChipException {
+	public boolean shouldUseTrustedInputForSegwit() {
+		try {
+			if (this.firmwareVersion == null) this.getFirmwareVersion();
+		} catch (BTChipException e) {
+			return false;
+		}
+		return this.firmwareVersion.getMajor() >= 0x3001 && // 0x2001 = Ledger 1.x, 0x3001 = Nano S/X
+			this.firmwareVersion.getMinor() >= 4;
+	}
+
+	public BTChipInput getTrustedInput(BitcoinTransaction transaction, long index, long sequence, boolean segwit) throws BTChipException {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		// Header
 		BufferUtils.writeUint32BE(data, index);
@@ -554,7 +564,7 @@ public class BTChipDongle implements BTChipConstants {
 		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_TRUSTED_INPUT, (byte)0x80, (byte)0x00, transaction.getLockTime(), OK);
 		ByteArrayOutputStream sequenceBuf = new ByteArrayOutputStream();
 		BufferUtils.writeUint32LE(sequenceBuf, sequence);
-		return new BTChipInput(response, sequenceBuf.toByteArray(), true, false);
+		return new BTChipInput(response, sequenceBuf.toByteArray(), true, segwit);
 	}
 
 	public BTChipInput createInput(byte[] value, byte[] sequence, boolean trusted, boolean segwit) {
@@ -576,7 +586,7 @@ public class BTChipDongle implements BTChipConstants {
 		for (BTChipInput input : usedInputList) {
 			byte[] script = (currentIndex == inputIndex ? redeemScript : new byte[0]);
 			data = new ByteArrayOutputStream();
-			data.write(input.isSegwit() ? (byte)0x02 : input.isTrusted() ? (byte)0x01 : (byte)0x00);
+			data.write(input.isTrusted() ? (byte)0x01 : input.isSegwit() ? (byte)0x02 : (byte)0x00);
 			if (input.isTrusted()) {
 				// other inputs have constant length
 				data.write(input.getValue().length);
@@ -897,7 +907,7 @@ public class BTChipDongle implements BTChipConstants {
 		} catch (BTChipException e) {
 			return false;
 		}
-		if (this.firmwareVersion.getMajor() > 0x2001) { // 0x2001 = Ledger 1.x, 0x3001 = Nano S
+		if (this.firmwareVersion.getMajor() > 0x2001) { // 0x2001 = Ledger 1.x, 0x3001 = Nano S/X
 			return true;
 		} else if (this.firmwareVersion.getMajor() == 0x2001 &&
 				this.firmwareVersion.getMinor() > 0) {

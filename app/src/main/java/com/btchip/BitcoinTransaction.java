@@ -151,22 +151,48 @@ public class BitcoinTransaction {
 	
 	public static final byte DEFAULT_SEQUENCE[] = { (byte)0xff, (byte)0xff, (byte)0xff, (byte)0xff };
 	
-	public BitcoinTransaction(ByteArrayInputStream data) throws BTChipException  {		
+	public BitcoinTransaction(ByteArrayInputStream data) throws BTChipException  {
 		inputs = new Vector<BitcoinInput>();
 		outputs = new Vector<BitcoinOutput>();
+		boolean segwit = false;
+
 		try {
 			version = new byte[4];
 			data.read(version);
+
+			// If num-inputs is zero, this should rather be the segwit flag
+			// (We shouldn't be signing a tx with 0 inputs)
 			long numberItems = VarintUtils.read(data);
-			for (long i=0; i<numberItems; i++) {
+			if (numberItems == 0) {
+				long flag = VarintUtils.read(data);
+				if (flag != 1) {
+					throw new BTChipException("Invalid segwit flag value: " + numberItems + "," + flag);
+				}
+				segwit = true;
+
+				// The actual number of inputs
+				numberItems = VarintUtils.read(data);
+			}
+
+			// Inputs
+			for (long i = 0; i < numberItems; ++i) {
 				inputs.add(new BitcoinInput(data));
 			}
+
+			// Outputs
 			numberItems = VarintUtils.read(data);
-			for (long i=0; i<numberItems; i++) {
+			for (long i = 0; i < numberItems; ++i) {
 				outputs.add(new BitcoinOutput(data));
 			}
+
+			// If segwit, we need to skip over the witness data
+			// We know the last 4 bytes are the locktime, so jump to that.
+			if (segwit) {
+				data.skip(data.available() - 4);
+			}
+
 			lockTime = new byte[4];
-			data.read(lockTime);			
+			data.read(lockTime);
 		}
 		catch(Exception e) {
 			throw new BTChipException("Invalid encoding", e);
