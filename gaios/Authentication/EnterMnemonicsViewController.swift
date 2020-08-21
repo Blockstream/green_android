@@ -169,8 +169,9 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
                 throw LoginError.invalidMnemonic
             }
         }.compactMap(on: bgq) {
-            let resolver = try getSession().login(mnemonic: $0.0, password: $0.1)
-            _ = try DummyResolve(call: resolver)
+            return try getSession().login(mnemonic: $0.0, password: $0.1)
+        }.then(on: bgq) { twoFactorCall in
+            twoFactorCall.resolve()
         }.then { _ in
             Registry.shared.refresh().recover { _ in Guarantee() }
         }.ensure {
@@ -186,6 +187,8 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
             let message: String
             if error is LoginError {
                 message = NSLocalizedString("id_invalid_mnemonic", comment: "")
+            } else if error is TwoFactorCallError {
+                message = NSLocalizedString("id_login_failed", comment: "")
             } else if let err = error as? GaError, err != GaError.GenericError {
                 message = NSLocalizedString("id_connection_failed", comment: "")
             } else {

@@ -96,12 +96,14 @@ class PinLoginViewController: UIViewController {
             appDelegate.disconnect()
         }.get(on: bgq) { _ in
             try appDelegate.connect()
-        }.map(on: bgq) {
-            let jsonData = try JSONSerialization.data(withJSONObject: $0)
-            let pin = withPIN ?? $0["plaintext_biometric"] as? String
+        }.compactMap(on: bgq) {data -> TwoFactorCall in
+            let jsonData = try JSONSerialization.data(withJSONObject: data)
+            let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-            try DummyResolve(call: getSession().loginWithPin(pin: pin!, pin_data: pinData!))
-        }.then {
+            return try getSession().loginWithPin(pin: pin!, pin_data: pinData!)
+        }.then(on: bgq) { twoFactorCall in
+            twoFactorCall.resolve()
+        }.then { _ in
             Registry.shared.refresh().recover { _ in Guarantee() }
         }.ensure {
             self.stopAnimating()
@@ -115,31 +117,31 @@ class PinLoginViewController: UIViewController {
                 case .CanceledByUser:
                     return
                 case .SecurityError, .KeychainError:
-                    self.onBioAuthError(authError.localizedDescription)
-                    return
+                    return self.onBioAuthError(authError.localizedDescription)
                 default:
                     message = authError.localizedDescription
                 }
-            } else if let error = error as? GaError {
+            } else if let error = error as? TwoFactorCallError {
                 switch error {
-                case .NotAuthorizedError:
-                    if withPIN != nil {
-                        self.pinAttemptsPreference += 1
-                        if self.pinAttemptsPreference == self.MAXATTEMPTS {
-                            removeKeychainData()
-                            self.pinAttemptsPreference = 0
-                            appDelegate.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
-                            return
-                        }
+                case .failure(let localizedDescription), .cancel(let localizedDescription):
+                    if localizedDescription.contains(":login failed:") && withPIN != nil {
+                        self.wrongPin()
                     }
-                default:
-                    break
                 }
             }
             self.pinCode = ""
             self.updateAttemptsLabel()
             self.reload()
             DropAlert().error(message: message)
+        }
+    }
+
+    func wrongPin() {
+        self.pinAttemptsPreference += 1
+        if self.pinAttemptsPreference == self.MAXATTEMPTS {
+            removeKeychainData()
+            self.pinAttemptsPreference = 0
+            getAppDelegate()?.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
         }
     }
 
