@@ -81,14 +81,14 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             let tag = addressee.assetTag ?? "btc"
             let info = Registry.shared.infos[tag]
             let icon = Registry.shared.image(for: tag)
-            content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: addressee.satoshi, negative: false, isTransaction: false, sendAll: true)
+            content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: transaction.amounts[tag] ?? 0, negative: false, isTransaction: false, sendAll: transaction.sendAll)
         }
         if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
             let (amount, denom) = balance.get(tag: isFiat ? "fiat" : "btc")
             content.assetsFeeLabel.text = "\(amount) \(denom)"
             content.feeLabel.text = "\(amount) \(denom)"
         }
-        if let balance = Balance.convert(details: ["satoshi": addressee.satoshi]) {
+        if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
             let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
             content.amountText.text = amount
         }
