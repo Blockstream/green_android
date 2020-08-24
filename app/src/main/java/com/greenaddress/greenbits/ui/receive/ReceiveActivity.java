@@ -324,7 +324,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
         final String key = mIsFiat ? "fiat" : getBitcoinUnitClean();
         try {
-            final NumberFormat us = Conversion.getNumberFormat(8, Locale.US);
+            final NumberFormat us = Conversion.getNumberFormat(8);
             final Number number = us.parse(mAmountText.getText().toString());
             final String value = String.valueOf(number);
             final ObjectMapper mapper = new ObjectMapper();

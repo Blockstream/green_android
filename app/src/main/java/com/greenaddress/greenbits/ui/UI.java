@@ -461,7 +461,7 @@ public abstract class UI {
                     return;
                 isEditing = true;
                 final int index = editable.toString().indexOf(otherSeparator);
-                if (index > 0)
+                if (index >= 0)
                     editable.replace(index,index+1, defaultSeparator);
 
                 if (editable.toString().contains(".") || editable.toString().contains(","))
