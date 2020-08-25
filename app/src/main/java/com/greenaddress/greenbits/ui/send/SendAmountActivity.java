@@ -37,6 +37,7 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
+import com.greenaddress.greenbits.ui.components.AmountTextWatcher;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
@@ -82,6 +83,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private static final int[] mFeeButtonsText =
     {R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom};
     private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
+    private AmountTextWatcher mAmountTextWatcher;
 
     private Disposable setupDisposable;
     private Disposable updateDisposable;
@@ -107,12 +109,13 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mAccountBalance = UI.find(this, R.id.accountBalanceText);
 
         mAmountText = UI.find(this, R.id.amountText);
-        UI.localeDecimalInput(mAmountText);
-        mUnitButton = UI.find(this, R.id.unitButton);
-
+        mAmountTextWatcher = new AmountTextWatcher(mAmountText);
+        mAmountText.setHint(String.format("0%s00", mAmountTextWatcher.getDefaultSeparator()));
+        mAmountText.addTextChangedListener(mAmountTextWatcher);
         mAmountText.addTextChangedListener(this);
-        mUnitButton.setOnClickListener(this);
 
+        mUnitButton = UI.find(this, R.id.unitButton);
+        mUnitButton.setOnClickListener(this);
         mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
         mUnitButton.setPressed(!isFiat());
         mUnitButton.setSelected(!isFiat());
@@ -226,7 +229,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             // If addressee doesn't contain asset_tag, we are sending btc
             final String asset = addressee.has("asset_tag") ? addressee.get("asset_tag").asText() : "btc";
             final long newSatoshi = assetsMap.get(asset).asLong();
-            setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
+            if (newSatoshi > 0) {
+                mAmountText.removeTextChangedListener(mAmountTextWatcher);
+                setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
+                mAmountText.addTextChangedListener(mAmountTextWatcher);
+            }
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
@@ -382,8 +389,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         } else if (view == mUnitButton) {
             try {
                 mIsFiat = !mIsFiat;
-                if (mCurrentAmount != null)
+                if (mCurrentAmount != null && mAmountTextWatcher != null) {
+                    mAmountText.removeTextChangedListener(mAmountTextWatcher);
                     setAmountText(mAmountText, mIsFiat, mCurrentAmount);
+                    mAmountText.addTextChangedListener(mAmountTextWatcher);
+                }
 
                 // Toggle unit display and selected state
                 mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
@@ -419,8 +429,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         final View v = UI.inflateDialog(this, R.layout.dialog_set_custom_feerate);
         final EditText rateEdit = UI.find(v, R.id.set_custom_feerate_amount);
-        UI.localeDecimalInput(rateEdit);
+        final AmountTextWatcher amountTextWatcher = new AmountTextWatcher(rateEdit);
+        rateEdit.setHint(String.format("0%s00", amountTextWatcher.getDefaultSeparator()));
         rateEdit.setText(initValue);
+        rateEdit.addTextChangedListener(amountTextWatcher);
 
         final MaterialDialog dialog;
         dialog = UI.popup(this, R.string.id_set_custom_fee_rate)

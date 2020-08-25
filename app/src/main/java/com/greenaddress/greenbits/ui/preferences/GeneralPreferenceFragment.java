@@ -43,6 +43,7 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.SweepSelectActivity;
+import com.greenaddress.greenbits.ui.components.AmountTextWatcher;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
@@ -482,12 +483,12 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         }
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_custom_feerate);
         final EditText rateEdit = UI.find(v, R.id.set_custom_feerate_amount);
-        UI.localeDecimalInput(rateEdit);
-
+        final AmountTextWatcher amountTextWatcher = new AmountTextWatcher(rateEdit);
         final Double aDouble = Double.valueOf(getDefaultFeeRate());
-
+        rateEdit.setHint(String.format("0%s00", amountTextWatcher.getDefaultSeparator()));
         rateEdit.setText(Conversion.getNumberFormat(2).format(aDouble));
         rateEdit.selectAll();
+        rateEdit.addTextChangedListener(amountTextWatcher);
 
         final MaterialDialog dialog;
         dialog = UI.popup(getActivity(), R.string.id_set_custom_fee_rate)
@@ -678,7 +679,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         final View v = UI.inflateDialog(getActivity(), R.layout.dialog_set_limits);
         final Spinner unitSpinner = UI.find(v, R.id.set_limits_currency);
         final EditText amountEdit = UI.find(v, R.id.set_limits_amount);
-        UI.localeDecimalInput(amountEdit);
+
+        final AmountTextWatcher amountTextWatcher = new AmountTextWatcher(amountEdit);
+        amountEdit.setHint(String.format("0%s00", amountTextWatcher.getDefaultSeparator()));
+        amountEdit.addTextChangedListener(amountTextWatcher);
 
         final String[] currencies;
         currencies = new String[] {Conversion.getBitcoinOrLiquidUnit(), Conversion.getFiatCurrency()};
@@ -695,11 +699,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             amountEdit.selectAll();
             final BalanceData balance;
             balance = mObjectMapper.treeToValue(limitsData, BalanceData.class);
-            if (isFiat) {
-                amountEdit.setText(Conversion.getFiat(balance, false));
-            } else {
-                amountEdit.setText(Conversion.getBtc(balance, false));
-            }
+            amountEdit.removeTextChangedListener(amountTextWatcher);
+            amountEdit.setText(isFiat ? Conversion.getFiat(balance, false) :
+                        Conversion.getBtc(balance, false));
+            amountEdit.addTextChangedListener(amountTextWatcher);
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }

@@ -47,6 +47,7 @@ import com.greenaddress.greenbits.ui.R.layout;
 import com.greenaddress.greenbits.ui.R.string;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.SubaccountPopup;
+import com.greenaddress.greenbits.ui.components.AmountTextWatcher;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.text.NumberFormat;
@@ -74,6 +75,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     private SubaccountData mSubaccountData;
     private boolean isGenerationOnProgress = false;
     private Disposable generateDisposte, validateDisposte;
+    private AmountTextWatcher mAmountTextWatcher;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -85,9 +87,12 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
         mAddressImage = UI.find(this, id.receiveQrImageView);
         mAddressText = UI.find(this, id.receiveAddressText);
-        mAmountText = UI.find(this, id.amountEditText);
-        UI.localeDecimalInput(mAmountText);
         mUnitButton = UI.find(this, id.unitButton);
+
+        mAmountText = UI.find(this, id.amountEditText);
+        mAmountTextWatcher = new AmountTextWatcher(mAmountText);
+        mAmountText.setHint(String.format("0%s00", mAmountTextWatcher.getDefaultSeparator()));
+        mAmountText.addTextChangedListener(mAmountTextWatcher);
 
         mUnitButton.setOnClickListener((final View v) -> {
             onCurrencyClick();
@@ -350,7 +355,9 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
         try {
             mIsFiat = !mIsFiat;
+            mAmountText.removeTextChangedListener(mAmountTextWatcher);
             setAmountText(mAmountText, mIsFiat, mCurrentAmount);
+            mAmountText.addTextChangedListener(mAmountTextWatcher);
         } catch (final ParseException e) {
             mIsFiat = !mIsFiat;
             UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
