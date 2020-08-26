@@ -211,7 +211,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         mLimitsPref = find(PrefKeys.TWO_FAC_LIMITS);
         mLimitsPref.setOnPreferenceClickListener(this::onLimitsPreferenceClicked);
         mLimitsPref.setVisible(anyEnabled && !isLiquid);
-        setLimitsText(twoFaData.getLimits());
+        if (twoFaData != null)
+            setLimitsText(twoFaData.getLimits());
 
         // Enable nlocktime recovery emails
         mLocktimePref = find(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS);

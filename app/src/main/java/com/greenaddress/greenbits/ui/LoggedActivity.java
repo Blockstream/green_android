@@ -222,7 +222,8 @@ public abstract class LoggedActivity extends GaActivity {
     }
 
     private int delayLogoutTimer() {
-        if (getSession() != null && getSession().getSettings() != null) {
+        if (getSession() != null && getSession().getSettings() != null
+                && getSession().getSettings().getAltimeout() != null) {
             return getSession().getSettings().getAltimeout()  * 60 * 1000;
         }
         final String altimeString = cfg().getString(PrefKeys.ALTIMEOUT, "5");
