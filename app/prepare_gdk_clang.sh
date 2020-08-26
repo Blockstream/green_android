@@ -12,7 +12,7 @@ if [ -d gdk ]; then
 else
     git clone https://github.com/Blockstream/gdk.git
     cd gdk
-    git checkout tags/release_0.0.33 -b release_0.0.33
+    git checkout tags/release_0.0.34 -b release_0.0.34
 fi
 
 python3 -m virtualenv -p python3 venv
