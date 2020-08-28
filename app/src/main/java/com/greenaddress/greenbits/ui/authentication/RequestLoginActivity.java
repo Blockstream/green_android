@@ -138,6 +138,7 @@ public class RequestLoginActivity extends LoginActivity {
         final int vendorId = t.getVendorId();
         Log.d(TAG,"Trezor Version: " + version + " vendorid:" + vendorId + " productid:" + t.getProductId());
 
+        // Min allowed: v1.6.0 & v2.1.0
         final boolean isFirmwareOutdated = version.get(0) < 1 ||
                                            (version.get(0) == 1 && version.get(1) < 6) ||
                                            (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0) ||
@@ -230,20 +231,17 @@ public class RequestLoginActivity extends LoginActivity {
 
             // We don't ask for firmware version while in the dashboard, since the Ledger Nano X would return invalid status
             final BTChipFirmware fw = dongle.getFirmwareVersion();
-            final int major = fw.getMajor(), minor = fw.getMinor(), patch = fw.getPatch();
+            Log.d(TAG, "BTChip/Ledger firmware version " + fw);
 
-            Log.d(TAG, "BTChip/Ledger firmware version " + fw.toString() + '(' +
-                  major + '.' + minor + '.' + patch + ')');
-
-            boolean isFirmwareOutdated = false;
-            if (mVendorId == VENDOR_BTCHIP) {
-                isFirmwareOutdated = major < 0x2001 ||
-                                     (major == 0x2001 && minor < 0) || // Just for consistency in checking code
-                                     (major == 0x2001 && minor == 0 && patch < 4);
-            } else if (mVendorId == VENDOR_LEDGER) {
-                isFirmwareOutdated = major < 0x3001 ||
-                                     (major == 0x3001 && minor < 3) ||
-                                     (major == 0x3001 && minor == 3 && patch < 7);
+            boolean isFirmwareOutdated = true;
+            if (mVendorId == VENDOR_BTCHIP && fw.getArchitecture() == BTChipDongle.BTCHIP_ARCH_LEDGER_1 && fw.getMajor() > 0) {
+                // Min allowed: v1.0.4
+                isFirmwareOutdated = (fw.getMajor() == 1 && fw.getMinor() < 0) ||
+                                     (fw.getMajor() == 1 && fw.getMinor() == 0 && fw.getPatch() < 4);
+            } else if (mVendorId == VENDOR_LEDGER && fw.getArchitecture() == BTChipDongle.BTCHIP_ARCH_NANO_SX && fw.getMajor() > 0) {
+                // Min allowed: v1.3.7
+                isFirmwareOutdated = (fw.getMajor() == 1 && fw.getMinor() < 3) ||
+                                     (fw.getMajor() == 1 && fw.getMinor() == 3 && fw.getPatch() < 7);
             }
 
             if (!isFirmwareOutdated) {

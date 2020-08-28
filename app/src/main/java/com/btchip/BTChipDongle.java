@@ -143,18 +143,27 @@ public class BTChipDongle implements BTChipConstants {
 	}
 
 	public class BTChipFirmware {
+
+		private int features;
+		private int architecture;
 		private int major;
 		private int minor;
 		private int patch;
-		private boolean compressedKeys;
 
-		public BTChipFirmware(int major, int minor, int patch, boolean compressedKeys) {
+		public BTChipFirmware(int features, int architecture, int major, int minor, int patch) {
+			this.features = features;
+			this.architecture = architecture;
 			this.major = major;
 			this.minor = minor;
 			this.patch = patch;
-			this.compressedKeys = compressedKeys;
 		}
 
+		public int getFeatures() {
+			return features;
+		}
+		public int getArchitecture() {
+			return architecture;
+		}
 		public int getMajor() {
 			return major;
 		}
@@ -164,13 +173,14 @@ public class BTChipDongle implements BTChipConstants {
 		public int getPatch() {
 			return patch;
 		}
-		public boolean isCompressedKey() {
-			return compressedKeys;
+
+		public boolean compressedKeys() {
+			return (features & 0x1) == 0x1;
 		}
 
 		@Override
 		public String toString() {
-			return String.format("%s.%s.%s compressed keys %b", major, minor, patch, compressedKeys);
+			return String.format("%s.%s.%s  (architecture 0x%x, features 0x%x)", major, minor, patch, architecture, features);
 		}
 	}
 
@@ -525,8 +535,15 @@ public class BTChipDongle implements BTChipConstants {
 		} catch (BTChipException e) {
 			return false;
 		}
-		return this.firmwareVersion.getMajor() >= 0x3001 && // 0x2001 = Ledger 1.x, 0x3001 = Nano S/X
-			this.firmwareVersion.getMinor() >= 4;
+
+		// Only applies to Nano S/X
+		if (this.firmwareVersion.getArchitecture() != BTCHIP_ARCH_NANO_SX) {
+		    return false;
+		}
+
+		// True for ver >= 1.4.0
+		return this.firmwareVersion.getMajor() > 1 ||
+			(this.firmwareVersion.getMajor() == 1 && this.firmwareVersion.getMinor() >= 4);
 	}
 
 	public BTChipInput getTrustedInput(BitcoinTransaction transaction, long index, long sequence, boolean segwit) throws BTChipException {
@@ -907,14 +924,20 @@ public class BTChipDongle implements BTChipConstants {
 		} catch (BTChipException e) {
 			return false;
 		}
-		if (this.firmwareVersion.getMajor() > 0x2001) { // 0x2001 = Ledger 1.x, 0x3001 = Nano S/X
+
+		// True for Nano S/X
+		if (this.firmwareVersion.getArchitecture() == BTCHIP_ARCH_NANO_SX) {
 			return true;
-		} else if (this.firmwareVersion.getMajor() == 0x2001 &&
-				this.firmwareVersion.getMinor() > 0) {
-			return true;
-		} else return this.firmwareVersion.getMajor() == 0x2001 &&
-                this.firmwareVersion.getMinor() == 0 &&
-                this.firmwareVersion.getPatch() >= 2;
+		}
+
+		// True for ver >= 1.1.2 on ledger 1.x
+		if (this.firmwareVersion.getArchitecture() == BTCHIP_ARCH_LEDGER_1) {
+			return this.firmwareVersion.getMajor() > 1 ||
+				(this.firmwareVersion.getMajor() == 1 && this.firmwareVersion.getMinor() > 1) ||
+				(this.firmwareVersion.getMajor() == 1 && this.firmwareVersion.getMinor() == 1 && this.firmwareVersion.getPatch() >= 2);
+		}
+
+		return false;
 	}
 
 	public boolean signMessagePrepare(final List<Integer> path, byte[] message) throws BTChipException {
@@ -949,12 +972,14 @@ public class BTChipDongle implements BTChipConstants {
 
 	public BTChipFirmware getFirmwareVersion() throws BTChipException {
 		byte[] response = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_FIRMWARE_VERSION, (byte)0x00, (byte)0x00, 0x00, OK);
-		boolean compressedKeys = (response[0] == (byte)0x01);
 
-		int major = ((response[1] & 0xff) << 8) | response[2] & 0xff;
+		int features = response[0] & 0xff;
+		int architecture = response[1] & 0xff;
+		int major = response[2] & 0xff;
 		int minor = response[3] & 0xff;
 		int patch = response[4] & 0xff;
-		this.firmwareVersion = new BTChipFirmware(major, minor, patch, compressedKeys);
+		this.firmwareVersion = new BTChipFirmware(features, architecture, major, minor, patch);
+
 		return this.firmwareVersion;
 	}
 
