@@ -9,4 +9,9 @@
         android:id="@+id/action_restore_temporary"
         app:showAsAction="never"
         android:title="@string/id_restore_temporary_wallet" />
+    <item
+        android:id="@+id/action_device"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_ledger"
+        android:title="@string/id_hardware_wallet_support_for" />
 </menu>

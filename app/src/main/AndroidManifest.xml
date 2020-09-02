@@ -18,6 +18,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.NFC" />
 
+    <!-- Bluetooth BLE for hardware wallets -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="22"/>
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -250,13 +255,15 @@
             android:screenOrientation="portrait"
             android:label="@string/id_asset"
             />
-        <activity android:name=".assets.RegistryErrorActivity"  android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".assets.RegistryErrorActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            />
         <activity
             android:name=".preferences.DisplayMnemonicActivity"
             android:screenOrientation="portrait"
             android:label="@string/id_mnemonic"
             />
-
         <activity
             android:name=".accounts.SubaccountAddActivity"
             android:screenOrientation="portrait"
@@ -267,6 +274,10 @@
             android:name=".accounts.SweepSelectActivity"
             android:screenOrientation="portrait"
             android:label="@string/id_sweep"
+            />
+        <activity
+            android:name=".hardwarewallets.DeviceSelectorActivity"
+            android:screenOrientation="portrait"
             />
 
     </application>

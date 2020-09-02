@@ -14,6 +14,7 @@ import com.greenaddress.greenbits.ui.NetworkSettingsActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.onboarding.InfoActivity;
+import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity;
 
 public class FirstScreenActivity extends LoginActivity {
 
@@ -47,6 +48,9 @@ public class FirstScreenActivity extends LoginActivity {
             final Intent intent = new Intent(this, MnemonicActivity.class);
             intent.putExtra(MnemonicActivity.TEMPORARY_MODE, true);
             startActivity(intent);
+            return true;
+        case R.id.action_device:
+            startActivity(new Intent(this, DeviceSelectorActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -2,11 +2,13 @@ package com.greenaddress.greenbits.ui.authentication;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -31,17 +33,20 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
+import com.polidea.rxandroidble2.RxBleClient;
+import com.polidea.rxandroidble2.RxBleDevice;
 import com.satoshilabs.trezor.Trezor;
 
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.Objects;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.greenaddress.greenapi.Session.getSession;
@@ -58,6 +63,8 @@ public class RequestLoginActivity extends LoginActivity {
     private UsbManager mUsbManager;
     private UsbDevice mUsb;
 
+    private BluetoothDevice mBleDevice;
+
     private TextView mInstructionsText;
     private Dialog mPinDialog;
     private String mPin;
@@ -67,7 +74,7 @@ public class RequestLoginActivity extends LoginActivity {
     private HWWallet mHwWallet;
     private TextView mActiveNetwork;
     private NetworkData networkData;
-    private Disposable loginDisposable;
+    private CompositeDisposable mDisposables;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
@@ -81,6 +88,8 @@ public class RequestLoginActivity extends LoginActivity {
         mInstructionsText = UI.find(this, R.id.first_login_instructions);
         mActiveNetwork = UI.find(this, R.id.activeNetwork);
         networkData = getNetwork();
+
+        mDisposables = new CompositeDisposable();
     }
 
     @Override
@@ -121,6 +130,21 @@ public class RequestLoginActivity extends LoginActivity {
                 showPinDialog();
             }
         }
+    }
+
+    private void onBleAttach(final ParcelUuid serviceId, final BluetoothDevice btDevice) {
+        final RxBleDevice bleDevice = RxBleClient.create(this).getBleDevice(btDevice.getAddress());
+        if (serviceId == null || bleDevice == null || bleDevice.getName() == null) {
+            mBleDevice = null;
+            onNoHardwareWallet();
+            return;
+        }
+
+        mBleDevice = btDevice;
+        Log.d(TAG, "onBleAttach " + bleDevice.getName() + " (" + bleDevice.getMacAddress() + ")");
+        final ImageView hardwareIcon = UI.find(this, R.id.hardwareIcon);
+
+        // TODO: for now do nothing (ie. no supported hw atm)
     }
 
     private void onTrezor() {
@@ -172,17 +196,16 @@ public class RequestLoginActivity extends LoginActivity {
                      .customView(v, true)
                      .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
                      .onPositive((dialog, which) -> {
-            mPin = UI.getText(v, R.id.btchipPINValue);
-            Observable.just(getSession())
-            .observeOn(Schedulers.computation())
-            .subscribe((session) -> {
-                onLedger(false);
-            });
-        })
+                         mPin = UI.getText(v, R.id.btchipPINValue);
+                         mDisposables.add(Observable.just(getSession())
+                                 .observeOn(Schedulers.computation())
+                                 .subscribe(session -> onLedger(false))
+                         );
+                     })
                      .onNegative((dialog, which) -> {
-            UI.toast(this, R.string.id_no_pin_provided_exiting, Toast.LENGTH_LONG);
-            finish();
-        }).build();
+                         UI.toast(this, R.string.id_no_pin_provided_exiting, Toast.LENGTH_LONG);
+                         finish();
+                     }).build();
 
         UI.mapEnterToPositive(mPinDialog, R.id.btchipPINValue);
         UI.showDialog(mPinDialog);
@@ -281,7 +304,7 @@ public class RequestLoginActivity extends LoginActivity {
     }
 
     private void doLogin(final Activity parent) {
-        loginDisposable = Observable.just(getSession())
+        mDisposables.add(Observable.just(getSession())
                           .observeOn(Schedulers.computation())
                           .map((session) -> {
             session.disconnect();
@@ -303,15 +326,16 @@ public class RequestLoginActivity extends LoginActivity {
             GDKSession.get().disconnect();
             UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
             showInstructions(R.string.id_please_reconnect_your_hardware);
-        });
+        }));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mPinDialog = UI.dismiss(this, mPinDialog);
-        if (loginDisposable != null)
-            loginDisposable.dispose();
+        if (mDisposables != null) {
+            mDisposables.dispose();
+        }
     }
 
     @Override
@@ -325,13 +349,24 @@ public class RequestLoginActivity extends LoginActivity {
             onUsbAttach(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE));
         }
 
-        if (mUsb != null || mInLedgerDashboard) {
+        if (DeviceSelectorActivity.ACTION_BLE_SELECTED.equalsIgnoreCase(intent.getAction())) {
+            onBleAttach(intent.getParcelableExtra(BluetoothDevice.EXTRA_UUID),
+                    Objects.requireNonNull(intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)));
+        }
+
+        if (mUsb != null || mBleDevice != null || mInLedgerDashboard) {
             // Continue displaying instructions until the user opens the
             // correct wallet app, or log in completes/errors out
             return;
         }
 
+        // No hardware wallet after all
+        onNoHardwareWallet();
+    }
+
+    private void onNoHardwareWallet() {
         // No hardware wallet, jump to PIN or 1st screen entry
+        final Intent intent = getIntent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         if (AuthenticationHandler.hasPin(this))
             startActivityForResult(new Intent(this, PinActivity.class), 0);
