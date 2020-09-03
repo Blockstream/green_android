@@ -22,6 +22,7 @@ import com.btchip.BTChipDongle;
 import com.btchip.BTChipDongle.BTChipFirmware;
 import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
+import com.btchip.comm.LedgerDeviceBLE;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.GDKSession;
@@ -36,6 +37,7 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
+import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.polidea.rxandroidble2.RxBleClient;
 import com.polidea.rxandroidble2.RxBleDevice;
@@ -122,12 +124,23 @@ public class RequestLoginActivity extends LoginActivity {
         case VENDOR_BTCHIP:
         case VENDOR_LEDGER:
             hardwareIcon.setImageResource(R.drawable.ic_ledger);
+            BTChipTransport transport = null;
+            try {
+                transport = BTChipTransportAndroid.open(mUsbManager, mUsb);
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+            if (transport == null) {
+                showInstructions(R.string.id_please_reconnect_your_hardware);
+                return;
+            }
+
             if (BTChipTransportAndroid.isLedgerWithScreen(usb)) {
                 // User entered PIN on-device
-                onLedger(true);
+                onLedger(transport, true);
             } else {
                 // Prompt for PIN to unlock device before setting it up
-                showPinDialog();
+                showLedgerPinDialog(transport);
             }
         }
     }
@@ -144,7 +157,16 @@ public class RequestLoginActivity extends LoginActivity {
         Log.d(TAG, "onBleAttach " + bleDevice.getName() + " (" + bleDevice.getMacAddress() + ")");
         final ImageView hardwareIcon = UI.find(this, R.id.hardwareIcon);
 
-        // TODO: for now do nothing (ie. no supported hw atm)
+        // Ledger (Nano X)
+        if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId.getUuid())) {
+            hardwareIcon.setImageResource(R.drawable.ic_ledger);
+
+            // Ledger BLE adapter will call the 'onLedger' function when the BLE connection is established
+            LedgerBLEAdapter.connectLedgerBLE(this, btDevice, this::onLedger, this::onLedgerError);
+        } else {
+            mBleDevice = null;
+            onNoHardwareWallet();
+        }
     }
 
     private void onTrezor() {
@@ -167,14 +189,13 @@ public class RequestLoginActivity extends LoginActivity {
                                            (version.get(0) == 1 && version.get(1) < 6) ||
                                            (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0) ||
                                            (version.get(0) == 2 && version.get(1) < 1);
-
-        if (!isFirmwareOutdated) {
-            onTrezorConnected(t);
+        if (isFirmwareOutdated) {
+            showFirmwareOutdated(() -> onTrezorConnected(t), null);
             return;
         }
 
-        showFirmwareOutdated(R.string.id_outdated_hardware_wallet,
-                             () -> onTrezorConnected(t));
+        // All good
+        onTrezorConnected(t);
     }
 
     private void onTrezorConnected(final Trezor t) {
@@ -187,7 +208,7 @@ public class RequestLoginActivity extends LoginActivity {
         doLogin(this);
     }
 
-    private void showPinDialog() {
+    private void showLedgerPinDialog(final BTChipTransport transport) {
         mPinDialog = UI.dismiss(this, mPinDialog);
 
         final View v = UI.inflateDialog(this, R.layout.dialog_btchip_pin);
@@ -199,7 +220,7 @@ public class RequestLoginActivity extends LoginActivity {
                          mPin = UI.getText(v, R.id.btchipPINValue);
                          mDisposables.add(Observable.just(getSession())
                                  .observeOn(Schedulers.computation())
-                                 .subscribe(session -> onLedger(false))
+                                 .subscribe(session -> onLedger(transport, false))
                          );
                      })
                      .onNegative((dialog, which) -> {
@@ -211,23 +232,25 @@ public class RequestLoginActivity extends LoginActivity {
         UI.showDialog(mPinDialog);
     }
 
-    private void onLedger(final boolean hasScreen) {
+    private void closeLedger(final BTChipTransport transport) {
+        try {
+            transport.close();
+        } catch (final BTChipException ignored) {}
+
+        mUsb = null;
+        mBleDevice = null;
+        mInLedgerDashboard = true;
+    }
+
+    private void onLedgerError(final BTChipTransport transport) {
+        showInstructions(R.string.id_please_reconnect_your_hardware);
+        closeLedger(transport);
+    }
+
+    private void onLedger(final BTChipTransport transport, final boolean hasScreen) {
         showInstructions(R.string.id_logging_in);
         final String pin = mPin;
         mPin = null;
-
-        BTChipTransport transport = null;
-        if (mUsb != null) {
-            try {
-                transport = BTChipTransportAndroid.open(mUsbManager, mUsb);
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-            if (transport == null) {
-                showInstructions(R.string.id_please_reconnect_your_hardware);
-                return;
-            }
-        }
 
         transport.setDebug(BuildConfig.DEBUG);
         try {
@@ -235,59 +258,64 @@ public class RequestLoginActivity extends LoginActivity {
             try {
                 // This should only be supported by the Nano X
                 final BTChipDongle.BTChipApplication application = dongle.getApplication();
+                Log.d(TAG, "Ledger application:" + application);
+
+                if (application.getName().contains("OLOS")) {
+                    showInstructions(R.string.id_ledger_dashboard_detected);
+                    closeLedger(transport);
+                    return;
+                }
 
                 final boolean netMainnet = networkData.getMainnet();
                 final boolean netLiquid = networkData.getLiquid();
                 final boolean hwMainnet = !application.getName().contains("Test");
                 final boolean hwLiquid = application.getName().contains("Liquid");
-
-                Log.d(TAG, "Ledger application:" + application.getName() + " network is mainnet:"+ netMainnet);
+                Log.d(TAG, "Ledger application:" + application.getName() + ", network is mainnet:"+ netMainnet);
 
                 if (netMainnet != hwMainnet || netLiquid != hwLiquid) {
                     // We using the wrong app, prompt the user to open the right app.
-                    mUsb = null;
-                    mInLedgerDashboard = true;
                     showInstructions(R.string.id_the_network_selected_on_the);
+                    closeLedger(transport);
                     return;
                 }
-            } catch (BTChipException ignored) { }
+            } catch (final Exception e) {
+                // Log but otherwise ignore
+                Log.e(TAG, "Error trying to get Ledger application details: " + e);
+            }
 
             // We don't ask for firmware version while in the dashboard, since the Ledger Nano X would return invalid status
             final BTChipFirmware fw = dongle.getFirmwareVersion();
             Log.d(TAG, "BTChip/Ledger firmware version " + fw);
 
             boolean isFirmwareOutdated = true;
-            if (mVendorId == VENDOR_BTCHIP && fw.getArchitecture() == BTChipDongle.BTCHIP_ARCH_LEDGER_1 && fw.getMajor() > 0) {
+            if (fw.getArchitecture() == BTChipDongle.BTCHIP_ARCH_LEDGER_1 && fw.getMajor() > 0) {
                 // Min allowed: v1.0.4
                 isFirmwareOutdated = (fw.getMajor() == 1 && fw.getMinor() < 0) ||
                                      (fw.getMajor() == 1 && fw.getMinor() == 0 && fw.getPatch() < 4);
-            } else if (mVendorId == VENDOR_LEDGER && fw.getArchitecture() == BTChipDongle.BTCHIP_ARCH_NANO_SX && fw.getMajor() > 0) {
+            } else if (fw.getArchitecture() == BTChipDongle.BTCHIP_ARCH_NANO_SX && fw.getMajor() > 0) {
                 // Min allowed: v1.3.7
                 isFirmwareOutdated = (fw.getMajor() == 1 && fw.getMinor() < 3) ||
                                      (fw.getMajor() == 1 && fw.getMinor() == 3 && fw.getPatch() < 7);
             }
 
-            if (!isFirmwareOutdated) {
-                onLedgerConnected(dongle, pin);
+            if (isFirmwareOutdated) {
+                showFirmwareOutdated(() -> onLedgerConnected(dongle, pin),
+                                     () -> closeLedger(transport));
                 return;
             }
 
-            showFirmwareOutdated(R.string.id_outdated_hardware_wallet,
-                                 () -> onLedgerConnected(dongle, pin));
+            // All good
+            onLedgerConnected(dongle, pin);
         } catch (final BTChipException e) {
             if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
                 e.printStackTrace();
+
             if (e.getSW() == 0x6faa) {
                 showInstructions(R.string.id_please_disconnect_your_ledger);
-                return;
+            } else {
+                showInstructions(R.string.id_ledger_dashboard_detected);
             }
-            try {
-                transport.close();
-            } catch (final BTChipException bte) {}
-            // We are in dashboard mode, prompt the user to open the btcoin app.
-            mUsb = null;
-            mInLedgerDashboard = true;
-            showInstructions(R.string.id_ledger_dashboard_detected);
+            closeLedger(transport);
         }
     }
 
@@ -381,20 +409,23 @@ public class RequestLoginActivity extends LoginActivity {
         });
     }
 
-    private void showFirmwareOutdated(final int resId, final Runnable onContinue) {
-        // FIXME: Close and set mUsb to null for ledger in onNegative/onCancel
-
+    private void showFirmwareOutdated(final Runnable onContinue, final Runnable onClose) {
         if (!BuildConfig.DEBUG) {
             // Only allow the user to skip firmware checks in debug builds.
-            showInstructions(resId);
+            showInstructions(R.string.id_outdated_hardware_wallet);
+            if (onClose != null) {
+                onClose.run();
+            }
             return;
         }
 
         runOnUiThread(() -> {
             final MaterialDialog d;
             d = UI.popup(RequestLoginActivity.this, R.string.id_warning, R.string.id_continue, R.string.id_cancel)
-                .content(resId)
-                .onPositive((dialog, which) -> onContinue.run()).build();
+                .content(R.string.id_outdated_hardware_wallet)
+                .onNegative((dialog, which) -> { if (onClose != null) { onClose.run(); } } )
+                .onPositive((dialog, which) -> { if (onContinue != null) { onContinue.run(); } } )
+                .build();
             UI.setDialogCloseHandler(d, this::finishOnUiThread);
             d.show();
         });

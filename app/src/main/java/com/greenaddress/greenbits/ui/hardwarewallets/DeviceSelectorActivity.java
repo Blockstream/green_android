@@ -17,6 +17,7 @@ import android.util.Pair;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.btchip.comm.LedgerDeviceBLE;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -49,6 +50,9 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
     private static final String TAG = DeviceSelectorActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSION_COARSE_LOCATION = 101;
     private static final int REQUEST_ENABLE_BT = 102;
+
+    // Supported hw
+    private static ParcelUuid PARCEL_SERVICE_UUID_LEDGER = new ParcelUuid(LedgerDeviceBLE.SERVICE_UUID);
 
     private RecyclerView mRecyclerView;
     private DeviceAdapter mAdapter;
@@ -196,9 +200,11 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
                         for (final BluetoothGattService service : services.getBluetoothGattServices()) {
                             final UUID serviceId = service.getUuid();
 
-                            // TODO: check service supported - for now show all devices that advertise any service uuid
-                            mAdapter.add(Pair.create(new ParcelUuid(serviceId), device));
-                            return;
+                            // Ledger (Nano X)
+                            if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId)) {
+                                mAdapter.add(Pair.create(PARCEL_SERVICE_UUID_LEDGER, device));
+                                return;
+                            }
                         }
                     },
                     throwable -> {
@@ -233,9 +239,11 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
                     .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                     .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                     .build(),
+            // add custom filters - filter to just supported hw
+            // Ledger (Nano X)
             new ScanFilter.Builder()
-            // add custom filters if needed - filter to just supported hw
-            .build()
+                    .setServiceUuid(PARCEL_SERVICE_UUID_LEDGER)
+                    .build()
             )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onScan, this::onScanFailure)
@@ -245,9 +253,10 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
     private void onScan(final ScanResult rslt) {
         final ScanRecord rec = rslt.getScanRecord();
         if (rec != null && rec.getServiceUuids() != null && !rec.getServiceUuids().isEmpty()) {
-            // Filter to supported hw, and associate with service uuid
-            // TODO: check service supported - for now show all devices that advertise any service uuid
-            mAdapter.add(Pair.create(rec.getServiceUuids().get(0), rslt.getBleDevice().getBluetoothDevice()));
+            // Ledger (Nano X)
+            if (rec.getServiceUuids().contains(PARCEL_SERVICE_UUID_LEDGER)) {
+                mAdapter.add(Pair.create(PARCEL_SERVICE_UUID_LEDGER, rslt.getBleDevice().getBluetoothDevice()));
+            }
         }
     }
 
