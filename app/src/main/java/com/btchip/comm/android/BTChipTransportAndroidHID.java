@@ -27,7 +27,7 @@ import android.util.Log;
 
 import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
-import com.btchip.comm.LedgerHelper;
+import com.btchip.comm.LedgerWrapper;
 import com.btchip.utils.Dump;
 import com.btchip.utils.FutureUtils;
 
@@ -70,7 +70,7 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 			Log.d(BTChipTransportAndroid.LOG_STRING, "=> " + Dump.dump(command));
 		}
 		if (ledger) {
-			command = LedgerHelper.wrapCommandAPDU(LEDGER_DEFAULT_CHANNEL, command, HID_BUFFER_SIZE);
+			command = LedgerWrapper.wrapCommandAPDU(LEDGER_DEFAULT_CHANNEL, command, HID_BUFFER_SIZE);
 		}
 		UsbRequest request = new UsbRequest();
 		if (!request.initialize(connection, out)) {
@@ -127,7 +127,7 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 			responseData = response.toByteArray();
 		}
 		else {			
-			while ((responseData = LedgerHelper.unwrapResponseAPDU(LEDGER_DEFAULT_CHANNEL, response.toByteArray(), HID_BUFFER_SIZE)) == null) {
+			while ((responseData = LedgerWrapper.unwrapResponseAPDU(LEDGER_DEFAULT_CHANNEL, response.toByteArray(), HID_BUFFER_SIZE)) == null) {
 				responseBuffer.clear();
 				if (!request.queue(responseBuffer, HID_BUFFER_SIZE)) {
 					throw new BTChipException("I/O error");

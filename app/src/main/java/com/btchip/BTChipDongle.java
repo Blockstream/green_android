@@ -535,11 +535,9 @@ public class BTChipDongle implements BTChipConstants {
 		return new BTChipPublicKey(nonce, null, null);
 	}
 
-	public boolean shouldUseTrustedInputForSegwit() {
-		try {
-			if (this.firmwareVersion == null) this.getFirmwareVersion();
-		} catch (BTChipException e) {
-			return false;
+	public boolean shouldUseTrustedInputForSegwit() throws BTChipException {
+		if (this.firmwareVersion == null) {
+			this.getFirmwareVersion();
 		}
 
 		// Only applies to Nano S/X
@@ -924,11 +922,9 @@ public class BTChipDongle implements BTChipConstants {
 		return untrustedHashSign(privateKeyPath, pin, 0, (byte)0x01);
 	}
 
-	public boolean shouldUseNewSigningApi() {
-		try {
-			if (this.firmwareVersion == null) this.getFirmwareVersion();
-		} catch (BTChipException e) {
-			return false;
+	public boolean shouldUseNewSigningApi() throws BTChipException {
+		if (this.firmwareVersion == null) {
+			this.getFirmwareVersion();
 		}
 
 		// True for Nano S/X
