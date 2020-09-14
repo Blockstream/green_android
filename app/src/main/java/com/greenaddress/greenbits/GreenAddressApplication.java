@@ -3,7 +3,6 @@ package com.greenaddress.greenbits;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Debug;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -14,12 +13,9 @@ import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.JSONConverterImpl;
 import com.greenaddress.greenapi.CryptoHelper;
-import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.BuildConfig;
@@ -30,7 +26,6 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GreenAddressApplication extends MultiDexApplication {
@@ -158,7 +153,7 @@ public class GreenAddressApplication extends MultiDexApplication {
                 return n;
             }
         }
-        return null;
+        return networks.get(0);
     }
 
     public void setCurrentNetwork(final String networkId) {
