@@ -46,6 +46,7 @@ android {
         // because it breaks F-Droid!
         versionName "3.3.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     flavorDimensions 'normal'
     buildTypes {
