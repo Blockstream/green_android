@@ -457,6 +457,12 @@ public class BTChipDongle implements BTChipConstants {
 	}
 
 	private byte[] exchangeApduSplit2(byte cla, byte ins, byte p1, byte p2, byte[] data, byte[] data2, int acceptedSW[]) throws BTChipException {
+		// If data is empty, just send data2 immediately
+		if (data.length == 0) {
+			return exchangeApdu(cla, ins, p1, p2, data2, acceptedSW);
+		}
+
+		// Send data potentially in chunks, appending data2 to the last one
 		int offset = 0;
 		byte[] result = null;
 		int maxBlockSize = 255 - data2.length;
