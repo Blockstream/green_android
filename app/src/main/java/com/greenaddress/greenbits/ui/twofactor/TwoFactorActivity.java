@@ -152,6 +152,10 @@ public class TwoFactorActivity extends LoggedActivity {
                 final String details = UI.getText(detailsText).trim();
                 if (details.isEmpty())
                     return;
+                if (!isValidEmail(details)) {
+                    detailsText.setError(getString(R.string.id_not_a_valid_email_address));
+                    return;
+                }
                 UI.disable(mContinueButton);
                 resetTwoFactor(details, isDispute);
             }
@@ -171,6 +175,10 @@ public class TwoFactorActivity extends LoggedActivity {
                 final String details = UI.getText(detailsText).trim();
                 if (details.isEmpty())
                     return;
+                if (!isValidEmail(details)) {
+                    detailsText.setError(getString(R.string.id_not_a_valid_email_address));
+                    return;
+                }
                 UI.disable(mContinueButton);
                 if (settingEmail) {
                     setEmail(details);
@@ -301,6 +309,10 @@ public class TwoFactorActivity extends LoggedActivity {
         return false;
     }
 
+    static boolean isValidEmail(final String email) {
+        return email.matches(".+@.+\\..+");
+    }
+
     public void setEmail(String data) {
         disposable = Observable.just(getSession())
                      .subscribeOn(Schedulers.computation())
@@ -348,6 +360,8 @@ public class TwoFactorActivity extends LoggedActivity {
             finishOnUiThread();
         }, (final Throwable e) -> {
             UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+            finishOnUiThread();
+            return;
         });
     }
 
