@@ -202,7 +202,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 if (details.isEmpty())
                     return;
                 if (!isValidPhoneNumber(details)) {
-                    UI.toast(TwoFactorActivity.this, R.string.id_invalid_phone_number_format, Toast.LENGTH_LONG);
+                    detailsText.setError(getString(R.string.id_invalid_phone_number_format));
                     return;
                 }
                 UI.disable(mContinueButton);
@@ -224,7 +224,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 if (details.isEmpty())
                     return;
                 if (!isValidPhoneNumber(details)) {
-                    UI.toast(TwoFactorActivity.this, R.string.id_invalid_phone_number_format, Toast.LENGTH_LONG);
+                    detailsText.setError(getString(R.string.id_invalid_phone_number_format));
                     return;
                 }
                 UI.disable(mContinueButton);
