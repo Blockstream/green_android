@@ -21,6 +21,7 @@
   <string name="id_account_id">Account ID</string>
   <string name="id_account_name">Account Name</string>
   <string name="id_account_type">Account Type</string>
+  <string name="id_accounts_summary">Accounts summary</string>
   <string name="id_action_canceled">Action canceled</string>
   <string name="id_add_a_note_only_you_can_see_it">Add a note (only you can see it).</string>
   <string name="id_add_a_pgp_public_key_to_receive">Add a PGP public key to receive encrypted email and keep your privacy</string>
@@ -51,6 +52,7 @@
   <string name="id_autolock_after">Autolock After</string>
   <string name="id_back">Back</string>
   <string name="id_backup_the_recovery_mnemonic">Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.</string>
+  <string name="id_backup_your_mnemonic_before">Backup your mnemonic before removing the wallet from this device.</string>
   <string name="id_be_aware_other_apps_can_read_or">Be aware, other apps can read or change the clipboard</string>
   <string name="id_bitcoin_denomination">Bitcoin denomination</string>
   <string name="id_bitcoin_wallet">Bitcoin wallet.</string>
@@ -82,6 +84,8 @@
   <string name="id_communication_timed_out_make">Communication timed out. Make sure the device is powered on and try again.</string>
   <string name="id_completed">Completed</string>
   <string name="id_confidential">Confidential</string>
+  <string name="id_confirm_action">Confirm action</string>
+  <string name="id_confirm_by_typing_the_wallet">Confirm by typing the wallet name</string>
   <string name="id_confirm_code">Confirm Code</string>
   <string name="id_confirm_passphrase">Confirm passphrase</string>
   <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
@@ -148,6 +152,7 @@
   <string name="id_email_address">email address</string>
   <string name="id_enable">Enable</string>
   <string name="id_enable_custom_networks_debug">Enable custom networks debug options</string>
+  <string name="id_enable_email_notifications_to">Enable email notifications to change nlocktime</string>
   <string name="id_enable_face_id">Enable Face ID</string>
   <string name="id_enable_or_change_your_pin_to">Enable or change your PIN to quickly access your wallet</string>
   <string name="id_enable_spv">Enable SPV</string>
@@ -180,6 +185,7 @@
   <string name="id_error_passphrases_do_not_match">Error: passphrases do not match</string>
   <string name="id_estimated_blocks_until">Estimated blocks until confirmation: %d</string>
   <string name="id_example_89014283334011612858333">Example: 8.90.14.2:8333,40.116.12.85:8333</string>
+  <string name="id_export_transactions_to_csv_file">Export transactions to CSV file</string>
   <string name="id_face_id">Face ID</string>
   <string name="id_fast">Fast</string>
   <string name="id_fee">Fee</string>
@@ -191,9 +197,9 @@
   <string name="id_fee_rate_s">Fee rate: %s</string>
   <string name="id_fee_s__s">Fee: %s / %s</string>
   <string name="id_fees_are_too_low">Fees are too low</string>
+  <string name="id_for_investors">For investors</string>
   <string name="id_for_long_term_storage">For long term storage</string>
   <string name="id_for_most_users">For most users</string>
-  <string name="id_for_securities_investors">For securities investors</string>
   <string name="id_from">FROM</string>
   <string name="id_funds_received_in_this">Funds received in this transaction are not confidential.</string>
   <string name="id_general">General</string>
@@ -205,6 +211,7 @@
   <string name="id_google_auth">Google Auth</string>
   <string name="id_google_authenticator">Google Authenticator</string>
   <string name="id_google_authenticator_qr_code">Google Authenticator QR Code:</string>
+  <string name="id_google_authenticator_secret_key">Google Authenticator secret key</string>
   <string name="id_green_is_a_noncustodial_wallet">Green is a non-custodial wallet</string>
   <string name="id_green_logo">Green Logo</string>
   <string name="id_green_mnemonic_qr_code">Green Mnemonic QR Code</string>
@@ -262,9 +269,6 @@
   <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: tap here to check the list.</string>
   <string name="id_lets_get_you_set_up">Let\'s get you set up.</string>
   <string name="id_liquid_securities">Liquid Securities</string>
-  <string name="id_liquid_securities_account">Liquid Securities Account</string>
-  <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
-  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.</string>
   <string name="id_loading_transactions">Loading transactions…</string>
   <string name="id_log_in">Log In</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
@@ -280,6 +284,8 @@
   <string name="id_main_account">Main Account</string>
   <string name="id_make_sure_you_made_a_proper">Make sure you made a proper backup of your wallet mnemonic.</string>
   <string name="id_malleated">malleated</string>
+  <string name="id_managed_assets_account">Managed Assets Account</string>
+  <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">Medium</string>
   <string name="id_memo">Memo</string>
   <string name="id_minute">minute</string>
@@ -316,6 +322,8 @@
   <string name="id_no_utxos_found">No UTXOs found</string>
   <string name="id_nonconfidential_addresses_not">Non-confidential addresses not supported</string>
   <string name="id_normal">Normal</string>
+  <string name="id_not_a_valid_email_address">Not a valid email address</string>
+  <string name="id_not_a_valid_phone_number">Not a valid phone number</string>
   <string name="id_not_connected_connecting_in_ds_">Not connected. Connecting in %ds …</string>
   <string name="id_notifications">Notifications</string>
   <string name="id_now">Now</string>
@@ -366,7 +374,7 @@
   <string name="id_previous_fee">Previous fee</string>
   <string name="id_privacy_policy">Privacy Policy</string>
   <string name="id_problem_with_key_1s">Problem with key %1$s</string>
-  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive a Liquid Security.</string>
+  <string name="id_provide_this_id_to_the_asset">Provide this ID to the asset issuer if requested.</string>
   <string name="id_proxy_settings">PROXY SETTINGS</string>
   <string name="id_qr_scanner">QR Scanner</string>
   <string name="id_read_more_at_our_s">Read more at our %s</string>
@@ -388,7 +396,9 @@
   <string name="id_reference_exchange_rate">Reference exchange rate</string>
   <string name="id_refresh">Refresh</string>
   <string name="id_remember_me">Remember me</string>
+  <string name="id_remove">Remove</string>
   <string name="id_remove_custom_network">Remove custom network</string>
+  <string name="id_remove_wallet">Remove wallet</string>
   <string name="id_rename_account">Rename account</string>
   <string name="id_replaceable">replaceable</string>
   <string name="id_request_amount">REQUEST AMOUNT</string>
@@ -410,8 +420,10 @@
   <string name="id_s_from_s">%s from %s</string>
   <string name="id_s_network">%s network</string>
   <string name="id_save">Save</string>
+  <string name="id_save_a_summary_of_your_accounts">Save a summary of your accounts to speed up recovery in case you need to use our recovery tool.</string>
   <string name="id_save_your_mnemonic">Save your mnemonic</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Scan a QR code for SPV pairing</string>
+  <string name="id_scan_qr_code">Scan QR code</string>
   <string name="id_scan_the_qr_code_in_google">Scan the QR Code in Google Authenticator:</string>
   <string name="id_scan_to_send_here">Scan to send here</string>
   <string name="id_screen_lock">Screen Lock</string>
@@ -560,6 +572,7 @@
   <string name="id_user_not_found_or_invalid">User not found or invalid password</string>
   <string name="id_username">Username</string>
   <string name="id_username_not_available">Username not available</string>
+  <string name="id_value_must_be_between_144_and">Value must be between 144 and 200000</string>
   <string name="id_verify_your_pin">Verify Your PIN</string>
   <string name="id_version">Version</string>
   <string name="id_version_1s">Version: %1$s</string>
@@ -614,7 +627,7 @@
   <string name="id_your_transactions_will_be_shown">Your transactions will be shown here.</string>
   <string name="id_your_twofactor_threshold_is_s">Your Two-Factor threshold is %s.</string>
   <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
-  <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %s days.</string>
+  <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %d days.</string>
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
 </resources>

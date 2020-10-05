@@ -7,10 +7,10 @@
   <string name="id_1s_blocks_left_2d">%1$s Blöcke verbleibend %2$d</string>
   <string name="id_1s_twofactor_set_up">%1$s Zwei-Faktor Einrichtung</string>
   <string name="id_2_hours">~ 2 Stunden</string>
-  <string name="id_2of3_account">2of3 Account</string>
+  <string name="id_2of3_account">2von3-Account</string>
   <string name="id_4_hours">~ 4 Stunden</string>
   <string name="id_5_seconds_minimum">mindestens 5 Sekunden</string>
-  <string name="id_a_2of3_account_requires_two_out">A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.</string>
+  <string name="id_a_2of3_account_requires_two_out">Ein 2of3-Account benötigt zwei von drei Signaturen, um Coins auszugeben. Die dritte Signatur stammt von einem Backup-Schlüssel, den nur du kennst. Dies gibt dir die Sicherheitsvorteile eines Standardkontos, erlaubt dir aber trotzdem, deine Coins jederzeit unabhängig zu bewegen.</string>
   <string name="id_a_new_transaction_has_just">Eine neue Transaktion ist soeben eingetroffen.</string>
   <string name="id_a_screen_lock_must_be_enabled">Eine Bildschirmsperre muss über die Android-Einstellungen aktiviert werden</string>
   <string name="id_a_wallet_is_detected_on_this">Eine Wallet wurde auf dem Gerät erkannt:</string>
@@ -21,6 +21,7 @@
   <string name="id_account_id">Konto-ID</string>
   <string name="id_account_name">Konto-Name</string>
   <string name="id_account_type">Konto-Typ</string>
+  <string name="id_accounts_summary">Kontenübersicht</string>
   <string name="id_action_canceled">Aktion abgebrochen</string>
   <string name="id_add_a_note_only_you_can_see_it">Füge eine Notiz hinzu (nur du kannst sie sehen).</string>
   <string name="id_add_a_pgp_public_key_to_receive">Füge einen PGP-Public-Key hinzu, um verschlüsselte E-Mails zu erhalten und deine Privatsphäre zu schützen</string>
@@ -50,7 +51,8 @@
   <string name="id_auto_logout_timeout">Automatisch Ausloggen</string>
   <string name="id_autolock_after">Automatisch ausloggen nach</string>
   <string name="id_back">Zurück</string>
-  <string name="id_backup_the_recovery_mnemonic">Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.</string>
+  <string name="id_backup_the_recovery_mnemonic">Sichere den Merksatz und deinen Wiederhesrtellungs-xpub um deine Gelder von deinem 2von3-Account wiederherstellen zu können. </string>
+  <string name="id_backup_your_mnemonic_before">Erstelle eine Sicherungskopie von deinem Merksatz, bevor du die Wallet von deinem Gerät entfernst.</string>
   <string name="id_be_aware_other_apps_can_read_or">Denk daran, ändere Apps können die Zwischenablage lesen und ändern</string>
   <string name="id_bitcoin_denomination">Bitcoin-Denominierung</string>
   <string name="id_bitcoin_wallet">Bitcoin Wallet.</string>
@@ -82,6 +84,8 @@
   <string name="id_communication_timed_out_make">Die Kommunikation wurde unterbrochen. Stelle sicher, dass das Gerät eingeschaltet ist, und probiere es erneut.</string>
   <string name="id_completed">Abgeschlossen</string>
   <string name="id_confidential">Vertraulich</string>
+  <string name="id_confirm_action">Aktion bestätigen</string>
+  <string name="id_confirm_by_typing_the_wallet">Besätige in dem du den Wallet-Namen eingibst</string>
   <string name="id_confirm_code">Code bestätigen</string>
   <string name="id_confirm_passphrase">Passphrase bestätigen</string>
   <string name="id_confirm_transaction_details_on">Bestätige die Transaktionsdetails auf deiner Hardware-Wallet</string>
@@ -104,7 +108,7 @@
   <string name="id_copy_to_clipboard">In die Zwischenablage kopieren</string>
   <string name="id_copy_transaction_id">Transaktions-ID kopieren</string>
   <string name="id_copy_uri">URI kopieren</string>
-  <string name="id_copy_xpub">Copy xpub</string>
+  <string name="id_copy_xpub">xpub kopieren</string>
   <string name="id_create">Erstellen</string>
   <string name="id_create_a_pin_to_access_your">PIN für die Wallet generieren</string>
   <string name="id_create_a_wallet_for_bitcoin">Wallet für Bitcoin, Liquid oderr Testnet erstellen</string>
@@ -130,7 +134,7 @@
   <string name="id_denomination">Denominierung</string>
   <string name="id_deposit">Einzahlung</string>
   <string name="id_disable">Deaktivieren</string>
-  <string name="id_disable_s_twofactor">Disable %s Two-Factor Authentication</string>
+  <string name="id_disable_s_twofactor">%s Zwei-Faktor-Authentifizierung deaktivieren</string>
   <string name="id_disabled">Deaktiviert</string>
   <string name="id_displays_the_progress_of_spv">Zeigt den Fortschritt der SPV-Synchronisation</string>
   <string name="id_dispute_twofactor_reset">Zwei-Faktor Widerherstellung anfechten</string>
@@ -148,6 +152,7 @@
   <string name="id_email_address">Email-Adresse</string>
   <string name="id_enable">Aktivieren</string>
   <string name="id_enable_custom_networks_debug">Benutzerdefinierte Netzwerk-Debugger-Optionen aktivieren</string>
+  <string name="id_enable_email_notifications_to">E-Mail-Benachrichtigungen aktivieren um die nlocktime zu ändern</string>
   <string name="id_enable_face_id">Face ID aktivieren</string>
   <string name="id_enable_or_change_your_pin_to">Aktiviere oder ändere deine PIN, um schnell auf deine Wallet zuzugreifen</string>
   <string name="id_enable_spv">SPV aktivieren</string>
@@ -170,7 +175,7 @@
   <string name="id_enter_the_matching_words">Gib die passenden Wörter ein</string>
   <string name="id_enter_the_pin_for_your_hardware">Geben Sie die PIN Ihrer Hardware Wallet ein</string>
   <string name="id_enter_your_email_address">Geben Sie Ihre Email Adresse ein</string>
-  <string name="id_enter_your_s_wallet_mnemonic">Gib dein %s Merkwort ein</string>
+  <string name="id_enter_your_s_wallet_mnemonic">Gib deinen %s Wallet-Merksatz ein</string>
   <string name="id_enter_your_wallet_mnemonic">Geben Sie Ihren Wallet Merksatz ein</string>
   <string name="id_entity">Instanz</string>
   <string name="id_error">Fehler</string>
@@ -180,6 +185,7 @@
   <string name="id_error_passphrases_do_not_match">Fehler: Passphrase stimmt nicht überein</string>
   <string name="id_estimated_blocks_until">Geschätzte Blöcke bis zur Bestätigung: %d</string>
   <string name="id_example_89014283334011612858333">Beispiel: 8.90.14.2:8333,40.116.12.85:8333</string>
+  <string name="id_export_transactions_to_csv_file">Transaktionen als CSV-File exportieren</string>
   <string name="id_face_id">Face ID</string>
   <string name="id_fast">Schnell</string>
   <string name="id_fee">Gebühr</string>
@@ -190,10 +196,10 @@
   <string name="id_fee_rate_must_be_at_least_s">Gebührenrate muss mindestens %s satoshi/vbyte sein.</string>
   <string name="id_fee_rate_s">Gebührenrate: %s</string>
   <string name="id_fee_s__s">Gebühr: %s / %s</string>
-  <string name="id_fees_are_too_low">Fees are too low</string>
+  <string name="id_fees_are_too_low">Die Gebühren sind zu niedrig</string>
+  <string name="id_for_investors">For investors</string>
   <string name="id_for_long_term_storage">Zur langfristigen Aufbewahrung</string>
   <string name="id_for_most_users">Für die meisten Nutzer</string>
-  <string name="id_for_securities_investors">Für Anleger und Investoren</string>
   <string name="id_from">VON</string>
   <string name="id_funds_received_in_this">Die im Rahmen dieser Transaktion erhaltenen Gelder sind nicht als vertraulich einzustufen.</string>
   <string name="id_general">Allgemein</string>
@@ -205,6 +211,7 @@
   <string name="id_google_auth">Google Auth</string>
   <string name="id_google_authenticator">Google Authenticator</string>
   <string name="id_google_authenticator_qr_code">Google Authenticator QR Code:</string>
+  <string name="id_google_authenticator_secret_key">Geheimer Schlüssel von Google Authenticator</string>
   <string name="id_green_is_a_noncustodial_wallet">Green ist eine selbstverwahrende Wallet (non-custodial)</string>
   <string name="id_green_logo">Green Logo</string>
   <string name="id_green_mnemonic_qr_code">Green Merksatz QR Code</string>
@@ -256,15 +263,12 @@
   <string name="id_last_attempt_if_failed_you_will">Letzter Versuch: Wenn dieser Versuch fehlschlägt, musst du deine Wallet mit dem 24-Wörter-Merksatz wiederherstellen.</string>
   <string name="id_last_ping_1d_ms">Letzter Ping: %1$d ms</string>
   <string name="id_later">SPÄTER</string>
-  <string name="id_lbtc_has_no_issuer_and_is">L-BTC has no issuer and is instead created on the network via a peg-in.</string>
+  <string name="id_lbtc_has_no_issuer_and_is">L-BTC hat keinen Emittenten und wird stattdessen über einen Peg-In im Netzwerk erstellt.</string>
   <string name="id_learn_more_about_s">Erfahre mehr über %s.</string>
   <string name="id_ledger_dashboard_detected">Ledger Dashboard erkannt, für Zugriff bitte die richtige App öffnen.</string>
-  <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: tap here to check the list.</string>
+  <string name="id_ledger_supports_a_limited_set">Ledger unterstützt eine begrenzte Anzahl von Assets: Tippe hier, um die Liste zu sehen.</string>
   <string name="id_lets_get_you_set_up">Beginnen wir mit dem Setup.</string>
   <string name="id_liquid_securities">Liquid-Wertpapiere</string>
-  <string name="id_liquid_securities_account">Liquid-Wertpapier-Konto</string>
-  <string name="id_liquid_securities_account_is">Das Liquid-Wertpapier-Konto ist nur auf Liquid verfügbar.</string>
-  <string name="id_liquid_securities_accounts_are">Liquid-Wertpapier-Konten sind nur in Liquid-Wallets verfügbar. Für den Erhalt eines Liquid-Wertpapiers musst du eine Autorisierung des Herausgebers des Tokens einholen.</string>
   <string name="id_loading_transactions">Transaktionen werden geladen...</string>
   <string name="id_log_in">Login</string>
   <string name="id_log_in_into_your_s_wallet">Logge dich in deine %s Wallet ein</string>
@@ -280,6 +284,8 @@
   <string name="id_main_account">Hauptkonto</string>
   <string name="id_make_sure_you_made_a_proper">Stelle sicher, dass du ein geeignetes Backup deines Wallet-Merksatzes gemacht hast.</string>
   <string name="id_malleated">verformt</string>
+  <string name="id_managed_assets_account">Managed Assets Account</string>
+  <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">Mittel</string>
   <string name="id_memo">Memo</string>
   <string name="id_minute">Minute</string>
@@ -297,7 +303,7 @@
   <string name="id_network_fee">NETZWERK-GEBÜHR</string>
   <string name="id_network_monitor">Netzwerk-Monitor</string>
   <string name="id_new_accounts_functionality">Neue Kontofunktionalität in Kürze!</string>
-  <string name="id_new_fee">New fee</string>
+  <string name="id_new_fee">Neue Gebühr</string>
   <string name="id_new_incoming_transaction_in">Neue Transaktion eingegangen auf Konto %s (%s).</string>
   <string name="id_new_outgoing_transaction_from">Neue ausgehende Transaktion von Konto %s (%s).</string>
   <string name="id_new_s_transaction_of_s_in">Neue %s Transaktion von %s auf Konto %s.</string>
@@ -316,6 +322,8 @@
   <string name="id_no_utxos_found">Keine UTXOs gefunden</string>
   <string name="id_nonconfidential_addresses_not">Nicht-vertrauliche Adressen werden nicht unterstützt</string>
   <string name="id_normal">Normal</string>
+  <string name="id_not_a_valid_email_address">Not a valid email address</string>
+  <string name="id_not_a_valid_phone_number">Not a valid phone number</string>
   <string name="id_not_connected_connecting_in_ds_">Nicht verbunden. Verbindung in %d s...</string>
   <string name="id_notifications">Nachrichten</string>
   <string name="id_now">Jetzt</string>
@@ -351,7 +359,7 @@
   <string name="id_please_enable_pin">Bitte PIN Authentifiziereung aktivieren bevor Du biometrische Authentifiziereung hinzufügst oder löschst</string>
   <string name="id_please_enter_the_passphrase_for">Bitte geben Sie das Passwort Ihrer Hardware Wallet ein.</string>
   <string name="id_please_follow_the_instructions">Bitte folge den Anweisungen Deiner Hardware Wallet</string>
-  <string name="id_please_hold_on_while_your">Please hold on while your address is being generated</string>
+  <string name="id_please_hold_on_while_your">Bitte bleib dran, während deine Adresse generiert wird</string>
   <string name="id_please_provide_your_1s">Bitte geben Sie Ihre %1$s ein.</string>
   <string name="id_please_provide_your_1s_code">Bitte gib deinen %1$s Code ein.</string>
   <string name="id_please_provide_your_passphrase">Bitte geben Sie ihr Passwort ein:</string>
@@ -361,12 +369,12 @@
   <string name="id_please_set_and_enable_socks5">Bitte setze und aktiviere den SOCKS5-Proxy und -Port um Tor zu benutzen</string>
   <string name="id_please_tap_card">Bitte tippen Sie die Karte an</string>
   <string name="id_please_verify_that_the_address">Bitte kontrolliere, dass die Adresse auf deiner Hardware-Wallet mit der Adresse auf deinem Smartphone übereinstimmt.</string>
-  <string name="id_please_wait_until_your_ledger">Please wait until your Ledger displays the address to validate it. This could take up to 20 seconds.</string>
+  <string name="id_please_wait_until_your_ledger">Bitte warte, bis dein Ledger die Adresse anzeigt, um sie zu bestätigen. Dies kann bis zu 20 Sekunden dauern.</string>
   <string name="id_precision">Genauigkeit</string>
-  <string name="id_previous_fee">Previous fee</string>
+  <string name="id_previous_fee">Vorherige Gebühr</string>
   <string name="id_privacy_policy">Datenschutzerklärung</string>
   <string name="id_problem_with_key_1s">Problem mit Schlüssel %1$s</string>
-  <string name="id_provide_this_id_to_the_issuer">Gib diese ID an den Herausgeber weiter, um die Genehmigung zum Erhalt eines Liquid-Wertpapiers zu erlangen.</string>
+  <string name="id_provide_this_id_to_the_asset">Provide this ID to the asset issuer if requested.</string>
   <string name="id_proxy_settings">PROXY EINSTELLUNGEN</string>
   <string name="id_qr_scanner">QR Scanner</string>
   <string name="id_read_more_at_our_s">Weitere Informationen auf unserer %s</string>
@@ -377,19 +385,21 @@
   <string name="id_recipient">Empfänger</string>
   <string name="id_recovery">Wiederherstellung</string>
   <string name="id_recovery_and_notifications">Wiederherstellung und Mitteilungen</string>
-  <string name="id_recovery_mnemonic">Recovery mnemonic</string>
+  <string name="id_recovery_mnemonic">Wiederherstellungs-Merksatz</string>
   <string name="id_recovery_transaction_emails">Transaktionswiederherstellungs-Emails</string>
   <string name="id_recovery_transaction_request">Anfrage für Wiederherstellungstransaktion gesendet</string>
   <string name="id_recovery_transactions">Wiederherstellungstransaktionen</string>
   <string name="id_recovery_words">Wiederherstellungs-Wörter</string>
-  <string name="id_recovery_xpub">Recovery xpub</string>
+  <string name="id_recovery_xpub">Wiederherstellungs-xpub</string>
   <string name="id_redeem_your_deposited_funds">Löse deine Einzahlungen nach einer vordefinierten Zeitspanne wieder ein, ohne eine Signatur seitens Blockstream Green.</string>
   <string name="id_redeposited">Wiedereingezahlt</string>
   <string name="id_reference_exchange_rate">Referenzwechselkurs</string>
   <string name="id_refresh">Neu Laden</string>
   <string name="id_remember_me">An mich erinnern</string>
+  <string name="id_remove">Entfernen</string>
   <string name="id_remove_custom_network">Eigenes Netzwerk entfernen</string>
-  <string name="id_rename_account">Rename account</string>
+  <string name="id_remove_wallet">Wallet entfernen</string>
+  <string name="id_rename_account">Konto umbenennen</string>
   <string name="id_replaceable">austauschbar</string>
   <string name="id_request_amount">BETRAG ANFORDERN</string>
   <string name="id_request_failed">Anfrage gescheitert</string>
@@ -410,8 +420,10 @@
   <string name="id_s_from_s">%s von %s</string>
   <string name="id_s_network">%s Netzwerk</string>
   <string name="id_save">Speichern</string>
+  <string name="id_save_a_summary_of_your_accounts">Speichere eine Zusammenfassung deiner Accounts um die Wiederherstellung zu beschleunigen, solltest du unser Recovery-Tool einmal brauchen.</string>
   <string name="id_save_your_mnemonic">Speichere deinen Merksatz</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Scanne Sie den QR Code um SPV zu verbinden</string>
+  <string name="id_scan_qr_code">QR-Code scannen</string>
   <string name="id_scan_the_qr_code_in_google">QR-Code im Google Authenticator einscannen:</string>
   <string name="id_scan_to_send_here">Hier scannen und senden</string>
   <string name="id_screen_lock">Bildschirmsperre</string>
@@ -560,6 +572,7 @@
   <string name="id_user_not_found_or_invalid">Benutzer nicht gefunden oder ungültiges Passwort</string>
   <string name="id_username">Benutzername</string>
   <string name="id_username_not_available">Benutzername nicht verfügbar</string>
+  <string name="id_value_must_be_between_144_and">Der Wert muss zwischen 144 und 200000 sein</string>
   <string name="id_verify_your_pin">Verifiziere deine PIN</string>
   <string name="id_version">Version</string>
   <string name="id_version_1s">Version: %1$s</string>
@@ -614,7 +627,7 @@
   <string name="id_your_transactions_will_be_shown">Ihre Transaktionen werden hier angezeigt.</string>
   <string name="id_your_twofactor_threshold_is_s">Dein Zwei-Faktor Limit ist %s.</string>
   <string name="id_your_wallet_backup_is_made_of">Dein Wallet-Backup besteht aus 24 Wörtern, die auch als Mnemonik oder auch Merksatz bezeichnet werden. Stelle sicher, dass du ein Backup hast und bewahre es sicher auf. Jeder, der es findet, kann dein Geld stehlen. Du kannst es verwenden, um deine Blockstream Green Wallet auf einem anderen Gerät wiederherzustellen, falls deines verloren geht, beschädigt oder gestohlen wird.</string>
-  <string name="id_your_wallet_is_locked_for_a">Deine Wallet ist für eine Zurücksetzung der Zwei-Faktor-Authentifizierung gesperrt. Die Zurücksetzung wird in %s Tagen abgeschlossen.</string>
+  <string name="id_your_wallet_is_locked_for_a">Deine Wallet ist gesperrt wegen des zurücksetzens der Zwei-Faktor-Authentifizierung. Das Zurücksetzen wird in %d Tagen abgeschlossen sein.</string>
   <string name="id_your_wallet_is_not_yet_fully">Deine Wallet ist noch nicht vollständig gesichert. \nBitte aktiviere die Zwei-Faktor Authentifizierung.</string>
   <string name="id_your_watchonly_username_and">Dein Watch-Only Benutzername und Passwort werden unverschlüsselt auf diesem Gerät gespeichert. Sollte dein Gerät kompromittiert werden, können Dritte Zugang zu deinem Transaktionsverlauf erhalten. Drücke "OK", um fortzufahren.</string>
 </resources>

@@ -197,9 +197,9 @@
   <string name="id_fee_rate_s">Sazba poplatků: %s</string>
   <string name="id_fee_s__s">Poplatek: %s / %s</string>
   <string name="id_fees_are_too_low">Poplatky jsou příliš nízké</string>
+  <string name="id_for_investors">For investors</string>
   <string name="id_for_long_term_storage">Pro dlouhodobou úschovu</string>
   <string name="id_for_most_users">Pro většinu uživatelů</string>
-  <string name="id_for_securities_investors">Pro investory s cennými papíry</string>
   <string name="id_from">OD</string>
   <string name="id_funds_received_in_this">Prostředky přijaté v této transakci nejsou důvěrné.</string>
   <string name="id_general">Všeobecné</string>
@@ -269,9 +269,6 @@
   <string name="id_ledger_supports_a_limited_set">Ledger podporuje omezenou sadu aktiv: klepnutím sem zkontrolujete seznam.</string>
   <string name="id_lets_get_you_set_up">Pojďme se připravit.</string>
   <string name="id_liquid_securities">Liquid Securities</string>
-  <string name="id_liquid_securities_account">Účet Liquid Securities</string>
-  <string name="id_liquid_securities_account_is">Účet Liquid securities je k dispozici pouze na Liquid.</string>
-  <string name="id_liquid_securities_accounts_are">Účty Liquid securities jsou k dispozici pouze v Liquid peněženkách. Budete muset získat oprávnění od vydavatel k získání Liquid Security.</string>
   <string name="id_loading_transactions">Načítání transakcí...</string>
   <string name="id_log_in">Přihlásit se</string>
   <string name="id_log_in_into_your_s_wallet">Přihlaste se do své %s peněženky</string>
@@ -287,6 +284,8 @@
   <string name="id_main_account">Hlavní účet</string>
   <string name="id_make_sure_you_made_a_proper">Ujistěte se, že jste vytvořili řádnou zálohu mnemotechnické fráze vaší peněženky.</string>
   <string name="id_malleated">malleated</string>
+  <string name="id_managed_assets_account">Managed Assets Account</string>
+  <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">Střední</string>
   <string name="id_memo">Memo</string>
   <string name="id_minute">minuta</string>
@@ -323,6 +322,8 @@
   <string name="id_no_utxos_found">Nebyly nalezeny žádné UTXO</string>
   <string name="id_nonconfidential_addresses_not">Nedůvěrné adresy nejsou podporovány</string>
   <string name="id_normal">Normální</string>
+  <string name="id_not_a_valid_email_address">Not a valid email address</string>
+  <string name="id_not_a_valid_phone_number">Not a valid phone number</string>
   <string name="id_not_connected_connecting_in_ds_">Nepřipojeno. Připojování za %d s ...</string>
   <string name="id_notifications">Oznámení</string>
   <string name="id_now">Nyní</string>
@@ -373,7 +374,7 @@
   <string name="id_previous_fee">Předchozí poplatek</string>
   <string name="id_privacy_policy">Zásady ochrany osobních údajů</string>
   <string name="id_problem_with_key_1s">Problém s klíčem %1$s</string>
-  <string name="id_provide_this_id_to_the_issuer">Poskytněte toto ID vydavateli, aby získal oprávnění k přijímání Liquid Security.</string>
+  <string name="id_provide_this_id_to_the_asset">Provide this ID to the asset issuer if requested.</string>
   <string name="id_proxy_settings">NASTAVENÍ PROXY</string>
   <string name="id_qr_scanner">QR čtečka</string>
   <string name="id_read_more_at_our_s">Přečtěte si více na našem %s</string>

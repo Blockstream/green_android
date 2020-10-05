@@ -21,6 +21,7 @@
   <string name="id_account_id">Account ID</string>
   <string name="id_account_name">Account Name</string>
   <string name="id_account_type">Account Type</string>
+  <string name="id_accounts_summary">Accounts summary</string>
   <string name="id_action_canceled">Hành động đã hủy</string>
   <string name="id_add_a_note_only_you_can_see_it">Thêm một ghi chú( chỉ có bạn mới thấy nó)</string>
   <string name="id_add_a_pgp_public_key_to_receive">Add a PGP public key to receive encrypted email and keep your privacy</string>
@@ -51,6 +52,7 @@
   <string name="id_autolock_after">Tự khoá sau thời gian</string>
   <string name="id_back">Back</string>
   <string name="id_backup_the_recovery_mnemonic">Backup the recovery mnemonic and recovery xpub to recover funds from your 2of3 account.</string>
+  <string name="id_backup_your_mnemonic_before">Backup your mnemonic before removing the wallet from this device.</string>
   <string name="id_be_aware_other_apps_can_read_or">Cẩn thận, các ứng dụng khác có thể đọc hoặc thay đổi thông tin trên clipboard</string>
   <string name="id_bitcoin_denomination">Thị phần của Bitcoin Core</string>
   <string name="id_bitcoin_wallet">Ví Bitcoin.</string>
@@ -82,6 +84,8 @@
   <string name="id_communication_timed_out_make">Communication timed out. Make sure the device is powered on and try again.</string>
   <string name="id_completed">Hoàn thành</string>
   <string name="id_confidential">Bí mật</string>
+  <string name="id_confirm_action">Confirm action</string>
+  <string name="id_confirm_by_typing_the_wallet">Confirm by typing the wallet name</string>
   <string name="id_confirm_code">Mã xác nhận</string>
   <string name="id_confirm_passphrase">Xác nhận mật khẩu</string>
   <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
@@ -148,6 +152,7 @@
   <string name="id_email_address">địa chỉ thư điện tử</string>
   <string name="id_enable">Cho phép</string>
   <string name="id_enable_custom_networks_debug">Cho phép cài đặt gỡ lỗi của mạng tùy chỉnh</string>
+  <string name="id_enable_email_notifications_to">Enable email notifications to change nlocktime</string>
   <string name="id_enable_face_id">Cho phép nhận dạng khuôn mặt Face ID</string>
   <string name="id_enable_or_change_your_pin_to">Enable or change your PIN to quickly access your wallet</string>
   <string name="id_enable_spv">Cho phép Xác thực thanh toán đơn giản SPV</string>
@@ -180,6 +185,7 @@
   <string name="id_error_passphrases_do_not_match">Lỗi: mật khẩu không trùng khớp</string>
   <string name="id_estimated_blocks_until">Số khối dự kiến cho đến khi có xác nhận: %d</string>
   <string name="id_example_89014283334011612858333">Ví dụ: 8.90.14.2:8333,40.116.12.85:8333</string>
+  <string name="id_export_transactions_to_csv_file">Export transactions to CSV file</string>
   <string name="id_face_id">Mã nhận dạng khuôn mặt Face ID</string>
   <string name="id_fast">Nhanh</string>
   <string name="id_fee">Phí</string>
@@ -191,9 +197,9 @@
   <string name="id_fee_rate_s">Lệ phí: %s</string>
   <string name="id_fee_s__s">Phí: %s / %s</string>
   <string name="id_fees_are_too_low">Fees are too low</string>
+  <string name="id_for_investors">For investors</string>
   <string name="id_for_long_term_storage">For long term storage</string>
   <string name="id_for_most_users">For most users</string>
-  <string name="id_for_securities_investors">For securities investors</string>
   <string name="id_from">TỪ</string>
   <string name="id_funds_received_in_this">Tiền nhận được trong giao dịch này không được bảo mật.</string>
   <string name="id_general">General</string>
@@ -205,6 +211,7 @@
   <string name="id_google_auth">Phần mềm xác thực Google Auth</string>
   <string name="id_google_authenticator">Phần mềm Google Authenticator</string>
   <string name="id_google_authenticator_qr_code">Mã QR của Google Authenticator</string>
+  <string name="id_google_authenticator_secret_key">Google Authenticator secret key</string>
   <string name="id_green_is_a_noncustodial_wallet">Green là ví không tạm giữ tiền của bạn , bạn là người giữ tiền</string>
   <string name="id_green_logo">Logo của Green </string>
   <string name="id_green_mnemonic_qr_code">Mã số QR của các chữ gợi nhớ mnemonic Green</string>
@@ -262,9 +269,6 @@
   <string name="id_ledger_supports_a_limited_set">Ledger supports a limited set of assets: tap here to check the list.</string>
   <string name="id_lets_get_you_set_up">Bạn hãy cài đặt</string>
   <string name="id_liquid_securities">Liquid Securities</string>
-  <string name="id_liquid_securities_account">Liquid Securities Account</string>
-  <string name="id_liquid_securities_account_is">Liquid securities account is only available on Liquid.</string>
-  <string name="id_liquid_securities_accounts_are">Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.</string>
   <string name="id_loading_transactions">Đang tải giao dịch...</string>
   <string name="id_log_in">Đăng nhập</string>
   <string name="id_log_in_into_your_s_wallet">Đăng nhập vào ví %s </string>
@@ -280,6 +284,8 @@
   <string name="id_main_account">Tài khoản chính</string>
   <string name="id_make_sure_you_made_a_proper">Make sure you made a proper backup of your wallet mnemonic.</string>
   <string name="id_malleated">vồ vập</string>
+  <string name="id_managed_assets_account">Managed Assets Account</string>
+  <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">Trung bình</string>
   <string name="id_memo">Memo</string>
   <string name="id_minute">phút</string>
@@ -316,6 +322,8 @@
   <string name="id_no_utxos_found">Không có thông tin UTXOs được tìm thấy</string>
   <string name="id_nonconfidential_addresses_not">Địa chỉ không bảo mật không được hỗ trợ</string>
   <string name="id_normal">Bình thường</string>
+  <string name="id_not_a_valid_email_address">Not a valid email address</string>
+  <string name="id_not_a_valid_phone_number">Not a valid phone number</string>
   <string name="id_not_connected_connecting_in_ds_">Không kết nối. Đang kết nối lại trong %dg giây nữa...</string>
   <string name="id_notifications">Thông báo</string>
   <string name="id_now">Bây giờ</string>
@@ -366,7 +374,7 @@
   <string name="id_previous_fee">Previous fee</string>
   <string name="id_privacy_policy">Chính sách bảo mật</string>
   <string name="id_problem_with_key_1s">Có vấn đề với khóa %1$s</string>
-  <string name="id_provide_this_id_to_the_issuer">Provide this ID to the issuer to get authorization to receive a Liquid Security.</string>
+  <string name="id_provide_this_id_to_the_asset">Provide this ID to the asset issuer if requested.</string>
   <string name="id_proxy_settings">CÀI ĐẶT PROXY</string>
   <string name="id_qr_scanner">Máy quét mã QR</string>
   <string name="id_read_more_at_our_s">Read more at our %s</string>
@@ -388,7 +396,9 @@
   <string name="id_reference_exchange_rate">Tỉ giá sàn tham chiếu</string>
   <string name="id_refresh">Làm mới</string>
   <string name="id_remember_me">Nhắc nhớ tôi</string>
+  <string name="id_remove">Remove</string>
   <string name="id_remove_custom_network">Loại bỏ mạng tùy biến</string>
+  <string name="id_remove_wallet">Remove wallet</string>
   <string name="id_rename_account">Rename account</string>
   <string name="id_replaceable">có thể thay thế</string>
   <string name="id_request_amount">SỐ TIỀN YÊU CẦU</string>
@@ -410,8 +420,10 @@
   <string name="id_s_from_s">%s từ %s</string>
   <string name="id_s_network">Mạng %s</string>
   <string name="id_save">Lưu lại</string>
+  <string name="id_save_a_summary_of_your_accounts">Save a summary of your accounts to speed up recovery in case you need to use our recovery tool.</string>
   <string name="id_save_your_mnemonic">Lưu các chữ gợi nhớ mnemonic</string>
   <string name="id_scan_a_qr_code_for_spv_pairing">Quét mã QR để ghép đôi SPV</string>
+  <string name="id_scan_qr_code">Scan QR code</string>
   <string name="id_scan_the_qr_code_in_google">Quét mã QR vào phần mềm Google Authenticator:</string>
   <string name="id_scan_to_send_here">Scan to send here</string>
   <string name="id_screen_lock">Khóa màn hình</string>
@@ -560,6 +572,7 @@
   <string name="id_user_not_found_or_invalid">Người dùng không tìm thấy hoặc sai mật khẩu</string>
   <string name="id_username">Tên người dùng</string>
   <string name="id_username_not_available">Tên người dùng không sẵn có</string>
+  <string name="id_value_must_be_between_144_and">Value must be between 144 and 200000</string>
   <string name="id_verify_your_pin">Xác nhận mã PIN</string>
   <string name="id_version">Phiên bản</string>
   <string name="id_version_1s">Phiên bản: %1$s</string>
@@ -614,7 +627,7 @@
   <string name="id_your_transactions_will_be_shown">Các giao dịch của bạn được hiện ra ở đây</string>
   <string name="id_your_twofactor_threshold_is_s">Ngưỡng xác thực 2 lớp của bạn là %s.</string>
   <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
-  <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %s days.</string>
+  <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %d days.</string>
   <string name="id_your_wallet_is_not_yet_fully">Ví của bạn chưa bảo mật đầy đủ\nLàm ơn kích hoạt xác thực 2 lớp</string>
   <string name="id_your_watchonly_username_and">Tên người dùng và mật khẩu chỉ xem của bạn sẽ được lưu trữ không được mã hóa trên thiết bị này. Nếu thiết bị của bạn bị xâm phạm, bên thứ ba có thể truy cập vào lịch sử giao dịch của bạn. Nhấn "OK" để tiếp tục.</string>
 </resources>
