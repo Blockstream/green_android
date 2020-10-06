@@ -350,18 +350,18 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
     public void afterTextChanged(final Editable s) {}
 
     public void onCurrencyClick() {
-        if (mCurrentAmount == null)
-            return;
 
-        try {
-            mIsFiat = !mIsFiat;
-            mAmountText.removeTextChangedListener(mAmountTextWatcher);
-            setAmountText(mAmountText, mIsFiat, mCurrentAmount);
-            mAmountText.addTextChangedListener(mAmountTextWatcher);
-        } catch (final ParseException e) {
-            mIsFiat = !mIsFiat;
-            UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
-            return;
+        mIsFiat = !mIsFiat;
+        if (mCurrentAmount != null) {
+            try {
+                mAmountText.removeTextChangedListener(mAmountTextWatcher);
+                setAmountText(mAmountText, mIsFiat, mCurrentAmount);
+                mAmountText.addTextChangedListener(mAmountTextWatcher);
+            } catch( final ParseException e) {
+                mIsFiat = !mIsFiat;
+                UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
+                return;
+            }
         }
 
         // Toggle unit display and selected state
