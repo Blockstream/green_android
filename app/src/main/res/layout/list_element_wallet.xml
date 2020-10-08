@@ -57,6 +57,7 @@
                     android:layout_gravity="center_vertical"
                     android:padding="@dimen/button_margin"
                     android:background="@color/hide"
+                    android:tint="@color/white"
                     />
 
             </LinearLayout>
@@ -127,7 +128,8 @@
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:drawableStart="@drawable/ic_send"
-                    android:text="@string/id_send"/>
+                    android:text="@string/id_send"
+                    android:drawableTint="?attr/drawableSendReceiveIcColor"/>
 
                 <Space
                     android:layout_width="wrap_content"
@@ -161,7 +163,8 @@
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:drawableStart="@drawable/ic_receive"
-                    android:text="@string/id_receive"/>
+                    android:text="@string/id_receive"
+                    android:drawableTint="?attr/drawableSendReceiveIcColor"/>
 
                 <Space
                     android:layout_width="wrap_content"
@@ -197,6 +200,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_add_wallet_1"
+            app:tint="@color/accent"
             />
 
         <Space

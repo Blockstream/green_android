@@ -199,7 +199,7 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="4dp"
                         android:src="@drawable/ic_copy"
-                        android:tint="@color/white" />
+                        app:tint="@color/white" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

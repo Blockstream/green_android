@@ -50,10 +50,12 @@
                     android:id="@+id/status_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:paddingStart="@dimen/activity_vertical_margin"
-                    android:layout_toRightOf="@id/txUnconfirmedText"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/ic_done" />
+                    android:layout_toRightOf="@id/txUnconfirmedText"
+                    android:foregroundTint="@color/accent"
+                    android:paddingStart="@dimen/activity_vertical_margin"
+                    android:src="@drawable/ic_done"
+                    app:tint="@color/accent" />
 
                 <TextView
                     android:id="@+id/status_spv_unverified"
@@ -83,7 +85,8 @@
                     android:paddingBottom="4dp"
                     android:paddingTop="4dp"
                     android:drawablePadding="4dp"
-                    android:drawableEnd="@drawable/ic_bump_fee" />
+                    android:drawableEnd="@drawable/ic_bump_fee"
+                    android:drawableTint="@color/accent"/>
 
             </RelativeLayout>
 
