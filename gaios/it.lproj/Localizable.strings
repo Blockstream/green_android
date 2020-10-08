@@ -70,6 +70,7 @@
 "id_cannot_remove_enabled_network" = "Impossibile rimuovere il network abilitato, per piacere disabilitalo prima.";
 "id_cant_connect_to_this_url" = "Impossibile connettersi a questo URL";
 "id_change" = "RESTO";
+"id_change_address" = "Change address";
 "id_change_pin" = "Cambia il PIN";
 "id_check_your_backup" = "Controlla il tuo backup";
 "id_choose" = "Scegli";
@@ -78,6 +79,7 @@
 "id_choose_twofactor_authentication" = "Scegli metodo di Autenticazione";
 "id_choose_your_network" = "Scegli la rete";
 "id_clear" = "CANCELLA";
+"id_click_to_copy" = "Click to copy";
 "id_click_to_receive_an_email_with" = "Clicca per ricevere una email contenente i tuoi dati per il recupero del wallet";
 "id_communication_timed_out_make" = "Comunicazione scaduta. Assicurati che il dispositivo sia acceso e riprova.";
 "id_completed" = "Completo";
@@ -86,12 +88,14 @@
 "id_confirm_by_typing_the_wallet" = "Conferma digitando il nome del wallet";
 "id_confirm_code" = "Conferma codice";
 "id_confirm_passphrase" = "Conferma passphrase";
+"id_confirm_transaction" = "Confirm transaction";
 "id_confirm_transaction_details_on" = "Conferma i dettagli di transazione sul tuo hardware wallet";
 "id_confirmation_in_d_blocks" = "Conferma in %d blocchi";
 "id_congratulations" = "Congratulazioni!";
 "id_connect_hardware_wallet" = "Connetti un hardware wallet";
 "id_connect_through_a_proxy" = "Connettiti tramite proxy";
 "id_connect_with_tor" = "Connettiti con Tor";
+"id_connect_your_ledger_to_use_it" = "Connect your Ledger to use it in Green";
 "id_connecting_to_a_trusted_node" = "Per connettersi ad un nodo di fiducia tramite Tor, bisogna abilitare i setting di proxy dell'app ed una proxy Socks5 (es. Orbot per Android), prima di effettuare il log in.";
 "id_connecting_to_peers" = "Connessione ai peer...";
 "id_connecting_to_tor_onion_nodes" = "Connettersi a nodi Tor (.onion) garantisce massima privacy e sicurezza. Premi \"OK\" per continuare.";
@@ -105,6 +109,7 @@
 "id_copy_raw_transaction" = "Copia raw transaction";
 "id_copy_to_clipboard" = "Copia in Clipboard";
 "id_copy_transaction_id" = "Copia ID di transazione";
+"id_copy_unblinding_data" = "Copy unblinding data";
 "id_copy_uri" = "Copia URI";
 "id_copy_xpub" = "Copia xpub";
 "id_create" = "Crea";
@@ -195,9 +200,9 @@
 "id_fee_rate_s" = "Tasso di commissione: %@";
 "id_fee_s__s" = "Commissione: %@ / %@";
 "id_fees_are_too_low" = "Fee troppo basse";
+"id_for_investors" = "Per investitori";
 "id_for_long_term_storage" = "Per deposito di lungo termine";
 "id_for_most_users" = "Per la maggioranza degli utenti";
-"id_for_securities_investors" = "Per investitori di titoli finanziari";
 "id_from" = "DA";
 "id_funds_received_in_this" = "Dei fondi ricevuti in questa transazione non sono confidenziali.";
 "id_general" = "Generali";
@@ -267,9 +272,6 @@
 "id_ledger_supports_a_limited_set" = "Ledger supporta un numero limitato di asset: clicca qui per consultare la lista.";
 "id_lets_get_you_set_up" = "Impostiamo il tuo wallet.";
 "id_liquid_securities" = "Liquid Securities";
-"id_liquid_securities_account" = "Liquid Securities Account";
-"id_liquid_securities_account_is" = "Liquid securities account è disponibile solo su Liquid";
-"id_liquid_securities_accounts_are" = "Liquid securities account sono disponibili solo nei wallet Liquid. Sarà necessario ottenere l'autorizzazione dell'emittente per ricevere un titolo Liquid Security.";
 "id_loading_transactions" = "Caricamento transazioni...";
 "id_log_in" = "Accedi";
 "id_log_in_into_your_s_wallet" = "Accedi al tuo %@ wallet";
@@ -285,6 +287,9 @@
 "id_main_account" = "Account principale";
 "id_make_sure_you_made_a_proper" = "Assicurati di aver fatto un backup corretto della tua mnemonica.";
 "id_malleated" = "malleata";
+"id_managed_assets" = "Managed Assets";
+"id_managed_assets_account" = "Managed Assets Account";
+"id_managed_assets_accounts_are" = "Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.";
 "id_medium" = "Medio";
 "id_memo" = "Memo";
 "id_minute" = "minuto";
@@ -321,6 +326,8 @@
 "id_no_utxos_found" = "Nessun UTXO trovato";
 "id_nonconfidential_addresses_not" = "Indirizzi non confidenziali non supportati";
 "id_normal" = "Normale";
+"id_not_a_valid_email_address" = "Indirizzo email non valido";
+"id_not_a_valid_phone_number" = "Numero di telefono non valido";
 "id_not_connected_connecting_in_ds_" = "Non connesso. Connessione in %ds …";
 "id_notifications" = "Notifiche";
 "id_now" = "Ora";
@@ -371,7 +378,7 @@
 "id_previous_fee" = "Commissione precedente";
 "id_privacy_policy" = "Privacy Policy";
 "id_problem_with_key_1s" = "Problema con il tasto %1$@";
-"id_provide_this_id_to_the_issuer" = "Fornisci questo ID all'emittente per ottenere l'autorizzazione a ricevere una loro Liquid Security.";
+"id_provide_this_id_to_the_asset" = "Provide this ID to the asset issuer if requested.";
 "id_proxy_settings" = "PROXY SETTINGS";
 "id_qr_scanner" = "QR Scanner";
 "id_read_more_at_our_s" = "Leggi di più presso la nostra %@";
@@ -380,6 +387,7 @@
 "id_received" = "Ricevuta";
 "id_received_on" = "Ricevuta su";
 "id_recipient" = "Destinatario";
+"id_recipient_address" = "Recipient address";
 "id_recovery" = "Recupero fondi";
 "id_recovery_and_notifications" = "Recupero e Notifiche";
 "id_recovery_mnemonic" = "Mnemonica per recovery 2of3";
@@ -413,6 +421,7 @@
 "id_restore_temporary_wallet" = "Ripristina wallet temporaneamente";
 "id_review" = "Controlla";
 "id_review_account_information" = "Rivedi le informazioni account";
+"id_review_output_s" = "Review output %@";
 "id_s_blocks_left" = "%@ blocchi rimanenti";
 "id_s_from_s" = "%@ da %@";
 "id_s_network" = " %@ network";
@@ -432,6 +441,7 @@
 "id_see_our_terms_of_service_s" = "Leggi %@ i Termini del Servizio";
 "id_select_a_fiat_currency_and" = "Seleziona una valuta fiat e una denominazione bitcoin con cui mostrare gli importi";
 "id_select_account" = "Seleziona Account";
+"id_select_an_app_on_s" = "Select an app on %@";
 "id_select_asset" = "Seleziona asset";
 "id_select_duration_of_twofactor" = "Seleziona la durata del Secondo Fattore d'Autenticazione per i tuoi coin. La nuova selezione verrà applicata a tutti i nuovi coin ricevuti.";
 "id_select_network" = "Scegli il network";
@@ -452,6 +462,7 @@
 "id_set_an_email_for_recovery" = "Imposta email per il recupero";
 "id_set_custom_fee_rate" = "Imposta commissione personalizzata";
 "id_set_locktime" = "Imposta il Locktime";
+"id_set_timelock" = "Set timelock";
 "id_set_twofactor_threshold" = "Imposta limite per autenticazione a due fattori";
 "id_set_up_a_passcode_for_your_ios" = "Imposta un codice per il tuo device iOS per impostare un PIN per Blockstream Green";
 "id_set_up_a_screen_lock_for_your" = "Abilita un blocco schermo Android e utilizzalo per accedere al tuo wallet";
@@ -468,6 +479,7 @@
 "id_setup_pin_and_s" = "Imposta PIN e %@";
 "id_share" = "Condividi";
 "id_share_address" = "Condividi Indirizzo";
+"id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "Mostra gli ammontari in bitcoin in";
 "id_show_coins_with_expiring" = "Mostra i coin con Secondo Fattore d'Autenticazione in scadenza.";
 "id_show_fiat" = "Mostra valuta corrente";

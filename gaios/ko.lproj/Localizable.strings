@@ -70,6 +70,7 @@
 "id_cannot_remove_enabled_network" = "활성화 된 네트워크는 제거할 수 없으므로 먼저 비활성화 하세요.";
 "id_cant_connect_to_this_url" = "URL 연결 불가";
 "id_change" = "거스름돈";
+"id_change_address" = "Change address";
 "id_change_pin" = "Change PIN";
 "id_check_your_backup" = "Check your backup";
 "id_choose" = "선택";
@@ -78,6 +79,7 @@
 "id_choose_twofactor_authentication" = "2FA 방식 선택";
 "id_choose_your_network" = "사용자 지정 네트워크 선택";
 "id_clear" = "새로고침";
+"id_click_to_copy" = "Click to copy";
 "id_click_to_receive_an_email_with" = "Click to receive an email with your encrypted recovery data.";
 "id_communication_timed_out_make" = "Communication timed out. Make sure the device is powered on and try again.";
 "id_completed" = "완료";
@@ -86,12 +88,14 @@
 "id_confirm_by_typing_the_wallet" = "Confirm by typing the wallet name";
 "id_confirm_code" = "코드 컨펌";
 "id_confirm_passphrase" = "비밀번호 확인";
+"id_confirm_transaction" = "Confirm transaction";
 "id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "%d 블록 내에 컨펌";
 "id_congratulations" = "축하합니다!";
 "id_connect_hardware_wallet" = "Connect hardware wallet";
 "id_connect_through_a_proxy" = "프록시를 사용하여 연결하기";
 "id_connect_with_tor" = "Tor를 사용하여 연결하기";
+"id_connect_your_ledger_to_use_it" = "Connect your Ledger to use it in Green";
 "id_connecting_to_a_trusted_node" = "Tor를 통해 신뢰하는 노드에 연결하려면 로그인 전, 설정에서 프록시를 활성화 하여야 하고 Socks5 프록시(안드로이드용 Orbot 앱)도 있어야 합니다.";
 "id_connecting_to_peers" = "Connecting to peers...";
 "id_connecting_to_tor_onion_nodes" = "Tor (.onion)에 연결하면 최고의 보안과 프라이버시를 가능케 합니다. 계속하시려면 \"확인\"을 눌러주세요.";
@@ -105,6 +109,7 @@
 "id_copy_raw_transaction" = "Copy raw transaction";
 "id_copy_to_clipboard" = "클립보드에 복사";
 "id_copy_transaction_id" = "Copy transaction ID";
+"id_copy_unblinding_data" = "Copy unblinding data";
 "id_copy_uri" = "Copy URI";
 "id_copy_xpub" = "Copy xpub";
 "id_create" = "생성";
@@ -195,9 +200,9 @@
 "id_fee_rate_s" = "수수료율: %@";
 "id_fee_s__s" = "수수료: %@ / %@ ";
 "id_fees_are_too_low" = "Fees are too low";
+"id_for_investors" = "For investors";
 "id_for_long_term_storage" = "For long term storage";
 "id_for_most_users" = "For most users";
-"id_for_securities_investors" = "For securities investors";
 "id_from" = "보낸이";
 "id_funds_received_in_this" = "Funds received in this transaction are not confidential.";
 "id_general" = "General";
@@ -267,9 +272,6 @@
 "id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: tap here to check the list.";
 "id_lets_get_you_set_up" = "새로운 지갑을 만들어 볼까요?";
 "id_liquid_securities" = "Liquid Securities";
-"id_liquid_securities_account" = "Liquid Securities Account";
-"id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
-"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
 "id_loading_transactions" = "거래 로딩중...";
 "id_log_in" = "로그인";
 "id_log_in_into_your_s_wallet" = "Log in into your %@ wallet";
@@ -285,6 +287,9 @@
 "id_main_account" = "주 계정";
 "id_make_sure_you_made_a_proper" = "Make sure you made a proper backup of your wallet mnemonic.";
 "id_malleated" = "바뀜";
+"id_managed_assets" = "Managed Assets";
+"id_managed_assets_account" = "Managed Assets Account";
+"id_managed_assets_accounts_are" = "Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.";
 "id_medium" = "중간";
 "id_memo" = "메모";
 "id_minute" = "분";
@@ -321,6 +326,8 @@
 "id_no_utxos_found" = "UTXO 찾지 못함";
 "id_nonconfidential_addresses_not" = "Non-confidential addresses not supported";
 "id_normal" = "보통";
+"id_not_a_valid_email_address" = "Not a valid email address";
+"id_not_a_valid_phone_number" = "Not a valid phone number";
 "id_not_connected_connecting_in_ds_" = "접속되지 않았습니다. 접속 시도 중 %d 초...";
 "id_notifications" = "알람";
 "id_now" = "지금";
@@ -371,7 +378,7 @@
 "id_previous_fee" = "Previous fee";
 "id_privacy_policy" = "개인정보처리방침";
 "id_problem_with_key_1s" = "키 %1$@에 문제있음";
-"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
+"id_provide_this_id_to_the_asset" = "Provide this ID to the asset issuer if requested.";
 "id_proxy_settings" = "프록시 설정";
 "id_qr_scanner" = "QR 스캐너";
 "id_read_more_at_our_s" = "Read more at our %@";
@@ -380,6 +387,7 @@
 "id_received" = "받음";
 "id_received_on" = "받은 시간";
 "id_recipient" = "수령인";
+"id_recipient_address" = "Recipient address";
 "id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "복구와 알람";
 "id_recovery_mnemonic" = "Recovery mnemonic";
@@ -413,6 +421,7 @@
 "id_restore_temporary_wallet" = "Restore temporary wallet";
 "id_review" = "검토";
 "id_review_account_information" = "Review account information";
+"id_review_output_s" = "Review output %@";
 "id_s_blocks_left" = "%@ 블록 남음";
 "id_s_from_s" = "%@ 데이터 %@에서 가져옴";
 "id_s_network" = "%@ 네트워크";
@@ -432,6 +441,7 @@
 "id_see_our_terms_of_service_s" = "See our Terms of Service %@";
 "id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "계정 선택";
+"id_select_an_app_on_s" = "Select an app on %@";
 "id_select_asset" = "자산 선택";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
 "id_select_network" = "네트워크 선택";
@@ -452,6 +462,7 @@
 "id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "사용자 지정 수수료 설정";
 "id_set_locktime" = "Set Locktime";
+"id_set_timelock" = "Set timelock";
 "id_set_twofactor_threshold" = "2FA 한도 정하기";
 "id_set_up_a_passcode_for_your_ios" = "Set up a passcode for your iOS device to set a PIN for Blockstream Green";
 "id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
@@ -468,6 +479,7 @@
 "id_setup_pin_and_s" = "비밀번호 설정 및 %@";
 "id_share" = "공유하기";
 "id_share_address" = "주소 내보내기";
+"id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "Show bitcoin amounts in";
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
 "id_show_fiat" = "명목화폐 보기";

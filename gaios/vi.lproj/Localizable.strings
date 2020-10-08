@@ -70,6 +70,7 @@
 "id_cannot_remove_enabled_network" = "Không thể loại bỏ mạng lưới đang sử dụng, làm ơn tắt nó trước.";
 "id_cant_connect_to_this_url" = "Không thể nối tới địa chỉ URL";
 "id_change" = "THAY ĐỔI";
+"id_change_address" = "Change address";
 "id_change_pin" = "Change PIN";
 "id_check_your_backup" = "Check your backup";
 "id_choose" = "Chọn";
@@ -78,6 +79,7 @@
 "id_choose_twofactor_authentication" = "Chọn phương pháp được ủy quyền để bảo mật 2 lớp";
 "id_choose_your_network" = "Chọn Mạng của bạn";
 "id_clear" = "XÓA";
+"id_click_to_copy" = "Click to copy";
 "id_click_to_receive_an_email_with" = "Click to receive an email with your encrypted recovery data.";
 "id_communication_timed_out_make" = "Communication timed out. Make sure the device is powered on and try again.";
 "id_completed" = "Hoàn thành";
@@ -86,12 +88,14 @@
 "id_confirm_by_typing_the_wallet" = "Confirm by typing the wallet name";
 "id_confirm_code" = "Mã xác nhận";
 "id_confirm_passphrase" = "Xác nhận mật khẩu";
+"id_confirm_transaction" = "Confirm transaction";
 "id_confirm_transaction_details_on" = "Confirm transaction details on your harware wallet";
 "id_confirmation_in_d_blocks" = "Xác nhận trong %d khối tiếp theo";
 "id_congratulations" = "Chúc mừng bạn!";
 "id_connect_hardware_wallet" = "Connect hardware wallet";
 "id_connect_through_a_proxy" = "Nối thông qua một địa chỉ proxy";
 "id_connect_with_tor" = "Kết nối qua mạng Tor";
+"id_connect_your_ledger_to_use_it" = "Connect your Ledger to use it in Green";
 "id_connecting_to_a_trusted_node" = "Kết nối với nút đáng tin cậy thông qua Tor yêu cầu bật cài đặt proxy trong ứng dụng trước khi đăng nhập và proxy  SockS5 (ứng dụng Orbot cho Android)";
 "id_connecting_to_peers" = "Đang nối với các nốt mạng khác...";
 "id_connecting_to_tor_onion_nodes" = "Đang nối tới nốt mạng Tor( có tên miền .onion)  cho phép bảo mật và quyền riêng tư tối đa. Ấn \"OK\" để tiếp tục.";
@@ -105,6 +109,7 @@
 "id_copy_raw_transaction" = "Copy raw transaction";
 "id_copy_to_clipboard" = "Sao chép vào clipboard";
 "id_copy_transaction_id" = "Copy transaction ID";
+"id_copy_unblinding_data" = "Copy unblinding data";
 "id_copy_uri" = "Copy URI";
 "id_copy_xpub" = "Copy xpub";
 "id_create" = "Tạo";
@@ -195,9 +200,9 @@
 "id_fee_rate_s" = "Lệ phí: %@";
 "id_fee_s__s" = "Phí: %@ / %@";
 "id_fees_are_too_low" = "Fees are too low";
+"id_for_investors" = "For investors";
 "id_for_long_term_storage" = "For long term storage";
 "id_for_most_users" = "For most users";
-"id_for_securities_investors" = "For securities investors";
 "id_from" = "TỪ";
 "id_funds_received_in_this" = "Tiền nhận được trong giao dịch này không được bảo mật.";
 "id_general" = "General";
@@ -267,9 +272,6 @@
 "id_ledger_supports_a_limited_set" = "Ledger supports a limited set of assets: tap here to check the list.";
 "id_lets_get_you_set_up" = "Bạn hãy cài đặt";
 "id_liquid_securities" = "Liquid Securities";
-"id_liquid_securities_account" = "Liquid Securities Account";
-"id_liquid_securities_account_is" = "Liquid securities account is only available on Liquid.";
-"id_liquid_securities_accounts_are" = "Liquid securities accounts are only available on Liquid wallets. You will be required to get authorization from the issuer to receive a Liquid Security.";
 "id_loading_transactions" = "Đang tải giao dịch...";
 "id_log_in" = "Đăng nhập";
 "id_log_in_into_your_s_wallet" = "Đăng nhập vào ví %@ ";
@@ -285,6 +287,9 @@
 "id_main_account" = "Tài khoản chính";
 "id_make_sure_you_made_a_proper" = "Make sure you made a proper backup of your wallet mnemonic.";
 "id_malleated" = "vồ vập";
+"id_managed_assets" = "Managed Assets";
+"id_managed_assets_account" = "Managed Assets Account";
+"id_managed_assets_accounts_are" = "Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.";
 "id_medium" = "Trung bình";
 "id_memo" = "Memo";
 "id_minute" = "phút";
@@ -321,6 +326,8 @@
 "id_no_utxos_found" = "Không có thông tin UTXOs được tìm thấy";
 "id_nonconfidential_addresses_not" = "Địa chỉ không bảo mật không được hỗ trợ";
 "id_normal" = "Bình thường";
+"id_not_a_valid_email_address" = "Not a valid email address";
+"id_not_a_valid_phone_number" = "Not a valid phone number";
 "id_not_connected_connecting_in_ds_" = "Không kết nối. Đang kết nối lại trong %dg giây nữa...";
 "id_notifications" = "Thông báo";
 "id_now" = "Bây giờ";
@@ -371,7 +378,7 @@
 "id_previous_fee" = "Previous fee";
 "id_privacy_policy" = "Chính sách bảo mật";
 "id_problem_with_key_1s" = "Có vấn đề với khóa %1$@";
-"id_provide_this_id_to_the_issuer" = "Provide this ID to the issuer to get authorization to receive a Liquid Security.";
+"id_provide_this_id_to_the_asset" = "Provide this ID to the asset issuer if requested.";
 "id_proxy_settings" = "CÀI ĐẶT PROXY";
 "id_qr_scanner" = "Máy quét mã QR";
 "id_read_more_at_our_s" = "Read more at our %@";
@@ -380,6 +387,7 @@
 "id_received" = "Đã nhận";
 "id_received_on" = "Đã nhận trên";
 "id_recipient" = "Người nhận";
+"id_recipient_address" = "Recipient address";
 "id_recovery" = "Recovery";
 "id_recovery_and_notifications" = "Khôi phục và thông báo";
 "id_recovery_mnemonic" = "Recovery mnemonic";
@@ -413,6 +421,7 @@
 "id_restore_temporary_wallet" = "Khôi phục ví tạm thời";
 "id_review" = "Xem lại";
 "id_review_account_information" = "Review account information";
+"id_review_output_s" = "Review output %@";
 "id_s_blocks_left" = "còn lại %@ khối ";
 "id_s_from_s" = "%@ từ %@";
 "id_s_network" = "Mạng %@";
@@ -432,6 +441,7 @@
 "id_see_our_terms_of_service_s" = "See our Terms of Service %@";
 "id_select_a_fiat_currency_and" = "Select a fiat currency and bitcoin denomination to show amounts in your wallet";
 "id_select_account" = "Chọn tài khoản";
+"id_select_an_app_on_s" = "Select an app on %@";
 "id_select_asset" = "Chọn tài sản số";
 "id_select_duration_of_twofactor" = "Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.";
 "id_select_network" = "Chọn mạng";
@@ -452,6 +462,7 @@
 "id_set_an_email_for_recovery" = "Set an email for recovery";
 "id_set_custom_fee_rate" = "Đặt phí tùy biến";
 "id_set_locktime" = "Set Locktime";
+"id_set_timelock" = "Set timelock";
 "id_set_twofactor_threshold" = "Đặt ngưỡng xác thực 2 lớp";
 "id_set_up_a_passcode_for_your_ios" = "Thiết lập mật mã cho thiết bị iOS của bạn để đặt mã PIN cho ví Blockstream Green";
 "id_set_up_a_screen_lock_for_your" = "Set up a screen lock for your Android device to unlock your wallet using Android screen lock";
@@ -468,6 +479,7 @@
 "id_setup_pin_and_s" = "Cài mã PIN và %@";
 "id_share" = "Chia sẻ";
 "id_share_address" = "Địa chỉ chia sẻ";
+"id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "Show bitcoin amounts in";
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
 "id_show_fiat" = "Nhìn số tiền giấy";
