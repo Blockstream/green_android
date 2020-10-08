@@ -134,7 +134,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
             UI.find(this, id.receivingIdTitle).setOnClickListener(v -> {
                 final SubaccountPopup s = SubaccountPopup.getInstance(getString(string.id_account_id),
                                                                       getString(
-                                                                          string.id_provide_this_id_to_the_issuer));
+                                                                          string.id_provide_this_id_to_the_asset));
                 final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.addToBackStack(null);
                 s.show(ft, "dialog");

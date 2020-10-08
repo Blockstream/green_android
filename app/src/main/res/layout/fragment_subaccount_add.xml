@@ -90,7 +90,7 @@
         android:layout_marginTop="20dp"
         android:drawableEnd="@drawable/ic_help"
         android:drawablePadding="4dp"
-        android:text="@string/id_for_securities_investors"
+        android:text="@string/id_for_investors"
         android:textColor="@color/grey_light"
         app:layout_constraintStart_toStartOf="@id/simpleAccount"
         app:layout_constraintTop_toBottomOf="@id/divider" />
@@ -109,7 +109,7 @@
             android:id="@+id/authorizedAccountTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/id_liquid_securities_account"
+            android:text="@string/id_managed_assets_account"
             android:textColor="@color/white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
