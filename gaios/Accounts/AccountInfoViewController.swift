@@ -19,11 +19,11 @@ class AccountInfoViewController: UIViewController {
                 headlineLabel.text = NSLocalizedString("id_standard_account", comment: "")
                 detailLabel.text = NSLocalizedString("id_standard_accounts_allow_you_to", comment: "")
             case .advanced:
-                headlineLabel.text = NSLocalizedString("id_liquid_securities_account", comment: "")
-                detailLabel.text = NSLocalizedString("id_liquid_securities_accounts_are", comment: "") + "\n\n" + NSLocalizedString("id_twofactor_protection_does_not", comment: "")
+                headlineLabel.text = NSLocalizedString("id_managed_assets_account", comment: "")
+                detailLabel.text = NSLocalizedString("id_managed_assets_accounts_are", comment: "") + "\n\n" + NSLocalizedString("id_twofactor_protection_does_not", comment: "")
             case .accountID:
                 headlineLabel.text = NSLocalizedString("id_account_id", comment: "")
-                detailLabel.text = NSLocalizedString("id_provide_this_id_to_the_issuer", comment: "")
+                detailLabel.text = NSLocalizedString("id_provide_this_id_to_the_asset", comment: "")
             }
         }
     }

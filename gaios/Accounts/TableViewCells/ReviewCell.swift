@@ -15,7 +15,7 @@ final class ReviewCell: AccountTypeCell {
         switch indexPath.row {
         case 0:
             subtextLabel.text = NSLocalizedString("id_account_name", comment: "")
-            nameTextField.text = isSimple ? "" : NSLocalizedString("id_liquid_securities_account", comment: "")
+            nameTextField.text = isSimple ? "" : NSLocalizedString("id_managed_assets_account", comment: "")
             nameTextField.isEnabled = isSimple
             nameTextField.isHidden = false
             nameTextField.delegate = self
@@ -28,7 +28,7 @@ final class ReviewCell: AccountTypeCell {
             subtextLabel.text = NSLocalizedString("id_account_type", comment: "")
             headlineLabel.text = isSimple ?
                 NSLocalizedString("id_standard_account", comment: "") :
-                NSLocalizedString("id_liquid_securities_account", comment: "")
+                NSLocalizedString("id_managed_assets_account", comment: "")
             infoButton.isHidden = false
         case 2:
             guard !isSimple else {
