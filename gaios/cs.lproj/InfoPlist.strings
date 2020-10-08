@@ -1,0 +1,4 @@
+NSFaceIDUsageDescription = "Green používá biometrické ověřování, které umožňuje snadný přístup k peněžence";
+NSBluetoothAlwaysUsageDescription = "Green používá Bluetooth pro komunikaci s hardwarovými peněženkami";
+NSBluetoothPeripheralUsageDescription = "Green používá Bluetooth pro připojení k hardwarovým peněženkám";
+NSCameraUsageDescription = "Kameru používáme ke skenování QR kódů";
