@@ -40,6 +40,7 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
     private Integer ctBits;
     private Integer ctExponent;
     private String policyAsset;
+    private String serverType;
 
     @JsonIgnore
     public NetworkParameters getNetworkParameters() {
@@ -281,6 +282,14 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
 
     public void setDefaultPeers(final List<String> defaultPeers) {
         this.defaultPeers = defaultPeers;
+    }
+
+    public String getServerType() {
+        return serverType;
+    }
+
+    public void setServerType(final String serverType) {
+        this.serverType = serverType;
     }
 
     @Override
