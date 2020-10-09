@@ -12,6 +12,7 @@ struct GdkNetwork: Codable {
         case icon
         case mainnet
         case policyAsset = "policy_asset"
+        case serverType = "server_type"
     }
 
     let name: String
@@ -22,6 +23,7 @@ struct GdkNetwork: Codable {
     let txExplorerUrl: String
     var icon: String?
     var policyAsset: String?
+    var serverType: String?
 }
 
 func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {
@@ -42,7 +44,9 @@ func getGdkNetworks() -> [GdkNetwork] {
         #else
         let net = data![$0] as? [String: Any]
         let development = net!["development"] as? Bool
-        return !development!
+        let serverType = net!["server_type"] as? String ?? ""
+        let isElectrum = serverType == "electrum"
+        return !development! && !isElectrum
         #endif
     }.map { name in
         return getGdkNetwork(name, data: data)
