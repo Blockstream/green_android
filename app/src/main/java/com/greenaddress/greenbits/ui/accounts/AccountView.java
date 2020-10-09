@@ -1,10 +1,12 @@
 package com.greenaddress.greenbits.ui.accounts;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.R;
@@ -70,19 +73,29 @@ public class AccountView extends CardView {
         mSubaccount= UI.find(view, R.id.subaccount);
         mAddSubaccount = UI.find(view, R.id.addSubaccount);
 
+        setButtonDrawable(mSendButton, getResources().getDrawable(R.drawable.ic_send));
+        setButtonDrawable(mReceiveButton, getResources().getDrawable(R.drawable.ic_receive));
     }
 
     // Show actions
     public void hideActions() {
         mActionLayout.setVisibility(GONE);
+    }
 
+    private void setButtonDrawable(final Button button, final Drawable drawable) {
+        // Set programmatically tint color for Android Api < 24
+        final TypedValue typedValue = new TypedValue();
+        getContext().getTheme().resolveAttribute(R.attr.drawableSendReceiveIcColor, typedValue, true);
+        final int color = typedValue.data;
+        DrawableCompat.setTint(drawable, color);
+        DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_ATOP);
+        button.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
     }
 
     public void showActions(final boolean isWatchOnly) {
         if (isWatchOnly) {
             mSendButton.setText(R.string.id_sweep);
-            final Drawable sweepDraw = getResources().getDrawable(R.drawable.ic_sweep);
-            mSendButton.setCompoundDrawablesWithIntrinsicBounds(sweepDraw, null, null, null);
+            setButtonDrawable(mSendButton, getResources().getDrawable(R.drawable.ic_sweep));
         }
     }
 

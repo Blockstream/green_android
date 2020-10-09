@@ -129,7 +129,7 @@
                     android:background="@android:color/transparent"
                     android:drawableStart="@drawable/ic_send"
                     android:text="@string/id_send"
-                    android:drawableTint="?attr/drawableSendReceiveIcColor"/>
+                    app:tint="?attr/drawableSendReceiveIcColor"/>
 
                 <Space
                     android:layout_width="wrap_content"
@@ -164,7 +164,7 @@
                     android:background="@android:color/transparent"
                     android:drawableStart="@drawable/ic_receive"
                     android:text="@string/id_receive"
-                    android:drawableTint="?attr/drawableSendReceiveIcColor"/>
+                    app:tint="?attr/drawableSendReceiveIcColor"/>
 
                 <Space
                     android:layout_width="wrap_content"
