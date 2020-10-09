@@ -323,7 +323,7 @@ public class GDKSession {
             final String networkName = node.asText();
             try {
                 final NetworkData data = mObjectMapper.treeToValue(networks.get(networkName), NetworkData.class);
-                if (!(isProduction && data.getDevelopment())) {
+                if (!(isProduction && (data.getDevelopment() || data.isElectrum()))) {
                     networksMap.add(data);
                 }
             } catch (Exception e) {

@@ -116,6 +116,9 @@ public class NetworkData extends JSONData implements Comparable<NetworkData> {
         return R.drawable.ic_testnet_btc;
     }
 
+    @JsonIgnore
+    public boolean isElectrum() { return "electrum".equals(getServerType()); }
+
     public String getPolicyAsset() {
         return policyAsset;
     }
