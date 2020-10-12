@@ -8,5 +8,5 @@
         android:orderInCategory="90"
         android:visible="false"
         app:showAsAction="always"
-        android:iconTint="@color/accent"/>
+        app:iconTint="@color/accent"/>
 </menu>

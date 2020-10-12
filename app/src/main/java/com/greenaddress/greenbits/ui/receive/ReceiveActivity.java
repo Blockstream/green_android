@@ -189,7 +189,6 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         // Inflate the menu; this adds items to the action bar if it is present.
         final int id = R.menu.receive_menu;
         getMenuInflater().inflate(id, menu);
-        menu.findItem(R.id.action_generate_new).setIcon(drawable.ic_refresh);
         return true;
     }
 
