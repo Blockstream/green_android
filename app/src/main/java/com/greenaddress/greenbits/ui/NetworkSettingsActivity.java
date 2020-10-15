@@ -25,7 +25,6 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import java.util.List;
 
 public class NetworkSettingsActivity extends GaActivity implements NetworkSwitchListener {
-
     private LinearLayout mProxySection;
     private Switch mSwitchTor;
     private Switch mSwitchProxy;

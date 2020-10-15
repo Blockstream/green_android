@@ -78,6 +78,10 @@ public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdap
         public void setSelected(final boolean selected) {
             mButton.setPressed(selected);
         }
+
+        public String getText() {
+            return mButton.getText().toString();
+        }
     }
 }
 

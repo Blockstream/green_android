@@ -95,7 +95,7 @@ public class SelectionFragment extends Fragment {
         return view;
     }
 
-    class SelectionViewAdapter extends RecyclerView.Adapter<SelectionViewAdapter.ViewHolder> {
+    public class SelectionViewAdapter extends RecyclerView.Adapter<SelectionViewAdapter.ViewHolder> {
 
         private final List<String> mData;
         private final LayoutInflater mInflater;

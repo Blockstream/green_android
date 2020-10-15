@@ -407,6 +407,7 @@ public class PinEntryView extends ViewGroup {
 
         // Add an "invisible" edit text to handle input
         editText = new EditText(getContext());
+        editText.setContentDescription("PIN");
         editText.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         editText.setTextColor(getResources().getColor(android.R.color.transparent));
         editText.setCursorVisible(false);

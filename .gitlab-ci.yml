@@ -1,4 +1,4 @@
-build_tag_release:
+.build_tag_release:
   image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
@@ -14,7 +14,7 @@ build_tag_release:
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
-build_debug:
+.build_debug:
   image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
@@ -30,7 +30,16 @@ build_debug:
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionDebug
 
-build_tag_osx_release:
+tests:
+  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  tags:
+    - ga
+  script:
+      - export ANDROID_HOME=/opt
+      - cd $CI_PROJECT_DIR
+      - ./tests/setup_virtual_device.sh
+
+.build_tag_osx_release:
   tags:
     - osx
   script:
@@ -38,7 +47,7 @@ build_tag_osx_release:
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
-package_release:
+.package_release:
   tags:
     - garelease
   stage: deploy
