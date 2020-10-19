@@ -535,18 +535,20 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private void updateFeeSummaries() {
-        if (mVsize == null)
-            return;
-
+        String feeSummary;
         for (int i = 0; i < mButtonIds.length; ++i) {
             try {
                 long currentEstimate = mFeeEstimates[i];
                 final String feeRateString = UI.getFeeRateString(currentEstimate);
-                final long amount = (currentEstimate * mVsize)/1000L;
-                final String formatted = isFiat() ? Conversion.getFiat(amount, true) : Conversion.getBtc(amount, true);
-                mFeeButtons[i].setSummary(mVsize == null ?
-                                          String.format("(%s)", feeRateString) :
-                                          String.format("%s (%s)", formatted, feeRateString));
+                if (mVsize == null) {
+                    feeSummary = String.format("(%s)", feeRateString);
+                } else {
+                    final long amount = (currentEstimate * mVsize)/1000L;
+                    final String formatted = isFiat() ? Conversion.getFiat(amount, true) : Conversion.getBtc(amount, true);
+                    feeSummary = String.format("%s (%s)", formatted, feeRateString);
+                }
+                mFeeButtons[i].setSummary(feeSummary);
+
             } catch (final Exception e) {
                 Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             }
