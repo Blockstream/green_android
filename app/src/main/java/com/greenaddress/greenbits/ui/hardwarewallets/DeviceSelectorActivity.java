@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.util.Log;
@@ -48,8 +49,13 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
     public static final String ACTION_BLE_SELECTED = "android.hardware.ble.action.ACTION_BLE_SELECTED";
 
     private static final String TAG = DeviceSelectorActivity.class.getSimpleName();
-    private static final int REQUEST_PERMISSION_COARSE_LOCATION = 101;
-    private static final int REQUEST_ENABLE_BT = 102;
+
+    // NOTE: BLE_LOCATION_PERMISSION should be set to FINE for Android 10 and above, or COARSE for 9 and below
+    // See: https://developer.android.com/about/versions/10/privacy/changes#location-telephony-bluetooth-wifi
+    private static final String BLE_LOCATION_PERMISSION = (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.P)
+            ? android.Manifest.permission.ACCESS_FINE_LOCATION : android.Manifest.permission.ACCESS_COARSE_LOCATION;
+
+    private static final int REQUEST_PERMISSION_LOCATION = 101;
 
     // Supported hw
     private static ParcelUuid PARCEL_SERVICE_UUID_LEDGER = new ParcelUuid(LedgerDeviceBLE.SERVICE_UUID);
@@ -99,9 +105,9 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
     public void onRequestPermissionsResult(final int requestCode, final String permissions[],
                                            final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSION_COARSE_LOCATION) {
+        if (requestCode == REQUEST_PERMISSION_LOCATION) {
             for (final String permission : permissions) {
-                if (android.Manifest.permission.ACCESS_COARSE_LOCATION.equals(permission)) {
+                if (BLE_LOCATION_PERMISSION.equals(permission)) {
                     // Do stuff if permission granted
                     scanBleDevices();
                 }
@@ -127,11 +133,10 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
 
         //reloadUsbDevices();
 
-        if (ContextCompat.checkSelfPermission(this,
-                                              android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.ACCESS_COARSE_LOCATION},
-                                              REQUEST_PERMISSION_COARSE_LOCATION);
+        // NOTE: BLE_LOCATION_PERMISSION should be set to COARSE or FINE as appropriate for running android version
+        if (ContextCompat.checkSelfPermission(this, BLE_LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {BLE_LOCATION_PERMISSION},
+                                              REQUEST_PERMISSION_LOCATION);
             return;
         }
 
