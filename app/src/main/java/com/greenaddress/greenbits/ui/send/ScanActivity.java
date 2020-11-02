@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -33,7 +34,6 @@ import androidx.core.content.ContextCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.PlanarYUVLuminanceSource;
@@ -83,7 +83,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
     private View contentView;
     private de.schildbach.wallet.ui.scan.ScannerView scannerView;
     private TextureView previewView;
-    private TextInputEditText mAddressEditText;
+    private EditText mAddressEditText;
     private Disposable disposable;
 
     private volatile boolean surfaceCreated = false;
