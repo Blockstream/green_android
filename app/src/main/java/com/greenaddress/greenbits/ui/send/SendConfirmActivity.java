@@ -52,6 +52,9 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     private Disposable setupDisposable;
     private Disposable sendDisposable;
 
+    private PopupMethodResolver popupMethodResolver;
+    private PopupCodeResolver popupCodeResolver;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,9 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
         final String hwwJson = getIntent().getStringExtra("hww");
+
+        popupMethodResolver = new PopupMethodResolver(this);
+        popupCodeResolver = new PopupCodeResolver(this);
 
         setTitle(isSweep ? R.string.id_sweep : R.string.id_send);
 
@@ -166,6 +172,10 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             setupDisposable.dispose();
         if (sendDisposable != null)
             sendDisposable.dispose();
+        if (popupMethodResolver != null)
+            popupMethodResolver.dismiss();
+        if (popupCodeResolver != null)
+            popupCodeResolver.dismiss();
     }
 
     @Override
@@ -188,8 +198,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             if (isSweep) {
                 getSession().broadcastTransactionRaw(tx.get("transaction").asText());
             } else {
-                getSession().sendTransactionRaw(activity, tx).resolve(new PopupMethodResolver(activity),
-                                                                      new PopupCodeResolver(activity));
+                getSession().sendTransactionRaw(activity, tx).resolve(popupMethodResolver, popupCodeResolver);
             }
             return tx;
         })

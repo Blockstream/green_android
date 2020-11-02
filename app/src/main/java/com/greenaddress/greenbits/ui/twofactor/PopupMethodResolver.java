@@ -13,6 +13,7 @@ import java.util.List;
 
 public class PopupMethodResolver implements MethodResolver {
     private Activity activity;
+    private MaterialDialog dialog;
 
     public PopupMethodResolver(final Activity activity) {
         this.activity = activity;
@@ -38,9 +39,18 @@ public class PopupMethodResolver implements MethodResolver {
             });
             activity.runOnUiThread(() -> {
                 Log.d("RSV", "PopupMethodResolver dialog show");
-                builder.show();
+                dialog = builder.show();
             });
         }
         return future;
+    }
+
+    @Override
+    public void dismiss() {
+        if (dialog != null) {
+            activity.runOnUiThread(() -> {
+                dialog.dismiss();
+            });
+        }
     }
 }

@@ -17,6 +17,7 @@ import com.greenaddress.greenbits.ui.UI;
 
 public class PopupCodeResolver implements CodeResolver {
     private Activity activity;
+    private MaterialDialog dialog;
 
     public PopupCodeResolver(final Activity activity) {
         this.activity=activity;
@@ -48,10 +49,19 @@ public class PopupCodeResolver implements CodeResolver {
 
         activity.runOnUiThread(() -> {
             Log.d("RSV", "PopupCodeResolver dialog show");
-            builder.show();
+            dialog = builder.show();
         });
 
         return future;
+    }
+
+    @Override
+    public void dismiss() {
+        if (dialog != null) {
+            activity.runOnUiThread(() -> {
+                dialog.dismiss();
+            });
+        }
     }
 
     private Drawable getIconFor(final String method) {

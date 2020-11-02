@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface MethodResolver {
     SettableFuture<String> method(final List<String> methods);
+    void dismiss();
 }

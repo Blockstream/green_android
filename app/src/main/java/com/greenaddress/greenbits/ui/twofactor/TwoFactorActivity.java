@@ -50,6 +50,8 @@ public class TwoFactorActivity extends LoggedActivity {
 
     private boolean settingEmail; // setting email without enabling 2FA
 
+    private PopupMethodResolver popupMethodResolver;
+    private PopupCodeResolver popupCodeResolver;
     private TwoFactorConfigData twoFactorConfigData;
     private Disposable disposable;
 
@@ -98,6 +100,8 @@ public class TwoFactorActivity extends LoggedActivity {
         }
         setTitle(getString(mEnable ? R.string.id_1s_twofactor_set_up : R.string.id_delete_s_twofactor,
                            mLocalizedMap.get(mMethod)));
+        popupMethodResolver = new PopupMethodResolver(this);
+        popupCodeResolver = new PopupCodeResolver(this);
 
         switch (mMethod) {
         case "reset":
@@ -321,8 +325,7 @@ public class TwoFactorActivity extends LoggedActivity {
             twoFactorDetail.setData(data);
             twoFactorDetail.setEnabled(false);
             twoFactorDetail.setConfirmed(true);
-            session.changeSettingsTwoFactor("email", twoFactorDetail).resolve(new PopupMethodResolver(this),
-                                                                              new PopupCodeResolver(this));
+            session.changeSettingsTwoFactor("email", twoFactorDetail).resolve(popupMethodResolver, popupCodeResolver);
             return session;
         })
                      .observeOn(AndroidSchedulers.mainThread())
@@ -349,8 +352,7 @@ public class TwoFactorActivity extends LoggedActivity {
             twoFactorDetail.setEnabled(true);
             twoFactorDetail.setData(data);
             twoFactorDetail.setConfirmed(true);
-            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(new PopupMethodResolver(this),
-                                                                             new PopupCodeResolver(this));
+            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(popupMethodResolver, popupCodeResolver);
             return session;
         })
                      .observeOn(AndroidSchedulers.mainThread())
@@ -391,8 +393,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 // it here
                 twoFactorDetail.setConfirmed(false);
             }
-            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(new PopupMethodResolver(this),
-                                                                             new PopupCodeResolver(this));
+            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(popupMethodResolver, popupCodeResolver);
             return session;
         }).observeOn(AndroidSchedulers.mainThread())
                      .subscribe((session) -> {
@@ -415,7 +416,7 @@ public class TwoFactorActivity extends LoggedActivity {
                      .subscribeOn(Schedulers.computation())
                      .map((session) -> {
             final GDKTwoFactorCall twoFactorCall = getSession().twoFactorReset(email, isDispute);
-            twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
+            twoFactorCall.resolve(popupMethodResolver, popupCodeResolver);
             return session;
         }).observeOn(AndroidSchedulers.mainThread())
                      .subscribe((session) -> {
@@ -441,7 +442,7 @@ public class TwoFactorActivity extends LoggedActivity {
                      .subscribeOn(Schedulers.computation())
                      .map((session) -> {
             final GDKTwoFactorCall twoFactorCall = getSession().twofactorCancelReset();
-            twoFactorCall.resolve(new PopupMethodResolver(this), new PopupCodeResolver(this));
+            twoFactorCall.resolve(popupMethodResolver, popupCodeResolver);
             return session;
         })
                      .observeOn(AndroidSchedulers.mainThread())
@@ -459,6 +460,10 @@ public class TwoFactorActivity extends LoggedActivity {
         super.onDestroy();
         if (disposable != null)
             disposable.dispose();
+        if (popupMethodResolver != null)
+            popupMethodResolver.dismiss();
+        if (popupCodeResolver != null)
+            popupCodeResolver.dismiss();
     }
 
     @Override

@@ -140,6 +140,8 @@ public class HardwareCodeResolver implements CodeResolver {
         return future;
     }
 
+    @Override
+    public void dismiss() { }
 
     @Override
     public SettableFuture<String> code(String method) {
