@@ -20,5 +20,6 @@ if [[ $($AVD_PATH/avdmanager list avd  | sed -n '2p' | grep -c "Name") -lt 1 ]];
 else
     export DEVICE_NAME=$($AVD_PATH/avdmanager list avd | grep "Name" | sed s/"^.*\:\ "//)
     echo "device name is $DEVICE_NAME"
+    $ANDROID_HOME/emulator/emulator -avd test-device -verbose -no-window -no-audio -no-accel -gpu off
 fi
 
