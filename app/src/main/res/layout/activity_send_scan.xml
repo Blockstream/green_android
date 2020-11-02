@@ -9,19 +9,13 @@
     android:background="@color/windowBackground"
     android:orientation="vertical">
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingEnd="16dp"
-        android:paddingBottom="16dp"
-        android:paddingStart="16dp">
-
         <EditText
             android:id="@+id/addressEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
             android:paddingEnd="8dp"
             android:paddingStart="8dp"
             android:imeOptions="flagNoPersonalizedLearning"
@@ -31,16 +25,6 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:textSize="12sp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="16dp"
-            android:text="@string/id_or"
-            android:textAlignment="center"
-            android:textColor="@color/textColor"/>
-
-    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
