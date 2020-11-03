@@ -173,6 +173,10 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
                           .subscribe((blockHeight) -> {
             mTransactionsAdapter.setCurrentBlock(blockHeight);
             mTransactionsAdapter.notifyDataSetChanged();
+
+            // check for pending/uncofirmed txs
+            if (hasMempoolTxs())
+                updateTransactions(true);
         });
 
         // on new transaction received
@@ -232,6 +236,14 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         }, (final Throwable e) -> {
             Log.d(TAG, e.getLocalizedMessage());
         });
+    }
+
+    private boolean hasMempoolTxs() {
+        for (final TransactionData tx : mTxItems) {
+            if (tx.getBlockHeight() == 0)
+                return true;
+        }
+        return false;
     }
 
     private void updateTransactions(final boolean clean) {
