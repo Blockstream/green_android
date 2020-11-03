@@ -171,13 +171,15 @@ public class ListTransactionsAdapter extends
         holder.listNumberConfirmation.setText(confirmations);
         holder.listNumberConfirmation.setTextColor(getColor(confirmationsColor));
 
-        final int amountColor;
+        final int amountColor, iconColor;
         final int sentOrReceive;
         if (txItem.getTxType() == TYPE.IN) {
             amountColor = mNetworkData.getLiquid() ? color.liquidDark : color.green;
+            iconColor = amountColor;
             sentOrReceive= drawable.ic_received;
         } else {
             amountColor = color.white;
+            iconColor = color.grey_light;
             sentOrReceive= drawable.ic_sent;
         }
         if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
@@ -186,6 +188,7 @@ public class ListTransactionsAdapter extends
         } else {
             holder.sentOrReceive.setImageDrawable(mActivity.getResources().getDrawable(sentOrReceive));
         }
+        holder.sentOrReceive.setColorFilter(getColor(iconColor));
         holder.textValue.setTextColor(getColor(amountColor));
         holder.mainLayout.setOnClickListener(v -> {
             if (mOnTxSelected != null)
