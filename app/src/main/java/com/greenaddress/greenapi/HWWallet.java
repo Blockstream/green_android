@@ -15,6 +15,9 @@ public abstract class HWWallet {
     protected NetworkData mNetwork;
     protected HWDeviceData mHWDeviceData;
 
+    // For any explicit disconnection the hw may want to do
+    public abstract void disconnect();
+
     // Return the base58check encoded xpubs for each path in paths
     public abstract List<String> getXpubs(final GaActivity parent, final List<List<Integer>> paths);
 

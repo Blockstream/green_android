@@ -42,6 +42,11 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
+    public void disconnect() {
+        // No-op
+    }
+
+    @Override
     public List<String> getXpubs(final GaActivity parent, final List<List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
 

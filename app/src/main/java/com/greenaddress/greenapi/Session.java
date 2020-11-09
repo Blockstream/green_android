@@ -80,8 +80,12 @@ public class Session extends GDKSession {
 
     public void disconnect() throws Exception {
         super.disconnect();
+
+        if (mHWWallet != null) {
+            mHWWallet.disconnect();
+            mHWWallet = null;
+        }
         mWatchOnlyUsername = null;
-        mHWWallet = null;
         mSettings = null;
         mTwoFAReset = false;
         pinJustSaved = false;

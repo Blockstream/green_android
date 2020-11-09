@@ -68,6 +68,11 @@ public class JadeHWWallet extends HWWallet {
         this.jade = jade;
     }
 
+    @Override
+    public void disconnect() {
+        this.jade.disconnect();
+    }
+
     public void authenticate() throws Exception {
         final VersionInfo verInfo = this.jade.getVersionInfo();
         if (!verInfo.getHasPin()) {
