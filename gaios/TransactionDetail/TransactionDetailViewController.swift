@@ -142,21 +142,12 @@ class TransactionDetailViewController: KeyboardViewController {
         return URL(string: network.txExplorerUrl! + self.transaction.hash)
     }
 
-    @IBAction func shareButtonTapped(_ sender: UIButton) {
-        if let url = urlForTx() {
-            let tx: [Any] = [url]
-            let shareVC = UIActivityViewController(activityItems: tx, applicationActivities: nil)
-            shareVC.popoverPresentationController?.sourceView = sender
-            self.present(shareVC, animated: true, completion: nil)
-        }
-    }
-
-    @IBAction func viewInExplorerClicked(_ sender: Any) {
-        guard let url: URL = urlForTx() else { return }
+    func explorerUrlOrAlert() -> UIAlertController? {
+        guard let url: URL = urlForTx() else { return nil }
         let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!
         if viewInExplorerPreference {
             UIApplication.shared.open(url, options: [:])
-            return
+            return nil
         }
         let message = String(format: NSLocalizedString("id_are_you_sure_you_want_to_view", comment: ""), host)
         let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
@@ -169,6 +160,42 @@ class TransactionDetailViewController: KeyboardViewController {
             self.viewInExplorerPreference = true
             UIApplication.shared.open(url, options: [:])
         })
+
+        return alert
+    }
+
+    func shareTransactionSheet() -> UIAlertController {
+        let alert = UIAlertController(title: NSLocalizedString("Share Transaction", comment: ""), message: "", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_view_in_explorer", comment: ""), style: .default) { _ in
+            // explorer tx url
+            guard let alert: UIAlertController = self.explorerUrlOrAlert() else { return }
+            self.present(alert, animated: true, completion: nil)
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_share_unblinding_data", comment: ""), style: .default) { _ in
+            let blindingData = try? JSONSerialization.data(withJSONObject: self.transaction.blindingData() ?? "", options: [])
+            let shareVC = UIActivityViewController(activityItems: [String(data: blindingData!, encoding: .utf8)!], applicationActivities: nil)
+            self.present(shareVC, animated: true, completion: nil)
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        return alert
+    }
+
+    @IBAction func shareButtonTapped(_ sender: UIButton) {
+        if isLiquid {
+            let alert = shareTransactionSheet()
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            if let url = urlForTx() {
+                let tx: [Any] = [url]
+                let shareVC = UIActivityViewController(activityItems: tx, applicationActivities: nil)
+                shareVC.popoverPresentationController?.sourceView = sender
+                self.present(shareVC, animated: true, completion: nil)
+            }
+        }
+    }
+
+    @IBAction func viewInExplorerClicked(_ sender: Any) {
+        guard let alert: UIAlertController = self.explorerUrlOrAlert() else { return }
         self.present(alert, animated: true, completion: nil)
     }
 

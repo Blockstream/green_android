@@ -147,8 +147,13 @@ struct Transaction {
     }
 
     var transactionOutputs: [[String: Any]]? {
-        get { return get("transaction_outputs") }
+        get { return get("outputs") }
     }
+
+    var transactionInputs: [[String: Any]]? {
+        get { return get("inputs") }
+    }
+
     func address() -> String? {
         let out: [String] = get("addressees") ?? []
         guard !out.isEmpty else {
@@ -165,6 +170,39 @@ struct Transaction {
             return createdAt
         }
         return DateFormatter.localizedString(from: date, dateStyle: dateStyle, timeStyle: timeStyle)
+    }
+
+    func hasBlindingData(data: [String: Any]) -> Bool {
+        return data["asset_id"] != nil && data["satoshi"] != nil && data["assetblinder"] != nil && data["amountblinder"] != nil
+    }
+
+    func txoBlindingData(data: [String: Any], isUnspent: Bool) -> [String: Any] {
+        var blindingData = [String: Any]()
+        let index = isUnspent ? "vout" : "vin"
+        blindingData[index] = data["pt_idx"]
+        blindingData["asset_id"] = data["asset_id"]
+        blindingData["assetblinder"] = data["assetblinder"]
+        blindingData["satoshi"] = data["satoshi"]
+        blindingData["amountblinder"] = data["amountblinder"]
+        return blindingData
+    }
+
+    func blindingData() -> [String: Any]? {
+        var txBlindingData = [String: Any]()
+        txBlindingData["version"] = 0
+        txBlindingData["txid"] = hash
+        txBlindingData["type"] = type
+        txBlindingData["inputs"] = transactionInputs?.filter { (data: [String: Any]) -> Bool in
+            return hasBlindingData(data: data)
+        }.map { (data: [String: Any]) -> [String: Any] in
+            return txoBlindingData(data: data, isUnspent: false)
+        }
+        txBlindingData["outputs"] = transactionOutputs?.filter { (data: [String: Any]) -> Bool in
+            return hasBlindingData(data: data)
+        }.map { (data: [String: Any]) -> [String: Any] in
+            return txoBlindingData(data: data, isUnspent: true)
+        }
+        return txBlindingData
     }
 }
 
