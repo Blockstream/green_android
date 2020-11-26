@@ -139,7 +139,7 @@ class TransactionDetailViewController: KeyboardViewController {
     func urlForTx() -> URL? {
         let currentNetwork = getNetwork().lowercased()
         let network = getGdkNetwork(currentNetwork)
-        return URL(string: network.txExplorerUrl + self.transaction.hash)
+        return URL(string: network.txExplorerUrl! + self.transaction.hash)
     }
 
     @IBAction func shareButtonTapped(_ sender: UIButton) {

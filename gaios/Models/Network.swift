@@ -20,7 +20,7 @@ struct GdkNetwork: Codable {
     let liquid: Bool
     let mainnet: Bool
     let development: Bool
-    let txExplorerUrl: String
+    let txExplorerUrl: String?
     var icon: String?
     var policyAsset: String?
     var serverType: String?
