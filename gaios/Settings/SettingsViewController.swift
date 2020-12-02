@@ -156,11 +156,6 @@ class SettingsViewController: UIViewController {
             subtitle: "",
             section: .twoFactor,
             type: .ResetTwoFactor)
-        let disputeTwoFactor = SettingsItem(
-            title: NSLocalizedString("id_dispute_twofactor_reset", comment: ""),
-            subtitle: "",
-            section: .twoFactor,
-            type: .DisputeTwoFactor)
         let cancelTwoFactor = SettingsItem(
             title: NSLocalizedString("id_cancel_twofactor_reset", comment: ""),
             subtitle: "",
@@ -174,9 +169,7 @@ class SettingsViewController: UIViewController {
 
         if isWatchOnly {
             return []
-        } else if isResetActive && !isDisputeActive {
-            return [disputeTwoFactor, cancelTwoFactor]
-        } else if isResetActive && isDisputeActive {
+        } else if isResetActive || isDisputeActive {
             return [cancelTwoFactor]
         } else if isLiquid {
             return [setupTwoFactor]
@@ -490,22 +483,6 @@ extension SettingsViewController {
         self.present(alert, animated: true, completion: nil)
     }
 
-    func showDisputeTwoFactor() {
-        let hint = "jane@example.com"
-        let alert = UIAlertController(title: NSLocalizedString("id_dispute_twofactor_reset", comment: ""), message: NSLocalizedString("id_warning_there_is_already_a", comment: ""), preferredStyle: .alert)
-        alert.addTextField { textField in
-            textField.placeholder = hint
-            textField.keyboardType = .emailAddress
-        }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
-            let textField = alert.textFields!.first
-            let email = textField!.text
-            self.resetTwoFactor(email: email!, isDispute: true)
-        })
-        self.present(alert, animated: true, completion: nil)
-    }
-
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let controller = segue.destination as? EnableTwoFactorViewController {
             controller.isHiddenWalletButton = true
@@ -564,7 +541,7 @@ extension SettingsViewController: UITableViewDelegate {
         case .SetupTwoFactor: performSegue(withIdentifier: "setupTwoFactor", sender: nil)
         case .ThresholdTwoFactor: performSegue(withIdentifier: "twoFactorLimit", sender: nil)
         case .ResetTwoFactor: showResetTwoFactor()
-        case .DisputeTwoFactor: showDisputeTwoFactor()
+        case .DisputeTwoFactor: return
         case .CancelTwoFactor: setCancelTwoFactor()
         case .LockTimeRecovery: showLockTimeRecovery()
         case .LockTimeRequest: setLockTimeRequest()
