@@ -34,8 +34,8 @@ public class InputOutputData extends JSONData implements Serializable {
     private String serviceXpub;
     private List<Long> userPath;
     private String commitment; // blinded value
-    private String abf; // asset blinding factor
-    private String vbf; // value blinding factor
+    private String assetblinder; // asset blinding factor
+    private String amountblinder; // value blinding factor
     private String assetId; // asset id for Liquid txs
     private String publicKey; // the pubkey embedded into the blinded address we are sending to
     private String ephKeypairSec; // our secret key used for the blinding
@@ -163,20 +163,20 @@ public class InputOutputData extends JSONData implements Serializable {
         this.commitment = commitment;
     }
 
-    public String getAbf() {
-        return abf;
+    public String getAssetblinder() {
+        return assetblinder;
     }
 
-    public void setAbf(String abf) {
-        this.abf = abf;
+    public void setAssetblinder(String assetblinder) {
+        this.assetblinder = assetblinder;
     }
 
-    public String getVbf() {
-        return vbf;
+    public String getAmountblinder() {
+        return amountblinder;
     }
 
-    public void setVbf(String vbf) {
-        this.vbf = vbf;
+    public void setAmountblinder(String amountblinder) {
+        this.amountblinder = amountblinder;
     }
 
     public String getAssetId() {
@@ -201,13 +201,13 @@ public class InputOutputData extends JSONData implements Serializable {
     }
 
     @JsonIgnore
-    public byte[] getAbfBytes() {
-        return Wally.hex_to_bytes(abf);
+    public byte[] getAssetBlinderBytes() {
+        return reverseBytes(Wally.hex_to_bytes(assetblinder));
     }
 
     @JsonIgnore
-    public byte[] getVbfBytes() {
-        return Wally.hex_to_bytes(vbf);
+    public byte[] getAmountBlinderBytes() {
+        return reverseBytes(Wally.hex_to_bytes(amountblinder));
     }
 
     @JsonIgnore
@@ -282,5 +282,18 @@ public class InputOutputData extends JSONData implements Serializable {
             path.add((int) (long) v);
         }
         return path;
+    }
+
+    // Return blinded data as expected by the explorer
+    public String getUnblindedString() {
+        if (hasUnblindingData()) {
+            // <value_in_satoshi>,<asset_tag_hex>,<amount_blinder_hex>,<asset_blinder_hex>
+            return String.format("%ld,%s,%s,%s",satoshi, assetId, amountblinder, assetblinder);
+        }
+        return "";
+    }
+
+    public boolean hasUnblindingData() {
+        return assetId != null && satoshi != null && assetblinder != null && amountblinder != null &&  !assetId.isEmpty() && !amountblinder.isEmpty() && !assetblinder.isEmpty();
     }
 }

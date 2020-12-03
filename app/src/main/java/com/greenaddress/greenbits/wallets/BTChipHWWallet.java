@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
+
 
 public class BTChipHWWallet extends HWWallet {
     private static final byte SIGHASH_ALL = 1;
@@ -183,21 +185,21 @@ public class BTChipHWWallet extends HWWallet {
             // TODO: refactor using map or something like that
             final List<String> assetCommitments = new ArrayList<>(outputs.size());
             final List<String> valueCommitments = new ArrayList<>(outputs.size());
-            final List<String> abfs = new ArrayList<>(outputs.size());
-            final List<String> vbfs = new ArrayList<>(outputs.size());
+            final List<String> amountBlinders = new ArrayList<>(outputs.size());
+            final List<String> assetBlinders = new ArrayList<>(outputs.size());
             for (int i = 0; i < outputs.size(); i++) {
                 if (resp.getAssetCommitments().get(i) == null) {
                     assetCommitments.add(null);
                     valueCommitments.add(null);
-                    abfs.add(null);
-                    vbfs.add(null);
+                    assetBlinders.add(null);
+                    amountBlinders.add(null);
                     continue;
                 }
 
                 assetCommitments.add(Wally.hex_from_bytes(resp.getAssetCommitments().get(i)));
                 valueCommitments.add(Wally.hex_from_bytes(resp.getValueCommitments().get(i)));
-                abfs.add(Wally.hex_from_bytes(resp.getAbfs().get(i)));
-                vbfs.add(Wally.hex_from_bytes(resp.getVbfs().get(i)));
+                assetBlinders.add(Wally.hex_from_bytes(reverseBytes(resp.getAssetBlinders().get(i))));
+                amountBlinders.add(Wally.hex_from_bytes(reverseBytes(resp.getAmountBlinders().get(i))));
             }
 
             final List<String> sigs = new ArrayList<>(inputs.size());
@@ -205,7 +207,7 @@ public class BTChipHWWallet extends HWWallet {
                 sigs.add(Wally.hex_from_bytes(sig));
             }
 
-            return new LiquidHWResult(sigs, assetCommitments, valueCommitments, abfs, vbfs);
+            return new LiquidHWResult(sigs, assetCommitments, valueCommitments, assetBlinders, amountBlinders);
         } catch (final BTChipException e) {
             e.printStackTrace();
             throw new RuntimeException("Signing Error: " + e.getMessage());
@@ -216,16 +218,16 @@ public class BTChipHWWallet extends HWWallet {
         private final List<byte[]> signatures;
         private final List<byte[]> assetCommitments;
         private final List<byte[]> valueCommitments;
-        private final List<byte[]> abfs;
-        private final List<byte[]> vbfs;
+        private final List<byte[]> assetBlinders;
+        private final List<byte[]> amountBlinders;
 
         public LiquidSigCommitment(List<byte[]> signatures, List<byte[]> assetCommitments,
-                                   List<byte[]> valueCommitments, List<byte[]> abfs, List<byte[]> vbfs) {
+                                   List<byte[]> valueCommitments, List<byte[]> assetBlinders, List<byte[]> amountBlinders) {
             this.signatures = signatures;
             this.assetCommitments = assetCommitments;
             this.valueCommitments = valueCommitments;
-            this.abfs = abfs;
-            this.vbfs = vbfs;
+            this.assetBlinders = assetBlinders;
+            this.amountBlinders = amountBlinders;
         }
 
         public List<byte[]> getSignatures() {
@@ -240,12 +242,12 @@ public class BTChipHWWallet extends HWWallet {
             return valueCommitments;
         }
 
-        public List<byte[]> getAbfs() {
-            return abfs;
+        public List<byte[]> getAssetBlinders() {
+            return assetBlinders;
         }
 
-        public List<byte[]> getVbfs() {
-            return vbfs;
+        public List<byte[]> getAmountBlinders() {
+            return amountBlinders;
         }
     }
 
@@ -271,19 +273,16 @@ public class BTChipHWWallet extends HWWallet {
         }
 
         List<Long> inputValues = new ArrayList<>();
-        List<byte[]> abfs = new ArrayList<>();
-        List<byte[]> vbfs = new ArrayList<>();
+        List<byte[]> assetBlinders = new ArrayList<>();
+        List<byte[]> amountBlinders = new ArrayList<>();
 
         for (InputOutputData in : inputs) {
             inputValues.add(in.getSatoshi());
-            abfs.add(in.getAbfBytes());
-            vbfs.add(in.getVbfBytes());
+            assetBlinders.add(in.getAssetBlinderBytes());
+            amountBlinders.add(in.getAmountBlinderBytes());
         }
 
-        List <BTChipDongle.BTChipLiquidTrustedCommitments> commitments = mDongle.getLiquidCommitments(inputValues, abfs,
-                                                                                                      vbfs,
-                                                                                                      inputs.size(),
-                                                                                                      outputs);
+        List <BTChipDongle.BTChipLiquidTrustedCommitments> commitments = mDongle.getLiquidCommitments(inputValues, assetBlinders, amountBlinders, inputs.size(), outputs);
 
         mDongle.finalizeLiquidInputFull(outputLiquidBytes(outputs, commitments));
         mDongle.provideLiquidIssuanceInformation(inputs.size());
@@ -322,13 +321,13 @@ public class BTChipHWWallet extends HWWallet {
             sigs.add(mDongle.untrustedLiquidHashSign(in.getUserPathAsInts(), locktime, SIGHASH_ALL));
         }
 
-        // remove the inputs from abfs/vbfs
+        // remove the inputs from assetBlinders/amountBlinders
         for (int i = 0; i < inputs.size(); i++) {
-            abfs.remove(0);
-            vbfs.remove(0);
+            assetBlinders.remove(0);
+            amountBlinders.remove(0);
         }
 
-        return new LiquidSigCommitment(sigs, assetCommitents, valueCommitents, abfs, vbfs);
+        return new LiquidSigCommitment(sigs, assetCommitents, valueCommitents, assetBlinders, amountBlinders);
     }
 
     // Helper to get the hw inputs

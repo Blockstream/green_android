@@ -18,8 +18,8 @@ public class HardwareCodeResolverData extends JSONData {
     private Map<String, String> blindingKeys;
     private List<String> assetCommitments;
     private List<String> valueCommitments;
-    private List<String> abfs;
-    private List<String> vbfs;
+    private List<String> assetblinders;
+    private List<String> amountblinders;
 
     public List<String> getXpubs() {
         return xpubs;
@@ -85,19 +85,19 @@ public class HardwareCodeResolverData extends JSONData {
         return valueCommitments;
     }
 
-    public void setAbfs(List<String> abfs) {
-        this.abfs = abfs;
+    public void setAssetblinders(List<String> assetblinders) {
+        this.assetblinders = assetblinders;
     }
 
-    public void setVbfs(List<String> vbfs) {
-        this.vbfs = vbfs;
+    public void setAmountblinders(List<String> amountblinders) {
+        this.amountblinders = amountblinders;
     }
 
-    public List<String> getAbfs() {
-        return abfs;
+    public List<String> getAssetblinders() {
+        return assetblinders;
     }
 
-    public List<String> getVbfs() {
-        return vbfs;
+    public List<String> getAmountblinders() {
+        return amountblinders;
     }
 }

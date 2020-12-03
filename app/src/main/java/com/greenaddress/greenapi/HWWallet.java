@@ -30,15 +30,15 @@ public abstract class HWWallet {
         private final List<String> signatures;
         private final List<String> assetCommitments;
         private final List<String> valueCommitments;
-        private final List<String> abfs;
-        private final List<String> vbfs;
+        private final List<String> assetBlinders;
+        private final List<String> amountBlinders;
 
-        public LiquidHWResult(List<String> signatures, List<String> assetCommitments, List<String> valueCommitments, List<String> abfs, List<String> vbfs) {
+        public LiquidHWResult(List<String> signatures, List<String> assetCommitments, List<String> valueCommitments, List<String> assetBlinders, List<String> amountBlinders) {
             this.signatures = signatures;
             this.assetCommitments = assetCommitments;
             this.valueCommitments = valueCommitments;
-            this.abfs = abfs;
-            this.vbfs = vbfs;
+            this.assetBlinders = assetBlinders;
+            this.amountBlinders = amountBlinders;
         }
 
         public List<String> getSignatures() {
@@ -53,12 +53,12 @@ public abstract class HWWallet {
             return valueCommitments;
         }
 
-        public List<String> getAbfs() {
-            return abfs;
+        public List<String> getAssetBlinders() {
+            return assetBlinders;
         }
 
-        public List<String> getVbfs() {
-            return vbfs;
+        public List<String> getAmountBlinders() {
+            return amountBlinders;
         }
     }
 

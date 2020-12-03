@@ -271,14 +271,6 @@ public class BTChipDongle implements BTChipConstants {
 			return Arrays.copyOfRange(value, 64, 207);
 		}
 
-		public byte[] getAbf() {
-			return Arrays.copyOfRange(value, 0, 32);
-		}
-
-		public byte[] getVbf() {
-			return Arrays.copyOfRange(value, 32, 64);
-		}
-
 		public byte[] getAssetCommitment() {
 			return Arrays.copyOfRange(value, 69, 69 + 33);
 		}
@@ -665,7 +657,7 @@ public class BTChipDongle implements BTChipConstants {
 		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_ISSUANCE_INFORMATION, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
 	}
 
-	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> abfs, List<byte[]> vbfs, final long numInputs, List<InputOutputData> outputData) throws BTChipException {
+	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> assetBlinders, List<byte[]> amountBlinders, final long numInputs, List<InputOutputData> outputData) throws BTChipException {
 		ByteArrayOutputStream data;
 		List<BTChipLiquidTrustedCommitments> out = new ArrayList<>();
 
@@ -691,24 +683,24 @@ public class BTChipDongle implements BTChipConstants {
 			BufferUtils.writeUint32BE(data, i);
 
 			if (last) {
-				// get only the abf
-				ByteArrayOutputStream getAbfData = new ByteArrayOutputStream(4);
-				BufferUtils.writeUint32BE(getAbfData, i);
-				byte abfResponse[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR, (byte)0x01, (byte)0x00, getAbfData.toByteArray(), OK);
-				abfs.add(Arrays.copyOfRange(abfResponse, 0, 32));
+				// get only the asset blinder
+				ByteArrayOutputStream getAssetBlinderData = new ByteArrayOutputStream(4);
+				BufferUtils.writeUint32BE(getAssetBlinderData, i);
+				byte assetBlinderResponse[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR, (byte)0x01, (byte)0x00, getAssetBlinderData.toByteArray(), OK);
+				assetBlinders.add(Arrays.copyOfRange(assetBlinderResponse, 0, 32));
 
-				// generate the last vbf based on the others
-				byte finalVbf[] = Wally.asset_final_vbf(Longs.toArray(values), numInputs, foldListOfByteArray(abfs), foldListOfByteArray(vbfs));
-				vbfs.add(finalVbf);
-				data.write(finalVbf, 0, 32);
+				// generate the last amount blinder based on the others
+				byte finalAmountBlinder[] = Wally.asset_final_vbf(Longs.toArray(values), numInputs, foldListOfByteArray(assetBlinders), foldListOfByteArray(amountBlinders));
+				amountBlinders.add(finalAmountBlinder);
+				data.write(finalAmountBlinder, 0, 32);
 			}
 
 			byte response[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_COMMITMENTS, last ? (byte)0x02 : (byte)0x01, (byte)0x00, data.toByteArray(), OK);
 			out.add(new BTChipLiquidTrustedCommitments(response));
 
 			if (!last) {
-				abfs.add(Arrays.copyOfRange(response, 0, 32));
-				vbfs.add(Arrays.copyOfRange(response, 32, 64));
+				assetBlinders.add(Arrays.copyOfRange(response, 0, 32));
+				amountBlinders.add(Arrays.copyOfRange(response, 32, 64));
 			}
 
 			i++;
