@@ -72,6 +72,7 @@
   <string name="id_cannot_remove_enabled_network">无法移除已启用的网络，请先禁用该网络</string>
   <string name="id_cant_connect_to_this_url">无法连接至此URL</string>
   <string name="id_change">改变</string>
+  <string name="id_change_address">Change address</string>
   <string name="id_change_pin">修改PIN</string>
   <string name="id_check_your_backup">检查备份</string>
   <string name="id_choose">选择</string>
@@ -80,6 +81,7 @@
   <string name="id_choose_twofactor_authentication">选择双重验证方案</string>
   <string name="id_choose_your_network">选择想要登录的网络</string>
   <string name="id_clear">清除</string>
+  <string name="id_click_to_copy">Click to copy</string>
   <string name="id_click_to_receive_an_email_with">点击接收包含加密恢复数据的邮件。</string>
   <string name="id_communication_timed_out_make">连接超时。请确保设备在开机状态然后再次尝试。</string>
   <string name="id_completed">完成</string>
@@ -88,12 +90,14 @@
   <string name="id_confirm_by_typing_the_wallet">输入钱包名称以确认</string>
   <string name="id_confirm_code">确认码</string>
   <string name="id_confirm_passphrase">确认密语</string>
+  <string name="id_confirm_transaction">Confirm transaction</string>
   <string name="id_confirm_transaction_details_on">请在硬件钱包上确认转账细节</string>
   <string name="id_confirmation_in_d_blocks">大约需要%d个区块确认</string>
   <string name="id_congratulations">恭喜！</string>
   <string name="id_connect_hardware_wallet">连接硬件钱包</string>
   <string name="id_connect_through_a_proxy">通过proxy连接</string>
   <string name="id_connect_with_tor">连接Tor</string>
+  <string name="id_connect_your_ledger_to_use_it">Connect your Ledger to use it in Green</string>
   <string name="id_connecting_to_a_trusted_node">通过Tor连接到受信任节点需要登录前在应用程序中启用代理设置以及Socks5代理（适用于Android的Orbot应用程序）</string>
   <string name="id_connecting_to_peers">正在连接终端...</string>
   <string name="id_connecting_to_tor_onion_nodes">连接至Tor (.onion)节点将使得隐私及安全性能最大化。点击"OK"继续。</string>
@@ -107,6 +111,7 @@
   <string name="id_copy_raw_transaction">复制raw transaction</string>
   <string name="id_copy_to_clipboard">复制到剪贴板</string>
   <string name="id_copy_transaction_id">复制转账ID</string>
+  <string name="id_copy_unblinding_data">Copy unblinding data</string>
   <string name="id_copy_uri">复制URL</string>
   <string name="id_copy_xpub">复制xpub格式公钥</string>
   <string name="id_create">创建</string>
@@ -284,6 +289,7 @@
   <string name="id_main_account">主账户</string>
   <string name="id_make_sure_you_made_a_proper">请确保你妥善备份了你的助记词。</string>
   <string name="id_malleated">已延展</string>
+  <string name="id_managed_assets">Managed Assets</string>
   <string name="id_managed_assets_account">Managed Assets Account</string>
   <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">中</string>
@@ -383,6 +389,7 @@
   <string name="id_received">已收款</string>
   <string name="id_received_on">收款时间</string>
   <string name="id_recipient">接收方</string>
+  <string name="id_recipient_address">Recipient address</string>
   <string name="id_recovery">恢复资金设置</string>
   <string name="id_recovery_and_notifications">恢复与通知</string>
   <string name="id_recovery_mnemonic">助记词</string>
@@ -416,6 +423,7 @@
   <string name="id_restore_temporary_wallet">恢复临时钱包</string>
   <string name="id_review">检查</string>
   <string name="id_review_account_information">检查账户信息</string>
+  <string name="id_review_output_s">Review output %s</string>
   <string name="id_s_blocks_left">剩余%s个区块</string>
   <string name="id_s_from_s">%s来自%s</string>
   <string name="id_s_network">%s网络</string>
@@ -435,6 +443,7 @@
   <string name="id_see_our_terms_of_service_s">查看服务条款%s</string>
   <string name="id_select_a_fiat_currency_and">选择一种法币和比特币面额在账户中显示</string>
   <string name="id_select_account">选择账户</string>
+  <string name="id_select_an_app_on_s">Select an app on %s</string>
   <string name="id_select_asset">选择资产</string>
   <string name="id_select_duration_of_twofactor">选择双重验证的持续时间来保护你的资产。新的选项只会影响新接收的资产。</string>
   <string name="id_select_network">选择钱包网络</string>
@@ -455,6 +464,7 @@
   <string name="id_set_an_email_for_recovery">设置恢复邮箱</string>
   <string name="id_set_custom_fee_rate">设置自定义转账手续费</string>
   <string name="id_set_locktime">设置锁定时间</string>
+  <string name="id_set_timelock">Set timelock</string>
   <string name="id_set_twofactor_threshold">设置双验证临界值</string>
   <string name="id_set_up_a_passcode_for_your_ios">需要给iOS设备设置密码才能给Blockstream Green设置PIN</string>
   <string name="id_set_up_a_screen_lock_for_your">开启安卓设备屏幕锁然后才可以用屏幕锁解锁钱包</string>
@@ -471,6 +481,7 @@
   <string name="id_setup_pin_and_s">设置PIN和%s</string>
   <string name="id_share">分享</string>
   <string name="id_share_address">分享地址</string>
+  <string name="id_share_unblinding_data">Share unblinding data</string>
   <string name="id_show_bitcoin_amounts_in">比特币面值</string>
   <string name="id_show_coins_with_expiring">显示快过期的双重验证保护的资产。</string>
   <string name="id_show_fiat">显示法币</string>

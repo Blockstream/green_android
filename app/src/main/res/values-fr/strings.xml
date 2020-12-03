@@ -72,6 +72,7 @@
   <string name="id_cannot_remove_enabled_network">Impossible de supprimer un réseau actif, merci de le désactiver</string>
   <string name="id_cant_connect_to_this_url">Impossible de se connecter à cette URL</string>
   <string name="id_change">MONNAIE</string>
+  <string name="id_change_address">Change address</string>
   <string name="id_change_pin">Change PIN</string>
   <string name="id_check_your_backup">Check your backup</string>
   <string name="id_choose">Choisissez</string>
@@ -80,6 +81,7 @@
   <string name="id_choose_twofactor_authentication">Choisissez un deuxième facteur d\'authentification</string>
   <string name="id_choose_your_network">Choisissez votre réseau</string>
   <string name="id_clear">EFFACER</string>
+  <string name="id_click_to_copy">Click to copy</string>
   <string name="id_click_to_receive_an_email_with">Click to receive an email with your encrypted recovery data.</string>
   <string name="id_communication_timed_out_make">Communication timed out. Make sure the device is powered on and try again.</string>
   <string name="id_completed">Complété</string>
@@ -88,12 +90,14 @@
   <string name="id_confirm_by_typing_the_wallet">Confirm by typing the wallet name</string>
   <string name="id_confirm_code">Confirmez le code</string>
   <string name="id_confirm_passphrase">Confirmez le mot de passe</string>
+  <string name="id_confirm_transaction">Confirm transaction</string>
   <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
   <string name="id_confirmation_in_d_blocks">Confirmation de blocs %d</string>
   <string name="id_congratulations">Félicitations !</string>
   <string name="id_connect_hardware_wallet">Connect hardware wallet</string>
   <string name="id_connect_through_a_proxy">Connectez-vous via un proxy</string>
   <string name="id_connect_with_tor">Connectez-vous avec Tor</string>
+  <string name="id_connect_your_ledger_to_use_it">Connect your Ledger to use it in Green</string>
   <string name="id_connecting_to_a_trusted_node">Pour vous connecter à un nœud approuvé par Tor, vous devez d\'abord activer les paramètres de proxy dans l\'application et utiliser un proxy Socks5 (application Orbot pour Android).</string>
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Connectez-vous à des nœuds sur le réseau Tor (.onion) et bénéficiez du maximum de confidentialité et de sécurité. Appuyez sur "OK" pour continuer. </string>
@@ -107,6 +111,7 @@
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Copié dans le presse-papier</string>
   <string name="id_copy_transaction_id">Copy transaction ID</string>
+  <string name="id_copy_unblinding_data">Copy unblinding data</string>
   <string name="id_copy_uri">Copy URI</string>
   <string name="id_copy_xpub">Copy xpub</string>
   <string name="id_create">Créer</string>
@@ -284,6 +289,7 @@
   <string name="id_main_account">Compte principal</string>
   <string name="id_make_sure_you_made_a_proper">Make sure you made a proper backup of your wallet mnemonic.</string>
   <string name="id_malleated">malléabilisée</string>
+  <string name="id_managed_assets">Managed Assets</string>
   <string name="id_managed_assets_account">Managed Assets Account</string>
   <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">Moyen</string>
@@ -383,6 +389,7 @@
   <string name="id_received">Reçu</string>
   <string name="id_received_on">Reçue le</string>
   <string name="id_recipient">Destinataire</string>
+  <string name="id_recipient_address">Recipient address</string>
   <string name="id_recovery">Recovery</string>
   <string name="id_recovery_and_notifications">Récupération et notifications</string>
   <string name="id_recovery_mnemonic">Recovery mnemonic</string>
@@ -416,6 +423,7 @@
   <string name="id_restore_temporary_wallet">Restaurer le portefeuille temporaire</string>
   <string name="id_review">Vérifier</string>
   <string name="id_review_account_information">Review account information</string>
+  <string name="id_review_output_s">Review output %s</string>
   <string name="id_s_blocks_left">%s blocs restant</string>
   <string name="id_s_from_s">%s de %s</string>
   <string name="id_s_network">Réseau %s</string>
@@ -435,6 +443,7 @@
   <string name="id_see_our_terms_of_service_s">See our Terms of Service %s</string>
   <string name="id_select_a_fiat_currency_and">Select a fiat currency and bitcoin denomination to show amounts in your wallet</string>
   <string name="id_select_account">Sélectionner le compte</string>
+  <string name="id_select_an_app_on_s">Select an app on %s</string>
   <string name="id_select_asset">Sélectionner l\'actif</string>
   <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">Sélectionner le réseau</string>
@@ -455,6 +464,7 @@
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">Fixer le taux des frais</string>
   <string name="id_set_locktime">Set Locktime</string>
+  <string name="id_set_timelock">Set timelock</string>
   <string name="id_set_twofactor_threshold">Définir le seuil à Double Facteur</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
@@ -471,6 +481,7 @@
   <string name="id_setup_pin_and_s">Définition du code PIN et %s</string>
   <string name="id_share">Partager</string>
   <string name="id_share_address">Partager l\'adresse</string>
+  <string name="id_share_unblinding_data">Share unblinding data</string>
   <string name="id_show_bitcoin_amounts_in">Show bitcoin amounts in</string>
   <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">Montrer FIAT</string>

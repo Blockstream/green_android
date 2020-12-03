@@ -72,6 +72,7 @@
   <string name="id_cannot_remove_enabled_network">Impossível remover uma rede ativa, por favor, desative-a primeiro</string>
   <string name="id_cant_connect_to_this_url">Impossível conectar-se a essa URL</string>
   <string name="id_change">ALTERAR</string>
+  <string name="id_change_address">Change address</string>
   <string name="id_change_pin">Alterar PIN</string>
   <string name="id_check_your_backup">Verifique seu backup</string>
   <string name="id_choose">Escolha</string>
@@ -80,6 +81,7 @@
   <string name="id_choose_twofactor_authentication">Escolha o método de Autenticação de Dois Fatores</string>
   <string name="id_choose_your_network">Escolha sua rede</string>
   <string name="id_clear">LIMPAR</string>
+  <string name="id_click_to_copy">Click to copy</string>
   <string name="id_click_to_receive_an_email_with">Clique para receber um email com seu pacote de recuperação em formato criptografado.</string>
   <string name="id_communication_timed_out_make">O tempo de comunicação expirou. Verifique se o dispositivo está ligado e tente novamente.</string>
   <string name="id_completed">Concluída</string>
@@ -88,12 +90,14 @@
   <string name="id_confirm_by_typing_the_wallet">Confirme digitando o nome da carteira</string>
   <string name="id_confirm_code">Confirmar código</string>
   <string name="id_confirm_passphrase">Confirmar senha</string>
+  <string name="id_confirm_transaction">Confirm transaction</string>
   <string name="id_confirm_transaction_details_on">Confirme os detalhes da transação na sua carteira física</string>
   <string name="id_confirmation_in_d_blocks">Confirmação em%d blocos</string>
   <string name="id_congratulations">Parabéns!</string>
   <string name="id_connect_hardware_wallet">Conectar carteira física</string>
   <string name="id_connect_through_a_proxy">Conectar-se através de um proxy</string>
   <string name="id_connect_with_tor">Conectar usando Tor</string>
+  <string name="id_connect_your_ledger_to_use_it">Connect your Ledger to use it in Green</string>
   <string name="id_connecting_to_a_trusted_node">Para se conectar a um nó confiável através da Tor é necessário habilitar as configurações de proxy e instalar um aplicativo SOCKS5 (Orbot para Android)</string>
   <string name="id_connecting_to_peers">Conectando aos pares...</string>
   <string name="id_connecting_to_tor_onion_nodes">Conectar através da rede Tor (.onion) garante máxima privacidade e segurança. Pressione "OK" para continuar.</string>
@@ -107,6 +111,7 @@
   <string name="id_copy_raw_transaction">Copiar transação raw</string>
   <string name="id_copy_to_clipboard">Copiar para a Área de Transferência</string>
   <string name="id_copy_transaction_id">Copiar ID da transação</string>
+  <string name="id_copy_unblinding_data">Copy unblinding data</string>
   <string name="id_copy_uri">Copiar URI</string>
   <string name="id_copy_xpub">Copiar xpub</string>
   <string name="id_create">Criar</string>
@@ -284,6 +289,7 @@
   <string name="id_main_account">Conta principal</string>
   <string name="id_make_sure_you_made_a_proper">Verifique se você realizou devidamente o backup do mnemônico da sua carteira.</string>
   <string name="id_malleated">maleada</string>
+  <string name="id_managed_assets">Managed Assets</string>
   <string name="id_managed_assets_account">Managed Assets Account</string>
   <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">Média</string>
@@ -383,6 +389,7 @@
   <string name="id_received">Recebida</string>
   <string name="id_received_on">Recebida em</string>
   <string name="id_recipient">Destinatário</string>
+  <string name="id_recipient_address">Recipient address</string>
   <string name="id_recovery">Recuperação</string>
   <string name="id_recovery_and_notifications">Recuperação e Notificações</string>
   <string name="id_recovery_mnemonic">Recuperar mnemônico</string>
@@ -416,6 +423,7 @@
   <string name="id_restore_temporary_wallet">Restaurar carteira temporária</string>
   <string name="id_review">Revisar</string>
   <string name="id_review_account_information">Revise as informações da conta</string>
+  <string name="id_review_output_s">Review output %s</string>
   <string name="id_s_blocks_left">%s blocos restantes</string>
   <string name="id_s_from_s">%s de %s</string>
   <string name="id_s_network">%s rede</string>
@@ -435,6 +443,7 @@
   <string name="id_see_our_terms_of_service_s">Veja nossos Termos de Serviço %s</string>
   <string name="id_select_a_fiat_currency_and">Escolha uma moeda fiduciária e a denominação de bitcoin que serão usadas para mostrar valores na sua carteira. </string>
   <string name="id_select_account">Selecionar conta</string>
+  <string name="id_select_an_app_on_s">Select an app on %s</string>
   <string name="id_select_asset">Selecionar ativo</string>
   <string name="id_select_duration_of_twofactor">Selecione um intervalo de tempo em que suas moedas estarão protegidas com a Autenticação de Dois Fatores. A nova opção se aplica às moedas recém-recebidas.</string>
   <string name="id_select_network">Selecionar rede</string>
@@ -455,6 +464,7 @@
   <string name="id_set_an_email_for_recovery">Definir um e-mail de recuperação </string>
   <string name="id_set_custom_fee_rate">Ajustar taxa</string>
   <string name="id_set_locktime">Definir Locktime</string>
+  <string name="id_set_timelock">Set timelock</string>
   <string name="id_set_twofactor_threshold">Definir valor máximo que pode ser gasto sem necessidade de 2FA</string>
   <string name="id_set_up_a_passcode_for_your_ios">Configure uma senha para o seu aparelho iOS para definir um PIN para o aplicativo Blockstream Green</string>
   <string name="id_set_up_a_screen_lock_for_your">Configure o bloqueio de tela do seu aparelho Android para acessar sua carteira usando essa função</string>
@@ -471,6 +481,7 @@
   <string name="id_setup_pin_and_s">Configurar PIN e %s</string>
   <string name="id_share">Compartilhar</string>
   <string name="id_share_address">Compartilhar endereço</string>
+  <string name="id_share_unblinding_data">Share unblinding data</string>
   <string name="id_show_bitcoin_amounts_in">Mostrar unidade de bitcoin em</string>
   <string name="id_show_coins_with_expiring">Mostrar moedas com proteção de Autenticação de Dois Fatores próximas de expirar.</string>
   <string name="id_show_fiat">Mostrar fiat</string>

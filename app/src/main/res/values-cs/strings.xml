@@ -72,6 +72,7 @@
   <string name="id_cannot_remove_enabled_network">Povolenou síť nelze odebrat, nejprve ji deaktivujte</string>
   <string name="id_cant_connect_to_this_url">K této adrese URL se nelze připojit</string>
   <string name="id_change">VRÁCENÉ DROBNÉ</string>
+  <string name="id_change_address">Změnit adresu</string>
   <string name="id_change_pin">Změnit PIN</string>
   <string name="id_check_your_backup">Zkontrolujte svou zálohu</string>
   <string name="id_choose">Zvolit</string>
@@ -80,6 +81,7 @@
   <string name="id_choose_twofactor_authentication">Zvolte metodu 2-Faktorové autentizace</string>
   <string name="id_choose_your_network">Vyberte svou síť</string>
   <string name="id_clear">VYMAZAT</string>
+  <string name="id_click_to_copy">Kliknutím zkopírujte</string>
   <string name="id_click_to_receive_an_email_with">Klepnutím sem obdržíte e-mail s šifrovanými daty pro obnovení.</string>
   <string name="id_communication_timed_out_make">Vypršel časový limit komunikace. Ujistěte se, že je zařízení zapnuto a zkuste to znovu.</string>
   <string name="id_completed">Dokončeno</string>
@@ -88,12 +90,14 @@
   <string name="id_confirm_by_typing_the_wallet">Potvrďte zadáním názvu peněženky</string>
   <string name="id_confirm_code">Potvrďte kód</string>
   <string name="id_confirm_passphrase">Potvrďte přístupovou frázi (passphrase)</string>
+  <string name="id_confirm_transaction">Potvrdit transakci</string>
   <string name="id_confirm_transaction_details_on">Potvrďte podrobnosti transakce na vaší hardwarové peněžence</string>
   <string name="id_confirmation_in_d_blocks">Potvrzení v %d blocích</string>
   <string name="id_congratulations">Gratulujeme!</string>
   <string name="id_connect_hardware_wallet">Připojit hardwarovou peněženku</string>
   <string name="id_connect_through_a_proxy">Připojit se přes proxy</string>
   <string name="id_connect_with_tor">Připojit se přes Tor</string>
+  <string name="id_connect_your_ledger_to_use_it">Připojte svůj Ledger a použijte ho s aplikací Green</string>
   <string name="id_connecting_to_a_trusted_node">Připojení k důvěryhodnému uzlu přes Tor vyžaduje povolení monžosti přihlášení přes proxy v aplikaci před přihlášením a v proxy serveru Socks5 (aplikace Orbot pro Android)</string>
   <string name="id_connecting_to_peers">Připojování k uzlům...</string>
   <string name="id_connecting_to_tor_onion_nodes">Připojení k uzlům Tor (.onion) umožňuje maximální soukromí a zabezpečení. Pokračujte stisknutím tlačítka „OK“.</string>
@@ -107,6 +111,7 @@
   <string name="id_copy_raw_transaction">Kopírovat raw transakci</string>
   <string name="id_copy_to_clipboard">Kopírovat do schránky</string>
   <string name="id_copy_transaction_id">Kopírovat ID transakce</string>
+  <string name="id_copy_unblinding_data">Copy unblinding data</string>
   <string name="id_copy_uri">Kopírovat URI</string>
   <string name="id_copy_xpub">Kopírovat xpub</string>
   <string name="id_create">Vytvořit</string>
@@ -197,7 +202,7 @@
   <string name="id_fee_rate_s">Sazba poplatků: %s</string>
   <string name="id_fee_s__s">Poplatek: %s / %s</string>
   <string name="id_fees_are_too_low">Poplatky jsou příliš nízké</string>
-  <string name="id_for_investors">For investors</string>
+  <string name="id_for_investors">Pro investory</string>
   <string name="id_for_long_term_storage">Pro dlouhodobou úschovu</string>
   <string name="id_for_most_users">Pro většinu uživatelů</string>
   <string name="id_from">OD</string>
@@ -284,8 +289,9 @@
   <string name="id_main_account">Hlavní účet</string>
   <string name="id_make_sure_you_made_a_proper">Ujistěte se, že jste vytvořili řádnou zálohu mnemotechnické fráze vaší peněženky.</string>
   <string name="id_malleated">malleated</string>
-  <string name="id_managed_assets_account">Managed Assets Account</string>
-  <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
+  <string name="id_managed_assets">Spravovaná aktiva</string>
+  <string name="id_managed_assets_account">Účet spravovaných aktiv</string>
+  <string name="id_managed_assets_accounts_are">Účty spravovaných aktiv jsou k dispozici pouze v peněženkách Liquid. Může se od vás vyžadovat, abyste emitentům poskytli ID svého účtu, abyste obdrželi spravované aktivum.</string>
   <string name="id_medium">Střední</string>
   <string name="id_memo">Memo</string>
   <string name="id_minute">minuta</string>
@@ -322,8 +328,8 @@
   <string name="id_no_utxos_found">Nebyly nalezeny žádné UTXO</string>
   <string name="id_nonconfidential_addresses_not">Nedůvěrné adresy nejsou podporovány</string>
   <string name="id_normal">Normální</string>
-  <string name="id_not_a_valid_email_address">Not a valid email address</string>
-  <string name="id_not_a_valid_phone_number">Not a valid phone number</string>
+  <string name="id_not_a_valid_email_address">Neplatná e-mailová adresa</string>
+  <string name="id_not_a_valid_phone_number">Neplatné telefonní číslo</string>
   <string name="id_not_connected_connecting_in_ds_">Nepřipojeno. Připojování za %d s ...</string>
   <string name="id_notifications">Oznámení</string>
   <string name="id_now">Nyní</string>
@@ -374,7 +380,7 @@
   <string name="id_previous_fee">Předchozí poplatek</string>
   <string name="id_privacy_policy">Zásady ochrany osobních údajů</string>
   <string name="id_problem_with_key_1s">Problém s klíčem %1$s</string>
-  <string name="id_provide_this_id_to_the_asset">Provide this ID to the asset issuer if requested.</string>
+  <string name="id_provide_this_id_to_the_asset">Na požádání poskytněte toto ID emitentovi aktiv.</string>
   <string name="id_proxy_settings">NASTAVENÍ PROXY</string>
   <string name="id_qr_scanner">QR čtečka</string>
   <string name="id_read_more_at_our_s">Přečtěte si více na našem %s</string>
@@ -383,6 +389,7 @@
   <string name="id_received">Přijaté</string>
   <string name="id_received_on">Přijato dne</string>
   <string name="id_recipient">Příjemce</string>
+  <string name="id_recipient_address">Adresa příjemce</string>
   <string name="id_recovery">Obnova</string>
   <string name="id_recovery_and_notifications">Obnovení a oznámení</string>
   <string name="id_recovery_mnemonic">Obnova mnemotechnické fráze</string>
@@ -416,6 +423,7 @@
   <string name="id_restore_temporary_wallet">Obnovit dočasnou peněženku</string>
   <string name="id_review">Přezkoumání</string>
   <string name="id_review_account_information">Zkontrolovat informace o účtu</string>
+  <string name="id_review_output_s">Zkontrolujte výstup %s</string>
   <string name="id_s_blocks_left">%s bloky(ů) zbývá</string>
   <string name="id_s_from_s">%s od %s</string>
   <string name="id_s_network">%s síť</string>
@@ -435,6 +443,7 @@
   <string name="id_see_our_terms_of_service_s">Přečtěte si naše smluvní podmínky %s</string>
   <string name="id_select_a_fiat_currency_and">Vyberte fiat měnu a bitcoinovou denominaci, aby se v peněžence zobrazovaly správné částky</string>
   <string name="id_select_account">Vybrat účet</string>
+  <string name="id_select_an_app_on_s">Vyberte aplikaci na %s</string>
   <string name="id_select_asset">Vybrat aktivum</string>
   <string name="id_select_duration_of_twofactor">Vybrat dobu trvání ochrany dvoufaktorovým ověřováním vašich mincí. Nová možnost se vztahuje na nově přijaté mince.</string>
   <string name="id_select_network">Vybrat síť</string>
@@ -455,6 +464,7 @@
   <string name="id_set_an_email_for_recovery">Nastavte e-mail pro obnovení</string>
   <string name="id_set_custom_fee_rate">Nastavte vlastní sazbu poplatku</string>
   <string name="id_set_locktime">Nastavit časový zámek</string>
+  <string name="id_set_timelock">Set timelock</string>
   <string name="id_set_twofactor_threshold">Nastavit limit 2-Faktoru</string>
   <string name="id_set_up_a_passcode_for_your_ios">Nastate přístupový kód pro vaše iOS zařízení a nastavte PIN pro Blockstream Green</string>
   <string name="id_set_up_a_screen_lock_for_your">Nastavte zámek obrazovky, chcete-li odemknout peněženku pomocí zámku obrazovky Android, </string>
@@ -471,6 +481,7 @@
   <string name="id_setup_pin_and_s">Nastavit PIN a %s</string>
   <string name="id_share">Sdílet</string>
   <string name="id_share_address">Sdílet adresu</string>
+  <string name="id_share_unblinding_data">Share unblinding data</string>
   <string name="id_show_bitcoin_amounts_in">Zobrazit množství bitcoinů v</string>
   <string name="id_show_coins_with_expiring">Zobrazit mince s vypršením platnosti dvoufaktorové ověřovací ochrany.</string>
   <string name="id_show_fiat">Zobrazit fiat</string>

@@ -72,6 +72,7 @@
   <string name="id_cannot_remove_enabled_network">Das aktive Netzwerk kann nicht entfernt werden, bitte deaktiviere es zuerst</string>
   <string name="id_cant_connect_to_this_url">Diese URL kann nicht erreicht werden</string>
   <string name="id_change">ÄNDERN</string>
+  <string name="id_change_address">Adresse ändern</string>
   <string name="id_change_pin">PIN ändern</string>
   <string name="id_check_your_backup">Überprüfe dein Backup</string>
   <string name="id_choose">Wählen</string>
@@ -80,6 +81,7 @@
   <string name="id_choose_twofactor_authentication">Zwei-Faktor Authentifizierungsmethode auswählen</string>
   <string name="id_choose_your_network">Wähle dein Netzwerk</string>
   <string name="id_clear">LEEREN</string>
+  <string name="id_click_to_copy">zum kopieren anklicken</string>
   <string name="id_click_to_receive_an_email_with">Klicke hier um eine E-Mail mit deinen verschlüsselten Wiederherstellungsdaten zu erhalten. </string>
   <string name="id_communication_timed_out_make">Die Kommunikation wurde unterbrochen. Stelle sicher, dass das Gerät eingeschaltet ist, und probiere es erneut.</string>
   <string name="id_completed">Abgeschlossen</string>
@@ -88,12 +90,14 @@
   <string name="id_confirm_by_typing_the_wallet">Besätige in dem du den Wallet-Namen eingibst</string>
   <string name="id_confirm_code">Code bestätigen</string>
   <string name="id_confirm_passphrase">Passphrase bestätigen</string>
+  <string name="id_confirm_transaction">Transaktion bestätigen</string>
   <string name="id_confirm_transaction_details_on">Bestätige die Transaktionsdetails auf deiner Hardware-Wallet</string>
   <string name="id_confirmation_in_d_blocks">Bestätigung in %d Blöcken</string>
   <string name="id_congratulations">Gratulation!</string>
   <string name="id_connect_hardware_wallet">Hardware-Wallet verbinden</string>
   <string name="id_connect_through_a_proxy">Über einen Proxy verbinden</string>
   <string name="id_connect_with_tor">Mit Tor verbinden</string>
+  <string name="id_connect_your_ledger_to_use_it">Verbinde deinen Ledger um ihn mit Green zu verwenden</string>
   <string name="id_connecting_to_a_trusted_node">Verbinden mit einer vertrauten Node über Tor erfordert die Aktivierung der Proxy Einstellungen in der App vor dem Einloggen und einen Socks5 Proxy (Orbot App für Android)</string>
   <string name="id_connecting_to_peers">Mit Peers verbinden...</string>
   <string name="id_connecting_to_tor_onion_nodes">Das Verbinden mit Tor (.onion) Nodes ermöglicht maximale Privatsphäre und Sicherheit. Klicke "OK" um fortzufahren.</string>
@@ -107,6 +111,7 @@
   <string name="id_copy_raw_transaction">Transaktions-Rohdaten kopieren</string>
   <string name="id_copy_to_clipboard">In die Zwischenablage kopieren</string>
   <string name="id_copy_transaction_id">Transaktions-ID kopieren</string>
+  <string name="id_copy_unblinding_data">Copy unblinding data</string>
   <string name="id_copy_uri">URI kopieren</string>
   <string name="id_copy_xpub">xpub kopieren</string>
   <string name="id_create">Erstellen</string>
@@ -197,7 +202,7 @@
   <string name="id_fee_rate_s">Gebührenrate: %s</string>
   <string name="id_fee_s__s">Gebühr: %s / %s</string>
   <string name="id_fees_are_too_low">Die Gebühren sind zu niedrig</string>
-  <string name="id_for_investors">For investors</string>
+  <string name="id_for_investors">Für Investoren</string>
   <string name="id_for_long_term_storage">Zur langfristigen Aufbewahrung</string>
   <string name="id_for_most_users">Für die meisten Nutzer</string>
   <string name="id_from">VON</string>
@@ -284,8 +289,9 @@
   <string name="id_main_account">Hauptkonto</string>
   <string name="id_make_sure_you_made_a_proper">Stelle sicher, dass du ein geeignetes Backup deines Wallet-Merksatzes gemacht hast.</string>
   <string name="id_malleated">verformt</string>
-  <string name="id_managed_assets_account">Managed Assets Account</string>
-  <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
+  <string name="id_managed_assets">Managed Assets</string>
+  <string name="id_managed_assets_account">Konto für Managed Assets</string>
+  <string name="id_managed_assets_accounts_are">Konten für verwalteten Vermögenswerte sind nur für Liquid Wallets verfügbar. Möglicherweise musst du deine Konto-ID dem Herausgeber angeben, um Managed Assets zu erhalten.</string>
   <string name="id_medium">Mittel</string>
   <string name="id_memo">Memo</string>
   <string name="id_minute">Minute</string>
@@ -322,8 +328,8 @@
   <string name="id_no_utxos_found">Keine UTXOs gefunden</string>
   <string name="id_nonconfidential_addresses_not">Nicht-vertrauliche Adressen werden nicht unterstützt</string>
   <string name="id_normal">Normal</string>
-  <string name="id_not_a_valid_email_address">Not a valid email address</string>
-  <string name="id_not_a_valid_phone_number">Not a valid phone number</string>
+  <string name="id_not_a_valid_email_address">Keine gültige Email-Adresse</string>
+  <string name="id_not_a_valid_phone_number">Keine gültige Telefonnummer</string>
   <string name="id_not_connected_connecting_in_ds_">Nicht verbunden. Verbindung in %d s...</string>
   <string name="id_notifications">Nachrichten</string>
   <string name="id_now">Jetzt</string>
@@ -374,7 +380,7 @@
   <string name="id_previous_fee">Vorherige Gebühr</string>
   <string name="id_privacy_policy">Datenschutzerklärung</string>
   <string name="id_problem_with_key_1s">Problem mit Schlüssel %1$s</string>
-  <string name="id_provide_this_id_to_the_asset">Provide this ID to the asset issuer if requested.</string>
+  <string name="id_provide_this_id_to_the_asset">Gib diese ID dem Asset-Herausgeber, falls erforderlich.</string>
   <string name="id_proxy_settings">PROXY EINSTELLUNGEN</string>
   <string name="id_qr_scanner">QR Scanner</string>
   <string name="id_read_more_at_our_s">Weitere Informationen auf unserer %s</string>
@@ -383,6 +389,7 @@
   <string name="id_received">Empfangen</string>
   <string name="id_received_on">Empfangen am</string>
   <string name="id_recipient">Empfänger</string>
+  <string name="id_recipient_address">Empfänger-Adresse</string>
   <string name="id_recovery">Wiederherstellung</string>
   <string name="id_recovery_and_notifications">Wiederherstellung und Mitteilungen</string>
   <string name="id_recovery_mnemonic">Wiederherstellungs-Merksatz</string>
@@ -416,6 +423,7 @@
   <string name="id_restore_temporary_wallet">Temporäre Wallet wiederherstellen</string>
   <string name="id_review">Review</string>
   <string name="id_review_account_information">Kontoinformationen überprüfen</string>
+  <string name="id_review_output_s">Ausgabe überprüfen %s</string>
   <string name="id_s_blocks_left">%s Blöcke übrig</string>
   <string name="id_s_from_s">%s von %s</string>
   <string name="id_s_network">%s Netzwerk</string>
@@ -435,6 +443,7 @@
   <string name="id_see_our_terms_of_service_s">Siehe unsere Allgemeinen Geschäftsbedingungen %s</string>
   <string name="id_select_a_fiat_currency_and">Wähle eine Fiat-Währung und eine Bitcoin-Denominierung aus, um die Beträge in deiner Wallet anzuzeigen.</string>
   <string name="id_select_account">Wähle Konto</string>
+  <string name="id_select_an_app_on_s">Wähle eine App auf %s</string>
   <string name="id_select_asset">Wählen Sie das Vermögen</string>
   <string name="id_select_duration_of_twofactor">Wähle die Dauer des Zwei-Faktor-Authentifizierungsschutzes für deine Coins. Die neu gewählte Option gilt nur für neu erhaltene Coins.</string>
   <string name="id_select_network">Netzwerk auswählen</string>
@@ -455,6 +464,7 @@
   <string name="id_set_an_email_for_recovery">E-Mail-Adresse zur Wiederherstellung festlegen</string>
   <string name="id_set_custom_fee_rate">Eigene Gebührenrate festlegen</string>
   <string name="id_set_locktime">Locktime festlegen</string>
+  <string name="id_set_timelock">Set timelock</string>
   <string name="id_set_twofactor_threshold">Zwei-Faktor Limit setzen</string>
   <string name="id_set_up_a_passcode_for_your_ios">Richte einen Passcode für dein iOS-Gerät ein, um eine PIN für Blockstream Green festlegen zu können</string>
   <string name="id_set_up_a_screen_lock_for_your">Richte eine Bildschirmsperre für dein Android-Gerät ein, um deine Wallet damit entsperren zu können</string>
@@ -471,6 +481,7 @@
   <string name="id_setup_pin_and_s">PIN und %s einrichten </string>
   <string name="id_share">Teilen</string>
   <string name="id_share_address">Adresse teilen</string>
+  <string name="id_share_unblinding_data">Share unblinding data</string>
   <string name="id_show_bitcoin_amounts_in">Bitcoin-Beträge anzeigen in</string>
   <string name="id_show_coins_with_expiring">Coins mit auslaufendem Zwei-Faktor-Authentifizierungsschutz anzeigen.</string>
   <string name="id_show_fiat">Fiat anzeigen</string>

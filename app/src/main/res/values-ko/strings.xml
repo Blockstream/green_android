@@ -72,6 +72,7 @@
   <string name="id_cannot_remove_enabled_network">활성화 된 네트워크는 제거할 수 없으므로 먼저 비활성화 하세요.</string>
   <string name="id_cant_connect_to_this_url">URL 연결 불가</string>
   <string name="id_change">거스름돈</string>
+  <string name="id_change_address">Change address</string>
   <string name="id_change_pin">Change PIN</string>
   <string name="id_check_your_backup">Check your backup</string>
   <string name="id_choose">선택</string>
@@ -80,6 +81,7 @@
   <string name="id_choose_twofactor_authentication">2FA 방식 선택</string>
   <string name="id_choose_your_network">사용자 지정 네트워크 선택</string>
   <string name="id_clear">새로고침</string>
+  <string name="id_click_to_copy">Click to copy</string>
   <string name="id_click_to_receive_an_email_with">Click to receive an email with your encrypted recovery data.</string>
   <string name="id_communication_timed_out_make">Communication timed out. Make sure the device is powered on and try again.</string>
   <string name="id_completed">완료</string>
@@ -88,12 +90,14 @@
   <string name="id_confirm_by_typing_the_wallet">Confirm by typing the wallet name</string>
   <string name="id_confirm_code">코드 컨펌</string>
   <string name="id_confirm_passphrase">비밀번호 확인</string>
+  <string name="id_confirm_transaction">Confirm transaction</string>
   <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
   <string name="id_confirmation_in_d_blocks">%d 블록 내에 컨펌</string>
   <string name="id_congratulations">축하합니다!</string>
   <string name="id_connect_hardware_wallet">Connect hardware wallet</string>
   <string name="id_connect_through_a_proxy">프록시를 사용하여 연결하기</string>
   <string name="id_connect_with_tor">Tor를 사용하여 연결하기</string>
+  <string name="id_connect_your_ledger_to_use_it">Connect your Ledger to use it in Green</string>
   <string name="id_connecting_to_a_trusted_node">Tor를 통해 신뢰하는 노드에 연결하려면 로그인 전, 설정에서 프록시를 활성화 하여야 하고 Socks5 프록시(안드로이드용 Orbot 앱)도 있어야 합니다.</string>
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Tor (.onion)에 연결하면 최고의 보안과 프라이버시를 가능케 합니다. 계속하시려면 "확인"을 눌러주세요.</string>
@@ -107,6 +111,7 @@
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">클립보드에 복사</string>
   <string name="id_copy_transaction_id">Copy transaction ID</string>
+  <string name="id_copy_unblinding_data">Copy unblinding data</string>
   <string name="id_copy_uri">Copy URI</string>
   <string name="id_copy_xpub">Copy xpub</string>
   <string name="id_create">생성</string>
@@ -284,6 +289,7 @@
   <string name="id_main_account">주 계정</string>
   <string name="id_make_sure_you_made_a_proper">Make sure you made a proper backup of your wallet mnemonic.</string>
   <string name="id_malleated">바뀜</string>
+  <string name="id_managed_assets">Managed Assets</string>
   <string name="id_managed_assets_account">Managed Assets Account</string>
   <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">중간</string>
@@ -383,6 +389,7 @@
   <string name="id_received">받음</string>
   <string name="id_received_on">받은 시간</string>
   <string name="id_recipient">수령인</string>
+  <string name="id_recipient_address">Recipient address</string>
   <string name="id_recovery">Recovery</string>
   <string name="id_recovery_and_notifications">복구와 알람</string>
   <string name="id_recovery_mnemonic">Recovery mnemonic</string>
@@ -416,6 +423,7 @@
   <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_review">검토</string>
   <string name="id_review_account_information">Review account information</string>
+  <string name="id_review_output_s">Review output %s</string>
   <string name="id_s_blocks_left">%s 블록 남음</string>
   <string name="id_s_from_s">%s 데이터 %s에서 가져옴</string>
   <string name="id_s_network">%s 네트워크</string>
@@ -435,6 +443,7 @@
   <string name="id_see_our_terms_of_service_s">See our Terms of Service %s</string>
   <string name="id_select_a_fiat_currency_and">Select a fiat currency and bitcoin denomination to show amounts in your wallet</string>
   <string name="id_select_account">계정 선택</string>
+  <string name="id_select_an_app_on_s">Select an app on %s</string>
   <string name="id_select_asset">자산 선택</string>
   <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">네트워크 선택</string>
@@ -455,6 +464,7 @@
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">사용자 지정 수수료 설정</string>
   <string name="id_set_locktime">Set Locktime</string>
+  <string name="id_set_timelock">Set timelock</string>
   <string name="id_set_twofactor_threshold">2FA 한도 정하기</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
@@ -471,6 +481,7 @@
   <string name="id_setup_pin_and_s">비밀번호 설정 및 %s</string>
   <string name="id_share">공유하기</string>
   <string name="id_share_address">주소 내보내기</string>
+  <string name="id_share_unblinding_data">Share unblinding data</string>
   <string name="id_show_bitcoin_amounts_in">Show bitcoin amounts in</string>
   <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">명목화폐 보기</string>

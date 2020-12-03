@@ -72,6 +72,7 @@
   <string name="id_cannot_remove_enabled_network">Не вдається видалити підключену мережу, спочатку вимкніть її.</string>
   <string name="id_cant_connect_to_this_url">Не вдається з\'єднатися з цим URL</string>
   <string name="id_change">РЕШТА</string>
+  <string name="id_change_address">Change address</string>
   <string name="id_change_pin">Change PIN</string>
   <string name="id_check_your_backup">Check your backup</string>
   <string name="id_choose">Обрати</string>
@@ -80,6 +81,7 @@
   <string name="id_choose_twofactor_authentication">Виберіть метод двофакторної аутентифікації</string>
   <string name="id_choose_your_network">Виберіть мережу</string>
   <string name="id_clear">ОЧИСТИТИ</string>
+  <string name="id_click_to_copy">Click to copy</string>
   <string name="id_click_to_receive_an_email_with">Click to receive an email with your encrypted recovery data.</string>
   <string name="id_communication_timed_out_make">Communication timed out. Make sure the device is powered on and try again.</string>
   <string name="id_completed">Завершено</string>
@@ -88,12 +90,14 @@
   <string name="id_confirm_by_typing_the_wallet">Confirm by typing the wallet name</string>
   <string name="id_confirm_code">Підтвердіть код</string>
   <string name="id_confirm_passphrase">Confirm passphrase</string>
+  <string name="id_confirm_transaction">Confirm transaction</string>
   <string name="id_confirm_transaction_details_on">Confirm transaction details on your harware wallet</string>
   <string name="id_confirmation_in_d_blocks">Confirmation in %d blocks</string>
   <string name="id_congratulations">Вітаємо!</string>
   <string name="id_connect_hardware_wallet">Connect hardware wallet</string>
   <string name="id_connect_through_a_proxy">Встановити з’єднання через проксі-сервер</string>
   <string name="id_connect_with_tor">Встановити з’єднання з Tor</string>
+  <string name="id_connect_your_ledger_to_use_it">Connect your Ledger to use it in Green</string>
   <string name="id_connecting_to_a_trusted_node">Connecting to a trusted node through Tor requires enabling proxy settings in the app before logging in and a Socks5 proxy (Orbot app for Android)</string>
   <string name="id_connecting_to_peers">Connecting to peers...</string>
   <string name="id_connecting_to_tor_onion_nodes">Підключення до Tor (.onion) вузлів забезпечує максимальну конфіденційність і безпеку. Натисніть "OK", щоб продовжити.</string>
@@ -107,6 +111,7 @@
   <string name="id_copy_raw_transaction">Copy raw transaction</string>
   <string name="id_copy_to_clipboard">Скопіювати в буфер обміну</string>
   <string name="id_copy_transaction_id">Copy transaction ID</string>
+  <string name="id_copy_unblinding_data">Copy unblinding data</string>
   <string name="id_copy_uri">Copy URI</string>
   <string name="id_copy_xpub">Copy xpub</string>
   <string name="id_create">Створити</string>
@@ -284,6 +289,7 @@
   <string name="id_main_account">Основний акаунт</string>
   <string name="id_make_sure_you_made_a_proper">Make sure you made a proper backup of your wallet mnemonic.</string>
   <string name="id_malleated">деформована</string>
+  <string name="id_managed_assets">Managed Assets</string>
   <string name="id_managed_assets_account">Managed Assets Account</string>
   <string name="id_managed_assets_accounts_are">Managed assets accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive a Managed Asset.</string>
   <string name="id_medium">Середня</string>
@@ -383,6 +389,7 @@
   <string name="id_received">Отримано</string>
   <string name="id_received_on">Отримано</string>
   <string name="id_recipient">Отримувач</string>
+  <string name="id_recipient_address">Recipient address</string>
   <string name="id_recovery">Recovery</string>
   <string name="id_recovery_and_notifications">Відновлення і повідомлення</string>
   <string name="id_recovery_mnemonic">Recovery mnemonic</string>
@@ -416,6 +423,7 @@
   <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
   <string name="id_review">Огляд</string>
   <string name="id_review_account_information">Review account information</string>
+  <string name="id_review_output_s">Review output %s</string>
   <string name="id_s_blocks_left">%s блоків залишилось</string>
   <string name="id_s_from_s">%s від %s</string>
   <string name="id_s_network">%s мережа</string>
@@ -435,6 +443,7 @@
   <string name="id_see_our_terms_of_service_s">See our Terms of Service %s</string>
   <string name="id_select_a_fiat_currency_and">Select a fiat currency and bitcoin denomination to show amounts in your wallet</string>
   <string name="id_select_account">Select Account</string>
+  <string name="id_select_an_app_on_s">Select an app on %s</string>
   <string name="id_select_asset">Select asset</string>
   <string name="id_select_duration_of_twofactor">Select duration of Two-Factor Authentication protection for your coins. The new option applies to newly received coins.</string>
   <string name="id_select_network">Оберіть мережу</string>
@@ -455,6 +464,7 @@
   <string name="id_set_an_email_for_recovery">Set an email for recovery</string>
   <string name="id_set_custom_fee_rate">Встановити розмір комісії</string>
   <string name="id_set_locktime">Set Locktime</string>
+  <string name="id_set_timelock">Set timelock</string>
   <string name="id_set_twofactor_threshold">Встановити двофакторний поріг</string>
   <string name="id_set_up_a_passcode_for_your_ios">Set up a passcode for your iOS device to set a PIN for Blockstream Green</string>
   <string name="id_set_up_a_screen_lock_for_your">Set up a screen lock for your Android device to unlock your wallet using Android screen lock</string>
@@ -471,6 +481,7 @@
   <string name="id_setup_pin_and_s">Встановити PIN-код та %s</string>
   <string name="id_share">Поділитися</string>
   <string name="id_share_address">Поділитися адресою</string>
+  <string name="id_share_unblinding_data">Share unblinding data</string>
   <string name="id_show_bitcoin_amounts_in">Show bitcoin amounts in</string>
   <string name="id_show_coins_with_expiring">Show coins with expiring Two-Factor authentication protection.</string>
   <string name="id_show_fiat">Показати фіат</string>
