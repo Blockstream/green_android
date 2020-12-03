@@ -273,16 +273,16 @@ public class BTChipHWWallet extends HWWallet {
         }
 
         List<Long> inputValues = new ArrayList<>();
-        List<byte[]> assetBlinders = new ArrayList<>();
-        List<byte[]> amountBlinders = new ArrayList<>();
+        List<byte[]> assetBlindersBytes = new ArrayList<>();
+        List<byte[]> amountBlindersBytes = new ArrayList<>();
 
         for (InputOutputData in : inputs) {
             inputValues.add(in.getSatoshi());
-            assetBlinders.add(in.getAssetBlinderBytes());
-            amountBlinders.add(in.getAmountBlinderBytes());
+            assetBlindersBytes.add(in.getAssetBlinderBytes());
+            amountBlindersBytes.add(in.getAmountBlinderBytes());
         }
 
-        List <BTChipDongle.BTChipLiquidTrustedCommitments> commitments = mDongle.getLiquidCommitments(inputValues, assetBlinders, amountBlinders, inputs.size(), outputs);
+        List <BTChipDongle.BTChipLiquidTrustedCommitments> commitments = mDongle.getLiquidCommitments(inputValues, assetBlindersBytes, amountBlindersBytes, inputs.size(), outputs);
 
         mDongle.finalizeLiquidInputFull(outputLiquidBytes(outputs, commitments));
         mDongle.provideLiquidIssuanceInformation(inputs.size());
@@ -323,11 +323,11 @@ public class BTChipHWWallet extends HWWallet {
 
         // remove the inputs from assetBlinders/amountBlinders
         for (int i = 0; i < inputs.size(); i++) {
-            assetBlinders.remove(0);
-            amountBlinders.remove(0);
+            assetBlindersBytes.remove(0);
+            amountBlindersBytes.remove(0);
         }
 
-        return new LiquidSigCommitment(sigs, assetCommitents, valueCommitents, assetBlinders, amountBlinders);
+        return new LiquidSigCommitment(sigs, assetCommitents, valueCommitents, assetBlindersBytes, amountBlindersBytes);
     }
 
     // Helper to get the hw inputs

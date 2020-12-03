@@ -657,7 +657,7 @@ public class BTChipDongle implements BTChipConstants {
 		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_ISSUANCE_INFORMATION, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
 	}
 
-	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> assetBlinders, List<byte[]> amountBlinders, final long numInputs, List<InputOutputData> outputData) throws BTChipException {
+	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> assetBlindersBytes, List<byte[]> amountBlindersBytes, final long numInputs, List<InputOutputData> outputData) throws BTChipException {
 		ByteArrayOutputStream data;
 		List<BTChipLiquidTrustedCommitments> out = new ArrayList<>();
 
@@ -687,11 +687,11 @@ public class BTChipDongle implements BTChipConstants {
 				ByteArrayOutputStream getAssetBlinderData = new ByteArrayOutputStream(4);
 				BufferUtils.writeUint32BE(getAssetBlinderData, i);
 				byte assetBlinderResponse[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR, (byte)0x01, (byte)0x00, getAssetBlinderData.toByteArray(), OK);
-				assetBlinders.add(Arrays.copyOfRange(assetBlinderResponse, 0, 32));
+				assetBlindersBytes.add(Arrays.copyOfRange(assetBlinderResponse, 0, 32));
 
 				// generate the last amount blinder based on the others
-				byte finalAmountBlinder[] = Wally.asset_final_vbf(Longs.toArray(values), numInputs, foldListOfByteArray(assetBlinders), foldListOfByteArray(amountBlinders));
-				amountBlinders.add(finalAmountBlinder);
+				byte finalAmountBlinder[] = Wally.asset_final_vbf(Longs.toArray(values), numInputs, foldListOfByteArray(assetBlindersBytes), foldListOfByteArray(amountBlindersBytes));
+				amountBlindersBytes.add(finalAmountBlinder);
 				data.write(finalAmountBlinder, 0, 32);
 			}
 
@@ -699,8 +699,8 @@ public class BTChipDongle implements BTChipConstants {
 			out.add(new BTChipLiquidTrustedCommitments(response));
 
 			if (!last) {
-				assetBlinders.add(Arrays.copyOfRange(response, 0, 32));
-				amountBlinders.add(Arrays.copyOfRange(response, 32, 64));
+				assetBlindersBytes.add(Arrays.copyOfRange(response, 0, 32));
+				amountBlindersBytes.add(Arrays.copyOfRange(response, 32, 64));
 			}
 
 			i++;
