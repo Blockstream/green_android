@@ -3,7 +3,6 @@ package com.greenaddress.greenbits.ui.transactions;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -12,11 +11,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
@@ -24,12 +23,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.gdk.GDKTwoFactorCall;
-import com.greenaddress.greenapi.JSONMap;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.BumpTxData;
@@ -46,8 +41,6 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +59,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private TextView mUnconfirmedText;
     private TextView mStatusIncreaseFee;
     private TextView mStatusSPVUnverified;
-    private Button mExplorerButton;
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private ImageView mStatusIcon;
@@ -92,7 +84,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mMemoTitle = UI.find(this, R.id.txMemoTitle);
         mMemoSave = UI.find(this, R.id.txMemoSave);
         mMemoText = UI.find(this, R.id.txMemoText);
-        mExplorerButton = UI.find(this, R.id.txExplorer);
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
         mStatusIncreaseFee = UI.find(this, R.id.status_increase_fee);
         mStatusSPVUnverified = UI.find(this, R.id.status_spv_unverified);
@@ -116,10 +107,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         // Set txid
         final TextView hashText = UI.find(this, R.id.txHashText);
         hashText.setText(mTxItem.getTxhash());
-
-        // Set explorer button
-        final String blockExplorerTx = mNetworkData.getTxExplorerUrl();
-        openInBrowser(mExplorerButton, mTxItem.getTxhash(), blockExplorerTx, null);
 
         // Set title: incoming, outgoing, redeposited
         final String title;
@@ -314,11 +301,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case R.id.action_share:
-            final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT,
-                                mNetworkData.getTxExplorerUrl() + mTxItem.getTxhash());
-            sendIntent.setType("text/plain");
-            startActivity(sendIntent);
+            final FragmentTransaction ft = getSupportFragmentManager().beginTransaction().addToBackStack(null);
+            TransactionSharingFrament.createTransactionSharingFrament(getNetwork(), mTxItem).show(ft, "");
             return true;
         case android.R.id.home:
             finish();
@@ -357,46 +341,6 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         }, (e) -> {
             e.printStackTrace();
             UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
-        });
-    }
-
-    private void openInBrowser(final Button button, final String identifier, final String url,
-                               final JSONMap confidentialData) {
-        button.setOnClickListener(v -> {
-            if (TextUtils.isEmpty(url))
-                return;
-
-            String domain = url;
-            try {
-                domain = new URI(url).getHost();
-            } catch (final URISyntaxException e) {
-                e.printStackTrace();
-            }
-
-            if (TextUtils.isEmpty(domain))
-                return;
-
-            final String stripped = domain.startsWith("www.") ? domain.substring(4) : domain;
-            final Uri uri = Uri.parse(TextUtils.concat(url, identifier).toString());
-            final boolean dontAskAgain = cfg().getBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL, false);
-            if (dontAskAgain) {
-                startActivity(new Intent(Intent.ACTION_VIEW, uri));
-            } else {
-                new MaterialDialog.Builder(this)
-                .checkBoxPromptRes(R.string.id_dont_ask_me_again, false,
-                                   (buttonView,
-                                    isChecked) -> cfg().edit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL,
-                                                                          isChecked).apply())
-                .content(getString(R.string.id_are_you_sure_you_want_to_view, stripped))
-                .backgroundColor(getResources().getColor(R.color.buttonJungleGreen))
-                .positiveText(android.R.string.ok)
-                .negativeText(android.R.string.cancel)
-                .cancelable(false)
-                .onNegative((dialog, which) -> cfg().edit().putBoolean(PrefKeys.DONT_ASK_AGAIN_TO_OPEN_URL,
-                                                                       false).apply())
-                .onPositive((dialog, which) -> startActivity(new Intent(Intent.ACTION_VIEW, uri)))
-                .build().show();
-            }
         });
     }
 

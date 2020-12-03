@@ -14,11 +14,12 @@ import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.RegTestParams;
 import org.bitcoinj.params.TestNet3Params;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class NetworkData extends JSONData implements Comparable<NetworkData> {
+public class NetworkData extends JSONData implements Comparable<NetworkData>, Serializable {
     private String addressExplorerUrl;
     private String txExplorerUrl;
     private String bech32Prefix;

@@ -1,5 +1,8 @@
 package com.greenaddress.greenapi.data;
 
+import android.text.TextUtils;
+import android.view.inputmethod.InputBinding;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,6 +14,7 @@ import org.bitcoinj.core.Sha256Hash;
 
 import java.io.Serializable;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -404,5 +408,44 @@ public class TransactionData extends JSONData implements Serializable {
     @JsonIgnore
     public boolean hasEnoughConfirmations(final int currentBlock) {
         return getConfirmations(currentBlock) >= 6;
+    }
+
+    public String getUnblindedString() {
+        final List<String> inputs_outputs_list = new ArrayList<>();
+        for (InputOutputData e: this.getInputs()) {
+            final String s = e.getUnblindedString();
+            if (!s.isEmpty()) {
+                inputs_outputs_list.add(s);
+            }
+        }
+        for (InputOutputData e: this.getOutputs()) {
+            final String s = e.getUnblindedString();
+            if (!s.isEmpty()) {
+                inputs_outputs_list.add(s);
+            }
+        }
+        return TextUtils.join(",", inputs_outputs_list);
+    }
+
+    public TransactionUnblindedData getUnblindedData() {
+        final TransactionUnblindedData tx = new TransactionUnblindedData();
+        tx.setVersion(0);
+        tx.setTxid(getTxhash());
+        tx.setType(getType());
+        tx.setInputs(new ArrayList<>());
+        tx.setOutputs(new ArrayList<>());
+        for (final InputOutputData e: getInputs()) {
+            if (e.hasUnblindingData()) {
+                final InputUnblindedData input = new InputUnblindedData(e.getPtIdx(), e.getAssetId(), e.getAssetblinder(), e.getSatoshi(), e.getAmountblinder());
+                tx.getInputs().add(input);
+            }
+        }
+        for (final InputOutputData e: getOutputs()) {
+            if (e.hasUnblindingData()) {
+                final OutputUnblindedData output = new OutputUnblindedData(e.getPtIdx(), e.getAssetId(), e.getAssetblinder(), e.getSatoshi(), e.getAmountblinder());
+                tx.getOutputs().add(output);
+            }
+        }
+        return tx;
     }
 }
