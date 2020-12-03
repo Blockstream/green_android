@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/action_link_confidential"
-        android:title="Link to confidential transaction"
+        android:title="@string/id_view_in_explorer"
         android:icon="@drawable/ic_share_white" />
     <item android:id="@+id/action_link_unconfidential"
         android:title="Link to unconfidential transaction"
         android:icon="@drawable/ic_share_white" />
     <item android:id="@+id/action_share_unblinding"
-        android:title="Share unblinding data"
+        android:title="@string/id_share_unblinding_data"
         android:icon="@drawable/ic_share_white" />
 </menu>
