@@ -18,13 +18,73 @@
     <!-- VID 0x2581 PID 0x4b7c - Ledger Proton HID -->
     <usb-device vendor-id="9601" product-id="19324"/>
 
-    <!-- VID 0x2c97 PID 0x0001 - Ledger Blue -->
-    <usb-device vendor-id="11415" product-id="0000"/>
-    <!-- VID 0x2c97 PID 0x0000 - Ledger Nano S -->
+    <!-- VID 0x2c97 PID 0x0001|1000|1001|1002|1003|1004|1005|1006|1007|1008|1009|100a|100b|100c|100d|100e|100f|1010|1011|1012|1013|1014|1015|1016|1017|1018|1019|101a|101b|101c|101d|101e|101f - Ledger Nano S -->
     <usb-device vendor-id="11415" product-id="0001"/>
-    <!-- VID 0x2c97 PID 0x0004 - Ledger Nano X -->
+    <usb-device vendor-id="11415" product-id="4096"/>
+    <usb-device vendor-id="11415" product-id="4097"/>
+    <usb-device vendor-id="11415" product-id="4098"/>
+    <usb-device vendor-id="11415" product-id="4099"/>
+    <usb-device vendor-id="11415" product-id="4100"/>
+    <usb-device vendor-id="11415" product-id="4101"/>
+    <usb-device vendor-id="11415" product-id="4102"/>
+    <usb-device vendor-id="11415" product-id="4103"/>
+    <usb-device vendor-id="11415" product-id="4104"/>
+    <usb-device vendor-id="11415" product-id="4105"/>
+    <usb-device vendor-id="11415" product-id="4106"/>
+    <usb-device vendor-id="11415" product-id="4107"/>
+    <usb-device vendor-id="11415" product-id="4108"/>
+    <usb-device vendor-id="11415" product-id="4109"/>
+    <usb-device vendor-id="11415" product-id="4110"/>
+    <usb-device vendor-id="11415" product-id="4111"/>
+    <usb-device vendor-id="11415" product-id="4112"/>
+    <!-- <usb-device vendor-id="11415" product-id="4113"/> dashboard -->
+    <usb-device vendor-id="11415" product-id="4114"/>
+    <usb-device vendor-id="11415" product-id="4115"/>
+    <usb-device vendor-id="11415" product-id="4116"/>
+    <usb-device vendor-id="11415" product-id="4117"/>
+    <usb-device vendor-id="11415" product-id="4118"/>
+    <usb-device vendor-id="11415" product-id="4119"/>
+    <usb-device vendor-id="11415" product-id="4120"/>
+    <usb-device vendor-id="11415" product-id="4121"/>
+    <usb-device vendor-id="11415" product-id="4122"/>
+    <usb-device vendor-id="11415" product-id="4123"/>
+    <usb-device vendor-id="11415" product-id="4124"/>
+    <usb-device vendor-id="11415" product-id="4125"/>
+    <usb-device vendor-id="11415" product-id="4126"/>
+    <usb-device vendor-id="11415" product-id="4127"/>
+
+    <!-- VID 0x2c97 PID 0x0004|4000|4001|4002|4003|4004|4005|4006|4007|4008|4009|400a|400b|400c|400d|400e|400f|4010|4011|4012|4013|4014|4015|4016|4017|4018|4019|401a|401b|401c|401d|401e|401f - Ledger Nano X -->
     <usb-device vendor-id="11415" product-id="0004"/>
-
-
-
+    <usb-device vendor-id="11415" product-id="16384"/>
+    <usb-device vendor-id="11415" product-id="16385"/>
+    <usb-device vendor-id="11415" product-id="16386"/>
+    <usb-device vendor-id="11415" product-id="16387"/>
+    <usb-device vendor-id="11415" product-id="16388"/>
+    <usb-device vendor-id="11415" product-id="16389"/>
+    <usb-device vendor-id="11415" product-id="16390"/>
+    <usb-device vendor-id="11415" product-id="16391"/>
+    <usb-device vendor-id="11415" product-id="16392"/>
+    <usb-device vendor-id="11415" product-id="16393"/>
+    <usb-device vendor-id="11415" product-id="16394"/>
+    <usb-device vendor-id="11415" product-id="16395"/>
+    <usb-device vendor-id="11415" product-id="16396"/>
+    <usb-device vendor-id="11415" product-id="16397"/>
+    <usb-device vendor-id="11415" product-id="16398"/>
+    <usb-device vendor-id="11415" product-id="16399"/>
+    <usb-device vendor-id="11415" product-id="16400"/>
+    <usb-device vendor-id="11415" product-id="16401"/>
+    <usb-device vendor-id="11415" product-id="16402"/>
+    <usb-device vendor-id="11415" product-id="16403"/>
+    <usb-device vendor-id="11415" product-id="16404"/>
+    <usb-device vendor-id="11415" product-id="16405"/>
+    <usb-device vendor-id="11415" product-id="16406"/>
+    <usb-device vendor-id="11415" product-id="16407"/>
+    <usb-device vendor-id="11415" product-id="16408"/>
+    <usb-device vendor-id="11415" product-id="16409"/>
+    <usb-device vendor-id="11415" product-id="16410"/>
+    <usb-device vendor-id="11415" product-id="16411"/>
+    <usb-device vendor-id="11415" product-id="16412"/>
+    <usb-device vendor-id="11415" product-id="16413"/>
+    <usb-device vendor-id="11415" product-id="16414"/>
+    <usb-device vendor-id="11415" product-id="16415"/>
 </resources>
