@@ -52,6 +52,11 @@
         android:layout="@layout/preference_category_green"/>
 
     <Preference
+        android:key="two_factor_csv"
+        android:title="@string/id_twofactor_expiration_period"
+        android:summary="@string/id_customize_2fa_expiration_of" />
+
+    <Preference
         android:key="two_factor_authentication"
         android:title="@string/id_twofactor_authentication"
         android:summary="@string/id_set_up_twofactor_authentication" />

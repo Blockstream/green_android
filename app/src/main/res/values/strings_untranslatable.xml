@@ -86,4 +86,15 @@
         <item quantity="other">@string/id_attempts_remaining_d</item>
     </plurals>
 
+    <string-array name="csv_titles" translatable="false">
+        <item>@string/id_6_months_25920_blocks</item>
+        <item>@string/id_12_months_51840_blocks</item>
+        <item>@string/id_15_months_65535_blocks</item>
+    </string-array>
+
+    <string-array name="csv_subtitles" translatable="false">
+        <item>@string/id_optimal_if_you_spend_coins</item>
+        <item>@string/id_wallet_coins_will_require</item>
+        <item>@string/id_optimal_if_you_rarely_spend</item>
+    </string-array>
 </resources>

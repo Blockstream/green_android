@@ -209,6 +209,15 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             return false;
         });
 
+        // Two-Factor expiration period
+        final Preference twoFactorCsv = find(PrefKeys.TWO_FACTOR_CSV);
+        twoFactorCsv.setVisible(!isLiquid);
+        twoFactorCsv.setOnPreferenceClickListener(preference -> {
+            final Intent intent = new Intent(getActivity(), CSVTimeActivity.class);
+            startActivity(intent);
+            return false;
+        });
+
         // Set two-factor threshold
         mLimitsPref = find(PrefKeys.TWO_FAC_LIMITS);
         mLimitsPref.setOnPreferenceClickListener(this::onLimitsPreferenceClicked);

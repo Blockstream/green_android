@@ -475,6 +475,12 @@ public class GDKSession {
         GDK.send_nlocktimes(mNativeSession);
     }
 
+    public GDKTwoFactorCall setCsvTime(final Integer value) throws Exception  {
+        final ObjectNode details = mObjectMapper.createObjectNode();
+        details.put("value", value);
+        return new GDKTwoFactorCall(GDK.set_csvtime(mNativeSession, details));
+    }
+
     public NotificationHandlerImpl getNotificationModel() {
         return mNotification;
     }

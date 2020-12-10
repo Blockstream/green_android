@@ -12,6 +12,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SettingsData extends JSONData {
+
+    public static final Integer CsvBucketsTestnet[] = {144, 4320, 51840}; // 1 day, 1 month, 1 year
+    public static final Integer CsvBucketsMainnet[] = {25920, 51840, 65535}; // 6 months, 1 year, ~15 months
+
     private Integer altimeout;
     private PricingData pricing;
     private NotificationsData notifications;
@@ -19,6 +23,7 @@ public class SettingsData extends JSONData {
     private boolean sound;
     private String unit;
     private String pgp;
+    private Integer csvtime;
 
     public Integer getAltimeout() {
         return altimeout;
@@ -74,6 +79,14 @@ public class SettingsData extends JSONData {
 
     public void setPgp(String pgp) {
         this.pgp = pgp;
+    }
+
+    public Integer getCsvtime() {
+        return csvtime;
+    }
+
+    public void setCsvtime(Integer csvtime) {
+        this.csvtime = csvtime;
     }
 
     @JsonIgnore

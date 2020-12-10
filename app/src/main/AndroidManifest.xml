@@ -283,6 +283,10 @@
             android:name=".hardwarewallets.DeviceSelectorActivity"
             android:screenOrientation="portrait"
             />
+        <activity
+            android:name=".preferences.CSVTimeActivity"
+            android:screenOrientation="portrait"
+            />
 
     </application>
 
