@@ -12,17 +12,17 @@ import java.io.Serializable;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InputUnblindedData extends JSONData implements Serializable {
     private Long vin;
-    private String asset;
+    private String assetId;
     private String assetblinder;
-    private Long amount;
+    private Long satoshi;
     private String amountblinder;
 
-    InputUnblindedData(final Long vin, final String asset, final String assetblinder, final Long amount, final String amountblinder) {
+    InputUnblindedData(final Long vin, final String assetId, final String assetblinder, final Long satoshi, final String amountblinder) {
         super();
         setVin(vin);
-        setAsset(asset);
+        setAssetId(assetId);
         setAssetblinder(assetblinder);
-        setAmount(amount);
+        setSatoshi(satoshi);
         setAmountblinder(amountblinder);
     }
 
@@ -34,20 +34,20 @@ public class InputUnblindedData extends JSONData implements Serializable {
         this.vin = vin;
     }
 
-    public String getAsset() {
-        return asset;
+    public String getAssetId() {
+        return assetId;
     }
 
-    public void setAsset(final String asset) {
-        this.asset = asset;
+    public void setAssetId(final String assetId) {
+        this.assetId = assetId;
     }
 
-    public Long getAmount() {
-        return amount;
+    public Long getSatoshi() {
+        return satoshi;
     }
 
-    public void setAmount(final Long amount) {
-        this.amount = amount;
+    public void setSatoshi(final Long satoshi) {
+        this.satoshi = satoshi;
     }
 
     public String getAmountblinder() {
