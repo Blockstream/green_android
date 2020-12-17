@@ -76,7 +76,8 @@ public class TransactionSharingFrament extends BottomSheetDialogFragment {
         final Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, mTxData.getTxhash());
         sendIntent.setType("text/plain");
-        startActivity(sendIntent);
+        final Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
     }
 
     private void onClickShareBlindingView(final View view) {
@@ -84,7 +85,8 @@ public class TransactionSharingFrament extends BottomSheetDialogFragment {
         final Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, text);
         sendIntent.setType("text/plain");
-        startActivity(sendIntent);
+        final Intent shareIntent = Intent.createChooser(sendIntent, null);
+        startActivity(shareIntent);
     }
 
     private String getUnblindedString() {
