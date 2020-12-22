@@ -33,6 +33,7 @@ enum SettingsType: String, Codable {
     case Version
     case TermsOfUse
     case PrivacyPolicy
+    case CsvTime
 }
 
 // Type of priority of a fee for transaction
@@ -188,6 +189,7 @@ class Settings: Codable {
         case pgp = "pgp"
         case sound = "sound"
         case notifications = "notifications"
+        case csvtime = "csvtime"
     }
 
     var requiredNumBlock: Int
@@ -198,6 +200,7 @@ class Settings: Codable {
     var pgp: String?
     var sound: Bool
     var notifications: SettingsNotifications?
+    var csvtime: Int?
 
     var denomination: DenominationType {
         get {
@@ -236,6 +239,52 @@ class Settings: Codable {
             return .Pin
         } else {
             return .None
+        }
+    }
+
+    public enum CsvTime: Int {
+        case Short
+        case Medium
+        case Long
+        static let all = [Short, Medium, Long]
+
+        static func values() -> [Int]? {
+            guard let csvBuckets = getGdkNetwork(getNetwork()).csvBuckets else { return nil }
+            return csvBuckets
+        }
+
+        func value() -> Int? {
+            guard let csvBuckets = getGdkNetwork(getNetwork()).csvBuckets else { return nil }
+            switch self {
+            case .Short:
+                return csvBuckets[0]
+            case .Medium:
+                return csvBuckets[1]
+            case .Long:
+                return csvBuckets[2]
+            }
+        }
+
+        func label() -> String {
+            switch self {
+            case .Short:
+                return NSLocalizedString("id_6_months_25920_blocks", comment: "")
+            case .Medium:
+                return NSLocalizedString("id_12_months_51840_blocks", comment: "")
+            case .Long:
+                return NSLocalizedString("id_15_months_65535_blocks", comment: "")
+            }
+        }
+
+        func description() -> String {
+            switch self {
+            case .Short:
+                return NSLocalizedString("id_optimal_if_you_spend_coins", comment: "")
+            case .Medium:
+                return NSLocalizedString("id_wallet_coins_will_require", comment: "")
+            case .Long:
+                return NSLocalizedString("id_optimal_if_you_rarely_spend", comment: "")
+            }
         }
     }
 }

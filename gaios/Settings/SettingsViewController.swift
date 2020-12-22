@@ -151,6 +151,11 @@ class SettingsViewController: UIViewController {
             subtitle: "",
             section: .twoFactor,
             type: .LockTimeRequest)
+        let csvTime = SettingsItem(
+            title: NSLocalizedString("id_set_2fa_expiry", comment: ""),
+            subtitle: "",
+            section: .twoFactor,
+            type: .CsvTime)
         let resetTwoFactor = SettingsItem(
             title: NSLocalizedString("id_request_twofactor_reset", comment: ""),
             subtitle: "",
@@ -179,7 +184,7 @@ class SettingsViewController: UIViewController {
         if twoFactorConfig?.anyEnabled ?? false {
             menu.append(contentsOf: [thresholdTwoFactor, resetTwoFactor])
         }
-        menu.append(contentsOf: [locktimeRecovery, locktimeRequest])
+        menu.append(contentsOf: [locktimeRecovery, locktimeRequest, csvTime])
         if !(twoFactorConfig?.email.confirmed ?? false) {
             menu.append(setRecoveryEmail)
         }
@@ -545,6 +550,7 @@ extension SettingsViewController: UITableViewDelegate {
         case .CancelTwoFactor: setCancelTwoFactor()
         case .LockTimeRecovery: showLockTimeRecovery()
         case .LockTimeRequest: setLockTimeRequest()
+        case .CsvTime: performSegue(withIdentifier: "csv", sender: nil)
         case .Mnemonic: performSegue(withIdentifier: "recovery", sender: nil)
         case .Autolock: showAutolock()
         case .Pgp: performSegue(withIdentifier: "pgp", sender: nil)

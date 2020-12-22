@@ -42,6 +42,8 @@
 		0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */; };
 		09DA612620E73A2300C3EA03 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String.swift */; };
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
+		2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1A25B995A200250E23 /* CsvViewController.swift */; };
+		2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
 		6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */; };
 		671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */; };
@@ -227,6 +229,8 @@
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
 		09DA612520E73A2300C3EA03 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
+		2034CE1A25B995A200250E23 /* CsvViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewController.swift; sourceTree = "<group>"; };
+		2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvTimeCell.swift; sourceTree = "<group>"; };
 		206D7A37252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		206D7A38252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -447,6 +451,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		2034CE1C25B99CDF00250E23 /* TableViewCells */ = {
+			isa = PBXGroup;
+			children = (
+				2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */,
+			);
+			path = TableViewCells;
+			sourceTree = "<group>";
+		};
 		3190F6274186A0301E5E66B2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -664,6 +676,7 @@
 		811EE25A219EBB1500684AD8 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				2034CE1C25B99CDF00250E23 /* TableViewCells */,
 				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				8128611E22221326005598D3 /* TwoFactorLimitView.xib */,
@@ -675,6 +688,7 @@
 				81837787224E6C8D00DC0FB1 /* PgpView.xib */,
 				81837789224E6D4700DC0FB1 /* PgpViewController.swift */,
 				81ACC4AE22733533004B1E92 /* Settings.storyboard */,
+				2034CE1A25B995A200250E23 /* CsvViewController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1163,6 +1177,7 @@
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
+				2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */,
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
 				6D707ECA229DAA830038CCA8 /* NetworkSelectionTableCell.swift in Sources */,
@@ -1219,6 +1234,7 @@
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
 				81E9B7FE21C90F74004D87B6 /* AccountsViewController.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
+				2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */,
 				6D8099DB23021D0F0069A69F /* PopoverMenuViewController.swift in Sources */,
 				6D7B5F9322E6852D00DE049D /* AccountMiniCollection.swift in Sources */,
 				6D0B3DC023A0870100C0E1C2 /* AccountInfoViewController.swift in Sources */,

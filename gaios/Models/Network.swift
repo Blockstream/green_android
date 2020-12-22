@@ -13,6 +13,7 @@ struct GdkNetwork: Codable {
         case mainnet
         case policyAsset = "policy_asset"
         case serverType = "server_type"
+        case csvBuckets = "csv_buckets"
     }
 
     let name: String
@@ -24,6 +25,7 @@ struct GdkNetwork: Codable {
     var icon: String?
     var policyAsset: String?
     var serverType: String?
+    var csvBuckets: [Int]?
 }
 
 func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {
