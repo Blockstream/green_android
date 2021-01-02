@@ -42,7 +42,7 @@ if [[ "$BUILD_GDK" -eq 1 ]]; then
     git clone https://github.com/Blockstream/gdk.git
     cd gdk
     git fetch origin -t
-    git checkout release_0.0.36
+    git checkout release_0.0.37
     rm -rf build-*
     ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone
     cd ..
