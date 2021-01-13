@@ -39,13 +39,13 @@ class TransactionTableCell: UITableViewCell {
         isRedeposit = transaction.type == "redeposit"
         if isRedeposit, let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
             let (fee, denom) = balance.get(tag: "btc")
-            amount.text = "-\(fee) \(denom)"
+            amount.text = "-\(fee ?? "") \(denom)"
         } else if multipleAssets && isIncoming {
             amount.text = NSLocalizedString("id_multiple_assets", comment: "")
         } else if "btc" == transaction.defaultAsset {
             if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
                 let (value, denom) = balance.get(tag: "btc")
-                amount.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", value, denom)
+                amount.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", value ?? "", denom)
             }
         } else {
             let asset = transaction.defaultAsset
@@ -53,7 +53,7 @@ class TransactionTableCell: UITableViewCell {
             let details = ["satoshi": transaction.amounts[asset]!, "asset_info": info.encode()!] as [String: Any]
             if let balance = Balance.convert(details: details) {
                 let (value, ticker) = balance.get(tag: transaction.defaultAsset)
-                amount.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", value, ticker)
+                amount.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", value ?? "", ticker)
             }
         }
         selectionStyle = .none

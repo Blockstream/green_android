@@ -82,7 +82,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
                 cell.balance.text = amount
                 cell.unit.text = denom
                 let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-                cell.balanceFiat.text = "≈ \(fiat) \(fiatCurrency) "
+                cell.balanceFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency) "
             }
             cell.walletName.text = wallet.localizedName()
             cell.networkImage.image = UIImage(named: network.icon!)
@@ -101,9 +101,9 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             header.title.text = isSweep ? NSLocalizedString("id_where_would_you_like_to", comment: ""): NSLocalizedString("id_total_balance", comment: "")
             if let balance = Balance.convert(details: ["satoshi": satoshi]) {
                 let (amount, denom) = balance.get(tag: "btc")
-                header.btcLabel.text = isSweep ? "" : "\(amount) \(denom)"
+                header.btcLabel.text = isSweep ? "" : "\(amount ?? "") \(denom)"
                 let (fiat, fiatCurrency) = balance.get(tag: "fiat")
-                header.fiatLabel.text = isSweep ? "" : "\(fiat) \(fiatCurrency)"
+                header.fiatLabel.text = isSweep ? "" : "\(fiat ?? "N.A.") \(fiatCurrency)"
             }
             header.equalsLabel.isHidden = isSweep
             header.dismissButton.isHidden = isSweep

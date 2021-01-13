@@ -153,7 +153,8 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
         guard transaction.amounts.count >= 1 else { return }
-        let details = "btc" != assetTag ? ["satoshi": transaction.amounts[assetTag], "asset_info": asset!.encode()!] : ["satoshi": transaction.amounts[assetTag]]
+        let satoshi = transaction.amounts[assetTag] ?? 0
+        let details = "btc" != assetTag ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
         let (amount, _) = Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetTag) ?? ("", "")
         content.amountTextField.text = amount
     }
@@ -173,7 +174,7 @@ class SendBtcDetailsViewController: UIViewController {
         let details = "btc" != assetTag ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
         if let balance = Balance.convert(details: details) {
             let (amount, denom) = balance.get(tag: isFiat ? "fiat" : assetTag)
-            content.maxAmountLabel.text =  "\(amount) \(denom)"
+            content.maxAmountLabel.text =  "\(amount ?? "N.A.") \(denom)"
         }
     }
 
@@ -294,7 +295,7 @@ class SendBtcDetailsViewController: UIViewController {
 
             if let (amount, denom) = Balance.convert(details: ["satoshi": feeSatoshi])?.get(tag: isFiat ? "fiat" : "btc") {
                 let feeRate = feeSatVByte.description.localeFormattedString(1)
-                feeButton.feerateLabel.text =  "\(amount) \(denom) (\(feeRate) satoshi / vbyte)"
+                feeButton.feerateLabel.text =  "\(amount ?? "N.A.") \(denom) (\(feeRate) satoshi / vbyte)"
             }
         }
         content.feeRateButtons[selectedFee]?.isSelect = true

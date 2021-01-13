@@ -126,7 +126,7 @@ class SettingsViewController: UIViewController {
                 balance = Balance.convert(details: [denom: limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)!])
             }
             let (amount, den) = balance?.get(tag: limits.isFiat ? "fiat" : "btc") ?? ("", "")
-            thresholdValue = String(format: "%@ %@", amount, den)
+            thresholdValue = String(format: "%@ %@", amount ?? "N.A.", den)
         }
         if let notifications = settings.notifications {
             locktimeRecoveryEnable = notifications.emailOutgoing == true

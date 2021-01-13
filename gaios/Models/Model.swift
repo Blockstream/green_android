@@ -224,9 +224,9 @@ struct Balance: Codable {
 
     let bits: String
     let btc: String
-    let fiat: String
+    let fiat: String?
     let fiatCurrency: String
-    let fiatRate: String
+    let fiatRate: String?
     let mbtc: String
     let satoshi: UInt64
     let ubtc: String
@@ -245,9 +245,9 @@ struct Balance: Codable {
         return balance
     }
 
-    func get(tag: String) -> (String, String) {
+    func get(tag: String) -> (String?, String) {
         if "fiat" == tag {
-            return (fiat.localeFormattedString(2), fiatCurrency)
+            return (fiat?.localeFormattedString(2), fiatCurrency)
         }
         if "btc" == tag {
             let denomination = getGAService().getSettings()?.denomination ?? .BTC
@@ -258,7 +258,7 @@ struct Balance: Codable {
         if let asset = asset?[tag] {
             return (asset.localeFormattedString(Int(assetInfo?.precision ?? 8)), assetInfo?.ticker ?? "")
         }
-        return ("", "")
+        return (nil, "")
     }
 }
 

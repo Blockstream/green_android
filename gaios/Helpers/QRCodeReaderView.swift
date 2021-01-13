@@ -201,7 +201,7 @@ class QRCodeReaderView: UIView {
     }
 
     @objc func onAllowCameraTap(_ sender: Any) {
-        _ = requestVideoAccess(presentingViewController: self.findViewController())
+        requestVideoAccess(presentingViewController: self.findViewController())
     }
 
     func requestVideoAccess(presentingViewController: UIViewController?) {

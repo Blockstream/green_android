@@ -19,13 +19,13 @@ class TransactionDetailTableCell: UITableViewCell {
             titleLabel.text = NSLocalizedString("id_fee", comment: "")
             if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
                 let (amount, denom) = balance.get(tag: "btc")
-                detailLabel.text = "\(amount) \(denom) \(String(format: "( %.2f sat / vbyte )", Double(transaction.feeRate) / 1000))"
+                detailLabel.text = "\(amount ?? "") \(denom) \(String(format: "( %.2f sat / vbyte )", Double(transaction.feeRate) / 1000))"
             }
         case .amount:
             titleLabel.text = NSLocalizedString("id_amount", comment: "")
             if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
                 let (amount, denom) = balance.get(tag: "btc")
-                detailLabel.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", amount, denom)
+                detailLabel.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", amount ?? "", denom)
             }
         case .notes:
             notesImageView.isHidden = false

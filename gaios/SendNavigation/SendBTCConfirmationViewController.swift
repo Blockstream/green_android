@@ -85,12 +85,12 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }
         if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
             let (amount, denom) = balance.get(tag: isFiat ? "fiat" : "btc")
-            content.assetsFeeLabel.text = "\(amount) \(denom)"
-            content.feeLabel.text = "\(amount) \(denom)"
+            content.assetsFeeLabel.text = "\(amount ?? "N.A.") \(denom)"
+            content.feeLabel.text = "\(amount ?? "N.A.") \(denom)"
         }
         if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
             let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
-            content.amountText.text = amount
+            content.amountText.text = amount ?? "N.A."
         }
         if transaction.sendAll {
             content.amountText.text = NSLocalizedString("id_all", comment: "")

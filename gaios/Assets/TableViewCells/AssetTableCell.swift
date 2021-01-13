@@ -26,7 +26,7 @@ class AssetTableCell: UITableViewCell {
             let (amount, denom) = balance.get(tag: tag)
             let ticker = isBtc ? denom : asset.ticker ?? ""
             let amountTxt = sendAll ? NSLocalizedString("id_all", comment: "") : amount
-            amountTickerLabel.text = "\(negative ? "-": "")\(amountTxt) \(ticker)"
+            amountTickerLabel.text = "\(negative ? "-": "")\(amountTxt ?? "") \(ticker)"
         }
         selectionStyle = .none
         headerLabel.isHidden = !isTransaction

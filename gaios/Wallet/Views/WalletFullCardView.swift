@@ -70,7 +70,7 @@ class WalletFullCardView: UIView {
             let (fiat, currency) = converted.get(tag: "fiat")
             balance.text = amount
             unit.text = denom
-            balanceFiat.text = "≈ \(fiat) \(currency)"
+            balanceFiat.text = "≈ \(fiat ?? "N.A.") \(currency)"
         }
         networkTitleLabel.text = network.name
         walletName.text = wallet.localizedName()

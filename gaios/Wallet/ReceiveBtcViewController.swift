@@ -107,6 +107,12 @@ class ReceiveBtcViewController: KeyboardViewController {
     @objc func fiatSwitchButtonClick(_ sender: Any) {
         let satoshi = getSatoshi() ?? 0
         let balance = Balance.convert(details: ["satoshi": satoshi])
+        if let (amount, _) = balance?.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc") {
+            if amount == nil {
+                showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
+                return
+            }
+        }
         if selectedType == TransactionType.BTC {
             selectedType = TransactionType.FIAT
         } else {
@@ -135,7 +141,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     func updateEstimate() {
         guard let satoshi = getSatoshi() else { return }
         if let (amount, denom) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc") {
-            content.estimateLabel.text = "≈ \(amount) \(denom)"
+            content.estimateLabel.text = "≈ \(amount ?? "N.A.") \(denom)"
         }
     }
 

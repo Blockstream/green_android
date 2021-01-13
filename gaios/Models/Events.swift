@@ -59,7 +59,7 @@ struct Event: EventProtocol, Equatable {
             guard let (amount, denom) = Balance.convert(details: ["satoshi": txEvent.satoshi])?.get(tag: "btc") else { return "" }
             let walletsList = wallets.filter { txEvent.subAccounts.contains(Int($0.pointer)) }
             let txWalletName = wallets.isEmpty ? "" : walletsList[0].localizedName()
-            let description = String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, "\(amount) \(denom)", txWalletName)
+            let description = String(format: NSLocalizedString("id_new_s_transaction_of_s_in", comment: ""), txType, "\(amount ?? "") \(denom)", txWalletName)
             return description
         } else if kindOf(TwoFactorReset.self) {
             return ""

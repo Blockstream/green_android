@@ -55,6 +55,7 @@ class TransactionsController: UITableViewController {
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
         assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
         handleRefresh()
+        checkFiatRate()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -78,6 +79,22 @@ class TransactionsController: UITableViewController {
         if height != headerView.frame.size.height {
             headerView.frame.size.height = height
             tableView.tableHeaderView = headerView
+        }
+    }
+
+    func checkFiatRate() {
+        // diplay errore if fiat_rate is missing
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            return Guarantee()
+        }.map(on: bgq) { () -> (String?, String) in
+            return Balance.convert(details: ["satoshi": 0])?.get(tag: "fiat") ?? (nil, "")
+        }.done { (amount, _) in
+            if amount == nil {
+                self.showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
+            }
+        }.catch { err in
+            print(err.localizedDescription)
         }
     }
 
@@ -273,7 +290,7 @@ class TransactionsController: UITableViewController {
 
 extension TransactionsController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        if !indexPaths.contains { $0.row >= self.txs[$0.section].list.count - 1 } { return }
+        if !indexPaths.contains(where: { $0.row >= self.txs[$0.section].list.count - 1 }) { return }
         if self.txs.count == 0 { return }
         if self.txs.last?.list.count == 0 { return }
         if fetchTxs != nil && fetchTxs!.isPending { return }

@@ -63,7 +63,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         }
         if let (amount, denom) = balance?.get(tag: limits.isFiat ? "fiat" : "btc") {
             content.limitTextField.text = amount
-            content.descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount) \(denom)")
+            content.descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount ?? "N.A.") \(denom)")
         }
         refresh()
     }
@@ -72,7 +72,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
         guard let balance = Balance.convert(details: ["satoshi": satoshi ?? 0]) else { return }
         let (amount, denom) = balance.get(tag: (isFiat ? "btc"  : "fiat"))
         let denomination = balance.get(tag: (isFiat ? "fiat"  : "btc")).1
-        content.convertedLabel.text = "≈ \(amount) \(denom)"
+        content.convertedLabel.text = "≈ \(amount ?? "N.A.") \(denom)"
         content.fiatButton.setTitle(denomination, for: UIControl.State.normal)
         content.fiatButton.backgroundColor = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
     }
