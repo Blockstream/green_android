@@ -98,7 +98,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         }.done { _ in
             self.navigationController?.popViewController(animated: true)
         }.catch {_ in
-
+            self.showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
         }
     }
 
