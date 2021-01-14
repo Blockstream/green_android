@@ -136,12 +136,20 @@ public class NotificationsFragment extends GAPreferenceFragment {
                 return getString(d, "", "");
             }
         } else if (d == R.string.id_new_transaction_involving) {
-            return getString(d, "");
+            try {
+                return getString(d, "");
+            } catch (final Exception e) {
+                return "";
+            }
         } else if (d == R.string.notification_format_string ||
                    d == R.string.id_your_wallet_is_locked_for_a ||
                    d == R.string.id_days_remaining_s ||
                    d == R.string.id_s_blocks_left) {
-            return getString(d, event.getValue());
+            try {
+                return getString(d, event.getValue());
+            } catch (final Exception e) {
+                return "";
+            }
         }
         try {
             return getString(d);
