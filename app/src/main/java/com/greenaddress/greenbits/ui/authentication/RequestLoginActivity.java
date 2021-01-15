@@ -26,6 +26,7 @@ import com.btchip.comm.android.BTChipTransportAndroid;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.HWWallet;
+import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.AuthenticationHandler;
@@ -50,6 +51,7 @@ import java.util.List;
 import java.util.Objects;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -214,45 +216,36 @@ public class RequestLoginActivity extends LoginActivity {
     }
 
     private void onJadeConnected(final JadeAPI jade) {
-        mDisposables.add(Observable.just(getSession())
+        mDisposables.add(Single.just(getSession())
                 .subscribeOn(Schedulers.computation())
 
                 // Connect GDKSession first (on a background thread), as we use httpRequest() as part of
                 // Jade login (to access firmware server and to interact with the pinserver).
                 // This also acts as a handy check that we have network connectivity before we start.
-                .map(session -> {
-                    Log.d(TAG, "(re-)connecting gdk session)");
-                    getSession().disconnect();
-                    this.connect();
-                    return session;
-                })
+                .map(this::reconnectSession)
                 .doOnError(throwable -> Log.e(TAG, "Exception connecting GDK - " + throwable))
 
                 // Then create JadeHWWallet instance and authenticate (with pinserver) still on background thread
-                .map(session -> {
-                    Log.d(TAG, "Creating Jade HW Wallet)");
-                    final HWDeviceData hwDeviceData = new HWDeviceData("Jade", true, true,
-                            HWDeviceData.HWDeviceDataLiquidSupport.Lite);
-                    final JadeHWWallet jadeHwWallet = new JadeHWWallet(this.getApplicationContext(), jade, networkData, hwDeviceData);
-
-                    // check fw-valid, user pin-entry, pinserver handshake, etc
-                    jadeHwWallet.authenticate();
-                    return jadeHwWallet;
-                })
+                .doOnSuccess(session -> Log.d(TAG, "Creating Jade HW Wallet)"))
+                .map(session -> new HWDeviceData("Jade", true, true, HWDeviceData.HWDeviceDataLiquidSupport.Lite))
+                .map(hwDeviceData -> new JadeHWWallet(jade, networkData, hwDeviceData))
+                .flatMap(jadeWallet -> jadeWallet.authenticate(this))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        jadeHwWallet -> {
+                        jadeWallet -> {
                             showInstructions(R.string.id_logging_in);
-                            mHwWallet = jadeHwWallet;
+                            mHwWallet = jadeWallet;
                             doLogin(false);
                         },
                         throwable -> {
                             Log.e(TAG, "Connecting to Jade HW wallet got error: " + throwable);
                             if (throwable instanceof JadeError) {
                                 final JadeError jaderr = (JadeError)throwable;
-                                if (jaderr.getCode()  == JadeError.CBOR_RPC_NETWORK_MISMATCH) {
+                                if (jaderr.getCode()  == JadeError.UNSUPPORTED_FIRMWARE_VERSION) {
+                                    showInstructions(R.string.id_outdated_hardware_wallet);
+                                } else if (jaderr.getCode()  == JadeError.CBOR_RPC_NETWORK_MISMATCH) {
                                     showInstructions(R.string.id_the_network_selected_on_the);
                                 } else {
                                     showInstructions(R.string.id_please_reconnect_your_hardware);
@@ -430,14 +423,20 @@ public class RequestLoginActivity extends LoginActivity {
         doLogin(true);
     }
 
+    private Session reconnectSession(final Session session) throws Exception {
+        Log.d(TAG, "(re-)connecting gdk session)");
+        session.disconnect();
+        this.connect();
+        return session;
+    }
+
     private void doLogin(final boolean bReConnectSession) {
         mDisposables.add(Observable.just(getSession())
                 .observeOn(Schedulers.computation())
                 .map((session) -> {
                     // Reconnect session if required
                     if (bReConnectSession) {
-                        session.disconnect();
-                        this.connect();
+                        reconnectSession(session);
                     }
 
                     // Register user/hw-wallet and login

@@ -1,17 +1,11 @@
 package com.greenaddress.greenbits.wallets;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.util.Base64;
 import android.util.Log;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
-import com.google.common.io.CharStreams;
 import com.google.common.primitives.Longs;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
@@ -27,44 +21,29 @@ import com.greenaddress.jade.entities.TxChangeOutput;
 import com.greenaddress.jade.entities.TxInput;
 import com.greenaddress.jade.entities.TxInputBtc;
 import com.greenaddress.jade.entities.TxInputLiquid;
-import com.greenaddress.jade.entities.VersionInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
+import io.reactivex.Single;
 
-// GDKSession used to implement http-request calls to firmware-server
-import static com.greenaddress.greenapi.Session.getSession;
+import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
 
 public class JadeHWWallet extends HWWallet {
     private static final String TAG = "JadeHWWallet";
 
-    private static final String JADE_MIN_ALLOWED_FW_VERSION = "0.1.21";
-
-    private static final String JADE_FW_SERVER_HTTPS = "https://jadefw.blockstream.com/bin/";
-    private static final String JADE_FW_SERVER_ONION = "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion/bin/";
-    private static final String JADE_FW_VERSIONS_FILE = "LATEST";
-    private static final String JADE_FW_SUFFIX = "fw.bin";
-
-    private final Resources res;
     private final JadeAPI jade;
 
-    public JadeHWWallet(final Context ctx, final JadeAPI jade, final NetworkData network, final HWDeviceData hwDeviceData) {
+    public JadeHWWallet(final JadeAPI jade, final NetworkData network, final HWDeviceData hwDeviceData) {
 
         super.mNetwork = network;
         super.mHWDeviceData = hwDeviceData;
-
-        this.res = ctx.getResources();
         this.jade = jade;
     }
 
@@ -73,126 +52,43 @@ public class JadeHWWallet extends HWWallet {
         this.jade.disconnect();
     }
 
-    public void authenticate() throws Exception {
-        final VersionInfo verInfo = this.jade.getVersionInfo();
-        if (!verInfo.getHasPin()) {
-            // Do firmware check / ota immediately
-            checkAndUpdateFirmware(jade);
+    // Helper to push entropy into jade, and then call 'authUser()' in a loop
+    // (until correctly setup and user authenticated etc).
+    private boolean authUser() throws IOException {
+
+        // Push some extra entropy into Jade
+        jade.addEntropy(GDK.get_random_bytes(32));
+
+        // Authenticate with pinserver (loop/retry on failure)
+        // Note: this should be a no-op if the user is already authenticated on the device.
+        while (!this.jade.authUser(getNetwork().getNetwork())) {
+            Log.w(TAG, "Jade authentication failed");
         }
-
-        boolean bUpdated = false;
-        do {
-            // Send some entropy from GDK into Jade
-            this.jade.addEntropy(GDK.get_random_bytes(32));
-
-            // Authenticate with pinserver (loop/retry on failure)
-            while (!this.jade.authUser(getNetwork().getNetwork())) {
-                Log.w(TAG, "Jade authentication failed");
-            }
-
-            // Do firmware check / ota after login
-            bUpdated = checkAndUpdateFirmware(jade);
-        } while (bUpdated);
-    }
-
-    // Check Jade fw against minimum allowed firmware version
-    private static boolean isJadeFwValid(final String version) {
-        return JADE_MIN_ALLOWED_FW_VERSION.compareTo(version) <= 0;
-    }
-
-    // Uses GDKSession's httpRequest() to get file from Jade firmware server - ensures Tor use as appropriate.
-    private byte[] downloadJadeFwFile(final String fwFileName, final boolean isBase64) throws IOException {
-        final URL tls = new URL(JADE_FW_SERVER_HTTPS + fwFileName);
-        final URL onion = new URL(JADE_FW_SERVER_ONION + fwFileName);
-        final String certificate = CharStreams.toString(new InputStreamReader(
-                                                            this.res.openRawResource(R.raw.jade_services_certificate),
-                                                            Charsets.UTF_8));
-
-        // Make http GET call to fetch file
-        final JsonNode ret = getSession().httpRequest("GET",
-                                                      Arrays.asList(tls, onion),
-                                                      null,
-                                                      isBase64 ? "base64" : "text",
-                                                      Collections.singletonList(certificate));
-
-        if (ret == null || !ret.has("body")) {
-            throw new IOException("Failed to fetch firmware file: " + fwFileName);
-        }
-
-        final String body = ret.get("body").asText();
-        return isBase64 ? Base64.decode(body, Base64.DEFAULT) : body.getBytes();
-    }
-
-    private void doJadeOtaUpdate(final JadeAPI jade, final VersionInfo verInfo) throws Exception {
-        final String config = verInfo.getJadeConfig().toLowerCase();
-        final int chunksize = verInfo.getJadeOtaMaxChunk();
-
-        final byte[] versions = downloadJadeFwFile(JADE_FW_VERSIONS_FILE, false);
-        final String files[] = new String(versions).split("\n");
-        final String substr = "_" + config + "_";
-        String fwFilename = null;
-        for (final String f : files) {
-            if (f.endsWith(JADE_FW_SUFFIX) && f.contains(substr)) {
-                fwFilename = f;
-                break;
-            }
-        }
-
-        if (fwFilename == null) {
-            throw new RuntimeException("Error scanning LATEST versions file");
-        }
-
-        // Split the filename, verify format, extract version and size
-        final String parts[] = fwFilename.split("_");
-        if (parts.length != 4 || !config.equals(parts[1]) || !JADE_FW_SUFFIX.equals(parts[3])) {
-            throw new RuntimeException("Unexpected firmware filename: " + fwFilename);
-        }
-        final String version = parts[0];
-        final int fullsize = Integer.parseInt(parts[2]);
-
-        // Do not downgrade/reinstall
-        if (version.compareTo(verInfo.getJadeVersion()) <= 0) {
-            Log.w(TAG, "New firmware appears to be same/downgrade - ignoring.");
-            Log.w(TAG, "Installed version: " + verInfo.getJadeVersion());
-            Log.w(TAG, "Available version: " + version);
-            return;
-        }
-
-        // Log if upgrade but still insufficient to satisfy minimum version
-        if (!isJadeFwValid(version)) {
-            Log.w(TAG, "New firmware does not appear sufficient to satisfy required minimum version.");
-            Log.w(TAG, "Allowed minumum: " + JADE_MIN_ALLOWED_FW_VERSION);
-            Log.w(TAG, "Available version: " + version);
-        }
-
-        // Copy file from fw server
-        Log.i(TAG, "Fetching firmware file: " + fwFilename);
-        final byte[] firmware = downloadJadeFwFile(fwFilename, true);
-
-        // Call jade ota update
-        Log.i(TAG, "Uploading firmware file: " + fwFilename + ", size: " + firmware.length);
-        jade.otaUpdate(firmware, fullsize, chunksize, null);
-    }
-
-    private boolean checkAndUpdateFirmware(final JadeAPI jade) throws Exception {
-        // Do firmware check and ota if necessary
-        final VersionInfo verInfo = this.jade.getVersionInfo();
-        if (isJadeFwValid(verInfo.getJadeVersion())) {
-            // No update required
-            return false;
-        }
-
-        // OTA
-        doJadeOtaUpdate(jade, verInfo);
-        jade.disconnect();
-
-        // Sleep to allow Jade to reboot, then retry/reconnect
-        android.os.SystemClock.sleep(6000);
-        if (!jade.connect()) {
-            throw new RuntimeException("Failed to reconnect to Jade after OTA");
-        }
-
         return true;
+    }
+
+    // Authenticate Jade with pinserver and check firmware version with fw-server
+    public Single<JadeHWWallet> authenticate(final GaActivity parent) throws Exception {
+        /*
+         * 1. check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
+         * 2. authenticate the user (see above)
+         * 3. check the firmware again (and maybe OTA) for devices that are set-up (and hence needed unlocking first)
+         * 4. authenticate the user *if required* - as we may have OTA'd and rebooted the hww.  Should be a no-op if not needed.
+         */
+        final JadeFirmwareManager fwManager = new JadeFirmwareManager(parent);
+        return Single.just(this)
+                .flatMap(hww -> fwManager.checkFirmware(jade, false))
+                .map(fwValid -> authUser())
+                .flatMap(authed -> fwManager.checkFirmware(jade, true))
+                .flatMap(fwValid -> {
+                    if (fwValid) {
+                        authUser();  // re-auth if required
+                        return Single.just(this);
+                    } else {
+                        return Single.error(new JadeError(JadeError.UNSUPPORTED_FIRMWARE_VERSION,
+                                "Insufficient/invalid firmware version", null));
+                    }
+                });
     }
 
     // Helper to turn the BIP32 paths back into a list of Longs, rather than a list of Integers

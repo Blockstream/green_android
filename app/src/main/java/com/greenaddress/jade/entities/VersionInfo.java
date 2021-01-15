@@ -9,6 +9,8 @@ public class VersionInfo {
     private String jadeVersion;
     private Integer jadeOtaMaxChunk;
     private String jadeConfig;
+    private String boardType;
+    private String jadeFeatures;
     private String idfVersion;
     private String chipFeatures;
     private String efusemac;
@@ -43,6 +45,26 @@ public class VersionInfo {
     @JsonSetter("JADE_CONFIG")
     public void setJadeConfig(String jadeConfig) {
         this.jadeConfig = jadeConfig;
+    }
+
+    @JsonGetter("BOARD_TYPE")
+    public String getBoardType() {
+        return boardType;
+    }
+
+    @JsonSetter("BOARD_TYPE")
+    public void setBoardType(String boardType) {
+        this.boardType = boardType;
+    }
+
+    @JsonGetter("JADE_FEATURES")
+    public String getJadeFeatures() {
+        return jadeFeatures;
+    }
+
+    @JsonSetter("JADE_FEATURES")
+    public void setJadeFeatures(String jadeFeatures) {
+        this.jadeFeatures = jadeFeatures;
     }
 
     @JsonGetter("IDF_VERSION")
