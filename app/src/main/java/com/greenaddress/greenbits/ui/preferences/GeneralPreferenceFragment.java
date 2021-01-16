@@ -157,7 +157,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             }
             return false;
         });
-        setUnitSummary(Conversion.getBitcoinOrLiquidUnit());
+        try {
+            setUnitSummary(Conversion.getBitcoinOrLiquidUnit());
+        } catch (final Exception e) { }
 
         // Reference exchange rate
         mPriceSourcePref = find(PrefKeys.PRICING);
@@ -686,12 +688,16 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         amountEdit.addTextChangedListener(amountTextWatcher);
 
         final String[] currencies;
-        currencies = new String[] {Conversion.getBitcoinOrLiquidUnit(), Conversion.getFiatCurrency()};
-
-        final ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, currencies);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        unitSpinner.setAdapter(adapter);
+        try {
+            currencies = new String[]{Conversion.getBitcoinOrLiquidUnit(), Conversion.getFiatCurrency()};
+            final ArrayAdapter<String> adapter;
+            adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, currencies);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            unitSpinner.setAdapter(adapter);
+        } catch (final Exception e) {
+            UI.toast(getActivity(), getString(R.string.id_operation_failure), Toast.LENGTH_SHORT);
+            return false;
+        }
 
         try {
             final ObjectNode limitsData = getSession().getTwoFactorConfig().getLimits();
@@ -757,13 +763,17 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
     private void setSpendingLimits(final String unit, final String amount) {
         final Activity activity = getActivity();
-
-        final boolean isFiat = unit.equals(Conversion.getFiatCurrency());
-        final String amountStr = TextUtils.isEmpty(amount) ? "0" : amount;
-
         final ObjectNode limitsData = new ObjectMapper().createObjectNode();
-        limitsData.set("is_fiat", isFiat ? BooleanNode.TRUE : BooleanNode.FALSE);
-        limitsData.set(isFiat ? "fiat" : Conversion.getUnitKey(), new TextNode(amountStr));
+        try {
+            final boolean isFiat = unit.equals(Conversion.getFiatCurrency());
+            final String amountStr = TextUtils.isEmpty(amount) ? "0" : amount;
+            limitsData.set("is_fiat", isFiat ? BooleanNode.TRUE : BooleanNode.FALSE);
+            limitsData.set(isFiat ? "fiat" : Conversion.getUnitKey(), new TextNode(amountStr));
+        } catch (final Exception e) {
+            UI.toast(activity, getString(R.string.id_operation_failure), Toast.LENGTH_SHORT);
+            return;
+        }
+
         mUpdateDisposable = Observable.just(getSession())
                             .observeOn(Schedulers.computation())
                             .map((session) -> {

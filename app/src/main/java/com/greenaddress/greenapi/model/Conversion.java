@@ -12,11 +12,11 @@ import static com.greenaddress.greenapi.Session.getSession;
 
 public class Conversion {
 
-    public static String getFiatCurrency() {
+    public static String getFiatCurrency() throws Exception {
         return getSession().getSettings().getPricing().getCurrency();
     }
 
-    public static String getBitcoinOrLiquidUnit() {
+    public static String getBitcoinOrLiquidUnit() throws Exception {
         final int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey()), 0);
         if (getSession().getNetworkData().getLiquid()) {
             return UI.LIQUID_UNITS[index];
@@ -25,7 +25,7 @@ public class Conversion {
         }
     }
 
-    public static String getUnitKey() {
+    public static String getUnitKey() throws Exception {
         final String unit = getSession().getSettings().getUnit();
         return toUnitKey(unit);
     }
@@ -54,22 +54,22 @@ public class Conversion {
         return getAsset(converted, withUnit);
     }
 
-    public static String getFiat(final BalanceData balanceData, final boolean withUnit) {
+    public static String getFiat(final BalanceData balanceData, final boolean withUnit) throws Exception {
         try {
             final Double number = Double.parseDouble(balanceData.getFiat());
             return getNumberFormat(2).format(number) + (withUnit ? " " + getFiatCurrency() : "");
-        } catch (final Exception e) {
+        } catch (final NumberFormatException | NullPointerException e) {
             return "N.A." + (withUnit ? " " + getFiatCurrency() : "");
         }
     }
 
-    public static String getBtc(final BalanceData balanceData, final boolean withUnit) {
+    public static String getBtc(final BalanceData balanceData, final boolean withUnit) throws Exception {
         final String converted = balanceData.toObjectNode().get(getUnitKey()).asText();
         final Double number = Double.parseDouble(converted);
         return getNumberFormat().format(number) + (withUnit ? " " + getBitcoinOrLiquidUnit() : "");
     }
 
-    public static NumberFormat getNumberFormat() {
+    public static NumberFormat getNumberFormat() throws Exception {
         switch (getUnitKey()) {
         case "btc":
             return getNumberFormat(8);

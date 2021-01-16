@@ -115,9 +115,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         mUnitButton = UI.find(this, R.id.unitButton);
         mUnitButton.setOnClickListener(this);
-        mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
-        mUnitButton.setPressed(!isFiat());
-        mUnitButton.setSelected(!isFiat());
+        try {
+            mUnitButton.setText(isFiat() ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
+            mUnitButton.setPressed(!isFiat());
+            mUnitButton.setSelected(!isFiat());
+        } catch (final Exception e) {}
 
         mSendAllButton = UI.find(this, R.id.sendallButton);
 
@@ -395,11 +397,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 }
 
                 // Toggle unit display and selected state
-                mUnitButton.setText(isFiat() ? getFiatCurrency() : getBitcoinOrLiquidUnit());
+                mUnitButton.setText(isFiat() ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
                 mUnitButton.setPressed(!isFiat());
                 mUnitButton.setSelected(!isFiat());
                 updateFeeSummaries();
-            } catch (final ParseException e) {
+            } catch (final Exception e) {
                 mIsFiat = !mIsFiat;
                 UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
             }
@@ -599,22 +601,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         return mIsFiat;
     }
 
-    private String getFiatCurrency() {
-        return Conversion.getFiatCurrency();
-    }
-
-    private String getBitcoinOrLiquidUnit() {
-        return Conversion.getBitcoinOrLiquidUnit();
-    }
-
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-        final String key = isAsset() ? mSelectedAsset : isFiat() ? "fiat" : getBitcoinUnitClean();
-        if (key.isEmpty())
-            return;
         final String localizedValue = mAmountText.getText().toString();
         String value = "0";
         try {
@@ -625,14 +616,14 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode amount = mapper.createObjectNode();
-
-        amount.put(key, value);
         if (isAsset()) {
             final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
             final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
             amount.set("asset_info", (info == null ? assetInfoDefault : info).toObjectNode());
         }
         try {
+            final String key = isAsset() ? mSelectedAsset : isFiat() ? "fiat" : getBitcoinUnitClean();
+            amount.put(key, value);
             // avoid updating the view if changing from fiat to btc or vice versa
             if (!mSendAll &&
                 (mCurrentAmount == null || mCurrentAmount.get(key) == null ||

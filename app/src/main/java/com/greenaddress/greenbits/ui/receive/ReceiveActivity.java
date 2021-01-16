@@ -178,10 +178,12 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         if (isFinishing())
             return;
 
-        mAmountText.addTextChangedListener(this);
-        mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
-        mUnitButton.setPressed(!mIsFiat);
-        mUnitButton.setSelected(!mIsFiat);
+        try {
+            mAmountText.addTextChangedListener(this);
+            mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
+            mUnitButton.setPressed(!mIsFiat);
+            mUnitButton.setSelected(!mIsFiat);
+        } catch (final Exception e) {}
     }
 
     @Override
@@ -326,8 +328,8 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
     @Override
     public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-        final String key = mIsFiat ? "fiat" : getBitcoinUnitClean();
         try {
+            final String key = mIsFiat ? "fiat" : getBitcoinUnitClean();
             final NumberFormat us = Conversion.getNumberFormat(8);
             final String numberText = mAmountText.getText().toString();
             final Number number = us.parse(numberText.isEmpty() ? "0" : numberText);
@@ -357,7 +359,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
                 mAmountText.removeTextChangedListener(mAmountTextWatcher);
                 setAmountText(mAmountText, mIsFiat, mCurrentAmount);
                 mAmountText.addTextChangedListener(mAmountTextWatcher);
-            } catch( final ParseException e) {
+            } catch(final Exception e) {
                 mIsFiat = !mIsFiat;
                 UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
                 return;
@@ -365,9 +367,11 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         }
 
         // Toggle unit display and selected state
-        mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
-        mUnitButton.setPressed(!mIsFiat);
-        mUnitButton.setSelected(!mIsFiat);
+        try {
+            mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
+            mUnitButton.setPressed(!mIsFiat);
+            mUnitButton.setSelected(!mIsFiat);
+        } catch (final Exception e) {}
     }
 
     public void onShareClicked() {
