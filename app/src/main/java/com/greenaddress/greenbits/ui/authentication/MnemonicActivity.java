@@ -403,14 +403,6 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        final boolean haveCamera = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
-        setMenuItemVisible(menu, R.id.action_add, haveCamera);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home:

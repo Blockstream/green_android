@@ -121,9 +121,6 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
         case android.R.id.home:
             onBackPressed();
             return true;
-        case R.id.action_refresh:
-            reload();
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
