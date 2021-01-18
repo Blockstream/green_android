@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ListIterator;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,27 +51,44 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         holder.itemView.setOnClickListener(view -> mListener.onItemClick(entry));
     }
 
-    public void clear() {
+    void clear() {
         mList.clear();
         notifyDataSetChanged();
     }
 
-    public void add(final ParcelUuid serviceId, final int imageResource, final BluetoothDevice device) {
+    void add(final ParcelUuid serviceId, final int imageResource, final BluetoothDevice device, final long ts) {
         if (serviceId == null || device == null || device.getName() == null || device.getAddress() == null) {
             return;
         }
 
-        // Ignore if already in list
+        // If already in list, just update timestamp
         for (final DeviceEntry entry : mList) {
             if (entry.device == device) {
+                entry.setTimestamp(ts);
                 return;
             }
         }
 
-        // Add new device
-        mList.add(new DeviceEntry(serviceId, imageResource, device));
+        // If not, add new device
+        mList.add(new DeviceEntry(serviceId, imageResource, device, ts));
         Collections.sort(mList, SORTING_COMPARATOR);
         notifyDataSetChanged();
+    }
+
+    void removeStale(final long tsLimit) {
+        boolean updated = false;
+        final ListIterator<DeviceEntry> iter = mList.listIterator();
+        while(iter.hasNext()){
+            final DeviceEntry entry = iter.next();
+            if(entry.timestamp < tsLimit){
+                updated = true;
+                iter.remove();
+            }
+        }
+
+        if (updated) {
+            notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -94,11 +112,21 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
         final ParcelUuid serviceId;
         final int imageResource;
         final BluetoothDevice device;
+        private long timestamp;
 
-        public DeviceEntry(final ParcelUuid serviceId, final int imageResource, final BluetoothDevice device) {
+        DeviceEntry(final ParcelUuid serviceId, final int imageResource, final BluetoothDevice device, final long ts) {
             this.serviceId = serviceId;
             this.imageResource = imageResource;
             this.device = device;
+            this.timestamp = ts;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(final long timestamp) {
+            this.timestamp = timestamp;
         }
     }
 }

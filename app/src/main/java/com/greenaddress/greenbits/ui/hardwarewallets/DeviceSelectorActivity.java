@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import com.polidea.rxandroidble2.scan.ScanSettings;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -39,6 +41,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -191,6 +194,7 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
 
     // Traverse the passed devices, and add any supported devices to the list view
     private void addSupportedDevices(final Collection<BluetoothDevice> devices) {
+        final long ts = SystemClock.elapsedRealtime();
         for (final BluetoothDevice device : devices) {
             mDisposables.add(mRxBleClient.getBleDevice(device.getAddress())
                     .establishConnection(false)
@@ -204,13 +208,13 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
 
                             // Blockstream Jade
                             if (JadeBleImpl.IO_SERVICE_UUID.equals(serviceId)) {
-                                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.ic_jade, device);
+                                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.ic_jade, device, ts);
                                 break;
                             }
 
                             // Ledger (Nano X)
                             if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId)) {
-                                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ic_ledger, device);
+                                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ic_ledger, device, ts);
                                 break;
                             }
                         }
@@ -242,21 +246,30 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
     }
 
     private void scanBleDevices() {
+        // Timer to sweep stale items from the scan result every few seconds
+        mDisposables.add(Observable.interval(3, 1, TimeUnit.SECONDS)
+                .doOnNext(v -> addBleConnectedDevices())
+                .map(v -> SystemClock.elapsedRealtime())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ts -> mAdapter.removeStale(ts - 2000))
+        );
+
+        // Scan for nearby ble devices
         mDisposables.add(mRxBleClient.scanBleDevices(
-            new ScanSettings.Builder()
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                    .build(),
-            // add custom filters - filter to just supported hw
-            // Blockstream Jade
-            new ScanFilter.Builder()
-                    .setServiceUuid(PARCEL_SERVICE_UUID_JADE)
-                    .build(),
-            // Ledger (Nano X)
-            new ScanFilter.Builder()
-                    .setServiceUuid(PARCEL_SERVICE_UUID_LEDGER)
-                    .build()
-            )
+                new ScanSettings.Builder()
+                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                        .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                        .build(),
+                // add custom filters - filter to just supported hw
+                // Blockstream Jade
+                new ScanFilter.Builder()
+                        .setServiceUuid(PARCEL_SERVICE_UUID_JADE)
+                        .build(),
+                // Ledger (Nano X)
+                new ScanFilter.Builder()
+                        .setServiceUuid(PARCEL_SERVICE_UUID_LEDGER)
+                        .build()
+                )
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally(this::dispose)
                 .subscribe(this::onScan, this::onScanFailure)
@@ -265,16 +278,17 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
 
     private void onScan(final ScanResult rslt) {
         // Filter to supported hw, and associate with service uuid
+        final long ts = TimeUnit.MILLISECONDS.convert(rslt.getTimestampNanos(), TimeUnit.NANOSECONDS);
         final ScanRecord rec = rslt.getScanRecord();
         if (rec != null && rec.getServiceUuids() != null && !rec.getServiceUuids().isEmpty()) {
             // Blockstream Jade
             if (rec.getServiceUuids().contains(PARCEL_SERVICE_UUID_JADE)) {
-                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.ic_jade, rslt.getBleDevice().getBluetoothDevice());
+                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.ic_jade, rslt.getBleDevice().getBluetoothDevice(), ts);
             }
 
             // Ledger (Nano X)
             else if (rec.getServiceUuids().contains(PARCEL_SERVICE_UUID_LEDGER)) {
-                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ic_ledger, rslt.getBleDevice().getBluetoothDevice());
+                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ic_ledger, rslt.getBleDevice().getBluetoothDevice(), ts);
             }
         }
     }
