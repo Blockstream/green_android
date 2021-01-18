@@ -56,9 +56,8 @@ public class TransactionSharingFrament extends BottomSheetDialogFragment {
         UI.find(view, R.id.unconfidential_view).setOnClickListener(this::onClickUnconfidentialView);
         UI.find(view, R.id.share_blinding_view).setOnClickListener(this::onClickShareBlindingView);
         UI.hideIf(mNetworkData.getLiquid(), UI.find(view, R.id.explorer_view));
-        UI.hideIf(mNetworkData.getLiquid(), UI.find(view, R.id.sharing_view));
         UI.showIf(mNetworkData.getLiquid(), UI.find(view, R.id.confidential_view));
-        UI.hide(UI.find(view, R.id.unconfidential_view)); // hide showing unconfidential tx to esplora
+        UI.showIf(mNetworkData.getLiquid(), UI.find(view, R.id.unconfidential_view));
         UI.showIf(mNetworkData.getLiquid(), UI.find(view, R.id.share_blinding_view));
     }
 
