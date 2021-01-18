@@ -451,8 +451,8 @@ public class JadeHWWallet extends HWWallet {
 
                 // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
                 values.add(input.getSatoshi());
-                abfs.add(input.getAssetBlinderBytes());
-                vbfs.add(input.getAmountBlinderBytes());
+                abfs.add(input.getAbfs());
+                vbfs.add(input.getVbfs());
 
                 // Get the input prevout txid and index for hashing later
                 inputPrevouts.add(input.getTxid());

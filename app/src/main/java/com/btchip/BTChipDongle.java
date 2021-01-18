@@ -657,7 +657,7 @@ public class BTChipDongle implements BTChipConstants {
 		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_ISSUANCE_INFORMATION, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
 	}
 
-	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> assetBlindersBytes, List<byte[]> amountBlindersBytes, final long numInputs, List<InputOutputData> outputData) throws BTChipException {
+	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> abfs, List<byte[]> vbfs, final long numInputs, List<InputOutputData> outputData) throws BTChipException {
 		ByteArrayOutputStream data;
 		List<BTChipLiquidTrustedCommitments> out = new ArrayList<>();
 
@@ -686,21 +686,21 @@ public class BTChipDongle implements BTChipConstants {
 				// get only the asset blinder
 				ByteArrayOutputStream getAssetBlinderData = new ByteArrayOutputStream(4);
 				BufferUtils.writeUint32BE(getAssetBlinderData, i);
-				byte assetBlinderResponse[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR, (byte)0x01, (byte)0x00, getAssetBlinderData.toByteArray(), OK);
-				assetBlindersBytes.add(Arrays.copyOfRange(assetBlinderResponse, 0, 32));
+				byte abfResponse[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_BLINDING_FACTOR, (byte)0x01, (byte)0x00, getAssetBlinderData.toByteArray(), OK);
+				abfs.add(Arrays.copyOfRange(abfResponse, 0, 32));
 
 				// generate the last amount blinder based on the others
-				byte finalAmountBlinder[] = Wally.asset_final_vbf(Longs.toArray(values), numInputs, foldListOfByteArray(assetBlindersBytes), foldListOfByteArray(amountBlindersBytes));
-				amountBlindersBytes.add(finalAmountBlinder);
-				data.write(finalAmountBlinder, 0, 32);
+				byte finalVbfs[] = Wally.asset_final_vbf(Longs.toArray(values), numInputs, foldListOfByteArray(abfs), foldListOfByteArray(vbfs));
+				vbfs.add(finalVbfs);
+				data.write(finalVbfs, 0, 32);
 			}
 
 			byte response[] = exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_COMMITMENTS, last ? (byte)0x02 : (byte)0x01, (byte)0x00, data.toByteArray(), OK);
 			out.add(new BTChipLiquidTrustedCommitments(response));
 
 			if (!last) {
-				assetBlindersBytes.add(Arrays.copyOfRange(response, 0, 32));
-				amountBlindersBytes.add(Arrays.copyOfRange(response, 32, 64));
+				abfs.add(Arrays.copyOfRange(response, 0, 32));
+				vbfs.add(Arrays.copyOfRange(response, 32, 64));
 			}
 
 			i++;

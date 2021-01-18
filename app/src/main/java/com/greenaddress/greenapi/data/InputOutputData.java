@@ -201,12 +201,12 @@ public class InputOutputData extends JSONData implements Serializable {
     }
 
     @JsonIgnore
-    public byte[] getAssetBlinderBytes() {
+    public byte[] getAbfs() {
         return reverseBytes(Wally.hex_to_bytes(assetblinder));
     }
 
     @JsonIgnore
-    public byte[] getAmountBlinderBytes() {
+    public byte[] getVbfs() {
         return reverseBytes(Wally.hex_to_bytes(amountblinder));
     }
 
@@ -288,7 +288,7 @@ public class InputOutputData extends JSONData implements Serializable {
     public String getUnblindedString() {
         if (hasUnblindingData()) {
             // <value_in_satoshi>,<asset_tag_hex>,<amount_blinder_hex>,<asset_blinder_hex>
-            return String.format("%ld,%s,%s,%s",satoshi, assetId, amountblinder, assetblinder);
+            return String.format("%d,%s,%s,%s", satoshi, assetId, amountblinder, assetblinder);
         }
         return "";
     }
