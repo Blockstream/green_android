@@ -292,7 +292,13 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                 cameraHandler.post(fetchAndDecodeRunnable);
             } catch (final Exception x) {
                 log.info("problem opening camera", x);
-                runOnUiThread(() -> showDialog(DIALOG_CAMERA_PROBLEM));
+                runOnUiThread(() -> {
+                    try {
+                        showDialog(DIALOG_CAMERA_PROBLEM);
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         }
 
