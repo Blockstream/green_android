@@ -133,7 +133,7 @@ public class NotificationsFragment extends GAPreferenceFragment {
                 return getString(d, new Object[] {"", amount});
             } catch (final Exception e) {
                 Log.e("", "Liquid or Conversion error: " + e.getLocalizedMessage());
-                return getString(d, "", "");
+                return "";
             }
         } else if (d == R.string.id_new_transaction_involving) {
             try {
