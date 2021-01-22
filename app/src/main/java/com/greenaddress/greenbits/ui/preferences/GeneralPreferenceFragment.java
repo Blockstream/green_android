@@ -261,11 +261,13 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         });
 
         // Auto logout timeout
-        final int timeout = settings.getAltimeout();
         mTimeoutPref = find(PrefKeys.ALTIMEOUT);
         mTimeoutPref.setEntryValues(getResources().getStringArray(R.array.auto_logout_values));
         setTimeoutValues(mTimeoutPref);
-        setTimeoutSummary(timeout);
+        try {
+            final int timeout = settings.getAltimeout();
+            setTimeoutSummary(timeout);
+        } catch (final Exception e) {}
         mTimeoutPref.setOnPreferenceChangeListener((preference, newValue) -> {
             final Integer altimeout = Integer.parseInt(newValue.toString());
             settings.setAltimeout(altimeout);
