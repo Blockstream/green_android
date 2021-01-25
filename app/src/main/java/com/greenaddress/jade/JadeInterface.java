@@ -197,7 +197,7 @@ class JadeInterface {
         }
     }
 */
-    public final JsonNode makeRpcCall(final JsonNode request, final int timeout) throws IOException {
+    public final JsonNode makeRpcCall(final JsonNode request, final int timeout, final boolean drain) throws IOException {
         final boolean isDebug = BuildConfig.DEBUG;
         if (isDebug) {
             // Sanity check json-rpc request
@@ -207,6 +207,11 @@ class JadeInterface {
                 method == null || method.asText().length() == 0 || method.asText().length() >= 32) {
                 throw new IllegalArgumentException("Invalid request: " + request);
             }
+        }
+
+        // If requested, drain any existing outstanding messages first
+        if (drain) {
+            this.drain();
         }
 
         // Send the request
@@ -221,8 +226,8 @@ class JadeInterface {
             final JsonNode result = response.get("result");
             final JsonNode error = response.get("error");
 
-            if (id == null ||
-                !(id.asText().equals(request.get("id").asText()) || (id.asText().equals("00") && (error != null))) ||
+            if (id == null || id.asText().length() == 0 || id.asText().length() >= 16 ||
+                (id.asText().equals("00") && (error == null)) ||
                 (result == null) == (error == null)) {
                 throw new IllegalArgumentException("Invalid response: " + response);
             }

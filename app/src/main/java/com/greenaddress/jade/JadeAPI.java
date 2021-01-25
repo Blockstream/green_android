@@ -40,11 +40,13 @@ public class JadeAPI {
     private final JadeInterface jade;
     private final Random idgen;
     private String efusemac;
+    private boolean sync_error;
 
     private JadeAPI(final JadeInterface jade) {
         this.jade = jade;
         this.idgen = new Random();
         this.efusemac = null;
+        this.sync_error = false;
     }
 
     public static JadeAPI createSerial(final UsbManager usbManager, final UsbDevice usbDevice, final int baud) {
@@ -95,19 +97,44 @@ public class JadeAPI {
     }
 
     // Helper to raise any returned error as an exception
-    private static JsonNode getResultOrRaiseError(final JsonNode response, final String verify_id) {
-        final JsonNode error = response.get("error");
-        if (error != null) {
-            throw new JadeError(error.get("code").asInt(),
-                                error.get("message").asText(),
-                                error.get("data"));
-        } else if (verify_id != null && (response.get("id") == null || !verify_id.equals(response.get("id").asText()))) {
-            throw new JadeError(10,
-                    "Request/Response id mismatch - expected id: " + verify_id,
-                    response.get("id"));
+    private JsonNode getResultOrRaiseError(final JsonNode response, final String expectedId, final String allowErrorId) {
+
+        // Timeout/no response
+        if (response == null) {
+            Log.e(TAG, "Timeout - no response received for message id: " + expectedId);
+            this.sync_error = true;
+
+            throw new JadeError(JadeError.JADE_RPC_MSG_TIMEOUT,
+                    "Timeout - no response received for message id: " + expectedId, null);
         }
 
-        return response.get("result");
+        final JsonNode idNode = response.get("id");
+        final JsonNode errorNode = response.get("error");
+        final JsonNode resultNode = response.get("result");
+
+        // Out of sync with jade hw
+        final String id = idNode != null ? idNode.asText() : null;
+        final boolean idOk = id != null && id.equals(expectedId);
+        final boolean extraErrorIdOk = errorNode != null && allowErrorId != null && allowErrorId.equals(id);
+        if (!idOk && !extraErrorIdOk) {
+            Log.e(TAG, "Request/Response id mismatch - expected id: " + expectedId + ", received: " + id);
+            this.sync_error = true;
+
+            throw new JadeError(JadeError.JADE_MSGS_OUT_OF_SYNC,
+                    "Request/Response id mismatch - expected id: " + expectedId + ", received: " + id,
+                    response);
+        }
+        this.sync_error = false;
+
+        // Raise any error from hw as an exception
+        if (errorNode != null) {
+            Log.w(TAG, "Received error from Jade: " + errorNode);
+            throw new JadeError(errorNode.get("code").asInt(),
+                    errorNode.get("message").asText(),
+                    errorNode.get("data"));
+        }
+
+        return resultNode;
     }
 
     // Helper to build an request to send
@@ -151,8 +178,8 @@ public class JadeAPI {
     private JsonNode jadeRpc(final String method, final JsonNode params, final String id, final int timeout) throws IOException {
         final String newid = id != null ? id : String.valueOf(100000 + this.idgen.nextInt(899999));
         final JsonNode request = buildRequest(newid, method, params);
-        final JsonNode response = this.jade.makeRpcCall(request, timeout);
-        final JsonNode result = getResultOrRaiseError(response, newid);
+        final JsonNode response = this.jade.makeRpcCall(request, timeout, this.sync_error);
+        final JsonNode result = getResultOrRaiseError(response, newid, null);
 
         /*
          * The Jade can respond with a request for interaction with a remote
@@ -301,12 +328,13 @@ public class JadeAPI {
         }
 
         // Receive all n signatures
+        final String lastId = String.valueOf(baseId + inputs.size());
         final List<byte[]> signatures = new ArrayList<>(inputs.size());
         for (i = 0; i < inputs.size(); ++i) {
             final String id = String.valueOf(baseId + i + 1);
 
-            final JsonNode response = this.jade.readResponse(TIMEOUT_USER_INTERACTION);
-            final JsonNode signatureResult = getResultOrRaiseError(response, id);
+            final JsonNode response = this.jade.readResponse(i == 0 ? TIMEOUT_USER_INTERACTION : TIMEOUT_AUTONOMOUS);
+            final JsonNode signatureResult = getResultOrRaiseError(response, id, lastId);
             signatures.add(signatureResult.binaryValue());
         }
 

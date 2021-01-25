@@ -432,7 +432,7 @@ public class JadeHWWallet extends HWWallet {
             }
 
             final int combinedSize = inputs.size() + outputs.size();
-            final List<byte[]> inputPrevouts = new ArrayList<>(inputs.size());
+            final List<byte[]> inputPrevouts = new ArrayList<>(2*inputs.size());
             final List<Long> values = new ArrayList<>(combinedSize);
             final List<byte[]> abfs = new ArrayList<>(combinedSize);
             final List<byte[]> vbfs = new ArrayList<>(combinedSize);
