@@ -187,6 +187,17 @@ struct Transaction {
         return blindingData
     }
 
+    func txoBlindingString(data: [String: Any]) -> String? {
+        if !hasBlindingData(data: data) {
+            return nil
+        }
+        let satoshi = data["satoshi"] as? UInt64 ?? 0
+        let assetId = data["asset_id"] as? String ?? ""
+        let amountBlinder = data["amountblinder"] as? String ?? ""
+        let assetBlinder = data["assetblinder"] as? String ?? ""
+        return String(format: "%d,%@,%@,%@", satoshi, assetId, amountBlinder, assetBlinder)
+    }
+
     func blindingData() -> [String: Any]? {
         var txBlindingData = [String: Any]()
         txBlindingData["version"] = 0
@@ -203,6 +214,21 @@ struct Transaction {
             return txoBlindingData(data: data, isUnspent: true)
         }
         return txBlindingData
+    }
+
+    func blindingUrlString() -> String {
+        var blindingUrlString = [String]()
+        transactionInputs?.forEach { input in
+            if let b = txoBlindingString(data: input) {
+                blindingUrlString.append(b)
+            }
+        }
+        transactionOutputs?.forEach { output in
+            if let b = txoBlindingString(data: output) {
+                blindingUrlString.append(b)
+            }
+        }
+        return blindingUrlString.isEmpty ? "" : "#blinded=" + blindingUrlString.joined(separator: ",")
     }
 }
 
