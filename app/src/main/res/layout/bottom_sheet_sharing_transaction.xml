@@ -73,30 +73,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/confidential_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:padding="8dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_link"
-            app:tint="@color/grey_light" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:textSize="18sp"
-            android:textColor="@color/grey_light"
-            android:text="Link to confidential transaction"/>
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/unconfidential_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -107,7 +83,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_link"
+            android:src="@drawable/ic_share_white"
             app:tint="@color/grey_light" />
 
         <TextView
@@ -117,7 +93,7 @@
             android:paddingStart="16dp"
             android:textSize="18sp"
             android:textColor="@color/grey_light"
-            android:text="Link to unconfidential transaction"/>
+            android:text="Share to unconfidential transaction"/>
     </LinearLayout>
 
     <LinearLayout

@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -436,5 +438,17 @@ public abstract class UI {
         } catch (final Exception e) {
             return textOrIdentifier; // Unknown id
         }
+    }
+
+    public static void shareChooser(final Context context, final Uri uri) {
+        shareChooser(context, uri.toString());
+    }
+
+    public static void shareChooser(final Context context, final String text) {
+        final Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        final Intent shareIntent = Intent.createChooser(sendIntent, null);
+        context.startActivity(shareIntent);
     }
 }

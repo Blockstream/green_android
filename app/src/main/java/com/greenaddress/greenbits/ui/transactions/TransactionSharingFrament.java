@@ -52,11 +52,9 @@ public class TransactionSharingFrament extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         UI.find(view, R.id.explorer_view).setOnClickListener(this::onClickConfidentialView);
         UI.find(view, R.id.sharing_view).setOnClickListener(this::onClickSharingView);
-        UI.find(view, R.id.confidential_view).setOnClickListener(this::onClickConfidentialView);
-        UI.find(view, R.id.unconfidential_view).setOnClickListener(this::onClickUnconfidentialView);
+        UI.find(view, R.id.unconfidential_view).setOnClickListener(this::onClickShareUnconfidentialView);
         UI.find(view, R.id.share_blinding_view).setOnClickListener(this::onClickShareBlindingView);
-        UI.hideIf(mNetworkData.getLiquid(), UI.find(view, R.id.explorer_view));
-        UI.showIf(mNetworkData.getLiquid(), UI.find(view, R.id.confidential_view));
+        UI.hideIf(mNetworkData.getLiquid(), UI.find(view, R.id.sharing_view));
         UI.showIf(mNetworkData.getLiquid(), UI.find(view, R.id.unconfidential_view));
         UI.showIf(mNetworkData.getLiquid(), UI.find(view, R.id.share_blinding_view));
     }
@@ -66,26 +64,19 @@ public class TransactionSharingFrament extends BottomSheetDialogFragment {
         openInBrowser(uri);
     }
 
-    private void onClickUnconfidentialView(final View view) {
+    private void onClickShareUnconfidentialView(final View view) {
         final Uri uri = Uri.parse(TextUtils.concat(mNetworkData.getTxExplorerUrl(),  mTxData.getTxhash(), getUnblindedString()).toString());
-        openInBrowser(uri);
+        UI.shareChooser(getContext(), uri);
     }
 
     private void onClickSharingView(final View view) {
-        final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, mTxData.getTxhash());
-        sendIntent.setType("text/plain");
-        final Intent shareIntent = Intent.createChooser(sendIntent, null);
-        startActivity(shareIntent);
+        final Uri uri = Uri.parse(mTxData.getTxhash());
+        UI.shareChooser(getContext(), uri);
     }
 
     private void onClickShareBlindingView(final View view) {
         final String text = mTxData.getUnblindedData().toString();
-        final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
-        sendIntent.setType("text/plain");
-        final Intent shareIntent = Intent.createChooser(sendIntent, null);
-        startActivity(shareIntent);
+        UI.shareChooser(getContext(), text);
     }
 
     private String getUnblindedString() {
