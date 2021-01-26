@@ -70,11 +70,16 @@ public class GDKSession {
         return instance;
     }
 
+    private static String getUserAgentString() {
+        return String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE);
+    }
+
     public void connect(final String network, final boolean isDebug) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("name", network);
         details.put("use_tor", false);
         details.put("log_level", isDebug ? "debug" : "none");
+        details.put("user_agent", getUserAgentString());
         GDK.setNotificationHandler(mNotification);
         GDK.connect(mNativeSession, details);
     }
@@ -85,6 +90,7 @@ public class GDKSession {
         details.put("proxy", proxyAsString);
         details.put("use_tor", useTor);
         details.put("log_level", isDebug ? "debug" : "none");
+        details.put("user_agent", getUserAgentString());
         GDK.setNotificationHandler(mNotification);
         GDK.connect(mNativeSession, details);
     }
