@@ -166,11 +166,19 @@ class TransactionDetailViewController: KeyboardViewController {
 
     func shareTransactionSheet() -> UIAlertController {
         let alert = UIAlertController(title: NSLocalizedString("Share Transaction", comment: ""), message: "", preferredStyle: .actionSheet)
+        // View the transaction in blockstream.info
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_view_in_explorer", comment: ""), style: .default) { _ in
-            // explorer tx url
             guard let alert: UIAlertController = self.explorerUrlOrAlert() else { return }
             self.present(alert, animated: true, completion: nil)
         })
+        // Share the unblinded transaction explorer url
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_share_nonconfidential", comment: ""), style: .default) { _ in
+            let network = getGdkNetwork(getNetwork().lowercased())
+            let unblindedUrl = network.txExplorerUrl! + self.transaction.hash + self.transaction.blindingUrlString()
+            let shareVC = UIActivityViewController(activityItems: [unblindedUrl], applicationActivities: nil)
+            self.present(shareVC, animated: true, completion: nil)
+        })
+        // Share data needed to unblind the transaction
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_share_unblinding_data", comment: ""), style: .default) { _ in
             let blindingData = try? JSONSerialization.data(withJSONObject: self.transaction.blindingData() ?? "", options: [])
             let shareVC = UIActivityViewController(activityItems: [String(data: blindingData!, encoding: .utf8)!], applicationActivities: nil)
@@ -181,6 +189,7 @@ class TransactionDetailViewController: KeyboardViewController {
     }
 
     @IBAction func shareButtonTapped(_ sender: UIButton) {
+        // We have more options in liquid for confidential txs
         if isLiquid {
             let alert = shareTransactionSheet()
             self.present(alert, animated: true, completion: nil)
