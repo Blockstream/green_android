@@ -1,5 +1,7 @@
 "id_1030_minutes" = "~ 10-30 Minuti";
 "id_12_confirmations" = "1/2 conferme";
+"id_12_months_51840_blocks" = "12 months (51840 blocks)";
+"id_15_months_65535_blocks" = "15 months (65535 blocks)";
 "id_1d_2s_ago" = "%1$d %2$@ fa";
 "id_1d_minutes" = "%1$d minuti";
 "id_1s_blocks_left_2d" = "%1$@ blocchi rimanenti %2$d";
@@ -8,6 +10,7 @@
 "id_2of3_account" = "Account 2of3";
 "id_4_hours" = "~ 4 Ore";
 "id_5_seconds_minimum" = "minimo 5 secondi";
+"id_6_months_25920_blocks" = "6 months (25920 blocks)";
 "id_a_2of3_account_requires_two_out" = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.";
 "id_a_new_transaction_has_just" = "Hai appena ricevuto una transazione.";
 "id_a_screen_lock_must_be_enabled" = "Necessario abilitare un blocco schermo nelle impostazioni Android";
@@ -122,6 +125,7 @@
 "id_custom_network_added_enable_it" = "Network custom aggiunto, abilitalo nelle Impostazioni di Network";
 "id_custom_network_not_found" = "Network custom non trovato";
 "id_custom_network_with_this_name" = "Il network custom è già presente.";
+"id_customize_2fa_expiration_of" = "Customize 2FA expiration of your coins";
 "id_d6_confirmations" = "%d/6 conferme";
 "id_d_asset_in_this_account" = "%d asset in questo account";
 "id_d_assets" = "%d asset";
@@ -339,6 +343,8 @@
 "id_only_connect_to_trusted_nodes" = "Connettiti solo a nodi fidati per SPV";
 "id_only_this_time" = "Solo questa volta";
 "id_operation_failure" = "Operazione fallita";
+"id_optimal_if_you_rarely_spend" = "Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication";
+"id_optimal_if_you_spend_coins" = "Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.";
 "id_optional" = "Opzionale";
 "id_optional_memo" = "Memo opzionale";
 "id_optional_password" = "Password opzionale";
@@ -455,6 +461,7 @@
 "id_sending_request" = "Invio richiesta…";
 "id_sent" = "Inviato";
 "id_sent_to" = "Inviato a";
+"id_set_2fa_expiry" = "Set 2FA expiry";
 "id_set_a_limit_to_spend_without" = "Imposta un limite per spendere senza Autenticazione a Due Fattori";
 "id_set_a_new_pin" = "Imposta un nuovo PIN";
 "id_set_a_timeout_to_logout_after" = "Imposta un timeout per logout dopo un periodo prolungato di inattività";
@@ -479,6 +486,7 @@
 "id_setup_pin_and_s" = "Imposta PIN e %@";
 "id_share" = "Condividi";
 "id_share_address" = "Condividi Indirizzo";
+"id_share_nonconfidential" = "Share non-confidential transaction";
 "id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "Mostra gli ammontari in bitcoin in";
 "id_show_coins_with_expiring" = "Mostra i coin con Secondo Fattore d'Autenticazione in scadenza.";
@@ -566,6 +574,7 @@
 "id_twofactor" = "AUTENTICAZIONE A DUE FATTORI";
 "id_twofactor_authentication" = "Autenticazione a Due Fattori";
 "id_twofactor_authentication_expiry" = "Scadenza del Secondo Fattore d'Autenticazione";
+"id_twofactor_expiration_period" = "Two-Factor expiration period";
 "id_twofactor_protection_does_not" = "La protezione con Secondo Fattore non scade su questo account, abilita 2 metodi di Secondo Fattore d'Autenticazione separati come backup in caso ne perdessi uno.";
 "id_twofactor_reset_in_progress" = "Reset Secondo Fattore di Autenticazione in corso, il tuo wallet è attualmente bloccato.";
 "id_twofactor_settings" = "Impostazioni Secondo Fattore";
@@ -590,6 +599,7 @@
 "id_visit_s_for_further_information" = "Visita %@ per maggiori informazioni sul software";
 "id_waiting_for_transaction" = "In attesa della transazione…";
 "id_wallet_backup" = "Wallet Backup";
+"id_wallet_coins_will_require" = "Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.";
 "id_wallet_creation_failed" = "Creazione wallet fallita";
 "id_wallets" = "Wallets";
 "id_warning" = "Attenzione!";

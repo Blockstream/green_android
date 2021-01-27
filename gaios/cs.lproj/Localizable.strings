@@ -1,5 +1,7 @@
 "id_1030_minutes" = "~ 10-30 Minut";
 "id_12_confirmations" = "1/2 potvrzení";
+"id_12_months_51840_blocks" = "12 months (51840 blocks)";
+"id_15_months_65535_blocks" = "15 months (65535 blocks)";
 "id_1d_2s_ago" = "před %1$d %2$@";
 "id_1d_minutes" = "%1$d minut";
 "id_1s_blocks_left_2d" = "%1$@ blocků zbývá %2$d";
@@ -8,6 +10,7 @@
 "id_2of3_account" = "2ze3 Účet";
 "id_4_hours" = "~ 4 Hodiny";
 "id_5_seconds_minimum" = "5 sekund minimum";
+"id_6_months_25920_blocks" = "6 months (25920 blocks)";
 "id_a_2of3_account_requires_two_out" = "Účet 2ze3 vyžaduje pro utracení mincí přítomnost dvou ze tří podpisů. Třetí podpis je ze záložního klíče, který znáte pouze vy. To vám přináší bezpečnostní výhody běžného účtu a přitom vám to umožňuje pohybovat prostředky nezávisle v libovolném okamžiku.";
 "id_a_new_transaction_has_just" = "Do vaší peněženky právě dorazila nová transakce.";
 "id_a_screen_lock_must_be_enabled" = "V nastavení systému Android musí být povolen zámek obrazovky";
@@ -109,7 +112,7 @@
 "id_copy_raw_transaction" = "Kopírovat raw transakci";
 "id_copy_to_clipboard" = "Kopírovat do schránky";
 "id_copy_transaction_id" = "Kopírovat ID transakce";
-"id_copy_unblinding_data" = "Copy unblinding data";
+"id_copy_unblinding_data" = "Kopírovat nezaslepená data";
 "id_copy_uri" = "Kopírovat URI";
 "id_copy_xpub" = "Kopírovat xpub";
 "id_create" = "Vytvořit";
@@ -122,6 +125,7 @@
 "id_custom_network_added_enable_it" = "Přidána vlastní síť, povolte ji v nastavení sítě";
 "id_custom_network_not_found" = "Vlastní síť nebyla nalezena";
 "id_custom_network_with_this_name" = "Vlastní síť s tímto názvem již existuje";
+"id_customize_2fa_expiration_of" = "Customize 2FA expiration of your coins";
 "id_d6_confirmations" = "%d/6 potvrzení";
 "id_d_asset_in_this_account" = "%d aktivum v tomto účtu";
 "id_d_assets" = "%d aktiva";
@@ -339,6 +343,8 @@
 "id_only_connect_to_trusted_nodes" = "Připojte se pouze k důvěryhodným uzlům pro SPV";
 "id_only_this_time" = "Pouze tentokrát";
 "id_operation_failure" = "Operace selhala";
+"id_optimal_if_you_rarely_spend" = "Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication";
+"id_optimal_if_you_spend_coins" = "Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.";
 "id_optional" = "Volitelný";
 "id_optional_memo" = "Volitelné memo";
 "id_optional_password" = "Volitelné heslo";
@@ -455,6 +461,7 @@
 "id_sending_request" = "Odesílá se žádost…";
 "id_sent" = "Odesláno";
 "id_sent_to" = "Odesláno na";
+"id_set_2fa_expiry" = "Set 2FA expiry";
 "id_set_a_limit_to_spend_without" = "Nastavte limit pro utrácení bez 2-Faktorové autentizace";
 "id_set_a_new_pin" = "Nastavit nový PIN";
 "id_set_a_timeout_to_logout_after" = "Nastavte časový limit pro odhlášení po delší nečinnosti";
@@ -462,7 +469,7 @@
 "id_set_an_email_for_recovery" = "Nastavte e-mail pro obnovení";
 "id_set_custom_fee_rate" = "Nastavte vlastní sazbu poplatku";
 "id_set_locktime" = "Nastavit časový zámek";
-"id_set_timelock" = "Set timelock";
+"id_set_timelock" = "Nastavit časový zámek";
 "id_set_twofactor_threshold" = "Nastavit limit 2-Faktoru";
 "id_set_up_a_passcode_for_your_ios" = "Nastate přístupový kód pro vaše iOS zařízení a nastavte PIN pro Blockstream Green";
 "id_set_up_a_screen_lock_for_your" = "Nastavte zámek obrazovky, chcete-li odemknout peněženku pomocí zámku obrazovky Android, ";
@@ -479,7 +486,8 @@
 "id_setup_pin_and_s" = "Nastavit PIN a %@";
 "id_share" = "Sdílet";
 "id_share_address" = "Sdílet adresu";
-"id_share_unblinding_data" = "Share unblinding data";
+"id_share_nonconfidential" = "Share non-confidential transaction";
+"id_share_unblinding_data" = "Sdílet nezaslepená data";
 "id_show_bitcoin_amounts_in" = "Zobrazit množství bitcoinů v";
 "id_show_coins_with_expiring" = "Zobrazit mince s vypršením platnosti dvoufaktorové ověřovací ochrany.";
 "id_show_fiat" = "Zobrazit fiat";
@@ -566,6 +574,7 @@
 "id_twofactor" = "2-FAKTOR";
 "id_twofactor_authentication" = "2-Faktorové potvrzení";
 "id_twofactor_authentication_expiry" = "Platnost 2-Faktorového potvrzení";
+"id_twofactor_expiration_period" = "Two-Factor expiration period";
 "id_twofactor_protection_does_not" = "2-Faktorová ochrana na tomto účtu nevyprší, v případě ztráty přístupu k jednomu z nich povolte 2 oddělené 2-Faktorové metody jako zálohu.";
 "id_twofactor_reset_in_progress" = "Probíhá reset 2-Faktorů, vaše peněženka je aktuálně uzamčena.";
 "id_twofactor_settings" = "Nastavení 2-Faktorů";
@@ -590,6 +599,7 @@
 "id_visit_s_for_further_information" = "Navštivte %@ pro další informace o softwaru";
 "id_waiting_for_transaction" = "Čekání na transakci…";
 "id_wallet_backup" = "Záloha peněženky";
+"id_wallet_coins_will_require" = "Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.";
 "id_wallet_creation_failed" = "Vytvoření peněženky se nezdařilo";
 "id_wallets" = "Peněženky";
 "id_warning" = "Varování!";

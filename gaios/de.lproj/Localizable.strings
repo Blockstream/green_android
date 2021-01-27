@@ -1,5 +1,7 @@
 "id_1030_minutes" = "~ 10-30 Minuten";
 "id_12_confirmations" = "1/2 Bestätigungen";
+"id_12_months_51840_blocks" = "12 months (51840 blocks)";
+"id_15_months_65535_blocks" = "15 months (65535 blocks)";
 "id_1d_2s_ago" = "vor %1$d %2$@";
 "id_1d_minutes" = "%1$d Minuten";
 "id_1s_blocks_left_2d" = "%1$@ Blöcke verbleibend %2$d";
@@ -8,6 +10,7 @@
 "id_2of3_account" = "2von3-Account";
 "id_4_hours" = "~ 4 Stunden";
 "id_5_seconds_minimum" = "mindestens 5 Sekunden";
+"id_6_months_25920_blocks" = "6 months (25920 blocks)";
 "id_a_2of3_account_requires_two_out" = "Ein 2of3-Account benötigt zwei von drei Signaturen, um Coins auszugeben. Die dritte Signatur stammt von einem Backup-Schlüssel, den nur du kennst. Dies gibt dir die Sicherheitsvorteile eines Standardkontos, erlaubt dir aber trotzdem, deine Coins jederzeit unabhängig zu bewegen.";
 "id_a_new_transaction_has_just" = "Eine neue Transaktion ist soeben eingetroffen.";
 "id_a_screen_lock_must_be_enabled" = "Eine Bildschirmsperre muss über die Android-Einstellungen aktiviert werden";
@@ -122,6 +125,7 @@
 "id_custom_network_added_enable_it" = "Eigenes Netzwerk hinzugefügt, aktivieren Sie es in den Netzwerkeinstellungen";
 "id_custom_network_not_found" = "Eigenes Netzwerk nicht gefunden";
 "id_custom_network_with_this_name" = "Eigenes Netzwerk mit diesem Namen bereits vorhanden";
+"id_customize_2fa_expiration_of" = "Customize 2FA expiration of your coins";
 "id_d6_confirmations" = "%d/6 Bestätigungen";
 "id_d_asset_in_this_account" = "%d Vermögen in diesem Konto";
 "id_d_assets" = "%d Assets";
@@ -339,6 +343,8 @@
 "id_only_connect_to_trusted_nodes" = "Nur mit vertrauten Node(s) für SPV verbinden";
 "id_only_this_time" = "Nur diesmal";
 "id_operation_failure" = "Betriebsfehler";
+"id_optimal_if_you_rarely_spend" = "Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication";
+"id_optimal_if_you_spend_coins" = "Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.";
 "id_optional" = "Optional";
 "id_optional_memo" = "Optionale Notiz";
 "id_optional_password" = "Optionales Passwort";
@@ -455,6 +461,7 @@
 "id_sending_request" = "Anfrage versenden...";
 "id_sent" = "Gesendet";
 "id_sent_to" = "Versendet an";
+"id_set_2fa_expiry" = "Set 2FA expiry";
 "id_set_a_limit_to_spend_without" = "Setze ein Limit für Ausgaben ohne Zwei-Faktor-Authentifizierung";
 "id_set_a_new_pin" = "Neue PIN einrichten";
 "id_set_a_timeout_to_logout_after" = "Setze ein Timeout für das Abmelden nach längerer Inaktivität";
@@ -479,6 +486,7 @@
 "id_setup_pin_and_s" = "PIN und %@ einrichten ";
 "id_share" = "Teilen";
 "id_share_address" = "Adresse teilen";
+"id_share_nonconfidential" = "Share non-confidential transaction";
 "id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "Bitcoin-Beträge anzeigen in";
 "id_show_coins_with_expiring" = "Coins mit auslaufendem Zwei-Faktor-Authentifizierungsschutz anzeigen.";
@@ -566,6 +574,7 @@
 "id_twofactor" = "ZWEI-FAKTOR";
 "id_twofactor_authentication" = "Zwei-Faktor Authentifizierung";
 "id_twofactor_authentication_expiry" = "Ablauf der Zwei-Faktor-Authentifizierung";
+"id_twofactor_expiration_period" = "Two-Factor expiration period";
 "id_twofactor_protection_does_not" = "Der Zwei-Faktor-Schutz läuft bei diesem Konto nicht ab. Aktiviere 2 separate Zwei-Faktor-Methoden als Backup für den Fall, dass du den Zugriff auf eine davon verlierst.";
 "id_twofactor_reset_in_progress" = "Zwei-Faktor Rücksetzung in Arbeit, deine Wallet ist momentan gesperrt.";
 "id_twofactor_settings" = "Zwei-Faktor Einstellungen";
@@ -590,6 +599,7 @@
 "id_visit_s_for_further_information" = "Besuche %@ für weitere Informationen über die Software";
 "id_waiting_for_transaction" = "Warten auf Transaktion...";
 "id_wallet_backup" = "Wallet Backup";
+"id_wallet_coins_will_require" = "Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.";
 "id_wallet_creation_failed" = "Wallet-Erstellung fehlgeschlagen";
 "id_wallets" = "Wallets";
 "id_warning" = "Achtung!";

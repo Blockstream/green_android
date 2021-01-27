@@ -1,5 +1,7 @@
 "id_1030_minutes" = "~ 10-30分钟";
 "id_12_confirmations" = "已确认1/2";
+"id_12_months_51840_blocks" = "12 months (51840 blocks)";
+"id_15_months_65535_blocks" = "15 months (65535 blocks)";
 "id_1d_2s_ago" = "%1$d %2$@前";
 "id_1d_minutes" = "%1$d分钟";
 "id_1s_blocks_left_2d" = "剩余%1$@区块%2$d";
@@ -8,6 +10,7 @@
 "id_2of3_account" = "2of3账户";
 "id_4_hours" = "~ 4小时";
 "id_5_seconds_minimum" = "最少5秒";
+"id_6_months_25920_blocks" = "6 months (25920 blocks)";
 "id_a_2of3_account_requires_two_out" = "一个2of3账户需要三个签名中的两个来花费代币。第三个签名来自只有你知道的备用秘钥。这保证了标准账户的安全性，同时又能允许你独自使用这些代币。";
 "id_a_new_transaction_has_just" = "收到一笔新的转账。";
 "id_a_screen_lock_must_be_enabled" = "需要在安卓系统设置中打开屏幕锁";
@@ -122,6 +125,7 @@
 "id_custom_network_added_enable_it" = "已添加自定义网络，请在网络设置中启用这个网络";
 "id_custom_network_not_found" = "未找到自定义网络";
 "id_custom_network_with_this_name" = "已存在同名的自定义网络";
+"id_customize_2fa_expiration_of" = "Customize 2FA expiration of your coins";
 "id_d6_confirmations" = "已确认%d/6";
 "id_d_asset_in_this_account" = "此账户有%d种资产";
 "id_d_assets" = "%d种资产";
@@ -339,6 +343,8 @@
 "id_only_connect_to_trusted_nodes" = "SPV开启时请仅连接至受信任的节点";
 "id_only_this_time" = "仅本次";
 "id_operation_failure" = "运行失败";
+"id_optimal_if_you_rarely_spend" = "Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication";
+"id_optimal_if_you_spend_coins" = "Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.";
 "id_optional" = "选填";
 "id_optional_memo" = "备忘录（选填）";
 "id_optional_password" = "密码（选填）";
@@ -455,6 +461,7 @@
 "id_sending_request" = "正在发送请求...";
 "id_sent" = "已发送";
 "id_sent_to" = "发送至";
+"id_set_2fa_expiry" = "Set 2FA expiry";
 "id_set_a_limit_to_spend_without" = "设置触发双重验证的转账额度";
 "id_set_a_new_pin" = "设置一个新的PIN";
 "id_set_a_timeout_to_logout_after" = "设置无操作自动退出登录时间";
@@ -479,6 +486,7 @@
 "id_setup_pin_and_s" = "设置PIN和%@";
 "id_share" = "分享";
 "id_share_address" = "分享地址";
+"id_share_nonconfidential" = "Share non-confidential transaction";
 "id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "比特币面值";
 "id_show_coins_with_expiring" = "显示快过期的双重验证保护的资产。";
@@ -566,6 +574,7 @@
 "id_twofactor" = "双重";
 "id_twofactor_authentication" = "双重验证";
 "id_twofactor_authentication_expiry" = "双重验证到期";
+"id_twofactor_expiration_period" = "Two-Factor expiration period";
 "id_twofactor_protection_does_not" = "双重验证在这个设备上不会过期，请开启2个不同的双重验证方法作为备选，以防万一丢失其中一个。";
 "id_twofactor_reset_in_progress" = "双重验证重置正在进行中，你的钱包目前已被锁定。";
 "id_twofactor_settings" = "双重验证设置";
@@ -590,6 +599,7 @@
 "id_visit_s_for_further_information" = "访问%@查看更多关于软件的信息";
 "id_waiting_for_transaction" = "等待转账...";
 "id_wallet_backup" = "钱包备份";
+"id_wallet_coins_will_require" = "Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.";
 "id_wallet_creation_failed" = "钱包创建失败";
 "id_wallets" = "钱包";
 "id_warning" = "警告！";

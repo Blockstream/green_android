@@ -1,5 +1,7 @@
 "id_1030_minutes" = "~ 10-30 minutos";
 "id_12_confirmations" = "1/2 confirmaciones";
+"id_12_months_51840_blocks" = "12 months (51840 blocks)";
+"id_15_months_65535_blocks" = "15 months (65535 blocks)";
 "id_1d_2s_ago" = "Hace %1$d%2$@";
 "id_1d_minutes" = "%1$d minutos";
 "id_1s_blocks_left_2d" = "Restan %1$@ bloques %2$d";
@@ -8,6 +10,7 @@
 "id_2of3_account" = "2of3 Account";
 "id_4_hours" = "~ 4 horas";
 "id_5_seconds_minimum" = "5 segundos como mínimo";
+"id_6_months_25920_blocks" = "6 months (25920 blocks)";
 "id_a_2of3_account_requires_two_out" = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.";
 "id_a_new_transaction_has_just" = "Una nueva transacción acaba de llegar a tu cartera.";
 "id_a_screen_lock_must_be_enabled" = "A screen lock must be enabled from Android settings";
@@ -122,6 +125,7 @@
 "id_custom_network_added_enable_it" = "Red personalizada agregada. Habilítala en configuración de red";
 "id_custom_network_not_found" = "No se encuentra la red personalizada";
 "id_custom_network_with_this_name" = "Ya existe una red personalizada con este nombre";
+"id_customize_2fa_expiration_of" = "Customize 2FA expiration of your coins";
 "id_d6_confirmations" = "%d/6 confirmaciones";
 "id_d_asset_in_this_account" = "%d activos en esta cuenta";
 "id_d_assets" = "%d activos";
@@ -339,6 +343,8 @@
 "id_only_connect_to_trusted_nodes" = "Conectar solo con nodo(s) confiable(s) para SPV";
 "id_only_this_time" = "Sólo esta vez";
 "id_operation_failure" = "Error de operación";
+"id_optimal_if_you_rarely_spend" = "Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication";
+"id_optimal_if_you_spend_coins" = "Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.";
 "id_optional" = "Opcional";
 "id_optional_memo" = "Nota opcional";
 "id_optional_password" = "Contraseña opcional";
@@ -455,6 +461,7 @@
 "id_sending_request" = "Enviando solicitud...";
 "id_sent" = "Enviado";
 "id_sent_to" = "Enviado a";
+"id_set_2fa_expiry" = "Set 2FA expiry";
 "id_set_a_limit_to_spend_without" = "Set a limit to spend without two-factor authentication";
 "id_set_a_new_pin" = "Establecer un nuevo PIN";
 "id_set_a_timeout_to_logout_after" = "Set a timeout to logout after prolonged inactivity";
@@ -479,6 +486,7 @@
 "id_setup_pin_and_s" = "Configurar el PIN y %@";
 "id_share" = "Compartir";
 "id_share_address" = "Compartir direcciones";
+"id_share_nonconfidential" = "Share non-confidential transaction";
 "id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "Show bitcoin amounts in";
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
@@ -566,6 +574,7 @@
 "id_twofactor" = "DOS FACTORES";
 "id_twofactor_authentication" = "Autenticación de dos factores";
 "id_twofactor_authentication_expiry" = "Two-Factor authentication expiry";
+"id_twofactor_expiration_period" = "Two-Factor expiration period";
 "id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.";
 "id_twofactor_reset_in_progress" = "Restablecimiento de la autenticación de dos factores en curso. Su cartera se encuentra bloqueada.";
 "id_twofactor_settings" = "Configuración de dos factores";
@@ -590,6 +599,7 @@
 "id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "Esperando transacción...";
 "id_wallet_backup" = "Wallet Backup";
+"id_wallet_coins_will_require" = "Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.";
 "id_wallet_creation_failed" = "Imposible crear la cartera";
 "id_wallets" = "Carteras";
 "id_warning" = "¡Advertencia!";

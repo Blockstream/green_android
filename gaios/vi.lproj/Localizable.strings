@@ -1,5 +1,7 @@
 "id_1030_minutes" = "10 ₫ến-30 phút";
 "id_12_confirmations" = "1/2 xác nhận";
+"id_12_months_51840_blocks" = "12 months (51840 blocks)";
+"id_15_months_65535_blocks" = "15 months (65535 blocks)";
 "id_1d_2s_ago" = "%1$d%2$@ trước đây";
 "id_1d_minutes" = "%1$dphút";
 "id_1s_blocks_left_2d" = "%1$@ khối còn lại %2$d";
@@ -8,6 +10,7 @@
 "id_2of3_account" = "2of3 Account";
 "id_4_hours" = "4 giờ";
 "id_5_seconds_minimum" = "ít nhất 5 giây";
+"id_6_months_25920_blocks" = "6 months (25920 blocks)";
 "id_a_2of3_account_requires_two_out" = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.";
 "id_a_new_transaction_has_just" = "Một giao dịch mới tới ví bạn";
 "id_a_screen_lock_must_be_enabled" = "A screen lock must be enabled from Android settings";
@@ -122,6 +125,7 @@
 "id_custom_network_added_enable_it" = "Mạng tùy biến đã được thêm, cho phép nó trong mục cài đặt mạng.";
 "id_custom_network_not_found" = "Mạng tùy biến không tìm thấy";
 "id_custom_network_with_this_name" = "Mạng tùy biến với tên này đã có";
+"id_customize_2fa_expiration_of" = "Customize 2FA expiration of your coins";
 "id_d6_confirmations" = "%d /6 xác nhận";
 "id_d_asset_in_this_account" = "%d tài sản trong tài khoản này";
 "id_d_assets" = "%d tài sản";
@@ -339,6 +343,8 @@
 "id_only_connect_to_trusted_nodes" = "Chỉ nối với nốt mạng tin tưởng cho việc xác nhận thanh toán đơn giản (SPV )";
 "id_only_this_time" = "Chỉ lúc này thôi";
 "id_operation_failure" = "Lỗi hoạt động";
+"id_optimal_if_you_rarely_spend" = "Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication";
+"id_optimal_if_you_spend_coins" = "Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.";
 "id_optional" = "Tùy chọn không bắt buộc";
 "id_optional_memo" = "Tùy chọn memo";
 "id_optional_password" = "Tùy chọn mật khẩu";
@@ -455,6 +461,7 @@
 "id_sending_request" = "Đang gửi yêu cầu...";
 "id_sent" = "Gửi";
 "id_sent_to" = "Gửi đến";
+"id_set_2fa_expiry" = "Set 2FA expiry";
 "id_set_a_limit_to_spend_without" = "Set a limit to spend without two-factor authentication";
 "id_set_a_new_pin" = "Cài đặt mã PIN";
 "id_set_a_timeout_to_logout_after" = "Set a timeout to logout after prolonged inactivity";
@@ -479,6 +486,7 @@
 "id_setup_pin_and_s" = "Cài mã PIN và %@";
 "id_share" = "Chia sẻ";
 "id_share_address" = "Địa chỉ chia sẻ";
+"id_share_nonconfidential" = "Share non-confidential transaction";
 "id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "Show bitcoin amounts in";
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
@@ -566,6 +574,7 @@
 "id_twofactor" = "XÁC THỰC 2 LỚP";
 "id_twofactor_authentication" = "Xác thực 2 lớp";
 "id_twofactor_authentication_expiry" = "Two-Factor authentication expiry";
+"id_twofactor_expiration_period" = "Two-Factor expiration period";
 "id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.";
 "id_twofactor_reset_in_progress" = "Cài lại xác thực 2 lớp đang tiến hành, ví của bạn đang khóa.";
 "id_twofactor_settings" = "Cài đặt xác thực 2 lớp";
@@ -590,6 +599,7 @@
 "id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "Đang chờ giao dịch...";
 "id_wallet_backup" = "Wallet Backup";
+"id_wallet_coins_will_require" = "Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.";
 "id_wallet_creation_failed" = "Việc tạo ví bị lỗi";
 "id_wallets" = "Các ví";
 "id_warning" = "Cảnh báo!";

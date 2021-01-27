@@ -1,5 +1,7 @@
 "id_1030_minutes" = "~ 10-30 Минут";
 "id_12_confirmations" = "1/2 подтверждений";
+"id_12_months_51840_blocks" = "12 months (51840 blocks)";
+"id_15_months_65535_blocks" = "15 months (65535 blocks)";
 "id_1d_2s_ago" = "%1$d%2$@тому назад";
 "id_1d_minutes" = "%1$d минут";
 "id_1s_blocks_left_2d" = "%1$@блоков осталось%2$d";
@@ -8,6 +10,7 @@
 "id_2of3_account" = "2of3 Account";
 "id_4_hours" = "~ 4 Часа";
 "id_5_seconds_minimum" = "5 секунд минимум";
+"id_6_months_25920_blocks" = "6 months (25920 blocks)";
 "id_a_2of3_account_requires_two_out" = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time.";
 "id_a_new_transaction_has_just" = "Новая транзакция только что поступила на ваш кошелек.";
 "id_a_screen_lock_must_be_enabled" = "Блокировка экрана должна быть включена в настройках Android";
@@ -122,6 +125,7 @@
 "id_custom_network_added_enable_it" = "Настраиваемая сеть добавлена, включите ее в сетевых настройках";
 "id_custom_network_not_found" = "Настраиваемая сеть не найдена";
 "id_custom_network_with_this_name" = "Настраиваемая сеть с таким именем уже существует";
+"id_customize_2fa_expiration_of" = "Customize 2FA expiration of your coins";
 "id_d6_confirmations" = "%d/6 подтверждений";
 "id_d_asset_in_this_account" = "%d актив в этом аккаунте";
 "id_d_assets" = "%d assets";
@@ -339,6 +343,8 @@
 "id_only_connect_to_trusted_nodes" = "Соединять только с проверенными узлом(ами) для SPV";
 "id_only_this_time" = "Только в этот раз";
 "id_operation_failure" = "Сбой в работе";
+"id_optimal_if_you_rarely_spend" = "Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication";
+"id_optimal_if_you_spend_coins" = "Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.";
 "id_optional" = "Опциональный";
 "id_optional_memo" = "Дополнительное уведомление";
 "id_optional_password" = "Дополнительный пароль";
@@ -455,6 +461,7 @@
 "id_sending_request" = "Отправка запроса...";
 "id_sent" = "Отправлено";
 "id_sent_to" = "Отправить на";
+"id_set_2fa_expiry" = "Set 2FA expiry";
 "id_set_a_limit_to_spend_without" = "Set a limit to spend without two-factor authentication";
 "id_set_a_new_pin" = "Установить новый PIN-код ";
 "id_set_a_timeout_to_logout_after" = "Set a timeout to logout after prolonged inactivity";
@@ -479,6 +486,7 @@
 "id_setup_pin_and_s" = "Установить PIN-код и %@";
 "id_share" = "Поделиться";
 "id_share_address" = "Поделиться адресом";
+"id_share_nonconfidential" = "Share non-confidential transaction";
 "id_share_unblinding_data" = "Share unblinding data";
 "id_show_bitcoin_amounts_in" = "Show bitcoin amounts in";
 "id_show_coins_with_expiring" = "Show coins with expiring Two-Factor authentication protection.";
@@ -566,6 +574,7 @@
 "id_twofactor" = "ДВУХФАКТОРНАЯ АУТЕНТИФИКАЦИЯ";
 "id_twofactor_authentication" = "Двухфакторная аутентификация";
 "id_twofactor_authentication_expiry" = "Two-Factor authentication expiry";
+"id_twofactor_expiration_period" = "Two-Factor expiration period";
 "id_twofactor_protection_does_not" = "Two-Factor protection does not expire on this account, enable 2 separate Two-Factor methods as backup in case you lose access to one.";
 "id_twofactor_reset_in_progress" = "Выполняется двухфакторный сброс, ваш кошелек заблокирован.";
 "id_twofactor_settings" = "Двухфакторные настройки";
@@ -590,6 +599,7 @@
 "id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_waiting_for_transaction" = "Ожидание транзакции ...";
 "id_wallet_backup" = "Wallet Backup";
+"id_wallet_coins_will_require" = "Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.";
 "id_wallet_creation_failed" = "Не удалось создать кошелек";
 "id_wallets" = "Кошельки";
 "id_warning" = "Внимание!";
