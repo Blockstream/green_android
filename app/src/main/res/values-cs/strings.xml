@@ -2,6 +2,8 @@
 <resources>
   <string name="id_1030_minutes">~ 10-30 Minut</string>
   <string name="id_12_confirmations">1/2 potvrzení</string>
+  <string name="id_12_months_51840_blocks">12 months (51840 blocks)</string>
+  <string name="id_15_months_65535_blocks">15 months (65535 blocks)</string>
   <string name="id_1d_2s_ago">před %1$d %2$s</string>
   <string name="id_1d_minutes">%1$d minut</string>
   <string name="id_1s_blocks_left_2d">%1$s blocků zbývá %2$d</string>
@@ -10,6 +12,7 @@
   <string name="id_2of3_account">2ze3 Účet</string>
   <string name="id_4_hours">~ 4 Hodiny</string>
   <string name="id_5_seconds_minimum">5 sekund minimum</string>
+  <string name="id_6_months_25920_blocks">6 months (25920 blocks)</string>
   <string name="id_a_2of3_account_requires_two_out">Účet 2ze3 vyžaduje pro utracení mincí přítomnost dvou ze tří podpisů. Třetí podpis je ze záložního klíče, který znáte pouze vy. To vám přináší bezpečnostní výhody běžného účtu a přitom vám to umožňuje pohybovat prostředky nezávisle v libovolném okamžiku.</string>
   <string name="id_a_new_transaction_has_just">Do vaší peněženky právě dorazila nová transakce.</string>
   <string name="id_a_screen_lock_must_be_enabled">V nastavení systému Android musí být povolen zámek obrazovky</string>
@@ -111,7 +114,7 @@
   <string name="id_copy_raw_transaction">Kopírovat raw transakci</string>
   <string name="id_copy_to_clipboard">Kopírovat do schránky</string>
   <string name="id_copy_transaction_id">Kopírovat ID transakce</string>
-  <string name="id_copy_unblinding_data">Copy unblinding data</string>
+  <string name="id_copy_unblinding_data">Kopírovat nezaslepená data</string>
   <string name="id_copy_uri">Kopírovat URI</string>
   <string name="id_copy_xpub">Kopírovat xpub</string>
   <string name="id_create">Vytvořit</string>
@@ -124,6 +127,7 @@
   <string name="id_custom_network_added_enable_it">Přidána vlastní síť, povolte ji v nastavení sítě</string>
   <string name="id_custom_network_not_found">Vlastní síť nebyla nalezena</string>
   <string name="id_custom_network_with_this_name">Vlastní síť s tímto názvem již existuje</string>
+  <string name="id_customize_2fa_expiration_of">Customize 2FA expiration of your coins</string>
   <string name="id_d6_confirmations">%d/6 potvrzení</string>
   <string name="id_d_asset_in_this_account">%d aktivum v tomto účtu</string>
   <string name="id_d_assets">%d aktiva</string>
@@ -341,6 +345,8 @@
   <string name="id_only_connect_to_trusted_nodes">Připojte se pouze k důvěryhodným uzlům pro SPV</string>
   <string name="id_only_this_time">Pouze tentokrát</string>
   <string name="id_operation_failure">Operace selhala</string>
+  <string name="id_optimal_if_you_rarely_spend">Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication</string>
+  <string name="id_optimal_if_you_spend_coins">Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.</string>
   <string name="id_optional">Volitelný</string>
   <string name="id_optional_memo">Volitelné memo</string>
   <string name="id_optional_password">Volitelné heslo</string>
@@ -457,6 +463,7 @@
   <string name="id_sending_request">Odesílá se žádost…</string>
   <string name="id_sent">Odesláno</string>
   <string name="id_sent_to">Odesláno na</string>
+  <string name="id_set_2fa_expiry">Set 2FA expiry</string>
   <string name="id_set_a_limit_to_spend_without">Nastavte limit pro utrácení bez 2-Faktorové autentizace</string>
   <string name="id_set_a_new_pin">Nastavit nový PIN</string>
   <string name="id_set_a_timeout_to_logout_after">Nastavte časový limit pro odhlášení po delší nečinnosti</string>
@@ -464,7 +471,7 @@
   <string name="id_set_an_email_for_recovery">Nastavte e-mail pro obnovení</string>
   <string name="id_set_custom_fee_rate">Nastavte vlastní sazbu poplatku</string>
   <string name="id_set_locktime">Nastavit časový zámek</string>
-  <string name="id_set_timelock">Set timelock</string>
+  <string name="id_set_timelock">Nastavit časový zámek</string>
   <string name="id_set_twofactor_threshold">Nastavit limit 2-Faktoru</string>
   <string name="id_set_up_a_passcode_for_your_ios">Nastate přístupový kód pro vaše iOS zařízení a nastavte PIN pro Blockstream Green</string>
   <string name="id_set_up_a_screen_lock_for_your">Nastavte zámek obrazovky, chcete-li odemknout peněženku pomocí zámku obrazovky Android, </string>
@@ -481,7 +488,8 @@
   <string name="id_setup_pin_and_s">Nastavit PIN a %s</string>
   <string name="id_share">Sdílet</string>
   <string name="id_share_address">Sdílet adresu</string>
-  <string name="id_share_unblinding_data">Share unblinding data</string>
+  <string name="id_share_nonconfidential">Share non-confidential transaction</string>
+  <string name="id_share_unblinding_data">Sdílet nezaslepená data</string>
   <string name="id_show_bitcoin_amounts_in">Zobrazit množství bitcoinů v</string>
   <string name="id_show_coins_with_expiring">Zobrazit mince s vypršením platnosti dvoufaktorové ověřovací ochrany.</string>
   <string name="id_show_fiat">Zobrazit fiat</string>
@@ -568,6 +576,7 @@
   <string name="id_twofactor">2-FAKTOR</string>
   <string name="id_twofactor_authentication">2-Faktorové potvrzení</string>
   <string name="id_twofactor_authentication_expiry">Platnost 2-Faktorového potvrzení</string>
+  <string name="id_twofactor_expiration_period">Two-Factor expiration period</string>
   <string name="id_twofactor_protection_does_not">2-Faktorová ochrana na tomto účtu nevyprší, v případě ztráty přístupu k jednomu z nich povolte 2 oddělené 2-Faktorové metody jako zálohu.</string>
   <string name="id_twofactor_reset_in_progress">Probíhá reset 2-Faktorů, vaše peněženka je aktuálně uzamčena.</string>
   <string name="id_twofactor_settings">Nastavení 2-Faktorů</string>
@@ -592,6 +601,7 @@
   <string name="id_visit_s_for_further_information">Navštivte %s pro další informace o softwaru</string>
   <string name="id_waiting_for_transaction">Čekání na transakci…</string>
   <string name="id_wallet_backup">Záloha peněženky</string>
+  <string name="id_wallet_coins_will_require">Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.</string>
   <string name="id_wallet_creation_failed">Vytvoření peněženky se nezdařilo</string>
   <string name="id_wallets">Peněženky</string>
   <string name="id_warning">Varování!</string>

@@ -2,6 +2,8 @@
 <resources>
   <string name="id_1030_minutes">~ 10-30 Minuten</string>
   <string name="id_12_confirmations">1/2 Bestätigungen</string>
+  <string name="id_12_months_51840_blocks">12 months (51840 blocks)</string>
+  <string name="id_15_months_65535_blocks">15 months (65535 blocks)</string>
   <string name="id_1d_2s_ago">vor %1$d %2$s</string>
   <string name="id_1d_minutes">%1$d Minuten</string>
   <string name="id_1s_blocks_left_2d">%1$s Blöcke verbleibend %2$d</string>
@@ -10,6 +12,7 @@
   <string name="id_2of3_account">2von3-Account</string>
   <string name="id_4_hours">~ 4 Stunden</string>
   <string name="id_5_seconds_minimum">mindestens 5 Sekunden</string>
+  <string name="id_6_months_25920_blocks">6 months (25920 blocks)</string>
   <string name="id_a_2of3_account_requires_two_out">Ein 2of3-Account benötigt zwei von drei Signaturen, um Coins auszugeben. Die dritte Signatur stammt von einem Backup-Schlüssel, den nur du kennst. Dies gibt dir die Sicherheitsvorteile eines Standardkontos, erlaubt dir aber trotzdem, deine Coins jederzeit unabhängig zu bewegen.</string>
   <string name="id_a_new_transaction_has_just">Eine neue Transaktion ist soeben eingetroffen.</string>
   <string name="id_a_screen_lock_must_be_enabled">Eine Bildschirmsperre muss über die Android-Einstellungen aktiviert werden</string>
@@ -124,6 +127,7 @@
   <string name="id_custom_network_added_enable_it">Eigenes Netzwerk hinzugefügt, aktivieren Sie es in den Netzwerkeinstellungen</string>
   <string name="id_custom_network_not_found">Eigenes Netzwerk nicht gefunden</string>
   <string name="id_custom_network_with_this_name">Eigenes Netzwerk mit diesem Namen bereits vorhanden</string>
+  <string name="id_customize_2fa_expiration_of">Customize 2FA expiration of your coins</string>
   <string name="id_d6_confirmations">%d/6 Bestätigungen</string>
   <string name="id_d_asset_in_this_account">%d Vermögen in diesem Konto</string>
   <string name="id_d_assets">%d Assets</string>
@@ -341,6 +345,8 @@
   <string name="id_only_connect_to_trusted_nodes">Nur mit vertrauten Node(s) für SPV verbinden</string>
   <string name="id_only_this_time">Nur diesmal</string>
   <string name="id_operation_failure">Betriebsfehler</string>
+  <string name="id_optimal_if_you_rarely_spend">Optimal if you rarely spend coins. Wallet coins will require two-factor reactivation every 455 days to remain protected by two-factor authentication</string>
+  <string name="id_optimal_if_you_spend_coins">Optimal if you spend coins every 6 months. Wallet coins will require two-factor reactivation every 6 months to remain protected by two-factor authentication.</string>
   <string name="id_optional">Optional</string>
   <string name="id_optional_memo">Optionale Notiz</string>
   <string name="id_optional_password">Optionales Passwort</string>
@@ -457,6 +463,7 @@
   <string name="id_sending_request">Anfrage versenden...</string>
   <string name="id_sent">Gesendet</string>
   <string name="id_sent_to">Versendet an</string>
+  <string name="id_set_2fa_expiry">Set 2FA expiry</string>
   <string name="id_set_a_limit_to_spend_without">Setze ein Limit für Ausgaben ohne Zwei-Faktor-Authentifizierung</string>
   <string name="id_set_a_new_pin">Neue PIN einrichten</string>
   <string name="id_set_a_timeout_to_logout_after">Setze ein Timeout für das Abmelden nach längerer Inaktivität</string>
@@ -481,6 +488,7 @@
   <string name="id_setup_pin_and_s">PIN und %s einrichten </string>
   <string name="id_share">Teilen</string>
   <string name="id_share_address">Adresse teilen</string>
+  <string name="id_share_nonconfidential">Share non-confidential transaction</string>
   <string name="id_share_unblinding_data">Share unblinding data</string>
   <string name="id_show_bitcoin_amounts_in">Bitcoin-Beträge anzeigen in</string>
   <string name="id_show_coins_with_expiring">Coins mit auslaufendem Zwei-Faktor-Authentifizierungsschutz anzeigen.</string>
@@ -568,6 +576,7 @@
   <string name="id_twofactor">ZWEI-FAKTOR</string>
   <string name="id_twofactor_authentication">Zwei-Faktor Authentifizierung</string>
   <string name="id_twofactor_authentication_expiry">Ablauf der Zwei-Faktor-Authentifizierung</string>
+  <string name="id_twofactor_expiration_period">Two-Factor expiration period</string>
   <string name="id_twofactor_protection_does_not">Der Zwei-Faktor-Schutz läuft bei diesem Konto nicht ab. Aktiviere 2 separate Zwei-Faktor-Methoden als Backup für den Fall, dass du den Zugriff auf eine davon verlierst.</string>
   <string name="id_twofactor_reset_in_progress">Zwei-Faktor Rücksetzung in Arbeit, deine Wallet ist momentan gesperrt.</string>
   <string name="id_twofactor_settings">Zwei-Faktor Einstellungen</string>
@@ -592,6 +601,7 @@
   <string name="id_visit_s_for_further_information">Besuche %s für weitere Informationen über die Software</string>
   <string name="id_waiting_for_transaction">Warten auf Transaktion...</string>
   <string name="id_wallet_backup">Wallet Backup</string>
+  <string name="id_wallet_coins_will_require">Wallet coins will require two-factor reactivation once a year to remain protected by two-factor authentication.</string>
   <string name="id_wallet_creation_failed">Wallet-Erstellung fehlgeschlagen</string>
   <string name="id_wallets">Wallets</string>
   <string name="id_warning">Achtung!</string>
