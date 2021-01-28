@@ -33,7 +33,6 @@ public class CSVTimeActivity extends GaActivity {
     private PopupCodeResolver popupCodeResolver;
     private Disposable disposable;
     private RecyclerView recyclerView;
-    private Integer csvTimeBlock[];
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -42,10 +41,8 @@ public class CSVTimeActivity extends GaActivity {
         setTitle(getString(R.string.id_set_2fa_expiry));
         setTitleBackTransparent();
 
-        csvTimeBlock = getNetwork().isTestnet() ? SettingsData.CsvBucketsTestnet :
-                SettingsData.CsvBucketsMainnet;
         final Integer csv = getSession().getSettings().getCsvtime();
-        final int index = Arrays.asList(csvTimeBlock).indexOf(csv);
+        final int index = getNetwork().getCsvBuckets().indexOf(csv);
         final String titles[] = getResources().getStringArray(R.array.csv_titles);
         final String subtitles[] = getResources().getStringArray(R.array.csv_subtitles);
         final RadioBoxAdapter adapter = new RadioBoxAdapter(titles, subtitles, index);
@@ -60,7 +57,7 @@ public class CSVTimeActivity extends GaActivity {
 
     private void setCsvTime(final View view) {
         final int selected = ((RadioBoxAdapter) recyclerView.getAdapter()).getSelected();
-        final int csvTime = csvTimeBlock[selected];
+        final int csvTime = getNetwork().getCsvBuckets().get(selected);
         startLoading();
         popupMethodResolver = new PopupMethodResolver(CSVTimeActivity.this);
         popupCodeResolver = new PopupCodeResolver(CSVTimeActivity.this);

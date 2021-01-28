@@ -42,6 +42,7 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
     private Integer ctExponent;
     private String policyAsset;
     private String serverType;
+    private List<Integer> csvBuckets;
 
     @JsonIgnore
     public NetworkParameters getNetworkParameters() {
@@ -286,6 +287,14 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
 
     public void setDefaultPeers(final List<String> defaultPeers) {
         this.defaultPeers = defaultPeers;
+    }
+
+    public List<Integer> getCsvBuckets() {
+        return csvBuckets;
+    }
+
+    public void setCsvBuckets(final List<Integer> csvBuckets) {
+        this.csvBuckets = csvBuckets;
     }
 
     public String getServerType() {

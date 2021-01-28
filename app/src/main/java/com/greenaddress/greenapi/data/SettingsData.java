@@ -13,9 +13,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SettingsData extends JSONData {
 
-    public static final Integer CsvBucketsTestnet[] = {144, 4320, 51840}; // 1 day, 1 month, 1 year
-    public static final Integer CsvBucketsMainnet[] = {25920, 51840, 65535}; // 6 months, 1 year, ~15 months
-
     private Integer altimeout;
     private PricingData pricing;
     private NotificationsData notifications;
