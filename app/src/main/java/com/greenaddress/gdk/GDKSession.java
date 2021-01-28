@@ -419,7 +419,7 @@ public class GDKSession {
     }
 
     public Boolean changeMemo(final String txHashHex, final String memo) throws Exception {
-        GDK.set_transaction_memo(mNativeSession, txHashHex, memo, GDK.GA_MEMO_USER);
+        GDK.set_transaction_memo(mNativeSession, txHashHex, memo, 0);
         return true;
     }
 
