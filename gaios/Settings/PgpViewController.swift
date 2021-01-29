@@ -14,6 +14,10 @@ class PgpViewController: KeyboardViewController {
         content.textarea.text = settings.pgp ?? ""
         content.button.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         content.button.addTarget(self, action: #selector(save), for: .touchUpInside)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         content.button.setGradient(true)
     }
 
