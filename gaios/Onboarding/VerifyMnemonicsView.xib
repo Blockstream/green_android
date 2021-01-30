@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -34,8 +32,8 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kIn-So-B9o" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                    <rect key="frame" x="127.5" y="333" width="120" height="55"/>
+                <button opaque="NO" tag="3" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kIn-So-B9o" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                    <rect key="frame" x="127.5" y="373.5" width="120" height="55"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="55" id="5hE-dO-wvM"/>
                     </constraints>
@@ -61,12 +59,12 @@
                             <real key="value" value="2"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                            <color key="value" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="value" systemColor="darkTextColor"/>
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </button>
-                <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AfR-VJ-e7v" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                    <rect key="frame" x="127.5" y="191" width="120" height="55"/>
+                <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AfR-VJ-e7v" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                    <rect key="frame" x="127.5" y="231.5" width="120" height="55"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="55" id="1k9-p5-eGZ"/>
                     </constraints>
@@ -92,17 +90,17 @@
                             <real key="value" value="2"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                            <color key="value" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="value" systemColor="darkTextColor"/>
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ijj-J0-mY4" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                    <rect key="frame" x="127.5" y="120" width="120" height="55"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ijj-J0-mY4" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                    <rect key="frame" x="127.5" y="160.5" width="120" height="55"/>
                     <constraints>
                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="120" id="Mq0-ff-suR"/>
                         <constraint firstAttribute="height" constant="55" id="h5a-En-hRm"/>
                     </constraints>
-                    <fontDescription key="fontDescription" name=".SFNSDisplay" family=".SF NS Display" pointSize="20"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="20"/>
                     <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" title="Text">
                         <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -121,7 +119,7 @@
                             <real key="value" value="2"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                            <color key="value" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="value" systemColor="darkTextColor"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
                             <color key="value" name="customTitaniumLight"/>
@@ -129,7 +127,7 @@
                     </userDefinedRuntimeAttributes>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="___" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qOu-qM-qPA">
-                    <rect key="frame" x="176" y="60" width="23" height="20"/>
+                    <rect key="frame" x="173" y="100.5" width="29" height="20"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="20" id="njh-ui-q6M"/>
                     </constraints>
@@ -137,8 +135,8 @@
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wd5-vg-DFh" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
-                    <rect key="frame" x="127.5" y="262" width="120" height="55"/>
+                <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wd5-vg-DFh" customClass="DesignableButton" customModule="gaios" customModuleProvider="target">
+                    <rect key="frame" x="127.5" y="302.5" width="120" height="55"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="55" id="iQd-W3-vEv"/>
                     </constraints>
@@ -164,18 +162,18 @@
                             <real key="value" value="2"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                            <color key="value" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="value" systemColor="darkTextColor"/>
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5CI-kO-c49">
-                    <rect key="frame" x="16" y="60" width="343" height="46"/>
+                    <rect key="frame" x="16" y="40" width="343" height="20.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3lB-FB-pmB">
-                    <rect key="frame" x="117.5" y="514" width="140" height="35"/>
+                    <rect key="frame" x="147.5" y="468.5" width="80" height="60"/>
                     <subviews>
                         <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pcC-kS-cqu">
                             <rect key="frame" x="5" y="25" width="10" height="10"/>
@@ -302,6 +300,7 @@
                     </constraints>
                 </view>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="oXU-Pc-Ke9"/>
             <color key="backgroundColor" name="customTitaniumDark"/>
             <constraints>
                 <constraint firstItem="kIn-So-B9o" firstAttribute="top" secondItem="wd5-vg-DFh" secondAttribute="bottom" constant="16" id="0R9-ox-Wb6"/>
@@ -324,19 +323,35 @@
                 <constraint firstItem="kIn-So-B9o" firstAttribute="centerX" secondItem="jJi-Ak-spy" secondAttribute="centerX" id="xdK-pC-hUt"/>
                 <constraint firstItem="kIn-So-B9o" firstAttribute="width" secondItem="Ijj-J0-mY4" secondAttribute="width" id="yX1-K7-IaS"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="oXU-Pc-Ke9"/>
             <point key="canvasLocation" x="39.200000000000003" y="46.326836581709152"/>
         </view>
     </objects>
+    <designables>
+        <designable name="AfR-VJ-e7v">
+            <size key="intrinsicContentSize" width="37" height="36"/>
+        </designable>
+        <designable name="Ijj-J0-mY4">
+            <size key="intrinsicContentSize" width="37" height="36"/>
+        </designable>
+        <designable name="kIn-So-B9o">
+            <size key="intrinsicContentSize" width="37" height="36"/>
+        </designable>
+        <designable name="wd5-vg-DFh">
+            <size key="intrinsicContentSize" width="37" height="36"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
-            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
-            <color red="0.42745098039215684" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <systemColor name="darkTextColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

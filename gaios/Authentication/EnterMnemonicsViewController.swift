@@ -336,8 +336,8 @@ extension EnterMnemonicsViewController: MnemonicWordCellDelegate {
             suggestions!.isHidden = true
         }
 
-        // pass focus to next item for valid words of length > 3
-        if text.count > 3 && WL.contains(text) {
+        // pass focus to next item for valid words of length >= 3
+        if text.count >= 3 && WL.contains(text) && WL.filter({ $0.contains(text) }).count == 1 {
             suggestionWasTapped(suggestion: text)
         }
 
