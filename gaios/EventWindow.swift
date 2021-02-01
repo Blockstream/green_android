@@ -4,7 +4,7 @@ class EventWindow: UIWindow {
 
     private var timer: Timer?
     private var duration: TimeInterval {
-        guard let settings = getGAService().getSettings() else { return 5 * 60 }
+        guard let settings = Settings.shared else { return 5 * 60 }
         return TimeInterval(settings.altimeout * 60)
     }
 

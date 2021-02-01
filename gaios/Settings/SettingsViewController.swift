@@ -92,7 +92,7 @@ class SettingsViewController: UIViewController {
     }
 
     func getAccount() -> [SettingsItem] {
-        guard let settings = getGAService().getSettings() else { return [] }
+        guard let settings = Settings.shared else { return [] }
         let bitcoinDenomination = SettingsItem(
             title: NSLocalizedString("id_bitcoin_denomination", comment: ""),
             subtitle: settings.denomination.string,
@@ -113,7 +113,7 @@ class SettingsViewController: UIViewController {
     }
 
     func getTwoFactor() -> [SettingsItem] {
-        guard let settings = getGAService().getSettings() else { return [] }
+        guard let settings = Settings.shared else { return [] }
         var thresholdValue = ""
         var locktimeRecoveryEnable = false
         if let twoFactorConfig = self.twoFactorConfig {
@@ -192,7 +192,7 @@ class SettingsViewController: UIViewController {
     }
 
     func getSecurity() -> [SettingsItem] {
-        guard let settings = getGAService().getSettings() else { return [] }
+        guard let settings = Settings.shared else { return [] }
         let mnemonic = SettingsItem(
             title: NSLocalizedString("id_mnemonic", comment: ""),
             subtitle: "",
@@ -407,7 +407,7 @@ extension SettingsViewController {
     }
 
     func showLockTimeRecovery() {
-        let settings = getGAService().getSettings()!
+        let settings = Settings.shared!
         var enabled = false
         if let notifications = settings.notifications {
             enabled = notifications.emailOutgoing == true
@@ -431,7 +431,7 @@ extension SettingsViewController {
 
     func showBitcoinDenomination() {
         let list = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats].map { DenominationType.denominations[$0]! }
-        let settings = getGAService().getSettings()!
+        let settings = Settings.shared!
         let selected = settings.denomination.string
         let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
@@ -459,7 +459,7 @@ extension SettingsViewController {
 
     func showAutolock() {
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
-        let settings = getGAService().getSettings()!
+        let settings = Settings.shared!
         let selected = settings.autolock.string
         let alert = UIAlertController(title: NSLocalizedString("id_auto_logout_timeout", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in

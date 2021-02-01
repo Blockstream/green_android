@@ -180,6 +180,9 @@ struct SettingsNotifications: Codable {
 
 // Main setting
 class Settings: Codable {
+
+    static var shared: Settings?
+
     enum CodingKeys: String, CodingKey {
         case requiredNumBlock = "required_num_blocks"
         case altimeout = "altimeout"
@@ -286,5 +289,12 @@ class Settings: Codable {
                 return NSLocalizedString("id_optimal_if_you_rarely_spend", comment: "")
             }
         }
+    }
+
+    static func from(_ data: [String: Any]) -> Settings? {
+        if let json = try? JSONSerialization.data(withJSONObject: data, options: []) {
+            return try? JSONDecoder().decode(Settings.self, from: json)
+        }
+        return nil
     }
 }

@@ -36,7 +36,7 @@ class ScreenLockViewController: UIViewController {
 
     func updateValues() {
         content.helpLabel.text = ""
-        guard let screenlock = getGAService().getSettings()?.getScreenLock() else {
+        guard let screenlock = Settings.shared?.getScreenLock() else {
             DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return
         }

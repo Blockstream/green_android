@@ -45,7 +45,6 @@ struct Tor: Codable {
 class GreenAddressService {
 
     private var session: Session?
-    private var settings: Settings?
     private var twoFactorReset: TwoFactorReset?
     private var events = [Event]()
     static var isTemporary = false
@@ -60,7 +59,7 @@ class GreenAddressService {
     }
 
     func reset() {
-        settings = nil
+        Settings.shared = nil
         twoFactorReset = nil
         events = [Event]()
         blockHeight = 0
@@ -71,10 +70,6 @@ class GreenAddressService {
 
     func getSession() -> Session {
         return self.session!
-    }
-
-    func getSettings() -> Settings? {
-        return settings
     }
 
     func getTwoFactorReset() -> TwoFactorReset? {
@@ -128,12 +123,9 @@ class GreenAddressService {
             post(event: .TwoFactorReset, data: data)
         case .Settings:
             reloadSystemMessage()
-            do {
-                let json = try JSONSerialization.data(withJSONObject: data, options: [])
-                self.settings = try JSONDecoder().decode(Settings.self, from: json)
-                reloadTwoFactor()
-                post(event: .Settings, data: data)
-            } catch { break }
+            Settings.shared = Settings.from(data)
+            reloadTwoFactor()
+            post(event: .Settings, data: data)
         case .Network:
             do {
                 let json = try JSONSerialization.data(withJSONObject: data, options: [])
@@ -181,7 +173,7 @@ class GreenAddressService {
             try self.getSession().getTwoFactorConfig()
         }.done { dataTwoFactorConfig in
             let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
-            let data = try JSONSerialization.jsonObject(with: JSONEncoder().encode(self.settings), options: .allowFragments) as? [String: Any]
+            let data = try JSONSerialization.jsonObject(with: JSONEncoder().encode(Settings.shared), options: .allowFragments) as? [String: Any]
             if twoFactorConfig.enableMethods.count <= 1 {
                 self.events.append(Event(value: data!))
             }

@@ -112,7 +112,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     }
 
     func setupCurrencyButton() {
-        guard let settings = getGAService().getSettings() else { return }
+        guard let settings = Settings.shared else { return }
         if !isFiat {
             content.currencyButton.setTitle(settings.denomination.string, for: UIControl.State.normal)
             content.currencyButton.backgroundColor = UIColor.customMatrixGreen()

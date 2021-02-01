@@ -10,8 +10,7 @@ class PgpViewController: KeyboardViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_pgp_key", comment: "")
         content.subtitle.text = NSLocalizedString("id_enter_a_pgp_public_key_to_have", comment: "")
-        guard let settings = getGAService().getSettings() else { return }
-        content.textarea.text = settings.pgp ?? ""
+        content.textarea.text = Settings.shared?.pgp ?? ""
         content.button.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         content.button.addTarget(self, action: #selector(save), for: .touchUpInside)
     }
@@ -22,7 +21,7 @@ class PgpViewController: KeyboardViewController {
     }
 
     @objc func save(_ sender: UIButton) {
-        guard let settings = getGAService().getSettings() else { return }
+        guard let settings = Settings.shared else { return }
         let bgq = DispatchQueue.global(qos: .background)
         let session = getGAService().getSession()
         let value = settings.pgp

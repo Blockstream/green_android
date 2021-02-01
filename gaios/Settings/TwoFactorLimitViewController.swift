@@ -29,7 +29,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     var denomination: DenominationType {
-        return getGAService().getSettings()!.denomination
+        return Settings.shared?.denomination ?? .BTC
     }
 
     override func viewDidLoad() {

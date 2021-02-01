@@ -124,7 +124,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func setButton() {
-        guard let settings = getGAService().getSettings() else {
+        guard let settings = Settings.shared else {
             return
         }
         if selectedType == TransactionType.BTC {
@@ -208,7 +208,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
-        let denomination = getGAService().getSettings()!.denomination
+        let denomination = Settings.shared!.denomination
         let key = selectedType == TransactionType.BTC ? denomination.rawValue : "fiat"
         return Balance.convert(details: [key: amountText])?.satoshi
     }

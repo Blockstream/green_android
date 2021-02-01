@@ -46,7 +46,7 @@ class SendBtcDetailsViewController: UIViewController {
     }()
 
     private var selectedFee: Int = {
-        guard let settings = getGAService().getSettings() else { return 0 }
+        guard let settings = Settings.shared else { return 0 }
         switch settings.transactionPriority {
         case .High:
             return 0
@@ -160,7 +160,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func reloadCurrencySwitch() {
-        let settings = getGAService().getSettings()!
+        let settings = Settings.shared!
         let title = isFiat ? settings.getCurrency() : settings.denomination.string
         let color = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
         content.currencySwitch.setTitle(title, for: UIControl.State.normal)
@@ -219,7 +219,7 @@ class SendBtcDetailsViewController: UIViewController {
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
         let isBtc = assetTag == "btc"
-        let denominationBtc = getGAService().getSettings()!.denomination.rawValue
+        let denominationBtc = Settings.shared!.denomination.rawValue
         let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetTag)
         let details: [String: Any]
         if "btc" == assetTag {
@@ -309,7 +309,7 @@ class SendBtcDetailsViewController: UIViewController {
                 feeRate = storedFeeRate
             } else if let oldFeeRate = self.oldFeeRate {
                 feeRate = (oldFeeRate + self.minFeeRate)
-            } else if let settings = getGAService().getSettings() {
+            } else if let settings = Settings.shared {
                 feeRate = UInt64(settings.customFeeRate ?? self.minFeeRate)
             } else {
                 feeRate = self.minFeeRate
@@ -322,7 +322,7 @@ class SendBtcDetailsViewController: UIViewController {
             alert?.dismiss(animated: true, completion: nil)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { [weak alert] (_) in
-            let settings = getGAService().getSettings()!
+            let settings = Settings.shared!
             guard var amountText = alert!.textFields![0].text else { return }
             amountText = amountText.isEmpty ? "0" : amountText
             amountText = amountText.unlocaleFormattedString(8)
@@ -345,7 +345,7 @@ class SendBtcDetailsViewController: UIViewController {
 
     @objc func clickFeeButton(_ sender: UITapGestureRecognizer) {
         guard let view = sender.view else { return }
-        let settings = getGAService().getSettings()!
+        let settings = Settings.shared!
         switch view {
         case content.fastFeeButton:
             settings.transactionPriority = .High

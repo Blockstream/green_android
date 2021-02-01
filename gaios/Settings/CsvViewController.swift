@@ -25,7 +25,7 @@ class CsvViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.dataSource = self
         tableView.delegate = self
-        currentCsv = getGAService().getSettings()?.csvtime
+        currentCsv = Settings.shared?.csvtime
     }
 
     func setCsvTimeLock(csv: Settings.CsvTime) {
@@ -39,6 +39,10 @@ class CsvViewController: UIViewController {
             try getGAService().getSession().setCSVTime(details: details)
         }.then(on: bgq) { call in
             call.resolve()
+        }.map(on: bgq) { _ in
+            if let data = try? getSession().getSettings() {
+                Settings.shared = Settings.from(data)
+            }
         }.ensure {
             self.stopAnimating()
         }.done { _ in

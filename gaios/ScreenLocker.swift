@@ -90,7 +90,7 @@ class ScreenLocker {
         }
 
         let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval!
-        let settings = getGAService().getSettings()
+        let settings = Settings.shared
         let altimeout = settings != nil ? settings!.altimeout * 60 : 5 * 60
         if Int(countdown) >= altimeout {
             // after timeout

@@ -276,7 +276,7 @@ struct Balance: Codable {
             return (fiat?.localeFormattedString(2), fiatCurrency)
         }
         if "btc" == tag {
-            let denomination = getGAService().getSettings()?.denomination ?? .BTC
+            let denomination = Settings.shared?.denomination ?? .BTC
             let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
             let value = res![denomination.rawValue] as? String
             return (value!.localeFormattedString(denomination.digits), denomination.string)
