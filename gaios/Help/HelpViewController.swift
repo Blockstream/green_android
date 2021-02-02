@@ -17,7 +17,7 @@ class HelpViewController: UIViewController {
     private var version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
     private var releaseURLString: String {
         get {
-            return String(format: "https://github.com/Blockstream/green_android/releases/tag/release_%@", version)
+            return String(format: "https://github.com/Blockstream/green_ios/releases/tag/release_%@", version)
         }
     }
 
