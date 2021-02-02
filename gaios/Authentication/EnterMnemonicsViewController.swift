@@ -337,8 +337,17 @@ extension EnterMnemonicsViewController: MnemonicWordCellDelegate {
         }
 
         // pass focus to next item for valid words of length >= 3
-        if text.count >= 3 && WL.contains(text) && WL.filter({ $0.contains(text) }).count == 1 {
-            suggestionWasTapped(suggestion: text)
+//        if text.count >= 3 && WL.contains(text) && WL.filter({ $0.contains(text) }).count == 1 {
+//            suggestionWasTapped(suggestion: text)
+//        }
+
+        if text.count >= 3 {
+            let filtered = WL.filter({ $0.hasPrefix(text) })
+            if filtered.count == 1 {
+                if filtered.first?.count == text.count {
+                    suggestionWasTapped(suggestion: text)
+                }
+            }
         }
 
         let foundEmpty = mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24).contains(where: { $0.isEmpty })
