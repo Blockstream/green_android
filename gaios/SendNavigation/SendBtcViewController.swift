@@ -109,7 +109,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
 
     func createTransaction(userInput: String) {
         let subaccount = self.wallet!.pointer
-        let feeRate: UInt64 = Settings.shared?.customFeeRate ?? UInt64(1000)
+        let feeRate = getFeeEstimates()?.first ?? 1000
 
         self.startAnimating()
         let bgq = DispatchQueue.global(qos: .background)
