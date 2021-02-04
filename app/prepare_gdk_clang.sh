@@ -7,12 +7,14 @@ fi
 echo ${JAVA_HOME:?}
 echo ${ANDROID_NDK:?}
 
+TAGNAME="release_0.0.39"
+
 if [ -d gdk ]; then
     cd gdk
 else
     git clone https://github.com/Blockstream/gdk.git
     cd gdk
-    git checkout tags/release_0.0.39 -b release_0.0.39
+    git checkout tags/${TAGNAME} -b ${TAGNAME}
 fi
 
 python3 -m virtualenv -p python3 venv
