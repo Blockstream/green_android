@@ -248,6 +248,8 @@ public class RequestLoginActivity extends LoginActivity {
                                 } else if (jaderr.getCode()  == JadeError.CBOR_RPC_NETWORK_MISMATCH) {
                                     showInstructions(R.string.id_the_network_selected_on_the);
                                 } else {
+                                    // Error from Jade hw - show the hw error message as a toast
+                                    UI.toast(this, jaderr.getMessage(), Toast.LENGTH_LONG);
                                     showInstructions(R.string.id_please_reconnect_your_hardware);
                                 }
                             } else if ("GDK_ERROR_CODE -1 GA_connect".equals(throwable.getMessage())) {
