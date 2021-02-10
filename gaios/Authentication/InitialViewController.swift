@@ -25,6 +25,8 @@ class InitialViewController: UIViewController {
         content.restoreButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         content.networkButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         reload()
+
+        BLEManager.shared.dispose()
     }
 
     override func viewWillDisappear(_ animated: Bool) {

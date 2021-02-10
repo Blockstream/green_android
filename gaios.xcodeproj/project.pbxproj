@@ -44,6 +44,7 @@
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1A25B995A200250E23 /* CsvViewController.swift */; };
 		2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */; };
+		344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344562EA25D297CF00A5EC18 /* BLEManager.swift */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
 		6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */; };
 		671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */; };
@@ -236,6 +237,7 @@
 		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		207C121823303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		344562EA25D297CF00A5EC18 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -469,6 +471,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		344562E925D2979800A5EC18 /* BLEManager */ = {
+			isa = PBXGroup;
+			children = (
+				344562EA25D297CF00A5EC18 /* BLEManager.swift */,
+			);
+			name = BLEManager;
+			sourceTree = "<group>";
+		};
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
@@ -515,6 +525,7 @@
 				81A3B5402244AFAC0091B6BC /* Models */,
 				81BF4E2522E9E9CD005A04C6 /* HardwareWallets */,
 				676FCF1F1F9D0CF800354E93 /* AppDelegate.swift */,
+				344562E925D2979800A5EC18 /* BLEManager */,
 				098192822176D05500D8434F /* EventWindow.swift */,
 				817417362236E85500A28E36 /* ScreenLockWindow.swift */,
 				8189BEFF2236F2270091B466 /* ScreenLocker.swift */,
@@ -1171,6 +1182,7 @@
 				8173F1DD225E2863008E35F7 /* PinSetViewController.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
 				6D2A613623302694008C518A /* UIImage.swift in Sources */,
+				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
 				6D565ED322C2E53E00C20786 /* TransactionDetailTableCell.swift in Sources */,
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
