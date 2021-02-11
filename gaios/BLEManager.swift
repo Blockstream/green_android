@@ -48,6 +48,8 @@ class BLEManager {
         return instance
     }
 
+    static let manager = CentralManager(queue: .main)
+
     let timeout = RxTimeInterval.seconds(10)
     var peripherals = [ScannedPeripheral]()
 
@@ -57,7 +59,7 @@ class BLEManager {
     weak var delegate: BLEManagerDelegate?
 
     func start() {
-        let manager = AppDelegate.manager
+        let manager = BLEManager.manager
         switch manager.state {
         case .poweredOn:
             scanningDispose = scan()
@@ -82,7 +84,7 @@ class BLEManager {
     }
 
     func scan() -> Disposable {
-        return AppDelegate.manager.scanForPeripherals(withServices: nil)
+        return BLEManager.manager.scanForPeripherals(withServices: nil)
             .filter { $0.peripheral.name?.contains("Nano") ?? false }
             .subscribe(onNext: { p in
                 self.peripherals.removeAll { $0.rssi == p.rssi }
@@ -95,10 +97,14 @@ class BLEManager {
     }
 
     func dispose() {
+        disposeScan()
+        enstablishDispose?.dispose()
+    }
+
+    func disposeScan() {
         peripherals = []
         scanningDispose?.dispose()
-        AppDelegate.manager.manager.stopScan()
-        enstablishDispose?.dispose()
+        BLEManager.manager.manager.stopScan()
     }
 
     func connect(peripheral: Peripheral) {

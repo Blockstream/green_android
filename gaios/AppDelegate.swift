@@ -24,7 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: EventWindow?
     static let service = GreenAddressService()
-    static let manager = CentralManager(queue: .main)
 
     static func getService() -> GreenAddressService {
         return service

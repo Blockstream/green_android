@@ -25,6 +25,9 @@ class HardwareWalletScanViewController: UIViewController {
         radarImageView.startSpinning()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        BLEManager.shared.disposeScan()
+    }
 }
 
 extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewDataSource {
