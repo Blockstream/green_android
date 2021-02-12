@@ -38,22 +38,19 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "HardwareDeviceCell",
-                                                    for: indexPath as IndexPath) as? HardwareDeviceCell {
-            let p = peripherals[indexPath.row]
-            cell.nameLabel.text = p.name
-            cell.connectionStatusLabel.text = p.peripheral.identifier.uuidString == UserDefaults.standard.string(forKey: "paired_device_uuid") ? "Current selected" : ""
-            cell.accessoryType = p.isConnected ? .disclosureIndicator : .none
-            cell.peripheral = p
-            cell.delegate = self
-            return cell
+                                                            for: indexPath as IndexPath) as? HardwareDeviceCell {
+                    let p = peripherals[indexPath.row]
+                    cell.nameLabel.text = p.advertisementData.localName
+                    cell.connectionStatusLabel.text = p.peripheral.identifier.uuidString == UserDefaults.standard.string(forKey: "paired_device_uuid") ? "Current selected" : ""
+                    cell.accessoryType = p.advertisementData.isConnectable ?? false ? .disclosureIndicator : .none
+                    return cell
         }
         return UITableViewCell()
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row].peripheral
-        startAnimating()
-        BLEManager.shared.connect(peripheral: peripheral)
+        BLEManager.shared.prepare(peripheral)
     }
 }
 
@@ -118,147 +115,24 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
             })*/
     }
 
-    func connectJade(peripheral: Peripheral) {
-        startAnimating()
-        HWResolver.shared.hw = Jade.shared
-
-        if peripheral.isConnected {
-            self.reconnectJade(peripheral: peripheral)
-        }
-
-        // dummy 1st connection
-        let dispose = peripheral.establishConnection().subscribe()
-        _ = manager.observeConnect(for: peripheral).take(1).compactMap { _ in sleep(1) }
-            .subscribe(onNext: { x in
-                let alert = UIAlertController(title: NSLocalizedString("WELCOME TO JADE", comment: ""), message: "", preferredStyle: .actionSheet)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in
-                    dispose.dispose()
-                    self.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
-                    self.reconnectJade(peripheral: peripheral)
-                })
-                self.present(alert, animated: true, completion: nil)
-        })
+    func didUpdatePeripherals(_ peripherals: [ScannedPeripheral]) {
+        self.peripherals = peripherals
+        tableView.reloadData()
     }
 
-    func reconnectJade(peripheral: Peripheral) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let session = getGAService().getSession()
-        enstablishDispose = Observable.just(peripheral)
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { p -> Observable<Peripheral> in
-                if p.isConnected {
-                    return Observable.just(peripheral)
-                }
-                return p.establishConnection()
-            }.flatMap {
-                Jade.shared.open($0)
-            }.compactMap { _ in
-                appDelegate?.disconnect()
-                try appDelegate?.connect()
-            }.flatMap { _ in
-                Jade.shared.version()
-            }.flatMap { version -> Observable<[String: Any]> in
-                let hasPin = version["JADE_HAS_PIN"] as? Bool
-                // check genuine firmware
-                return Jade.shared.addEntropy()
-            }.flatMap { _ in
-                Jade.shared.auth(network: getNetwork())
-            }.compactMap { _ in
-                _ = try session.registerUser(mnemonic: "", hw_device: ["device": (Jade.shared.hwDevice as Any) ]).resolve().wait()
-                _ = try session.login(mnemonic: "", hw_device: ["device": Jade.shared.hwDevice]).resolve().wait()
-            }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                self.stopAnimating()
-                getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
-            }, onError: { err in
-                self.stopAnimating()
-                switch err {
-                case is BluetoothError:
-                    let bleErr = err as? BluetoothError
-                    self.showError(NSLocalizedString("id_communication_timed_out_make", comment: "") + ": \(bleErr?.description ?? "")")
-                case RxError.timeout:
-                    self.showError(NSLocalizedString("id_communication_timed_out_make", comment: ""))
-                case DeviceError.dashboard:
-                    self.showError(String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
-                case DeviceError.wrong_app:
-                self.showError(String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
-                case is AuthenticationTypeHandler.AuthError:
-                    let authErr = err as? AuthenticationTypeHandler.AuthError
-                    self.showError(authErr?.localizedDescription ?? "")
-                case is JadeError:
-                    switch err {
-                    case JadeError.Abort(let txt):
-                        self.showError(txt)
-                    case JadeError.URLError(let txt):
-                        self.showError(txt)
-                    default:
-                        self.showError(err.localizedDescription)
-                    }
-                default:
-                    self.showError(err.localizedDescription)
-                }
-            })
-    }
-
-    func connect(peripheral: Peripheral) {
-        startAnimating()
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let session = getGAService().getSession()
-        HWResolver.shared.hw = Ledger.shared
-
-        enstablishDispose = peripheral.establishConnection()
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { Ledger.shared.open($0) }
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { _ in Ledger.shared.application() }
-            .compactMap { res in
-                let name = res["name"] as? String ?? ""
-                let versionString = res["version"] as? String ?? ""
-                let version = versionString.split(separator: ".").map {Int($0)}
-                if name.contains("OLOS") {
-                    throw DeviceError.dashboard // open app from dashboard
-                } else if name != self.network() {
-                    throw DeviceError.wrong_app // change app
-                } else if name == "Bitcoin" && (version[0]! < 1 || version[1]! < 4) {
-                    throw DeviceError.outdated_app
-                }
-            }.observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .compactMap { _ in
-                appDelegate?.disconnect()
-                try appDelegate?.connect()
-                _ = try session.registerUser(mnemonic: "", hw_device: ["device": (Ledger.shared.hwDevice as Any) ]).resolve().wait()
-                _ = try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice]).resolve().wait()
-            }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                self.stopAnimating()
-                getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
-            }, onError: { err in
-                self.stopAnimating()
-                switch err {
-                case is BluetoothError:
-                    let bleErr = err as? BluetoothError
-                    self.showError(NSLocalizedString("id_communication_timed_out_make", comment: "") + ": \(bleErr?.localizedDescription ?? "")")
-                case RxError.timeout:
-                    self.showError(NSLocalizedString("id_communication_timed_out_make", comment: ""))
-                case DeviceError.dashboard:
-                    self.showError(String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
-                case DeviceError.outdated_app:
-                    self.showError("Outdated Ledger app: update the bitcoin app via Ledger Manager")
-                case DeviceError.wrong_app:
-                self.showError(String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
-                case is AuthenticationTypeHandler.AuthError:
-                    let authErr = err as? AuthenticationTypeHandler.AuthError
-                    self.showError(authErr?.localizedDescription ?? "")
-                case is Ledger.SWError:
-                    self.showError(NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
-                default:
-                    self.showError(err.localizedDescription)
-                }
-            })
-    }
-
-    func onConnect() {
+    func onConnect(_ peripheral: Peripheral) {
         self.stopAnimating()
         getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+    }
+
+    func onPrepare(_ peripheral: Peripheral) {
+        let alert = UIAlertController(title: NSLocalizedString("WELCOME TO JADE", comment: ""), message: "", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in
+            self.startAnimating()
+            BLEManager.shared.dispose()
+            BLEManager.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
+            BLEManager.shared.connect(peripheral)
+        })
+        self.present(alert, animated: true, completion: nil)
     }
 }

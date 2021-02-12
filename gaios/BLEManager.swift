@@ -33,7 +33,8 @@ enum DeviceError: Error {
 
 protocol BLEManagerDelegate: class {
     func didUpdatePeripherals(_: [ScannedPeripheral])
-    func onConnect()
+    func onConnect(_: Peripheral)
+    func onPrepare(_: Peripheral)
     func onError(_: BLEManagerError)
 }
 
@@ -107,14 +108,17 @@ class BLEManager {
         BLEManager.manager.manager.stopScan()
     }
 
-    func connect(peripheral: Peripheral) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let session = getGAService().getSession()
+    func isLedger(_ p: Peripheral) -> Bool {
+        p.peripheral.name?.contains("Nano") ?? false
+    }
 
-        enstablishDispose = peripheral.establishConnection()
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { Ledger.shared.open($0) }
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+    func isJade(_ p: Peripheral) -> Bool {
+        p.peripheral.name?.contains("Jade") ?? false
+    }
+
+    func connectLedger(_ p: Peripheral) -> Observable<Peripheral> {
+        HWResolver.shared.hw = Ledger.shared
+        return Ledger.shared.open(p)
             .flatMap { _ in Ledger.shared.application() }
             .compactMap { res in
                 let name = res["name"] as? String ?? ""
@@ -127,6 +131,35 @@ class BLEManager {
                 } else if name == "Bitcoin" && (version[0]! < 1 || version[1]! < 4) {
                     throw DeviceError.outdated_app
                 }
+                return p
+            }
+    }
+
+    func connectJade(_ p: Peripheral) -> Observable<Peripheral> {
+        HWResolver.shared.hw = Jade.shared
+        return Jade.shared.open(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { _ in
+                Jade.shared.version()
+            }.flatMap { version -> Observable<[String: Any]> in
+                // let hasPin = version["JADE_HAS_PIN"] as? Bool
+                // check genuine firmware
+                return Jade.shared.addEntropy()
+            }.flatMap { _ in
+                Jade.shared.auth(network: getNetwork())
+            }.compactMap { _ in
+                return p
+            }
+    }
+
+    func connect(_ p: Peripheral) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let session = getGAService().getSession()
+
+        enstablishDispose = p.establishConnection()
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { p in
+                self.isJade(p) ? self.connectJade(p) : self.connectLedger(p)
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in
                 appDelegate?.disconnect()
@@ -135,8 +168,7 @@ class BLEManager {
                 _ = try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice]).resolve().wait()
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-
-                self.delegate?.onConnect()
+                self.delegate?.onConnect(p)
             }, onError: { err in
 
                 switch err {
@@ -168,6 +200,24 @@ class BLEManager {
                     self.delegate?.onError(err)
                 }
             })
+    }
+
+    func prepare(_ peripheral: Peripheral) {
+        if peripheral.isConnected {
+            self.delegate?.onPrepare(peripheral)
+            return
+        } else if isLedger(peripheral) {
+            self.delegate?.onPrepare(peripheral)
+            return
+        }
+
+        // dummy 1st connection for jade
+        let dispose = peripheral.establishConnection().subscribe()
+        _ = BLEManager.manager.observeConnect(for: peripheral).take(1).compactMap { _ in sleep(1) }
+            .subscribe(onNext: { _ in
+                dispose.dispose()
+                self.delegate?.onPrepare(peripheral)
+        })
     }
 
     func network() -> String {
