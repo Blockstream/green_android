@@ -141,7 +141,7 @@ class BLEManager {
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in
                 Jade.shared.version()
-            }.flatMap { version -> Observable<[String: Any]> in
+            }.flatMap { _ -> Observable<[String: Any]> in
                 // let hasPin = version["JADE_HAS_PIN"] as? Bool
                 // check genuine firmware
                 return Jade.shared.addEntropy()
