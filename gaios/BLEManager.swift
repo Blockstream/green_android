@@ -86,7 +86,7 @@ class BLEManager {
 
     func scan() -> Disposable {
         return BLEManager.manager.scanForPeripherals(withServices: nil)
-            .filter { $0.peripheral.name?.contains("Nano") ?? false }
+            .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
             .subscribe(onNext: { p in
                 self.peripherals.removeAll { $0.rssi == p.rssi }
                 self.peripherals.append(p)
