@@ -158,12 +158,14 @@ class BLEManager {
 
         enstablishDispose = p.establishConnection()
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { p in
+            .compactMap { p in
+                appDelegate?.disconnect()
+                try appDelegate?.connect()
+                return p
+            }.flatMap { p in
                 self.isJade(p) ? self.connectJade(p) : self.connectLedger(p)
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in
-                appDelegate?.disconnect()
-                try appDelegate?.connect()
                 _ = try session.registerUser(mnemonic: "", hw_device: ["device": (Ledger.shared.hwDevice as Any) ]).resolve().wait()
                 _ = try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice]).resolve().wait()
             }.observeOn(MainScheduler.instance)
