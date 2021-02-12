@@ -297,6 +297,8 @@ class WalletItem: Codable {
         case receivingId = "receiving_id"
         case type
         case satoshi
+        case recoveryChainCode = "recovery_chain_code"
+        case recoveryPubKey = "recovery_pub_key"
     }
 
     private let name: String
@@ -306,6 +308,8 @@ class WalletItem: Codable {
     let type: String
     var satoshi: [String: UInt64]
     var btc: UInt64 { get { return satoshi["btc"]! }}
+    var recoveryChainCode: String?
+    var recoveryPubKey: String?
 
     func localizedName() -> String {
         return pointer == 0 ? NSLocalizedString("id_main_account", comment: "") : name

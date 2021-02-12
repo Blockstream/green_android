@@ -312,13 +312,46 @@ final class Jade: JadeDevice, HWResolverProtocol {
             }
     }
 
+    public func bip32KeyFromParentToBase58(isMainnet: Bool = true, pubKey: [UInt8], chainCode: [UInt8], branch: UInt32 ) throws -> String {
+        let version = isMainnet ? BIP32_VER_MAIN_PUBLIC : BIP32_VER_TEST_PUBLIC
+        var subactkey: UnsafeMutablePointer<ext_key>?
+        var branchkey: UnsafeMutablePointer<ext_key>?
+        var xpubPtr: UnsafeMutablePointer<Int8>?
+        let pubKey_: UnsafePointer<UInt8> = UnsafePointer(pubKey)
+        let chainCode_: UnsafePointer<UInt8> = UnsafePointer(chainCode)
+        defer {
+            bip32_key_free(subactkey)
+            bip32_key_free(branchkey)
+            wally_free_string(xpubPtr)
+        }
+
+        if bip32_key_init(UInt32(version), UInt32(0), UInt32(0), chainCode_, chainCode.count,
+                                 pubKey_, pubKey.count, nil, 0, nil, 0, nil, 0, subactkey) != WALLY_OK {
+            throw GaError.GenericError
+        }
+        if bip32_key_from_parent(subactkey, branch, UInt32(BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH), branchkey) != WALLY_OK {
+            throw GaError.GenericError
+        }
+        if bip32_key_to_base58(branchkey, UInt32(BIP32_FLAG_KEY_PUBLIC), &xpubPtr) != WALLY_OK {
+            throw GaError.GenericError
+        }
+        return String(cString: xpubPtr!)
+    }
+
     // Get (receive) green address
     // swiftlint:disable:next function_parameter_count
-    func getReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryxpub: String, csvBlocks: UInt32) -> Observable<String> {
-        let params = [ "network": network, "subaccount": subaccount,
-                       "branch": branch, "recovery_xpub": recoveryxpub,
-                       "csv_blocks": csvBlocks
+    func newReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryChainCode: String?, recoveryPubKey: String?, csvBlocks: UInt32) -> Observable<String> {
+        // Jade expects any 'recoveryxpub' to be at the subact/branch level, consistent with tx outputs - but gdk
+        // subaccount data has the base subaccount chain code and pubkey - so we apply the branch derivation here.
+        var recoveryxpub: String?
+        if let chaincode = recoveryChainCode, !chaincode.isEmpty {
+            let isNetworkMainnet = ["mainnet", "liquid"].contains(network)
+            recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: isNetworkMainnet, pubKey: hexToData(recoveryPubKey!).encode(), chainCode: hexToData(chaincode).encode(), branch: branch)
+        }
+        let params = [ "network": network, "subaccount": subaccount, "pointer": pointer,
+                       "branch": branch, "recovery_xpub": recoveryxpub ?? "", "csv_blocks": csvBlocks
         ] as [String: Any]
+
         return Jade.shared.exchange(method: "get_receive_address", params: params)
         .flatMap { res -> Observable<String> in
             guard let result = res["result"] as? String else {
@@ -327,6 +360,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
             return Observable.just(result)
         }
     }
+
 }
 // Liquid calls
 extension Jade {

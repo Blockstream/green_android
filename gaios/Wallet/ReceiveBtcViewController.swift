@@ -49,7 +49,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.fiatSwitchButton.addTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
         content.shareButton.addTarget(self, action: #selector(shareButtonClicked(_:)), for: .touchUpInside)
         content.accountButton.addTarget(self, action: #selector(authInfoTapped(_:)), for: .touchUpInside)
-        reload()
+        refreshClick(nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -67,18 +67,50 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.shareButton.removeTarget(self, action: #selector(authInfoTapped(_:)), for: .touchUpInside)
     }
 
-    @IBAction func refreshClick(_ sender: Any) {
+    @IBAction func refreshClick(_ sender: Any?) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, userInfo: ["pointer": self.wallet?.pointer ?? 0])
     }
 
     func newAddress(_ notification: Notification?) {
         let dict = notification?.userInfo as NSDictionary?
         let pointer = dict?["pointer"] as? UInt32
-        if wallet?.pointer == pointer {
-            wallet?.generateNewAddress().done { address in
-                self.wallet?.receiveAddress = address
+        guard wallet?.pointer == pointer else {
+            return
+        }
+        Address.generate(with: wallet!)
+            .done { addr in
+                self.wallet?.receiveAddress = addr.address
                 self.reload()
-            }.catch { _ in }
+                if HWResolver.shared.hw != nil {
+                    self.validate(addr: addr)
+                }
+            }.catch { _ in
+                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+            }
+    }
+
+    func validate(addr: Address) {
+        guard let hw = HWResolver.shared.hw else {
+            return
+        }
+        firstly {
+            DropAlert().info(message: NSLocalizedString("id_please_verify_that_the_address", comment: ""))
+            return Guarantee()
+        }.then {
+            Address.validate(with: self.wallet!, hw: hw, addr: addr)
+        }.done { addr in
+            if self.wallet?.receiveAddress == addr {
+                DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
+            } else {
+                DropAlert().error(message: NSLocalizedString("id_the_addresses_dont_match", comment: ""))
+            }
+        }.catch { err in
+            switch err {
+            case JadeError.Abort(_):
+                DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
+            default:
+                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+            }
         }
     }
 
@@ -151,19 +183,12 @@ class ReceiveBtcViewController: KeyboardViewController {
             content.walletQRCode.isHidden = true
             return
         }
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().then(on: bgq) {
-            return wallet.getAddress()
-        }.done { address in
-            if address.isEmpty {
-                throw GaError.GenericError
-            }
-            let uri = self.uriBitcoin(address: address)
-            self.content.walletAddressLabel.text = uri
-            self.content.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: self.content.walletQRCode.frame)
-        }.catch { _ in
-            DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+        guard let address = wallet.receiveAddress, !address.isEmpty else {
+            return
         }
+        let uri = uriBitcoin(address: address)
+        content.walletAddressLabel.text = uri
+        content.walletQRCode.image = QRImageGenerator.imageForTextWhite(text: uri, frame: content.walletQRCode.frame)
     }
 
     func uriBitcoin(address: String) -> String {
