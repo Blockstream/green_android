@@ -214,10 +214,11 @@ class BLEManager {
         }
 
         // dummy 1st connection for jade
-        let dispose = peripheral.establishConnection().subscribe()
-        _ = BLEManager.manager.observeConnect(for: peripheral).take(1).compactMap { _ in sleep(1) }
+        enstablishDispose = peripheral.establishConnection().subscribe()
+        _ = BLEManager.manager.observeConnect(for: peripheral).take(1).compactMap { _ in sleep(2) }
             .subscribe(onNext: { _ in
-                dispose.dispose()
+                self.enstablishDispose?.dispose()
+                BLEManager.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
                 self.delegate?.onPrepare(peripheral)
         })
     }
