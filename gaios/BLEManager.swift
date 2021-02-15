@@ -36,6 +36,7 @@ protocol BLEManagerDelegate: class {
     func onConnect(_: Peripheral)
     func onPrepare(_: Peripheral)
     func onError(_: BLEManagerError)
+    func onConnectivityChange(peripheral: Peripheral, status: Bool)
 }
 
 class BLEManager {
@@ -56,6 +57,7 @@ class BLEManager {
 
     var scanningDispose: Disposable?
     var enstablishDispose: Disposable?
+    var statusDispose: Disposable?
 
     weak var delegate: BLEManagerDelegate?
 
@@ -99,6 +101,7 @@ class BLEManager {
 
     func dispose() {
         disposeScan()
+        statusDispose?.dispose()
         enstablishDispose?.dispose()
     }
 
@@ -155,6 +158,8 @@ class BLEManager {
     func connect(_ p: Peripheral) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let session = getGAService().getSession()
+
+        addStatusListener(p)
 
         enstablishDispose = p.establishConnection()
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
@@ -225,6 +230,18 @@ class BLEManager {
 
     func network() -> String {
         return getGdkNetwork(getNetwork()).network.lowercased() == "testnet" ? "Bitcoin Test" : "Bitcoin"
+    }
+
+    func addStatusListener(_ peripheral: Peripheral) {
+        statusDispose?.dispose()
+        statusDispose = peripheral.observeConnection()
+            .subscribe(onNext: { status in
+                self.delegate?.onConnectivityChange(peripheral: peripheral, status: status)
+                if status == false {
+                    DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+                }
+            }, onError: { _ in
+            })
     }
 }
 

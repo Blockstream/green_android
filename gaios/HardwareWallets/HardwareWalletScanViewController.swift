@@ -55,6 +55,10 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
 }
 
 extension HardwareWalletScanViewController: BLEManagerDelegate {
+    func onConnectivityChange(peripheral: Peripheral, status: Bool) {
+
+    }
+
     func onError(_ error: BLEManagerError) {
 
         self.stopAnimating()
