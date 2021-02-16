@@ -110,6 +110,7 @@ final class Ledger: LedgerCommands, HWResolverProtocol {
         }
     }
 
+    // swiftlint:disable:next function_parameter_count
     func newReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryChainCode: String?, recoveryPubKey: String?, csvBlocks: UInt32) -> Observable<String> {
         return Observable.error(JadeError.Abort(""))
     }
