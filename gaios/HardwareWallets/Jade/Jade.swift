@@ -14,9 +14,10 @@ enum JadeError: Error {
 final class Jade: JadeDevice, HWResolverProtocol {
 
     public static let shared = Jade()
-    let hwDevice: [String: Any] = ["name": "Jade", "supports_arbitrary_scripts": true, "supports_liquid": 1, "supports_low_r": true]
     var xPubsCached = [String: String]()
     let SIGHASH_ALL: UInt8 = 1
+
+    var info: [String: Any] { get { ["name": "Jade", "supports_arbitrary_scripts": true, "supports_liquid": 1, "supports_low_r": true] } }
     var connected: Bool { get { !self.xPubsCached.isEmpty }}
 
     func version() -> Observable<[String: Any]> {

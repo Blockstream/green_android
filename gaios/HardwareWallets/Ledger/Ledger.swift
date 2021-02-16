@@ -6,9 +6,10 @@ import CoreBluetooth
 final class Ledger: LedgerCommands, HWResolverProtocol {
     public static let shared = Ledger()
 
-    let hwDevice: [String: Any] = ["name": "Ledger", "supports_arbitrary_scripts": true, "supports_low_r": false]
     var xPubsCached = [String: String]()
     let SIGHASH_ALL: UInt8 = 1
+
+    var info: [String: Any] { get { ["name": "Ledger", "supports_arbitrary_scripts": true, "supports_low_r": false] } }
     var connected: Bool { get { !self.xPubsCached.isEmpty }}
 
     func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],

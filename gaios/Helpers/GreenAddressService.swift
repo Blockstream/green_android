@@ -135,7 +135,7 @@ class GreenAddressService {
                     let bgq = DispatchQueue.global(qos: .background)
                     let session = getSession()
                     Guarantee().map(on: bgq) {_ -> TwoFactorCall in
-                        try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice])
+                        try session.login(mnemonic: "", hw_device: ["device": HWResolver.shared.hw!.info])
                     }.then(on: bgq) { call in
                         call.resolve()
                     }.done { _ in

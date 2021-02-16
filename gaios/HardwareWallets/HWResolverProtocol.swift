@@ -5,7 +5,9 @@ import RxSwift
 
 protocol HWResolverProtocol {
 
+    var info: [String: Any] { get }
     var connected: Bool { get }
+
     func xpubs(paths: [[Int]]) -> Observable<[String]>
     func signMessage(path: [Int], message: String) -> Observable<String>
     func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],

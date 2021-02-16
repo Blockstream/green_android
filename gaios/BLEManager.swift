@@ -171,8 +171,8 @@ class BLEManager {
                 self.isJade(p) ? self.connectJade(p) : self.connectLedger(p)
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in
-                _ = try session.registerUser(mnemonic: "", hw_device: ["device": (Ledger.shared.hwDevice as Any) ]).resolve().wait()
-                _ = try session.login(mnemonic: "", hw_device: ["device": Ledger.shared.hwDevice]).resolve().wait()
+                _ = try session.registerUser(mnemonic: "", hw_device: ["device": HWResolver.shared.hw!.info]).resolve().wait()
+                _ = try session.login(mnemonic: "", hw_device: ["device": HWResolver.shared.hw!.info]).resolve().wait()
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.delegate?.onConnect(p)
