@@ -127,7 +127,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
         let txInputs = inputs.map { input -> TxInputBtc? in
             let swInput = !(input["address_type"] as? String == "p2sh")
             let prevoutScript = inputs.first?["prevout_script"] as? String
-            let script = swInput ? hexToData(prevoutScript!) : nil
+            let script = hexToData(prevoutScript!)
             let userPath = input["user_path"] as? [UInt32]
 
             if swInput && inputs.count == 1 {
