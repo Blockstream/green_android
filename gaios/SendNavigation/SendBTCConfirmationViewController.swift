@@ -179,12 +179,17 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }.catch { error in
             self.content.slidingButton.reset()
             self.content.slidingButton.isUserInteractionEnabled = true
-            if let twofaError = error as? TwoFactorCallError {
-                switch twofaError {
-                case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    self.showError(localizedDescription)
-                }
-            } else {
+            switch error {
+            case JadeError.Abort(let desc),
+                 JadeError.Declined(let desc):
+                self.showError(desc)
+            case LedgerWrapper.LedgerError.IOError,
+                 LedgerWrapper.LedgerError.InvalidParameter:
+                self.showError(NSLocalizedString("id_operation_failure", comment: ""))
+            case TwoFactorCallError.failure(let localizedDescription),
+                 TwoFactorCallError.cancel(let localizedDescription):
+                self.showError(localizedDescription)
+            default:
                 self.showError(error.localizedDescription)
             }
         }
