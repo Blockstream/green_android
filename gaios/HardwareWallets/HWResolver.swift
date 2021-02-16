@@ -14,11 +14,11 @@ class HWResolver {
             _ = Observable.just(paths)
                 .observeOn(SerialDispatchQueueScheduler(qos: .background))
                 .flatMap { _ in self.hw!.xpubs(paths: paths!) }
-                .flatMapLatest { data -> Observable<String> in
+                .takeLast(1)
+                .subscribe(onNext: { data in
                     let xpubs = "{\"xpubs\":\(data.description)}"
                     seal.fulfill(xpubs)
-                    return Observable.just(xpubs)
-                }.subscribe(onError: { err in
+                }, onError: { err in
                     seal.reject(err)
                 })
         }
@@ -31,12 +31,12 @@ class HWResolver {
             _ = Observable.just(message)
                 .observeOn(SerialDispatchQueueScheduler(qos: .background))
                 .flatMap { _ in self.hw!.signMessage(path: path!, message: message!) }
-                .flatMapLatest { data -> Observable<String> in
+                .takeLast(1)
+                .subscribe(onNext: { data in
                     let value = "{\"signature\":\"\(data.description)\"}"
                     seal.fulfill(value)
-                    return Observable.just(value)
-                }.subscribe(onError: { _ in
-                    seal.reject(LedgerWrapper.LedgerError.IOError)
+                }, onError: { err in
+                    seal.reject(err)
                 })
         }
     }
@@ -50,24 +50,21 @@ class HWResolver {
             let signingTxs = json["signing_transactions"] as? [String: String]
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
-            _ = Observable.just(json)
-                .observeOn(SerialDispatchQueueScheduler(qos: .background))
-                .flatMap { _ in self.hw!.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
-                }.flatMapLatest { data -> Observable<String> in
+            _ = self.hw!.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
+                .takeLast(1)
+                .subscribe(onNext: { data in
                     let value = "{\"signatures\":\(data.description)}"
                     seal.fulfill(value)
-                    return Observable.just(value)
-                }.subscribe(onNext: { _ in
                     Ledger.shared.TIMEOUT = 30
-                }, onError: { _ in
-                    seal.reject(LedgerWrapper.LedgerError.IOError)
+                }, onError: { err in
+                    seal.reject(err)
                 })
-        }
+            }
     }
 
     func getBlindingNonce(pubkey: String, script: String) -> Promise<String> {
         return Promise { seal in
-            self.hw!.getSharedNonce(pubkey: pubkey, scriptHex: script)
+            _ = self.hw!.getSharedNonce(pubkey: pubkey, scriptHex: script)
                 .subscribe(onNext: { data in
                     seal.fulfill(data!.description)
                 }, onError: { err in
@@ -92,7 +89,7 @@ class HWResolver {
 
     func getBlindingKey(script: String) -> Promise<String> {
         return Promise { seal in
-            self.hw!.getBlindingKey(scriptHex: script)
+            _ = self.hw!.getBlindingKey(scriptHex: script)
                 .subscribe(onNext: { data in
                     seal.fulfill(data!.description)
                 }, onError: { err in
