@@ -34,7 +34,7 @@ class JadeDevice: HWDeviceProtocol {
         return true
     }
 
-    func exchange(method: String, params: Any? = nil) -> Observable<[String: Any]> {
+    func build(method: String, params: Any? = nil) -> Data {
         let newid = 100000 + Int.random(in: 0 ..< 899999)
         var packet: [String: Any] = [
             "method": method,
@@ -57,23 +57,28 @@ class JadeDevice: HWDeviceProtocol {
                 encoded = encoded[0..<pos+4] + encodedPath + encoded[pos+4+wrongPath.count..<encoded.count]
             }
         }
+        return Data(encoded)
+    }
 
-        /*let wrongPath: [UInt8] = [0x70, 0x61, 0x74, 0x68] // path is always an array
-        if let pos = (0..<encoded.count - wrongPath.count).firstIndex(where: { ind in
-            return [UInt8](encoded[ind..<ind + wrongPath.count]) == wrongPath
-        }) {
-            // replace 0x40 with 0x80 next field
-            if encoded[pos + 4] / 0x80 == 0 {
-                encoded[pos + 4] = (encoded[pos + 4] + 0x40) as UInt8
-            }
-        }*/
-
-        return exchange(Data(encoded))
+    func exchange(method: String, params: Any? = nil) -> Observable<[String: Any]> {
+        let package = build(method: method, params: params)
+        return exchange(package)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .map { buffer in
-            let decoded = try? CBOR.decode([UInt8](buffer))
-            return CBOR.parser(decoded ?? CBOR("")) as? [String: Any] ?? [:]
-        }
+            .map { buffer -> [String: Any] in
+                let decoded = try? CBOR.decode([UInt8](buffer))
+                return CBOR.parser(decoded ?? CBOR("")) as? [String: Any] ?? [:]
+            }.flatMap { res in
+                return Observable<[String: Any]>.create { observer in
+                    if let error = res["error"] as? [String: Any],
+                       let message = error["message"] as? String {
+                        observer.onError(JadeError.Declined(message))
+                    } else {
+                        observer.onNext(res)
+                        observer.onCompleted()
+                    }
+                    return Disposables.create { }
+                }
+            }
     }
 
     func exchange(_ request: String) -> Observable<String> {

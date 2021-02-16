@@ -3,10 +3,12 @@ import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
 import ga.wally
+import SwiftCBOR
 
 enum JadeError: Error {
     case Abort(_ localizedDescription: String)
     case URLError(_ localizedDescription: String)
+    case Declined(_ localizedDescription: String)
 }
 
 final class Jade: JadeDevice, HWResolverProtocol {
@@ -91,8 +93,6 @@ final class Jade: JadeDevice, HWResolverProtocol {
             .map {
                 Observable.just($0)
                     .flatMap { self.xpubs(path: $0) }
-                    .asObservable()
-                    .take(1)
         }
         return Observable.concat(allObservables)
         .reduce([], accumulator: { result, element in
@@ -138,8 +138,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
             guard let txhex = transactions[txhash ?? ""] else {
                 return nil
             }
-            let inputTx = hexToData(txhex).reversed()
-            return TxInputBtc(isWitness: swInput, inputTx: Data(inputTx), script: script, satoshi: nil, path: userPath)
+            return TxInputBtc(isWitness: swInput, inputTx: hexToData(txhex), script: script, satoshi: nil, path: userPath)
         }
 
         if txInputs.contains(where: { $0 == nil }) {
@@ -167,28 +166,57 @@ final class Jade: JadeDevice, HWResolverProtocol {
     }
 
     func signTxInputs(baseId: Int, inputs: [TxInputBtc?]) -> Observable<[String]> {
-        //return Observable.just([Data()])
-        let allObservables = inputs
-            .map {
+        let allWrites = inputs.map {
                 Observable.just($0!)
                     .flatMap { self.signTxInput($0) }
-                    .compactMap { $0.map { String(format: "%02x", $0) }.joined() }
                     .asObservable()
-                    .take(1)
         }
-        return Observable.concat(allObservables)
-        .reduce([], accumulator: { result, element in
-            result + [element]
-        })
+        let allReads = inputs.map {
+                Observable.just($0!)
+                    .flatMap { _ in Jade.shared.read() }
+                    .compactMap { buffer in
+                        #if DEBUG
+                        print("<= " + buffer.map { String(format: "%02hhx", $0) }.joined())
+                        #endif
+                        let decoded = try? CBOR.decode([UInt8](buffer))
+                        return CBOR.parser(decoded ?? CBOR("")) as? [String: Any] ?? [:]
+                    }.flatMap { (res: [String: Any]) -> Observable<[UInt8]> in
+                        return Observable<[UInt8]>.create { observer in
+                            if let error = res["error"] as? [String: Any],
+                               let message = error["message"] as? String {
+                                observer.onError(JadeError.Declined(message))
+                            } else if let result = res["result"] as? [UInt8] {
+                                observer.onNext(result)
+                                observer.onCompleted()
+                            }
+                            return Disposables.create { }
+                        }
+                    }.compactMap { $0.map { String(format: "%02x", $0) }.joined() }
+                    .asObservable()
+        }
+        return Observable.concat(allWrites)
+            .reduce([], accumulator: { result, element in
+                result + [element]
+            }).flatMap { _ in
+                Observable.concat(allReads)
+            }.reduce([], accumulator: { result, element in
+                result + [element]
+            }).compactMap { signatures in
+                print(signatures)
+                return signatures
+            }
     }
 
     func signTxInput(_ input: TxInputBtc) -> Observable<Data> {
         return Observable.create { observer in
             let inputParams = input.encode()
-            return Jade.shared.exchange(method: "tx_input", params: inputParams)
-                .subscribe(onNext: { res in
-                    let result = res["result"] as? [UInt8]
-                    observer.onNext(Data(result ?? []))
+            let package = Jade.shared.build(method: "tx_input", params: inputParams)
+            #if DEBUG
+            print("=> " + package.map { String(format: "%02hhx", $0) }.joined())
+            #endif
+            return Jade.shared.write(package)
+                .subscribe(onNext: { _ in
+                    observer.onNext(Data())
                     observer.onCompleted()
                 }, onError: { err in
                     observer.onError(err)
