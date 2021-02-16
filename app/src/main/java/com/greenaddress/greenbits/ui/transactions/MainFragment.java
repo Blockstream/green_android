@@ -2,6 +2,7 @@ package com.greenaddress.greenbits.ui.transactions;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -224,7 +225,9 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
                                .subscribe((subaccount) -> {
             mSubaccount = subaccount;
             final Map<String, Long> balance = getBalance();
-            mAccountView.setTitle(subaccount.getNameWithDefault(getString(R.string.id_main_account)));
+            final long pointer = subaccount.getPointer();
+            final String defaultName = pointer == 0 ? getString(R.string.id_main_account) : getString(R.string.id_account) + " " + pointer;
+            mAccountView.setTitle(subaccount.getNameWithDefault(defaultName));
             mAccountView.setBalance(balance.get("btc").longValue());
             mAssetsSelection.setVisibility(getNetwork().getLiquid() ? View.VISIBLE : View.GONE);
             mAssetsSelection.setText(balance.size() == 1 ?

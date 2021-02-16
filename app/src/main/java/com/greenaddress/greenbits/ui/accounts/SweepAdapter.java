@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.accounts;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +44,12 @@ public class SweepAdapter extends RecyclerView.Adapter<SweepAdapter.Item> {
         };
 
         holder.itemView.setOnClickListener(listener);
-        holder.mSubaccountTextView.setText(mSubaccountList.get(position).getName().equals("") ?
-                                           holder.itemView.getContext().getString(R.string.id_main_account)
-                                           : mSubaccountList.get(position).getName());
 
+        final SubaccountData subaccount = mSubaccountList.get(position);
+        final long pointer = subaccount.getPointer();
+        final Context ctx = holder.itemView.getContext();
+        final String defaultName = pointer == 0 ? ctx.getString(R.string.id_main_account) : ctx.getString(R.string.id_account) + " " + pointer;
+        holder.mSubaccountTextView.setText(subaccount.getNameWithDefault(defaultName));
     }
 
     @Override

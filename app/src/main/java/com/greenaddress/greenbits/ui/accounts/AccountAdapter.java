@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.accounts;
 
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,8 +52,11 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final Account h = (Account) holder;
             final SubaccountData subaccount = mSubaccountList.get(position);
             final long satoshi = subaccount.getSatoshi().get("btc");
-            h.name.setText(subaccount.getNameWithDefault(holder.itemView.getResources().getString(R.string.
-                                                                                                  id_main_account)));
+            final long pointer = subaccount.getPointer();
+            final Resources res = holder.itemView.getResources();
+            final String defaultName = pointer == 0 ? res.getString(R.string.id_main_account) : res.getString(R.string.id_account) + " " + pointer;
+
+            h.name.setText(subaccount.getNameWithDefault(defaultName));
             try {
                 final String valueBitcoin = Conversion.getBtc(satoshi, false);
                 final String valueFiat = Conversion.getFiat(satoshi, true);
