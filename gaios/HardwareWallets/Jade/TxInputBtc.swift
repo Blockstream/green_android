@@ -2,7 +2,7 @@ import Foundation
 
 struct TxInputBtc: Codable {
     enum CodingKeys: String, CodingKey {
-        case inputTx = "inputTx"
+        case inputTx = "input_tx"
         case script = "script"
         case isWitness = "is_witness"
         case path = "path"
@@ -20,7 +20,7 @@ struct TxInputBtc: Codable {
             inputParams["script"] = script!
         }
         if inputTx != nil {
-            inputParams["inputTx"] = inputTx!
+            inputParams["input_tx"] = inputTx!
         }
         return inputParams
     }
