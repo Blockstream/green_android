@@ -113,7 +113,9 @@ class HWResolver {
         return Promise.chain(promises).compactMap { list in
             var dict = [String: String]()
             list.forEach { dict[$0.0] = $0.1 }
-            return "{\"blinding_keys\":\(dict.description)}"
+            let data = try JSONSerialization.data(withJSONObject: dict, options: .fragmentsAllowed)
+            let text = String(data: data, encoding: .utf8) ?? ""
+            return "{\"blinding_keys\":\(text)}"
         }
     }
 
