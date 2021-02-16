@@ -199,9 +199,7 @@ public class JadeHWWallet extends HWWallet {
             final List<TxInput> txInputs = new ArrayList<>(inputs.size());
             for (final InputOutputData input : inputs) {
                 final boolean swInput = !input.getAddressType().equals("p2sh");
-
-                // For a SegWit input we need to send prevout script explicitly
-                final byte[] script = swInput ? Wally.hex_to_bytes(input.getPrevoutScript()) : null;
+                final byte[] script = Wally.hex_to_bytes(input.getPrevoutScript());
 
                 if (swInput && inputs.size() == 1) {
                     // Single SegWit input - can skip sending entire tx and just send the sats amount
