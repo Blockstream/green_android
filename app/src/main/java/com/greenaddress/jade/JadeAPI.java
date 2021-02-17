@@ -21,15 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-// GDKSession used to implement http-request calls during pinserver handshake
-import static com.greenaddress.greenapi.Session.getSession;
-
 /**
  * High-Level Synchronous Jade Client API
  * Builds on a JadeInterface to provide a properly typed API
  */
 public class JadeAPI {
     private static final String TAG = "JadeAPI";
+
+    public static boolean isDebug = false;
 
     // Timeouts for autonomous calls that should return quickly, calls that require user confirmation,
     // and calls that need arbitrarily long (eg. entering a mnemonic) and should not timeout at all.
@@ -39,24 +38,26 @@ public class JadeAPI {
 
     private final JadeInterface jade;
     private final Random idgen;
+    private final HttpRequestProvider requestProvider;
     private String efusemac;
     private boolean sync_error;
 
-    private JadeAPI(final JadeInterface jade) {
+    private JadeAPI(final JadeInterface jade, final HttpRequestProvider requestProvider) {
         this.jade = jade;
         this.idgen = new Random();
         this.efusemac = null;
         this.sync_error = false;
+        this.requestProvider = requestProvider;
     }
 
-    public static JadeAPI createSerial(final UsbManager usbManager, final UsbDevice usbDevice, final int baud) {
+    public static JadeAPI createSerial(final HttpRequestProvider requestProvider, final UsbManager usbManager, final UsbDevice usbDevice, final int baud) {
         final JadeInterface jade = JadeInterface.createSerial(usbManager, usbDevice, baud);
-        return new JadeAPI(jade);
+        return new JadeAPI(jade, requestProvider);
     }
 
-    public static JadeAPI createBle(final RxBleDevice device) {
+    public static JadeAPI createBle(final HttpRequestProvider requestProvider, final RxBleDevice device) {
         final JadeInterface jade = JadeInterface.createBle(device);
-        return new JadeAPI(jade);
+        return new JadeAPI(jade, requestProvider);
     }
 
     public boolean connect() {
@@ -151,12 +152,12 @@ public class JadeAPI {
 
     // Helper to make http requests (with retries)
     // NOTE: Uses GDKSession's httpRequest() call to ensure Tor use as appropriate.
-    private static JsonNode makeHttpRequest(final JsonNode request) throws IOException {
+    private static JsonNode makeHttpRequest(HttpRequestHandler requestHandler, final JsonNode request) throws IOException {
 
         // If it fails retry up to 3 times
         for (int attempt = 2; attempt >= 0; --attempt) {
             Log.i(TAG,"Making gdk http request: " + request.toString());
-            final JsonNode response = getSession().httpRequest(request);
+            final JsonNode response = requestHandler.httpRequest(request);
             Log.i(TAG,"Received gdk http response: " + response.toString());
 
             // Return the 'body' if received
@@ -192,7 +193,7 @@ public class JadeAPI {
             final String onHttpReplyCall = httpRequest.get("on-reply").asText();
 
             final JsonNode httpParams = httpRequest.get("params");
-            final JsonNode httpResponse = makeHttpRequest(httpParams);
+            final JsonNode httpResponse = makeHttpRequest(requestProvider.getHttpRequest(), httpParams);
             return this.jadeRpc(onHttpReplyCall, httpResponse, timeout);
         }
 

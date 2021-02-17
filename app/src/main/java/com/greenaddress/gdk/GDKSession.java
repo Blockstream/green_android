@@ -28,6 +28,7 @@ import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.data.TwoFactorDetailData;
 import com.greenaddress.greenapi.model.NotificationHandlerImpl;
 import com.greenaddress.greenbits.ui.BuildConfig;
+import com.greenaddress.jade.HttpRequestHandler;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,7 +42,7 @@ import java.util.Map;
 import static com.blockstream.libgreenaddress.GDK.GA_ERROR;
 import static com.blockstream.libgreenaddress.GDK.GA_RECONNECT;
 
-public class GDKSession {
+public class GDKSession implements HttpRequestHandler {
 
     // Fine to have a static objectMapper according to docs if using always same configuration
     private static final ObjectMapper mObjectMapper = new ObjectMapper();

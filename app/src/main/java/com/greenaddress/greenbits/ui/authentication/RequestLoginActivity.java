@@ -124,7 +124,7 @@ public class RequestLoginActivity extends LoginActivity {
         switch (mVendorId) {
         case VENDOR_JADE:
             hardwareIcon.setImageResource(R.drawable.ic_jade);
-            final JadeAPI jadeAPI = JadeAPI.createSerial(mUsbManager, mUsb, 115200);
+            final JadeAPI jadeAPI = JadeAPI.createSerial(getSession(), mUsbManager, mUsb, 115200);
             onJade(jadeAPI);
             return;
 
@@ -176,7 +176,7 @@ public class RequestLoginActivity extends LoginActivity {
             hardwareIcon.setImageResource(R.drawable.ic_jade);
 
             // Create JadeAPI on BLE device
-            final JadeAPI jadeAPI = JadeAPI.createBle(bleDevice);
+            final JadeAPI jadeAPI = JadeAPI.createBle(getSession(), bleDevice);
             onJade(jadeAPI);
 
         } else if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId.getUuid())) {

@@ -1,6 +1,5 @@
 package com.greenaddress.greenapi;
 
-import com.btchip.BTChipException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;

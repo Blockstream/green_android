@@ -12,6 +12,8 @@ import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
+import com.greenaddress.jade.HttpRequestHandler;
+import com.greenaddress.jade.HttpRequestProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Session extends GDKSession {
+public class Session extends GDKSession implements HttpRequestProvider {
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private static Session instance = new Session();
 
@@ -173,5 +175,10 @@ public class Session extends GDKSession {
 
     public void setSettings(final SettingsData settings) {
         mSettings = settings;
+    }
+
+    @Override
+    public HttpRequestHandler getHttpRequest() {
+        return this;
     }
 }

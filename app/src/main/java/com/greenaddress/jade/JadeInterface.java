@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
-import com.greenaddress.greenbits.ui.BuildConfig;
 import com.polidea.rxandroidble2.RxBleDevice;
 
 import java.io.ByteArrayOutputStream;
@@ -198,8 +197,7 @@ class JadeInterface {
     }
 */
     public final JsonNode makeRpcCall(final JsonNode request, final int timeout, final boolean drain) throws IOException {
-        final boolean isDebug = BuildConfig.DEBUG;
-        if (isDebug) {
+        if (JadeAPI.isDebug) {
             // Sanity check json-rpc request
             final JsonNode id = request.get("id");
             final JsonNode method = request.get("method");
@@ -220,7 +218,7 @@ class JadeInterface {
         // Await the response
         final JsonNode response = readResponse(timeout);
 
-        if (isDebug && response != null) {
+        if (JadeAPI.isDebug && response != null) {
             // Sanity check json-rpc response
             final JsonNode id = response.get("id");
             final JsonNode result = response.get("result");

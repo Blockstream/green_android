@@ -2,8 +2,6 @@ package com.greenaddress.jade;
 
 import android.util.Log;
 
-import org.h2.util.IOUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

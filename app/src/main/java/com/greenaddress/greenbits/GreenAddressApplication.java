@@ -22,6 +22,7 @@ import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.FailHardActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+import com.greenaddress.jade.JadeAPI;
 
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,8 @@ public class GreenAddressApplication extends MultiDexApplication {
             failHard("Initialization failed", "Cryptographic initialization failed");
             return;
         }
+
+        JadeAPI.isDebug = BuildConfig.DEBUG;
 
         // GDK initialization parameters
         final ObjectNode details = (new ObjectMapper()).createObjectNode();
