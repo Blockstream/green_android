@@ -82,7 +82,11 @@ class ReceiveBtcViewController: KeyboardViewController {
                 self.wallet?.receiveAddress = addr.address
                 self.reload()
                 if HWResolver.shared.hw != nil {
-                    self.validate(addr: addr)
+                    if (HWResolver.shared.hw as? Ledger) != nil {
+                        //Ledger does not suport address validation
+                    } else {
+                        self.validate(addr: addr)
+                    }
                 }
             }.catch { _ in
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))

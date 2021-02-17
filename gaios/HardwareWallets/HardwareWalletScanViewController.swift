@@ -136,6 +136,9 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
             BLEManager.shared.dispose()
             BLEManager.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
             BLEManager.shared.connect(peripheral)
+            if BLEManager.shared.isJade(peripheral) {
+                DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
+            }
         })
         self.present(alert, animated: true, completion: nil)
     }
