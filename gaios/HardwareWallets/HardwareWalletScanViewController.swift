@@ -50,7 +50,15 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row].peripheral
-        BLEManager.shared.prepare(peripheral)
+
+        if BLEManager.shared.isLedger(peripheral) {
+            self.startAnimating()
+            BLEManager.shared.connect(peripheral)
+            DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
+        } else {
+            BLEManager.shared.prepare(peripheral)
+        }
+
     }
 }
 
@@ -136,9 +144,7 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
             BLEManager.shared.dispose()
             BLEManager.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
             BLEManager.shared.connect(peripheral)
-            if BLEManager.shared.isJade(peripheral) {
-                DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
-            }
+            DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
         })
         self.present(alert, animated: true, completion: nil)
     }
