@@ -52,14 +52,19 @@ class HWResolver {
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
             _ = Observable.just(self.hw!)
-                .flatMap { hw -> Observable<[String]> in
+                .flatMap { hw -> Observable<[String: Any]> in
                     if isLiquid {
                         return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
                     }
                     return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
-                }.subscribe(onNext: { data in
-                    let value = "{\"signatures\":\(data.description)}"
-                    seal.fulfill(value)
+                        .compactMap { res in
+                            return ["signatures": res]
+                        }
+                }.subscribe(onNext: { res in
+                    if let data = try?  JSONSerialization.data(withJSONObject: res, options: .fragmentsAllowed),
+                       let text = String(data: data, encoding: String.Encoding.ascii) {
+                        seal.fulfill(text)
+                    }
                     Ledger.shared.TIMEOUT = 30
                 }, onError: { err in
                     seal.reject(err)

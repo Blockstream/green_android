@@ -397,7 +397,7 @@ extension Jade {
             }
     }
 
-    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<[String]> {
+    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<[String: Any]> {
 
         if addressTypes.contains("p2pkh") {
             return Observable.error(JadeError.Abort("Hardware Wallet cannot sign sweep inputs"))
@@ -479,23 +479,31 @@ extension Jade {
             let network = getNetwork()
             let txhex = tx["transaction"] as? String
             let txn = hexToData(txhex ?? "")
-            return Jade.shared.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, change: change)
-        }.compactMap { signatures -> [String] in
-            print(signatures)
-            return signatures
+            return Jade.shared.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, changes: change)
+        }.compactMap { signatures -> [String: Any] in
+            let assetGenerators = trustedCommitments.map { $0?.assetGenerator }.map { (($0 != nil) ? dataToHex(Data($0!)) : nil) }
+            let valueCommitments = trustedCommitments.map { $0?.valueCommitment }.map { (($0 != nil) ? dataToHex(Data($0!)) : nil) }
+            let abfs = trustedCommitments.map { $0?.abf }.map { (($0 != nil) ? dataToHex(Data($0!)) : nil) }
+            let vbfs = trustedCommitments.map { $0?.vbf }.map { (($0 != nil) ? dataToHex(Data($0!)) : nil) }
+            return ["signatures": signatures,
+                    "asset_commitments": assetGenerators,
+                    "value_commitments": valueCommitments,
+                    "assetblinders": abfs,
+                    "amountblinders": vbfs]
         }
     }
 
-    func signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], change: [TxChangeOutput?]) -> Observable<[String]> {
-        let changeParams = change.map { change -> [String: Any] in
+    func  signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], changes: [TxChangeOutput?]) -> Observable<[String]> {
+        let changeParams = changes.map { change -> [String: Any]? in
             let data = try? JSONEncoder().encode(change)
-            let dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
-            return dict ?? [:]
+            var dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
+            dict?["path"] = change?.path ?? []
+            return dict
         }
-        let commitmentsParams = trustedCommitments.map { comm -> [String: Any] in
+        let commitmentsParams = trustedCommitments.map { comm -> [String: Any]? in
             let data = try? JSONEncoder().encode(comm)
             let dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
-            return dict ?? [:]
+            return dict
         }
         let params = ["change": changeParams,
                       "network": network,

@@ -43,10 +43,10 @@ class JadeDevice: HWDeviceProtocol {
         if let p = params {
             packet["params"] = p
         }
-        var encoded: [UInt8] = try! CBOR.encodeAny(packet)
+        let encoded: [UInt8] = try! CBOR.encodeAny(packet)
 
         // manually fix for path array https://github.com/myfreeweb/SwiftCBOR/issues/58
-        if let dict = params as? [String: Any], let path = dict["path"] as? [UInt8] {
+        /*if let dict = params as? [String: Any], let path = dict["path"] as? [UInt8] {
             let encodedPath = CBOR.encodeArray(path)
             let wrongPath = CBOR.encodeByteString(path)
             let pathName: [UInt8] = [0x70, 0x61, 0x74, 0x68] // path is always an array
@@ -56,7 +56,7 @@ class JadeDevice: HWDeviceProtocol {
                 // replace wrong path field with encodedPath
                 encoded = encoded[0..<pos+4] + encodedPath + encoded[pos+4+wrongPath.count..<encoded.count]
             }
-        }
+        }*/
         return Data(encoded)
     }
 

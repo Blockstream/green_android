@@ -26,6 +26,10 @@ public func hexToData(_ hex: String) -> Data {
     return data
 }
 
+public func dataToHex(_ data: Data) -> String {
+    return data.map { String(format: "%02hhx", $0) }.joined()
+}
+
 public func sigToDer(sigDecoded: [UInt8]) throws -> [UInt8] {
     let sig = sigDecoded[1..<sigDecoded.count]
     let sigPtr: UnsafePointer<UInt8> = UnsafePointer(Array(sig))
