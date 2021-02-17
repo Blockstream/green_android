@@ -1,6 +1,6 @@
 import Foundation
 
-protocol TxInputProtocol: Codable  {
+protocol TxInputProtocol: Codable {
     func encode() -> [String: Any]
 }
 
