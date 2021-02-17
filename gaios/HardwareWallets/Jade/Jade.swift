@@ -166,7 +166,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
             }
     }
 
-    func signTxInputs(baseId: Int, inputs: [TxInputBtc?]) -> Observable<[String]> {
+    func signTxInputs(baseId: Int, inputs: [TxInputProtocol?]) -> Observable<[String]> {
         let allWrites = inputs.map {
                 Observable.just($0!)
                     .flatMap { self.signTxInput($0) }
@@ -208,7 +208,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
             }
     }
 
-    func signTxInput(_ input: TxInputBtc) -> Observable<Data> {
+    func signTxInput(_ input: TxInputProtocol) -> Observable<Data> {
         return Observable.create { observer in
             let inputParams = input.encode()
             let package = Jade.shared.build(method: "tx_input", params: inputParams)
@@ -226,10 +226,12 @@ final class Jade: JadeDevice, HWResolverProtocol {
     }
 
     // Helper to get the change paths for auto-validation
-    func getChangeData(outputs: [TxInputOutputData]) -> [TxChangeOutput] {
+    func getChangeData(outputs: [TxInputOutputData]) -> [TxChangeOutput?] {
         // Get the change outputs and paths
-        return outputs.filter { $0.isChange }
-            .map { output -> TxChangeOutput in
+        return outputs.map { output -> TxChangeOutput? in
+            if !(output.isChange ?? true) {
+                    return nil
+                }
                 var csvBlock = 0
                 if let addressType = output.addressType, addressType == "csv" {
                     csvBlock = output.subtype ?? 0
@@ -336,7 +338,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
         var recoveryxpub: String?
         if let chaincode = recoveryChainCode, !chaincode.isEmpty {
             let isNetworkMainnet = ["mainnet", "liquid"].contains(network)
-            recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: isNetworkMainnet, pubKey: hexToData(recoveryPubKey!).encode(), chainCode: hexToData(chaincode).encode(), branch: branch)
+            recoveryxpub = try? bip32KeyFromParentToBase58(isMainnet: isNetworkMainnet, pubKey: [UInt8](hexToData(recoveryPubKey!)), chainCode: [UInt8](hexToData(chaincode)), branch: branch)
         }
         let params = [ "network": network, "subaccount": subaccount, "pointer": pointer,
                        "branch": branch, "recovery_xpub": recoveryxpub ?? "", "csv_blocks": csvBlocks
@@ -379,7 +381,8 @@ extension Jade {
         let params = ["hash_prevouts": hashPrevouts, "output_index": outputIdx, "type": type] as [String: Any]
         return exchange(method: "get_blinding_factor", params: params)
             .compactMap { res -> Data? in
-                return res["result"] as? Data
+                let result = res["result"] as? [UInt8]
+                return Data(result!)
             }
     }
 
@@ -394,49 +397,142 @@ extension Jade {
             }
     }
 
-    func signLiquidTransaction(inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<LiquidHWResult> {
+    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<[String]> {
 
         if addressTypes.contains("p2pkh") {
             return Observable.error(JadeError.Abort("Hardware Wallet cannot sign sweep inputs"))
         }
 
-        var values = [UInt32]()
-        var abfs = [Data]()
-        var vbfs = [Data]()
-        var inputPrevouts = [Data]()
+        guard let dataOutputs = try? JSONSerialization.data(withJSONObject: outputs),
+              let txOutputs = try? JSONDecoder().decode([TxInputOutputData].self, from: dataOutputs) else {
+            return Observable.error(JadeError.Abort("Decode error"))
+        }
+
+        guard let dataInputs = try? JSONSerialization.data(withJSONObject: inputs),
+              let inputs = try? JSONDecoder().decode([TxInputOutputData].self, from: dataInputs) else {
+            return Observable.error(JadeError.Abort("Decode error"))
+        }
 
         let txInputs = inputs.map { input -> TxInputLiquid? in
-            let swInput = !(input["address_type"] as? String == "p2sh")
-            let script = hexToData(input["prevout_script"] as? String ?? "")
-            let commitment = hexToData(input["commitment"] as? String ?? "")
-            let userPath = input["user_path"] as? [UInt32]
-
-            // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
-            values.append(input["satoshi"] as? UInt32 ?? 0)
-            abfs.append(hexToData(input["abf"] as? String ?? ""))
-            vbfs.append(hexToData(input["vbf"] as? String ?? ""))
-
-            let txhash = input["txhash"] as? String
-            let txhex = transactions[txhash ?? ""]
-            inputPrevouts.append(Data(hexToData(txhex!).reversed()))
-
-            let ptIdx = input["ptIdx"] as? UInt
-            inputPrevouts += [Data(ptIdx!.uint32BE())]
-
-            return TxInputLiquid(isWitness: swInput, script: script, valueCommitment: commitment, path: userPath)
+            let swInput = !(input.addressType == "p2sh")
+            let script = hexToData(input.prevoutScript ?? "")
+            let commitment = hexToData(input.commitment ?? "")
+            return TxInputLiquid(isWitness: swInput, script: script, valueCommitment: commitment, path: input.userPath)
         }
-        //SHA256.init()
-        //flatten(inputPrevouts)
-        //final byte[] hashPrevOuts = Wally.sha256d(flatten(inputPrevouts));
 
-        return Observable.error(JadeError.Abort(""))
+        // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
+        var values = inputs.map { $0.satoshi ?? 0 }
+        var abfs = inputs.map { hexToData($0.abf ?? "") }
+        var vbfs = inputs.map { hexToData($0.vbf ?? "") }
+
+        var inputPrevouts = [Data]()
+        inputs.forEach { input in
+            inputPrevouts.append(Data(hexToData(input.txhash!).reversed()))
+            inputPrevouts += [Data(input.ptIdx!.uint32BE())]
+        }
+
+        // Compute the hash of all input prevouts for making deterministic blinding factors
+        let prevOuts = flatten(inputPrevouts.map { [UInt8]($0) }, fixedSize: nil)
+        let hashPrevOuts = Data(try! sha256d(prevOuts))
+
+        // Get trusted commitments per output - null for unblinded outputs
+        var trustedCommitments = [Commitment?]()
+
+        // For all-but-last blinded entry, do not pass custom vbf, so one is generated
+        // Append the output abfs and vbfs to the arrays
+        // assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
+        let lastBlindedIndex = txOutputs.count - 2;  // Could determine this properly
+        var obsCommitments = [Observable<Commitment>]()
+        let lastBlindedOutput = txOutputs[lastBlindedIndex]
+        for (i, output) in txOutputs.enumerated() where i < lastBlindedIndex {
+            values.append(output.satoshi ?? 0)
+            obsCommitments.append( Observable.just(output).flatMap {
+                self.getTrustedCommitment(index: i, output: $0, hashPrevOuts: hashPrevOuts, customVbf: nil)
+            })
+        }
+        return Observable.concat(obsCommitments)
+        .reduce([], accumulator: { _, commitment in
+            trustedCommitments.append(commitment)
+            abfs.append(Data(commitment.abf))
+            vbfs.append(Data(commitment.vbf))
+            return []
+        }).flatMap { _ -> Observable<Data?> in
+            // For the last blinded output, get the abf only
+            values.append(lastBlindedOutput.satoshi ?? 0)
+            return Jade.shared.getBlindingFactor(hashPrevouts: hashPrevOuts, outputIdx: lastBlindedIndex, type: "ASSET")
+        }.flatMap { lastAbf -> Observable<Commitment> in
+            abfs.append(lastAbf!)
+            // For the last blinded output we need to calculate the correct vbf so everything adds up
+            let flattenAbfs = flatten(abfs.map { [UInt8]($0) }, fixedSize: BLINDING_FACTOR_LEN)
+            let flattenVbfs = flatten(vbfs.map { [UInt8]($0) }, fixedSize: BLINDING_FACTOR_LEN)
+            let lastVbf = try asset_final_vbf(values: values, numInputs: inputs.count, abf: flattenAbfs, vbf: flattenVbfs)
+            vbfs.append(Data(lastVbf))
+            // Fetch the last commitment using that explicit vbf
+            return self.getTrustedCommitment(index: lastBlindedIndex, output: lastBlindedOutput, hashPrevOuts: hashPrevOuts, customVbf: Data(lastVbf))
+        }.flatMap { lastCommitment -> Observable<[String]> in
+            trustedCommitments.append(lastCommitment)
+            // Add a 'null' commitment for the final (fee) output
+            trustedCommitments.append(nil)
+            // Get the change outputs and paths
+            let change = self.getChangeData(outputs: txOutputs)
+            // Make jade-api call to sign the txn
+            let network = getNetwork()
+            let txhex = tx["transaction"] as? String
+            let txn = hexToData(txhex ?? "")
+            return Jade.shared.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, change: change)
+        }.compactMap { signatures -> [String] in
+            print(signatures)
+            return signatures
+        }
     }
 
-    func flatten(_ list: [Data]) -> Data {
-        guard !list.isEmpty else {
-            return Data()
+    func signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], change: [TxChangeOutput?]) -> Observable<[String]> {
+        let changeParams = change.map { change -> [String: Any] in
+            let data = try? JSONEncoder().encode(change)
+            let dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
+            return dict ?? [:]
         }
-        return list.reduce(Data(), { (a, b) in Data(a.encode() + b.encode()) })
+        let commitmentsParams = trustedCommitments.map { comm -> [String: Any] in
+            let data = try? JSONEncoder().encode(comm)
+            let dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
+            return dict ?? [:]
+        }
+        let params = ["change": changeParams,
+                      "network": network,
+                      "num_inputs": inputs.count,
+                      "trusted_commitments": commitmentsParams,
+                      "txn": txn] as [String: Any]
+
+        return Jade.shared.exchange(method: "sign_liquid_tx", params: params)
+            .flatMap { res -> Observable<[String]> in
+                guard res["result"] as? Bool != nil else {
+                    throw JadeError.Abort("Error response from initial sign_liquid_tx call: \(res.description)")
+                }
+                return self.signTxInputs(baseId: 0, inputs: inputs)
+            }
     }
 
+    // Helper to get the commitment and blinding key from Jade
+    func getTrustedCommitment(index: Int, output: TxInputOutputData, hashPrevOuts: Data, customVbf: Data?) -> Observable<Commitment> {
+        let assetId = hexToData(output.assetId ?? "")
+        var params = [  "hash_prevouts": hashPrevOuts,
+                        "output_index": index,
+                        "asset_id": assetId,
+                        "value": output.satoshi ?? 0 ] as [String: Any]
+        if let vbf = customVbf, !vbf.isEmpty {
+            params["vbf"] = vbf
+        }
+        return Jade.shared.exchange(method: "get_commitments", params: params)
+            .compactMap { res in
+                let result = res["result"] as? [String: Any]
+                let json = try JSONSerialization.data(withJSONObject: result!, options: [])
+                let comm = try JSONDecoder().decode(Commitment.self, from: json)
+                return comm
+            }.compactMap { (res: Commitment) in
+                // Add the script blinding key
+                var comm = res
+                comm.blindingKey = [UInt8](hexToData(output.publicKey!))
+                return comm
+            }
+    }
 }

@@ -48,11 +48,16 @@ class HWResolver {
             let txOutputs = json["transaction_outputs"] as? [[String: Any]]
             let signingAddressTypes = json["signing_address_types"] as? [String]
             let signingTxs = json["signing_transactions"] as? [String: String]
+            let isLiquid = getGdkNetwork(getNetwork()).liquid
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
-            _ = self.hw!.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
-                .takeLast(1)
-                .subscribe(onNext: { data in
+            _ = Observable.just(self.hw!)
+                .flatMap { hw -> Observable<[String]> in
+                    if isLiquid {
+                        return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
+                    }
+                    return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
+                }.subscribe(onNext: { data in
                     let value = "{\"signatures\":\(data.description)}"
                     seal.fulfill(value)
                     Ledger.shared.TIMEOUT = 30

@@ -25,25 +25,27 @@ struct TxInputOutputData: Codable {
         case commitment = "commitment"
         case abf = "abf"
         case vbf = "vbf"
-        case assetId = "ga_asset_id"
+        case assetId = "asset_id"
+        case assetTag = "asset_tag"
         case publicKey = "public_key"
         case userStatus = "user_status"
         case blockHeight = "block_height"
+        case nonceCommitment = "nonce_commitment"
     }
     let address: String?
     let addressee: String?
     let addressType: String?
-    let isChange: Bool
+    let isChange: Bool?
     let isOutput: Int?
     let isRelevant: Int?
     let isSpent: Int?
     let pointer: Int?
     let prevoutScript: String?
-    let ptIdx: Int64?
+    let ptIdx: UInt?
     let recoveryXpub: String?
     let satoshi: UInt64?
     let script: String?
-    let scriptType: Int?
+    let scriptType: UInt32?
     let sequence: UInt64?
     let subaccount: Int?
     let subtype: Int?
@@ -54,7 +56,9 @@ struct TxInputOutputData: Codable {
     let abf: String?
     let vbf: String?
     let assetId: String?
+    let assetTag: String?
     let publicKey: String?
     let userStatus: Int?
     let blockHeight: UInt32?
+    let nonceCommitment: String?
 }

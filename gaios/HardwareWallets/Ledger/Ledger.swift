@@ -125,11 +125,7 @@ final class Ledger: LedgerCommands, HWResolverProtocol {
         return Observable.error(JadeError.Abort(""))
     }
 
-    func signLiquidTransaction(pubkey: String, scriptHex: String) -> Observable<String?> {
-        return Observable.error(JadeError.Abort(""))
-    }
-
-    func signLiquidTransaction(inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<LiquidHWResult> {
+    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<[String]> {
         return Observable.error(JadeError.Abort(""))
     }
 

@@ -2,7 +2,7 @@ import Foundation
 import ga.wally
 
 public func hexToData(_ hex: String) -> Data {
-    let hex_bytes: UnsafePointer<Int8> = UnsafePointer(hex)
+    /*let hex_bytes: UnsafePointer<Int8> = UnsafePointer(hex)
     precondition(hex.count%2 == 0)
     let length = hex.count/2
     let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: length)
@@ -11,7 +11,19 @@ public func hexToData(_ hex: String) -> Data {
     precondition(written == length)
     return Data(bytesNoCopy: buffer, count: length, deallocator: .custom({ (_, _)  in
         buffer.deallocate()
-    }))
+    }))*/
+    precondition(hex.count%2 == 0)
+    var data = Data(capacity: hex.count/2)
+    var indexIsEven = true
+    for i in hex.indices {
+        if indexIsEven {
+            let byteRange = i...hex.index(after: i)
+            let byte = UInt8(hex[byteRange], radix: 16)
+            data.append(byte!)
+        }
+        indexIsEven.toggle()
+    }
+    return data
 }
 
 public func sigToDer(sigDecoded: [UInt8]) throws -> [UInt8] {
@@ -51,4 +63,35 @@ public func bip32KeyFromParentToBase58(isMainnet: Bool = true, pubKey: [UInt8], 
         throw GaError.GenericError
     }
     return String(cString: xpubPtr!)
+}
+
+public func sha256d(_ input: [UInt8]) throws -> [UInt8] {
+    let inputPtr: UnsafePointer<UInt8> = UnsafePointer(input)
+    let outputPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(SHA256_LEN))
+    if wally_sha256d(inputPtr, input.count, outputPtr, Int(SHA256_LEN)) != WALLY_OK {
+        throw GaError.GenericError
+    }
+    return Array(UnsafeBufferPointer(start: outputPtr, count: Int(SHA256_LEN)))
+}
+
+func asset_final_vbf(values: [UInt64], numInputs: Int, abf: [UInt8], vbf: [UInt8]) throws -> [UInt8] {
+    let valuesPtr: UnsafePointer<UInt64> = UnsafePointer(values)
+    let abfPtr: UnsafePointer<UInt8> = UnsafePointer(abf)
+    let vbfPtr: UnsafePointer<UInt8> = UnsafePointer(vbf)
+    let len = Int(BLINDING_FACTOR_LEN)
+    let bufferPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: len)
+    if wally_asset_final_vbf(valuesPtr, values.count, numInputs, abfPtr, abf.count, vbfPtr, vbf.count, bufferPtr, len) != WALLY_OK {
+        throw GaError.GenericError
+    }
+    return Array(UnsafeBufferPointer(start: bufferPtr, count: len))
+}
+
+func flatten(_ inputs: [[UInt8]], fixedSize: Int32?) -> [UInt8] {
+    return inputs
+        .reduce([UInt8](), { (prev, item) in
+            if let size = fixedSize, item.count < size {
+                return prev + item + [UInt8](repeating: 0, count: Int(size) - item.count)
+            }
+            return prev + item
+        })
 }

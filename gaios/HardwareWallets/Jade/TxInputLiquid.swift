@@ -1,6 +1,6 @@
 import Foundation
 
-struct TxInputLiquid: Codable {
+struct TxInputLiquid: TxInputProtocol {
     enum CodingKeys: String, CodingKey {
         case isWitness = "is_witness"
         case script = "script"

@@ -1,6 +1,10 @@
 import Foundation
 
-struct TxInputBtc: Codable {
+protocol TxInputProtocol: Codable  {
+    func encode() -> [String: Any]
+}
+
+struct TxInputBtc: TxInputProtocol {
     enum CodingKeys: String, CodingKey {
         case inputTx = "input_tx"
         case script = "script"
