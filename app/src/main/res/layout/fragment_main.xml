@@ -10,60 +10,20 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
         app:elevation="0dp"
         android:background="@color/windowBackground">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim="@android:color/transparent"
+            android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll">
 
-            <LinearLayout
+            <com.greenaddress.greenbits.ui.accounts.AccountView
+                android:id="@+id/accountView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin">
-
-                    <ImageButton
-                        android:id="@+id/networkImage"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_gravity="center"
-                        android:layout_marginEnd="3dp"
-                        android:background="?attr/themeIconNoPadding" />
-
-                    <TextView
-                        android:id="@+id/switchNetwork"
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:background="@android:color/transparent"
-                        android:paddingStart="4dp"
-                        android:textAllCaps="false"
-                        android:textColor="@color/white"
-                        android:gravity="center"
-                        android:textSize="16sp" />
-
-
-                </LinearLayout>
-
-                <com.greenaddress.greenbits.ui.accounts.AccountView
-                    android:id="@+id/accountView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginStart="@dimen/activity_horizontal_margin"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
-
-            </LinearLayout>
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -106,19 +66,5 @@
 
         </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_gravity="bottom"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:paddingTop="18dp"
-        android:background="@color/windowBackground"
-        app:itemIconTint="@color/bottom_navigation_view"
-        app:itemTextColor="@color/bottom_navigation_view"
-        app:menu="@menu/navigation">
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

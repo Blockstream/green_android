@@ -10,7 +10,6 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/appbar_padding_top"
         android:theme="@style/AppTheme.AppBarOverlay"
         android:background="@android:color/transparent"
         app:elevation="0dp">
@@ -23,28 +22,25 @@
             android:background="@android:color/transparent"
             app:elevation="0dp">
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/toolbarTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Bitcoin"
+                android:paddingStart="6dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                app:drawableEndCompat="@drawable/ic_expand_more_24dp" />
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navigation"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_gravity="bottom"
-        android:layout_marginEnd="0dp"
-        android:layout_marginStart="0dp"
-        android:paddingTop="18dp"
-        android:background="@color/windowBackground"
-        app:itemIconTint="@color/bottom_navigation_view"
-        app:itemTextColor="@color/bottom_navigation_view"
-        app:menu="@menu/navigation">
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

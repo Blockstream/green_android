@@ -4,10 +4,12 @@
     <item
         android:id="@+id/action_notifications"
         android:title="@string/id_notifications"
-        app:showAsAction="never" />
+        android:icon="@drawable/bottom_navigation_notifications"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/action_settings"
         android:title="@string/id_settings"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_settings"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -49,15 +49,6 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
         onPreferenceChanged.onPreferenceChange(preference, currentVal);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            startActivity(new Intent(getActivity(), SettingsActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     protected < T > T find(final String preferenceName) {
         return (T) findPreference(preferenceName);
     }

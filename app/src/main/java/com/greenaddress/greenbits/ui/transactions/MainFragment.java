@@ -2,14 +2,18 @@ package com.greenaddress.greenbits.ui.transactions;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -21,11 +25,11 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.AccountView;
 import com.greenaddress.greenbits.ui.accounts.SubaccountSelectActivity;
-import com.greenaddress.greenbits.ui.accounts.SwitchNetworkFragment;
 import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 
 import org.bitcoinj.core.Sha256Hash;
@@ -36,18 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observer;
 
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
@@ -130,14 +126,6 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         mAssetsSelection.setOnClickListener(v -> startActivityForResult(new Intent(getGaActivity(),
                                                                                    AssetsSelectActivity.class),
                                                                         REQUEST_SELECT_ASSET));
-        mSwitchNetwork = UI.find(mView, R.id.switchNetwork);
-        mSwitchNetwork.setOnClickListener(v -> showDialog());
-        mSwitchNetwork.setText(getNetwork().getName());
-        mSwitchNetwork.setTextColor(getResources().getColor(R.color.white));
-
-        final Drawable arrow = getContext().getResources().getDrawable(R.drawable.ic_expand_more_24dp);
-        mSwitchNetwork.setCompoundDrawablesWithIntrinsicBounds(null, null, arrow, null);
-
 
         final SharedPreferences preferences = getActivity().getSharedPreferences(network(), MODE_PRIVATE);
         mActiveAccount = preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0);
@@ -306,16 +294,6 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     public void onVerifiedTx(final Observer observer) {
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.getAdapter().notifyDataSetChanged();
-    }
-
-    private void showDialog() {
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        DialogFragment newFragment = SwitchNetworkFragment.newInstance();
-        newFragment.show(ft, "dialog");
     }
 
     private void showTxView(final boolean doShowTxList) {

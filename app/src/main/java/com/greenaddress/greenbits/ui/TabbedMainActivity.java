@@ -7,30 +7,26 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
-import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
+import com.greenaddress.greenbits.ui.accounts.SwitchNetworkFragment;
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
 import com.greenaddress.greenbits.ui.notifications.NotificationsActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-import com.greenaddress.greenbits.ui.preferences.PreferencesActivity;
+import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.ui.transactions.MainFragment;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
@@ -40,8 +36,7 @@ import java.util.Arrays;
 import static com.greenaddress.greenapi.Session.getSession;
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
-public class TabbedMainActivity extends LoggedActivity implements
-    BottomNavigationView.OnNavigationItemSelectedListener  {
+public class TabbedMainActivity extends LoggedActivity  {
 
     private static final String TAG = TabbedMainActivity.class.getSimpleName();
 
@@ -51,8 +46,7 @@ public class TabbedMainActivity extends LoggedActivity implements
         REQUEST_BITCOIN_URL_SEND = 3,
         REQUEST_SELECT_ASSET = 4,
         REQUEST_SELECT_SUBACCOUNT = 5;
-    private ViewPager mViewPager;
-    private BottomNavigationView mNavigation;
+
     private MaterialDialog mSubaccountDialog;
     private boolean mIsBitcoinUri = false;
 
@@ -81,11 +75,21 @@ public class TabbedMainActivity extends LoggedActivity implements
             // If logged in, open send activity
             onBitcoinUri();
         }
+
+        if(savedInstanceState == null){
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.container, new MainFragment()).commit();
+        }
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
+
+        // Update notification Icon
+        MenuItem notificationMenuItem = menu.findItem(R.id.action_notifications);
+        notificationMenuItem.setIcon(!getSession().getNotificationModel().getEvents().isEmpty() ? R.drawable.bottom_navigation_notifications_2 : R.drawable.bottom_navigation_notifications);
         return true;
     }
 
@@ -96,7 +100,7 @@ public class TabbedMainActivity extends LoggedActivity implements
                 startActivity(new Intent(this, NotificationsActivity.class));
                 break;
             case R.id.action_settings:
-                startActivity(new Intent(this, PreferencesActivity.class));
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -145,37 +149,28 @@ public class TabbedMainActivity extends LoggedActivity implements
     }
 
     private void launch() {
-
         setContentView(R.layout.activity_tabbed_main);
         final Toolbar toolbar = UI.find(this, R.id.toolbar);
         setSupportActionBar(toolbar);
+        // Set network Icon
         setTitleWithNetwork(R.string.id_wallets);
+        // Set title as null as we use a custom title element with an arrow and clicklistener
+        setTitle(null);
 
-        // Set up the action bar.
-        final SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = UI.find(this, R.id.container);
-
-        // Keep all of our tabs in memory while paging. This helps any races
-        // left where broadcasts/callbacks are called on the pager when its not
-        // shown.
-        mViewPager.setOffscreenPageLimit(3);
-
-        // Set up the BottomNavigationView and connect to ViewPager
-        mNavigation = findViewById(R.id.navigation);
-        mNavigation.setOnNavigationItemSelectedListener(this);
-        mNavigation.getMenu().findItem(R.id.navigation_home).setChecked(true);
-        mNavigation.setItemIconTintList(null);  // allows colored icons
-        mViewPager = findViewById(R.id.container);
-        // set adapter and tabs only after all setTag in ViewPager container
-        mViewPager.setAdapter(sectionsPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(final int index) {
-                sectionsPagerAdapter.onViewPageSelected(index);
-            }
+        TextView toolbarTitle = UI.find(this, R.id.toolbarTitle);
+        toolbarTitle.setText(getNetwork().getName());
+        toolbarTitle.setOnClickListener(v -> {
+            showDialog();
         });
+    }
+
+    private void showDialog() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = SwitchNetworkFragment.newInstance();
+        newFragment.show(ft, "dialog");
     }
 
     @Override
@@ -183,15 +178,6 @@ public class TabbedMainActivity extends LoggedActivity implements
         super.onResume();
         if (isFinishing())
             return;
-
-        final SectionsPagerAdapter adapter = getPagerAdapter();
-
-        if (adapter == null && !mIsBitcoinUri) {
-            // FIXME: Should pass flag to activity so it shows it was forced logged out
-            startActivity(new Intent(this, FirstScreenActivity.class));
-            finish();
-            return;
-        }
 
         // check available preferred exchange rate
         try {
@@ -201,19 +187,9 @@ public class TabbedMainActivity extends LoggedActivity implements
             UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
         }
 
-        updateBottomNavigationView();
         invalidateOptionsMenu();
     }
 
-    private void updateBottomNavigationView() {
-        // Moving the notifications into the menu, notification icon is no longer used
-//        final MenuItem item = mNavigation.getMenu().findItem(R.id.navigation_notifications);
-//        runOnUiThread(() ->
-//                      item.setIcon(!getSession().getNotificationModel().getEvents().isEmpty() ?
-//                                   R.drawable.bottom_navigation_notifications_2 :
-//                                   R.drawable.bottom_navigation_notifications)
-//                      );
-    }
 
     @Override
     public void onPause() {
@@ -224,20 +200,12 @@ public class TabbedMainActivity extends LoggedActivity implements
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
         case REQUEST_BITCOIN_URL_SEND:
             mIsBitcoinUri = false;
-            launch();
-            onUpdateActiveAccount();
             break;
         case REQUEST_BITCOIN_URL_LOGIN:
             if (resultCode != RESULT_OK) {
@@ -246,7 +214,6 @@ public class TabbedMainActivity extends LoggedActivity implements
                 return;
             }
             mIsBitcoinUri = true;
-            launch();
             break;
         case REQUEST_TX_DETAILS:
             break;
@@ -257,121 +224,5 @@ public class TabbedMainActivity extends LoggedActivity implements
     @Override
     public void onBackPressed() {
         this.moveTaskToBack(true);
-    }
-
-    /*
-       @Override
-       public void update(final Observable observable, final Object data) {
-        super.update(observable,data);
-        if (observable instanceof ActiveAccountObservable)
-            onUpdateActiveAccount();
-        else if (observable instanceof EventDataObservable) {
-            updateBottomNavigationView();
-        } else {
-            invalidateOptionsMenu();
-        }
-       }*/
-
-    public void onUpdateActiveAccount() {
-        getPagerAdapter().notifyDataSetChanged();
-    }
-
-    public SectionsPagerAdapter getPagerAdapter() {
-        if (mViewPager == null)
-            return null;
-        return (SectionsPagerAdapter) mViewPager.getAdapter();
-    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
-        private final Fragment[] mFragments = new Fragment[1];
-        int mSelectedPage = -1;
-        private int mInitialSelectedPage = -1;
-        private boolean mInitialPage = true;
-
-        SectionsPagerAdapter(final FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(final int index) {
-            Log.d(TAG, "SectionsPagerAdapter -> getItem " + index);
-
-            final Fragment centerFragment = new MainFragment();
-
-             return centerFragment;
-        }
-
-        @Override
-        public Object instantiateItem(final ViewGroup container, final int index) {
-            Log.d(TAG, "SectionsPagerAdapter -> instantiateItem " + index);
-
-            mFragments[index] = (Fragment) super.instantiateItem(container, index);
-
-            if (mInitialPage && index == mInitialSelectedPage) {
-                // Call setPageSelected() on the first page, now that it is created
-                Log.d(TAG, "SectionsPagerAdapter -> selecting first page " + index);
-                mInitialSelectedPage = -1;
-                mInitialPage = false;
-            }
-            return mFragments[index];
-        }
-
-        @Override
-        public void destroyItem(final ViewGroup container, final int index, final Object object) {
-            Log.d(TAG, "SectionsPagerAdapter -> destroyItem " + index);
-            if (index >= 0 && index <= 2 && mFragments[index] != null) {
-                // Make sure the fragment is not kept alive and does not
-                // try to process any callbacks it registered for.
-                mFragments[index].onPause();
-                mFragments[index] = null;
-            }
-            super.destroyItem(container, index, object);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragments.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(final int index) {
-            if (getSession().isTwoFAReset())
-                return " " + getString(R.string.id_wallets);
-            final String networkName = getNetwork().getName();
-            return " " + networkName + " " + getString(R.string.id_wallets);
-        }
-
-        void onViewPageSelected(final int index) {
-            Log.d(TAG, "SectionsPagerAdapter -> onViewPageSelected " + index +
-                  " current is " + mSelectedPage + " initial " + mInitialPage);
-
-            if (mInitialPage)
-                mInitialSelectedPage = index; // Store so we can notify it when constructed
-
-            if (index == mSelectedPage)
-                return; // No change to the selected page
-
-            mNavigation.getMenu().getItem(index).setChecked(true);
-            mNavigation.setSelectedItemId(index);
-
-            getSupportActionBar().setTitle(getPageTitle(index));
-            invalidateOptionsMenu();
-        }
-
-        public void onOptionsItemSelected(final MenuItem item) {}
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                mViewPager.setCurrentItem(0);
-                return true;
-        }
-        return false;
     }
 }

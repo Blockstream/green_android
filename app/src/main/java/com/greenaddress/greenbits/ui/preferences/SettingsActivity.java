@@ -1,40 +1,50 @@
 package com.greenaddress.greenbits.ui.preferences;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import static com.greenaddress.greenapi.Session.getSession;
+
 public class SettingsActivity extends GaPreferenceActivity {
-    private Fragment fragment;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(android.R.color.transparent));
-        final String preference;
-        try {
-            preference = getIntent().getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT);
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return;
+
+        Fragment fragment;
+
+        if(savedInstanceState == null) {
+            try {
+                if (getIntent().hasExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT)) {
+                    final String preference = getIntent().getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT);
+
+                    if (preference.equals(SPVPreferenceFragment.class.getName()))
+                        fragment = new SPVPreferenceFragment();
+                    else if (preference.equals(PinPreferenceFragment.class.getName()))
+                        fragment = new PinPreferenceFragment();
+                    else
+                        fragment = new GeneralPreferenceFragment();
+
+                } else {
+                    // Moved from TabbedMainActivity
+                    if (getSession().isTwoFAReset())
+                        fragment = new ResetActivePreferenceFragment();
+                    else if (getSession().isWatchOnly())
+                        fragment = new WatchOnlyPreferenceFragment();
+                    else
+                        fragment = new GeneralPreferenceFragment();
+                }
+
+                getSupportFragmentManager().beginTransaction().add(android.R.id.content, fragment).commit();
+
+            } catch (final Exception e) {
+                e.printStackTrace();
+                finish();
+            }
         }
-
-        if (preference.equals(SPVPreferenceFragment.class.getName()))
-            fragment = new SPVPreferenceFragment();
-        else if (preference.equals(PinPreferenceFragment.class.getName()))
-            fragment = new PinPreferenceFragment();
-        else
-            fragment = new GeneralPreferenceFragment();
-        getSupportFragmentManager().beginTransaction().add(android.R.id.content, fragment).commit();
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (fragment != null)
-            fragment.onActivityResult(requestCode, resultCode, data);
     }
 }
