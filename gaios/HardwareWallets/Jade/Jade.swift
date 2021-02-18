@@ -427,8 +427,8 @@ extension Jade {
 
         var inputPrevouts = [Data]()
         inputs.forEach { input in
-            inputPrevouts.append(Data(hexToData(input.txhash!).reversed()))
-            inputPrevouts += [Data(input.ptIdx!.uint32BE())]
+            inputPrevouts += [Data(hexToData(input.txhash!).reversed())]
+            inputPrevouts += [Data(input.ptIdx!.uint32LE())]
         }
 
         // Compute the hash of all input prevouts for making deterministic blinding factors
