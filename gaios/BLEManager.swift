@@ -170,9 +170,22 @@ class BLEManager {
             }.flatMap { p in
                 self.isJade(p) ? self.connectJade(p) : self.connectLedger(p)
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .compactMap { _ in
-                _ = try session.registerUser(mnemonic: "", hw_device: ["device": HWResolver.shared.hw!.info]).resolve().wait()
-                _ = try session.login(mnemonic: "", hw_device: ["device": HWResolver.shared.hw!.info]).resolve().wait()
+            .flatMap { _ in
+                return Observable<[String: Any]>.create { observer in
+                    let info = HWResolver.shared.hw!.info
+                    _ = try? session.registerUser(mnemonic: "", hw_device: ["device": info]).resolve()
+                        .then { _ in
+                            try session.login(mnemonic: "", hw_device: ["device": info]).resolve()
+                        }.get { _ in
+                            Registry.shared.refresh().recover { _ in Guarantee() }
+                        }.done { res in
+                            observer.onNext(res)
+                            observer.onCompleted()
+                        }.catch { err in
+                            observer.onError(err)
+                        }
+                    return Disposables.create { }
+                }
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.delegate?.onConnect(p)
