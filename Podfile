@@ -8,7 +8,7 @@ target 'gaios' do
   # Pods for Green
   pod 'PromiseKit', '6.10.0'
   pod 'SwiftLint', '0.35.0'
-  pod 'RxSwift', '5.1.0'
+  pod 'RxSwift', '~> 5.1'
   pod 'RxBluetoothKit', '6.0.0'
   pod 'SwiftCBOR', '0.4.3'
   target 'gaiosTests' do

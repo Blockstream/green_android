@@ -10,14 +10,14 @@ PODS:
     - PromiseKit/CorePromise
   - RxBluetoothKit (6.0.0):
     - RxSwift (~> 5.1)
-  - RxSwift (5.1.0)
+  - RxSwift (5.1.1)
   - SwiftCBOR (0.4.3)
   - SwiftLint (0.35.0)
 
 DEPENDENCIES:
   - PromiseKit (= 6.10.0)
   - RxBluetoothKit (= 6.0.0)
-  - RxSwift (= 5.1.0)
+  - RxSwift (~> 5.1)
   - SwiftCBOR (= 0.4.3)
   - SwiftLint (= 0.35.0)
 
@@ -32,10 +32,10 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   PromiseKit: 1fdaeb6c0a94a5114fcb814ff3d772b86886ad4e
   RxBluetoothKit: dad22912b15b74a40df8f60057f218d4e851746d
-  RxSwift: ad5874f24bb0dbffd1e9bb8443604e3578796c7a
+  RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
   SwiftCBOR: c7d740966575e0fd5d971466de2b6776db3f10c3
   SwiftLint: 5553187048b900c91aa03552807681bb6b027846
 
-PODFILE CHECKSUM: 3918977415e49080c0e22cb079ba064c25d5247a
+PODFILE CHECKSUM: 35eabdcca450cd903e1c32da16a0c7b3b6e8979c
 
 COCOAPODS: 1.10.1
