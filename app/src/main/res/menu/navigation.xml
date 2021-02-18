@@ -9,12 +9,5 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/bottom_navigation_home"
-        
         android:title=""/>
-
-    <item
-        android:id="@+id/navigation_notifications"
-        android:icon="@drawable/bottom_navigation_notifications"
-        android:title=""/>
-
 </menu>

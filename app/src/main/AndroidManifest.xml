@@ -243,6 +243,11 @@
             android:screenOrientation="portrait"
             />
         <activity
+            android:name=".notifications.NotificationsActivity"
+            android:label="@string/id_notifications"
+            android:screenOrientation="portrait"
+            />
+        <activity
             android:name=".authentication.TrezorPinActivity"
             android:screenOrientation="portrait"
             />

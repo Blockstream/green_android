@@ -8,6 +8,8 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -26,7 +28,7 @@ import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
-import com.greenaddress.greenbits.ui.notifications.NotificationsFragment;
+import com.greenaddress.greenbits.ui.notifications.NotificationsActivity;
 import com.greenaddress.greenbits.ui.preferences.GeneralPreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment;
@@ -81,6 +83,26 @@ public class TabbedMainActivity extends LoggedActivity implements
             // If logged in, open send activity
             onBitcoinUri();
         }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_notifications:
+                final Intent intent = new Intent(this, NotificationsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_settings:
+
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void onBitcoinUri() {
@@ -188,12 +210,13 @@ public class TabbedMainActivity extends LoggedActivity implements
     }
 
     private void updateBottomNavigationView() {
-        final MenuItem item = mNavigation.getMenu().findItem(R.id.navigation_notifications);
-        runOnUiThread(() ->
-                      item.setIcon(!getSession().getNotificationModel().getEvents().isEmpty() ?
-                                   R.drawable.bottom_navigation_notifications_2 :
-                                   R.drawable.bottom_navigation_notifications)
-                      );
+        // Moving the notifications into the menu, notification icon is no longer used
+//        final MenuItem item = mNavigation.getMenu().findItem(R.id.navigation_notifications);
+//        runOnUiThread(() ->
+//                      item.setIcon(!getSession().getNotificationModel().getEvents().isEmpty() ?
+//                                   R.drawable.bottom_navigation_notifications_2 :
+//                                   R.drawable.bottom_navigation_notifications)
+//                      );
     }
 
     @Override
@@ -268,7 +291,7 @@ public class TabbedMainActivity extends LoggedActivity implements
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
-        private final Fragment[] mFragments = new Fragment[3];
+        private final Fragment[] mFragments = new Fragment[2];
         int mSelectedPage = -1;
         private int mInitialSelectedPage = -1;
         private boolean mInitialPage = true;
@@ -293,7 +316,6 @@ public class TabbedMainActivity extends LoggedActivity implements
             switch (index) {
             case 0: return preferenceFragment;
             case 1: return centerFragment;
-            case 2: return new NotificationsFragment();
             }
             return null;
         }
@@ -338,7 +360,6 @@ public class TabbedMainActivity extends LoggedActivity implements
             switch (index) {
             case 0: return " " + getString(R.string.id_settings);
             case 1: return " " + networkName + " " + getString(R.string.id_wallets);
-            case 2: return " " + getString(R.string.id_notifications);
             }
             return null;
         }
@@ -369,15 +390,12 @@ public class TabbedMainActivity extends LoggedActivity implements
     @Override
     public boolean onNavigationItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.navigation_settings:
-            mViewPager.setCurrentItem(0);
-            return true;
-        case R.id.navigation_home:
-            mViewPager.setCurrentItem(1);
-            return true;
-        case R.id.navigation_notifications:
-            mViewPager.setCurrentItem(2);
-            return true;
+            case R.id.navigation_settings:
+                mViewPager.setCurrentItem(0);
+                return true;
+            case R.id.navigation_home:
+                mViewPager.setCurrentItem(1);
+                return true;
         }
         return false;
     }
