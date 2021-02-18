@@ -10,7 +10,7 @@ target 'gaios' do
   pod 'SwiftLint', '0.35.0'
   pod 'RxSwift', '~> 5.1'
   pod 'RxBluetoothKit', '6.0.0'
-  pod 'SwiftCBOR', '0.4.3'
+  pod 'SwiftCBOR', :git => 'https://github.com/lvaccaro/SwiftCBOR.git', :branch => 'green'
   target 'gaiosTests' do
     inherit! :search_paths
     # Pods for testing

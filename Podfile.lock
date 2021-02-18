@@ -18,7 +18,7 @@ DEPENDENCIES:
   - PromiseKit (= 6.10.0)
   - RxBluetoothKit (= 6.0.0)
   - RxSwift (~> 5.1)
-  - SwiftCBOR (= 0.4.3)
+  - SwiftCBOR (from `https://github.com/lvaccaro/SwiftCBOR.git`, branch `green`)
   - SwiftLint (= 0.35.0)
 
 SPEC REPOS:
@@ -26,8 +26,17 @@ SPEC REPOS:
     - PromiseKit
     - RxBluetoothKit
     - RxSwift
-    - SwiftCBOR
     - SwiftLint
+
+EXTERNAL SOURCES:
+  SwiftCBOR:
+    :branch: green
+    :git: https://github.com/lvaccaro/SwiftCBOR.git
+
+CHECKOUT OPTIONS:
+  SwiftCBOR:
+    :commit: eccdfd1f41a865a356e6b211fb9754e49e29e041
+    :git: https://github.com/lvaccaro/SwiftCBOR.git
 
 SPEC CHECKSUMS:
   PromiseKit: 1fdaeb6c0a94a5114fcb814ff3d772b86886ad4e
@@ -36,6 +45,6 @@ SPEC CHECKSUMS:
   SwiftCBOR: c7d740966575e0fd5d971466de2b6776db3f10c3
   SwiftLint: 5553187048b900c91aa03552807681bb6b027846
 
-PODFILE CHECKSUM: 35eabdcca450cd903e1c32da16a0c7b3b6e8979c
+PODFILE CHECKSUM: cfe1ac655097123ce53be7a586444d6b5c046108
 
 COCOAPODS: 1.10.1
