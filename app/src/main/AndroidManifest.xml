@@ -292,6 +292,11 @@
             android:name=".preferences.CSVTimeActivity"
             android:screenOrientation="portrait"
             />
+        <activity
+            android:name=".preferences.PreferencesActivity"
+            android:label="@string/id_settings"
+            android:screenOrientation="portrait"
+            />
 
     </application>
 

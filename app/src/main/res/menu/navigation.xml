@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_settings"
-        android:icon="@drawable/bottom_navigation_settings"
-        android:title=""/>
-
-    <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/bottom_navigation_home"
         android:title=""/>

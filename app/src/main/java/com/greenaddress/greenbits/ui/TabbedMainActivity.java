@@ -29,10 +29,8 @@ import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
 import com.greenaddress.greenbits.ui.notifications.NotificationsActivity;
-import com.greenaddress.greenbits.ui.preferences.GeneralPreferenceFragment;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment;
-import com.greenaddress.greenbits.ui.preferences.WatchOnlyPreferenceFragment;
+import com.greenaddress.greenbits.ui.preferences.PreferencesActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.ui.transactions.MainFragment;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
@@ -95,11 +93,10 @@ public class TabbedMainActivity extends LoggedActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_notifications:
-                final Intent intent = new Intent(this, NotificationsActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(this, NotificationsActivity.class));
                 break;
             case R.id.action_settings:
-
+                startActivity(new Intent(this, PreferencesActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -179,7 +176,6 @@ public class TabbedMainActivity extends LoggedActivity implements
                 sectionsPagerAdapter.onViewPageSelected(index);
             }
         });
-        mViewPager.setCurrentItem(1);
     }
 
     @Override
@@ -291,7 +287,7 @@ public class TabbedMainActivity extends LoggedActivity implements
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
-        private final Fragment[] mFragments = new Fragment[2];
+        private final Fragment[] mFragments = new Fragment[1];
         int mSelectedPage = -1;
         private int mInitialSelectedPage = -1;
         private boolean mInitialPage = true;
@@ -303,21 +299,10 @@ public class TabbedMainActivity extends LoggedActivity implements
         @Override
         public Fragment getItem(final int index) {
             Log.d(TAG, "SectionsPagerAdapter -> getItem " + index);
-            final Fragment preferenceFragment;
-            if (getSession().isTwoFAReset())
-                preferenceFragment = new ResetActivePreferenceFragment();
-            else if (getSession().isWatchOnly())
-                preferenceFragment = new WatchOnlyPreferenceFragment();
-            else
-                preferenceFragment = new GeneralPreferenceFragment();
 
             final Fragment centerFragment = new MainFragment();
 
-            switch (index) {
-            case 0: return preferenceFragment;
-            case 1: return centerFragment;
-            }
-            return null;
+             return centerFragment;
         }
 
         @Override
@@ -357,11 +342,7 @@ public class TabbedMainActivity extends LoggedActivity implements
             if (getSession().isTwoFAReset())
                 return " " + getString(R.string.id_wallets);
             final String networkName = getNetwork().getName();
-            switch (index) {
-            case 0: return " " + getString(R.string.id_settings);
-            case 1: return " " + networkName + " " + getString(R.string.id_wallets);
-            }
-            return null;
+            return " " + networkName + " " + getString(R.string.id_wallets);
         }
 
         void onViewPageSelected(final int index) {
@@ -376,10 +357,7 @@ public class TabbedMainActivity extends LoggedActivity implements
 
             mNavigation.getMenu().getItem(index).setChecked(true);
             mNavigation.setSelectedItemId(index);
-            if (index != 1)
-                getSupportActionBar().show();
-            else
-                getSupportActionBar().hide();
+
             getSupportActionBar().setTitle(getPageTitle(index));
             invalidateOptionsMenu();
         }
@@ -390,11 +368,8 @@ public class TabbedMainActivity extends LoggedActivity implements
     @Override
     public boolean onNavigationItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.navigation_settings:
-                mViewPager.setCurrentItem(0);
-                return true;
             case R.id.navigation_home:
-                mViewPager.setCurrentItem(1);
+                mViewPager.setCurrentItem(0);
                 return true;
         }
         return false;
