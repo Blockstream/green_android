@@ -28,6 +28,7 @@ class HardwareWalletScanViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         BLEManager.shared.disposeScan()
+        radarImageView.stopSpinning()
     }
 }
 
