@@ -127,7 +127,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
 
         let txInputs = inputs.map { input -> TxInputBtc? in
             let swInput = !(input["address_type"] as? String == "p2sh")
-            let prevoutScript = inputs.first?["prevout_script"] as? String
+            let prevoutScript = input["prevout_script"] as? String
             let script = hexToData(prevoutScript!)
             let userPath = input["user_path"] as? [UInt32]
 
@@ -493,7 +493,7 @@ extension Jade {
         }
     }
 
-    func  signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], changes: [TxChangeOutput?]) -> Observable<[String]> {
+    func signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], changes: [TxChangeOutput?]) -> Observable<[String]> {
         let changeParams = changes.map { change -> [String: Any]? in
             let data = try? JSONEncoder().encode(change)
             var dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
