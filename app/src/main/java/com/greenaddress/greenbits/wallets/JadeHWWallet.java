@@ -7,12 +7,12 @@ import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Longs;
+import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.Commitment;
@@ -68,7 +68,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     // Authenticate Jade with pinserver and check firmware version with fw-server
-    public Single<JadeHWWallet> authenticate(final GaActivity parent) throws Exception {
+    public Single<JadeHWWallet> authenticate(final HWWalletBridge parent) throws Exception {
         /*
          * 1. check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
          * 2. authenticate the user (see above)
@@ -108,7 +108,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> getXpubs(final GaActivity parent, final List<List<Integer>> paths) {
+    public List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths) {
         Log.d(TAG, "getXpubs() for " + paths.size() + " paths.");
 
         final String network = getNetwork().getNetwork();
@@ -130,7 +130,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String signMessage(final GaActivity parent, final List<Integer> path, final String message) {
+    public String signMessage(final HWWalletBridge parent, final List<Integer> path, final String message) {
         Log.d(TAG, "signMessage() for message of length " + message.length() + " using path " + path);
 
         try {
@@ -179,7 +179,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> signTransaction(final GaActivity parent,
+    public List<String> signTransaction(final HWWalletBridge parent,
                                         final ObjectNode tx,
                                         final List<InputOutputData> inputs,
                                         final List<InputOutputData> outputs,
@@ -316,7 +316,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public LiquidHWResult signLiquidTransaction(final GaActivity parent, final ObjectNode tx,
+    public LiquidHWResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
                                                 final List<InputOutputData> inputs,
                                                 final List<InputOutputData> outputs,
                                                 final Map<String,String> transactions,
@@ -417,7 +417,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getBlindingKey(final GaActivity parent, final String scriptHex) {
+    public String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
         Log.d(TAG, "getBlindingKey() for script of length " + scriptHex.length());
 
         try {
@@ -432,7 +432,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getBlindingNonce(final GaActivity parent, final String pubkey, final String scriptHex) {
+    public String getBlindingNonce(final HWWalletBridge parent, final String pubkey, final String scriptHex) {
         Log.d(TAG, "getBlindingNonce() for script of length " + scriptHex.length() + " and pubkey " + pubkey);
 
         try {

@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +22,7 @@ import androidx.preference.PreferenceManager;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GreenAddressApplication;
@@ -36,7 +38,7 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
  * Provides access to the main Application and Service objects along with
  * support code to handle service initialization, error handling etc.
  */
-public abstract class GaActivity extends AppCompatActivity {
+public abstract class GaActivity extends AppCompatActivity implements HWWalletBridge {
 
     public static final int HARDWARE_PIN_REQUEST = 59212;
     public static final int HARDWARE_PASSPHRASE_REQUEST = 21392;
@@ -227,6 +229,11 @@ public abstract class GaActivity extends AppCompatActivity {
             toast.setDuration(iconId == R.drawable.ic_ledger ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
             toast.show();
         });
+    }
+
+    @Override
+    public Activity getActivity() {
+        return this;
     }
 
     @Override

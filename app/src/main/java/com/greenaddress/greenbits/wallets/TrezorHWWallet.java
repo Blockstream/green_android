@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
+import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.satoshilabs.trezor.Trezor;
 import com.satoshilabs.trezor.protobuf.TrezorMessage;
@@ -47,7 +47,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> getXpubs(final GaActivity parent, final List<List<Integer>> paths) {
+    public List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
 
         for (List<Integer> path : paths) {
@@ -64,7 +64,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String signMessage(final GaActivity parent, final List<Integer> path, final String message) {
+    public String signMessage(final HWWalletBridge parent, final List<Integer> path, final String message) {
         Message m = mTrezor.io(TrezorMessage.SignMessage.newBuilder()
                                .addAllAddressN(path)
                                .setMessage(ByteString.copyFromUtf8(message)));
@@ -85,7 +85,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> signTransaction(final GaActivity parent, final ObjectNode tx,
+    public List<String> signTransaction(final HWWalletBridge parent, final ObjectNode tx,
                                         final List<InputOutputData> inputs,
                                         final List<InputOutputData> outputs,
                                         final Map<String, String> transactions,
@@ -103,13 +103,13 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public LiquidHWResult signLiquidTransaction(GaActivity parent, ObjectNode tx, List<InputOutputData> inputs,
+    public LiquidHWResult signLiquidTransaction(HWWalletBridge parent, ObjectNode tx, List<InputOutputData> inputs,
                                                 List<InputOutputData> outputs, Map<String, String> transactions,
                                                 List<String> addressTypes) {
         return null;
     }
 
-    private List<String> signTransactionImpl(final GaActivity parent, final ObjectNode tx,
+    private List<String> signTransactionImpl(final HWWalletBridge parent, final ObjectNode tx,
                                              final List<InputOutputData> inputs,
                                              final List<InputOutputData> outputs,
                                              final Map<String, String> transactions,
@@ -196,7 +196,7 @@ public class TrezorHWWallet extends HWWallet {
         return mPrevTxs.get(key);
     }
 
-    private TrezorType.HDNodeType getUserXpub(final GaActivity parent, final List<Integer> path) {
+    private TrezorType.HDNodeType getUserXpub(final HWWalletBridge parent, final List<Integer> path) {
         final String key = Joiner.on("/").join(path);
 
         if (!mUserXPubs.containsKey(key)) {
@@ -232,12 +232,12 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String getBlindingKey(GaActivity parent, String scriptHex) {
+    public String getBlindingKey(HWWalletBridge parent, String scriptHex) {
         return null;
     }
 
     @Override
-    public String getBlindingNonce(GaActivity parent, String pubkey, String scriptHex) {
+    public String getBlindingNonce(HWWalletBridge parent, String pubkey, String scriptHex) {
         return null;
     }
 
@@ -245,7 +245,7 @@ public class TrezorHWWallet extends HWWallet {
         return TrezorType.HDNodePathType.newBuilder().setNode(node).addAddressN(pointer).build();
     }
 
-    private TrezorType.MultisigRedeemScriptType makeRedeemScript(final GaActivity parent, final InputOutputData in) {
+    private TrezorType.MultisigRedeemScriptType makeRedeemScript(final HWWalletBridge parent, final InputOutputData in) {
         final int pointer = in.getPointer();
         final TrezorType.HDNodeType serviceParent = getXpub(mServiceXPubs, in.getServiceXpub());
         final TrezorType.HDNodeType userParent =
@@ -262,7 +262,7 @@ public class TrezorHWWallet extends HWWallet {
         return b.setM(2).build();
     }
 
-    private TrezorType.TxOutputType.Builder createOutput(final GaActivity parent,
+    private TrezorType.TxOutputType.Builder createOutput(final HWWalletBridge parent,
                                                          final TrezorType.TxRequestDetailsType txRequest,
                                                          final List<InputOutputData> outputs) {
         final InputOutputData out = outputs.get(txRequest.getRequestIndex());
@@ -284,7 +284,7 @@ public class TrezorHWWallet extends HWWallet {
                .setScriptPubkey(ByteString.copyFrom(Wally.tx_get_output_script(prevTx, txRequest.getRequestIndex())));
     }
 
-    private TrezorType.TxInputType.Builder createInput(final GaActivity parent,
+    private TrezorType.TxInputType.Builder createInput(final HWWalletBridge parent,
                                                        final TrezorType.TxRequestDetailsType txRequest,
                                                        final List<InputOutputData> inputs) {
         final int index = txRequest.getRequestIndex();
@@ -315,7 +315,7 @@ public class TrezorHWWallet extends HWWallet {
         return txin.setScriptType(TrezorType.InputScriptType.SPENDMULTISIG);
     }
 
-    private Message handleCommon(final GaActivity parent, final Message m) {
+    private Message handleCommon(final HWWalletBridge parent, final Message m) {
         switch (m.getClass().getSimpleName()) {
         case "ButtonRequest":
             parent.interactionRequest(this);

@@ -11,12 +11,12 @@ import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.core.VarInt;
@@ -79,7 +79,7 @@ public class BTChipHWWallet extends HWWallet {
         // No-op
     }
 
-    public List<String> getXpubs(final GaActivity parent, final List<List<Integer>> paths) {
+    public List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
         try {
             for (final List<Integer> path : paths) {
@@ -101,7 +101,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public String getBlindingKey(final GaActivity parent, final String scriptHex) {
+    public String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
         try {
             final BTChipDongle.BTChipPublicKey blindingKey = mDongle.getBlindingKey(Wally.hex_to_bytes(scriptHex));
             final byte[] compressed = KeyUtils.compressPublicKey(blindingKey.getPublicKey());
@@ -113,7 +113,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public String getBlindingNonce(GaActivity parent, String pubkey, String scriptHex) {
+    public String getBlindingNonce(HWWalletBridge parent, String pubkey, String scriptHex) {
         try {
             final byte[] fullPk = Wally.ec_public_key_decompress(Wally.hex_to_bytes(pubkey), null);
             final BTChipDongle.BTChipPublicKey nonce = mDongle.getBlindingNonce(fullPk, Wally.hex_to_bytes(scriptHex));
@@ -129,7 +129,7 @@ public class BTChipHWWallet extends HWWallet {
         return mDongle.getGreenAddress(csvBlocks > 0, subaccount.getPointer(), branch, pointer, csvBlocks);
     }
 
-    public String signMessage(final GaActivity parent, final List<Integer> path, final String message) {
+    public String signMessage(final HWWalletBridge parent, final List<Integer> path, final String message) {
         try {
             mDongle.signMessagePrepare(path, message.getBytes(StandardCharsets.UTF_8));
             return Wally.hex_from_bytes(mDongle.signMessageSign(new byte[] {0}).getSignature());
@@ -139,7 +139,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> signTransaction(final GaActivity parent, final ObjectNode tx,
+    public List<String> signTransaction(final HWWalletBridge parent, final ObjectNode tx,
                                         final List<InputOutputData> inputs,
                                         final List<InputOutputData> outputs,
                                         final Map<String, String> transactions,
@@ -174,7 +174,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public LiquidHWResult signLiquidTransaction(GaActivity parent, ObjectNode tx, List<InputOutputData> inputs,
+    public LiquidHWResult signLiquidTransaction(HWWalletBridge parent, ObjectNode tx, List<InputOutputData> inputs,
                                                 List<InputOutputData> outputs, Map<String, String> transactions,
                                                 List<String> addressTypes) {
         final HashSet<String> addrTypes = new HashSet<>(addressTypes);
@@ -258,7 +258,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     // This assumes segwit = true
-    private LiquidSigCommitment signLiquid(final GaActivity parent, final ObjectNode tx,
+    private LiquidSigCommitment signLiquid(final HWWalletBridge parent, final ObjectNode tx,
                                            final List<InputOutputData> inputs,
                                            final List<InputOutputData> outputs) throws BTChipException {
         final BTChipDongle.BTChipLiquidInput hwInputs[] = new BTChipDongle.BTChipLiquidInput[inputs.size()];
@@ -364,7 +364,7 @@ public class BTChipHWWallet extends HWWallet {
         return hwInputs;
     }
 
-    private List<byte[]> signSW(final GaActivity parent, final ObjectNode tx,
+    private List<byte[]> signSW(final HWWalletBridge parent, final ObjectNode tx,
                                 final List<InputOutputData> inputs,
                                 final List<InputOutputData> outputs,
                                 final Map<String, String> transactions) throws BTChipException {
@@ -399,7 +399,7 @@ public class BTChipHWWallet extends HWWallet {
         return sigs;
     }
 
-    private List<byte[]> signNonSW(final GaActivity parent, final ObjectNode tx,
+    private List<byte[]> signNonSW(final HWWalletBridge parent, final ObjectNode tx,
                                    final List<InputOutputData> inputs,
                                    final List<InputOutputData> outputs,
                                    final Map<String, String> transactions) throws BTChipException {

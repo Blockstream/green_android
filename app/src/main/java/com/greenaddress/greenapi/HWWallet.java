@@ -5,7 +5,6 @@ import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenbits.ui.GaActivity;
 
 import java.util.List;
 import java.util.Map;
@@ -18,12 +17,12 @@ public abstract class HWWallet {
     public abstract void disconnect();
 
     // Return the base58check encoded xpubs for each path in paths
-    public abstract List<String> getXpubs(final GaActivity parent, final List<List<Integer>> paths);
+    public abstract List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths);
 
     // Sign message with the key resulting from path, and return it as hex encoded DER
-    public abstract String signMessage(final GaActivity parent, final List<Integer> path, final String message);
+    public abstract String signMessage(final HWWalletBridge parent, final List<Integer> path, final String message);
 
-    public abstract List<String> signTransaction(final GaActivity parent, final ObjectNode tx,
+    public abstract List<String> signTransaction(final HWWalletBridge parent, final ObjectNode tx,
                                                  final List<InputOutputData> inputs,
                                                  final List<InputOutputData> outputs,
                                                  final Map<String,String> transactions,
@@ -65,15 +64,15 @@ public abstract class HWWallet {
         }
     }
 
-    public abstract LiquidHWResult signLiquidTransaction(final GaActivity parent, final ObjectNode tx,
-                                                 final List<InputOutputData> inputs,
-                                                 final List<InputOutputData> outputs,
-                                                 final Map<String,String> transactions,
-                                                 final List<String> addressTypes);
+    public abstract LiquidHWResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+                                                         final List<InputOutputData> inputs,
+                                                         final List<InputOutputData> outputs,
+                                                         final Map<String,String> transactions,
+                                                         final List<String> addressTypes);
 
-    public abstract String getBlindingKey(final GaActivity parent, final String scriptHex);
+    public abstract String getBlindingKey(final HWWalletBridge parent, final String scriptHex);
 
-    public abstract String getBlindingNonce(final GaActivity parent, final String pubkey, final String scriptHex);
+    public abstract String getBlindingNonce(final HWWalletBridge parent, final String pubkey, final String scriptHex);
 
     public abstract int getIconResourceId();
 

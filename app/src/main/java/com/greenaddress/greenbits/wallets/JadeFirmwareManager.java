@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.wallets;
 
-import android.content.res.Resources;
 import android.util.Base64;
 import android.util.Log;
 
@@ -8,7 +7,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import com.greenaddress.greenbits.ui.GaActivity;
+import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.jade.JadeAPI;
@@ -47,8 +46,7 @@ public class JadeFirmwareManager {
     private static final String JADE_BOARD_TYPE_JADE = "JADE";
     private static final String JADE_FEATURE_SECURE_BOOT = "SB";
 
-    private GaActivity parent;
-    private final Resources res;
+    private HWWalletBridge parent;
 
     // A firmware instance on the file server
     private static class FwFileData {
@@ -75,9 +73,8 @@ public class JadeFirmwareManager {
         }
     }
 
-    public JadeFirmwareManager(final GaActivity parent) {
+    public JadeFirmwareManager(final HWWalletBridge parent) {
         this.parent = parent;
-        this.res = parent.getApplicationContext().getResources();
     }
 
     // Check Jade fw against minimum allowed firmware version
@@ -109,7 +106,7 @@ public class JadeFirmwareManager {
         final URL tls = new URL(JADE_FW_SERVER_HTTPS + fwFilePath);
         final URL onion = new URL(JADE_FW_SERVER_ONION + fwFilePath);
         final String certificate = CharStreams.toString(new InputStreamReader(
-                this.res.openRawResource(R.raw.jade_services_certificate),
+                this.parent.getResources().openRawResource(R.raw.jade_services_certificate),
                 Charsets.UTF_8));
 
         // Make http GET call to fetch file
@@ -245,7 +242,7 @@ public class JadeFirmwareManager {
                 final String title = fwValid ? "New Jade Firmware Available" : "New Jade Firmware Required";
                 parent.runOnUiThread(() -> {
                     final MaterialDialog d;
-                    d = UI.popup(parent, title, R.string.id_continue, R.string.id_cancel)
+                    d = UI.popup(parent.getActivity(), title, R.string.id_continue, R.string.id_cancel)
                             .content("Install version: " + fwFile.version + " ?")
                             .onNegative((dialog, which) -> {
                                 // User declined to update firmware right now
