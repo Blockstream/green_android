@@ -23,14 +23,14 @@ struct TxInputOutputData: Codable {
         case serviceXpub = "service_xpub"
         case userPath = "user_path"
         case commitment = "commitment"
-        case abf = "abf"
-        case vbf = "vbf"
         case assetId = "asset_id"
         case assetTag = "asset_tag"
         case publicKey = "public_key"
         case userStatus = "user_status"
         case blockHeight = "block_height"
         case nonceCommitment = "nonce_commitment"
+        case assetblinder = "assetblinder"
+        case amountblinder = "amountblinder"
     }
     let address: String?
     let addressee: String?
@@ -53,12 +53,19 @@ struct TxInputOutputData: Codable {
     let serviceXpub: String?
     let userPath: [UInt32]?
     let commitment: String?
-    let abf: String?
-    let vbf: String?
     let assetId: String?
     let assetTag: String?
     let publicKey: String?
     let userStatus: Int?
     let blockHeight: UInt32?
     let nonceCommitment: String?
+    let assetblinder: String? // asset blinding factor
+    let amountblinder: String? // value blinding factor
+
+    var abf: [UInt8] {
+        get { return [UInt8](hexToData(assetblinder ?? "")).reversed() }
+    }
+    var vbf: [UInt8] {
+        get { return [UInt8](hexToData(amountblinder ?? "")).reversed() }
+    }
 }

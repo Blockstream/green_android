@@ -422,8 +422,8 @@ extension Jade {
 
         // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
         var values = inputs.map { $0.satoshi ?? 0 }
-        var abfs = inputs.map { hexToData($0.abf ?? "") }
-        var vbfs = inputs.map { hexToData($0.vbf ?? "") }
+        var abfs = inputs.map { $0.abf }
+        var vbfs = inputs.map { $0.vbf }
 
         var inputPrevouts = [Data]()
         inputs.forEach { input in
@@ -453,20 +453,20 @@ extension Jade {
         return Observable.concat(obsCommitments)
         .reduce([], accumulator: { _, commitment in
             trustedCommitments.append(commitment)
-            abfs.append(Data(commitment.abf))
-            vbfs.append(Data(commitment.vbf))
+            abfs.append(commitment.abf)
+            vbfs.append(commitment.vbf)
             return []
         }).flatMap { _ -> Observable<Data?> in
             // For the last blinded output, get the abf only
             values.append(lastBlindedOutput.satoshi ?? 0)
             return Jade.shared.getBlindingFactor(hashPrevouts: hashPrevOuts, outputIdx: lastBlindedIndex, type: "ASSET")
         }.flatMap { lastAbf -> Observable<Commitment> in
-            abfs.append(lastAbf!)
+            abfs.append([UInt8](lastAbf!))
             // For the last blinded output we need to calculate the correct vbf so everything adds up
-            let flattenAbfs = flatten(abfs.map { [UInt8]($0) }, fixedSize: BLINDING_FACTOR_LEN)
-            let flattenVbfs = flatten(vbfs.map { [UInt8]($0) }, fixedSize: BLINDING_FACTOR_LEN)
+            let flattenAbfs = flatten(abfs, fixedSize: BLINDING_FACTOR_LEN)
+            let flattenVbfs = flatten(vbfs, fixedSize: BLINDING_FACTOR_LEN)
             let lastVbf = try asset_final_vbf(values: values, numInputs: inputs.count, abf: flattenAbfs, vbf: flattenVbfs)
-            vbfs.append(Data(lastVbf))
+            vbfs.append(lastVbf)
             // Fetch the last commitment using that explicit vbf
             return self.getTrustedCommitment(index: lastBlindedIndex, output: lastBlindedOutput, hashPrevOuts: hashPrevOuts, customVbf: Data(lastVbf))
         }.flatMap { lastCommitment -> Observable<[String]> in
@@ -481,10 +481,10 @@ extension Jade {
             let txn = hexToData(txhex ?? "")
             return Jade.shared.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, changes: change)
         }.compactMap { signatures -> [String: Any] in
-            let assetGenerators = trustedCommitments.map { $0?.assetGenerator }.map { (($0 != nil) ? dataToHex(Data($0!)) : nil) }
-            let valueCommitments = trustedCommitments.map { $0?.valueCommitment }.map { (($0 != nil) ? dataToHex(Data($0!)) : nil) }
-            let abfs = trustedCommitments.map { $0?.abf }.map { (($0 != nil) ? dataToHex(Data($0!)) : nil) }
-            let vbfs = trustedCommitments.map { $0?.vbf }.map { (($0 != nil) ? dataToHex(Data($0!)) : nil) }
+            let assetGenerators = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.assetGenerator)) : nil) }
+            let valueCommitments = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.valueCommitment)) : nil) }
+            let abfs = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.abf.reversed())) : nil) }
+            let vbfs = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.vbf.reversed())) : nil) }
             return ["signatures": signatures,
                     "asset_commitments": assetGenerators,
                     "value_commitments": valueCommitments,
