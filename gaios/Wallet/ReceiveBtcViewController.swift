@@ -110,8 +110,10 @@ class ReceiveBtcViewController: KeyboardViewController {
             }
         }.catch { err in
             switch err {
-            case JadeError.Abort(_):
-                DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
+            case JadeError.Abort(let desc),
+                 JadeError.URLError(let desc),
+                 JadeError.Declined(let desc):
+                DropAlert().error(message: desc)
             default:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             }
