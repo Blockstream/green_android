@@ -190,7 +190,6 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onConnect(p)
             }, onError: { err in
-
                 switch err {
                 case is BluetoothError:
                     let bleErr = err as? BluetoothError
@@ -214,6 +213,9 @@ class BLEManager {
                     self.delegate?.onError(err)
                 case is Ledger.SWError:
                     let err = BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
+                    self.delegate?.onError(err)
+                case is JadeError:
+                    let err = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
                     self.delegate?.onError(err)
                 default:
                     let err = BLEManagerError.genericErr(txt: err.localizedDescription)
