@@ -112,6 +112,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
             .do(onNext: { print($0) })
             .flatMap { res -> Observable<String> in
                 let xpub = res["result"] as? String
+                self.xPubsCached[key] = xpub
                 return Observable.just(xpub ?? "")
             }
     }
