@@ -9,9 +9,9 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Build;
 
+import com.blockstream.hardware.BuildConfig;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerDeviceBLE;
-import com.greenaddress.greenbits.ui.BuildConfig;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;

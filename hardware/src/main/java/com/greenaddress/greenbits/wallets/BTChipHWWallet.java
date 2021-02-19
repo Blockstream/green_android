@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
+import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
@@ -17,7 +18,6 @@ import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.core.VarInt;
 

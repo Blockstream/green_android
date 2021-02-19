@@ -3,13 +3,12 @@ package com.greenaddress.greenbits.wallets;
 import android.util.Base64;
 import android.util.Log;
 
-import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.hardware.R;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.greenaddress.greenapi.HWWalletBridge;
-import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.VersionInfo;
 
@@ -25,8 +24,6 @@ import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-// GDKSession used to implement http-request calls to firmware-server
-import static com.greenaddress.greenapi.Session.getSession;
 
 // Class to handle jade firmware validation and OTA updates (with fw server)
 // Separated from main wallet functions in JadeHWWallet
@@ -47,6 +44,7 @@ public class JadeFirmwareManager {
     private static final String JADE_FEATURE_SECURE_BOOT = "SB";
 
     private HWWalletBridge parent;
+    private final HttpRequestProvider httpRequestProvider;
 
     // A firmware instance on the file server
     private static class FwFileData {
@@ -73,8 +71,9 @@ public class JadeFirmwareManager {
         }
     }
 
-    public JadeFirmwareManager(final HWWalletBridge parent) {
+    public JadeFirmwareManager(final HWWalletBridge parent, HttpRequestProvider httpRequestProvider) {
         this.parent = parent;
+        this.httpRequestProvider = httpRequestProvider;
     }
 
     // Check Jade fw against minimum allowed firmware version
@@ -111,7 +110,7 @@ public class JadeFirmwareManager {
 
         // Make http GET call to fetch file
         Log.i(TAG, "Fetching firmware file: " + fwFilePath);
-        final JsonNode ret = getSession().httpRequest("GET",
+        final JsonNode ret = httpRequestProvider.getHttpRequest().httpRequest("GET",
                 Arrays.asList(tls, onion),
                 null,
                 isBase64 ? "base64" : "text",
@@ -239,46 +238,41 @@ public class JadeFirmwareManager {
                 // Get first/only match then offer as Y/N to user
                 // FIXME: show user full list and let them choose
                 final FwFileData fwFile = updates.get(0);
-                final String title = fwValid ? "New Jade Firmware Available" : "New Jade Firmware Required";
-                parent.runOnUiThread(() -> {
-                    final MaterialDialog d;
-                    d = UI.popup(parent.getActivity(), title, R.string.id_continue, R.string.id_cancel)
-                            .content("Install version: " + fwFile.version + " ?")
-                            .onNegative((dialog, which) -> {
-                                // User declined to update firmware right now
-                                final Disposable unused = Single.just(fwFile)
-                                        .subscribeOn(Schedulers.computation())
-                                        .doOnSuccess(fw -> Log.i(TAG, "No OTA firmware selected"))
-                                        .subscribe(fw -> emitter.onSuccess(fwValid),
-                                                   emitter::onError);
-                            })
-                            .onPositive((dialog, which) -> {
-                                // Update firmware
-                                final Disposable unused = Single.just(fwFile)
-                                        .subscribeOn(Schedulers.computation())
-                                        .doOnSuccess(fw -> Log.i(TAG, "Loading selected firmware file: " + fwFile.filepath))
-                                        .subscribe(fw -> {
-                                                    loadFirmware(fwFile);
-                                                    if (fw.getFirmware() == null) {
-                                                        emitter.onSuccess(fwValid);
-                                                    } else {
-                                                        try {
-                                                            // Try to OTA the fw onto Jade
-                                                            doOtaUpdate(jade, verInfo.getJadeOtaMaxChunk(), fwFile);
 
-                                                            // Check fw validity again (from scratch)
-                                                            final VersionInfo newInfo = jade.getVersionInfo();
-                                                            final boolean fwNowValid = isJadeFwValid(newInfo.getJadeVersion());
-                                                            emitter.onSuccess(fwNowValid);
-                                                        } catch (final Exception e) {
-                                                            emitter.onError(e);
-                                                        }
-                                                    }
-                                                },
-                                                emitter::onError);
-                                })
-                            .build();
-                    d.show();
+                parent.jadeAskForFirmwareUpgrade(fwFile.version, !fwValid, isPositive -> {
+                    if(isPositive){
+                        // Update firmware
+                        final Disposable unused = Single.just(fwFile)
+                                .subscribeOn(Schedulers.computation())
+                                .doOnSuccess(fw -> Log.i(TAG, "Loading selected firmware file: " + fwFile.filepath))
+                                .subscribe(fw -> {
+                                            loadFirmware(fwFile);
+                                            if (fw.getFirmware() == null) {
+                                                emitter.onSuccess(fwValid);
+                                            } else {
+                                                try {
+                                                    // Try to OTA the fw onto Jade
+                                                    doOtaUpdate(jade, verInfo.getJadeOtaMaxChunk(), fwFile);
+
+                                                    // Check fw validity again (from scratch)
+                                                    final VersionInfo newInfo = jade.getVersionInfo();
+                                                    final boolean fwNowValid = isJadeFwValid(newInfo.getJadeVersion());
+                                                    emitter.onSuccess(fwNowValid);
+                                                } catch (final Exception e) {
+                                                    emitter.onError(e);
+                                                }
+                                            }
+                                        },
+                                        emitter::onError);
+                    }else{
+                        // User declined to update firmware right now
+                        final Disposable unused = Single.just(fwFile)
+                                .subscribeOn(Schedulers.computation())
+                                .doOnSuccess(fw -> Log.i(TAG, "No OTA firmware selected"))
+                                .subscribe(fw -> emitter.onSuccess(fwValid),
+                                        emitter::onError);
+                    }
+                    return null;
                 });
             } catch (final Exception e) {
                 emitter.onError(e);

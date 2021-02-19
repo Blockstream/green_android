@@ -80,7 +80,6 @@ public class TabbedMainActivity extends LoggedActivity  {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.container, new MainFragment()).commit();
         }
-
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {

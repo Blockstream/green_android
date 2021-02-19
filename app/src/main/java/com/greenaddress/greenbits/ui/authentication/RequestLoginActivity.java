@@ -229,7 +229,7 @@ public class RequestLoginActivity extends LoginActivity {
                 .doOnSuccess(session -> Log.d(TAG, "Creating Jade HW Wallet)"))
                 .map(session -> new HWDeviceData("Jade", true, true, HWDeviceData.HWDeviceDataLiquidSupport.Lite))
                 .map(hwDeviceData -> new JadeHWWallet(jade, networkData, hwDeviceData))
-                .flatMap(jadeWallet -> jadeWallet.authenticate(this))
+                .flatMap(jadeWallet -> jadeWallet.authenticate(this, getSession()))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
                 .observeOn(AndroidSchedulers.mainThread())

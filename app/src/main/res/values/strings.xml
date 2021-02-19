@@ -353,6 +353,9 @@
   <string name="id_or">OR</string>
   <string name="id_our_support_page">our support page</string>
   <string name="id_outdated_hardware_wallet">Outdated hardware wallet firmware. Please upgrade to the latest firmware from your desktop.</string>
+  <string name="id_new_jade_firmware_available">New Jade Firmware Available</string>
+  <string name="id_new_jade_firmware_required">New Jade Firmware Required</string>
+  <string name="id_install_version_s">Install version: %1$s?</string>
   <string name="id_outgoing">Outgoing</string>
   <string name="id_password">Password</string>
   <string name="id_password_protected">Password protected</string>

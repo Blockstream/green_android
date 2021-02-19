@@ -30,8 +30,13 @@ android {
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
     implementation project(':crypto')
+    implementation project(':bitcoinj:core')
     /** ----------------------------------------------------------------------------------------- */
 
+    /**  --- AndroidX --------------------------------------------------------------------------- */
+    implementation 'androidx.arch.core:core-common:2.1.0'
+    /** ----------------------------------------------------------------------------------------- */
+    
     /**  --- Guava ------------------------------------------------------------------------------ */
     implementation 'com.google.guava:guava:24.1-android'
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version:'3.4.0'
