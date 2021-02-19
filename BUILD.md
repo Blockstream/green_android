@@ -25,7 +25,7 @@ published by GreenAddress. Gradle/Android Studio will automatically use the late
 
 To download and update manually native libraries to the latest supported run:
 
-`cd app && ./fetch_gdk_binaries.sh && cd ..`
+`cd crypto && ./fetch_gdk_binaries.sh && cd ..`
 
 #### Cross-compile the native libraries (advanced):
 
@@ -44,7 +44,7 @@ using:
 You must set the environment variables `ANDROID_NDK` and `JAVA_HOME`
 correctly, then run:
 
-`cd app && ./prepare_gdk_clang.sh && cd ..`
+`cd crypto && ./prepare_gdk_clang.sh && cd ..`
 
 If you get errors building please ensure your are using the recommended NDK
 version.

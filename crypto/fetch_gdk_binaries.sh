@@ -23,16 +23,16 @@ check_command shasum
 
 # Find out where we are being run from to get paths right
 OLD_PWD=$(pwd)
-APP_ROOT=${OLD_PWD}
-if [ -d "${APP_ROOT}/app" ]; then
-    APP_ROOT="${APP_ROOT}/app"
+CRYPTO_MODULE_ROOT=${OLD_PWD}
+if [ -d "${CRYPTO_MODULE_ROOT}/crypto" ]; then
+    CRYPTO_MODULE_ROOT="${CRYPTO_MODULE_ROOT}/crypto"
 fi
 
-JNILIBSDIR=${APP_ROOT}/src/main/jniLibs
-GDK_JAVA_DIR="${APP_ROOT}/src/main/java/com/blockstream"
+JNILIBSDIR=${CRYPTO_MODULE_ROOT}/src/main/jniLibs
+GDK_JAVA_DIR="${CRYPTO_MODULE_ROOT}/src/main/java/com/blockstream"
 
 # Clean up any previous install
-rm -rf gdk-android-jni* ${APP_ROOT}/src/main/jniLibs ${GDK_JAVA_DIR}
+rm -rf gdk-android-jni* ${CRYPTO_MODULE_ROOT}/src/main/jniLibs ${GDK_JAVA_DIR}
 
 # Fetch, validate and decompress gdk
 curl -sL -o ${TARBALL} "${URL}"
@@ -41,7 +41,7 @@ tar xvf ${TARBALL}
 rm ${TARBALL}
 
 # Move the libraries and Java wrapper where we need them
-mv ${NAME}/lib/ ${APP_ROOT}/src/main/jniLibs
+mv ${NAME}/lib/ ${CRYPTO_MODULE_ROOT}/src/main/jniLibs
 mv ${NAME}/java/com/blockstream/ ${GDK_JAVA_DIR}
 
 # Cleanup

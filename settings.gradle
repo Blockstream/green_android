@@ -1,1 +1,2 @@
+include ':crypto'
 include ':app', ':bitcoinj:core', ':bitcoinj:tools'

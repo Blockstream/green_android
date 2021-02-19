@@ -92,19 +92,6 @@ android {
         ignoreWarnings false
         disable 'MissingTranslation'
     }
-    task fetchdepstask (type: Exec) {
-        workingDir '.'
-        commandLine './fetch_gdk_binaries.sh'
-    }
-}
-
-afterEvaluate {
-  android.applicationVariants.all { variant ->
-      def folder = new File('./app/src/main/jniLibs')
-      if (!folder.exists()) {
-          variant.javaCompiler.dependsOn(fetchdepstask)
-      }
-  }
 }
 
 configurations {
@@ -113,6 +100,7 @@ configurations {
 
 dependencies {
     implementation project(':bitcoinj:core')
+    implementation project(':crypto')
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
