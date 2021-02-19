@@ -99,8 +99,11 @@ configurations {
 }
 
 dependencies {
+    /**  --- Modules ---------------------------------------------------------------------------- */
     implementation project(':bitcoinj:core')
     implementation project(':crypto')
+    implementation project(':hardware')
+    /** ----------------------------------------------------------------------------------------- */
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
@@ -130,12 +133,9 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
-    implementation 'com.github.felHR85:UsbSerial:6.0.6'
 }
 
 repositories {
     google()
     jcenter()
-    maven { url "https://jitpack.io" }
 }

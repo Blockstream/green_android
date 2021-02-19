@@ -2,12 +2,12 @@ package com.greenaddress.greenapi.data;
 
 import androidx.annotation.NonNull;
 
+import com.blockstream.crypto.BuildConfig;
+import com.blockstream.crypto.R;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.greenaddress.greenbits.ui.BuildConfig;
-import com.greenaddress.greenbits.ui.R;
 
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.MainNetParams;
