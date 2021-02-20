@@ -45,7 +45,6 @@ import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.greenaddress.greenapi.Registry.getRegistry;
 
 public class TransactionActivity extends LoggedActivity implements View.OnClickListener,
                                          AssetsAdapter.OnAssetSelected  {
@@ -400,7 +399,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         if (mAssetsBalances.containsKey(assetId)) {
             satoshi = mAssetsBalances.get(assetId);
         }
-        final AssetInfoData info = getRegistry().getInfos().get(assetId);
+        final AssetInfoData info = getSession().getRegistry().getInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", info)
         .putExtra("SATOSHI", satoshi);

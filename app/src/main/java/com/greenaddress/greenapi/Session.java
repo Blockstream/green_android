@@ -26,6 +26,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private static Session instance = new Session();
 
+    private Registry mRegistry;
     private String mWatchOnlyUsername;
     private boolean pinJustSaved = false;
     private HWWallet mHWWallet = null;
@@ -39,6 +40,14 @@ public class Session extends GDKSession implements HttpRequestProvider {
 
     public static Session getSession() {
         return instance;
+    }
+
+    public Registry getRegistry() {
+        if(mRegistry == null){
+            mRegistry = new Registry(this);
+        }
+
+        return mRegistry;
     }
 
     public boolean isWatchOnly() {

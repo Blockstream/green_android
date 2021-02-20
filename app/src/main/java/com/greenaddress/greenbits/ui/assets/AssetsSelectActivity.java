@@ -27,8 +27,6 @@ import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Map;
 
-import static com.greenaddress.greenapi.Registry.getRegistry;
-
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
@@ -90,7 +88,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        final AssetInfoData assetInfo = getRegistry().getInfos().get(assetId);
+        final AssetInfoData assetInfo = getSession().getRegistry().getInfos().get(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", assetInfo)
         .putExtra("SATOSHI", mAssetsBalances.get(assetId));

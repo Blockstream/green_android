@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.greenaddress.greenapi.Registry.getRegistry;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
@@ -287,7 +286,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         final long satoshi = mSubaccount.getSatoshi().get(mSelectedAsset);
-        final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
+        final AssetInfoData info = getSession().getRegistry().getInfos().get(mSelectedAsset);
 
         final Map<String, Long> balances = new HashMap<>();
         balances.put(mSelectedAsset, satoshi);
@@ -527,7 +526,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
         if (!"btc".equals(mSelectedAsset)) {
-            final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
+            final AssetInfoData info = getSession().getRegistry().getInfos().get(mSelectedAsset);
             details.set("asset_info", info.toObjectNode());
         }
         mCurrentAmount = getSession().convert(details);
@@ -586,7 +585,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     public void onFinish(final ObjectNode transactionData) {
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
-        final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
+        final AssetInfoData info = getSession().getRegistry().getInfos().get(mSelectedAsset);
         removeUtxosIfTooBig(transactionData);
         intent.putExtra(PrefKeys.INTENT_STRING_TX, transactionData.toString());
         intent.putExtra("asset_info", info);
@@ -617,7 +616,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final ObjectNode amount = mapper.createObjectNode();
         if (isAsset()) {
             final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
-            final AssetInfoData info = getRegistry().getInfos().get(mSelectedAsset);
+            final AssetInfoData info = getSession().getRegistry().getInfos().get(mSelectedAsset);
             amount.set("asset_info", (info == null ? assetInfoDefault : info).toObjectNode());
         }
         try {

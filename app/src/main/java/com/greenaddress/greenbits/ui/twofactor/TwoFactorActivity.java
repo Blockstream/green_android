@@ -25,7 +25,6 @@ import com.greenaddress.greenbits.QrBitmap;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -36,7 +35,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.greenaddress.greenapi.Registry.getRegistry;
 
 
 public class TwoFactorActivity extends LoggedActivity {

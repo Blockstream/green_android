@@ -23,8 +23,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.greenaddress.greenapi.Registry.getRegistry;
-
 
 public abstract class LoginActivity extends GaActivity {
 
@@ -76,11 +74,11 @@ public abstract class LoginActivity extends GaActivity {
             Observable.just(getSession())
             .subscribeOn(Schedulers.computation())
             .map((session) -> {
-                getRegistry().cached();
+                getSession().getRegistry().cached();
                 return session;
             })
             .map((session) -> {
-                getRegistry().refresh();
+                getSession().getRegistry().refresh();
                 return session;
             })
             .observeOn(AndroidSchedulers.mainThread())

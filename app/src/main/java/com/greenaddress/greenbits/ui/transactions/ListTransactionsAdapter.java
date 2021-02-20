@@ -40,7 +40,6 @@ import java.text.DateFormat;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.greenaddress.greenapi.Registry.getRegistry;
 
 public class ListTransactionsAdapter extends
     Adapter<ViewHolder> {
@@ -130,7 +129,7 @@ public class ListTransactionsAdapter extends
             else if (mNetworkData.getLiquid() && txItem.isAsset()) {
                 final String assetId =
                     txItem.getSatoshi().keySet().iterator().next();
-                final AssetInfoData assetInfo = getRegistry().getInfos().get(assetId);
+                final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getInfos().get(assetId);
                 message = assetInfo != null ? assetInfo.getEntity().getDomain() : assetId;
             } else if (txItem.getTxType() == TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(
@@ -207,7 +206,7 @@ public class ListTransactionsAdapter extends
                 final String amount = Conversion.getBtc(mActivity.getSession(), tx.getSatoshi().get("btc"), true);
                 return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
             }
-            AssetInfoData info = getRegistry().getInfos().get(assetId);
+            AssetInfoData info = mActivity.getSession().getRegistry().getInfos().get(assetId);
             if (info == null)
                 info = new AssetInfoData(assetId);
             final String amount = Conversion.getAsset(mActivity.getSession(), tx.getSatoshi().get(assetId), assetId, info, true);
