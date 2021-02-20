@@ -9,11 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.params.MainNetParams;
-import org.bitcoinj.params.RegTestParams;
-import org.bitcoinj.params.TestNet3Params;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
@@ -45,21 +40,6 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
     private List<Integer> csvBuckets;
 
     @JsonIgnore
-    public NetworkParameters getNetworkParameters() {
-        switch (network == null ? "mainnet" : network) {
-        case "mainnet":
-            return MainNetParams.get();
-        case "testnet":
-            return TestNet3Params.get();
-        case "regtest":
-        case "localtest":
-            return RegTestParams.get();
-        default:
-            return null;
-        }
-    }
-
-    @JsonIgnore
     public static NetworkData find(final String networkName, final List<NetworkData> list) {
         for (NetworkData n : list)
             if (n.getNetwork().equals(networkName))
@@ -74,11 +54,13 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
 
     @JsonIgnore
     public boolean isTestnet() {
-        return getNetworkParameters() == TestNet3Params.get();
+        return "testnet".equals(network);
     }
 
     @JsonIgnore
-    public boolean isRegtest() { return getNetworkParameters() == RegTestParams.get(); }
+    public boolean isRegtest() {
+        return "regtest".equals(network) || "localtest".equals(network);
+    }
 
     @JsonIgnore
     public int getBip32Network() {
