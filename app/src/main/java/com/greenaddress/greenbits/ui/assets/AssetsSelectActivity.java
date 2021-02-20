@@ -28,7 +28,7 @@ import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 import java.util.Map;
 
 import static com.greenaddress.greenapi.Registry.getRegistry;
-import static com.greenaddress.greenapi.Session.getSession;
+
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
@@ -124,7 +124,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         }).subscribe((subaccounts) -> {
             stopLoading();
             mAssetsBalances = subaccounts;
-            final AssetsAdapter adapter = new AssetsAdapter(mAssetsBalances, getNetwork(), this);
+            final AssetsAdapter adapter = new AssetsAdapter(this, mAssetsBalances, getNetwork(), this);
             mRecyclerView.setAdapter(adapter);
         }, (final Throwable e) -> {
             stopLoading();

@@ -48,7 +48,7 @@ import io.reactivex.schedulers.Schedulers;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
-import static com.greenaddress.greenapi.Session.getSession;
+
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_SUBACCOUNT;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_TX_DETAILS;
@@ -117,6 +117,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         mAccountView = UI.find(mView, R.id.accountView);
         mAccountView.listMode(true);
         mAccountView.setOnClickListener(this);
+        mAccountView.setSession(getSession());
         if (getSession().isTwoFAReset())
             mAccountView.hideActions();
         else

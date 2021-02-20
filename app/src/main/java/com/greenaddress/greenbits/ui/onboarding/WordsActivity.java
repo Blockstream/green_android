@@ -12,7 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -122,7 +122,7 @@ public class WordsActivity extends LoginActivity implements View.OnClickListener
 
     public String getSignUpMnemonic() {
         if (mSignUpMnemonic == null)
-            mSignUpMnemonic = GDKSession.generateMnemonic("en");
+            mSignUpMnemonic = getSession().generateMnemonic("en");
         return mSignUpMnemonic;
     }
 

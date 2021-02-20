@@ -92,6 +92,7 @@ import java.util.concurrent.Executors;
 import static android.content.Context.MODE_PRIVATE;
 import static com.greenaddress.greenapi.Session.getSession;
 
+
 public class SPV {
 
     private final static String TAG = SPV.class.getSimpleName();

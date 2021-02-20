@@ -26,7 +26,7 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class SubaccountSelectActivity extends LoggedActivity implements AccountAdapter.OnAccountSelected {
 
@@ -50,7 +50,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements AccountA
         final float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         final boolean isWatchonly = getSession().isWatchOnly();
-        final AccountAdapter accountsAdapter = new AccountAdapter(mSubaccountList, this, !isWatchonly);
+        final AccountAdapter accountsAdapter = new AccountAdapter(this, mSubaccountList, this, !isWatchonly);
         mRecyclerView.addItemDecoration(bottomOffsetDecoration);
         mRecyclerView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
@@ -97,8 +97,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements AccountA
         balanceReq.setSatoshi(totalSatoshi);
         try {
             final BalanceData total = getSession().convertBalance(balanceReq);
-            final String btcString = Conversion.getBtc(total, true);
-            final String fiatString = Conversion.getFiat(total, true);
+            final String btcString = Conversion.getBtc(getSession(), total, true);
+            final String fiatString = Conversion.getFiat(getSession(), total, true);
             mTotalAmountBtc.setTextColor(ThemeUtils.resolveColorAccent(this));
             mTotalAmountBtc.setText(btcString);
             mTotalAmountFiat.setText(" ≈ " + fiatString);

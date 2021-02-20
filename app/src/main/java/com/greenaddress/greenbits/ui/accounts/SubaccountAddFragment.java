@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenbits.ui.GAFragment;
 import com.greenaddress.greenbits.ui.R;
@@ -21,7 +21,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class SubaccountAddFragment extends GAFragment {
 

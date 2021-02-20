@@ -13,7 +13,7 @@ import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.gdk.JSONConverterImpl;
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.data.NetworkData;
@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.greenaddress.greenapi.Session.getSession;
 
 public class GreenAddressApplication extends MultiDexApplication {
 
@@ -150,7 +152,7 @@ public class GreenAddressApplication extends MultiDexApplication {
 
     // get Network function
     public static NetworkData getNetworkData(final String network) {
-        final List<NetworkData> networks = GDKSession.getNetworks();
+        final List<NetworkData> networks = getSession().getNetworks();
         for (final NetworkData n : networks) {
             if (n.getNetwork().equals(network)) {
                 return n;

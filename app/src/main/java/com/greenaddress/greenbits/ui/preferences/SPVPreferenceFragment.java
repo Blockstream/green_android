@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener,

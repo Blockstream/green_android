@@ -35,7 +35,7 @@ import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.greenapi.CryptoHelper;
 import com.greenaddress.greenapi.MnemonicHelper;
 import com.greenaddress.greenbits.ui.CB;
@@ -50,8 +50,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.content.ClipDescription.MIMETYPE_TEXT_PLAIN;
-import static com.greenaddress.gdk.GDKSession.getErrorCode;
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class MnemonicActivity extends LoginActivity implements View.OnClickListener,
                                       View.OnKeyListener, TextView.OnEditorActionListener {
@@ -282,8 +281,8 @@ public class MnemonicActivity extends LoginActivity implements View.OnClickListe
             onLoginSuccess();
         }, (final Throwable e) -> {
             stopLoading();
-            GDKSession.get().disconnect();
-            final Integer code = getErrorCode(e.getMessage());
+            getSession().disconnect();
+            final Integer code = getSession().getErrorCode(e.getMessage());
             if (code == GDK.GA_ERROR) {
                 UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
             } else {

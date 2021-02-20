@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.spv.SPV;
@@ -52,4 +53,7 @@ public abstract class GAFragment extends Fragment {
         return getActivity() == null;
     }
 
+    public Session getSession() {
+        return Session.getSession();
+    }
 }

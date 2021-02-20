@@ -17,7 +17,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -29,8 +29,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import static com.greenaddress.gdk.GDKSession.getErrorCode;
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class SelectionActivity extends LoginActivity implements View.OnClickListener {
     private String mMnemonic;
@@ -79,8 +78,8 @@ public class SelectionActivity extends LoginActivity implements View.OnClickList
             startActivity(savePin);
         }, (final Throwable e) -> {
             stopLoading();
-            GDKSession.get().disconnect();
-            final Integer code = getErrorCode(e.getMessage());
+            getSession().disconnect();
+            final Integer code = getSession().getErrorCode(e.getMessage());
             if (code == GDK.GA_ERROR) {
                 UI.toast(this, R.string.id_login_failed, Toast.LENGTH_LONG);
             } else {

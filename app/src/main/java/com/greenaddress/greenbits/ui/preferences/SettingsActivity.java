@@ -5,7 +5,7 @@ import android.preference.PreferenceActivity;
 
 import androidx.fragment.app.Fragment;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class SettingsActivity extends GaPreferenceActivity {
 

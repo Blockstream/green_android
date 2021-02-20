@@ -33,7 +33,7 @@ import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Arrays;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
 public class TabbedMainActivity extends LoggedActivity  {

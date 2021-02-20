@@ -19,7 +19,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import com.blockstream.libgreenaddress.GDK;
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.PinData;
 import com.greenaddress.greenbits.AuthenticationHandler;
@@ -44,8 +44,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
-import static com.greenaddress.gdk.GDKSession.getErrorCode;
-import static com.greenaddress.greenapi.Session.getSession;
 
 public class PinActivity extends LoginActivity implements PinFragment.OnPinListener {
 
@@ -87,13 +85,13 @@ public class PinActivity extends LoginActivity implements PinFragment.OnPinListe
             goToTabbedMainActivity();
         }, (final Throwable e) -> {
             stopLoading();
-            GDKSession.get().disconnect();
+            getSession().disconnect();
             onLoginFailure(e);
         });
     }
 
     void onLoginFailure(final Throwable e) {
-        final Integer code = getErrorCode(e.getMessage());
+        final Integer code = getSession().getErrorCode(e.getMessage());
         if (code == GDK.GA_NOT_AUTHORIZED || e.getMessage().contains(":login failed:")) {
             final SharedPreferences.Editor editor = mPin.edit();
             final int counter = mPin.getInt("counter", 0) + 1;

@@ -24,7 +24,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.greenaddress.greenapi.Registry.getRegistry;
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public abstract class LoginActivity extends GaActivity {
 

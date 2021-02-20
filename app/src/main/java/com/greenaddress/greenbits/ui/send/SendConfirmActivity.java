@@ -39,8 +39,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.greenaddress.greenapi.Session.getSession;
-
 public class SendConfirmActivity extends LoggedActivity implements SwipeButton.OnActiveListener {
     private static final String TAG = SendConfirmActivity.class.getSimpleName();
     private final ObjectMapper mObjectMapper = new ObjectMapper();
@@ -131,7 +129,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             balances.put(tag, amount);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null);
+            final AssetsAdapter adapter = new AssetsAdapter(this, balances, getNetwork(), null);
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
         } else {
@@ -157,8 +155,8 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     private String getFormatAmount(final long amount) {
         try {
             return String.format("%s / %s",
-                                 Conversion.getBtc(amount, true),
-                                 Conversion.getFiat(amount, true));
+                                 Conversion.getBtc(getSession(), amount, true),
+                                 Conversion.getFiat(getSession(), amount, true));
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
             return "";

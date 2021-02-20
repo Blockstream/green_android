@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class SecurityActivity extends LoggedActivity implements View.OnClickListener {
     private static final int REQUEST_2FA = 100;

@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 
+import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.UI;
@@ -81,5 +82,9 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
 
     public void toast(final int id) {
         UI.toast(this, id, Toast.LENGTH_LONG);
+    }
+
+    public Session getSession() {
+        return Session.getSession();
     }
 }

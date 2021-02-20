@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static com.greenaddress.greenapi.Session.getSession;
 
+
 public class Registry {
 
     private static Registry instance = new Registry();

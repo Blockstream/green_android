@@ -25,6 +25,7 @@ import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TransactionData.TYPE;
 import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.spv.SPV;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R.color;
 import com.greenaddress.greenbits.ui.R.drawable;
 import com.greenaddress.greenbits.ui.R.id;
@@ -48,7 +49,7 @@ public class ListTransactionsAdapter extends
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
 
     private final List<TransactionData> mTxItems;
-    private final Activity mActivity;
+    private final GaActivity mActivity;
     private final NetworkData mNetworkData;
     private final SPV mSPV;
     private final boolean isSpvEnabled;
@@ -60,7 +61,7 @@ public class ListTransactionsAdapter extends
         void onSelected(final TransactionData tx);
     }
 
-    public ListTransactionsAdapter(final Activity activity,
+    public ListTransactionsAdapter(final GaActivity activity,
                                    final NetworkData networkData,
                                    final List<TransactionData> txItems,
                                    final SPV spv, final OnTxSelected selector) {
@@ -199,17 +200,17 @@ public class ListTransactionsAdapter extends
     public String getAmountWithUnit(final TransactionData tx, final String assetId) {
         try {
             if (tx.getTxType() == TYPE.REDEPOSIT) {
-                final String fee = Conversion.getBtc(tx.getFee(), true);
+                final String fee = Conversion.getBtc(mActivity.getSession(), tx.getFee(), true);
                 return String.format("-%s", fee);
             }
             if ("btc".equals(assetId)) {
-                final String amount = Conversion.getBtc(tx.getSatoshi().get("btc"), true);
+                final String amount = Conversion.getBtc(mActivity.getSession(), tx.getSatoshi().get("btc"), true);
                 return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
             }
             AssetInfoData info = getRegistry().getInfos().get(assetId);
             if (info == null)
                 info = new AssetInfoData(assetId);
-            final String amount = Conversion.getAsset(tx.getSatoshi().get(assetId), assetId, info, true);
+            final String amount = Conversion.getAsset(mActivity.getSession(), tx.getSatoshi().get(assetId), assetId, info, true);
             return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
         } catch (final Exception e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());

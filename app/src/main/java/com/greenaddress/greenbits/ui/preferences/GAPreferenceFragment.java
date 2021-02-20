@@ -12,6 +12,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.LoggedActivity;
@@ -92,5 +93,9 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
     // Returns true if we are being restored without an activity or service
     protected boolean isZombie() {
         return getActivity() == null;
+    }
+
+    public Session getSession() {
+        return Session.getSession();
     }
 }

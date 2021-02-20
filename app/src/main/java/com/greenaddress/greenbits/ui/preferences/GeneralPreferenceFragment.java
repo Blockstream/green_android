@@ -56,7 +56,6 @@ import java.util.List;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
-import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.authentication.FirstScreenActivity.NETWORK_SELECTOR_REQUEST;
 
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
@@ -158,7 +157,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             return false;
         });
         try {
-            setUnitSummary(Conversion.getBitcoinOrLiquidUnit());
+            setUnitSummary(Conversion.getBitcoinOrLiquidUnit(getSession()));
         } catch (final Exception e) { }
 
         // Reference exchange rate
@@ -674,9 +673,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                 if (!isFiat && balance.getSatoshi() == 0) {
                     mLimitsPref.setSummary(R.string.id_set_twofactor_threshold);
                 } else if (isFiat) {
-                    mLimitsPref.setSummary(Conversion.getFiat(balance, true));
+                    mLimitsPref.setSummary(Conversion.getFiat(getSession(), balance, true));
                 } else {
-                    mLimitsPref.setSummary(Conversion.getBtc(balance, true));
+                    mLimitsPref.setSummary(Conversion.getBtc(getSession(), balance, true));
                 }
             } catch (final Exception e) {
                 // We can throw because we have been logged out here, e.g. when
@@ -700,7 +699,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         final String[] currencies;
         try {
-            currencies = new String[]{Conversion.getBitcoinOrLiquidUnit(), Conversion.getFiatCurrency()};
+            currencies = new String[]{Conversion.getBitcoinOrLiquidUnit(getSession()), Conversion.getFiatCurrency(getSession())};
             final ArrayAdapter<String> adapter;
             adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, currencies);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -718,8 +717,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             final BalanceData balance;
             balance = mObjectMapper.treeToValue(limitsData, BalanceData.class);
             amountEdit.removeTextChangedListener(amountTextWatcher);
-            amountEdit.setText(isFiat ? Conversion.getFiat(balance, false) :
-                        Conversion.getBtc(balance, false));
+            amountEdit.setText(isFiat ? Conversion.getFiat(getSession(), balance, false) :
+                        Conversion.getBtc(getSession(), balance, false));
             amountEdit.addTextChangedListener(amountTextWatcher);
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
@@ -734,7 +733,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             try {
                 final String unit = unitSpinner.getSelectedItem().toString();
                 final String value = UI.getText(amountEdit);
-                final Double doubleValue = Conversion.getNumberFormat().parse(value).doubleValue();
+                final Double doubleValue = Conversion.getNumberFormat(getSession()).parse(value).doubleValue();
                 setSpendingLimits(unit, doubleValue.toString());
             } catch (final Exception e) {
                 UI.toast(getActivity(), "Error setting limits", Toast.LENGTH_LONG);
@@ -776,10 +775,10 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         final Activity activity = getActivity();
         final ObjectNode limitsData = new ObjectMapper().createObjectNode();
         try {
-            final boolean isFiat = unit.equals(Conversion.getFiatCurrency());
+            final boolean isFiat = unit.equals(Conversion.getFiatCurrency(getSession()));
             final String amountStr = TextUtils.isEmpty(amount) ? "0" : amount;
             limitsData.set("is_fiat", isFiat ? BooleanNode.TRUE : BooleanNode.FALSE);
-            limitsData.set(isFiat ? "fiat" : Conversion.getUnitKey(), new TextNode(amountStr));
+            limitsData.set(isFiat ? "fiat" : Conversion.getUnitKey(getSession()), new TextNode(amountStr));
         } catch (final Exception e) {
             UI.toast(activity, getString(R.string.id_operation_failure), Toast.LENGTH_SHORT);
             return;

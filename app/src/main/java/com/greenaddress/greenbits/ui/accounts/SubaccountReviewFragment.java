@@ -23,7 +23,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.*;
 
 public class SubaccountReviewFragment extends GAFragment {

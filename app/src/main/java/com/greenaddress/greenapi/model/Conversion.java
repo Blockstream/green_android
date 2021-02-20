@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi.model;
 
+import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenbits.ui.UI;
@@ -8,25 +9,23 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Locale;
 
-import static com.greenaddress.greenapi.Session.getSession;
-
 public class Conversion {
 
-    public static String getFiatCurrency() throws Exception {
-        return getSession().getSettings().getPricing().getCurrency();
+    public static String getFiatCurrency(Session session) throws Exception {
+        return session.getSettings().getPricing().getCurrency();
     }
 
-    public static String getBitcoinOrLiquidUnit() throws Exception {
-        final int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey()), 0);
-        if (getSession().getNetworkData().getLiquid()) {
+    public static String getBitcoinOrLiquidUnit(Session session) throws Exception {
+        final int index = Math.max(UI.UNIT_KEYS_LIST.indexOf(getUnitKey(session)), 0);
+        if (session.getNetworkData().getLiquid()) {
             return UI.LIQUID_UNITS[index];
         } else {
             return UI.UNITS[index];
         }
     }
 
-    public static String getUnitKey() throws Exception {
-        final String unit = getSession().getSettings().getUnit();
+    public static String getUnitKey(Session session) throws Exception {
+        final String unit = session.getSettings().getUnit();
         return toUnitKey(unit);
     }
 
@@ -36,41 +35,41 @@ public class Conversion {
         return unit.equals("\u00B5BTC") ? "ubtc" : unit.toLowerCase(Locale.US);
     }
 
-    public static String getFiat(final long satoshi, final boolean withUnit) throws Exception {
-        return getFiat(getSession().convertBalance(satoshi), withUnit);
+    public static String getFiat(Session session, final long satoshi, final boolean withUnit) throws Exception {
+        return getFiat(session, session.convertBalance(satoshi), withUnit);
     }
 
-    public static String getBtc(final long satoshi, final boolean withUnit) throws Exception {
-        return getBtc(getSession().convertBalance(satoshi), withUnit);
+    public static String getBtc(Session session, final long satoshi, final boolean withUnit) throws Exception {
+        return getBtc(session , session.convertBalance(satoshi), withUnit);
     }
 
-    public static String getAsset(final long satoshi,  final String asset, final AssetInfoData assetInfo,
+    public static String getAsset(Session session, final long satoshi,  final String asset, final AssetInfoData assetInfo,
                                   final boolean withUnit) throws Exception {
         final AssetInfoData assetInfoData = assetInfo != null ? assetInfo : new AssetInfoData(asset);
         final BalanceData balance = new BalanceData();
         balance.setSatoshi(satoshi);
         balance.setAssetInfo(assetInfoData);
-        final BalanceData converted = getSession().convertBalance(balance);
+        final BalanceData converted = session.convertBalance(balance);
         return getAsset(converted, withUnit);
     }
 
-    public static String getFiat(final BalanceData balanceData, final boolean withUnit) throws Exception {
+    public static String getFiat(Session session, final BalanceData balanceData, final boolean withUnit) throws Exception {
         try {
             final Double number = Double.parseDouble(balanceData.getFiat());
-            return getNumberFormat(2).format(number) + (withUnit ? " " + getFiatCurrency() : "");
+            return getNumberFormat(2).format(number) + (withUnit ? " " + getFiatCurrency(session) : "");
         } catch (final NumberFormatException | NullPointerException e) {
-            return "N.A." + (withUnit ? " " + getFiatCurrency() : "");
+            return "N.A." + (withUnit ? " " + getFiatCurrency(session) : "");
         }
     }
 
-    public static String getBtc(final BalanceData balanceData, final boolean withUnit) throws Exception {
-        final String converted = balanceData.toObjectNode().get(getUnitKey()).asText();
+    public static String getBtc(Session session, final BalanceData balanceData, final boolean withUnit) throws Exception {
+        final String converted = balanceData.toObjectNode().get(getUnitKey(session)).asText();
         final Double number = Double.parseDouble(converted);
-        return getNumberFormat().format(number) + (withUnit ? " " + getBitcoinOrLiquidUnit() : "");
+        return getNumberFormat(session).format(number) + (withUnit ? " " + getBitcoinOrLiquidUnit(session) : "");
     }
 
-    public static NumberFormat getNumberFormat() throws Exception {
-        switch (getUnitKey()) {
+    public static NumberFormat getNumberFormat(Session session) throws Exception {
+        switch (getUnitKey(session)) {
         case "btc":
             return getNumberFormat(8);
         case "mbtc":

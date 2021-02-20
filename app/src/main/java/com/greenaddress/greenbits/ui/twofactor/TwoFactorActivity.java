@@ -37,7 +37,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.greenaddress.greenapi.Registry.getRegistry;
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class TwoFactorActivity extends LoggedActivity {
 

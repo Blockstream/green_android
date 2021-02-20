@@ -19,7 +19,7 @@ import com.greenaddress.greenbits.ui.send.ScanActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class SweepSelectActivity extends LoggedActivity implements SweepAdapter.OnAccountSelected {
 

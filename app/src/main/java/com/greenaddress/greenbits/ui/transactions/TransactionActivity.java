@@ -46,7 +46,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.greenaddress.greenapi.Registry.getRegistry;
-import static com.greenaddress.greenapi.Session.getSession;
 
 public class TransactionActivity extends LoggedActivity implements View.OnClickListener,
                                          AssetsAdapter.OnAssetSelected  {
@@ -146,8 +145,8 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         try {
             final BalanceData balance = getSession().convertBalance(mTxItem.getSatoshi().get("btc"));
-            final String btc = Conversion.getBtc(balance, true);
-            final String fiat = Conversion.getFiat(balance, true);
+            final String btc = Conversion.getBtc(getSession(), balance, true);
+            final String fiat = Conversion.getFiat(getSession(), balance, true);
             amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
         } catch (final Exception e) {
             e.printStackTrace();
@@ -157,7 +156,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             amountText.setVisibility(View.GONE);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
-            final AssetsAdapter adapter = new AssetsAdapter(mTxItem.getSatoshi(),
+            final AssetsAdapter adapter = new AssetsAdapter(this, mTxItem.getSatoshi(),
                                                             getNetwork(),this);
             assetsList.setAdapter(adapter);
             assetsList.setVisibility(View.VISIBLE);
@@ -236,7 +235,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private void showFeeInfo(final long fee, final long vSize, final long feeRate) {
         final TextView feeText = UI.find(this, R.id.txFeeInfoText);
         try {
-            final String btcFee = Conversion.getBtc(fee, true);
+            final String btcFee = Conversion.getBtc(getSession(), fee, true);
             feeText.setText(String.format("%s (%s)", btcFee, UI.getFeeRateString(feeRate)));
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());

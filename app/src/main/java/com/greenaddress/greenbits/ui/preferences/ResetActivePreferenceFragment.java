@@ -13,7 +13,7 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 
 import static android.app.Activity.RESULT_OK;
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class ResetActivePreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceClickListener {

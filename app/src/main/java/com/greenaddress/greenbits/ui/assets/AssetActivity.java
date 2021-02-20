@@ -18,7 +18,6 @@ import com.greenaddress.greenbits.ui.UI;
 public class AssetActivity extends LoggedActivity {
 
     private static final String TAG = AssetActivity.class.getSimpleName();
-    private static final ObjectMapper mObjectMapper = new ObjectMapper();
 
     private TextView mIdText;
     private TextView mPrecisionText;
@@ -91,7 +90,7 @@ public class AssetActivity extends LoggedActivity {
 
     private void refresh() {
         try {
-            final String amount = Conversion.getAsset(mSatoshi, mAssetId, getAssetInfo(), true);
+            final String amount = Conversion.getAsset(getSession(), mSatoshi, mAssetId, getAssetInfo(), true);
             mAssetBalanceText.setText(amount);
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());

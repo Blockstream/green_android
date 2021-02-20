@@ -25,6 +25,7 @@ import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
+import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
@@ -286,5 +287,9 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
 
     protected NetworkData getNetwork() {
         return getGAApp().getCurrentNetworkData();
+    }
+
+    public Session getSession() {
+        return Session.getSession();
     }
 }

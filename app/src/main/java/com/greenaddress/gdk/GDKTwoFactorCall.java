@@ -1,6 +1,5 @@
 package com.greenaddress.gdk;
 
-import android.app.Activity;
 import android.util.Log;
 
 import com.blockstream.libgreenaddress.GDK;
@@ -10,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.data.TwoFactorStatusData;
-import com.greenaddress.greenbits.ui.GaActivity;
 
 public class GDKTwoFactorCall {
     private Object mTwoFactorCall;

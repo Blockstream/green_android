@@ -21,8 +21,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.greenaddress.greenapi.Session.getSession;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.greenapi.data.EventData;
@@ -39,7 +37,6 @@ import java.util.List;
 
 public class NotificationsFragment extends GAPreferenceFragment {
 
-    private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private ContextThemeWrapper mContextThemeWrapper;
     private PreferenceCategory mEmptyNotifications;
     private Disposable eventsDisposable;
@@ -129,7 +126,7 @@ public class NotificationsFragment extends GAPreferenceFragment {
             final JsonNode tx = (JsonNode) event.getValue();
             try {
                 final long satoshi = tx.get("satoshi").asLong(0);
-                final String amount = Conversion.getBtc(satoshi, true);
+                final String amount = Conversion.getBtc(getSession(), satoshi, true);
                 return getString(d, new Object[] {"", amount});
             } catch (final Exception e) {
                 Log.e("", "Liquid or Conversion error: " + e.getLocalizedMessage());

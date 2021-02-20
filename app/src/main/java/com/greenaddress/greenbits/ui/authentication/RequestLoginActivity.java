@@ -24,7 +24,7 @@ import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerDeviceBLE;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.HWDeviceData;
@@ -56,7 +56,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class RequestLoginActivity extends LoginActivity {
 
@@ -456,7 +456,7 @@ public class RequestLoginActivity extends LoginActivity {
                     onLoggedIn();
                 }, (final Throwable e) -> {
                     stopLoading();
-                    GDKSession.get().disconnect();
+                    getSession().disconnect();
                     UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
                     showInstructions(R.string.id_please_reconnect_your_hardware);
                 })

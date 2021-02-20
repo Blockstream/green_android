@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.accounts.NetworkSwitchListener;
 import com.greenaddress.greenbits.ui.accounts.SwitchNetworkAdapter;
@@ -67,7 +67,7 @@ public class NetworkSettingsActivity extends GaActivity implements NetworkSwitch
     public void onResume() {
         super.onResume();
 
-        final List<NetworkData> networks = GDKSession.getNetworks();
+        final List<NetworkData> networks = getSession().getNetworks();
         final NetworkData networkData = getNetwork();
         mSwitchNetworkAdapter = new SwitchNetworkAdapter(this, networks, networkData, this);
         final RecyclerView recyclerView = UI.find(this, R.id.networksRecyclerView);
@@ -95,7 +95,7 @@ public class NetworkSettingsActivity extends GaActivity implements NetworkSwitch
         if (socksHost.startsWith("{")) {
             try {
                 final NetworkData newNetwork = (new ObjectMapper()).readValue(socksHost, NetworkData.class);
-                GDKSession.registerNetwork(newNetwork.getName(), socksHost);
+                getSession().registerNetwork(newNetwork.getName(), socksHost);
                 networkName = newNetwork.getNetwork();
             } catch (final Exception e) {
                 UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);

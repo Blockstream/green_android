@@ -46,7 +46,6 @@ public class GDKSession implements HttpRequestHandler {
 
     // Fine to have a static objectMapper according to docs if using always same configuration
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
-    private static GDKSession instance = new GDKSession();
 
     private Object mNativeSession;
     private final NotificationHandlerImpl mNotification;
@@ -60,18 +59,7 @@ public class GDKSession implements HttpRequestHandler {
         mNativeSession = GDK.create_session();
     }
 
-    /*
-     * YOU SHOULD NEVER KEEP A REFERENCE TO THE INSTANCE RETURNED HERE. IT COULD BE DESTROYED
-     * AND LEAD TO ITS USAGE AFTER ITS DESTRUCTOR HAS BEEN CALLED
-     */
-    public static GDKSession get() {
-        return instance;
-    }
-    public static GDKSession getGDKSession() {
-        return instance;
-    }
-
-    private static String getUserAgentString() {
+    private String getUserAgentString() {
         return String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE);
     }
 
@@ -363,7 +351,7 @@ public class GDKSession implements HttpRequestHandler {
         return mObjectMapper.treeToValue(availableCurrencies, Map.class);
     }
 
-    public static List<NetworkData> getNetworks() {
+    public List<NetworkData> getNetworks() {
         final List<NetworkData> networksMap = new LinkedList<>();
         final ObjectNode networks = (ObjectNode) GDK.get_networks();
         final ArrayNode nodes = (ArrayNode) networks.get("all_networks");
@@ -384,7 +372,7 @@ public class GDKSession implements HttpRequestHandler {
         return networksMap;
     }
 
-    public static void registerNetwork(final String name, final String networkJson) throws Exception {
+    public void registerNetwork(final String name, final String networkJson) throws Exception {
         GDK.register_network(name, networkJson);
     }
 
@@ -394,11 +382,11 @@ public class GDKSession implements HttpRequestHandler {
         return new GDKTwoFactorCall(GDK.get_receive_address(mNativeSession, details));
     }
 
-    public static boolean isEnabled() {
+    public boolean isEnabled() {
         return GDK.isEnabled();
     }
 
-    public static String generateMnemonic(final String language) {
+    public String generateMnemonic(final String language) {
         return GDK.generate_mnemonic();
     }
 
@@ -490,7 +478,7 @@ public class GDKSession implements HttpRequestHandler {
         return new GDKTwoFactorCall(GDK.change_settings(mNativeSession, setting));
     }
 
-    public static Integer getErrorCode(final String message) {
+    public Integer getErrorCode(final String message) {
         try {
             final String stringCode = message.split(" ")[1];
             final String function = message.split(" ")[2];

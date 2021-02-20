@@ -14,15 +14,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 import com.blockstream.libgreenaddress.GDK;
-import com.greenaddress.gdk.GDKSession;
+
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.CircularButton;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import static com.greenaddress.gdk.GDKSession.getErrorCode;
-import static com.greenaddress.greenapi.Session.getSession;
 
 public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClickListener {
 
@@ -115,9 +113,9 @@ public class WatchOnlyLoginActivity extends LoginActivity implements View.OnClic
             onLoggedIn();
         }, (final Throwable e) -> {
             stopLoading();
-            GDKSession.get().disconnect();
+            getSession().disconnect();
             onLoginStop();
-            final Integer code = getErrorCode(e.getMessage());
+            final Integer code = getSession().getErrorCode(e.getMessage());
             if (code == GDK.GA_ERROR) {
                 UI.toast(this, R.string.id_user_not_found_or_invalid, Toast.LENGTH_LONG);
             } else {

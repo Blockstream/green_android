@@ -7,10 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.GreenAddressApplication;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -19,7 +20,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 public class SwitchNetworkFragment extends BottomSheetDialogFragment implements NetworkSwitchListener {
 
     public static SwitchNetworkFragment newInstance() {
@@ -47,7 +47,7 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
         });
 
         final NetworkData networkData = getGAApp().getCurrentNetworkData();
-        recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), GDKSession.getNetworks(),
+        recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), ((GaActivity)getActivity()).getSession().getNetworks(),
                                                          networkData,
                                                          this));
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));

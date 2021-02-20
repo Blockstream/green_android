@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Conversion;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
@@ -20,14 +21,17 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private final List<SubaccountData> mSubaccountList;
     private final OnAccountSelected mOnAccountSelected;
     private final boolean showNewButton;
+    private final GaActivity mActivity;
 
     public interface OnAccountSelected {
         void onAccountSelected(int account);
         void onNewSubaccount();
     }
 
-    public AccountAdapter(final List<SubaccountData> subaccountList,
+    public AccountAdapter(final GaActivity activity,
+                          final List<SubaccountData> subaccountList,
                           final OnAccountSelected cb, final boolean showNewAccount) {
+        mActivity = activity;
         mSubaccountList = subaccountList;
         mOnAccountSelected = cb;
         showNewButton = showNewAccount;
@@ -58,10 +62,10 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             h.name.setText(subaccount.getNameWithDefault(defaultName));
             try {
-                final String valueBitcoin = Conversion.getBtc(satoshi, false);
-                final String valueFiat = Conversion.getFiat(satoshi, true);
+                final String valueBitcoin = Conversion.getBtc(mActivity.getSession(), satoshi, false);
+                final String valueFiat = Conversion.getFiat(mActivity.getSession(), satoshi, true);
                 h.mainBalanceText.setText(valueBitcoin);
-                h.mainBalanceUnitText.setText(" " + Conversion.getBitcoinOrLiquidUnit());
+                h.mainBalanceUnitText.setText(" " + Conversion.getBitcoinOrLiquidUnit(mActivity.getSession()));
                 h.mainLocalBalanceText.setText("≈  " + valueFiat);
             } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());

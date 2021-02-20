@@ -56,7 +56,7 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
 import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.AUTHORIZED_ACCOUNT;
 
@@ -180,7 +180,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
         try {
             mAmountText.addTextChangedListener(this);
-            mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
+            mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency(getSession()) : Conversion.getBitcoinOrLiquidUnit(getSession()));
             mUnitButton.setPressed(!mIsFiat);
             mUnitButton.setSelected(!mIsFiat);
         } catch (final Exception e) {}
@@ -368,7 +368,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
 
         // Toggle unit display and selected state
         try {
-            mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
+            mUnitButton.setText(mIsFiat ? Conversion.getFiatCurrency(getSession()) : Conversion.getBitcoinOrLiquidUnit(getSession()));
             mUnitButton.setPressed(!mIsFiat);
             mUnitButton.setSelected(!mIsFiat);
         } catch (final Exception e) {}

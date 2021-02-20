@@ -6,7 +6,6 @@ import android.util.Pair;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.CodeResolver;
-import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.BlindedScriptsData;
 import com.greenaddress.greenapi.data.HWDeviceRequiredData;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.greenaddress.greenapi.Session.getSession;
+
 
 public class HardwareCodeResolver implements CodeResolver {
     private final static String TAG = "HWC";
@@ -31,7 +30,7 @@ public class HardwareCodeResolver implements CodeResolver {
 
     public HardwareCodeResolver(final GaActivity activity) {
         this.parent = activity;
-        this.hwWallet = getSession().getHWWallet();
+        this.hwWallet = activity.getSession().getHWWallet();
     }
 
     public HardwareCodeResolver(final GaActivity activity, final HWWallet hwWallet) {

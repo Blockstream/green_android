@@ -15,6 +15,7 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.EntityData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.model.Conversion;
+import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.ArrayList;
@@ -29,15 +30,18 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     private final List<String> mAssetsIds;
     private final OnAssetSelected mOnAccountSelected;
     private final NetworkData mNetworkData;
+    private final GaActivity mActivity;
 
     @FunctionalInterface
     public interface OnAssetSelected {
         void onAssetSelected(String assetSelected);
     }
 
-    public AssetsAdapter(final Map<String, Long> assets,
+    public AssetsAdapter(final GaActivity activity,
+                         final Map<String, Long> assets,
                          final NetworkData networkData,
                          final OnAssetSelected cb) {
+        mActivity = activity;
         mAssets = assets;
         mOnAccountSelected = cb;
         mNetworkData = networkData;
@@ -68,7 +72,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             holder.mAssetName.setText("Liquid Bitcoin");
             holder.mAssetDomain.setVisibility(View.GONE);
             try {
-                holder.mAssetValue.setText(Conversion.getBtc(satoshi, true));
+                holder.mAssetValue.setText(Conversion.getBtc(mActivity.getSession(), satoshi, true));
             } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
             }
@@ -82,7 +86,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
                 holder.mAssetDomain.setVisibility(View.GONE);
             }
             try {
-                holder.mAssetValue.setText(Conversion.getAsset(satoshi, assetId, assetInfo, true));
+                holder.mAssetValue.setText(Conversion.getAsset(mActivity.getSession(), satoshi, assetId, assetInfo, true));
             } catch (final Exception e) {
                 e.printStackTrace();
             }

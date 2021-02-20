@@ -18,6 +18,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -29,6 +30,7 @@ public class AccountView extends CardView {
     private ImageButton mSelectButton;
     private LinearLayout mBodyLayout, mActionLayout, mSubaccount, mAddSubaccount;
     private TextView mTitleText, mBalanceText, mBalanceUnitText, mBalanceFiatText;
+    private Session mSession;
 
     public AccountView(final Context context) {
         super(context);
@@ -114,10 +116,10 @@ public class AccountView extends CardView {
         mBalanceText.setVisibility(VISIBLE);
         mBalanceUnitText.setVisibility(VISIBLE);
         try {
-            final String valueBitcoin = Conversion.getBtc(satoshi, false);
-            final String valueFiat = Conversion.getFiat(satoshi, true);
+            final String valueBitcoin = Conversion.getBtc(mSession, satoshi, false);
+            final String valueFiat = Conversion.getFiat(mSession, satoshi, true);
             mBalanceText.setText(valueBitcoin);
-            mBalanceUnitText.setText(" " + Conversion.getBitcoinOrLiquidUnit());
+            mBalanceUnitText.setText(" " + Conversion.getBitcoinOrLiquidUnit(mSession));
             mBalanceFiatText.setText("≈  " + valueFiat);
         } catch (final Exception e) {
             Log.e("", "Conversion error: " + e.getLocalizedMessage());
@@ -138,5 +140,9 @@ public class AccountView extends CardView {
     public void showAdd(final boolean value) {
         mSubaccount.setVisibility(value ? GONE : VISIBLE);
         mAddSubaccount.setVisibility(value ? VISIBLE : GONE);
+    }
+
+    public void setSession(Session session) {
+        mSession = session;
     }
 }

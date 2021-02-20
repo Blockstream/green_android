@@ -49,7 +49,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.greenaddress.greenapi.Registry.getRegistry;
-import static com.greenaddress.greenapi.Session.getSession;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
@@ -116,7 +115,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mUnitButton = UI.find(this, R.id.unitButton);
         mUnitButton.setOnClickListener(this);
         try {
-            mUnitButton.setText(isFiat() ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
+            mUnitButton.setText(isFiat() ? Conversion.getFiatCurrency(getSession()) : Conversion.getBitcoinOrLiquidUnit(getSession()));
             mUnitButton.setPressed(!isFiat());
             mUnitButton.setSelected(!isFiat());
         } catch (final Exception e) {}
@@ -294,7 +293,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         balances.put(mSelectedAsset, satoshi);
 
         final RecyclerView assetsList = findViewById(R.id.assetsList);
-        final AssetsAdapter adapter = new AssetsAdapter(balances, getNetwork(), null);
+        final AssetsAdapter adapter = new AssetsAdapter(this, balances, getNetwork(), null);
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         assetsList.setAdapter(adapter);
         UI.showIf(!isAsset(), mUnitButton);
@@ -302,9 +301,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         UI.showIf(isAsset(), assetsList);
         try {
             if (!isAsset())
-                mAccountBalance.setText(Conversion.getBtc(satoshi, true));
+                mAccountBalance.setText(Conversion.getBtc(getSession(), satoshi, true));
             else
-                mAccountBalance.setText(Conversion.getAsset(satoshi, mSelectedAsset, info, true));
+                mAccountBalance.setText(Conversion.getAsset(getSession(), satoshi, mSelectedAsset, info, true));
         } catch (final Exception e) {
             Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
         }
@@ -397,7 +396,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 }
 
                 // Toggle unit display and selected state
-                mUnitButton.setText(isFiat() ? Conversion.getFiatCurrency() : Conversion.getBitcoinOrLiquidUnit());
+                mUnitButton.setText(isFiat() ? Conversion.getFiatCurrency(getSession()) : Conversion.getBitcoinOrLiquidUnit(getSession()));
                 mUnitButton.setPressed(!isFiat());
                 mUnitButton.setSelected(!isFiat());
                 updateFeeSummaries();
@@ -545,7 +544,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                     feeSummary = String.format("(%s)", feeRateString);
                 } else {
                     final long amount = (currentEstimate * mVsize)/1000L;
-                    final String formatted = isFiat() ? Conversion.getFiat(amount, true) : Conversion.getBtc(amount, true);
+                    final String formatted = isFiat() ? Conversion.getFiat(getSession(), amount, true) : Conversion.getBtc(getSession(), amount, true);
                     feeSummary = String.format("%s (%s)", formatted, feeRateString);
                 }
                 mFeeButtons[i].setSummary(feeSummary);

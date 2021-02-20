@@ -28,7 +28,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.greenaddress.greenapi.Registry.getRegistry;
-import static com.greenaddress.greenapi.Session.getSession;
 
 public abstract class LoggedActivity extends GaActivity {
 
@@ -250,13 +249,13 @@ public abstract class LoggedActivity extends GaActivity {
     }
 
     protected String getBitcoinUnitClean() throws Exception {
-        return Conversion.getUnitKey();
+        return Conversion.getUnitKey(getSession());
     }
 
     // for btc and fiat
     protected void setAmountText(final EditText amountText, final boolean isFiat,
                                  final ObjectNode currentAmount) throws Exception {
-        final NumberFormat btcNf = Conversion.getNumberFormat();
+        final NumberFormat btcNf = Conversion.getNumberFormat(getSession());
         setAmountText(amountText, isFiat, currentAmount, btcNf, "btc");
     }
 
@@ -264,7 +263,7 @@ public abstract class LoggedActivity extends GaActivity {
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
                                  final String asset) throws Exception {
 
-        NumberFormat nf = Conversion.getNumberFormat();
+        NumberFormat nf = Conversion.getNumberFormat(getSession());
         if (!"btc".equals(asset) && asset != null) {
             final AssetInfoData assetInfoData = getRegistry().getInfos().get(asset);
             final int precision = assetInfoData == null ? 0 : assetInfoData.getPrecision();

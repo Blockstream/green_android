@@ -23,6 +23,7 @@ import io.reactivex.subjects.PublishSubject;
 
 import static com.greenaddress.greenapi.Session.getSession;
 
+
 public class NotificationHandlerImpl implements GDK.NotificationHandler {
 
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
