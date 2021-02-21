@@ -35,8 +35,8 @@ android {
         exclude 'com/mysql/jdbc/configs/maxPerformance.properties'
         exclude 'com/mysql/jdbc/configs/solarisMaxPerformance.properties'
     }
-    compileSdkVersion 29
-    buildToolsVersion '29.0.3'
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId 'com.greenaddress.greenbits_android_wallet'
