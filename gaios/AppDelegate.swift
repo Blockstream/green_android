@@ -75,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func logout(with pin: Bool) {
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
-            window?.rootViewController?.stopAnimating()
+            window?.rootViewController?.startAnimating()
             return Guarantee()
         }.map(on: bgq) {
             self.disconnect()
