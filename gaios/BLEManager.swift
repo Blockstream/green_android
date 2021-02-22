@@ -38,6 +38,8 @@ protocol BLEManagerDelegate: class {
     func onPrepare(_: Peripheral)
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
+    func onCheckFirmware(_: Peripheral, fw: [String: String], currentVersion: String)
+    func onUpdateFirmware(_: Peripheral)
 }
 
 class BLEManager {
@@ -159,9 +161,44 @@ class BLEManager {
             }
     }
 
+    func checkFirmware(_ p: Peripheral) {
+        var verInfo: [String: Any]?
+        _ = Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { _ in
+                Jade.shared.version()
+            }.compactMap { data in
+                verInfo = data["result"] as? [String: Any]
+                return try Jade.shared.checkFirmware(verInfo!)
+            }.observeOn(MainScheduler.instance)
+            .subscribe(onNext: { (fwFile: [String: String]?) in
+                if let fw = fwFile,
+                   let ver = verInfo?["JADE_VERSION"] as? String {
+                    self.delegate?.onCheckFirmware(p, fw: fw, currentVersion: ver)
+                } else {
+                    self.login(p)
+                }
+            }, onError: { err in
+                self.onError(err)
+            })
+    }
+
+    func updateFirmware(_ p: Peripheral, fwFile: [String: String]) {
+        _ = Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { _ in Jade.shared.version() }
+            .compactMap { $0["result"] as? [String: Any] }
+            .flatMap { Jade.shared.updateFirmare(verInfo: $0, fwFile: fwFile) }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                self.delegate?.onUpdateFirmware(p)
+            }, onError: { err in
+                self.onError(err)
+            })
+    }
+
     func connect(_ p: Peripheral) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let session = getGAService().getSession()
 
         addStatusListener(p)
 
@@ -173,7 +210,25 @@ class BLEManager {
                 return p
             }.flatMap { p in
                 self.isJade(p) ? self.connectJade(p) : self.connectLedger(p)
-            }.compactMap { _ in
+            }.observeOn(MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                if self.isJade(p) {
+                    self.checkFirmware(p)
+                } else {
+                    self.login(p)
+                }
+            }, onError: { err in
+                self.onError(err)
+            })
+    }
+
+    func login(_ p: Peripheral) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let session = getGAService().getSession()
+
+        _ = Observable.just(p)
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .compactMap { _ in
                 appDelegate?.disconnect()
                 try appDelegate?.connect()
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
@@ -197,44 +252,50 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onConnect(p)
             }, onError: { err in
-                switch err {
-                case is BluetoothError:
-                    let bleErr = err as? BluetoothError
-                    let err = BLEManagerError.bleErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: "") + ": \(bleErr?.localizedDescription ?? "")")
-                    self.delegate?.onError(err)
-                case RxError.timeout:
-                    let err = BLEManagerError.timeoutErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
-                    self.delegate?.onError(err)
-                case DeviceError.dashboard:
-                    let err = BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
-                    self.delegate?.onError(err)
-                case DeviceError.outdated_app:
-                    let err = BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
-                    self.delegate?.onError(err)
-                case DeviceError.wrong_app:
-                    let err = BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
-                    self.delegate?.onError(err)
-                case is AuthenticationTypeHandler.AuthError:
-                    let authErr = err as? AuthenticationTypeHandler.AuthError
-                    let err = BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
-                    self.delegate?.onError(err)
-                case is Ledger.SWError:
-                    let err = BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
-                    self.delegate?.onError(err)
-                case is JadeError:
-                    switch err {
-                    case JadeError.Abort(let txt), JadeError.Declined(let txt), JadeError.URLError(let txt):
-                        let err = BLEManagerError.authErr(txt: txt)
-                        self.delegate?.onError(err)
-                    default:
-                        let err = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
-                        self.delegate?.onError(err)
-                    }
-                default:
-                    let err = BLEManagerError.genericErr(txt: err.localizedDescription)
-                    self.delegate?.onError(err)
-                }
+                self.onError(err)
             })
+    }
+
+    func onError(_ err: Error) {
+        switch err {
+        case is BluetoothError:
+            let bleErr = err as? BluetoothError
+            let err = BLEManagerError.bleErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: "") + ": \(bleErr?.localizedDescription ?? "")")
+            self.delegate?.onError(err)
+        case RxError.timeout:
+            let err = BLEManagerError.timeoutErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
+            self.delegate?.onError(err)
+        case DeviceError.dashboard:
+            let err = BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
+            self.delegate?.onError(err)
+        case DeviceError.outdated_app:
+            let err = BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
+            self.delegate?.onError(err)
+        case DeviceError.wrong_app:
+            let err = BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
+            self.delegate?.onError(err)
+        case is AuthenticationTypeHandler.AuthError:
+            let authErr = err as? AuthenticationTypeHandler.AuthError
+            let err = BLEManagerError.authErr(txt: authErr?.localizedDescription ?? "")
+            self.delegate?.onError(err)
+        case is Ledger.SWError:
+            let err = BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
+            self.delegate?.onError(err)
+        case is JadeError:
+            switch err {
+            case JadeError.Abort(let desc),
+                 JadeError.URLError(let desc),
+                 JadeError.Declined(let desc):
+                let err = BLEManagerError.genericErr(txt: desc)
+                self.delegate?.onError(err)
+            default:
+                let err = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
+                self.delegate?.onError(err)
+            }
+        default:
+            let err = BLEManagerError.genericErr(txt: err.localizedDescription)
+            self.delegate?.onError(err)
+        }
     }
 
     func prepare(_ peripheral: Peripheral) {

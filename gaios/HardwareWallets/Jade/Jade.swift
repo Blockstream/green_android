@@ -248,89 +248,6 @@ final class Jade: JadeDevice, HWResolverProtocol {
         return Data(txId! + ptIdx!.uint32LE() + (isSegwit ? (input["satoshi"] as? UInt64)!.uint64LE() : []))
     }
 
-    func download(_ fwname: String) -> Data? {
-        let path = Bundle.main.path(forResource: "fwserver", ofType: "pem")
-        let rootCert = try? String(contentsOfFile: path!, encoding: String.Encoding.utf8)
-        let params: [String: Any] = [
-            "method": "GET",
-            "root_certificates": [rootCert!],
-            "accept": "base64",
-            "urls": ["https://jadefw.blockstream.com/bin/\(fwname)"] ]
-        let response = try? getSession().httpRequest(params: params)
-        let responseBody = response?["body"] as? String
-        return Data(base64Encoded: responseBody ?? "")
-    }
-
-    func latestFW() -> String? {
-        let path = Bundle.main.path(forResource: "fwserver", ofType: "pem")
-        let rootCert = try? String(contentsOfFile: path!, encoding: String.Encoding.utf8)
-        let params: [String: Any] = [
-            "method": "GET",
-            "root_certificates": [rootCert!],
-            "urls": ["https://jadefw.blockstream.com/bin/LATEST"] ]
-        let response = try? getSession().httpRequest(params: params)
-        let responseBody = response?["body"] as? String
-        return responseBody?.split(separator: "\n")
-            .map { String($0) }
-            .filter({ $0.contains("ble") })
-            .first
-    }
-
-    func ota() -> Observable<Bool> {
-        guard let fwname = latestFW(),
-            let fwlen = Int(fwname.split(separator: "_")[2]),
-            let fwcmp = download(String(fwname)) else {
-            return Observable.error(JadeError.Abort(""))
-        }
-        print("firmware \(fwname) (\(fwlen))")
-        return otaUpdate(fwcmp: fwcmp, len: fwlen, chunksize: 1024 * 4)
-    }
-
-    func otaUpdate(fwcmp: Data, len: Int, chunksize: Int) -> Observable<Bool> {
-        let params = ["fwsize": len, "cmpsize": fwcmp.count] as [String: Any]
-        return Jade.shared.exchange(method: "ota", params: params)
-        .flatMap { _ in
-            self.otaSend(fwcmp, size: len, chunksize: chunksize)
-        }.flatMap { _ in
-            return Observable.just(true)
-        }
-    }
-
-    func send(_ chunk: [UInt8]) -> Observable<Bool> {
-        return Observable.create { observer in
-            return Jade.shared.exchange(method: "ota_data", params: chunk)
-                .subscribe(onNext: { res in
-                    let result = res["result"] as? Bool
-                    observer.onNext(result ?? false)
-                    observer.onCompleted()
-                }, onError: { err in
-                    observer.onError(err)
-                })
-        }
-    }
-
-    func otaSend(_ data: Data, size: Int, chunksize: Int = 4 * 1024) -> Observable<Bool> {
-        let chunks = stride(from: 0, to: data.count, by: chunksize).map {
-            Array(data[$0 ..< Swift.min($0 + chunksize, data.count)])
-        }
-        let sequence: [Observable<Bool>] = chunks.map { Observable.just($0) }
-            .map { obs in
-                return obs.flatMap { chunk in
-                    self.send(chunk)
-                }
-            }
-        return Observable.concat(sequence)
-            .takeLast(1)
-            .flatMap { _ in
-                Jade.shared.exchange(method: "ota_complete")
-            }.compactMap { res in
-                if let result = res["result"] as? Bool, result {
-                    return true
-                }
-                return false
-            }
-    }
-
     // Get (receive) green address
     // swiftlint:disable:next function_parameter_count
     func newReceiveAddress(network: String, subaccount: UInt32, branch: UInt32, pointer: UInt32, recoveryChainCode: String?, recoveryPubKey: String?, csvBlocks: UInt32) -> Observable<String> {
@@ -353,7 +270,140 @@ final class Jade: JadeDevice, HWResolverProtocol {
             return Observable.just(result)
         }
     }
+}
+// Jade ota
+extension Jade {
 
+    static let MIN_ALLOWED_FW_VERSION = "0.1.23"
+    static let FW_VERSIONS_FILE = "LATEST"
+    static let FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
+    static let FW_SERVER_ONION = "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion"
+    static let FW_JADE_PATH = "/bin/jade/"
+    static let FW_JADEDEV_PATH = "/bin/jadedev/"
+    static let FW_SUFFIX = "fw.bin"
+    static let BOARD_TYPE_JADE = "JADE"
+    static let FEATURE_SECURE_BOOT = "SB"
+
+    // Check Jade fw against minimum allowed firmware version
+    func isJadeFwValid(_ version: String) -> Bool {
+        return Jade.MIN_ALLOWED_FW_VERSION <= version
+    }
+
+    func firmwarePath(_ info: [String: Any]) -> String? {
+        let boardType = info["BOARD_TYPE"] as? String
+        if boardType != nil && boardType != Jade.BOARD_TYPE_JADE {
+            return nil
+        }
+        // Alas the first version of the jade fw didn't have 'BoardType' - so we assume an early jade.
+        if let jadeFeatures = info["JADE_FEATURES"] as? String, jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
+            // Production Jade (Secure-Boot [and flash-encryption] enabled)
+            return Jade.FW_JADE_PATH
+        } else {
+            // Unsigned/development/testing Jade
+            return Jade.FW_JADEDEV_PATH
+        }
+    }
+
+    func download(_ fwpath: String, base64: Bool = false) -> [String: Any]? {
+        let path = Bundle.main.path(forResource: "fwserver", ofType: "pem")
+        let rootCert = try? String(contentsOfFile: path!, encoding: String.Encoding.utf8)
+        let params: [String: Any] = [
+            "method": "GET",
+            "root_certificates": [rootCert!],
+            "accept": base64 ? "base64": "text",
+            "urls": ["\(Jade.FW_SERVER_HTTPS)\(fwpath)",
+                     "\(Jade.FW_SERVER_ONION)\(fwpath)"] ]
+        return try? getSession().httpRequest(params: params)
+    }
+
+    func checkFirmware(_ verInfo: [String: Any]) throws -> [String: String]? {
+        guard let currentVersion = verInfo["JADE_VERSION"] as? String,
+            let config = verInfo["JADE_CONFIG"] as? String else {
+            throw JadeError.Abort("Invalid version")
+        }
+        guard let hasPin = verInfo["JADE_HAS_PIN"] as? Bool, hasPin else {
+            throw JadeError.Abort("Authentication required")
+        }
+        // Get relevant fw path (or if hw not supported)
+        guard let fwPath = firmwarePath(verInfo) else {
+            throw JadeError.Abort("Unsupported hardware, firmware updates not available")
+        }
+        // Get the index file from that path
+        guard let res = download("\(fwPath)\(Jade.FW_VERSIONS_FILE)"),
+              let body = res["body"] as? String else {
+            throw JadeError.Abort("Failed to fetch firmware file")
+        }
+        let versions = body.split(separator: "\n")
+            .map { String($0) }
+            .filter {
+                let parts = $0.split(separator: "_")
+                return parts.count == 4 && parts[3] == Jade.FW_SUFFIX
+            }.map {
+                let parts = $0.split(separator: "_")
+                return ["filepath": "\(fwPath)\($0)",
+                        "version": String(parts[0]),
+                        "config": String(parts[1]),
+                        "fwSize": String(parts[2])]
+            }.filter { (v: [String: String]) in
+                v["version"]! > currentVersion &&
+                    v["config"]!.lowercased() == config.lowercased()
+            }
+        return versions.first
+    }
+
+    func updateFirmare( verInfo: [String: Any], fwFile: [String: String])-> Observable<Bool> {
+        guard let res = download(fwFile["filepath"] ?? "", base64: true),
+            let body = res["body"] as? String,
+            let fw = Data(base64Encoded: body) else {
+            return Observable.error(JadeError.Abort("Error downloading firmware file"))
+        }
+        let chunk = verInfo["JADE_OTA_MAX_CHUNK"] as? UInt64
+        let uncompressedSize = Int(fwFile["fwSize"] ?? "")
+        let compressedSize = fw.count
+        return Jade.shared.exchange(method: "ota", params: ["fwsize": uncompressedSize!,
+                                                            "cmpsize": compressedSize,
+                                                            "otachunk": chunk!])
+        .flatMap { _ in
+            self.otaSend(fw, size: uncompressedSize!, chunksize: chunk!)
+        }.flatMap { _ in
+            return Observable.just(true)
+        }
+    }
+
+    func send(_ chunk: [UInt8]) -> Observable<Bool> {
+        return Observable.create { observer in
+            return Jade.shared.exchange(method: "ota_data", params: chunk)
+                .subscribe(onNext: { res in
+                    let result = res["result"] as? Bool
+                    observer.onNext(result ?? false)
+                    observer.onCompleted()
+                }, onError: { err in
+                    observer.onError(err)
+                })
+        }
+    }
+
+    func otaSend(_ data: Data, size: Int, chunksize: UInt64 = 4 * 1024) -> Observable<Bool> {
+        let chunks = stride(from: 0, to: data.count, by: Int(chunksize)).map {
+            Array(data[$0 ..< Swift.min($0 + Int(chunksize), data.count)])
+        }
+        let sequence: [Observable<Bool>] = chunks.map { Observable.just($0) }
+            .map { obs in
+                return obs.flatMap { chunk in
+                    self.send(chunk)
+                }
+            }
+        return Observable.concat(sequence)
+            .takeLast(1)
+            .flatMap { _ in
+                Jade.shared.exchange(method: "ota_complete")
+            }.compactMap { res in
+                if let result = res["result"] as? Bool, result {
+                    return true
+                }
+                return false
+            }
+    }
 }
 // Liquid calls
 extension Jade {

@@ -66,6 +66,7 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
 }
 
 extension HardwareWalletScanViewController: BLEManagerDelegate {
+
     func onConnectivityChange(peripheral: Peripheral, status: Bool) {
 
     }
@@ -99,37 +100,6 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
         }
     }
 
-    func ota(_ peripheral: Peripheral) {
-        /*startAnimating()
-        HWResolver.shared.hw = Jade.shared
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-
-        enstablishDispose = Observable.just(peripheral)
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .flatMap { p -> Observable<Peripheral> in
-                if p.isConnected {
-                    return Observable.just(peripheral)
-                }
-                return p.establishConnection()
-            }.flatMap {
-                Jade.shared.open($0)
-            }.compactMap { _ in
-                appDelegate?.disconnect()
-                try appDelegate?.connect()
-            }.flatMap { _ in
-                Jade.shared.auth()
-            }.flatMap { _ in
-                Jade.shared.ota()
-            }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { res in
-                self.stopAnimating()
-                print("res: \(res)")
-            }, onError: { err in
-                self.stopAnimating()
-                print("err: \(err)")
-            })*/
-    }
-
     func didUpdatePeripherals(_ peripherals: [ScannedPeripheral]) {
         self.peripherals = peripherals
         tableView.reloadData()
@@ -156,6 +126,33 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
                 self.connect(peripheral)
             }
         })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onCheckFirmware(_ peripheral: Peripheral, fw: [String: String], currentVersion: String) {
+        stopAnimating()
+        let notRequired = Jade.shared.isJadeFwValid(currentVersion)
+        let alert = UIAlertController(title: notRequired ? "New Jade Firmware Available" : "New Jade Firmware Required",
+                                      message: "New \(fw["version"] ?? "") is available",
+                                      preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("update", comment: ""), style: .default) { _ in
+            self.startAnimating()
+            BLEManager.shared.updateFirmware(peripheral, fwFile: fw)
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
+            if notRequired {
+                BLEManager.shared.login(peripheral)
+            } else {
+                BLEManager.shared.dispose()
+            }
+        })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func onUpdateFirmware(_ peripheral: Peripheral) {
+        stopAnimating()
+        let alert = UIAlertController(title: "Firmware", message: "Update success", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
 
