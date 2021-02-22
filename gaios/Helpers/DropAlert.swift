@@ -115,7 +115,7 @@ class DropAlert: UIView {
                                          toItem: self,
                                          attribute: .trailing,
                                          multiplier: 1,
-                                         constant: 8))
+                                         constant: -8))
 
         messageLabel.text = message
         messageLabel.textColor = textColor
