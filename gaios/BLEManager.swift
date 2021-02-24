@@ -150,6 +150,7 @@ class BLEManager {
                 return Jade.shared.addEntropy()
             }.flatMap { _ in
                 Jade.shared.auth(network: getNetwork())
+                    .retry(3)
             }.compactMap { _ in
                 return p
             }
