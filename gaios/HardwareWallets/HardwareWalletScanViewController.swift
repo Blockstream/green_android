@@ -51,15 +51,17 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row].peripheral
-
+        self.startAnimating()
         if BLEManager.shared.isLedger(peripheral) {
-            self.startAnimating()
-            BLEManager.shared.connect(peripheral)
-            DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
+            connect(peripheral)
         } else {
             BLEManager.shared.prepare(peripheral)
         }
+    }
 
+    func connect(_ peripheral: Peripheral) {
+        BLEManager.shared.connect(peripheral)
+        DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
     }
 }
 
@@ -139,14 +141,22 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
     }
 
     func onPrepare(_ peripheral: Peripheral) {
+        stopAnimating()
         let alert = UIAlertController(title: NSLocalizedString("WELCOME TO JADE", comment: ""), message: "", preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in
-            self.startAnimating()
-            BLEManager.shared.dispose()
-            BLEManager.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
-            BLEManager.shared.connect(peripheral)
-            DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
+            let bgq = DispatchQueue.global(qos: .background)
+            firstly {
+                self.startAnimating()
+                BLEManager.shared.dispose()
+                BLEManager.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
+                return Guarantee()
+            }.then(on: bgq) {
+                after(seconds: 1)
+            }.done { _ in
+                self.connect(peripheral)
+            }
         })
         self.present(alert, animated: true, completion: nil)
     }
+
 }
