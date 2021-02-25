@@ -12,6 +12,7 @@ enum EventType: String {
     case SystemMessage = "system_message"
     case Tor = "tor"
     case AssetsUpdated = "assets_updated"
+    case Session = "session"
 }
 
 struct Connection: Codable {
@@ -126,35 +127,39 @@ class GreenAddressService {
             Settings.shared = Settings.from(data)
             reloadTwoFactor()
             post(event: .Settings, data: data)
+        case .Session:
+            post(event: EventType.Network, data: data)
         case .Network:
-            do {
-                let json = try JSONSerialization.data(withJSONObject: data, options: [])
-                let connection = try JSONDecoder().decode(Connection.self, from: json)
-                let loginRequired = connection.loginRequired ?? false
-                if loginRequired && Ledger.shared.connected {
-                    let bgq = DispatchQueue.global(qos: .background)
-                    let session = getSession()
-                    Guarantee().map(on: bgq) {_ -> TwoFactorCall in
-                        try session.login(mnemonic: "", hw_device: ["device": HWResolver.shared.hw!.info])
-                    }.then(on: bgq) { call in
-                        call.resolve()
-                    }.done { _ in
-                        print("reconnected with hw")
-                        self.post(event: EventType.Network, data: data)
-                    }.catch { err in
-                        print("Error on reconnected with hw: \(err.localizedDescription)")
-                        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                        appDelegate?.logout(with: false)
-                    }
-                } else if loginRequired {
-                    DispatchQueue.main.async {
-                        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                        appDelegate?.logout(with: false)
-                    }
-                } else {
-                    post(event: EventType.Network, data: data)
+            guard let json = try? JSONSerialization.data(withJSONObject: data, options: []),
+                  let connection = try? JSONDecoder().decode(Connection.self, from: json) else {
+                return
+            }
+            if !connection.connected || !(connection.loginRequired ?? false) {
+                post(event: EventType.Network, data: data)
+                return
+            }
+            if Ledger.shared.connected || Jade.shared.connected {
+                // Restore connection with hw through hidden login
+                let bgq = DispatchQueue.global(qos: .background)
+                let session = getSession()
+                Guarantee().map(on: bgq) {_ -> TwoFactorCall in
+                    try session.login(mnemonic: "", hw_device: ["device": HWResolver.shared.hw!.info])
+                }.then(on: bgq) { call in
+                    call.resolve()
+                }.done { _ in
+                    self.post(event: EventType.Network, data: data)
+                }.catch { err in
+                    print("Error on reconnected with hw: \(err.localizedDescription)")
+                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                    appDelegate?.logout(with: false)
                 }
-            } catch { break }
+                return
+            }
+            DispatchQueue.main.async {
+                // Login required
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.logout(with: false)
+            }
         case .Tor:
             post(event: .Tor, data: data)
         default:
