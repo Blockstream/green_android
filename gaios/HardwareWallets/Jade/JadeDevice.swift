@@ -71,7 +71,7 @@ class JadeDevice: HWDeviceProtocol {
                 return Observable<[String: Any]>.create { observer in
                     if let error = res["error"] as? [String: Any],
                        let message = error["message"] as? String {
-                        observer.onError(JadeError.Declined(message))
+                        observer.onError(JadeError.Abort(message))
                     } else {
                         observer.onNext(res)
                         observer.onCompleted()

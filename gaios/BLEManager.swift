@@ -216,8 +216,14 @@ class BLEManager {
                     let err = BLEManagerError.swErr(txt: NSLocalizedString("id_invalid_status_check_that_your", comment: ""))
                     self.delegate?.onError(err)
                 case is JadeError:
-                    let err = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
-                    self.delegate?.onError(err)
+                    switch err {
+                    case JadeError.Abort(let txt), JadeError.Declined(let txt), JadeError.URLError(let txt):
+                        let err = BLEManagerError.authErr(txt: txt)
+                        self.delegate?.onError(err)
+                    default:
+                        let err = BLEManagerError.authErr(txt: NSLocalizedString("id_login_failed", comment: ""))
+                        self.delegate?.onError(err)
+                    }
                 default:
                     let err = BLEManagerError.genericErr(txt: err.localizedDescription)
                     self.delegate?.onError(err)
