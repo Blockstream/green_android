@@ -46,6 +46,10 @@ class EventWindow: UIWindow {
     }
 
     @objc private func timeout(_ timer: Timer) {
+        guard Settings.shared != nil else {
+            // If user not logged to a session
+            return
+        }
         DispatchQueue.main.async {
             NSLog("Idle timer expired: locking application...")
             let appDelegate = UIApplication.shared.delegate as? AppDelegate

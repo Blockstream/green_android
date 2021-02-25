@@ -88,11 +88,12 @@ class ScreenLocker {
             // We became inactive, but never started a countdown.
             return
         }
-
+        guard let settings = Settings.shared else {
+            // App is not logged
+            return
+        }
         let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval!
-        let settings = Settings.shared
-        let altimeout = settings != nil ? settings!.altimeout * 60 : 5 * 60
-        if Int(countdown) >= altimeout {
+        if Int(countdown) >= settings.altimeout {
             // after timeout
             self.isScreenLockLocked = true
         }
@@ -160,9 +161,5 @@ class ScreenLocker {
             return
         }
         clear()
-        DispatchQueue.main.async {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.logout(with: false)
-        }
     }
 }
