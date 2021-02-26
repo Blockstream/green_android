@@ -10,6 +10,7 @@ import Foundation
 import PromiseKit
 import RxSwift
 import RxBluetoothKit
+import CoreBluetooth
 
 enum BLEManagerError: Error {
     case powerOff(txt: String)
@@ -50,7 +51,7 @@ class BLEManager {
         return instance
     }
 
-    static let manager = CentralManager(queue: .main)
+    static let manager: CentralManager = CentralManager(queue: .main, options: [CBCentralManagerOptionRestoreIdentifierKey: NSString(string: "io.blockstream.greenCentralManager")])
 
     let timeout = RxTimeInterval.seconds(10)
     var peripherals = [ScannedPeripheral]()
@@ -108,7 +109,9 @@ class BLEManager {
     func disposeScan() {
         peripherals = []
         scanningDispose?.dispose()
-        BLEManager.manager.manager.stopScan()
+        if BLEManager.manager.state == .poweredOn {
+            BLEManager.manager.manager.stopScan()
+        }
     }
 
     func isLedger(_ p: Peripheral) -> Bool {
