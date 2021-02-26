@@ -138,7 +138,13 @@ class GreenAddressService {
                 post(event: EventType.Network, data: data)
                 return
             }
-            if Ledger.shared.connected || Jade.shared.connected {
+            guard let hw = HWResolver.shared.hw else {
+                // Login required without hw
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.logout(with: false)
+                return
+            }
+            if hw.connected {
                 // Restore connection with hw through hidden login
                 let bgq = DispatchQueue.global(qos: .background)
                 let session = getSession()
@@ -154,11 +160,6 @@ class GreenAddressService {
                     appDelegate?.logout(with: false)
                 }
                 return
-            }
-            DispatchQueue.main.async {
-                // Login required
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                appDelegate?.logout(with: false)
             }
         case .Tor:
             post(event: .Tor, data: data)
