@@ -86,12 +86,11 @@ class GreenAddressService {
     }
 
     func newNotification(notification: [String: Any]?) {
-        guard let dict = notification else {
+        guard let notificationEvent = notification?["event"] as? String,
+                let event = EventType(rawValue: notificationEvent),
+                let data = notification?[event.rawValue] as? [String: Any] else {
             return
         }
-        guard let notificationEvent = dict["event"] as? String else { return }
-        guard let event = EventType(rawValue: notificationEvent) else { return }
-        guard let data = dict[event.rawValue] as? [String: Any] else { return }
         switch event {
         case .Block:
             guard let height = data["block_height"] as? UInt32 else { break }
@@ -146,25 +145,28 @@ class GreenAddressService {
             }
             if hw.connected {
                 // Restore connection with hw through hidden login
-                let bgq = DispatchQueue.global(qos: .background)
-                let session = getSession()
-                Guarantee().map(on: bgq) {_ -> TwoFactorCall in
-                    try session.login(mnemonic: "", hw_device: ["device": HWResolver.shared.hw!.info])
-                }.then(on: bgq) { call in
-                    call.resolve()
-                }.done { _ in
-                    self.post(event: EventType.Network, data: data)
-                }.catch { err in
-                    print("Error on reconnected with hw: \(err.localizedDescription)")
-                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                    appDelegate?.logout(with: false)
-                }
-                return
+                post(event: EventType.Network, data: data)
+                reconnect()
             }
         case .Tor:
             post(event: .Tor, data: data)
         default:
             break
+        }
+    }
+
+    func reconnect() {
+        let bgq = DispatchQueue.global(qos: .background)
+        let session = getSession()
+        Guarantee().map(on: bgq) {_ -> TwoFactorCall in
+            try session.login(mnemonic: "", hw_device: ["device": HWResolver.shared.hw?.info ?? [:]])
+        }.then(on: bgq) { call in
+            call.resolve()
+        }.done { _ in
+        }.catch { err in
+            print("Error on reconnected with hw: \(err.localizedDescription)")
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.logout(with: false)
         }
     }
 
