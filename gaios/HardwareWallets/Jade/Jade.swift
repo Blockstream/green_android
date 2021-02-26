@@ -70,7 +70,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
                 if let result = res["result"] as? Bool, result {
                     return Observable.just(res)
                 }
-                return Observable.error(JadeError.Abort("Handshake failure"))
+                return Observable.error(JadeError.Abort(NSLocalizedString("id_login_failed", comment: "")))
             }
         }
     }

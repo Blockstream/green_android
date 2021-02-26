@@ -173,6 +173,9 @@ class BLEManager {
                 return p
             }.flatMap { p in
                 self.isJade(p) ? self.connectJade(p) : self.connectLedger(p)
+            }.compactMap { _ in
+                appDelegate?.disconnect()
+                try appDelegate?.connect()
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in
                 return Observable<[String: Any]>.create { observer in
