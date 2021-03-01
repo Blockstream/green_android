@@ -137,10 +137,15 @@ public class JadeHWWallet extends HWWallet {
         try {
             final List<Long> unsignedPath = getUnsignedPath(path);
             final String sigEncoded = this.jade.signMessage(unsignedPath, message);
-            final byte[] sigDecoded = BaseEncoding.base64().decode(sigEncoded);
+            byte[] sigDecoded = BaseEncoding.base64().decode(sigEncoded);
+
+            // Need to truncate lead byte if recoverable signature
+            if (sigDecoded.length == Wally.EC_SIGNATURE_RECOVERABLE_LEN) {
+                sigDecoded = Arrays.copyOfRange(sigDecoded, 1, sigDecoded.length);
+            }
 
             final byte[] sigDer = new byte[Wally.EC_SIGNATURE_DER_MAX_LEN];
-            final int len = Wally.ec_sig_to_der(Arrays.copyOfRange(sigDecoded, 1, sigDecoded.length), sigDer);
+            final int len = Wally.ec_sig_to_der(sigDecoded, sigDer);
             final String sigDerHex =  Wally.hex_from_bytes(Arrays.copyOfRange(sigDer, 0, len));
 
             Log.d(TAG, "signMessage() returning: " + sigDerHex);
