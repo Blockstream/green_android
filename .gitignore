@@ -26,4 +26,4 @@ bitcoinj/tools/checkpoints-testnet.txt
 bitcoinj/tools/checkpoints-testnet
 bitcoinj/tools/checkpoints
 crypto/src/main/java/com/blockstream/libgreenaddress/GDK.java
-crypto/src/main/java/com/blockstream/libwally/
+crypto/src/main/java/com/blockstream/libwally/Wally.java

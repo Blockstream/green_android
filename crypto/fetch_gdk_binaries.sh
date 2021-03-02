@@ -32,7 +32,9 @@ JNILIBSDIR=${CRYPTO_MODULE_ROOT}/src/main/jniLibs
 GDK_JAVA_DIR="${CRYPTO_MODULE_ROOT}/src/main/java/com/blockstream"
 
 # Clean up any previous install
-rm -rf gdk-android-jni* ${CRYPTO_MODULE_ROOT}/src/main/jniLibs ${GDK_JAVA_DIR}
+rm -rf gdk-android-jni* ${CRYPTO_MODULE_ROOT}/src/main/jniLibs \
+  ${GDK_JAVA_DIR}/libgreenaddress/GDK.java \
+  ${GDK_JAVA_DIR}/libwally/Wally.java
 
 # Fetch, validate and decompress gdk
 curl -sL -o ${TARBALL} "${URL}"
@@ -41,8 +43,9 @@ tar xvf ${TARBALL}
 rm ${TARBALL}
 
 # Move the libraries and Java wrapper where we need them
-mv ${NAME}/lib/ ${CRYPTO_MODULE_ROOT}/src/main/jniLibs
-mv ${NAME}/java/com/blockstream/ ${GDK_JAVA_DIR}
+mv ${NAME}/lib/ ${CRYPTO_MODULE_ROOT}/src/main/jniLibs/
+mv ${NAME}/java/com/blockstream/libgreenaddress/GDK.java ${GDK_JAVA_DIR}/libgreenaddress/GDK.java
+mv ${NAME}/java/com/blockstream/libwally/Wally.java ${GDK_JAVA_DIR}/libwally/Wally.java
 
 # Cleanup
 rm -fr $NAME
