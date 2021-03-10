@@ -61,7 +61,7 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
 
     func connect(_ peripheral: Peripheral) {
         BLEManager.shared.connect(peripheral)
-        DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
+        DropAlert().info(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""))
     }
 }
 
@@ -112,7 +112,7 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
 
     func onPrepare(_ peripheral: Peripheral) {
         stopAnimating()
-        let alert = UIAlertController(title: NSLocalizedString("WELCOME TO JADE", comment: ""), message: "", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: NSLocalizedString("id_connected_to_jade", comment: ""), message: "", preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in
             let bgq = DispatchQueue.global(qos: .background)
             firstly {
@@ -132,10 +132,10 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
     func onCheckFirmware(_ peripheral: Peripheral, fw: [String: String], currentVersion: String) {
         stopAnimating()
         let notRequired = Jade.shared.isJadeFwValid(currentVersion)
-        let alert = UIAlertController(title: notRequired ? "New Jade Firmware Available" : "New Jade Firmware Required",
-                                      message: "New \(fw["version"] ?? "") is available",
+        let alert = UIAlertController(title: notRequired ? NSLocalizedString("id_new_jade_firmware_available", comment: "") : NSLocalizedString("id_new_jade_firmware_required", comment: ""),
+                                      message: String(format: NSLocalizedString("id_version_1s", comment: ""), fw["version"] ?? ""),
                                       preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("update", comment: ""), style: .default) { _ in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_update", comment: ""), style: .default) { _ in
             self.startAnimating()
             BLEManager.shared.updateFirmware(peripheral, fwFile: fw)
         })
@@ -151,7 +151,7 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
 
     func onUpdateFirmware(_ peripheral: Peripheral) {
         stopAnimating()
-        let alert = UIAlertController(title: "Firmware", message: "Update success", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: NSLocalizedString("id_firmware_update_completed", comment: ""), message: NSLocalizedString("id_select_your_jade_to_login", comment: ""), preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
