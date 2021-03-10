@@ -38,6 +38,18 @@ extension UIColor {
         return UIColor(named: "customModalMedium")!
     }
 
+    class func customGrayLight() -> UIColor {
+        return UIColor(named: "customGrayLight")!
+    }
+
+    class func customTextFieldBg() -> UIColor {
+        return UIColor(named: "customTextFieldBg")!
+    }
+
+    class func customBtnOff() -> UIColor {
+        return UIColor(named: "customBtnOff")!
+    }
+
     class func cardLight() -> UIColor {
         return UIColor.init(red: 0 / 255, green: 144 / 255, blue: 72 / 255, alpha: 1)
     }

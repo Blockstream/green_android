@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B5O-7h-VGM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="B5O-7h-VGM">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,8 +16,8 @@
                     <view key="view" contentMode="scaleToFill" id="0vK-Vs-Lgw" customClass="WatchOnlySignInView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="rG8-87-dkS"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="DSk-AC-jAE"/>
                     <connections>
@@ -37,15 +37,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_big" translatesAutoresizingMaskIntoConstraints="NO" id="eOt-9F-YzE">
-                                <rect key="frame" x="70" y="174" width="180" height="220"/>
+                                <rect key="frame" x="115" y="229" width="90" height="110"/>
                             </imageView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="5Ef-r4-flD"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="eOt-9F-YzE" firstAttribute="centerY" secondItem="5Ef-r4-flD" secondAttribute="centerY" id="LH8-ob-0ZT"/>
                             <constraint firstItem="eOt-9F-YzE" firstAttribute="centerX" secondItem="5Ef-r4-flD" secondAttribute="centerX" id="PEx-W5-l7s"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="5Ef-r4-flD"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="70P-Km-swb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -59,8 +59,8 @@
                     <view key="view" contentMode="scaleToFill" id="soW-Tu-XRH" customClass="InitialView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="7hx-b0-XCa"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="r6N-ze-unT"/>
                     <connections>
@@ -91,8 +91,8 @@
         <!--HelpViewController-->
         <scene sceneID="sxl-7W-qlX">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6zg-kF-cQt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <viewControllerPlaceholder storyboardName="Help" referencedIdentifier="HelpViewController" id="Mbf-LQ-77o" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6zg-kF-cQt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-649" y="-140"/>
         </scene>
@@ -103,8 +103,8 @@
                     <view key="view" contentMode="scaleToFill" id="DDp-YV-A2x" customClass="PinView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="tP3-hE-v6d"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="QuL-mu-old" propertyAccessControl="none">
                         <barButtonItem key="backBarButtonItem" title=" " id="EKp-3z-N7f"/>
@@ -125,7 +125,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Ka-HY-djy">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Ka-HY-djy">
                                 <rect key="frame" x="16" y="486" width="288" height="42"/>
                                 <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -205,6 +205,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="t2r-7e-jNo"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="F2P-wf-Oem" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="t2r-7e-jNo" secondAttribute="leading" symbolic="YES" id="5Ek-ET-oP0"/>
@@ -220,7 +221,6 @@
                             <constraint firstItem="6oW-aw-gUc" firstAttribute="width" secondItem="5FT-sb-MH7" secondAttribute="width" id="qJx-p2-ETl"/>
                             <constraint firstItem="F2P-wf-Oem" firstAttribute="top" secondItem="t2r-7e-jNo" secondAttribute="top" constant="12" id="zPn-me-Lv1"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="t2r-7e-jNo"/>
                     </view>
                     <navigationItem key="navigationItem" title="Enter your wallet mnemonic" id="GCg-9J-4AJ">
                         <barButtonItem key="backBarButtonItem" title=" " id="aNm-iv-5BH"/>
@@ -271,8 +271,8 @@
                     <view key="view" contentMode="scaleToFill" id="faf-6K-g3N" customClass="PinView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="HnC-zZ-qEn"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <navigationItem key="navigationItem" id="gil-TD-AX7"/>
                     <connections>
@@ -320,6 +320,9 @@
             <point key="canvasLocation" x="-556" y="-357"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="QEt-l0-XBh"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="logo_big" width="90" height="110"/>
         <image name="qr" width="25" height="25"/>
@@ -330,7 +333,4 @@
             <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
-    <inferredMetricsTieBreakers>
-        <segue reference="QEt-l0-XBh"/>
-    </inferredMetricsTieBreakers>
 </document>
