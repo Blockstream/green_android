@@ -139,8 +139,10 @@ class GreenAddressService {
             }
             guard let hw = HWResolver.shared.hw else {
                 // Login required without hw
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                appDelegate?.logout(with: false)
+                DispatchQueue.main.async {
+                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                    appDelegate?.logout(with: false)
+                }
                 return
             }
             if hw.connected {
