@@ -51,12 +51,6 @@ class InitialViewController: UIViewController {
 
     @objc func click(_ sender: UIButton) {
 
-        //TEMP
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "LandingViewController")
-        navigationController?.pushViewController(vc, animated: true)
-        return
-
         if sender == content.createLoginButton {
             if walletFound {
                 self.performSegue(withIdentifier: "pin", sender: self)

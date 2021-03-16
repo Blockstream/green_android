@@ -75,6 +75,9 @@ class SetPinViewController: UIViewController {
     }
 
     @objc func keyClick(sender: UIButton) {
+
+        if pinCode.count == 6 { return }
+
         pinCode += (sender.titleLabel?.text)!
         reload()
         guard pinCode.count == 6 else {
@@ -103,7 +106,7 @@ class SetPinViewController: UIViewController {
             if index < pinCode.count {
                 label.textColor = UIColor.customMatrixGreen()
             } else {
-                label.textColor = UIColor.clear
+                label.textColor = UIColor.black
             }
         }
         switch actionPin {

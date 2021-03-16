@@ -69,7 +69,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return
             }
         }
-        instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
+        //instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
+
+        instantiateViewControllerAsRoot(storyboard: "Home", identifier: "HomeViewController")
+
     }
 
     func logout(with pin: Bool) {

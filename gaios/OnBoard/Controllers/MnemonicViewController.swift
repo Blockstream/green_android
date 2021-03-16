@@ -70,6 +70,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         super.viewWillAppear(animated)
         progressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: progress)
         updateDoneButton(false)
+
+        qrCodeReader?.startScan()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -77,6 +79,10 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         if let token = progressToken {
             NotificationCenter.default.removeObserver(token)
         }
+
+        let contentInset = UIEdgeInsets.zero
+        mnemonicWords.contentInset = contentInset
+        mnemonicWords.scrollIndicatorInsets = contentInset
     }
 
     override func viewDidLayoutSubviews() {
