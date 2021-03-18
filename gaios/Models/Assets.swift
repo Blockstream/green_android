@@ -54,30 +54,32 @@ class Registry: Codable {
         return UIImage(named: "default_asset_icon")
     }
 
-    func cache() -> Promise<Void> {
+    func cache() {
         return refresh(refresh: false)
     }
 
-    func refresh(refresh: Bool = true) -> Promise<Void> {
+    func refresh(refresh: Bool = true) {
+        guard let data = try? getSession().refreshAssets(params: ["icons": true, "assets": true, "refresh": refresh]) else {
+            return
+        }
+        var infosData = data["assets"] as? [String: Any]
+        var iconsData = data["icons"] as? [String: String]
+        if let modIndex = infosData?.keys.firstIndex(of: "last_modified") {
+            infosData?.remove(at: modIndex)
+        }
+        if let modIndex = iconsData?.keys.firstIndex(of: "last_modified") {
+            iconsData?.remove(at: modIndex)
+        }
+        let infosSer = try? JSONSerialization.data(withJSONObject: infosData ?? [:])
+        let infos = try? JSONDecoder().decode([String: AssetInfo].self, from: infosSer ?? Data())
+        self.infos = infos ?? [:]
+        self.icons = iconsData ?? [:]
+    }
+
+    func load() -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
-        if !getGdkNetwork(getNetwork()).liquid {
-            return Promise<Void>()
-        }
-        return Promise().compactMap(on: bgq) { _ in
-            try getSession().refreshAssets(params: ["icons": true, "assets": true, "refresh": refresh])
-        }.map { data in
-            var infosData = data["assets"] as? [String: Any]
-            var iconsData = data["icons"] as? [String: String]
-            if let modIndex = infosData?.keys.firstIndex(of: "last_modified") {
-                infosData?.remove(at: modIndex)
-            }
-            if let modIndex = iconsData?.keys.firstIndex(of: "last_modified") {
-                iconsData?.remove(at: modIndex)
-            }
-            let infosSer = try? JSONSerialization.data(withJSONObject: infosData ?? [:])
-            let infos = try? JSONDecoder().decode([String: AssetInfo].self, from: infosSer ?? Data())
-            self.infos = infos ?? [:]
-            self.icons = iconsData ?? [:]
-        }
+        return Promise()
+            .compactMap(on: bgq) { self.refresh(refresh: true) }
+            .recover(on: bgq) { _ in self.cache() }
     }
 }

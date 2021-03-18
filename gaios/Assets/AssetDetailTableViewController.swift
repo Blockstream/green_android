@@ -83,10 +83,11 @@ class AssetDetailTableViewController: UITableViewController, UITextViewDelegate 
     }
 
     func onAssetsUpdated(_ notification: Notification) {
-        Registry.shared.cache().done { _ in
-            self.tableView.reloadData()
-        }.catch { err in
-            print(err.localizedDescription)
+        Guarantee()
+            .compactMap { Registry.shared.cache() }
+            .done { self.tableView.reloadData() }
+            .catch { err in
+                print(err.localizedDescription)
         }
     }
 

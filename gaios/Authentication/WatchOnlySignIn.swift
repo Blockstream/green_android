@@ -159,7 +159,7 @@ class WatchOnlySignIn: KeyboardViewController {
             try getSession().loginWatchOnly(username: username ?? "",
                                             password: password ?? "")
         }.then { _ in
-            Registry.shared.refresh().recover { _ in Guarantee() }
+            Registry.shared.load()
         }.ensure {
             self.stopAnimating()
         }.done {

@@ -105,10 +105,11 @@ class TransactionsController: UITableViewController {
     }
 
     func onAssetsUpdated(_ notification: Notification) {
-        Registry.shared.cache().done { _ in
-            self.reload()
-        }.catch { err in
-            print(err.localizedDescription)
+        Guarantee()
+            .compactMap { Registry.shared.cache() }
+            .done { self.reload() }
+            .catch { err in
+                print(err.localizedDescription)
         }
     }
 
@@ -170,7 +171,7 @@ class TransactionsController: UITableViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.then(on: bgq) {
+        }.compactMap(on: bgq) {
             Registry.shared.cache()
         }.then(on: bgq) {
             self.loadWallet()

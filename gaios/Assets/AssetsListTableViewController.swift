@@ -36,10 +36,11 @@ class AssetsListTableViewController: UITableViewController {
     }
 
     @objc func onAssetsUpdated(_ notification: NSNotification) {
-        Registry.shared.cache().done {
-            self.tableView.reloadData()
-        }.catch { err in
-            print(err.localizedDescription)
+        Guarantee()
+            .compactMap { Registry.shared.cache() }
+            .done { self.tableView.reloadData() }
+            .catch { err in
+                print(err.localizedDescription)
         }
     }
 
@@ -47,7 +48,7 @@ class AssetsListTableViewController: UITableViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.then {
+        }.compactMap {
             Registry.shared.cache()
         }.then { _ in
             self.wallet!.getBalance()

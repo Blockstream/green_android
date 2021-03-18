@@ -104,7 +104,7 @@ class VerifyMnemonicsViewController: UIViewController {
         }.then(on: bgq) { call in
             call.resolve()
         }.then { _ in
-            Registry.shared.refresh().recover { _ in Guarantee() }
+            Registry.shared.load()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

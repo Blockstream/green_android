@@ -231,7 +231,7 @@ class BLEManager {
                         .then { _ in
                             try session.login(mnemonic: "", hw_device: ["device": info]).resolve()
                         }.get { _ in
-                            Registry.shared.refresh().recover { _ in Guarantee() }
+                            Registry.shared.load()
                         }.done { res in
                             observer.onNext(res)
                             observer.onCompleted()
