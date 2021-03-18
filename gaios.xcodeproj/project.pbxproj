@@ -175,6 +175,8 @@
 		81923A33228084FF0097BEA8 /* AssetsListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81923A32228084FF0097BEA8 /* AssetsListTableViewController.swift */; };
 		81923A35228089BE0097BEA8 /* AssetTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81923A34228089BE0097BEA8 /* AssetTableCell.swift */; };
 		81923A38228194950097BEA8 /* AssetTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81923A37228194950097BEA8 /* AssetTableCell.xib */; };
+		819DFBA826038E800022BD85 /* AccountsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819DFBA726038E800022BD85 /* AccountsManager.swift */; };
+		819DFBAC26038E8B0022BD85 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 819DFBAB26038E8B0022BD85 /* Account.swift */; };
 		81A062D0245322B0003464A0 /* HWResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062CF245322B0003464A0 /* HWResolver.swift */; };
 		81A062D224532454003464A0 /* HWResolverProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D124532454003464A0 /* HWResolverProtocol.swift */; };
 		81A062D624532643003464A0 /* HWDeviceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A062D524532643003464A0 /* HWDeviceProtocol.swift */; };
@@ -453,6 +455,8 @@
 		8192BB9821EF616100B04185 /* zh */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh; path = zh.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8192BB9921EF616F00B04185 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8192BB9A21EF616F00B04185 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		819DFBA726038E800022BD85 /* AccountsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsManager.swift; sourceTree = "<group>"; };
+		819DFBAB26038E8B0022BD85 /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		81A062CF245322B0003464A0 /* HWResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolver.swift; sourceTree = "<group>"; };
 		81A062D124532454003464A0 /* HWResolverProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWResolverProtocol.swift; sourceTree = "<group>"; };
 		81A062D524532643003464A0 /* HWDeviceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWDeviceProtocol.swift; sourceTree = "<group>"; };
@@ -640,6 +644,7 @@
 			isa = PBXGroup;
 			children = (
 				344562EA25D297CF00A5EC18 /* BLEManager.swift */,
+				819DFBA726038E800022BD85 /* AccountsManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1040,6 +1045,7 @@
 				81C602A422A553D3004E26E1 /* Assets.swift */,
 				8124524125D6B0DD00537238 /* Address.swift */,
 				34AB8BA4260366A8009C930A /* WalletListItem.swift */,
+				819DFBAB26038E8B0022BD85 /* Account.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1437,6 +1443,7 @@
 				3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */,
 				81923A33228084FF0097BEA8 /* AssetsListTableViewController.swift in Sources */,
 				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
+				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,
 				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,
 				3497936E25F8B18C0029ECB1 /* ProgressView.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
@@ -1468,6 +1475,7 @@
 				6D2A613623302694008C518A /* UIImage.swift in Sources */,
 				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
+				819DFBA826038E800022BD85 /* AccountsManager.swift in Sources */,
 				3497937025F8B18C0029ECB1 /* Loader.swift in Sources */,
 				6D565ED322C2E53E00C20786 /* TransactionDetailTableCell.swift in Sources */,
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
