@@ -11,7 +11,7 @@ class SetGauthViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("id_google_authenticator_qr_code", comment: "")
+        title = NSLocalizedString("id_authenticator_qr_code", comment: "")
 
         let dataTwoFactorConfig = try? getSession().getTwoFactorConfig()
         guard dataTwoFactorConfig != nil else { return }
@@ -24,7 +24,7 @@ class SetGauthViewController: UIViewController {
         content.secretLabel.text = secret
         content.qrCodeImageView.image = QRImageGenerator.imageForTextWhite(text: gauthData!, frame: content.qrCodeImageView.frame)
         content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
-        content.subtitleLabel.text = NSLocalizedString("id_scan_the_qr_code_in_google", comment: "")
+        content.subtitleLabel.text = NSLocalizedString("id_scan_the_qr_code_with_an", comment: "")
         content.warningLabel.text = NSLocalizedString("id_the_recovery_key_below_will_not", comment: "")
         content.secretLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))
         content.copyImage.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard)))

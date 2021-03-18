@@ -99,7 +99,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
         factors.append(FactorItem(name: NSLocalizedString("id_email", comment: ""), image: UIImage.init(named: "2fa_email")!, enabled: twoFactorConfig.email.enabled && twoFactorConfig.email.confirmed, type: .email))
         factors.append(FactorItem(name: NSLocalizedString("id_sms", comment: ""), image: UIImage.init(named: "2fa_sms")!, enabled: twoFactorConfig.sms.enabled && twoFactorConfig.sms.confirmed, type: .sms))
         factors.append(FactorItem(name: NSLocalizedString("id_call", comment: ""), image: UIImage.init(named: "2fa_call")!, enabled: twoFactorConfig.phone.enabled && twoFactorConfig.phone.confirmed, type: .phone))
-        factors.append(FactorItem(name: NSLocalizedString("id_google_auth", comment: ""), image: UIImage.init(named: "2fa_google")!, enabled: twoFactorConfig.gauth.enabled && twoFactorConfig.gauth.confirmed, type: .gauth))
+        factors.append(FactorItem(name: NSLocalizedString("id_authenticator_app", comment: ""), image: UIImage.init(named: "2fa_google")!, enabled: twoFactorConfig.gauth.enabled && twoFactorConfig.gauth.confirmed, type: .gauth))
         tableview.reloadData()
     }
 
