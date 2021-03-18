@@ -15,8 +15,8 @@ class WalletHDCell: UITableViewCell {
 
     }
 
-    func configure(_ item: WalletListItem) {
-        self.lblTitle.text = item.title
-        self.icon.image = item.icon
+    func configure(_ text: String, _ icon: UIImage) {
+        self.lblTitle.text = text
+        self.icon.image = icon
     }
 }

@@ -16,8 +16,8 @@ class WalletCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    func configure(_ item: WalletListItem) {
-        self.lblTitle.text = item.title
+    func configure(_ item: Account) {
+        self.lblTitle.text = item.name
         self.icon.image = item.icon
     }
 

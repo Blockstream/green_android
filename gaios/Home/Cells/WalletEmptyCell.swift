@@ -16,10 +16,10 @@ class WalletEmptyCell: UITableViewCell {
 
     }
 
-    func configure(_ item: WalletListItem) {
-        self.lblTitle.text = item.title
+    func configure(_ text: String, _ icon: UIImage) {
+        self.lblTitle.text = text
         lblTitle.textColor = UIColor.customGrayLight()
-        self.icon.image = item.icon.maskWithColor(color: UIColor.customGrayLight())
+        self.icon.image = icon.maskWithColor(color: UIColor.customGrayLight())
         bgContainer.layer.borderWidth = 1.0
         bgContainer.layer.borderColor = UIColor.customGrayLight().cgColor
         bgContainer.cornerRadius = 8.0

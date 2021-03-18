@@ -63,16 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func lock(with pin: Bool) {
         window?.endEditing(true)
-        if pin {
-            if isPinEnabled(network: getNetwork()) {
-                instantiateViewControllerAsRoot(storyboard: "Main", identifier: "PinLoginNavigationController")
-                return
-            }
-        }
-        //instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
-
         instantiateViewControllerAsRoot(storyboard: "Home", identifier: "HomeViewController")
-
     }
 
     func logout(with pin: Bool) {

@@ -5,11 +5,12 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblVersion: UILabel!
 
-    var wallets: [WalletListItem] = [WalletListItem(icon: UIImage(named: "ntw_btc")!, title: "My Bitcoin Wallet"),
-                   WalletListItem(icon: UIImage(named: "ntw_liquid")!, title: "My Liquid Wallet"),
-                   WalletListItem(icon: UIImage(named: "ntw_btc")!, title: "My Testnet Wallet")]
-    var walletsHW = [WalletListItem(icon: UIImage(named: "ic_hww")!, title: "Connect Jade Wallet"),
-                     WalletListItem(icon: UIImage(named: "ic_hww")!, title: "Connect Ledger Wallet")]
+    var accounts: [Account] { get { AccountsManager.shared.list } }
+
+    enum SupportedHW: String, CaseIterable {
+        case Jade = "Jade"
+        case LedgerNanoX = "Ledger Nano X"
+    }
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
@@ -20,6 +21,11 @@ class HomeViewController: UIViewController {
         setContent()
         setStyle()
         updateUI()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        tableView.reloadData()
     }
 
     func setContent() {
@@ -69,9 +75,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch section {
         case 0:
-            return wallets.count == 0 ? 1 : wallets.count
+            return accounts.count == 0 ? 1 : accounts.count
         case 1:
-            return walletsHW.count
+            return SupportedHW.allCases.count
         default:
             return 0
         }
@@ -81,24 +87,22 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch indexPath.section {
         case 0:
-            if wallets.count == 0 {
+            if accounts.count == 0 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletEmptyCell") as? WalletEmptyCell {
-                    cell.configure(WalletListItem(icon: UIImage(named: "ic_logo_green")!, title: "It looks like you have no software wallets.  Click below to add one."))
+                    cell.configure("It looks like you have no software wallets.  Click below to add one.", UIImage(named: "ic_logo_green")!)
                     cell.selectionStyle = .none
                     return cell
                 }
             } else {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
-
-                    cell.configure(wallets[indexPath.row])
+                    cell.configure(accounts[indexPath.row])
                     cell.selectionStyle = .none
                     return cell
                 }
             }
         case 1:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletHDCell") as? WalletHDCell {
-
-                cell.configure(walletsHW[indexPath.row])
+                cell.configure(SupportedHW.allCases[indexPath.row].rawValue, UIImage(named: "ic_hww")!)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -151,7 +155,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
-            if wallets.count > 0 {
+            if accounts.count > 0 {
                 enterWallet(indexPath.row)
             }
         case 1:
