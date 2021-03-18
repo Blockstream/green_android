@@ -44,8 +44,9 @@ class HomeViewController: UIViewController {
 //        let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController")
 //        navigationController?.pushViewController(vc, animated: true)
         let storyboard = UIStoryboard(name: "Home", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
+        vc?.account = accounts[index]
+        navigationController?.pushViewController(vc!, animated: true)
     }
 
     func showHardwareWallet() {

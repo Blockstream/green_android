@@ -19,27 +19,17 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var lblWalletLockHint1: UILabel!
     @IBOutlet weak var lblWalletLockHint2: UILabel!
     @IBOutlet weak var btnWalletLock: UIButton!
+    var account: Account?
 
     private var pinCode = ""
     private let MAXATTEMPTS = 3
-    private var network = { return getNetwork() }()
-
-    var pinAttemptsPreference: Int {
-        get {
-            return UserDefaults.standard.integer(forKey: getNetwork() + "_pin_attempts")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_pin_attempts")
-        }
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         let navigationBarHeight: CGFloat =  navigationController!.navigationBar.frame.height
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: navigationBarHeight, height: navigationBarHeight))
         imageView.contentMode = .scaleAspectFit
-        let imageName = getGdkNetwork(network).liquid ? "btc_liquid" : getGdkNetwork(network).icon
-        imageView.image = UIImage(named: imageName!)
+        imageView.image = account?.icon
         navigationItem.titleView = imageView
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))
@@ -79,9 +69,8 @@ class LoginViewController: UIViewController {
     }
 
     override func viewDidAppear(_ animated: Bool) {
-        let bioAuth = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-        if bioAuth {
-            loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, network: network, withPIN: nil)
+        if account?.hasBioPin ?? false {
+            loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil)
         }
     }
 
@@ -112,83 +101,78 @@ class LoginViewController: UIViewController {
     }
 
     @objc func progress(_ notification: NSNotification) {
-        Guarantee().map { () -> UInt32 in
-            let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
-            let tor = try JSONDecoder().decode(Tor.self, from: json)
-            return tor.progress
-        }.done { progress in
-            var text = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
-            if progress == 100 {
+        if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
+           let tor = try? JSONDecoder().decode(Tor.self, from: json) {
+            var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            if tor.progress == 100 {
                 text = NSLocalizedString("id_logging_in", comment: "")
             }
-            self.progressIndicator?.message = text
-        }.catch { err in
-            print(err.localizedDescription)
+            DispatchQueue.main.async {
+                self.startLoader(message: text)
+            }
         }
     }
 
-    fileprivate func loginWithPin(usingAuth: String, network: String, withPIN: String?) {
+    fileprivate func loginWithPin(usingAuth: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
         firstly {
             return Guarantee()
         }.compactMap {
-            try AuthenticationTypeHandler.getAuth(method: usingAuth, forNetwork: network)
+            try self.account?.auth(usingAuth)
         }.get { _ in
-            self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
-        }.get(on: bgq) { _ in
+            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
+        }.then(on: bgq) { data -> Promise<[String: Any]> in
             appDelegate.disconnect()
-        }.get(on: bgq) { _ in
             try appDelegate.connect()
-        }.compactMap(on: bgq) {data -> TwoFactorCall in
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-            return try getSession().loginWithPin(pin: pin!, pin_data: pinData!)
-        }.then(on: bgq) { twoFactorCall in
-            twoFactorCall.resolve()
-        }.then { _ in
-            Registry.shared.refresh().recover { _ in Guarantee() }
+            let resolver = try getSession().loginWithPin(pin: pin!, pin_data: pinData!)
+            return resolver.resolve()
+        }.then { _ -> Promise<Void> in
+            if self.account?.network == "liquid" {
+                return Registry.shared.load()
+            }
+            return Promise<Void>()
         }.ensure {
-            self.stopAnimating()
+            self.stopLoader()
         }.done {
-            self.pinAttemptsPreference = 0
+            self.account?.attempts = 0
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
-            var message = NSLocalizedString("id_login_failed", comment: "")
-            if let authError = error as? AuthenticationTypeHandler.AuthError {
-                switch authError {
-                case .CanceledByUser:
-                    return
-                case .SecurityError, .KeychainError:
-                    return self.onBioAuthError(authError.localizedDescription)
-                default:
-                    message = authError.localizedDescription
+            switch error {
+            case AuthenticationTypeHandler.AuthError.CanceledByUser:
+                return
+            case AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
+                return self.onBioAuthError(error.localizedDescription)
+            case is AuthenticationTypeHandler.AuthError:
+                DropAlert().error(message: error.localizedDescription)
+            case TwoFactorCallError.failure(let desc):
+                if desc.contains(":login failed:") && withPIN != nil {
+                    self.wrongPin(usingAuth)
                 }
-            } else if let error = error as? TwoFactorCallError {
-                switch error {
-                case .failure(let localizedDescription), .cancel(let localizedDescription):
-                    if localizedDescription.contains(":login failed:") && withPIN != nil {
-                        self.wrongPin()
-                    }
-                }
+            default:
+                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             }
-            self.pinCode = ""
-            self.updateAttemptsLabel()
-            self.reload()
-            DropAlert().error(message: message)
         }
     }
 
-    func wrongPin() {
-        self.pinAttemptsPreference += 1
-        if self.pinAttemptsPreference == self.MAXATTEMPTS {
-
-            // VERIFY LOGIC
-            removeKeychainData()
-//            self.pinAttemptsPreference = 0
-//            getAppDelegate()?.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
+    func wrongPin(_ usingAuth: String) {
+        account?.attempts += 1
+        if account?.attempts == self.MAXATTEMPTS {
+            if usingAuth == AuthenticationTypeHandler.AuthKeyBiometric {
+                account?.removeBioKeychainData()
+            } else {
+                account?.removePinKeychainData()
+            }
+            account?.attempts = 0
+            navigationController?.popViewController(animated: true)
+        } else {
+            self.pinCode = ""
+            self.updateAttemptsLabel()
+            self.reload()
         }
     }
 
@@ -197,9 +181,7 @@ class LoginViewController: UIViewController {
         let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: text, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .default) { _ in })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_reset", comment: ""), style: .destructive) { _ in
-            removeBioKeychainData()
-            try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.network)
-            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.network)
+            self.account?.removeBioKeychainData()
         })
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
@@ -208,18 +190,19 @@ class LoginViewController: UIViewController {
 
     func updateAttemptsLabel() {
 
-        let isLock = pinAttemptsPreference == MAXATTEMPTS
+        let pinattempts = account?.attempts ?? 0
+        let isLock = pinattempts == MAXATTEMPTS
 
         cardEnterPin.isHidden = isLock
         lblTitle.isHidden = isLock
         cardWalletLock.isHidden = !isLock
 
-        if MAXATTEMPTS - pinAttemptsPreference == 1 {
+        if MAXATTEMPTS - pinattempts == 1 {
             attempts.text = NSLocalizedString("id_last_attempt_if_failed_you_will", comment: "")
         } else {
-            attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinAttemptsPreference)
+            attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinattempts)
         }
-        attempts.isHidden = pinAttemptsPreference == 0
+        attempts.isHidden = pinattempts == 0
     }
 
     @objc func keyClick(sender: UIButton) {
@@ -228,8 +211,7 @@ class LoginViewController: UIViewController {
         guard pinCode.count == 6 else {
             return
         }
-        let network = getNetwork()
-        loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN, network: network, withPIN: self.pinCode)
+        loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyPIN, withPIN: self.pinCode)
     }
 
     func reload() {
@@ -244,7 +226,6 @@ class LoginViewController: UIViewController {
 
     @objc func back(sender: UIBarButtonItem) {
         navigationController?.popViewController(animated: true)
-//        getAppDelegate()!.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
     }
 
     @objc func click(sender: UIButton) {
