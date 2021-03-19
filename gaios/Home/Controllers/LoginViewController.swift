@@ -125,7 +125,7 @@ class LoginViewController: UIViewController {
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         }.then(on: bgq) { data -> Promise<[String: Any]> in
             appDelegate.disconnect()
-            try appDelegate.connect()
+            try appDelegate.connect(self.account?.network ?? "mainnet")
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]

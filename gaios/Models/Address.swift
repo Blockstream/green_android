@@ -19,11 +19,11 @@ class Address: Codable {
         }
     }
 
-    static func validate(with wallet: WalletItem, hw: HWResolverProtocol, addr: Address) -> Promise<String> {
+    static func validate(with wallet: WalletItem, hw: HWResolverProtocol, addr: Address, network: String) -> Promise<String> {
         let csv = wallet.type == "2of2"
         let csvBlocks = csv ? addr.subtype ?? 0 : 0
         return Promise { seal in
-            _ = hw.newReceiveAddress(network: getNetwork(), subaccount: wallet.pointer, branch: addr.branch!, pointer: addr.pointer!, recoveryChainCode: wallet.recoveryChainCode, recoveryPubKey: wallet.recoveryPubKey, csvBlocks: csvBlocks)
+            _ = hw.newReceiveAddress(network: network, subaccount: wallet.pointer, branch: addr.branch!, pointer: addr.pointer!, recoveryChainCode: wallet.recoveryChainCode, recoveryPubKey: wallet.recoveryPubKey, csvBlocks: csvBlocks)
                 .subscribe(onNext: { data in
                     seal.fulfill(data)
                 }, onError: { err in

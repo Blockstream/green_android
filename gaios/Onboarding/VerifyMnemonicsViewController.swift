@@ -94,7 +94,7 @@ class VerifyMnemonicsViewController: UIViewController {
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
         }.compactMap(on: bgq) {
-            try appDelegate.connect()
+            try appDelegate.connect("mainnet")
         }.compactMap(on: bgq) {
             try getSession().registerUser(mnemonic: mnemonics)
         }.then(on: bgq) { call in

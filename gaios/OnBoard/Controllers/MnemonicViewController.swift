@@ -196,6 +196,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         dummyLoginAndNext()
         return
 
+        let account = Account(name: "Testnet", network: "testnet")
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
@@ -205,7 +206,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
         }.compactMap(on: bgq) {
-            try appDelegate.connect()
+            try appDelegate.connect(account.network)
         }.then {
             self.getMnemonicString()
         }.get { (mnemonic: String, _: String) in

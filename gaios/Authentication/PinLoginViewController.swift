@@ -95,7 +95,7 @@ class PinLoginViewController: UIViewController {
         }.get(on: bgq) { _ in
             appDelegate.disconnect()
         }.get(on: bgq) { _ in
-            try appDelegate.connect()
+            try appDelegate.connect("testnet")
         }.compactMap(on: bgq) {data -> TwoFactorCall in
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String

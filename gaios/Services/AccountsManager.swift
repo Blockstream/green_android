@@ -5,6 +5,7 @@ class AccountsManager {
     let attrService = "AccountsManager_Service"
     static let shared = AccountsManager()
 
+    var current: Account?
     var list: [Account] {
         get {
             if !UserDefaults.standard.bool(forKey: "wallets_keychain") {

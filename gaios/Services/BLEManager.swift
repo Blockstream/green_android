@@ -116,7 +116,7 @@ class BLEManager {
         p.peripheral.name?.contains("Jade") ?? false
     }
 
-    func connectLedger(_ p: Peripheral) -> Observable<Peripheral> {
+    func connectLedger(_ p: Peripheral, network: String) -> Observable<Peripheral> {
         HWResolver.shared.hw = Ledger.shared
         return Ledger.shared.open(p)
             .flatMap { _ in Ledger.shared.application() }
@@ -126,7 +126,7 @@ class BLEManager {
                 let version = versionString.split(separator: ".").map {Int($0)}
                 if name.contains("OLOS") {
                     throw DeviceError.dashboard // open app from dashboard
-                } else if name != self.network() {
+                } else if name != self.networkLabel(network) {
                     throw DeviceError.wrong_app // change app
                 } else if name == "Bitcoin" && (version[0]! < 1 || version[1]! < 4) {
                     throw DeviceError.outdated_app
@@ -135,7 +135,7 @@ class BLEManager {
             }
     }
 
-    func connectJade(_ p: Peripheral) -> Observable<Peripheral> {
+    func connectJade(_ p: Peripheral, network: String) -> Observable<Peripheral> {
         HWResolver.shared.hw = Jade.shared
         return Jade.shared.open(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
@@ -146,14 +146,14 @@ class BLEManager {
                 // check genuine firmware
                 return Jade.shared.addEntropy()
             }.flatMap { _ in
-                Jade.shared.auth(network: getNetwork())
+                Jade.shared.auth(network: network)
                     .retry(3)
             }.compactMap { _ in
                 return p
             }
     }
 
-    func checkFirmware(_ p: Peripheral) {
+    func checkFirmware(_ p: Peripheral, network: String) {
         var verInfo: [String: Any]?
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
@@ -168,10 +168,10 @@ class BLEManager {
                    let ver = verInfo?["JADE_VERSION"] as? String {
                     self.delegate?.onCheckFirmware(p, fw: fw, currentVersion: ver)
                 } else {
-                    self.login(p)
+                    self.login(p, network: network)
                 }
             }, onError: { err in
-                self.onError(err)
+                self.onError(err, network: network)
             })
     }
 
@@ -185,11 +185,11 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onUpdateFirmware(p)
             }, onError: { err in
-                self.onError(err)
+                self.onError(err, network: nil)
             })
     }
 
-    func connect(_ p: Peripheral) {
+    func connect(_ p: Peripheral, network: String) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
         addStatusListener(p)
@@ -198,23 +198,23 @@ class BLEManager {
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { p in
                 appDelegate?.disconnect()
-                try appDelegate?.connect()
+                try appDelegate?.connect(network)
                 return p
             }.flatMap { p in
-                self.isJade(p) ? self.connectJade(p) : self.connectLedger(p)
+                self.isJade(p) ? self.connectJade(p, network: network) : self.connectLedger(p, network: network)
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 if self.isJade(p) {
-                    self.checkFirmware(p)
+                    self.checkFirmware(p, network: network)
                 } else {
-                    self.login(p)
+                    self.login(p, network: network)
                 }
             }, onError: { err in
-                self.onError(err)
+                self.onError(err, network: network)
             })
     }
 
-    func login(_ p: Peripheral) {
+    func login(_ p: Peripheral, network: String) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let session = getGAService().getSession()
 
@@ -222,7 +222,7 @@ class BLEManager {
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in
                 appDelegate?.disconnect()
-                try appDelegate?.connect()
+                try appDelegate?.connect(network)
             }.observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in
                 return Observable<[String: Any]>.create { observer in
@@ -244,11 +244,11 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onConnect(p)
             }, onError: { err in
-                self.onError(err)
+                self.onError(err, network: network)
             })
     }
 
-    func onError(_ err: Error) {
+    func onError(_ err: Error, network: String?) {
         switch err {
         case is BluetoothError:
             let bleErr = err as? BluetoothError
@@ -258,13 +258,13 @@ class BLEManager {
             let err = BLEManagerError.timeoutErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
             self.delegate?.onError(err)
         case DeviceError.dashboard:
-            let err = BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
+            let err = BLEManagerError.dashboardErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
             self.delegate?.onError(err)
         case DeviceError.outdated_app:
             let err = BLEManagerError.outdatedAppErr(txt: "Outdated Ledger app: update the bitcoin app via Ledger Manager")
             self.delegate?.onError(err)
         case DeviceError.wrong_app:
-            let err = BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.network()))
+            let err = BLEManagerError.wrongAppErr(txt: String(format: NSLocalizedString("id_select_the_s_app_on_your_ledger", comment: ""), self.networkLabel(network ?? "mainnet")))
             self.delegate?.onError(err)
         case is AuthenticationTypeHandler.AuthError:
             let authErr = err as? AuthenticationTypeHandler.AuthError
@@ -310,8 +310,8 @@ class BLEManager {
         })
     }
 
-    func network() -> String {
-        return getGdkNetwork(getNetwork()).network.lowercased() == "testnet" ? "Bitcoin Test" : "Bitcoin"
+    func networkLabel(_ network: String) -> String {
+        return network == "testnet" ? "Bitcoin Test" : "Bitcoin"
     }
 
     func addStatusListener(_ peripheral: Peripheral) {

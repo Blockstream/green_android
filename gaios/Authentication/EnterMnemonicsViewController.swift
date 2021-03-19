@@ -161,7 +161,7 @@ class EnterMnemonicsViewController: KeyboardViewController, SuggestionsDelegate 
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
         }.compactMap(on: bgq) {
-            try appDelegate.connect()
+            try appDelegate.connect("testnet")
         }.then {
             self.getMnemonicString()
         }.get { (mnemonic: String, _: String) in

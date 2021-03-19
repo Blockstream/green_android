@@ -34,7 +34,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
         content.shareButton.setGradient(true)
 
-        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let isLiquid = AccountsManager.shared.current?.gdkNetwork.liquid ?? false
         content.amountView.isHidden = isLiquid
         content.accountView.isHidden = !(isLiquid && "2of2_no_recovery" == wallet?.type)
         if isLiquid && "2of2_no_recovery" == wallet?.type {
@@ -101,7 +101,7 @@ class ReceiveBtcViewController: KeyboardViewController {
             DropAlert().info(message: NSLocalizedString("id_please_verify_that_the_address", comment: ""))
             return Guarantee()
         }.then {
-            Address.validate(with: self.wallet!, hw: hw, addr: addr)
+            Address.validate(with: self.wallet!, hw: hw, addr: addr, network: AccountsManager.shared.current!.network)
         }.done { addr in
             if self.wallet?.receiveAddress == addr {
                 DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
@@ -199,7 +199,8 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func uriBitcoin(address: String) -> String {
         let satoshi = self.getSatoshi() ?? 0
-        if getGdkNetwork(getNetwork()).liquid || satoshi == 0 {
+        let isLiquid = AccountsManager.shared.current?.gdkNetwork.liquid ?? false
+        if isLiquid || satoshi == 0 {
             return address
         }
         return String(format: "bitcoin:%@?amount=%.8f", address, getBTC() ?? 0)

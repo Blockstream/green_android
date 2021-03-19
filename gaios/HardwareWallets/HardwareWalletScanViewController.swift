@@ -52,16 +52,26 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let peripheral = peripherals[indexPath.row].peripheral
         self.startAnimating()
-        if BLEManager.shared.isLedger(peripheral) {
-            connect(peripheral)
-        } else {
-            BLEManager.shared.prepare(peripheral)
-        }
+        BLEManager.shared.prepare(peripheral)
     }
 
-    func connect(_ peripheral: Peripheral) {
-        BLEManager.shared.connect(peripheral)
-        DropAlert().info(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""))
+    func connect(_ peripheral: Peripheral, network: String) {
+        if BLEManager.shared.isLedger(peripheral) {
+            BLEManager.shared.connect(peripheral, network: network)
+            return
+        }
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            BLEManager.shared.dispose()
+            BLEManager.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
+            return Guarantee()
+        }.then(on: bgq) {
+            after(seconds: 1)
+        }.done { _ in
+            BLEManager.shared.connect(peripheral, network: network)
+            DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
+        }
     }
 }
 
@@ -112,20 +122,12 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
 
     func onPrepare(_ peripheral: Peripheral) {
         stopAnimating()
-        let alert = UIAlertController(title: NSLocalizedString("id_connected_to_jade", comment: ""), message: "", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in
-            let bgq = DispatchQueue.global(qos: .background)
-            firstly {
-                self.startAnimating()
-                BLEManager.shared.dispose()
-                BLEManager.manager.manager.cancelPeripheralConnection(peripheral.peripheral)
-                return Guarantee()
-            }.then(on: bgq) {
-                after(seconds: 1)
-            }.done { _ in
-                self.connect(peripheral)
-            }
-        })
+        let alert = UIAlertController(title: NSLocalizedString("LOGIN HW", comment: ""), message: "", preferredStyle: .actionSheet)
+        if BLEManager.shared.isJade(peripheral) {
+            alert.addAction(UIAlertAction(title: NSLocalizedString("Connect Liquid", comment: ""), style: .default) { _ in self.connect(peripheral, network: "liquid") })
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("Connect Mainnet", comment: ""), style: .default) {  _ in self.connect(peripheral, network: "mainnet") })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("Connect Testnet", comment: ""), style: .default) { _ in self.connect(peripheral, network: "testnet") })
         self.present(alert, animated: true, completion: nil)
     }
 
@@ -141,7 +143,8 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
             if notRequired {
-                BLEManager.shared.login(peripheral)
+                let network = AccountsManager.shared.current?.network ?? "mainnet"
+                BLEManager.shared.login(peripheral, network: network)
             } else {
                 BLEManager.shared.dispose()
             }

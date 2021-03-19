@@ -63,15 +63,20 @@ struct Account: Codable {
         }
     }
 
+    var gdkNetwork: GdkNetwork {
+        get {
+            getGdkNetwork(network)
+        }
+    }
+
     func removeBioKeychainData() {
-        let network = getNetwork()
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
         try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.network)
         UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.network)
     }
 
     func removePinKeychainData() {
-        let network = getNetwork()
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
     }
+    
 }

@@ -147,7 +147,7 @@ class WatchOnlySignIn: KeyboardViewController {
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
         }.compactMap(on: bgq) {
-            try appDelegate.connect()
+            try appDelegate.connect("mainnet")
         }.compactMap {
             if let username = self.content.usernameTextField.text,
                 let password = self.content.passwordTextField.text {
