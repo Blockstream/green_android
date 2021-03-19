@@ -8,11 +8,13 @@ class WalletSettingsViewController: UIViewController {
     @IBOutlet weak var cardTor: UIView!
     @IBOutlet weak var lblTorTitle: UILabel!
     @IBOutlet weak var lblTorHint: UILabel!
+    @IBOutlet weak var switchTor: UISwitch!
 
     @IBOutlet weak var cardProxy: UIView!
     @IBOutlet weak var lblProxyTitle: UILabel!
     @IBOutlet weak var lblProxyHint: UILabel!
     @IBOutlet weak var cardProxyDetail: UIView!
+    @IBOutlet weak var switchProxy: UISwitch!
     @IBOutlet weak var fieldProxyIp: UITextField!
 
     @IBOutlet weak var cardTxCheck: UIView!
@@ -34,12 +36,23 @@ class WalletSettingsViewController: UIViewController {
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnSave: UIButton!
 
+    private var networkSettings: [String: Any] {
+        get {
+            UserDefaults.standard.value(forKey: "network_settings") as? [String: Any] ?? [:]
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "network_settings")
+            UserDefaults.standard.synchronize()
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setContent()
         setStyle()
         setActions()
+        reload()
         hideKeyboardWhenTappedAround()
     }
 
@@ -83,8 +96,17 @@ class WalletSettingsViewController: UIViewController {
 
     }
 
-    @IBAction func switchProxyChange(_ sender: UISwitch) {
+    func reload() {
+        switchTor.setOn(networkSettings["tor"] as? Bool ?? false, animated: true)
+        switchProxy.setOn(networkSettings["proxy"] as? Bool ?? false, animated: true)
+        var socks5 = networkSettings["socks5_hostname"] as? String ?? ""
+        if let port = networkSettings["socks5_port"] as? String {
+            socks5 += ":\(port)"
+        }
+        fieldProxyIp.text = socks5
+    }
 
+    @IBAction func switchProxyChange(_ sender: UISwitch) {
         cardProxyDetail.isHidden = !sender.isOn
     }
 
@@ -93,6 +115,17 @@ class WalletSettingsViewController: UIViewController {
     }
 
     @IBAction func btnSave(_ sender: Any) {
+        let socks5 = fieldProxyIp.text ?? ""
+        if switchProxy.isOn && socks5.isEmpty {
+            showAlert(title: NSLocalizedString("id_warning", comment: ""),
+                      message: NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: ""))
+            return
+        }
+        networkSettings = [
+            "proxy": switchProxy.isOn,
+            "tor": switchTor.isOn,
+            "socks5_hostname": socks5.split(separator: ":").first ?? "",
+            "socks5_port": socks5.split(separator: ":").last ?? ""]
         dismiss(animated: true, completion: nil)
     }
 
