@@ -30,7 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 public class JadeFirmwareManager {
     private static final String TAG = "JadeFirmwareManager";
 
-    private static final String JADE_MIN_ALLOWED_FW_VERSION = "0.1.23";
+    private static final String JADE_MIN_ALLOWED_FW_VERSION = "0.1.24";
     private static final String JADE_FW_VERSIONS_FILE = "LATEST";
 
     private static final String JADE_FW_SERVER_HTTPS = "https://jadefw.blockstream.com";

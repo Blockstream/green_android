@@ -266,7 +266,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
                 .doOnSuccess(session -> Log.d(TAG, "Creating Jade HW Wallet)"))
                 .map(session -> new HWDeviceData("Jade", true, true,
                                                  HWDeviceData.HWDeviceDataLiquidSupport.Lite,
-                                                 HWDeviceData.HWDeviceAntiExfilSupport.None))
+                                                 HWDeviceData.HWDeviceAntiExfilSupport.Optional))
                 .map(hwDeviceData -> new JadeHWWallet(jade, networkData, hwDeviceData))
                 .flatMap(jadeWallet -> jadeWallet.authenticate(this, getSession()))
 

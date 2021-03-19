@@ -18,6 +18,8 @@ import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.Commitment;
 import com.greenaddress.jade.entities.JadeError;
+import com.greenaddress.jade.entities.SignMessageResult;
+import com.greenaddress.jade.entities.SignTxInputsResult;
 import com.greenaddress.jade.entities.TxChangeOutput;
 import com.greenaddress.jade.entities.TxInput;
 import com.greenaddress.jade.entities.TxInputBtc;
@@ -92,6 +94,29 @@ public class JadeHWWallet extends HWWallet {
                 });
     }
 
+    // Helper to map an optional hex string into an array of bytes - null input is returned as null
+    private static byte[] hexToBytes(final String hexstr) {
+        return hexstr != null ? Wally.hex_to_bytes(hexstr) : null;
+    }
+
+    // Helper to map an optional array of bytes into a hex string - null input is returned as null
+    private static String hexFromBytes(final byte[] bytes) {
+        return bytes != null ? Wally.hex_from_bytes(bytes) : null;
+    }
+
+    // Helper to map an array of n byte arrays into an array of n hex strings - null input is returned as null
+    private static List<String> hexFromBytes(final List<byte[]> lstByteArrays) {
+        if (lstByteArrays == null) {
+            return null;
+        }
+
+        final List<String> lstHexes = new ArrayList<>(lstByteArrays.size());
+        for (final byte[] bytes : lstByteArrays) {
+            lstHexes.add(hexFromBytes(bytes));
+        }
+        return lstHexes;
+    }
+
     // Helper to turn the BIP32 paths back into a list of Longs, rather than a list of Integers
     // (which may well be expressed as negative [for hardened paths]).
     private static List<Long> getUnsignedPath(final List<Integer> signed) {
@@ -135,14 +160,14 @@ public class JadeHWWallet extends HWWallet {
                                      final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
         Log.d(TAG, "signMessage() for message of length " + message.length() + " using path " + path);
 
-        if (useAeProtocol) {
-            throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
-        }
-
         try {
             final List<Long> unsignedPath = getUnsignedPath(path);
-            final String sigEncoded = this.jade.signMessage(unsignedPath, message);
-            byte[] sigDecoded = BaseEncoding.base64().decode(sigEncoded);
+            final SignMessageResult result = this.jade.signMessage(unsignedPath, message, useAeProtocol,
+                                                                   hexToBytes(aeHostCommitment),
+                                                                   hexToBytes(aeHostEntropy));
+
+            // Convert the signature from Base64 into into DER hex for GDK
+            byte[] sigDecoded = BaseEncoding.base64().decode(result.getSignature());
 
             // Need to truncate lead byte if recoverable signature
             if (sigDecoded.length == Wally.EC_SIGNATURE_RECOVERABLE_LEN) {
@@ -151,10 +176,10 @@ public class JadeHWWallet extends HWWallet {
 
             final byte[] sigDer = new byte[Wally.EC_SIGNATURE_DER_MAX_LEN];
             final int len = Wally.ec_sig_to_der(sigDecoded, sigDer);
-            final String sigDerHex =  Wally.hex_from_bytes(Arrays.copyOfRange(sigDer, 0, len));
+            final String sigDerHex =  hexFromBytes(Arrays.copyOfRange(sigDer, 0, len));
 
             Log.d(TAG, "signMessage() returning: " + sigDerHex);
-            return new SignMsgResult(sigDerHex, null);
+            return new SignMsgResult(sigDerHex, hexFromBytes(result.getSignerCommitment()));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -178,17 +203,6 @@ public class JadeHWWallet extends HWWallet {
         return change;
     }
 
-    // Helper to map an array of n byte arrays into an array of n hex strings
-    private static List<String> getHexFromBytes(final List<byte[]> lstByteArrays) {
-        // return lstByteArrays.stream().map(Wally::hex_from_bytes).collect(Collectors.toList());
-        final List<String> lstHexes = new ArrayList<>(lstByteArrays.size());
-        for (final byte[] bytes : lstByteArrays) {
-            final String hexstr = Wally.hex_from_bytes(bytes);
-            lstHexes.add(hexstr);
-        }
-        return lstHexes;
-    }
-
     @Override
     public SignTxResult signTransaction(final HWWalletBridge parent,
                                         final ObjectNode tx,
@@ -199,9 +213,6 @@ public class JadeHWWallet extends HWWallet {
                                         final boolean useAeProtocol) {
         Log.d(TAG, "signTransaction() called for " + inputs.size() + " inputs");
         try {
-            if (useAeProtocol) {
-                throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
-            }
             if (addressTypes.contains("p2pkh")) {
                 throw new RuntimeException("Hardware Wallet cannot sign sweep inputs");
             }
@@ -213,7 +224,7 @@ public class JadeHWWallet extends HWWallet {
             final List<TxInput> txInputs = new ArrayList<>(inputs.size());
             for (final InputOutputData input : inputs) {
                 final boolean swInput = !input.getAddressType().equals("p2sh");
-                final byte[] script = Wally.hex_to_bytes(input.getPrevoutScript());
+                final byte[] script = hexToBytes(input.getPrevoutScript());
 
                 if (swInput && inputs.size() == 1) {
                     // Single SegWit input - can skip sending entire tx and just send the sats amount
@@ -221,7 +232,9 @@ public class JadeHWWallet extends HWWallet {
                                                 null,
                                                 script,
                                                 input.getSatoshi(),
-                                                input.getUserPath()));
+                                                input.getUserPath(),
+                                                hexToBytes(input.getAeHostCommitment()),
+                                                hexToBytes(input.getAeHostEntropy())));
                 } else {
                     // Non-SegWit input or there are several inputs - in which case we always send
                     // the entire prior transaction up to Jade (so it can verify the spend amounts).
@@ -229,12 +242,14 @@ public class JadeHWWallet extends HWWallet {
                     if (txhex == null) {
                         throw new RuntimeException("Required input transaction not found: " + input.getTxhash());
                     }
-                    final byte[] inputTx = Wally.hex_to_bytes(txhex);
+                    final byte[] inputTx = hexToBytes(txhex);
                     txInputs.add(new TxInputBtc(swInput,
                                                 inputTx,
                                                 script,
                                                 null,
-                                                input.getUserPath()));
+                                                input.getUserPath(),
+                                                hexToBytes(input.getAeHostCommitment()),
+                                                hexToBytes(input.getAeHostEntropy())));
                 }
             }
 
@@ -244,12 +259,11 @@ public class JadeHWWallet extends HWWallet {
             // Make jade-api call
             final String network = getNetwork().getNetwork();
             final String txhex = tx.get("transaction").asText();
-            final byte[] txn = Wally.hex_to_bytes(txhex);
-            final List<byte[]> signatures = this.jade.signTx(network, txn, txInputs, change);
+            final byte[] txn = hexToBytes(txhex);
+            final SignTxInputsResult result = this.jade.signTx(network, useAeProtocol, txn, txInputs, change);
 
-            final List<String> hexSigs = getHexFromBytes(signatures);
-            Log.d(TAG, "signTransaction() returning " + hexSigs.size() + " signatures");
-            return new SignTxResult(hexSigs, null);
+            Log.d(TAG, "signTransaction() returning " + result.getSignatures().size() + " signatures");
+            return new SignTxResult(hexFromBytes(result.getSignatures()), hexFromBytes(result.getSignerCommitments()));
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -260,7 +274,7 @@ public class JadeHWWallet extends HWWallet {
                                             final InputOutputData output,
                                             final byte[] hashPrevOuts,
                                             final byte[] customVbf) throws IOException {
-        final byte[] assetId = Wally.hex_to_bytes(output.getAssetId());
+        final byte[] assetId = hexToBytes(output.getAssetId());
         final Commitment commitment = this.jade.getCommitments(
             assetId,
             output.getSatoshi(),
@@ -269,14 +283,14 @@ public class JadeHWWallet extends HWWallet {
             customVbf);
 
         // Add the script blinding key
-        final byte[] blindingKey = Wally.hex_to_bytes(output.getPublicKey());
+        final byte[] blindingKey = hexToBytes(output.getPublicKey());
         commitment.setBlindingKey(blindingKey);
 
         return commitment;
     }
 
     // Helper to pivot commitments and signatures into result structure
-    private static SignTxResult createResult(final List<Commitment> commitments, final List<String> signatures) {
+    private static SignTxResult createResult(final List<Commitment> commitments, final SignTxInputsResult signResult) {
         final List<String> assetGenerators = new ArrayList<>(commitments.size());
         final List<String> valueCommitments = new ArrayList<>(commitments.size());
         final List<String> abfs = new ArrayList<>(commitments.size());
@@ -291,20 +305,24 @@ public class JadeHWWallet extends HWWallet {
                 vbfs.add(null);
             } else {
                 // Blinded output, populate commitments & blinding factors
-                final String assetGenerator = Wally.hex_from_bytes(commitment.getAssetGenerator());
+                final String assetGenerator = hexFromBytes(commitment.getAssetGenerator());
                 assetGenerators.add(assetGenerator);
 
-                final String valueCommitment = Wally.hex_from_bytes(commitment.getValueCommitment());
+                final String valueCommitment = hexFromBytes(commitment.getValueCommitment());
                 valueCommitments.add(valueCommitment);
 
-                final String abf = Wally.hex_from_bytes(reverseBytes(commitment.getAbf()));
+                final String abf = hexFromBytes(reverseBytes(commitment.getAbf()));
                 abfs.add(abf);
 
-                final String vbf = Wally.hex_from_bytes(reverseBytes(commitment.getVbf()));
+                final String vbf = hexFromBytes(reverseBytes(commitment.getVbf()));
                 vbfs.add(vbf);
             }
         }
-        return new SignTxResult(signatures, null, assetGenerators, valueCommitments, abfs, vbfs);
+
+        final List<String> signatures = hexFromBytes(signResult.getSignatures());
+        final List<String> signerCommitments = hexFromBytes(signResult.getSignerCommitments());
+
+        return new SignTxResult(signatures, signerCommitments, assetGenerators, valueCommitments, abfs, vbfs);
     }
 
     private static byte[] valueToLE(final int i) {
@@ -352,12 +370,14 @@ public class JadeHWWallet extends HWWallet {
             for (final InputOutputData input : inputs) {
                 // Get the input in the form Jade expects
                 final boolean swInput = !input.getAddressType().equals("p2sh");
-                final byte[] script = Wally.hex_to_bytes(input.getPrevoutScript());
-                final byte[] commitment = Wally.hex_to_bytes(input.getCommitment());
+                final byte[] script = hexToBytes(input.getPrevoutScript());
+                final byte[] commitment = hexToBytes(input.getCommitment());
                 txInputs.add(new TxInputLiquid(swInput,
                                                script,
                                                commitment,
-                                               input.getUserPath()));
+                                               input.getUserPath(),
+                                               hexToBytes(input.getAeHostCommitment()),
+                                               hexToBytes(input.getAeHostEntropy())));
 
                 // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
                 values.add(input.getSatoshi());
@@ -373,7 +393,7 @@ public class JadeHWWallet extends HWWallet {
             final byte[] hashPrevOuts = Wally.sha256d(flatten(inputPrevouts));
 
             // Get trusted commitments per output - null for unblinded outputs
-            final List<Commitment> trusted_commitments = new ArrayList<>(outputs.size());
+            final List<Commitment> trustedCommitments = new ArrayList<>(outputs.size());
 
             // For all-but-last blinded entry, do not pass custom vbf, so one is generated
             // Append the output abfs and vbfs to the arrays
@@ -382,7 +402,7 @@ public class JadeHWWallet extends HWWallet {
             for (int i = 0; i < lastBlindedIndex; ++i) {
                 final InputOutputData output = outputs.get(i);
                 final Commitment commitment = getTrustedCommitment(i, output, hashPrevOuts, null);
-                trusted_commitments.add(commitment);
+                trustedCommitments.add(commitment);
 
                 values.add(output.getSatoshi());
                 abfs.add(commitment.getAbf());
@@ -406,10 +426,10 @@ public class JadeHWWallet extends HWWallet {
                 lastBlindedOutput,
                 hashPrevOuts,
                 lastVbf);
-            trusted_commitments.add(lastCommitment);
+            trustedCommitments.add(lastCommitment);
 
             // Add a 'null' commitment for the final (fee) output
-            trusted_commitments.add(null);
+            trustedCommitments.add(null);
 
             // Get the change outputs and paths
             final List<TxChangeOutput> change = getChangeData(outputs);
@@ -417,14 +437,12 @@ public class JadeHWWallet extends HWWallet {
             // Make jade-api call to sign the txn
             final String network = getNetwork().getNetwork();
             final String txhex = tx.get("transaction").asText();
-            final byte[] txn = Wally.hex_to_bytes(txhex);
-            final List<byte[]> signatures =
-                this.jade.signLiquidTx(network, txn, txInputs, trusted_commitments, change);
-
+            final byte[] txn = hexToBytes(txhex);
+            final SignTxInputsResult result = this.jade.signLiquidTx(network, useAeProtocol, txn,
+                                                                     txInputs, trustedCommitments, change);
             // Pivot data into return structure
-            final List<String> hexSigs = getHexFromBytes(signatures);
-            Log.d(TAG, "signLiquidTransaction() returning " + signatures.size() + " signatures");
-            return createResult(trusted_commitments, hexSigs);
+            Log.d(TAG, "signLiquidTransaction() returning " + result.getSignatures().size() + " signatures");
+            return createResult(trustedCommitments, result);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -435,9 +453,9 @@ public class JadeHWWallet extends HWWallet {
         Log.d(TAG, "getBlindingKey() for script of length " + scriptHex.length());
 
         try {
-            final byte[] script = Wally.hex_to_bytes(scriptHex);
+            final byte[] script = hexToBytes(scriptHex);
             final byte[] bkey = this.jade.getBlindingKey(script);
-            final String keyHex = Wally.hex_from_bytes(bkey);
+            final String keyHex = hexFromBytes(bkey);
             Log.d(TAG, "getBlindingKey() returning " + keyHex);
             return keyHex;
         } catch (final Exception e) {
@@ -450,10 +468,10 @@ public class JadeHWWallet extends HWWallet {
         Log.d(TAG, "getBlindingNonce() for script of length " + scriptHex.length() + " and pubkey " + pubkey);
 
         try {
-            final byte[] script = Wally.hex_to_bytes(scriptHex);
-            final byte[] pkey = Wally.hex_to_bytes(pubkey);
+            final byte[] script = hexToBytes(scriptHex);
+            final byte[] pkey = hexToBytes(pubkey);
             final byte[] nonce = this.jade.getSharedNonce(script, pkey);
-            final String nonceHex = Wally.hex_from_bytes(nonce);
+            final String nonceHex = hexFromBytes(nonce);
             Log.d(TAG, "getBlindingNonce() returning " + nonceHex);
             return nonceHex;
         } catch (final Exception e) {

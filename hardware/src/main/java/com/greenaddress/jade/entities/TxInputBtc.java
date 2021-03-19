@@ -9,25 +9,18 @@ import java.util.List;
 public class TxInputBtc extends TxInput {
 
     private final byte[] inputTx;
-    private final byte[] script;
     private final Long satoshi;
 
     public TxInputBtc(final boolean isWitness, final byte[] inputTx, final byte[] script, final Long satoshi,
-                      final List<Long> path) {
-        super(isWitness, path);
+                      final List<Long> path, final byte[] aeHostCommitment, final byte[] aeHostEntropy) {
+        super(isWitness, script, path, aeHostCommitment, aeHostEntropy);
         this.inputTx = inputTx;
-        this.script = script;
         this.satoshi = satoshi;
     }
 
     @JsonGetter("input_tx")
     public byte[] getInputTx() {
         return inputTx;
-    }
-
-    @JsonGetter("script")
-    public byte[] getScript() {
-        return script;
     }
 
     @JsonGetter("satoshi")

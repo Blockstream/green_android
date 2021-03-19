@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.jade.entities.JadeError;
 import com.greenaddress.jade.entities.Commitment;
+import com.greenaddress.jade.entities.SignMessageResult;
+import com.greenaddress.jade.entities.SignTxInputsResult;
 import com.greenaddress.jade.entities.TxChangeOutput;
 import com.greenaddress.jade.entities.TxInput;
 import com.greenaddress.jade.entities.TxInputLiquid;
@@ -305,59 +307,115 @@ public class JadeAPI {
     }
 
     // Sign a message
-    public String signMessage(final List<Long> path, final String message) throws IOException {
+    public SignMessageResult signMessage(final List<Long> path,
+                                         final String message,
+                                         final boolean useAeProtocol,
+                                         final byte[] aeHostCommitment,
+                                         final byte[] aeHostEntropy ) throws IOException {
         testConnection();
-        final JsonNode params = makeParams("path", path).put("message", message);
-        final JsonNode result = this.jadeRpc("sign_message", params, TIMEOUT_USER_INTERACTION);
-        return result.asText();
+        if (useAeProtocol) {
+            // Anti-exfil protocol:
+            // We send the signing request with the host-commitment and receive the signer-commitment
+            // in reply once the user confirms.
+            // We can then request the actual signature passing the host-entropy.
+            final JsonNode params1 = makeParams("path", path)
+                    .put("message", message)
+                    .put("ae_host_commitment", aeHostCommitment);
+            final JsonNode signerCommitment = this.jadeRpc("sign_message", params1, TIMEOUT_USER_INTERACTION);
+
+            final JsonNode params2 = makeParams("ae_host_entropy", aeHostEntropy);
+            final JsonNode signature = this.jadeRpc("get_signature", params2, TIMEOUT_AUTONOMOUS);
+
+            return new SignMessageResult(signature.asText(), signerCommitment.binaryValue());
+        } else {
+            // Standard EC signature, simple case
+            final JsonNode params = makeParams("path", path).put("message", message);
+            final JsonNode signature = this.jadeRpc("sign_message", params, TIMEOUT_USER_INTERACTION);
+            return new SignMessageResult(signature.asText(), null);
+        }
     }
 
     // Helper to send transaction inputs and retrieve signature responses
-    private List<byte[]> signTxInputs(final int baseId, final List<? extends TxInput> inputs) throws IOException {
-        // Send all n inputs
-        int i = 0;
-        for (final TxInput input : inputs) {
-            final String id = String.valueOf(baseId + i + 1);
-            ++i;
+    private SignTxInputsResult signTxInputs(final int baseId, final List<? extends TxInput> inputs,
+                                            final boolean useAeProtocol) throws IOException {
+        if (useAeProtocol) {
+            /**
+             * Anti-exfil protocol:
+             * We send one message per input (which includes host-commitment *but
+             * not* the host entropy) and receive the signer-commitment in reply.
+             * Once all n input messages are sent, we can request the actual signatures
+             * (as the user has a chance to confirm/cancel at this point).
+             * We request the signatures passing the host-entropy for each one.
+             */
+            // Send inputs one at a time, receiving 'signer-commitment' in reply
+            final List<byte[]> signerCommitments = new ArrayList<>(inputs.size());
+            int i = 0;
+            for (final TxInput input : inputs) {
+                final String id = String.valueOf(baseId + i + 1);
+                ++i;
 
-            final JsonNode inputParams = JadeInterface.mapper().valueToTree(input);
-            final JsonNode request = buildRequest(id, "tx_input", inputParams);
-            this.jade.writeRequest(request);
+                final JsonNode params = JadeInterface.mapper().valueToTree(input);
+                final JsonNode signerCommitment = this.jadeRpc("tx_input", params, id, TIMEOUT_AUTONOMOUS);
+                signerCommitments.add(signerCommitment.binaryValue());
+            }
 
-            // FIXME - pause to not flood buffers
-            android.os.SystemClock.sleep(100);
+            // Request the signatures one at a time, sending the entropy
+            final List<byte[]> signatures = new ArrayList<>(inputs.size());
+            final int newBaseId = Math.round((baseId + inputs.size() + 500)/1000)*1000;
+            i = 0;
+            for (final TxInput input : inputs) {
+                final String id = String.valueOf(newBaseId + i + 1);
+                final JsonNode params = makeParams("ae_host_entropy", input.getAeHostEntropy());
+                final JsonNode signature = this.jadeRpc("get_signature", params, id, i == 0 ? TIMEOUT_USER_INTERACTION : TIMEOUT_AUTONOMOUS);
+                signatures.add(signature.binaryValue());
+            }
+            return new SignTxInputsResult(signatures, signerCommitments);
+        } else {
+            /**
+             * Legacy Protocol:
+             * Send one message per input - without expecting replies.
+             * Once all n input messages are sent, the hw then sends all n replies
+             * (as the user has a chance to confirm/cancel at this point).
+             * Then receive all n replies for the n signatures.
+             * NOTE: *NOT* a sequence of n blocking rpc calls.
+             */
+            // Send all n inputs
+            int i = 0;
+            for (final TxInput input : inputs) {
+                final String id = String.valueOf(baseId + i + 1);
+                ++i;
+
+                final JsonNode params = JadeInterface.mapper().valueToTree(input);
+                final JsonNode request = buildRequest(id, "tx_input", params);
+                this.jade.writeRequest(request);
+
+                // FIXME - pause to not flood buffers
+                android.os.SystemClock.sleep(100);
+            }
+
+            // Receive all n signatures
+            final List<byte[]> signatures = new ArrayList<>(inputs.size());
+            final String lastId = String.valueOf(baseId + inputs.size());
+            for (i = 0; i < inputs.size(); ++i) {
+                final String id = String.valueOf(baseId + i + 1);
+                final JsonNode response = this.jade.readResponse(i == 0 ? TIMEOUT_USER_INTERACTION : TIMEOUT_AUTONOMOUS);
+                final JsonNode signatureResult = getResultOrRaiseError(response, id, lastId);
+                signatures.add(signatureResult.binaryValue());
+            }
+            return new SignTxInputsResult(signatures, null);
         }
-
-        // Receive all n signatures
-        final String lastId = String.valueOf(baseId + inputs.size());
-        final List<byte[]> signatures = new ArrayList<>(inputs.size());
-        for (i = 0; i < inputs.size(); ++i) {
-            final String id = String.valueOf(baseId + i + 1);
-
-            final JsonNode response = this.jade.readResponse(i == 0 ? TIMEOUT_USER_INTERACTION : TIMEOUT_AUTONOMOUS);
-            final JsonNode signatureResult = getResultOrRaiseError(response, id, lastId);
-            signatures.add(signatureResult.binaryValue());
-        }
-
-        return signatures;
     }
 
     // Sign a transaction
-    public List<byte[]> signTx(final String network, final byte[] txn, final List<TxInput> inputs, final List<TxChangeOutput> change) throws IOException {
-        /**
-         * Protocol:
-         * 1st message contains txn and number of inputs we are going to send.
-         * Reply ok if that corresponds to the expected number of inputs (n).
-         * Then we send one message per input - without expecting replies.
-         * Once all n input messages are sent, the hw then sends all n replies
-         * (as the user has a chance to confirm/cancel at this point).
-         * Then receive all n replies for the n signatures.
-         * NOTE: *NOT* a sequence of n blocking rpc calls.
-         */
-        testConnection();
+    public SignTxInputsResult signTx(final String network, final boolean useAeProtocol, final byte[] txn,
+                                     final List<TxInput> inputs, final List<TxChangeOutput> change) throws IOException {
+         // 1st message contains txn and number of inputs we are going to send.
+         // Reply ok if that corresponds to the expected number of inputs (n).
+         testConnection();
         final int baseId = 100 * (1000 + this.idgen.nextInt(8999));
         final JsonNode params = makeParams("change", change)
                 .put("network", network)
+                .put("use_ae_signatures", useAeProtocol)
                 .put("num_inputs", inputs.size())
                 .put("txn", txn);
 
@@ -367,7 +425,7 @@ public class JadeAPI {
         }
 
         // Use helper function to send inputs and process replies
-        return signTxInputs(baseId, inputs);
+        return signTxInputs(baseId, inputs, useAeProtocol);
     }
 
     // Liquid calls
@@ -435,25 +493,19 @@ public class JadeAPI {
     }
 
     // Sign a liquid transaction
-    public List<byte[]> signLiquidTx(final String network,
-                                     final byte[] txn,
-                                     final List<TxInputLiquid> inputs,
-                                     final List<Commitment> trustedCommitments,
-                                     final List<TxChangeOutput> change) throws IOException {
-        /**
-         * Protocol:
-         * 1st message contains txn and number of inputs we are going to send.
-         * Reply ok if that corresponds to the expected number of inputs (n).
-         * Then we send one message per input - without expecting replies.
-         * Once all n input messages are sent, the hw then sends all n replies
-         * (as the user has a chance to confirm/cancel at this point).
-         * Then receive all n replies for the n signatures.
-         * NOTE: *NOT* a sequence of n blocking rpc calls.
-         */
+    public SignTxInputsResult signLiquidTx(final String network,
+                                           final boolean useAeProtocol,
+                                           final byte[] txn,
+                                           final List<TxInputLiquid> inputs,
+                                           final List<Commitment> trustedCommitments,
+                                           final List<TxChangeOutput> change) throws IOException {
+        // 1st message contains txn and number of inputs we are going to send.
+        // Reply ok if that corresponds to the expected number of inputs (n).
         testConnection();
         final int baseId = 100 * (1000 + this.idgen.nextInt(8999));
         final ObjectNode params = makeParams("change", change)
                 .put("network", network)
+                .put("use_ae_signatures", useAeProtocol)
                 .put("num_inputs", inputs.size());
 
         // Add the trusted commitments
@@ -472,6 +524,6 @@ public class JadeAPI {
         }
 
         // Use helper function to send inputs and process replies
-        return signTxInputs(baseId, inputs);
+        return signTxInputs(baseId, inputs, useAeProtocol);
     }
 }
