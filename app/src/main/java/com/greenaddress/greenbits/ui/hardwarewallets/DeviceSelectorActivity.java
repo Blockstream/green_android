@@ -208,13 +208,13 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
 
                             // Blockstream Jade
                             if (JadeBleImpl.IO_SERVICE_UUID.equals(serviceId)) {
-                                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.ic_jade, device, ts);
+                                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.blockstream_jade_device, device, ts);
                                 break;
                             }
 
                             // Ledger (Nano X)
                             if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId)) {
-                                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ic_ledger, device, ts);
+                                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ledger_device, device, ts);
                                 break;
                             }
                         }
@@ -283,12 +283,12 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
         if (rec != null && rec.getServiceUuids() != null && !rec.getServiceUuids().isEmpty()) {
             // Blockstream Jade
             if (rec.getServiceUuids().contains(PARCEL_SERVICE_UUID_JADE)) {
-                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.ic_jade, rslt.getBleDevice().getBluetoothDevice(), ts);
+                mAdapter.add(PARCEL_SERVICE_UUID_JADE, R.drawable.blockstream_jade_device, rslt.getBleDevice().getBluetoothDevice(), ts);
             }
 
             // Ledger (Nano X)
             else if (rec.getServiceUuids().contains(PARCEL_SERVICE_UUID_LEDGER)) {
-                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ic_ledger, rslt.getBleDevice().getBluetoothDevice(), ts);
+                mAdapter.add(PARCEL_SERVICE_UUID_LEDGER, R.drawable.ledger_device, rslt.getBleDevice().getBluetoothDevice(), ts);
             }
         }
     }

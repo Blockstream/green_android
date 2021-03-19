@@ -21,20 +21,17 @@
             android:contentDescription="@string/id_green_logo"
             android:src="@drawable/ic_logo_big" />
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="50dp" />
-
-       <ImageView
-           android:id="@+id/hardwareIcon"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="20dp" />
-
+        <ImageView
+            android:id="@+id/hardwareIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="120dp"
+            android:maxHeight="120dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="20dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/blockstream_jade_device" />
 
         <LinearLayout
             android:orientation="horizontal"

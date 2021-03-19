@@ -516,7 +516,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     public int getIconResourceId() {
-        return R.drawable.ic_ledger;
+        return R.drawable.ledger_device;
     }
 
     /*

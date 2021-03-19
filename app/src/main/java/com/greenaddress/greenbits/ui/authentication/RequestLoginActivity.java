@@ -123,20 +123,20 @@ public class RequestLoginActivity extends LoginActivity {
 
         switch (mVendorId) {
         case VENDOR_JADE:
-            hardwareIcon.setImageResource(R.drawable.ic_jade);
+            hardwareIcon.setImageResource(R.drawable.blockstream_jade_device);
             final JadeAPI jadeAPI = JadeAPI.createSerial(getSession(), mUsbManager, mUsb, 115200);
             onJade(jadeAPI);
             return;
 
         case VENDOR_TREZOR:
         case VENDOR_TREZOR_V2:
-            hardwareIcon.setImageResource(R.drawable.ic_trezor);
+            hardwareIcon.setImageResource(R.drawable.trezor_device);
             onTrezor();
             return;
 
         case VENDOR_BTCHIP:
         case VENDOR_LEDGER:
-            hardwareIcon.setImageResource(R.drawable.ic_ledger);
+            hardwareIcon.setImageResource(R.drawable.ledger_device);
             BTChipTransport transport = null;
             try {
                 transport = BTChipTransportAndroid.open(mUsbManager, mUsb);
@@ -173,7 +173,7 @@ public class RequestLoginActivity extends LoginActivity {
         // Check service id matches a supported hw wallet
         if (JadeBleImpl.IO_SERVICE_UUID.equals(serviceId.getUuid())) {
             // Blockstream Jade
-            hardwareIcon.setImageResource(R.drawable.ic_jade);
+            hardwareIcon.setImageResource(R.drawable.blockstream_jade_device);
 
             // Create JadeAPI on BLE device
             final JadeAPI jadeAPI = JadeAPI.createBle(getSession(), bleDevice);
@@ -181,7 +181,7 @@ public class RequestLoginActivity extends LoginActivity {
 
         } else if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId.getUuid())) {
             // Ledger (Nano X)
-            hardwareIcon.setImageResource(R.drawable.ic_ledger);
+            hardwareIcon.setImageResource(R.drawable.ledger_device);
 
             // Ledger BLE adapter will call the 'onLedger' function when the BLE connection is established
             LedgerBLEAdapter.connectLedgerBLE(this, btDevice, this::onLedger, this::onLedgerError);

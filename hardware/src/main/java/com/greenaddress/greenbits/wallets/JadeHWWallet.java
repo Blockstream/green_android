@@ -490,6 +490,6 @@ public class JadeHWWallet extends HWWallet {
 
     @Override
     public int getIconResourceId() {
-        return R.drawable.ic_jade;
+        return R.drawable.blockstream_jade_device;
     }
 }

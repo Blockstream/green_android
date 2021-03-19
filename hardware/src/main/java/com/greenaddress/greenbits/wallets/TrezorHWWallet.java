@@ -353,7 +353,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     public int getIconResourceId() {
-        return R.drawable.ic_trezor;
+        return R.drawable.trezor_device;
     }
 
     @Override
