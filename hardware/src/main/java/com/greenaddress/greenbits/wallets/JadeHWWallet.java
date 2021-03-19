@@ -131,8 +131,13 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String signMessage(final HWWalletBridge parent, final List<Integer> path, final String message) {
+    public SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
+                                     final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
         Log.d(TAG, "signMessage() for message of length " + message.length() + " using path " + path);
+
+        if (useAeProtocol) {
+            throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
+        }
 
         try {
             final List<Long> unsignedPath = getUnsignedPath(path);
@@ -149,7 +154,7 @@ public class JadeHWWallet extends HWWallet {
             final String sigDerHex =  Wally.hex_from_bytes(Arrays.copyOfRange(sigDer, 0, len));
 
             Log.d(TAG, "signMessage() returning: " + sigDerHex);
-            return sigDerHex;
+            return new SignMsgResult(sigDerHex, null);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -185,14 +190,18 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> signTransaction(final HWWalletBridge parent,
+    public SignTxResult signTransaction(final HWWalletBridge parent,
                                         final ObjectNode tx,
                                         final List<InputOutputData> inputs,
                                         final List<InputOutputData> outputs,
                                         final Map<String, String> transactions,
-                                        final List<String> addressTypes) {
+                                        final List<String> addressTypes,
+                                        final boolean useAeProtocol) {
         Log.d(TAG, "signTransaction() called for " + inputs.size() + " inputs");
         try {
+            if (useAeProtocol) {
+                throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
+            }
             if (addressTypes.contains("p2pkh")) {
                 throw new RuntimeException("Hardware Wallet cannot sign sweep inputs");
             }
@@ -240,7 +249,7 @@ public class JadeHWWallet extends HWWallet {
 
             final List<String> hexSigs = getHexFromBytes(signatures);
             Log.d(TAG, "signTransaction() returning " + hexSigs.size() + " signatures");
-            return hexSigs;
+            return new SignTxResult(hexSigs, null);
         } catch (final Exception e) {
             throw new RuntimeException(e);
         }
@@ -267,7 +276,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     // Helper to pivot commitments and signatures into result structure
-    private static LiquidHWResult createResult(final List<Commitment> commitments, final List<String> signatures) {
+    private static SignTxResult createResult(final List<Commitment> commitments, final List<String> signatures) {
         final List<String> assetGenerators = new ArrayList<>(commitments.size());
         final List<String> valueCommitments = new ArrayList<>(commitments.size());
         final List<String> abfs = new ArrayList<>(commitments.size());
@@ -295,7 +304,7 @@ public class JadeHWWallet extends HWWallet {
                 vbfs.add(vbf);
             }
         }
-        return new LiquidHWResult(signatures, assetGenerators, valueCommitments, abfs, vbfs);
+        return new SignTxResult(signatures, null, assetGenerators, valueCommitments, abfs, vbfs);
     }
 
     private static byte[] valueToLE(final int i) {
@@ -320,11 +329,12 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public LiquidHWResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                                final List<InputOutputData> inputs,
-                                                final List<InputOutputData> outputs,
-                                                final Map<String,String> transactions,
-                                                final List<String> addressTypes) {
+    public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+                                              final List<InputOutputData> inputs,
+                                              final List<InputOutputData> outputs,
+                                              final Map<String,String> transactions,
+                                              final List<String> addressTypes,
+                                              final boolean useAeProtocol) {
         Log.d(TAG, "signLiquidTransaction() called for " + inputs.size() + " inputs");
         try {
             if (addressTypes.contains("p2pkh")) {

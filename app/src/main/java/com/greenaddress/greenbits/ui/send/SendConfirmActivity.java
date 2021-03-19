@@ -210,15 +210,27 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         }, (e) -> {
             e.printStackTrace();
             stopLoading();
+
+             // If the error is the Anti-Exfil validation violation we show that prominently.
+             // Otherwise show a toast of the error text.
             final Resources res = getResources();
             final String msg = UI.i18n(res, e.getMessage());
-            UI.toast(activity, msg, Toast.LENGTH_LONG);
-            if (msg.equals(res.getString(R.string.id_transaction_already_confirmed))) {
-                activity.setResult(Activity.RESULT_OK);
-                activity.finishOnUiThread();
-            } else {
+            if (msg.equals(res.getString(R.string.id_signature_validation_failed_if))) {
+                UI.popup(this, R.string.id_error, R.string.id_continue)
+                        .content(getString(R.string.id_signature_validation_failed_if))
+                        .build()
+                        .show();
                 mSwipeButton.setEnabled(true);
                 mSwipeButton.moveButtonBack();
+            } else {
+                UI.toast(activity, msg, Toast.LENGTH_LONG);
+                if (msg.equals(res.getString(R.string.id_transaction_already_confirmed))) {
+                    activity.setResult(Activity.RESULT_OK);
+                    activity.finishOnUiThread();
+                } else {
+                    mSwipeButton.setEnabled(true);
+                    mSwipeButton.moveButtonBack();
+                }
             }
         });
     }

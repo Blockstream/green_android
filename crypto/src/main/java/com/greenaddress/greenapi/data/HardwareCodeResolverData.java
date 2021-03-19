@@ -12,7 +12,9 @@ import java.util.Map;
 public class HardwareCodeResolverData extends JSONData {
     private List<String> xpubs;
     private String signature;
+    private String signerCommitment;
     private List<String> signatures;
+    private List<String> signerCommitments;
     private String blindingKey;
     private List<String> nonces;
     private Map<String, String> blindingKeys;
@@ -37,12 +39,28 @@ public class HardwareCodeResolverData extends JSONData {
         this.signature = signature;
     }
 
+    public String getSignerCommitment() {
+        return signerCommitment;
+    }
+
+    public void setSignerCommitment(String signerCommitment) {
+        this.signerCommitment = signerCommitment;
+    }
+
     public List<String> getSignatures() {
         return signatures;
     }
 
     public void setSignatures(List<String> signatures) {
         this.signatures = signatures;
+    }
+
+    public List<String> getSignerCommitments() {
+        return signerCommitments;
+    }
+
+    public void setSignerCommitments(List<String> signerCommitments) {
+        this.signerCommitments = signerCommitments;
     }
 
     public String getBlindingKey() {

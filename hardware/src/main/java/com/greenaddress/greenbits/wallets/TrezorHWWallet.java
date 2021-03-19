@@ -64,7 +64,12 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String signMessage(final HWWalletBridge parent, final List<Integer> path, final String message) {
+    public SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
+                                     final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
+        if (useAeProtocol) {
+            throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
+        }
+
         Message m = mTrezor.io(TrezorMessage.SignMessage.newBuilder()
                                .addAllAddressN(path)
                                .setMessage(ByteString.copyFromUtf8(message)));
@@ -79,19 +84,25 @@ public class TrezorHWWallet extends HWWallet {
 
             final byte[] der = new byte[Wally.EC_SIGNATURE_DER_MAX_LEN];
             final int len = Wally.ec_sig_to_der(compact, der);
-            return Wally.hex_from_bytes(Arrays.copyOf(der, len));
+            final String signature = Wally.hex_from_bytes(Arrays.copyOf(der, len));
+            return new SignMsgResult(signature, null);
         }
         throw new IllegalStateException("Unknown response: " + m.getClass().getSimpleName());
     }
 
     @Override
-    public List<String> signTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
                                         final List<InputOutputData> inputs,
                                         final List<InputOutputData> outputs,
                                         final Map<String, String> transactions,
-                                        final List<String> addressTypes)
+                                        final List<String> addressTypes,
+                                        final boolean useAeProtocol)
     {
         try {
+            if (useAeProtocol) {
+                throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
+            }
+
             return signTransactionImpl(parent, tx, inputs, outputs, transactions, addressTypes);
         } finally {
             // Free all wally txs to ensure we don't leak any memory
@@ -103,13 +114,16 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public LiquidHWResult signLiquidTransaction(HWWalletBridge parent, ObjectNode tx, List<InputOutputData> inputs,
-                                                List<InputOutputData> outputs, Map<String, String> transactions,
-                                                List<String> addressTypes) {
+    public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+                                              final List<InputOutputData> inputs,
+                                              final List<InputOutputData> outputs,
+                                              final Map<String, String> transactions,
+                                              final List<String> addressTypes,
+                                              final boolean useAeProtocol) {
         return null;
     }
 
-    private List<String> signTransactionImpl(final HWWalletBridge parent, final ObjectNode tx,
+    private SignTxResult signTransactionImpl(final HWWalletBridge parent, final ObjectNode tx,
                                              final List<InputOutputData> inputs,
                                              final List<InputOutputData> outputs,
                                              final Map<String, String> transactions,
@@ -150,7 +164,7 @@ public class TrezorHWWallet extends HWWallet {
                         Wally.hex_from_bytes(r.getSerialized().getSignature().toByteArray()) +"01";
 
                 if (r.getRequestType().equals(TrezorType.RequestType.TXFINISHED))
-                    return Arrays.asList(signatures);
+                    return new SignTxResult(Arrays.asList(signatures), null);
 
                 final TrezorType.TxRequestDetailsType txRequest = r.getDetails();
                 TrezorType.TransactionType.Builder ack = TrezorType.TransactionType.newBuilder();

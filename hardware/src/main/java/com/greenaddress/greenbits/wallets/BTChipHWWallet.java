@@ -129,23 +129,35 @@ public class BTChipHWWallet extends HWWallet {
         return mDongle.getGreenAddress(csvBlocks > 0, subaccount.getPointer(), branch, pointer, csvBlocks);
     }
 
-    public String signMessage(final HWWalletBridge parent, final List<Integer> path, final String message) {
+    @Override
+    public SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
+                                     final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy) {
+        if (useAeProtocol) {
+            throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
+        }
+
         try {
             mDongle.signMessagePrepare(path, message.getBytes(StandardCharsets.UTF_8));
-            return Wally.hex_from_bytes(mDongle.signMessageSign(new byte[] {0}).getSignature());
+            final String signature = Wally.hex_from_bytes(mDongle.signMessageSign(new byte[] {0}).getSignature());
+            return new SignMsgResult(signature, null);
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
     @Override
-    public List<String> signTransaction(final HWWalletBridge parent, final ObjectNode tx,
+    public SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
                                         final List<InputOutputData> inputs,
                                         final List<InputOutputData> outputs,
                                         final Map<String, String> transactions,
-                                        final List<String> addressTypes) {
+                                        final List<String> addressTypes,
+                                        final boolean useAeProtocol) {
         final HashSet<String> addrTypes = new HashSet<>(addressTypes);
         try {
+            if (useAeProtocol) {
+                throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
+            }
+
             final boolean sw = addrTypes.contains("p2wsh") || addrTypes.contains("csv");
             final boolean p2sh = addrTypes.contains("p2sh");
 
@@ -166,7 +178,7 @@ public class BTChipHWWallet extends HWWallet {
                 final byte[] sig = (swInput ? swSigs : p2shSigs).remove(0);
                 sigs.add(Wally.hex_from_bytes(sig));
             }
-            return sigs;
+            return new SignTxResult(sigs, null);
         } catch (final BTChipException e) {
             e.printStackTrace();
             throw new RuntimeException("Signing Error: " + e.getMessage());
@@ -174,11 +186,18 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
-    public LiquidHWResult signLiquidTransaction(HWWalletBridge parent, ObjectNode tx, List<InputOutputData> inputs,
-                                                List<InputOutputData> outputs, Map<String, String> transactions,
-                                                List<String> addressTypes) {
+    public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+                                              final List<InputOutputData> inputs,
+                                              final List<InputOutputData> outputs,
+                                              final Map<String, String> transactions,
+                                              final List<String> addressTypes,
+                                              final boolean useAeProtocol) {
         final HashSet<String> addrTypes = new HashSet<>(addressTypes);
         try {
+            if (useAeProtocol) {
+                throw new RuntimeException("Hardware Wallet does not support the Anti-Exfil protocol");
+            }
+
             if (addrTypes.contains("p2pkh"))
                 throw new RuntimeException("Hardware Wallet cannot sign sweep inputs");
 
@@ -213,7 +232,7 @@ public class BTChipHWWallet extends HWWallet {
                 sigs.add(Wally.hex_from_bytes(sig));
             }
 
-            return new LiquidHWResult(sigs, assetCommitments, valueCommitments, assetBlinders, amountBlinders);
+            return new SignTxResult(sigs, null, assetCommitments, valueCommitments, assetBlinders, amountBlinders);
         } catch (final BTChipException e) {
             e.printStackTrace();
             throw new RuntimeException("Signing Error: " + e.getMessage());

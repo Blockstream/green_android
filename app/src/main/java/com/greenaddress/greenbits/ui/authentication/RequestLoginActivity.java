@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -263,7 +264,9 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
                 // Then create JadeHWWallet instance and authenticate (with pinserver) still on background thread
                 .doOnSuccess(session -> Log.d(TAG, "Creating Jade HW Wallet)"))
-                .map(session -> new HWDeviceData("Jade", true, true, HWDeviceData.HWDeviceDataLiquidSupport.Lite))
+                .map(session -> new HWDeviceData("Jade", true, true,
+                                                 HWDeviceData.HWDeviceDataLiquidSupport.Lite,
+                                                 HWDeviceData.HWDeviceAntiExfilSupport.None))
                 .map(hwDeviceData -> new JadeHWWallet(jade, networkData, hwDeviceData))
                 .flatMap(jadeWallet -> jadeWallet.authenticate(this, getSession()))
 
@@ -332,7 +335,8 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
         Log.d(TAG, "Creating Trezor HW wallet");
         final HWDeviceData hwDeviceData = new HWDeviceData("Trezor", false, false,
-                                                           HWDeviceData.HWDeviceDataLiquidSupport.None);
+                                                           HWDeviceData.HWDeviceDataLiquidSupport.None,
+                                                           HWDeviceData.HWDeviceAntiExfilSupport.None);
         mHwWallet = new TrezorHWWallet(t, networkData, hwDeviceData);
 
         doLogin(true);
@@ -455,7 +459,8 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         final boolean havePin = !TextUtils.isEmpty(pin);
         Log.d(TAG, "Creating Ledger HW wallet" + (havePin ? " with PIN" : ""));
         final HWDeviceData hwDeviceData = new HWDeviceData("Ledger", false, true,
-                                                           HWDeviceData.HWDeviceDataLiquidSupport.Lite);
+                                                           HWDeviceData.HWDeviceDataLiquidSupport.Lite,
+                                                           HWDeviceData.HWDeviceAntiExfilSupport.None);
         mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData, hwDeviceData);
 
         doLogin(true);
@@ -493,8 +498,16 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
                 }, (final Throwable e) -> {
                     stopLoading();
                     getSession().disconnect();
-                    UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
-                    showInstructions(R.string.id_please_reconnect_your_hardware);
+
+                    // If the error is the Anti-Exfil validation violation we show that prominently.
+                    // Otherwise show a generic error and reconnect/retry message.
+                    final String idValidationFailed = getResources().getResourceEntryName(R.string.id_signature_validation_failed_if);
+                    if (idValidationFailed.equals(e.getMessage())) {
+                        showInstructions(R.string.id_signature_validation_failed_if);
+                    } else {
+                        UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
+                        showInstructions(R.string.id_please_reconnect_your_hardware);
+                    }
                 })
         );
     }

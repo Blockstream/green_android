@@ -19,6 +19,9 @@ public class HWDeviceRequiredData extends JSONData {
     private ObjectNode transaction;
     private List<String> signingAddressTypes;
     private List<InputOutputData> signingInputs;
+    private boolean useAeProtocol;
+    private String aeHostCommitment;
+    private String aeHostEntropy;
 
     private List<InputOutputData> transactionOutputs;
     private Map<String, String> signingTransactions;
@@ -26,6 +29,7 @@ public class HWDeviceRequiredData extends JSONData {
     private Map<String, String> address;
 
     private List<BlindedScriptsData> blindedScripts;
+
 
     HWDeviceRequiredData() { }
 
@@ -95,6 +99,30 @@ public class HWDeviceRequiredData extends JSONData {
 
     public void setSigningInputs(final List<InputOutputData> signingInputs) {
         this.signingInputs = signingInputs;
+    }
+
+    public boolean getUseAeProtocol() {
+        return useAeProtocol;
+    }
+
+    public void setUseAeProtocol(final boolean useAeProtocol) {
+        this.useAeProtocol = useAeProtocol;
+    }
+
+    public String getAeHostCommitment() {
+        return aeHostCommitment;
+    }
+
+    public void setAeHostCommitment(final String aeHostCommitment) {
+        this.aeHostCommitment = aeHostCommitment;
+    }
+
+    public String getAeHostEntropy() {
+        return aeHostEntropy;
+    }
+
+    public void setAeHostEntropy(final String aeHostEntropy) {
+        this.aeHostEntropy = aeHostEntropy;
     }
 
     public Map<String, String> getSigningTransactions() {

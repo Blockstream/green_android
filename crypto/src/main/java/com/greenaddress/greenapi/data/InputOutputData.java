@@ -33,6 +33,8 @@ public class InputOutputData extends JSONData implements Serializable {
     private String txhash;
     private String serviceXpub;
     private List<Long> userPath;
+    private String aeHostCommitment;
+    private String aeHostEntropy;
     private String commitment; // blinded value
     private String assetblinder; // asset blinding factor
     private String amountblinder; // value blinding factor
@@ -155,6 +157,22 @@ public class InputOutputData extends JSONData implements Serializable {
 
     public void setSubtype(Integer subtype) { this.subtype = subtype; }
 
+    public String getAeHostCommitment() {
+        return aeHostCommitment;
+    }
+
+    public void setAeHostCommitment(final String aeHostCommitment) {
+        this.aeHostCommitment = aeHostCommitment;
+    }
+
+    public String getAeHostEntropy() {
+        return aeHostEntropy;
+    }
+
+    public void setAeHostEntropy(final String aeHostEntropy) {
+        this.aeHostEntropy = aeHostEntropy;
+    }
+
     public String getCommitment() {
         return commitment;
     }
@@ -193,6 +211,16 @@ public class InputOutputData extends JSONData implements Serializable {
 
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
+    }
+
+    @JsonIgnore
+    public byte[] getAeHostCommitmentBytes() {
+        return Wally.hex_to_bytes(aeHostCommitment);
+    }
+
+    @JsonIgnore
+    public byte[] getAeHostEntropyBytes() {
+        return Wally.hex_to_bytes(aeHostEntropy);
     }
 
     @JsonIgnore

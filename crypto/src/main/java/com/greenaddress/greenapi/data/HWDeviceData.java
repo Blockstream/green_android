@@ -17,13 +17,24 @@ public class HWDeviceData extends JSONData {
         }
     }
 
+    public enum HWDeviceAntiExfilSupport {
+        None,
+        Optional,
+        Mandatory;
+
+        @JsonValue
+        public int toValue() {
+            return ordinal();
+        }
+    }
+
     private HWDeviceDetailData device;
 
     public HWDeviceData() {}
 
     public HWDeviceData(final String name, final boolean supportsLowR, final boolean supportsArbitraryScripts,
-                        final HWDeviceDataLiquidSupport supportsLiquid) {
-        device = new HWDeviceDetailData(name, supportsLowR, supportsArbitraryScripts, supportsLiquid);
+                        final HWDeviceDataLiquidSupport supportsLiquid, final HWDeviceAntiExfilSupport aeProtocolSupportLevel) {
+        device = new HWDeviceDetailData(name, supportsLowR, supportsArbitraryScripts, supportsLiquid, aeProtocolSupportLevel);
     }
 
     public HWDeviceDetailData getDevice() {

@@ -54,8 +54,10 @@ public class HardwareCodeResolver implements CodeResolver {
 
         case "sign_message":
             try {
-                final String derHex = hwWallet.signMessage(parent, requiredData.getPath(), requiredData.getMessage());
-                data.setSignature(derHex);
+                final HWWallet.SignMsgResult result = hwWallet.signMessage(parent,requiredData.getPath(), requiredData.getMessage(),
+                        requiredData.getUseAeProtocol(), requiredData.getAeHostCommitment(), requiredData.getAeHostEntropy());
+                data.setSignerCommitment(result.getSignerCommitment());
+                data.setSignature(result.getSignature());
             } catch (final Exception e) {
                 future.set(null);
                 return future;
@@ -63,28 +65,28 @@ public class HardwareCodeResolver implements CodeResolver {
             break;
 
         case "sign_tx":
-            final List<String> derHexSigs;
+            final HWWallet.SignTxResult result;
             if (hwWallet.getNetwork().getLiquid()) {
-                HWWallet.LiquidHWResult result  = hwWallet.signLiquidTransaction(parent, requiredData.getTransaction(),
-                                                                                 requiredData.getSigningInputs(),
-                                                                                 requiredData.getTransactionOutputs(),
-                                                                                 requiredData.getSigningTransactions(),
-                                                                                 requiredData.getSigningAddressTypes());
-
-                derHexSigs = result.getSignatures();
-
+                result  = hwWallet.signLiquidTransaction(parent, requiredData.getTransaction(),
+                                                               requiredData.getSigningInputs(),
+                                                               requiredData.getTransactionOutputs(),
+                                                               requiredData.getSigningTransactions(),
+                                                               requiredData.getSigningAddressTypes(),
+                                                               requiredData.getUseAeProtocol());
                 data.setAssetCommitments(result.getAssetCommitments());
                 data.setValueCommitments(result.getValueCommitments());
                 data.setAssetblinders(result.getAssetBlinders());
                 data.setAmountblinders(result.getAmountBlinders());
             } else {
-                derHexSigs = hwWallet.signTransaction(parent, requiredData.getTransaction(),
-                                                      requiredData.getSigningInputs(),
-                                                      requiredData.getTransactionOutputs(),
-                                                      requiredData.getSigningTransactions(),
-                                                      requiredData.getSigningAddressTypes());
+                result = hwWallet.signTransaction(parent, requiredData.getTransaction(),
+                                                          requiredData.getSigningInputs(),
+                                                          requiredData.getTransactionOutputs(),
+                                                          requiredData.getSigningTransactions(),
+                                                          requiredData.getSigningAddressTypes(),
+                                                          requiredData.getUseAeProtocol());
             }
-            data.setSignatures(derHexSigs);
+            data.setSignatures(result.getSignatures());
+            data.setSignerCommitments(result.getSignerCommitments());
             break;
 
         case "get_receive_address":

@@ -13,30 +13,46 @@ public abstract class HWWallet {
     protected NetworkData mNetwork;
     protected HWDeviceData mHWDeviceData;
 
-    // For any explicit disconnection the hw may want to do
-    public abstract void disconnect();
+    public static class SignMsgResult {
+        private final String signature;
+        private final String signerCommitment;
 
-    // Return the base58check encoded xpubs for each path in paths
-    public abstract List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths);
+        public SignMsgResult(final String signature, final String signerCommitment) {
+            this.signature = signature;
+            this.signerCommitment = signerCommitment;
+        }
 
-    // Sign message with the key resulting from path, and return it as hex encoded DER
-    public abstract String signMessage(final HWWalletBridge parent, final List<Integer> path, final String message);
+        public String getSignature() {
+            return signature;
+        }
 
-    public abstract List<String> signTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                                 final List<InputOutputData> inputs,
-                                                 final List<InputOutputData> outputs,
-                                                 final Map<String,String> transactions,
-                                                 final List<String> addressTypes);
+        public String getSignerCommitment() {
+            return signerCommitment;
+        }
+    }
 
-    public static class LiquidHWResult {
+    public static class SignTxResult {
         private final List<String> signatures;
+        private final List<String> signerCommitments;
         private final List<String> assetCommitments;
         private final List<String> valueCommitments;
         private final List<String> assetBlinders;
         private final List<String> amountBlinders;
 
-        public LiquidHWResult(List<String> signatures, List<String> assetCommitments, List<String> valueCommitments, List<String> assetBlinders, List<String> amountBlinders) {
+        // Ctor for standard btc signature results
+        public SignTxResult(List<String> signatures, List<String> signerCommitments) {
             this.signatures = signatures;
+            this.signerCommitments = signerCommitments;
+            this.assetCommitments = null;
+            this.valueCommitments = null;
+            this.assetBlinders = null;
+            this.amountBlinders = null;
+        }
+
+        // Ctor for liquid signature results
+        public SignTxResult(List<String> signatures, List<String> signerCommitments, List<String> assetCommitments, List<String> valueCommitments, List<String> assetBlinders, List<String> amountBlinders) {
+            this.signatures = signatures;
+            this.signerCommitments = signerCommitments;
             this.assetCommitments = assetCommitments;
             this.valueCommitments = valueCommitments;
             this.assetBlinders = assetBlinders;
@@ -45,6 +61,10 @@ public abstract class HWWallet {
 
         public List<String> getSignatures() {
             return signatures;
+        }
+
+        public List<String> getSignerCommitments() {
+            return signerCommitments;
         }
 
         public List<String> getAssetCommitments() {
@@ -64,11 +84,30 @@ public abstract class HWWallet {
         }
     }
 
-    public abstract LiquidHWResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                                         final List<InputOutputData> inputs,
-                                                         final List<InputOutputData> outputs,
-                                                         final Map<String,String> transactions,
-                                                         final List<String> addressTypes);
+    // For any explicit disconnection the hw may want to do
+    public abstract void disconnect();
+
+    // Return the base58check encoded xpubs for each path in paths
+    public abstract List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths);
+
+    // Sign message with the key resulting from path, and return it as hex encoded DER
+    // If using Anti-Exfil protocol, also return the signerCommitment (if not this can be null).
+    public abstract SignMsgResult signMessage(final HWWalletBridge parent, final List<Integer> path, final String message,
+                                              final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy);
+
+    public abstract SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
+                                                 final List<InputOutputData> inputs,
+                                                 final List<InputOutputData> outputs,
+                                                 final Map<String,String> transactions,
+                                                 final List<String> addressTypes,
+                                                 final boolean useAeProtocol);
+
+    public abstract SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
+                                                       final List<InputOutputData> inputs,
+                                                       final List<InputOutputData> outputs,
+                                                       final Map<String,String> transactions,
+                                                       final List<String> addressTypes,
+                                                       final boolean useAeProtocol);
 
     public abstract String getBlindingKey(final HWWalletBridge parent, final String scriptHex);
 

@@ -9,6 +9,7 @@ public class HWDeviceDetailData extends JSONData {
     private boolean supportsLowR;
     private boolean supportsArbitraryScripts;
     private HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid;
+    private HWDeviceData.HWDeviceAntiExfilSupport aeProtocolSupportLevel;
 
     // Ctor for serialisation only
     public HWDeviceDetailData() {
@@ -16,14 +17,17 @@ public class HWDeviceDetailData extends JSONData {
         this.supportsLowR = false;
         this.supportsArbitraryScripts = false;
         this.supportsLiquid = HWDeviceData.HWDeviceDataLiquidSupport.None;
+        this.aeProtocolSupportLevel = HWDeviceData.HWDeviceAntiExfilSupport.None;
     }
 
     public HWDeviceDetailData(final String name, final boolean supportsLowR, final boolean supportsArbitraryScripts,
-                              final HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid) {
+                              final HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid,
+                              final HWDeviceData.HWDeviceAntiExfilSupport aeProtocolSupportLevel) {
         this.name = name;
         this.supportsLowR = supportsLowR;
         this.supportsArbitraryScripts = supportsArbitraryScripts;
         this.supportsLiquid = supportsLiquid;
+        this.aeProtocolSupportLevel = aeProtocolSupportLevel;
     }
 
     public String getName() {
@@ -54,7 +58,15 @@ public class HWDeviceDetailData extends JSONData {
         return supportsLiquid;
     }
 
-    public void setSupportsLiquid(HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid) {
+    public void setSupportsLiquid(final HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid) {
         this.supportsLiquid = supportsLiquid;
+    }
+
+    public HWDeviceData.HWDeviceAntiExfilSupport getAeProtocolSupportLevel() {
+        return this.aeProtocolSupportLevel;
+    }
+
+    public void setAeProtocolSupportLevel(final HWDeviceData.HWDeviceAntiExfilSupport aeProtocolSupportLevel) {
+        this.aeProtocolSupportLevel = aeProtocolSupportLevel;
     }
 }
