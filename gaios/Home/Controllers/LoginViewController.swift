@@ -140,6 +140,7 @@ class LoginViewController: UIViewController {
             self.stopLoader()
         }.done {
             self.account?.attempts = 0
+            AccountsManager.shared.current = self.account
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             switch error {

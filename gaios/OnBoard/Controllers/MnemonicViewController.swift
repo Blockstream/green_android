@@ -191,74 +191,47 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case invalidMnemonic
     }
 
-    fileprivate func login() {
-
-        dummyLoginAndNext()
-        return
-
-        let account = Account(name: "Testnet", network: "testnet")
+    fileprivate func login(_ mnemonic: String, _ password: String) {
+        let account = AccountsManager.shared.current
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
         firstly {
-            self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+            self.startLoader(message: "Setting Up Your Wallet")
             return Guarantee()
-        }.compactMap(on: bgq) {
-            appDelegate.disconnect()
-        }.compactMap(on: bgq) {
-            try appDelegate.connect(account.network)
-        }.then {
-            self.getMnemonicString()
-        }.get { (mnemonic: String, _: String) in
+        }.compactMap {
             guard try validateMnemonic(mnemonic: mnemonic) else {
                 throw LoginError.invalidMnemonic
             }
-        }.compactMap(on: bgq) {
-            return try getSession().login(mnemonic: $0.0, password: $0.1)
-        }.then(on: bgq) { twoFactorCall in
-            twoFactorCall.resolve()
+        }.then(on: bgq) { _ -> Promise<[String: Any]> in
+            appDelegate.disconnect()
+            try appDelegate.connect(account?.network ?? "mainnet")
+            return try getSession().login(mnemonic: mnemonic, password: password).resolve()
         }.then { _ in
             Registry.shared.load()
         }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            if self.isTemporary {
-                GreenAddressService.isTemporary = true
-                appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
-            } else {
-                self.performSegue(withIdentifier: "next", sender: self)
-            }
-        }.catch { error in
-            let message: String
-            if error is LoginError {
-                message = NSLocalizedString("id_invalid_mnemonic", comment: "")
-            } else if error is TwoFactorCallError {
-                message = NSLocalizedString("id_login_failed", comment: "")
-            } else if let err = error as? GaError, err != GaError.GenericError {
-                message = NSLocalizedString("id_connection_failed", comment: "")
-            } else {
-                message = NSLocalizedString("id_login_failed", comment: "")
-            }
-            DropAlert().error(message: message)
-        }
-    }
-
-    func dummyLoginAndNext() {
-
-        startLoader(message: "Setting Up Your Wallet")
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             self.stopLoader()
-
+        }.done { _ in
+            AccountsManager.shared.current = account
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
             self.navigationController?.pushViewController(vc, animated: true)
+        }.catch { error in
+            if error is LoginError {
+                DropAlert().error(message: NSLocalizedString("id_invalid_mnemonic", comment: ""))
+            } else if error is TwoFactorCallError {
+                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
+            } else if let err = error as? GaError, err != GaError.GenericError {
+                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+            } else {
+                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
+            }
         }
-
     }
 
     @IBAction func doneButtonClicked(_ sender: Any) {
-        login()
+        getMnemonicString()
+            .done { self.login($0.0, $0.1) }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -308,11 +281,13 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     func stopScan() {
         qrCodeReader!.stopScan()
 
-        dummyLoginAndNext()
-
 //        qrCodeReader!.removeFromSuperview()
 //        isScannerVisible = false
 
+    }
+    
+    func onScan(mnemonic: String) {
+        login(mnemonic, "")
     }
 
     @objc func onTap(sender: UITapGestureRecognizer?) {
@@ -337,7 +312,7 @@ extension MnemonicViewController: QRCodeReaderDelegate {
     }
 
     func onQRCodeReadSuccess(result: String) {
-        onPaste(result)
+        onScan(mnemonic: result)
         stopScan()
     }
 }

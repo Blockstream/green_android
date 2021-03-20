@@ -2,18 +2,18 @@ import Foundation
 import UIKit
 
 struct Account: Codable {
-    let name: String
-    let network: String
+    var name: String
+    var network: String
     let id: String
     let isJade: Bool
     let isLedger: Bool
 
-    init(name: String, network: String) {
+    init(name: String, network: String, isJade: Bool = false, isLedger: Bool = false) {
         id = UUID().uuidString
         self.name = name
         self.network = network
-        self.isJade = false
-        self.isLedger = false
+        self.isJade = isJade
+        self.isLedger = isLedger
     }
 
     var hasManualPin: Bool {
@@ -78,5 +78,5 @@ struct Account: Codable {
     func removePinKeychainData() {
         _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
     }
-    
+
 }

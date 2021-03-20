@@ -1,4 +1,5 @@
 import UIKit
+import PromiseKit
 
 enum ActionPin {
     case set
@@ -144,19 +145,7 @@ class SetPinViewController: UIViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .verify:
-            switch LandingViewController.flowType {
-            case .add:
-                startLoader(message: "Setting Up Your Wallet")
-            case .restore:
-                startLoader(message: "Finishing Up")
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                self.stopLoader()
-
-                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-                let vc = storyboard.instantiateViewController(withIdentifier: "WalletSuccessViewController")
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
+            register(pinCode)
         }
     }
 
@@ -164,4 +153,34 @@ class SetPinViewController: UIViewController {
         moveToNext()
     }
 
+    fileprivate func register(_ pin: String) {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            switch LandingViewController.flowType {
+            case .add:
+                self.startLoader(message: "Setting Up Your Wallet")
+            case .restore:
+                self.startLoader(message: "Finishing Up")
+            }
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try? AccountsManager.shared.current?.addPin(session: getSession(), pin: pin)
+        }.ensure {
+            self.stopLoader()
+        }.done {
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "WalletSuccessViewController")
+            self.navigationController?.pushViewController(vc, animated: true)
+        }.catch { error in
+            if let err = error as? GaError, err != GaError.GenericError {
+                self.showError(NSLocalizedString("id_connection_failed", comment: ""))
+            } else if let err = error as? AuthenticationTypeHandler.AuthError {
+                self.showError(err.localizedDescription)
+            } else if !error.localizedDescription.isEmpty {
+                self.showError(NSLocalizedString(error.localizedDescription, comment: ""))
+            } else {
+                self.showError(NSLocalizedString("id_operation_failure", comment: ""))
+            }
+        }
+    }
 }

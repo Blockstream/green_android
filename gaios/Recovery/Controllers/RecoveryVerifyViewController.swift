@@ -117,57 +117,34 @@ class RecoveryVerifyViewController: UIViewController {
         }
     }
 
-    func dummyLoginAndNext() {
-
-        startLoader(message: "Wait...")
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.stopLoader()
-
-            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "RecoverySuccessViewController")
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-    }
-
     func registerAndLogin(mnemonics: String) {
-
-        dummyLoginAndNext()
-
-        return
-
+        let account = AccountsManager.shared.current
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
         firstly {
-            self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
+            startLoader(message: "Wait...")
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
-        }.compactMap(on: bgq) {
-            try appDelegate.connect()
-        }.compactMap(on: bgq) {
-            try getSession().registerUser(mnemonic: mnemonics)
-        }.then(on: bgq) { call in
-            call.resolve()
-        }.compactMap(on: bgq) { _ in
-            try getSession().login(mnemonic: mnemonics)
-        }.then(on: bgq) { call in
-            call.resolve()
+            try appDelegate.connect(account?.network ?? "mainnet")
+        }.then(on: bgq) { _ in
+            try getSession().registerUser(mnemonic: mnemonics).resolve()
+        }.then(on: bgq) { _ in
+            try getSession().login(mnemonic: mnemonics).resolve()
         }.then { _ in
-            Registry.shared.refresh().recover { _ in Guarantee() }
+            Registry.shared.load()
         }.ensure {
-            self.stopAnimating()
+            self.stopLoader()
         }.done { _ in
-
-//            self.performSegue(withIdentifier: "next", sender: self)
+            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "RecoverySuccessViewController")
+            self.navigationController?.pushViewController(vc, animated: true)
         }.catch { error in
-            let message: String
             if let err = error as? GaError, err != GaError.GenericError {
-                message = NSLocalizedString("id_connection_failed", comment: "")
+                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             } else {
-                message = NSLocalizedString("id_login_failed", comment: "")
+                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             }
-            DropAlert().error(message: message)
         }
     }
 

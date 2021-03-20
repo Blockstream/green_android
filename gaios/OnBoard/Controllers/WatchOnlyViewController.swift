@@ -168,7 +168,7 @@ class WatchOnlyViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
-        firstly {
+        /*firstly {
             dismissKeyboard()
             self.startAnimating()
             return Guarantee()
@@ -207,7 +207,7 @@ class WatchOnlyViewController: KeyboardViewController {
                 message = NSLocalizedString("id_login_failed", comment: "")
             }
             DropAlert().error(message: message)
-        }
+        }*/
     }
 
     @IBAction func btnSettings(_ sender: Any) {

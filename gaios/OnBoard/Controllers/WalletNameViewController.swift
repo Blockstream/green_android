@@ -58,6 +58,12 @@ class WalletNameViewController: UIViewController {
     }
 
     @IBAction func btnNext(_ sender: Any) {
+        if var account = AccountsManager.shared.current {
+            account.name = fieldName.text ?? ""
+            var list = AccountsManager.shared.list
+            list.append(account)
+            AccountsManager.shared.list = list
+        }
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
         self.navigationController?.pushViewController(vc, animated: true)
