@@ -70,13 +70,35 @@ struct Account: Codable {
     }
 
     func removeBioKeychainData() {
-        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-        try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.network)
-        UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.network)
+        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: id)
+        try? AuthenticationTypeHandler.removePrivateKey(forNetwork: id)
+        UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + id)
     }
 
     func removePinKeychainData() {
-        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: id)
+    }
+
+    func addBioPin(session: Session) throws {
+        if UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + id) == nil {
+            try AuthenticationTypeHandler.generateBiometricPrivateKey(network: id)
+        }
+        let password = String.random(length: 14)
+        let deviceid = String.random(length: 14)
+        let mnemonics = try session.getMnemonicPassphrase(password: "")
+        guard let pindata = try session.setPin(mnemonic: mnemonics, pin: password, device: deviceid) else {
+            throw AuthenticationTypeHandler.AuthError.NotSupported
+        }
+        try AuthenticationTypeHandler.addBiometryType(data: pindata, extraData: password, forNetwork: id)
+    }
+
+    func addPin(session: Session, pin: String) throws {
+        let deviceid = String.random(length: 14)
+        let mnemonics = try session.getMnemonicPassphrase(password: "")
+        guard let pindata = try session.setPin(mnemonic: mnemonics, pin: pin, device: deviceid) else {
+            throw AuthenticationTypeHandler.AuthError.NotSupported
+        }
+        try AuthenticationTypeHandler.addPIN(data: pindata, forNetwork: id)
     }
 
 }

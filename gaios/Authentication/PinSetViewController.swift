@@ -89,16 +89,12 @@ class PinSetViewController: UIViewController {
 
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
-        let network = getNetwork()
 
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            let mnemonics = try getSession().getMnemonicPassphrase(password: "")
-            return try getSession().setPin(mnemonic: mnemonics, pin: pin, device: String.random(length: 14))
-        }.map(on: bgq) { (data: [String: Any]) -> Void in
-            try AuthenticationTypeHandler.addPIN(data: data, forNetwork: network)
+            try? AccountsManager.shared.current?.addPin(session: getSession(), pin: pin)
         }.ensure {
             self.stopAnimating()
         }.done {
