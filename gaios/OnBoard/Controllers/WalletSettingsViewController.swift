@@ -14,7 +14,7 @@ class WalletSettingsViewController: UIViewController {
     @IBOutlet weak var lblProxyHint: UILabel!
     @IBOutlet weak var cardProxyDetail: UIView!
     @IBOutlet weak var fieldProxyIp: UITextField!
-    
+
     @IBOutlet weak var cardTxCheck: UIView!
     @IBOutlet weak var lblTxCheckTitle: UILabel!
     @IBOutlet weak var lblTxCheckHint: UILabel!

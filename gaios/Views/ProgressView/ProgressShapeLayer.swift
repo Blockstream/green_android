@@ -1,7 +1,7 @@
 import UIKit
 
 class ProgressShapeLayer: CAShapeLayer {
-    
+
     public init(strokeColor: UIColor, lineWidth: CGFloat) {
         super.init()
 

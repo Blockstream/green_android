@@ -9,9 +9,9 @@ extension UIImage {
 }
 
 extension UIImage {
-  
+
   public func maskWithColor(color: UIColor) -> UIImage {
-    
+
     UIGraphicsBeginImageContextWithOptions(self.size, false, self.scale)
     let context = UIGraphicsGetCurrentContext()!
     let rect = CGRect(origin: CGPoint.zero, size: size)

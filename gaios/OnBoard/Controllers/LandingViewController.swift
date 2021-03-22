@@ -22,7 +22,7 @@ class LandingViewController: UIViewController {
     @IBOutlet weak var iconWatch: UIImageView!
 
     static var flowType: OnBoardingFlowType = .add
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

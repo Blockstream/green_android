@@ -69,6 +69,11 @@
 		3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3497937E25F8B3F90029ECB1 /* Loader.xib */; };
 		3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
+		34B826C42608827F00579C0B /* Recovery.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B826C32608827F00579C0B /* Recovery.storyboard */; };
+		34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */; };
+		34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */; };
+		34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */; };
+		34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */; };
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
@@ -303,6 +308,11 @@
 		3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletViewController.swift; sourceTree = "<group>"; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
+		34B826C32608827F00579C0B /* Recovery.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Recovery.storyboard; sourceTree = "<group>"; };
+		34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryInstructionViewController.swift; sourceTree = "<group>"; };
+		34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCreateViewController.swift; sourceTree = "<group>"; };
+		34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerifyViewController.swift; sourceTree = "<group>"; };
+		34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccessViewController.swift; sourceTree = "<group>"; };
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
@@ -645,6 +655,26 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		34B826C2260881E000579C0B /* Recovery */ = {
+			isa = PBXGroup;
+			children = (
+				34B826C32608827F00579C0B /* Recovery.storyboard */,
+				34B826C72608828C00579C0B /* Controllers */,
+			);
+			path = Recovery;
+			sourceTree = "<group>";
+		};
+		34B826C72608828C00579C0B /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */,
+				34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */,
+				34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */,
+				34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
@@ -670,6 +700,7 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
+				34B826C2260881E000579C0B /* Recovery */,
 				347FD0AB25FFA8E600BB3FAB /* Home */,
 				3497935125F8B18C0029ECB1 /* OnBoard */,
 				6770BF6D235E50D400BDB7DA /* GreenAddress.swift */,
@@ -1208,6 +1239,7 @@
 				6D7B5F9422E6852D00DE049D /* AccountMiniCollection.xib in Resources */,
 				81286117222212C7005598D3 /* SetPhoneView.xib in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
+				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				81E9B80221C92EF7004D87B6 /* AccountCardView.xib in Resources */,
 				6D7176BA234FF2B3001E1538 /* NetworkSelectionSettingsView.xib in Resources */,
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
@@ -1374,6 +1406,8 @@
 				3497936E25F8B18C0029ECB1 /* ProgressView.swift in Sources */,
 				0992F87220E6C7AE00F6AAAB /* PinLoginViewController.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
+				34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */,
+				34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */,
 				09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */,
 				81C602A522A553D3004E26E1 /* Assets.swift in Sources */,
 				3497936925F8B18C0029ECB1 /* ChooseSecurityViewController.swift in Sources */,
@@ -1441,6 +1475,7 @@
 				092D5C6420C04D130077048C /* CreateWalletViewController.swift in Sources */,
 				0932D7B320FC46C30074B48F /* EnterMnemonicsViewController.swift in Sources */,
 				811B963821F5FC8300DE02CB /* AccountsHeaderCollection.swift in Sources */,
+				34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
@@ -1471,6 +1506,7 @@
 				81BF4E2F22E9E9EA005A04C6 /* Utils.swift in Sources */,
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
 				0926C14C211912AE0008F94A /* InstructionViewController.swift in Sources */,
+				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
 				3470F9F52600D1A3009B5E33 /* WalletCell.swift in Sources */,
 				81BF4E3122E9E9EA005A04C6 /* LedgerCommands.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,

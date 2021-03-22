@@ -23,7 +23,7 @@ class HomeViewController: UIViewController {
     }
 
     func setContent() {
-        lblVersion.text = "App version: \(Bundle.main.versionNumber) (\(Bundle.main.buildNumber))"
+        lblVersion.text = "App version: \(Bundle.main.versionNumber)"
     }
 
     func setStyle() {
@@ -37,7 +37,7 @@ class HomeViewController: UIViewController {
         let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
         navigationController?.pushViewController(vc, animated: true)
     }
-    
+
     func showHardwareWallet() {
         let storyboard = UIStoryboard(name: "HardwareWallet", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "HardwareWalletScanViewController")
@@ -48,6 +48,9 @@ class HomeViewController: UIViewController {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "LandingViewController")
         navigationController?.pushViewController(vc, animated: true)
+//        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+//        let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
+//        navigationController?.pushViewController(vc, animated: true)
     }
 
 }

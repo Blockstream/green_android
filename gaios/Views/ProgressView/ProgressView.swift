@@ -1,7 +1,7 @@
 import UIKit
 
 class ProgressView: UIView {
-    
+
     // MARK: - Initialization
     init(frame: CGRect,
          colors: [UIColor],
@@ -9,12 +9,12 @@ class ProgressView: UIView {
     ) {
         self.colors = colors
         self.lineWidth = lineWidth
-        
+
         super.init(frame: frame)
 
         self.backgroundColor = .clear
     }
-    
+
     convenience init(colors: [UIColor], lineWidth: CGFloat) {
         self.init(frame: .zero, colors: colors, lineWidth: lineWidth)
     }
