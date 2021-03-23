@@ -98,5 +98,8 @@ class LandingViewController: UIViewController {
 
     @IBAction func btnWatchOnly(_ sender: Any) {
 
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyViewController")
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
