@@ -64,7 +64,7 @@ public class GDKTwoFactorCall {
                             throw new Exception(e.getMessage());
                         }
                     } else {
-                        value = codeResolver.code(mStatus.getMethod()).get();
+                        value = codeResolver.code(mStatus.getMethod(), mStatus.getAttemptsRemaining()).get();
                     }
                     Log.d("RSV", "resolve_code input " + value);
                     if (value == null) {

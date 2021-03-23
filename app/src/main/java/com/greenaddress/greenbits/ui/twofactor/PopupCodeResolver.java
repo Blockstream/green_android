@@ -29,7 +29,7 @@ public class PopupCodeResolver implements CodeResolver {
     }
 
     @Override
-    public SettableFuture<String> code(final String method) {
+    public SettableFuture<String> code(final String method, final int attemptsRemaining) {
         final SettableFuture<String> future = SettableFuture.create();
 
         final MaterialDialog.Builder builder =
@@ -38,10 +38,18 @@ public class PopupCodeResolver implements CodeResolver {
             .inputType(InputType.TYPE_CLASS_NUMBER)
             .icon(getIconFor(method))
             .cancelable(false)
-            .input("", "", (dialog, input) -> {
-            Log.d("RSV", "PopupCodeResolver OK callback");
-            future.set(input.toString());
-        })
+            .alwaysCallInputCallback()
+            .input(activity.getString(R.string.id_attempts_remaining_d, attemptsRemaining), "", (dialog, input) -> {
+                if(input != null && input.length() == 6){
+                    Log.d("RSV", "PopupCodeResolver OK callback");
+                    future.set(input.toString());
+                    dismiss();
+                }
+            })
+            .onPositive((dialog, which) -> {
+                Log.d("RSV", "PopupCodeResolver CANCEL callback");
+                future.set(null);
+            })
             .onNegative((dialog, which) -> {
             Log.d("RSV", "PopupCodeResolver CANCEL callback");
             future.set(null);
