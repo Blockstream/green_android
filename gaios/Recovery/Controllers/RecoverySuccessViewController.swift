@@ -42,7 +42,9 @@ class RecoverySuccessViewController: UIViewController {
     }
 
     @IBAction func btnNext(_ sender: Any) {
-        navigationController?.popToRootViewController(animated: true)
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 }

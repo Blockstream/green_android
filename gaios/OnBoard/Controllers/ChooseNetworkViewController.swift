@@ -68,8 +68,14 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     func next() {
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        if LandingViewController.flowType == .add {
+            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        } else {
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
