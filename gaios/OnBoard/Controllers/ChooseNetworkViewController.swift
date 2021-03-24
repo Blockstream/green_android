@@ -53,17 +53,17 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     @objc func didPressCardBitcoin() {
-        AccountsManager.shared.current = Account(name: "", network: "mainnet")
+        OnBoardManager.shared.params = OnBoardParams(network: "mainnet")
         next()
     }
 
     @objc func didPressCardLiquid() {
-        AccountsManager.shared.current = Account(name: "", network: "liquid")
+        OnBoardManager.shared.params = OnBoardParams(network: "liquid")
         next()
     }
 
     @objc func didPressCardTestnet() {
-        AccountsManager.shared.current = Account(name: "", network: "testnet")
+        OnBoardManager.shared.params = OnBoardParams(network: "testnet")
         next()
     }
 

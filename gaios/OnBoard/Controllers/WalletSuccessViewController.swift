@@ -53,9 +53,8 @@ class WalletSuccessViewController: UIViewController {
     }
 
     @IBAction func btnWallet(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "TabViewController")
-        self.navigationController?.pushViewController(vc, animated: true)
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
     }
 
     @IBAction func btnBackup(_ sender: Any) {

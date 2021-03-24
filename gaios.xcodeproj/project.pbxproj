@@ -155,6 +155,8 @@
 		815431962445C0EE00EE34DB /* JadeDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeDevice.swift */; };
 		816153C1230302B500FB9BC1 /* HardwareWallet.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 816153C0230302B500FB9BC1 /* HardwareWallet.storyboard */; };
 		816153C32303048300FB9BC1 /* HardwareWalletScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816153C22303048300FB9BC1 /* HardwareWalletScanViewController.swift */; };
+		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
+		816282B5260BB3C6003E5FA6 /* OnBoardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		8169EBBD2445F16F0053BC73 /* Jade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8169EBBC2445F16F0053BC73 /* Jade.swift */; };
@@ -412,6 +414,8 @@
 		815431952445C0EE00EE34DB /* JadeDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDevice.swift; sourceTree = "<group>"; };
 		816153C0230302B500FB9BC1 /* HardwareWallet.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HardwareWallet.storyboard; sourceTree = "<group>"; };
 		816153C22303048300FB9BC1 /* HardwareWalletScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareWalletScanViewController.swift; sourceTree = "<group>"; };
+		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
+		816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardManager.swift; sourceTree = "<group>"; };
 		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
 		81640CDF21FB2B4200E7F79C /* FeeButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeeButton.xib; sourceTree = "<group>"; };
 		8169EBBC2445F16F0053BC73 /* Jade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jade.swift; sourceTree = "<group>"; };
@@ -645,6 +649,7 @@
 			children = (
 				344562EA25D297CF00A5EC18 /* BLEManager.swift */,
 				819DFBA726038E800022BD85 /* AccountsManager.swift */,
+				816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1046,6 +1051,7 @@
 				8124524125D6B0DD00537238 /* Address.swift */,
 				34AB8BA4260366A8009C930A /* WalletListItem.swift */,
 				819DFBAB26038E8B0022BD85 /* Account.swift */,
+				816282B0260BB201003E5FA6 /* OnBoardParams.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1498,6 +1504,7 @@
 				FF29CA7222374E8B0035F95A /* URL.swift in Sources */,
 				8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */,
 				3497936725F8B18C0029ECB1 /* WalletSuccessViewController.swift in Sources */,
+				816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */,
 				6D50841C239970530063804F /* AccountCreateViewController.swift in Sources */,
 				6DD813B722BDA4F2002DCC8B /* AssetDetailTableCell.swift in Sources */,
 				81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */,
@@ -1576,6 +1583,7 @@
 				3497936B25F8B18C0029ECB1 /* SetPinViewController.swift in Sources */,
 				81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */,
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
+				816282B5260BB3C6003E5FA6 /* OnBoardManager.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
 				6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */,
 				6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */,

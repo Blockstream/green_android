@@ -98,4 +98,10 @@ class AccountsManager {
             return "Account"
         }
     }
+
+    func add(_ account: Account) {
+        var currentList = list
+        currentList.append(account)
+        list = currentList
+    }
 }

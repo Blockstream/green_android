@@ -163,8 +163,15 @@ class SetPinViewController: UIViewController {
                 self.startLoader(message: "Finishing Up")
             }
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try? AccountsManager.shared.current?.addPin(session: getSession(), pin: pin)
+        }.then {
+            OnBoardManager.shared.login()
+        }.compactMap(on: bgq) { _ in
+            let account = OnBoardManager.shared.account()
+            try account.addPin(session: getSession(), pin: pin, mnemonic: OnBoardManager.shared.params?.mnemonic ?? "")
+            AccountsManager.shared.add(account)
+            AccountsManager.shared.current = account
+        }.then { _ in
+            Registry.shared.load()
         }.ensure {
             self.stopLoader()
         }.done {

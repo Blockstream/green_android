@@ -103,7 +103,12 @@ class RecoveryVerifyViewController: UIViewController {
         }
         if selectedWord != nil, selectedWord == String(mnemonic[questionPosition]) {
             if isComplete() {
-                registerAndLogin(mnemonics: mnemonic.joined(separator: " "))
+                DispatchQueue.main.async {
+                    OnBoardManager.shared.params?.mnemonic = self.mnemonic.joined(separator: " ")
+                    let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+                    let vc = storyboard.instantiateViewController(withIdentifier: "RecoverySuccessViewController")
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
             } else {
                 questionCounter += 1
                 newRandomWords()
@@ -114,37 +119,6 @@ class RecoveryVerifyViewController: UIViewController {
         } else {
             DropAlert().warning(message: NSLocalizedString("id_wrong_choice_check_your", comment: ""), delay: 4)
             navigationController?.popViewController(animated: true)
-        }
-    }
-
-    func registerAndLogin(mnemonics: String) {
-        let account = AccountsManager.shared.current
-        let bgq = DispatchQueue.global(qos: .background)
-        let appDelegate = getAppDelegate()!
-        firstly {
-            startLoader(message: "Wait...")
-            return Guarantee()
-        }.compactMap(on: bgq) {
-            appDelegate.disconnect()
-            try appDelegate.connect(account?.network ?? "mainnet")
-        }.then(on: bgq) { _ in
-            try getSession().registerUser(mnemonic: mnemonics).resolve()
-        }.then(on: bgq) { _ in
-            try getSession().login(mnemonic: mnemonics).resolve()
-        }.then { _ in
-            Registry.shared.load()
-        }.ensure {
-            self.stopLoader()
-        }.done { _ in
-            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "RecoverySuccessViewController")
-            self.navigationController?.pushViewController(vc, animated: true)
-        }.catch { error in
-            if let err = error as? GaError, err != GaError.GenericError {
-                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-            } else {
-                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
-            }
         }
     }
 

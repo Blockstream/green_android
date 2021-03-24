@@ -92,10 +92,9 @@ struct Account: Codable {
         try AuthenticationTypeHandler.addBiometryType(data: pindata, extraData: password, forNetwork: id)
     }
 
-    func addPin(session: Session, pin: String) throws {
+    func addPin(session: Session, pin: String, mnemonic: String) throws {
         let deviceid = String.random(length: 14)
-        let mnemonics = try session.getMnemonicPassphrase(password: "")
-        guard let pindata = try session.setPin(mnemonic: mnemonics, pin: pin, device: deviceid) else {
+        guard let pindata = try session.setPin(mnemonic: mnemonic, pin: pin, device: deviceid) else {
             throw AuthenticationTypeHandler.AuthError.NotSupported
         }
         try AuthenticationTypeHandler.addPIN(data: pindata, forNetwork: id)

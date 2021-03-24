@@ -94,7 +94,7 @@ class PinSetViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try? AccountsManager.shared.current?.addPin(session: getSession(), pin: pin)
+            try? AccountsManager.shared.current?.addPin(session: getSession(), pin: pin, mnemonic: getSession().getMnemonicPassphrase(password: ""))
         }.ensure {
             self.stopAnimating()
         }.done {
