@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.greenaddress.Bridge
 
 @Database(entities = [Wallet::class, LoginCredentials::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
@@ -27,6 +28,12 @@ abstract class AppDatabase : RoomDatabase() {
 
             if(context.isDevelopmentFlavor()) {
                 builder.fallbackToDestructiveMigration()
+            }
+
+            // Only allow this if we use v3 codebase
+            // In v4 we use proper async code
+            if(!Bridge.usePrototype){
+                builder.allowMainThreadQueries()
             }
 
             return builder.build()

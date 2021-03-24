@@ -15,6 +15,7 @@ import com.blockstream.libgreenaddress.KotlinGDK
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.greenaddress.Bridge
 import com.greenaddress.jade.HttpRequestHandler
 import com.greenaddress.jade.HttpRequestProvider
 import io.reactivex.rxjava3.core.Observable
@@ -92,6 +93,11 @@ class GreenSession constructor(
     fun connect(network: Network) {
         disconnect()
         this.network = network
+
+        if(!Bridge.usePrototype) {
+            // Bridge Session to GDKSession
+            Bridge.bridgeSession(gaSession, network.network, if(isWatchOnly) watchOnlyUsernameBridge else null)
+        }
 
         val applicationSettings = settingsManager.getApplicationSettings()
 
@@ -245,10 +251,12 @@ class GreenSession constructor(
     }
 
     private fun initializeSessionData() {
-        updateSubAccounts()
+        if(Bridge.usePrototype) {
+            updateSubAccounts()
 
-        if (network.isLiquid) {
-            initLiquidAssets()
+            if (network.isLiquid) {
+                initLiquidAssets()
+            }
         }
     }
 
@@ -402,17 +410,22 @@ class GreenSession constructor(
     }
 
     private fun initLiquidAssets() {
-        try {
-            if(!assetsManager.isUpToDate){
-                // Update from Cache
-                assetsManager.setCache(refreshAssets(AssetsParams(assets = true, icons = true, refresh = false)))
+        if(Bridge.usePrototype) {
 
-                // Try to update the registry
-                assetsManager.updateAssets(refreshAssets(AssetsParams(assets = true, icons = true, refresh = true)))
+            try {
+                if(!assetsManager.isUpToDate){
+                    // Update from Cache
+                    assetsManager.setCache(refreshAssets(AssetsParams(assets = true, icons = true, refresh = false)))
+
+                    // Try to update the registry
+                    assetsManager.updateAssets(refreshAssets(AssetsParams(assets = true, icons = true, refresh = true)))
+                }
+
+            }catch (e: Exception){
+                e.printStackTrace()
             }
-
-        }catch (e: Exception){
-            e.printStackTrace()
+        }else{
+            // Implement v3 if needed
         }
     }
 

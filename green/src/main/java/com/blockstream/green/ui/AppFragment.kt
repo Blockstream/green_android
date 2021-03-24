@@ -136,7 +136,16 @@ abstract class AppFragment<T : ViewDataBinding>(
             navOptionsBuilder.setPopUpTo(R.id.addWalletFragment, true)
         }
 
+        // Remove chooseSecurityFragment from backstack
+        if(!Bridge.usePrototype && findNavController().currentDestination?.id == R.id.chooseSecurityFragment){
+            navOptionsBuilder.setPopUpTo(R.id.chooseSecurityFragment, true)
+        }
 
         findNavController().navigate(resId, args, navOptionsBuilder.build())
+    }
+
+    fun openOverview(){
+        Bridge.v3Implementation(requireContext())
+        findNavController().popBackStack(R.id.introFragment, false)
     }
 }

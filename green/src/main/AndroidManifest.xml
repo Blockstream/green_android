@@ -79,6 +79,11 @@
 
         </activity>
 
+        <activity
+            android:name="com.blockstream.green.ui.BridgeActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan"/>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
