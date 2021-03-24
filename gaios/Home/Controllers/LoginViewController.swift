@@ -11,6 +11,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet var keyButton: [UIButton]?
     @IBOutlet var pinLabel: [UILabel]?
+    let menuButton = UIButton(type: .system)
 
     private var pinCode = ""
     private let MAXATTEMPTS = 3
@@ -35,6 +36,9 @@ class LoginViewController: UIViewController {
         navigationItem.titleView = imageView
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))
+        menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
+        menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
         lblTitle.text = NSLocalizedString("id_enter_pin", comment: "")
         progressIndicator?.message = NSLocalizedString("id_logging_in", comment: "")
     }
@@ -69,6 +73,20 @@ class LoginViewController: UIViewController {
         deleteButton.removeTarget(self, action: #selector(click(sender:)), for: .touchUpInside)
         for button in keyButton!.enumerated() {
             button.element.removeTarget(self, action: #selector(keyClick(sender:)), for: .touchUpInside)
+        }
+    }
+
+    @objc func menuButtonTapped(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
+        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
+            popover.delegate = self
+            popover.modalPresentationStyle = .popover
+            let popoverPresentationController = popover.popoverPresentationController
+            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
+            popoverPresentationController?.delegate = self
+            popoverPresentationController?.sourceView = self.menuButton
+            popoverPresentationController?.sourceRect = self.menuButton.bounds
+            self.present(popover, animated: true)
         }
     }
 
@@ -210,6 +228,24 @@ class LoginViewController: UIViewController {
         reload()
     }
 
+    func walletDelete() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletDeleteViewController") as? DialogWalletDeleteViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func walletRename() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
     @IBAction func btnFaceID(_ sender: Any) {
     }
 
@@ -220,4 +256,38 @@ class LoginViewController: UIViewController {
         }
     }
 
+}
+
+extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
+    func didSave(_ name: String) {
+        print(name)
+    }
+    func didDelete() {
+        print("Remove Wallet")
+    }
+    func didCancel() {
+        print("Cancel")
+    }
+}
+
+extension LoginViewController: PopoverMenuWalletDelegate {
+    func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
+        switch menuOption {
+        case .edit:
+            walletRename()
+        case .delete:
+            walletDelete()
+        }
+    }
+}
+
+extension LoginViewController: UIPopoverPresentationControllerDelegate {
+
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        return UINavigationController(rootViewController: controller.presentedViewController)
+    }
 }

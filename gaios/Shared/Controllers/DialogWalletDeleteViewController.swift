@@ -27,14 +27,15 @@ class DialogWalletDeleteViewController: KeyboardViewController {
     weak var delegate: DialogWalletDeleteViewControllerDelegate?
 
     var buttonConstraint: NSLayoutConstraint?
+    var preDeleteFlag = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = "Delete Wallet"
+        lblTitle.text = "Remove Wallet"
         lblHint.text = "Do you have a backup?"
         lblDesc.text = "Be sure your recovery phrase is backed up before deleting this wallet"
-        btnDelete.setTitle("Delete Walllet", for: .normal)
+        btnDelete.setTitle("Remove Wallet", for: .normal)
         btnDelete.cornerRadius = 4.0
         btnDelete.setTitleColor(UIColor.customDestructiveRed(), for: .normal)
         btnDelete.borderWidth = 2.0
@@ -68,9 +69,14 @@ class DialogWalletDeleteViewController: KeyboardViewController {
         })
     }
 
-
     @IBAction func btnDelete(_ sender: Any) {
-        dismiss(.delete)
+        if preDeleteFlag {
+            dismiss(.delete)
+        } else {
+            preDeleteFlag = true
+            btnDelete.backgroundColor = UIColor.customDestructiveRed()
+            btnDelete.setTitleColor(.white, for: .normal)
+        }
     }
 
     @IBAction func btnDismiss(_ sender: Any) {
