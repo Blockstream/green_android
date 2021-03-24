@@ -52,6 +52,10 @@ class LoginViewController: UIViewController {
 
     func setStyle() {
         btnWalletLock.setStyle(.primary)
+        
+        if account?.attempts == self.MAXATTEMPTS {
+            // TODO: show recovery page
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -140,6 +144,7 @@ class LoginViewController: UIViewController {
             self.stopLoader()
         }.done {
             self.account?.attempts = 0
+            AccountsManager.shared.update(self.account!)
             AccountsManager.shared.current = self.account
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
@@ -162,14 +167,9 @@ class LoginViewController: UIViewController {
 
     func wrongPin(_ usingAuth: String) {
         account?.attempts += 1
+        AccountsManager.shared.update(self.account!)
         if account?.attempts == self.MAXATTEMPTS {
-            if usingAuth == AuthenticationTypeHandler.AuthKeyBiometric {
-                account?.removeBioKeychainData()
-            } else {
-                account?.removePinKeychainData()
-            }
-            account?.attempts = 0
-            navigationController?.popViewController(animated: true)
+            // TODO: show recovery page
         } else {
             self.pinCode = ""
             self.updateAttemptsLabel()
@@ -278,10 +278,17 @@ class LoginViewController: UIViewController {
 
 extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didSave(_ name: String) {
-        print(name)
+        if var account = self.account {
+            AccountsManager.shared.remove(account)
+            account.name = name
+            AccountsManager.shared.add(account)
+        }
     }
     func didDelete() {
-        print("Remove Wallet")
+        if let account = self.account {
+            AccountsManager.shared.remove(account)
+            navigationController?.popViewController(animated: true)
+        }
     }
     func didCancel() {
         print("Cancel")

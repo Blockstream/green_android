@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-struct Account: Codable {
+struct Account: Codable, Equatable {
     var name: String
     var network: String
     let id: String

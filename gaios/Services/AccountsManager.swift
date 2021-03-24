@@ -104,4 +104,12 @@ class AccountsManager {
         currentList.append(account)
         list = currentList
     }
+
+    func remove(_ account: Account) {
+        var currentList = list
+        if let index = currentList.firstIndex(where: { $0 == account }) {
+            currentList.remove(at: index)
+        }
+        list = currentList
+    }
 }
