@@ -78,6 +78,9 @@
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
+		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
+		34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */; };
+		34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */; };
 		45CD5615C596BD8280F76694 /* Pods_gaios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 30E4BBC6544671082AABADC5 /* Pods_gaios.framework */; };
 		6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6713533821E23E7200A9ACC0 /* QRCodeReaderView.swift */; };
 		671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */; };
@@ -318,6 +321,9 @@
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
+		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
+		34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletNameViewController.swift; sourceTree = "<group>"; };
+		34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDeleteViewController.swift; sourceTree = "<group>"; };
 		475E3453F5E43A804C3175DA /* Pods-gaiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F1029619A929DEA358F8D5E /* Pods-gaiosUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		6388587E72FD26B480510B8C /* Pods-gaios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.release.xcconfig"; sourceTree = "<group>"; };
@@ -678,6 +684,24 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		34DDD0A7260A484E00020380 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				34DDD0A8260A486300020380 /* Shared.storyboard */,
+				34DDD0AC260A48DF00020380 /* Controllers */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		34DDD0AC260A48DF00020380 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */,
+				34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		676FCF131F9D0CF800354E93 = {
 			isa = PBXGroup;
 			children = (
@@ -703,6 +727,7 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
+				34DDD0A7260A484E00020380 /* Shared */,
 				34B826C2260881E000579C0B /* Recovery */,
 				347FD0AB25FFA8E600BB3FAB /* Home */,
 				3497935125F8B18C0029ECB1 /* OnBoard */,
@@ -1260,6 +1285,7 @@
 				81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */,
 				818C740D2224395B00B0F794 /* PinView.xib in Resources */,
 				6D56C772235E27F000E4F990 /* Accounts.storyboard in Resources */,
+				34DDD0A9260A486300020380 /* Shared.storyboard in Resources */,
 				81286115222212B5005598D3 /* SetEmailView.xib in Resources */,
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
 				8128612722242E86005598D3 /* WatchOnlySignInView.xib in Resources */,
@@ -1442,6 +1468,7 @@
 				3497936825F8B18C0029ECB1 /* WalletNameViewController.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
+				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */,
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
@@ -1522,6 +1549,7 @@
 				81A062D624532643003464A0 /* HWDeviceProtocol.swift in Sources */,
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
 				3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */,
+				34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */,
 				81E9B7FE21C90F74004D87B6 /* AccountsViewController.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
 				2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */,

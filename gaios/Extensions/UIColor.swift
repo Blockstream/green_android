@@ -38,6 +38,10 @@ extension UIColor {
         return UIColor(named: "customModalMedium")!
     }
 
+    class func customDestructiveRed() -> UIColor {
+        return UIColor(named: "customDestructiveRed")!
+    }
+
     class func customGrayLight() -> UIColor {
         return UIColor(named: "customGrayLight")!
     }
