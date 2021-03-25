@@ -16,26 +16,7 @@ class WatchOnlyViewController: KeyboardViewController {
     @IBOutlet weak var testnetSwitch: UISwitch!
     @IBOutlet weak var btnSettings: UIButton!
 
-    var buttonConstraint: NSLayoutConstraint?
-
-    var username: String? {
-        get {
-            return UserDefaults.standard.string(forKey: getNetwork() + "_username")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_username")
-        }
-    }
-    var password: String? {
-        get {
-            return UserDefaults.standard.string(forKey: getNetwork() + "_password")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_password")
-        }
-    }
-
-    private var network = getGdkNetwork(getNetwork())
+    private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
 
     override func viewDidLoad() {
@@ -61,14 +42,6 @@ class WatchOnlyViewController: KeyboardViewController {
 
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
-        if let username = username {
-            usernameTextField.text = username
-            rememberSwitch.isOn = true
-        }
-        if let password = password {
-            passwordTextField.text = password
-        }
-        progressIndicator?.message = NSLocalizedString("id_logging_in", comment: "")
     }
 
     @objc func rememberSwitchChange(_ sender: UISwitch) {
@@ -83,11 +56,6 @@ class WatchOnlyViewController: KeyboardViewController {
             DispatchQueue.main.async {
                 self.present(alert, animated: true, completion: nil)
             }
-        } else {
-            self.username = nil
-            self.password = nil
-            usernameTextField.text = ""
-            passwordTextField.text = ""
         }
     }
 
@@ -107,19 +75,16 @@ class WatchOnlyViewController: KeyboardViewController {
         }
     }
 
-    func progress(_ notification: Notification) {
-        Guarantee().map(on: DispatchQueue.global(qos: .background)) { () -> UInt32 in
-            let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
-            let tor = try JSONDecoder().decode(Tor.self, from: json)
-            return tor.progress
-        }.done { progress in
-            var text = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
-            if progress == 100 {
+    @objc func progress(_ notification: Notification) {
+        if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
+           let tor = try? JSONDecoder().decode(Tor.self, from: json) {
+            var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            if tor.progress == 100 {
                 text = NSLocalizedString("id_logging_in", comment: "")
             }
-            self.progressIndicator?.message = text
-        }.catch { err in
-            print(err.localizedDescription)
+            DispatchQueue.main.async {
+                self.startLoader(message: text)
+            }
         }
     }
 
@@ -146,68 +111,42 @@ class WatchOnlyViewController: KeyboardViewController {
         })
     }
 
-    func dummyLoginAndNext() {
-
-        startLoader(message: "Loggin in...")
-        view.endEditing(true)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.stopLoader()
-
-            self.navigationController?.popToRootViewController(animated: true)
-        }
-
-    }
-
     @objc func click(_ sender: Any) {
-
-        dummyLoginAndNext()
-
-        return
-
+        let network = testnetSwitch.isOn ? "testnet" : "mainnet"
+        let username = self.usernameTextField.text ?? ""
+        let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
-        /*firstly {
+        firstly {
             dismissKeyboard()
-            self.startAnimating()
+            self.startLoader(message: "Loggin in...")
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
-        }.compactMap(on: bgq) {
-            try appDelegate.connect()
-        }.compactMap {
-            if let username = self.usernameTextField.text,
-                let password = self.passwordTextField.text {
-                return (username, password)
-            } else {
-                return (nil, nil)
-            }
-        }.compactMap(on: bgq) { (username, password) in
-            try getSession().loginWatchOnly(username: username ?? "",
-                                            password: password ?? "")
+            try appDelegate.connect(network)
+            try getSession().loginWatchOnly(username: username, password: password)
         }.then { _ in
-            Registry.shared.refresh().recover { _ in Guarantee() }
+            Registry.shared.load()
         }.ensure {
-            self.stopAnimating()
+            self.stopLoader()
         }.done {
-            if self.rememberSwitch.isOn,
-                let username = self.usernameTextField.text,
-                let password = self.passwordTextField.text {
-                self.username = username
-                self.password = password
+            let name = "\(AccountsManager.shared.nameLabel(network)) watch-only"
+            var account = Account(name: name, network: network, username: username)
+            if self.rememberSwitch.isOn {
+                account.password = password
             }
+            AccountsManager.shared.add(account)
+            AccountsManager.shared.current = account
             getGAService().isWatchOnly = true
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
-            let message: String
             if let err = error as? GaError, err != GaError.GenericError {
-                message = NSLocalizedString("id_connection_failed", comment: "")
+                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             } else {
-                message = NSLocalizedString("id_login_failed", comment: "")
+                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             }
-            DropAlert().error(message: message)
-        }*/
+        }
     }
 
     @IBAction func btnSettings(_ sender: Any) {

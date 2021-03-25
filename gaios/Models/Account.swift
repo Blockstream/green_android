@@ -7,6 +7,8 @@ struct Account: Codable, Equatable {
     let id: String
     let isJade: Bool
     let isLedger: Bool
+    let username: String?
+    var password: String?
 
     init(name: String, network: String, isJade: Bool = false, isLedger: Bool = false) {
         id = UUID().uuidString
@@ -14,6 +16,24 @@ struct Account: Codable, Equatable {
         self.network = network
         self.isJade = isJade
         self.isLedger = isLedger
+        self.username = nil
+        self.password = nil
+    }
+
+    init(name: String, network: String, username: String, password: String? = nil) {
+        id = UUID().uuidString
+        self.name = name
+        self.network = network
+        self.isJade = false
+        self.isLedger = false
+        self.username = username
+        self.password = password
+    }
+
+    var isWatchonly: Bool {
+        get {
+            return !(username?.isEmpty ?? true)
+        }
     }
 
     var hasManualPin: Bool {

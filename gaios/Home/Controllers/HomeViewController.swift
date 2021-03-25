@@ -39,14 +39,19 @@ class HomeViewController: UIViewController {
     }
 
     func enterWallet(_ index: Int) {
-//        // watch only wallet
-//        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-//        let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController")
-//        navigationController?.pushViewController(vc, animated: true)
-        let storyboard = UIStoryboard(name: "Home", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
-        vc?.account = accounts[index]
-        navigationController?.pushViewController(vc!, animated: true)
+        // watch only wallet
+        let account = accounts[index]
+        if account.isWatchonly {
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController
+            vc?.account = accounts[index]
+            navigationController?.pushViewController(vc!, animated: true)
+        } else {
+            let storyboard = UIStoryboard(name: "Home", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
+            vc?.account = accounts[index]
+            navigationController?.pushViewController(vc!, animated: true)
+        }
     }
 
     func showHardwareWallet() {

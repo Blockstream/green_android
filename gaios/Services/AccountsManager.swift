@@ -86,7 +86,7 @@ class AccountsManager {
         return accounts
     }
 
-    private func nameLabel(_ network: String) -> String {
+    func nameLabel(_ network: String) -> String {
         switch network {
         case "mainnet":
             return "Bitcoin"

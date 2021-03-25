@@ -10,26 +10,8 @@ class WatchOnlyLoginViewController: KeyboardViewController {
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var btnSettings: UIButton!
 
-    var buttonConstraint: NSLayoutConstraint?
-
-    var username: String? {
-        get {
-            return UserDefaults.standard.string(forKey: getNetwork() + "_username")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_username")
-        }
-    }
-    var password: String? {
-        get {
-            return UserDefaults.standard.string(forKey: getNetwork() + "_password")
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_password")
-        }
-    }
-
-    private var network = getGdkNetwork(getNetwork())
+    var account: Account?
+    private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
 
     override func viewDidLoad() {
@@ -49,13 +31,12 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
-        if let username = username {
+        if let username = account?.username {
             usernameTextField.text = username
         }
-        if let password = password {
+        if let password = account?.password {
             passwordTextField.text = password
         }
-        progressIndicator?.message = NSLocalizedString("id_logging_in", comment: "")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -70,19 +51,16 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }
     }
 
-    func progress(_ notification: Notification) {
-        Guarantee().map(on: DispatchQueue.global(qos: .background)) { () -> UInt32 in
-            let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
-            let tor = try JSONDecoder().decode(Tor.self, from: json)
-            return tor.progress
-        }.done { progress in
-            var text = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
-            if progress == 100 {
+    @objc func progress(_ notification: Notification) {
+        if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
+           let tor = try? JSONDecoder().decode(Tor.self, from: json) {
+            var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
+            if tor.progress == 100 {
                 text = NSLocalizedString("id_logging_in", comment: "")
             }
-            self.progressIndicator?.message = text
-        }.catch { err in
-            print(err.localizedDescription)
+            DispatchQueue.main.async {
+                self.startLoader(message: text)
+            }
         }
     }
 
@@ -103,61 +81,34 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         })
     }
 
-    func dummyLoginAndNext() {
-
-        startLoader(message: "Loggin in...")
-        view.endEditing(true)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            self.stopLoader()
-
-            self.navigationController?.popToRootViewController(animated: true)
-        }
-
-    }
-
     @objc func click(_ sender: Any) {
-
-        dummyLoginAndNext()
-
-        return
-
+        view.endEditing(true)
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
         firstly {
-            dismissKeyboard()
-            self.startAnimating()
+            view.endEditing(true)
+            self.startLoader(message: "Loggin in...")
             return Guarantee()
-        }.compactMap(on: bgq) {
+        }.compactMap(on: bgq) { [self] in
             appDelegate.disconnect()
-        }.compactMap(on: bgq) {
-            try appDelegate.connect()
-        }.compactMap {
-            if let username = self.usernameTextField.text,
-                let password = self.passwordTextField.text {
-                return (username, password)
-            } else {
-                return (nil, nil)
-            }
-        }.compactMap(on: bgq) { (username, password) in
-            try getSession().loginWatchOnly(username: username ?? "",
-                                            password: password ?? "")
+            try appDelegate.connect(account?.network ?? "mainnet")
+            try getSession().loginWatchOnly(username: account?.username ?? "",
+                                            password: account?.password ?? "")
         }.then { _ in
-            Registry.shared.refresh().recover { _ in Guarantee() }
+            Registry.shared.load()
         }.ensure {
-            self.stopAnimating()
+            self.stopLoader()
         }.done {
+            AccountsManager.shared.current = self.account
             getGAService().isWatchOnly = true
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
-            let message: String
             if let err = error as? GaError, err != GaError.GenericError {
-                message = NSLocalizedString("id_connection_failed", comment: "")
+                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             } else {
-                message = NSLocalizedString("id_login_failed", comment: "")
+                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             }
-            DropAlert().error(message: message)
         }
     }
 
