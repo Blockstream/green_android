@@ -12,6 +12,9 @@ class WatchOnlyViewController: KeyboardViewController {
     @IBOutlet weak var rememberTitle: UILabel!
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var warningLabel: UILabel!
+    @IBOutlet weak var lblTestnet: UILabel!
+    @IBOutlet weak var testnetSwitch: UISwitch!
+    @IBOutlet weak var btnSettings: UIButton!
 
     var buttonConstraint: NSLayoutConstraint?
 
@@ -42,11 +45,12 @@ class WatchOnlyViewController: KeyboardViewController {
         lblHint.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
         rememberTitle.text = NSLocalizedString("id_remember_me", comment: "")
         warningLabel.text = NSLocalizedString("id_watchonly_mode_can_be_activated", comment: "")
-
+        lblTestnet.text = "Testnet"
         rememberSwitch.addTarget(self, action: #selector(rememberSwitchChange), for: .valueChanged)
+        testnetSwitch.addTarget(self, action: #selector(testnetSwitchChange), for: .valueChanged)
         loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
         loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
-
+        loginButton.setStyle(.primary)
         usernameTextField.placeholder =  NSLocalizedString("id_username", comment: "")
         passwordTextField.placeholder = NSLocalizedString("id_password", comment: "")
 
@@ -85,6 +89,10 @@ class WatchOnlyViewController: KeyboardViewController {
             usernameTextField.text = ""
             passwordTextField.text = ""
         }
+    }
+
+    @objc func testnetSwitchChange(_ sender: UISwitch) {
+        print(sender.isOn)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -201,4 +209,12 @@ class WatchOnlyViewController: KeyboardViewController {
             DropAlert().error(message: message)
         }
     }
+
+    @IBAction func btnSettings(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController")
+        present(vc, animated: true) {
+        }
+    }
+
 }

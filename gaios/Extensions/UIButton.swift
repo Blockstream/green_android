@@ -1,5 +1,9 @@
 import UIKit
 
+enum ButtonStyle {
+    case primary
+}
+
 @IBDesignable
 class DesignableButton: UIButton {}
 
@@ -125,5 +129,18 @@ final class CheckButton: UIButton {
     @objc private func didTap() {
       isSelected.toggle()
       sendActions(for: .touchUpInside)
+    }
+}
+
+extension UIButton {
+
+    func setStyle(_ type: ButtonStyle) {
+
+        switch type {
+        case .primary:
+            backgroundColor = UIColor.customMatrixGreen()
+            setTitleColor(.white, for: .normal)
+            layer.cornerRadius = 4.0
+        }
     }
 }
