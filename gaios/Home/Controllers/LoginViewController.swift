@@ -280,9 +280,8 @@ class LoginViewController: UIViewController {
 extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didSave(_ name: String) {
         if var account = self.account {
-            AccountsManager.shared.remove(account)
             account.name = name
-            AccountsManager.shared.add(account)
+            AccountsManager.shared.update(account)
         }
     }
     func didDelete() {

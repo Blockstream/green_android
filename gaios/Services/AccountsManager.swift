@@ -112,4 +112,12 @@ class AccountsManager {
         }
         list = currentList
     }
+
+    func update(_ account: Account) {
+        var currentList = list
+        if let index = currentList.firstIndex(where: { $0.id == account.id }) {
+            currentList.replaceSubrange(index...index, with: [account])
+        }
+        list = currentList
+    }
 }
