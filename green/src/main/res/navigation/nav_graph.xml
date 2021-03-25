@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/introFragment">
+
+    <include app:graph="@navigation/settings_nav_graph" />
+
+    <fragment
+        android:id="@+id/introFragment"
+        android:name="com.blockstream.green.ui.IntroFragment"
+        android:label=""
+        tools:layout="@layout/intro_fragment" />
+
+    <fragment
+        android:id="@+id/addWalletFragment"
+        android:name="com.blockstream.green.ui.onboarding.AddWalletFragment"
+        android:label=""
+        tools:layout="@layout/add_wallet_fragment">
+        <action
+            android:id="@+id/action_addWalletFragment_to_chooseNetworkFragment"
+            app:destination="@id/chooseNetworkFragment" />
+        <action
+            android:id="@+id/action_addWalletFragment_to_restoreWalletFragment"
+            app:destination="@id/restoreWalletFragment" />
+        <action
+            android:id="@+id/action_addWalletFragment_to_chooseWatchOnlyFragment"
+            app:destination="@id/chooseWatchOnlyFragment" />
+        <argument
+            android:name="deviceId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseNetworkFragment"
+        android:name="com.blockstream.green.ui.onboarding.ChooseNetworkFragment"
+        android:label=""
+        tools:layout="@layout/choose_network_fragment">
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <action
+            android:id="@+id/action_chooseNetworkFragment_to_chooseSecurityFragment"
+            app:destination="@id/chooseSecurityFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseSecurityFragment"
+        android:name="com.blockstream.green.ui.onboarding.ChooseSecurityFragment"
+        android:label=""
+        tools:layout="@layout/choose_security_fragment">
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <action
+            android:id="@+id/action_chooseSecurityFragment_to_walletNameFragment"
+            app:destination="@id/walletNameFragment" />
+        <action
+            android:id="@+id/action_chooseSecurityFragment_to_chooseRecoveryPhraseFragment"
+            app:destination="@id/chooseRecoveryPhraseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/restoreWalletFragment"
+        android:name="com.blockstream.green.ui.onboarding.RestoreWalletFragment"
+        android:label=""
+        tools:layout="@layout/restore_wallet_fragment">
+        <action
+            android:id="@+id/action_restoreWalletFragment_to_chooseNetworkFragment"
+            app:destination="@id/chooseNetworkFragment" />
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <action
+            android:id="@+id/action_restoreWalletFragment_to_chooseRecoveryPhraseFragment"
+            app:destination="@id/chooseRecoveryPhraseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chooseRecoveryPhraseFragment"
+        android:name="com.blockstream.green.ui.onboarding.ChooseRecoveryPhraseFragment"
+        android:label=""
+        tools:layout="@layout/choose_recovery_phrase_fragment">
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <action
+            android:id="@+id/action_chooseRecoveryPhraseFragment_to_recoveryScanQRFragment"
+            app:destination="@id/recoveryScanQRFragment" />
+        <action
+            android:id="@+id/action_chooseRecoveryPhraseFragment_to_enterRecoveryPhraseFragment"
+            app:destination="@id/enterRecoveryPhraseFragment" />
+        <argument
+            android:name="restoreWallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
+    <argument
+        android:name="onboardingOptions"
+        app:argType="com.blockstream.green.data.OnboardingOptions" />
+    <fragment
+        android:id="@+id/walletNameFragment"
+        android:name="com.blockstream.green.ui.onboarding.WalletNameFragment"
+        android:label=""
+        tools:layout="@layout/wallet_name_fragment">
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <action
+            android:id="@+id/action_walletNameFragment_to_setPinFragment"
+            app:destination="@id/setPinFragment" />
+        <argument
+            android:name="mnemonic"
+            app:argType="string" />
+        <argument
+            android:name="mnemonicPassword"
+            app:argType="string" />
+        <argument
+            android:name="restoreWallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <action
+            android:id="@+id/action_walletNameFragment_to_onBoardingCompleteFragment"
+            app:destination="@id/onBoardingCompleteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recoveryScanQRFragment"
+        android:name="com.blockstream.green.ui.onboarding.RecoveryScanQRFragment"
+        android:label=""
+        tools:layout="@layout/recovery_scan_qr_fragment">
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <argument
+            android:name="restoreWallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_recoveryScanQRFragment_to_enterRecoveryPhraseFragment"
+            app:destination="@id/enterRecoveryPhraseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/setPinFragment"
+        android:name="com.blockstream.green.ui.onboarding.SetPinFragment"
+        android:label=""
+        tools:layout="@layout/set_pin_fragment">
+        <argument
+            android:name="restoreWallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <action
+            android:id="@+id/action_setPinFragment_to_onBoardingCompleteFragment"
+            app:destination="@id/onBoardingCompleteFragment" />
+        <argument
+            android:name="mnemonic"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/enterRecoveryPhraseFragment"
+        android:name="com.blockstream.green.ui.onboarding.EnterRecoveryPhraseFragment"
+        android:label=""
+        app:startDestination="@id/action_enterRecoveryPhraseFragment_to_walletNameFragment"
+        tools:layout="@layout/enter_recovery_phrase_fragment">
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <action
+            android:id="@+id/action_enterRecoveryPhraseFragment_to_walletNameFragment"
+            app:destination="@id/walletNameFragment"/>
+        <action
+            android:id="@+id/action_enterRecoveryPhraseFragment_to_helpBottomSheetDialogFragment"
+            app:destination="@id/helpBottomSheetDialogFragment" />
+        <argument
+            android:name="scannedInput"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="restoreWallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/recoveryIntroFragment"
+        android:name="com.blockstream.green.ui.recovery.RecoveryIntroFragment"
+        android:label=""
+        tools:layout="@layout/recovery_intro_fragment">
+        <action
+            android:id="@+id/action_recoveryIntroFragment_to_recoveryWordsFragment"
+            app:destination="@id/recoveryWordsFragment" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="mnemonic"
+            app:argType="string"
+            android:defaultValue="@null"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/recoveryWordsFragment"
+        android:name="com.blockstream.green.ui.recovery.RecoveryWordsFragment"
+        android:label=""
+        tools:layout="@layout/recovery_setup_words_fragment">
+        <action
+            android:id="@+id/action_recoveryWordsFragment_self"
+            app:destination="@id/recoveryWordsFragment" />
+        <action
+            android:id="@+id/action_recoveryWordsFragment_to_recoveryCheckFragment"
+            app:destination="@id/recoveryCheckFragment" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="page"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="mnemonic"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/recoveryCheckFragment"
+        android:name="com.blockstream.green.ui.recovery.RecoveryCheckFragment"
+        android:label=""
+        tools:layout="@layout/recovery_check_fragment">
+
+        <action
+            android:id="@+id/action_recoveryCheckFragment_self"
+            app:destination="@id/recoveryCheckFragment" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="page"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="mnemonic"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_recoveryCheckFragment_to_walletNameFragment"
+            app:destination="@id/walletNameFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_recoveryIntroFragment"
+        app:destination="@id/recoveryIntroFragment" />
+    <action
+        android:id="@+id/action_global_addWalletFragment"
+        app:destination="@id/addWalletFragment"
+        />
+    <fragment
+        android:id="@+id/chooseWatchOnlyFragment"
+        android:name="com.blockstream.green.ui.onboarding.ChooseWatchOnlyFragment"
+        android:label=""
+        tools:layout="@layout/choose_watch_only_fragment">
+        <action
+            android:id="@+id/action_chooseWatchOnlyFragment_to_loginWatchOnlyFragment"
+            app:destination="@id/loginWatchOnlyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginWatchOnlyFragment"
+        android:name="com.blockstream.green.ui.onboarding.LoginWatchOnlyFragment"
+        android:label=""
+        tools:layout="@layout/login_watch_only_fragment" />
+    <dialog
+        android:id="@+id/connectionSettingsDialogFragment"
+        android:name="com.blockstream.green.ui.settings.AppSettingsDialogFragment"
+        android:label=""
+        tools:layout="@layout/dialog_app_settings_bottom_sheet" />
+    <dialog
+        android:id="@+id/helpBottomSheetDialogFragment"
+        android:name="com.blockstream.green.ui.HelpBottomSheetDialogFragment"
+        android:label=""
+        tools:layout="@layout/help_bottom_sheet" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.blockstream.green.ui.wallet.LoginFragment"
+        tools:layout="@layout/login_fragment" >
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <action
+            android:id="@+id/action_loginFragment_to_chooseRecoveryPhraseFragment"
+            app:destination="@id/chooseRecoveryPhraseFragment" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_global_connectionSettingsDialogFragment"
+        app:destination="@id/connectionSettingsDialogFragment" />
+    <action android:id="@+id/action_global_loginFragment" app:destination="@id/loginFragment" />
+    <fragment
+        android:id="@+id/onBoardingCompleteFragment"
+        android:name="com.blockstream.green.ui.onboarding.OnBoardingCompleteFragment"
+        tools:layout="@layout/onboarding_complete_fragment"
+        android:label="" >
+        <argument
+            android:name="onboardingOptions"
+            app:argType="com.blockstream.green.data.OnboardingOptions" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/deviceListFragment"
+        android:name="com.blockstream.green.ui.devices.DeviceListFragment"
+        tools:layout="@layout/device_list_fragment">
+        <action
+            android:id="@+id/action_deviceListFragment_to_deviceInfoFragment"
+            app:destination="@id/deviceInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/deviceInfoFragment"
+        android:name="com.blockstream.green.ui.devices.DeviceInfoFragment"
+        tools:layout="@layout/device_info_fragment"
+        android:label="">
+        <argument
+            android:name="deviceId"
+            app:argType="integer" />
+    </fragment>
+
+    <action android:id="@+id/action_global_deviceListFragment" app:destination="@id/deviceListFragment"/>
+    <dialog
+        android:id="@+id/deviceBottomSheetDialogFragment"
+        android:name="com.blockstream.green.ui.devices.DeviceBottomSheetDialogFragment"
+        tools:layout="@layout/device_bottom_sheet_fragment">
+        <argument
+            android:name="deviceId"
+            app:argType="integer" />
+    </dialog>
+
+    <action android:id="@+id/action_global_deviceBottomSheetDialogFragment" app:destination="@id/deviceBottomSheetDialogFragment" />
+
+</navigation>

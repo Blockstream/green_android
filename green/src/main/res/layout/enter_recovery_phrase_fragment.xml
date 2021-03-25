@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.onboarding.EnterRecoveryPhraseFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.blockstream.green.ui.onboarding.EnterRecoveryPhraseViewModel" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_enter_your_recovery_phrase"
+            android:textAppearance="?attr/textAppearanceHeadline1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingTop="24dp"
+            android:paddingBottom="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/brand_surface"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="6dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="8dp"
+                android:singleLine="true"
+                android:text="@{vm.messageResource}"
+                android:textColor="@color/color_on_surface_emphasis_low"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                app:drawableEndCompat="@drawable/ic_baseline_info_16"
+                app:drawableTint="@color/color_on_surface_emphasis_low"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="This is a help message" />
+
+            <com.blockstream.green.views.RecoveryPhraseKeyboardView
+                android:id="@+id/recoveryPhraseKeyboardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/brand_surface"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/message" />
+
+            <Button
+                android:id="@+id/buttonContinue"
+                style="@style/Widget.Green.Button.Big"
+                isVisible="@{vm.isValid}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/id_continue"
+                app:layout_constraintBottom_toBottomOf="@+id/recoveryPhraseKeyboardView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/buttonPaste"
+                isVisible="@{vm.showPasteButton}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="6dp"
+                android:backgroundTint="@android:color/transparent"
+                android:src="@drawable/ic_baseline_content_paste_24"
+                android:tint="@color/brand_green"
+                app:layout_constraintBottom_toBottomOf="@+id/recoveryPhraseKeyboardView"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <Button
+                android:id="@+id/buttonHelp"
+                style="@style/Widget.Green.Button.Outlined"
+                isVisible="@{vm.showHelpButton}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="6dp"
+                android:text="@string/id_help"
+                app:icon="@drawable/ic_baseline_help_outline_18"
+                app:iconGravity="start"
+                app:layout_constraintBottom_toBottomOf="@+id/recoveryPhraseKeyboardView"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:visibility="gone" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

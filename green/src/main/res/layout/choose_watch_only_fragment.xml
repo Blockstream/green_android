@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.onboarding.ChooseWatchOnlyFragment">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_choose_watchonly"
+            android:textAppearance="?attr/textAppearanceHeadline1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+            <com.blockstream.green.views.GappedLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:orientation="vertical"
+                app:gap="24dp">
+
+                <com.blockstream.green.views.GreenContentCardView
+                    android:id="@+id/buttonGreenWatchOnly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:captionText="@string/id_log_in_to_your_multisig_shield"
+                    app:icon="@drawable/ic_green_60"
+                    app:titleText="@string/id_standard_wallet" />
+
+                <com.blockstream.green.views.GreenContentCardView
+                    android:id="@+id/buttonWatchOnly"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:captionText="@string/id_enter_your_xpub_to_add_a"
+                    app:icon="@drawable/ic_multisig"
+                    app:titleText="@string/id_multisig_shield" />
+
+            </com.blockstream.green.views.GappedLinearLayout>
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

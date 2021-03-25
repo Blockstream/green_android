@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.recovery.RecoveryWordsFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.blockstream.green.ui.recovery.RecoveryWordsViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_back_up_recovery_phrase"
+            android:textAppearance="?attr/textAppearanceHeadline1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/id_the_recovery_phrase_can_be_used"
+            android:textAppearance="?attr/textAppearanceBody2"
+            app:layout_constraintEnd_toEndOf="@+id/title"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/title"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="24dp"
+            android:max="@{vm.progressMax}"
+            android:progress="@{vm.progress}"
+            app:showAnimationBehavior="none"
+            app:trackThickness="12dp"
+            app:trackCornerRadius="6dp"
+            app:layout_constraintBottom_toTopOf="@+id/word1"
+            app:layout_constraintEnd_toEndOf="@+id/subtitle"
+            app:layout_constraintStart_toStartOf="@+id/subtitle"
+            app:layout_constraintTop_toBottomOf="@+id/subtitle"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <TextView
+            android:id="@+id/counter1"
+            textAsNumber="@{vm.counter + 1}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/brand_green"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/word1"
+            app:layout_constraintEnd_toStartOf="@+id/word1"
+            tools:text="19" />
+
+        <TextView
+            android:id="@+id/word1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.words[0]}"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/word2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress"
+            app:layout_constraintVertical_chainStyle="spread"
+            tools:text="word" />
+
+        <TextView
+            android:id="@+id/counter2"
+            textAsNumber="@{vm.counter + 2}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/brand_green"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/word2"
+            app:layout_constraintEnd_toStartOf="@+id/word2"
+            tools:text="20" />
+
+        <TextView
+            android:id="@+id/word2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.words[1]}"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/word3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/word1"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="signal" />
+
+        <TextView
+            android:id="@+id/counter3"
+            textAsNumber="@{vm.counter + 3}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/brand_green"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/word3"
+            app:layout_constraintEnd_toStartOf="@+id/word3"
+            tools:text="21" />
+
+        <TextView
+            android:id="@+id/word3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.words[2]}"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/word4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/word2"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="rest" />
+
+        <TextView
+            android:id="@+id/counter4"
+            textAsNumber="@{vm.counter + 4}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/brand_green"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/word4"
+            app:layout_constraintEnd_toStartOf="@+id/word4"
+            tools:text="22" />
+
+        <TextView
+            android:id="@+id/word4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.words[3]}"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/word5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/word3"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="piano" />
+
+        <TextView
+            android:id="@+id/counter5"
+            textAsNumber="@{vm.counter + 5}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/brand_green"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/word5"
+            app:layout_constraintEnd_toStartOf="@+id/word5"
+            tools:text="23" />
+
+        <TextView
+            android:id="@+id/word5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{vm.words[4]}"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/word6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/word4"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="blend" />
+
+        <TextView
+            android:id="@+id/counter6"
+            textAsNumber="@{vm.counter + 6}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/brand_green"
+            android:textSize="18sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/word6"
+            app:layout_constraintEnd_toStartOf="@+id/word6"
+            tools:text="23" />
+
+        <TextView
+            android:id="@+id/word6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:text="@{vm.words[5]}"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/color_on_surface_emphasis_high"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonNext"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/word5"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="alien" />
+
+        <Button
+            android:id="@+id/buttonNext"
+            style="@style/Widget.Green.Button.Big"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/id_next"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.onboarding.AddWalletFragment">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.blockstream.green.ui.onboarding.AddWalletViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_blockstream_greennsimple_and"
+            android:textAppearance="?attr/textAppearanceHeadline1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/id_well_get_you_set_up_in_no_time"
+            android:textAppearance="?attr/textAppearanceBody2"
+            app:layout_constraintEnd_toEndOf="@+id/title"
+            app:layout_constraintStart_toStartOf="@+id/title"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/add_wallet_visual"
+            app:layout_constraintBottom_toTopOf="@+id/termsCheckbox"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/subtitle" />
+
+        <CheckBox
+            android:id="@+id/termsCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:paddingEnd="3dp"
+            android:checked="@={vm.termsChecked}"
+            android:text="@string/id_i_agree_to_the"
+            app:layout_constraintBottom_toTopOf="@+id/wrapButtons"
+            app:layout_constraintEnd_toStartOf="@+id/termsLink"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/termsLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="@string/id_terms_of_service"
+            android:textColor="@color/brand_green"
+            app:layout_constraintBaseline_toBaselineOf="@+id/termsCheckbox"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/termsCheckbox" />
+
+        <com.blockstream.green.views.GappedLinearLayout
+            android:id="@+id/wrapButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            app:gap="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonContinueHardware"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="@{vm.termsChecked}"
+                isVisible="@{vm.isHardware}"
+                tools:text="Continue with Hardware Wallet"
+                android:text="@{String.format(@string/id_continue_with_1s, vm.device.name)}"
+                app:icon="@drawable/ic_plus_18"
+                app:iconGravity="start"
+                app:iconPadding="-18dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonNewWallet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="@{vm.termsChecked}"
+                isVisible="@{!vm.isHardware}"
+                android:text="@string/id_new_wallet"
+                app:icon="@drawable/ic_plus_18"
+                app:iconGravity="start"
+                app:iconPadding="-18dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonRestoreWallet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="@{vm.termsChecked}"
+                isVisible="@{!vm.isHardware}"
+                android:text="@string/id_restore_a_wallet"
+                app:icon="@drawable/ic_recycle_18"
+                app:iconGravity="start"
+                app:iconPadding="-18dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonWatchOnly"
+                style="@style/Widget.Green.Button.Outlined"
+                isVisible="@{!vm.isHardware}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="@{vm.termsChecked}"
+                android:text="@string/id_watchonly_wallet"
+                app:icon="@drawable/ic_watch_18"
+                app:iconGravity="start"
+                app:iconPadding="-18dp" />
+
+        </com.blockstream.green.views.GappedLinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
