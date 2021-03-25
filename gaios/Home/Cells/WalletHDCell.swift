@@ -1,11 +1,3 @@
-//
-//  WalletHDCell.swift
-//  gaios
-//
-//  Created by Mauro Olivo on 15/03/21.
-//  Copyright © 2021 Blockstream Corporation. All rights reserved.
-//
-
 import UIKit
 
 class WalletHDCell: UITableViewCell {

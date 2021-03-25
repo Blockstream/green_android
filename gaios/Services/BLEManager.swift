@@ -1,11 +1,3 @@
-//
-//  BLEManager.swift
-//  gaios
-//
-//  Created by Mauro Olivo on 09/02/21.
-//  Copyright © 2021 Blockstream Corporation. All rights reserved.
-//
-
 import Foundation
 import PromiseKit
 import RxSwift
