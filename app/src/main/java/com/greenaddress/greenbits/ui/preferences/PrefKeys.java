@@ -8,14 +8,10 @@ public class PrefKeys {
     public static final String PRICING = "pricing";
     public static final String UNIT = "unit";
     public static final String WATCH_ONLY_LOGIN = "watch_only_login";
-    public static final String WATCH_ONLY_USERNAME = "watch_only_username";
-    public static final String WATCH_ONLY_PASSWORD = "watch_only_password";
     public static final String REQUIRED_NUM_BLOCKS = "required_num_blocks";
     public static final String DEFAULT_FEERATE_SATBYTE = "default_feerate_satbyte";
     public static final String MNEMONIC_PASSPHRASE = "mnemonic_passphrase";
     public static final String DELETE_OR_CONFIGURE_PIN = "delete_or_configure_pin";
-    public static final String PIN_AUTH = "pin_auth";
-    public static final String NATIVE_AUTH = "native_auth";
     public static final String ALTIMEOUT = "altimeout";
     public static final String VERSION = "version";
     public static final String LOGOUT = "logout";
@@ -25,7 +21,6 @@ public class PrefKeys {
     public static final String PROXY_HOST = "proxy_host";
     public static final String PROXY_PORT = "proxy_port";
     public static final String TOR_ENABLED = "tor_enabled";
-    public static final String PREF_MIGRATED_V2_v3 = "pref_migrated_v2_v3";
     public static final String DEVICE_ID = "device_id";
     public static final String TRUSTED_ADDRESS = "trusted_address";
     public static final String PGP_KEY = "pgp_key";
@@ -44,7 +39,6 @@ public class PrefKeys {
     public static final String CANCEL_TWOFACTOR_RESET = "cancel_twofactor_reset";
     public static final String DISPUTE_TWOFACTOR_RESET = "dispute_twofactor_reset";
     public static final String DONT_ASK_AGAIN_TO_OPEN_URL = "dont_ask_again_to_open_url";
-    public static final String ASSET_SELECTED = "asset_selected";
     public static final String SET_EMAIL = "set_nlocktime_email";
     public static final String INTENT_STRING_TX = "intent_string_tx";
 

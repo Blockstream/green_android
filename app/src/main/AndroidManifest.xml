@@ -47,38 +47,15 @@
         android:required="false" />
 
     <application
-        android:name="com.greenaddress.greenbits.GreenAddressApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/BitcoinTheme">
-        <activity
-            android:name=".authentication.MnemonicActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"
-            android:screenOrientation="portrait"
-            android:label="@string/id_restore"
-            />
-
-        <activity-alias
-            android:name=".NFC"
-            android:label="@string/app_name"
-            android:targetActivity=".authentication.MnemonicActivity">
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <data android:mimeType="x-gait/mnc" />
-                <data android:mimeType="x-ga/en" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity-alias>
+        android:supportsRtl="true">
 
         <activity
             android:name=".TabbedMainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <meta-data android:name="useNoActionBar" android:value="true"/>
         </activity>
@@ -88,62 +65,17 @@
             android:enabled="true"
             android:exported="false"
             />
-
-        <activity
-            android:name=".authentication.PinActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden">
-            <meta-data android:name="useNoActionBar" android:value="true"/>
-
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <data android:scheme="bitcoin" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <data android:scheme="bitcoin" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <data android:mimeType="application/bitcoin-paymentrequest" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".onboarding.PinSaveActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateVisible"
-            />
-        <activity
-            android:name=".authentication.FirstScreenActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name"
-            />
         <activity
             android:name=".assets.AssetsSelectActivity"
             android:screenOrientation="portrait"
             android:label="@string/app_name"
+            android:theme="@style/BitcoinTheme"
             />
 
         <activity
             android:name=".accounts.SubaccountSelectActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:label="@string/app_name">
             <meta-data android:name="useNoActionBar" android:value="true"/>
         </activity>
@@ -151,117 +83,90 @@
         <activity
             android:name=".ScanForResultActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:label="@string/id_qr_scanner"
             />
         <activity
             android:name=".authentication.RequestLoginActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:theme="@style/BitcoinTheme"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
-
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_DETACHED"
-                android:resource="@xml/device_filter" />
-
         </activity>
         <activity
             android:name=".transactions.TransactionActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:label="@string/id_transaction_details"
             />
         <activity
             android:name=".twofactor.TwoFactorActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:label="@string/id_1s_twofactor_set_up"
             />
         <activity
             android:name=".preferences.SettingsActivity"
             android:screenOrientation="portrait"
             android:label="@string/id_settings"
+            android:theme="@style/BitcoinTheme"
             />
         <activity
             android:name=".FailHardActivity"
-            />
-        <activity
-            android:name=".authentication.WatchOnlyLoginActivity"
-            android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             />
         <activity
             android:name=".receive.ReceiveActivity"
             android:screenOrientation="portrait"
             android:label="@string/id_receive"
+            android:theme="@style/BitcoinTheme"
             android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity android:name=".send.ScanActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:label="@string/id_send_to" />
-        <activity
-            android:name=".onboarding.TermsActivity"
-            android:screenOrientation="portrait"
-            />
-        <activity
-            android:name=".onboarding.WordsActivity"
-            android:screenOrientation="portrait"
-            />
-        <activity
-            android:name=".onboarding.SelectionActivity"
-            android:screenOrientation="portrait"
-            />
-
-        <activity
-            android:name=".onboarding.InfoActivity"
-            android:screenOrientation="portrait"
-            />
         <activity
             android:name=".onboarding.SecurityActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             />
         <activity
             android:name=".send.SendAmountActivity"
             android:label="@string/id_send"
+            android:theme="@style/BitcoinTheme"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan"
             />
         <activity
             android:name=".send.SendConfirmActivity"
             android:label="@string/id_send"
+            android:theme="@style/BitcoinTheme"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan"
             />
         <activity
             android:name=".notifications.MessagesActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             />
         <activity
             android:name=".notifications.NotificationsActivity"
             android:label="@string/id_notifications"
+            android:theme="@style/BitcoinTheme"
             android:screenOrientation="portrait"
             />
         <activity
             android:name=".authentication.TrezorPinActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             />
         <activity
             android:name=".authentication.TrezorPassphraseActivity"
             android:screenOrientation="portrait"
-            />
-        <activity
-            android:name=".NetworkSettingsActivity"
-            android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             />
         <activity
             android:name=".assets.AssetActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:label="@string/id_asset"
             />
         <activity
@@ -271,26 +176,31 @@
         <activity
             android:name=".preferences.DisplayMnemonicActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:label="@string/id_mnemonic"
             />
         <activity
             android:name=".accounts.SubaccountAddActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:noHistory="true">
         </activity>
 
         <activity
             android:name=".accounts.SweepSelectActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             android:label="@string/id_sweep"
             />
         <activity
             android:name=".hardwarewallets.DeviceSelectorActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             />
         <activity
             android:name=".preferences.CSVTimeActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/BitcoinTheme"
             />
 
     </application>
