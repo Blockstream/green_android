@@ -1,0 +1,77 @@
+package com.blockstream.green.ui.twofactor
+
+
+import android.content.Context
+import android.content.DialogInterface
+import android.text.InputType
+import android.view.LayoutInflater
+import androidx.appcompat.app.AlertDialog
+import com.blockstream.green.R
+import com.blockstream.gdk.TwoFactorResolver
+import com.blockstream.green.databinding.EditTextDialogBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+
+class DialogTwoFactorResolver(val context: Context, val method: String? = null) : TwoFactorResolver {
+
+    override fun selectMethod(availableMethods: List<String>): Single<String> =
+        Single.create<String> { emitter ->
+
+            // Method is already selected in the constructor
+            if(method != null){
+                emitter.onSuccess(method)
+                return@create
+            }
+
+            MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.id_choose_method_to_authorize_the)
+                .setSingleChoiceItems(
+                    availableMethods.toTypedArray(),
+                    0, null
+                )
+                .setPositiveButton(android.R.string.ok){ dialogInterface: DialogInterface, i: Int ->
+                    if(dialogInterface is AlertDialog){
+                        emitter.onSuccess(availableMethods[dialogInterface.listView.checkedItemPosition])
+                    }
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .setCancelable(false)
+                .setOnDismissListener {
+                    if (!emitter.isDisposed) {
+                        emitter.tryOnError(Exception("id_user_cancel"))
+                    }
+                }
+                .show()
+
+        }.subscribeOn(AndroidSchedulers.mainThread())
+
+    override fun getCode(method: String): Single<String> =
+        Single.create<String> { emitter ->
+
+            val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
+
+            dialogBinding.hint = context.getString(R.string.id_code)
+            dialogBinding.editText.inputType = InputType.TYPE_CLASS_NUMBER
+
+            MaterialAlertDialogBuilder(context)
+                .setTitle(context.getString(R.string.id_please_provide_your_1s_code, method))
+                .setView(dialogBinding.root)
+                .setPositiveButton(R.string.id_ok) { _, _ ->
+                    emitter.onSuccess(dialogBinding.text ?: "")
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .setCancelable(false)
+                .setOnDismissListener {
+                    if (!emitter.isDisposed) {
+                        emitter.tryOnError(Exception("id_user_cancel"))
+                    }
+                }
+                .show()
+
+            // set focus to the input field
+            dialogBinding.editText.requestFocus()
+
+        }.subscribeOn(AndroidSchedulers.mainThread())
+
+}

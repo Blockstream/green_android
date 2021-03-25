@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/rename"
+        android:title="@string/id_rename_wallet" />
+
+    <item
+        android:id="@+id/delete"
+        android:title="@string/id_remove_wallet" />
+
+    <item
+        android:id="@+id/logout"
+        android:title="@string/id_log_out"
+        android:icon="@drawable/ic_close" />
+
+    <item
+        android:id="@+id/settings"
+        android:title="@string/id_settings"
+        android:icon="@drawable/ic_settings" />
+</menu>

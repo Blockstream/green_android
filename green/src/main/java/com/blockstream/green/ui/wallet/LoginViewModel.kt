@@ -1,0 +1,224 @@
+package com.blockstream.green.ui.wallet
+
+import android.util.Base64
+import androidx.lifecycle.*
+import com.blockstream.gdk.data.TORStatus
+import com.blockstream.green.AppKeystore
+import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.database.LoginCredentials
+import com.blockstream.green.database.Wallet
+import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.gdk.GreenSession
+import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.gdk.async
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.kotlin.subscribeBy
+import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import javax.crypto.Cipher
+
+class LoginViewModel @AssistedInject constructor(
+    private var appKeystore: AppKeystore,
+    sessionManager: SessionManager,
+    walletRepository: WalletRepository,
+    @Assisted wallet: Wallet
+) : WalletViewModel(sessionManager, walletRepository, wallet) {
+
+    val onErrorMessage = MutableLiveData<ConsumableEvent<Throwable>>()
+
+    var biometricsCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
+    var keystoreCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
+    var pinCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
+    var passwordCredentials: MutableLiveData<LoginCredentials> = MutableLiveData()
+
+    var password = MutableLiveData("")
+    var watchOnlyPassword = MutableLiveData("")
+
+    val torStatus: MutableLiveData<TORStatus> = MutableLiveData()
+
+    var isInProgress = MutableLiveData(false)
+
+    var actionLogin = MutableLiveData<Boolean>()
+
+    val isWatchOnlyLoginEnabled: LiveData<Boolean> by lazy {
+        MediatorLiveData<Boolean>().apply {
+            val block = { _: Any? ->
+                value =
+                    !watchOnlyPassword.value.isNullOrBlank() && !isInProgress.value!!
+            }
+            addSource(watchOnlyPassword, block)
+            addSource(isInProgress, block)
+        }
+    }
+
+    var initialAction = false
+
+    init {
+        if (session.isConnected()) {
+            actionLogin.value = true
+        }
+
+        // Beware as this will fire new values if eg. you change a login credential
+        walletRepository
+            .getWalletLoginCredentialsObservable(wallet.id)
+            .async()
+            .subscribeBy(
+                onError = {
+                    it.printStackTrace()
+                },
+                onNext = {
+                    biometricsCredentials.postValue(it.biometrics)
+                    keystoreCredentials.postValue(it.keystore)
+                    pinCredentials.postValue(it.pin)
+                    passwordCredentials.postValue(it.password)
+                }
+            ).addTo(disposables)
+
+        session.getTorStatusObservable()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                torStatus.value = it
+            }.addTo(disposables)
+
+    }
+
+    fun loginWithPin(pin: String, loginCredentials: LoginCredentials) {
+        login(loginCredentials) {
+            session.loginWithPin(wallet, pin, loginCredentials.pinData!!)
+        }
+    }
+
+    fun loginWatchOnlyWithKeyStore(loginCredentials: LoginCredentials) {
+        loginCredentials.encryptedData?.let { encryptedData ->
+            login(loginCredentials, isWatchOnly = true, updateWatchOnlyPassword = false) {
+                val password = String(appKeystore.decryptData(encryptedData))
+                session.loginWatchOnly(wallet, wallet.watchOnlyUsername!!, password)
+            }
+        }
+    }
+
+    fun loginWithBiometrics(cipher: Cipher, loginCredentials: LoginCredentials) {
+        loginCredentials.encryptedData?.let { encryptedData ->
+            login(loginCredentials) {
+                val pin = String(appKeystore.decryptData(cipher, encryptedData))
+                session.loginWithPin(wallet, pin, loginCredentials.pinData!!)
+            }
+        }
+    }
+
+    fun loginWithBiometricsV3(cipher: Cipher, loginCredentials: LoginCredentials) {
+        loginCredentials.encryptedData?.let { encryptedData ->
+            login(loginCredentials) {
+                val decrypted = appKeystore.decryptData(cipher, encryptedData)
+                // Migrated from v3
+                val pin = Base64.encodeToString(decrypted, Base64.NO_WRAP).substring(0, 15)
+                session.loginWithPin(wallet, pin, loginCredentials.pinData!!)
+            }
+        }
+    }
+
+    fun watchOnlyLogin() {
+        login(null, isWatchOnly = true, updateWatchOnlyPassword = true) {
+            session.loginWatchOnly(
+                wallet,
+                wallet.watchOnlyUsername!!,
+                watchOnlyPassword.value ?: ""
+            )
+        }
+    }
+
+    private fun login(
+        loginCredentials: LoginCredentials?,
+        isWatchOnly: Boolean = false,
+        updateWatchOnlyPassword: Boolean = false,
+        mapper: (GreenSession) -> Unit
+    ) {
+        Single.just(session)
+            .subscribeOn(Schedulers.io())
+            .map(mapper)
+            .map {
+
+                // Reset counter
+                loginCredentials?.also{
+                    it.counter = 0
+                    walletRepository.updateLoginCredentials(it)
+                }
+
+                // Update watchonly password if needed
+                if(updateWatchOnlyPassword){
+                    keystoreCredentials.value?.let {
+                        it.encryptedData = appKeystore.encryptData(watchOnlyPassword.value!!.toByteArray())
+                        walletRepository.updateLoginCredentials(it)
+                    }
+                }
+
+                session
+            }
+            .doOnError {
+                // isNotAuthorized only catches multisig login errors, singlesig or watchonly are not caught
+                // and the counter is not incremented
+                if(session.isNotAuthorized(it)){
+                    loginCredentials?.also{ loginCredentials ->
+                        loginCredentials.counter += 1
+
+                        if(loginCredentials.counter < 3){
+                            walletRepository.updateLoginCredentials(loginCredentials)
+                        }else{
+                             walletRepository.deleteLoginCredentials(loginCredentials)
+                        }
+                    }
+
+                    if(isWatchOnly){
+                        onErrorMessage.postValue(ConsumableEvent(it))
+                    }
+
+                }else{
+                    onErrorMessage.postValue(ConsumableEvent(it))
+                }
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                isInProgress.postValue(true)
+            }
+            .subscribeBy(
+                onError = {
+                    onError.postValue(ConsumableEvent(it))
+                    // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
+                    isInProgress.postValue(false)
+                },
+                onSuccess = {
+                    actionLogin.postValue(true)
+                }
+            )
+    }
+
+    fun deleteLoginCredentials(loginCredentials: LoginCredentials){
+        GlobalScope.launch {
+            walletRepository.deleteLoginCredentials(loginCredentials)
+        }
+    }
+
+    @dagger.assisted.AssistedFactory
+    interface AssistedFactory {
+        fun create(
+            wallet: Wallet,
+        ): LoginViewModel
+    }
+
+    companion object {
+        fun provideFactory(
+            assistedFactory: AssistedFactory,
+            wallet: Wallet
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return assistedFactory.create(wallet) as T
+            }
+        }
+    }
+}
