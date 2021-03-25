@@ -1,0 +1,65 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--Base theme, all common styling here-->
+    <style name="Base.Green" parent="@style/Theme.MaterialComponents.NoActionBar">
+        <!--Material type attributes-->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Green.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Green.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Green.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.Green.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.Green.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.Green.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Green.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.Green.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Green.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Green.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.Green.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Green.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.Green.Overline</item>
+
+
+        <!--Platform attributes-->
+        <item name="android:navigationBarColor">@color/brand_background</item>
+        <item name="android:statusBarColor">@color/brand_background</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">false</item> <!-- Make the status bar aware of our dark theme  -->
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <item name="android:navigationBarDividerColor" tools:ignore="NewApi">@null</item><!-- Remove the divider   -->
+
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <!--        <item name="android:windowTranslucentNavigation">true</item>-->
+
+        <!--    Disable Elevation Overlay    -->
+        <item name="elevationOverlayEnabled">false</item>
+
+        <!--Component styles-->
+        <item name="toolbarStyle">@style/Widget.Green.Toolbar</item>
+        <item name="appBarLayoutStyle">@style/Widget.Green.AppBarLayout</item>
+    </style>
+
+    <style name="Theme.Green" parent="Base.Green">
+
+        <!--colorPrimary colors map to components and elements, such as app bars and buttons. -->
+        <!--colorSecondary colors are most often used as accents on components, such as FABs and -->
+        <!--selection controls.-->
+        <item name="colorPrimary">@color/brand_green</item>
+        <item name="colorPrimaryVariant">@color/brand_green_dark</item>
+        <item name="colorSecondary">@color/brand_green</item>
+        <item name="colorSecondaryVariant">@color/brand_green_dark</item>
+
+        <!--colorBackground appears behind scrollable content and is used for the default window-->
+        <!--background. colorSurface is mapped to the surface of components such as cards, sheets-->
+        <!--and menus. colorError is used to indicate an error state for components such as-->
+        <!--text fields.-->
+        <item name="android:colorBackground">@color/brand_background</item>
+        <item name="colorSurface">@color/brand_surface</item>
+        <item name="colorError">@color/red</item>
+
+        <!--"On" colors define how text, icons and strokes are colored in relation to the surface-->
+        <!--on which they appear.-->
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorOnError">@color/red</item>
+    </style>
+
+</resources>

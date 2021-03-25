@@ -1,0 +1,29 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Widget.Green.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:elevation">0dp</item>
+        <item name="elevation" ignore="NewApi">0dp</item>
+        <item name="android:background">@color/brand_background</item>
+
+        <item name="android:contentInsetLeft">0dp</item>
+        <item name="contentInsetLeft">0dp</item>
+        <item name="android:contentInsetRight">0dp</item>
+        <item name="contentInsetRight">0dp</item>
+        <item name="android:contentInsetStartWithNavigation" tools:targetApi="n">0dp</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+
+        <item name="android:colorControlActivated">@color/brand_green</item>
+        <item name="android:colorControlNormal">@color/brand_green</item>
+        <item name="colorControlNormal">@color/brand_green</item>
+    </style>
+
+    <style name="Widget.Green.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
+        <item name="android:elevation" ignore="NewApi">0dp</item>
+        <item name="elevation" ignore="NewApi">0dp</item>
+    </style>
+
+    <style name="ThemeOverlay.Green.ImportantDialogButton" parent="">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

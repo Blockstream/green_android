@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--  Main Brand colors  -->
+    <color name="brand_green">#ff00b45a</color>
+    <color name="brand_green_dark">#ff00832e</color>
+
+    <color name="brand_surface">#19222c</color>
+    <color name="brand_surface_light">#273545</color>
+    <color name="brand_background">#12161f</color>
+
+    <color name="brand_surface_variant">#14161D</color>
+
+    <color name="black">#ff000000</color>
+    <color name="white">#ffffffff</color>
+
+
+    <color name="bitcoin">#fe8e02</color>
+    <color name="liquid">#46BEAE</color>
+    <color name="testnet">#8C8C8C</color>
+
+    <color name="red">#b40000</color>
+
+    <color name="transparent_darker">#22000000</color>
+
+    <color name="text_shadow">#50000000</color>
+
+
+    <color name="switch_thumb_disabled">#c1c1c1</color>
+
+    <color name="color_on_surface_divider">#22ffffff</color>
+    <color name="color_on_surface_emphasis_very_low">#41ffffff</color>
+    <color name="color_on_surface_emphasis_disabled">#61ffffff</color>
+    <color name="color_on_surface_emphasis_low">#8affffff</color>
+    <color name="color_on_surface_emphasis_medium">#bdffffff</color>
+    <color name="color_on_surface_emphasis_high">#ffffffff</color>
+
+</resources>

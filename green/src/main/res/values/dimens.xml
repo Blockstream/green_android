@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="toolbar_height">56dp</dimen>
+
+
+    <dimen name="dp0">0dp</dimen>
+    <dimen name="dp8">8dp</dimen>
+    <dimen name="dp16">16dp</dimen>
+    <dimen name="dp24">24dp</dimen>
+    <dimen name="dp32">32dp</dimen>
+
+    <dimen name="settings_element_margin">54dp</dimen>
+
+    <dimen name="circle_progress_size">150dp</dimen>
+
+    <dimen name="progress_radius">4dp</dimen>
+
+</resources>
