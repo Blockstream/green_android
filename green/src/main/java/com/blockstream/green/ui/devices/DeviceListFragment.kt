@@ -19,6 +19,9 @@ import com.blockstream.green.ui.items.DeviceListItem
 import com.blockstream.green.utils.observe
 import com.blockstream.green.utils.openBrowser
 import com.greenaddress.Bridge
+import com.greenaddress.greenbits.ui.GaActivity
+import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity
+import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
@@ -95,7 +98,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     override fun onResume() {
         super.onResume()
 
-        if(Bridge.usePrototype) {
+        if(Bridge.useGreenModule) {
 
             setToolbar(
                 drawable = ContextCompat.getDrawable(
@@ -107,17 +110,28 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
             }
 
         }else{
-            setToolbar(title = "USB", button = getString(R.string.id_blockstream_store)) {
+            setToolbar(title = getString(R.string.id_cable), button = getString(R.string.id_blockstream_store)) {
                 openBrowser(requireContext(), Urls.HARDWARE_STORE)
             }
         }
     }
 
     private fun navigateToDevice(device: Device){
-        if(Bridge.usePrototype){
+        if(Bridge.useGreenModule){
             navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
         }else{
-            Bridge.v3Implementation(requireContext())
+            val intent = Intent(requireContext(), RequestLoginActivity::class.java).also {
+                if(device.isUsb){
+                    it.action = GaActivity.ACTION_USB_ATTACHED
+                    it.putExtra(UsbManager.EXTRA_DEVICE, device.usbDevice)
+                }else{
+                    it.action = DeviceSelectorActivity.ACTION_BLE_SELECTED
+                    it.putExtra(BluetoothDevice.EXTRA_UUID, device.bleService)
+                    it.putExtra(BluetoothDevice.EXTRA_DEVICE, device.bleDevice?.bluetoothDevice)
+                }
+            }
+
+            startActivity(intent)
         }
     }
 }

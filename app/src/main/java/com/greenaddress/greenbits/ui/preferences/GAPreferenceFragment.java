@@ -1,34 +1,24 @@
 package com.greenaddress.greenbits.ui.preferences;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class GAPreferenceFragment extends PreferenceFragmentCompat {
     private static final String TAG = GAPreferenceFragment.class.getSimpleName();
-
-    private GreenAddressApplication mApp;
-
-    @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
-        mApp = (GreenAddressApplication) getActivity().getApplication();
-    }
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {}
@@ -56,7 +46,7 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
 
     protected void logout() {
         if (getActivity() instanceof LoggedActivity)
-            ((LoggedActivity) getActivity()).logout();
+            ((LoggedActivity) getActivity()).logout(-1L);
         else if (getActivity() instanceof GaPreferenceActivity)
             ((GaPreferenceActivity) getActivity()).logout();
     }
@@ -75,11 +65,7 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
                                                                                      "mainnet");
     }
     public NetworkData getNetwork() {
-        return mApp.getCurrentNetworkData();
-    }
-
-    public GreenAddressApplication getGAApp() {
-        return mApp;
+        return Bridge.INSTANCE.getCurrentNetworkData(getContext());
     }
 
     public boolean warnIfOffline(final Activity activity) {

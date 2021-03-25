@@ -165,9 +165,6 @@ public class SecurityActivity extends LoggedActivity implements View.OnClickList
             final boolean isEnabled = mEnabled.contains(method);
             holder.enabled.setChecked(isEnabled);
             holder.enabled.setOnClickListener((v1) -> {
-                if (getGAApp().warnIfOffline(SecurityActivity.this)) {
-                    return;
-                }
                 final Intent intent = new Intent(SecurityActivity.this, TwoFactorActivity.class);
                 intent.putExtra("method", method);
                 intent.putExtra("enable", !isEnabled);

@@ -24,8 +24,6 @@ public class SettingsActivity extends GaPreferenceActivity {
 
                     if (preference.equals(SPVPreferenceFragment.class.getName()))
                         fragment = new SPVPreferenceFragment();
-                    else if (preference.equals(PinPreferenceFragment.class.getName()))
-                        fragment = new PinPreferenceFragment();
                     else
                         fragment = new GeneralPreferenceFragment();
 

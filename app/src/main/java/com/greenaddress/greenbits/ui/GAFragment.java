@@ -5,24 +5,21 @@ import android.content.Context;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 public abstract class GAFragment extends Fragment {
-    protected GreenAddressApplication mApp;
 
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
 
-        mApp = (GreenAddressApplication) getActivity().getApplication();
         final GaActivity activity = (GaActivity) getActivity();
 
         try {
-            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(mApp.getCurrentNetwork(), context,
+            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(Bridge.INSTANCE.getCurrentNetwork(getContext()), context,
                                                                            activity.getMetadata()),
                                           true);
         } catch (final Exception e) {
@@ -37,10 +34,6 @@ public abstract class GAFragment extends Fragment {
 
     protected NetworkData getNetwork() {
         return ((GaActivity) getActivity()).getNetwork();
-    }
-
-    protected SPV getSpv() {
-        return mApp.getSpv();
     }
 
     public String network() {

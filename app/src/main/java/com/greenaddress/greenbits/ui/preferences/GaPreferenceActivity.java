@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui.preferences;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.view.MenuItem;
@@ -8,11 +7,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.Session;
-import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 
 
 // Our GaPreferenceActivity derived classes aren't exported publicly, so the
@@ -35,12 +32,6 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    /*@Override
-       public boolean onIsMultiPane() {
-        final int layout = getResources().getConfiguration().screenLayout;
-        return (layout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-       }*/
-
     /**
      * This method stops fragment injection in malicious applications.
      * Make sure to deny any unknown fragments here.
@@ -60,10 +51,6 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
         return true;
     }
 
-    protected GreenAddressApplication getGAApp() {
-        return (GreenAddressApplication) getApplication();
-    }
-
     @Override
     final public void onPause() {
         super.onPause();
@@ -75,8 +62,7 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     }
 
     protected void logout() {
-        final Intent intent = GaActivity.createToFirstIntent(this);
-        startActivity(intent);
+        Bridge.INSTANCE.navigateToLogin(this ,-1);
     }
 
 

@@ -10,7 +10,6 @@ import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +21,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
-import com.greenaddress.greenbits.ui.accounts.SwitchNetworkFragment;
-import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
+import com.greenaddress.greenbits.ui.accounts.SwitchWalletFragment;
+import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 import com.greenaddress.greenbits.ui.notifications.NotificationsActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
@@ -32,7 +31,6 @@ import com.greenaddress.greenbits.ui.transactions.MainFragment;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Arrays;
-
 
 
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
@@ -63,12 +61,6 @@ public class TabbedMainActivity extends LoggedActivity  {
                         intent.hasCategory(Intent.CATEGORY_BROWSABLE) ||
                         NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction());
 
-        if (mIsBitcoinUri) {
-            // Not logged in, force the user to login
-            final Intent login = new Intent(this, RequestLoginActivity.class);
-            startActivityForResult(login, REQUEST_BITCOIN_URL_LOGIN);
-            return;
-        }
         launch();
         final boolean isResetActive = getSession().isTwoFAReset();
         if (mIsBitcoinUri && !isResetActive) {
@@ -80,27 +72,35 @@ public class TabbedMainActivity extends LoggedActivity  {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.container, new MainFragment()).commit();
         }
+
+        // Show error if Asset registry is not updated
+        if(getNetwork().getLiquid() && !getSession().getRegistry().isUpToDate()){
+            final Intent intentError = new Intent();
+            intentError.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intentError.setClass(this, RegistryErrorActivity.class);
+            startActivity(intentError);
+        }
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
         // Update notification Icon
         MenuItem notificationMenuItem = menu.findItem(R.id.action_notifications);
-        notificationMenuItem.setIcon(!getSession().getNotificationModel().getEvents().isEmpty() ? R.drawable.bottom_navigation_notifications_2 : R.drawable.bottom_navigation_notifications);
+        notificationMenuItem.setIcon(getSession().getNotificationModel().getEvents().isEmpty() ? R.drawable.bottom_navigation_notifications : R.drawable.bottom_navigation_notifications_2);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_notifications:
-                startActivity(new Intent(this, NotificationsActivity.class));
-                break;
-            case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_notifications) {
+            startActivity(new Intent(this, NotificationsActivity.class));
+        } else if (itemId == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }
@@ -168,7 +168,7 @@ public class TabbedMainActivity extends LoggedActivity  {
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        DialogFragment newFragment = SwitchNetworkFragment.newInstance();
+        DialogFragment newFragment = SwitchWalletFragment.newInstance();
         newFragment.show(ft, "dialog");
     }
 

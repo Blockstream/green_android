@@ -14,8 +14,9 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.R;
 
 import java.io.File;
@@ -55,14 +56,10 @@ public class GaService extends Service  {
     }
 
     public NetworkData getNetwork() {
-        return ((GreenAddressApplication) getApplication()).getCurrentNetworkData();
+        return Bridge.INSTANCE.getCurrentNetworkData(this);
     }
     public File getSPVChainFile() {
         return getSPVChainFile(getNetwork().getName());
-    }
-
-    public GreenAddressApplication getGAApp() {
-        return (GreenAddressApplication) getApplication();
     }
 
     private void onNetConnectivityChanged() {
@@ -70,7 +67,7 @@ public class GaService extends Service  {
         Log.d(TAG, "onNetConnectivityChanged " + info);
         // TODO: auto-reconnect using gdk
         if (info != null)
-            getGAApp().getSpv().onNetConnectivityChangedAsync(info);
+            Bridge.INSTANCE.getSpv().onNetConnectivityChangedAsync(info);
     }
 
     public NetworkInfo getNetworkInfo() {

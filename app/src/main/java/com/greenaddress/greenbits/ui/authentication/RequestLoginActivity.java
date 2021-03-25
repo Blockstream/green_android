@@ -10,10 +10,15 @@ import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.btchip.BTChipConstants;
@@ -24,27 +29,28 @@ import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerDeviceBLE;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.google.common.util.concurrent.SettableFuture;
-
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
+import com.greenaddress.greenbits.ui.accounts.NetworkSwitchListener;
+import com.greenaddress.greenbits.ui.accounts.SwitchNetworkFragment;
 import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
-import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
 import com.greenaddress.greenbits.wallets.JadeHWWallet;
+import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
-import com.greenaddress.jade.entities.JadeError;
+import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.JadeBleImpl;
+import com.greenaddress.jade.entities.JadeError;
 import com.polidea.rxandroidble2.RxBleClient;
 import com.polidea.rxandroidble2.RxBleDevice;
-import com.greenaddress.jade.JadeAPI;
 import com.satoshilabs.trezor.Trezor;
 
 import java.util.List;
@@ -57,8 +63,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-
-public class RequestLoginActivity extends LoginActivity {
+public class RequestLoginActivity extends LoginActivity implements NetworkSwitchListener {
 
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
 
@@ -80,7 +85,8 @@ public class RequestLoginActivity extends LoginActivity {
     private Boolean mInLedgerDashboard;
 
     private HWWallet mHwWallet;
-    private TextView mActiveNetwork;
+    private Button mActiveNetwork;
+    private Button mButtonContinue;
     private NetworkData networkData;
     private CompositeDisposable mDisposables;
 
@@ -90,11 +96,31 @@ public class RequestLoginActivity extends LoginActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitleBackTransparent();
+
         mInLedgerDashboard = false;
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
         mInstructionsText = UI.find(this, R.id.first_login_instructions);
         mActiveNetwork = UI.find(this, R.id.activeNetwork);
+        mButtonContinue = UI.find(this, R.id.buttonContinue);
+
+
+        mActiveNetwork.setOnClickListener(v -> {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.addToBackStack(null);
+
+            // Create and show the dialog.
+            DialogFragment newFragment = SwitchNetworkFragment.newInstance();
+            newFragment.show(ft, "dialog");
+        });
+
+        mButtonContinue.setOnClickListener(v -> {
+             continueToConnect();
+             mInstructionsText.setVisibility(View.VISIBLE);
+             mActiveNetwork.setVisibility(View.GONE);
+        });
+
         networkData = getNetwork();
 
         mDisposables = new CompositeDisposable();
@@ -104,6 +130,16 @@ public class RequestLoginActivity extends LoginActivity {
     protected void onNewIntent(final Intent intent) {
         Log.d(TAG, "onNewIntent");
         setIntent(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void onUsbAttach(final UsbDevice usb) {
@@ -477,6 +513,11 @@ public class RequestLoginActivity extends LoginActivity {
         super.onResume();
         mActiveNetwork.setText(getString(R.string.id_s_network, networkData.getName()));
 
+    }
+
+    private void continueToConnect(){
+        mButtonContinue.setVisibility(View.GONE);
+
         final Intent intent = getIntent();
 
         if (ACTION_USB_ATTACHED.equalsIgnoreCase(intent.getAction())) {
@@ -500,12 +541,14 @@ public class RequestLoginActivity extends LoginActivity {
 
     private void onNoHardwareWallet() {
         // No hardware wallet, jump to PIN or 1st screen entry
-        final Intent intent = getIntent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        if (AuthenticationHandler.hasPin(this))
-            startActivityForResult(new Intent(this, PinActivity.class), 0);
-        else
-            startActivityForResult(new Intent(this, FirstScreenActivity.class), 0);
+
+//        final Intent intent = getIntent();
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        if (AuthenticationHandler.hasPin(this))
+//            startActivityForResult(new Intent(this, PinActivity.class), 0);
+//        else
+//            startActivityForResult(new Intent(this, FirstScreenActivity.class), 0);
+        finish();
     }
 
     private void showInstructions(final int resId) {
@@ -535,5 +578,12 @@ public class RequestLoginActivity extends LoginActivity {
             UI.setDialogCloseHandler(d, this::finishOnUiThread);
             d.show();
         });
+    }
+
+    @Override
+    public void onNetworkClick(NetworkData nd) {
+        networkData = nd;
+        mActiveNetwork.setText(getString(R.string.id_s_network, networkData.getName()));
+        Bridge.INSTANCE.setCurrentNetwork(this, networkData.getNetwork());
     }
 }

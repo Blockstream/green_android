@@ -42,7 +42,7 @@ class ChooseSecurityFragment :
         }
 
         // Skip singlesig, check AppFragment where we remove this fragment from the backstack
-        if(!Bridge.usePrototype){
+        if(!Bridge.useGreenModule){
             options?.apply {
                 navigate(copy(network = getNetwork(networkType!!, false)))
             }
@@ -73,7 +73,7 @@ class ChooseSecurityFragment :
                 )
             )
         } else {
-            if(Bridge.usePrototype){
+            if(Bridge.useGreenModule){
                 navigate(ChooseSecurityFragmentDirections.actionChooseSecurityFragmentToWalletNameFragment(options, mnemonic = "", mnemonicPassword = ""))
             }else{
                 navigate(ChooseSecurityFragmentDirections.actionGlobalRecoveryIntroFragment(wallet = null, onboardingOptions = options, mnemonic = greenWallet.generateMnemonic()))

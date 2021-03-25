@@ -241,8 +241,13 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
         if (manager == null)
             return;
 
-        // Add supported devices that are already connected (and may not be 'advertising')
-        addSupportedDevices(manager.getConnectedDevices(BluetoothProfile.GATT));
+        try{
+            // Crash on emulator or device without Bluetooth adapter
+            // Add supported devices that are already connected (and may not be 'advertising')
+            addSupportedDevices(manager.getConnectedDevices(BluetoothProfile.GATT));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void scanBleDevices() {

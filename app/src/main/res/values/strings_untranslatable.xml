@@ -54,7 +54,7 @@
         <item>@string/id_email</item>
         <item>@string/id_sms</item>
         <item>@string/id_call</item>
-        <item>@string/id_google_authenticator</item>
+        <item>@string/id_authenticator_app</item>
     </string-array>
 
     <string-array name="timesStrings" translatable="false">

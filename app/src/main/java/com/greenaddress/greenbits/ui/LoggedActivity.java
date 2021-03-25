@@ -1,7 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.EditText;
@@ -10,6 +8,7 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.material.snackbar.Snackbar;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.model.Conversion;
@@ -17,7 +16,6 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,13 +42,13 @@ public abstract class LoggedActivity extends GaActivity {
         super.onResume();
 
         if (getSession() == null || getSession().getSettings() == null) {
-            exit();
+            exit(-1L);
             return;
         }
 
         final boolean timerExpired = mStart + delayLogoutTimer() < System.currentTimeMillis();
         if (timerExpired) {
-            exit();
+            exit(-1L);
             return;
         }
 
@@ -83,10 +81,10 @@ public abstract class LoggedActivity extends GaActivity {
                 getSession().disconnect();
                 return network;
             }).subscribe(res -> {
-                exit();
+                exit(-1L);
             }, (final Throwable e) -> {
                 e.printStackTrace();
-                exit();
+                exit(-1L);
             });
         } else {
             networkDisposable = networkObservable.map(network -> {
@@ -104,7 +102,7 @@ public abstract class LoggedActivity extends GaActivity {
                 onOnline();
             }, (final Throwable e) -> {
                 e.printStackTrace();
-                exit();
+                exit(-1L);
             });
         }
     }
@@ -186,7 +184,7 @@ public abstract class LoggedActivity extends GaActivity {
         }
     }
 
-    public void logout() {
+    public void logout(Long walletId) {
         startLoading();
         logoutDisposable = Observable.just(getSession())
                            .subscribeOn(AndroidSchedulers.mainThread())
@@ -196,19 +194,19 @@ public abstract class LoggedActivity extends GaActivity {
             return session;
         }).subscribe(session -> {
             stopLoading();
-            exit();
+            exit(walletId);
         }, (final Throwable e) -> {
             stopLoading();
-            exit();
+            exit(walletId);
         });
     }
 
-    private void exit() {
+    private void exit(Long walletId) {
         if (isFinishing())
             return;
-        final Intent intent = GaActivity.createToFirstIntent(this);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+
+        Bridge.INSTANCE.navigateToLogin(this, walletId);
+
         finish();
     }
 
@@ -234,7 +232,7 @@ public abstract class LoggedActivity extends GaActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(() -> exit());
+                runOnUiThread(() -> exit(-1L));
             }
         }, delayLogoutTimer());
         mTimer = timer;
@@ -294,12 +292,10 @@ public abstract class LoggedActivity extends GaActivity {
     }
 
     protected int getActiveAccount() {
-        final SharedPreferences preferences = getSharedPreferences(network(), MODE_PRIVATE);
-        return preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0);
+        return Bridge.INSTANCE.getActiveAccount();
     }
 
     protected void setActiveAccount(final int subaccount) {
-        final SharedPreferences preferences = getSharedPreferences(network(), MODE_PRIVATE);
-        preferences.edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
+        Bridge.INSTANCE.setActiveAccount(subaccount);
     }
 }

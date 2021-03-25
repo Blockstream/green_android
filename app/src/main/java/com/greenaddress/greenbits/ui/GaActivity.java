@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,12 +22,11 @@ import androidx.preference.PreferenceManager;
 
 import com.blockstream.libwally.Wally;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.GreenAddressApplication;
-import com.greenaddress.greenbits.ui.authentication.FirstScreenActivity;
 import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity;
 import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
@@ -46,14 +44,10 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
     public static final int HARDWARE_PASSPHRASE_REQUEST = 21392;
 
     protected static final String TAG = GaActivity.class.getSimpleName();
-    protected static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
+    public static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
 
     private ProgressBarHandler mProgressBarHandler;
     private final SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();
-
-    protected GreenAddressApplication getGAApp() {
-        return (GreenAddressApplication) getApplication();
-    }
 
     public Bundle getMetadata() {
         Bundle metadata = null;
@@ -68,7 +62,7 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
-        setTheme(ThemeUtils.getThemeFromNetworkId(getGAApp().getCurrentNetwork(), this,
+        setTheme(ThemeUtils.getThemeFromNetworkId(Bridge.INSTANCE.getCurrentNetwork(this), this,
                                                   getMetadata()));
 
         super.onCreate(savedInstanceState);
@@ -140,7 +134,7 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
     }
 
     protected void setTitleWithNetwork(final int resource) {
-        final NetworkData networkData = getGAApp().getCurrentNetworkData();
+        final NetworkData networkData = Bridge.INSTANCE.getCurrentNetworkData(this);
         if (networkData == null || getSupportActionBar() == null) {
             setTitle(resource);
             return;
@@ -269,14 +263,6 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
         finish();
     }
 
-    static public Intent createToFirstIntent(final Context ctx) {
-        final Intent intent = new Intent();
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        // Logout to first screen
-        intent.setClass(ctx, FirstScreenActivity.class);
-        return intent;
-    }
-
     public SharedPreferences cfg() {
         return getSharedPreferences(network(), MODE_PRIVATE);
     }
@@ -286,7 +272,7 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
     }
 
     protected NetworkData getNetwork() {
-        return getGAApp().getCurrentNetworkData();
+        return Bridge.INSTANCE.getCurrentNetworkData(this);
     }
 
     public Session getSession() {

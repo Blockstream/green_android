@@ -18,18 +18,13 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.SwitchPreference;
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.greenaddress.Bridge;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
@@ -38,7 +33,6 @@ import com.greenaddress.greenapi.data.PricingData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.model.Conversion;
-import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -55,8 +49,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 import static android.app.Activity.RESULT_OK;
-import static com.greenaddress.greenbits.ui.authentication.FirstScreenActivity.NETWORK_SELECTOR_REQUEST;
 
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
@@ -108,21 +106,17 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // Pin submenu
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
-        if (!AuthenticationHandler.hasPin(getActivity()) && !getSession().isPinJustSaved()) {
-            mPinPref.setEnabled(false);
-            mPinPref.setSummary(getString(R.string.id_green_only_supports_one_pin_per));
-        }
         mPinPref.setVisible(getSession().getHWWallet() == null);
         mPinPref.setOnPreferenceClickListener(preference -> {
-            final Intent intent = new Intent(getActivity(), SettingsActivity.class);
-            intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, PinPreferenceFragment.class.getName() );
-            startActivity(intent);
+            Bridge.INSTANCE.navigateToChangePin(requireActivity());
             return false;
         });
 
+        Boolean isRecoveryConfirmed = Bridge.INSTANCE.getIsRecoveryConfirmed();
+
         // Watch-Only Login
         mWatchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
-        mWatchOnlyLogin.setVisible(!isLiquid);
+        mWatchOnlyLogin.setVisible(!isLiquid && isRecoveryConfirmed);
         mWatchOnlyLogin.setOnPreferenceClickListener((preference) -> onWatchOnlyLoginClicked());
         setupWatchOnlySummary();
 
@@ -263,8 +257,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         final String touchToDisplay = getString(R.string.id_touch_to_display);
         mMemonicPref.setSummary(touchToDisplay);
         mMemonicPref.setOnPreferenceClickListener(preference -> {
-            final Intent intent = new Intent(getActivity(), DisplayMnemonicActivity.class);
-            startActivity(intent);
+            Bridge.INSTANCE.navigateToBackupRecovery(getActivity());
             return false;
         });
 
@@ -325,7 +318,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         version.setSummary(String.format("%s %s",
                                          getString(R.string.app_name),
                                          getString(R.string.id_version_1s_2s,
-                                                   BuildConfig.VERSION_NAME,
+                                                   Bridge.INSTANCE.getVersionName(),
                                                    BuildConfig.BUILD_TYPE)));
     }
 
@@ -809,8 +802,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         if (requestCode == GeneralPreferenceFragment.REQUEST_ENABLE_2FA && resultCode == RESULT_OK
             && data != null && "reset".equals(data.getStringExtra("method"))) {
-            logout();
-        } else if (requestCode == NETWORK_SELECTOR_REQUEST && resultCode == RESULT_OK) {
             logout();
         }
     }

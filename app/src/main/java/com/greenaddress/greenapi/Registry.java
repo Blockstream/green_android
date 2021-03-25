@@ -13,9 +13,14 @@ public class Registry {
     private final Map<String, Bitmap> mIcons = new HashMap<>();
     private final Map<String, AssetInfoData> mInfos = new HashMap<>();
     private final Session mSession;
+    private Boolean mIsUpToDate = false;
 
     Registry(Session session) {
         mSession = session;
+    }
+
+    public Boolean isUpToDate(){
+        return mIsUpToDate;
     }
 
     public void cached() {
@@ -33,6 +38,7 @@ public class Registry {
         final Map<String, Bitmap> icons = mSession.getAssetsIcons(true);
         final Map<String, AssetInfoData> infos = mSession.getAssetsInfos(true);
         setAssets(icons, infos);
+        mIsUpToDate = true;
     }
 
     private void setAssets(final Map<String, Bitmap> icons, final Map<String, AssetInfoData> infos) {
@@ -46,7 +52,6 @@ public class Registry {
     public Map<String, Bitmap> getIcons() {
         return mIcons;
     }
-
     public Map<String, AssetInfoData> getInfos() {
         return mInfos;
     }

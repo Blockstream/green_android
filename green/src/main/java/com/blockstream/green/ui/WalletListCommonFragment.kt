@@ -1,5 +1,6 @@
 package com.blockstream.green.ui
 
+import android.content.Intent
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
@@ -12,6 +13,7 @@ import com.blockstream.green.ui.items.DeviceBrandListItem
 import com.blockstream.green.ui.items.WalletListItem
 import com.blockstream.green.utils.observe
 import com.greenaddress.Bridge
+import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -44,10 +46,8 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
 
         val list: List<DeviceBrandListItem>
 
-        if(Bridge.usePrototype){
-            list = listOf(DeviceBrandListItem(true),
-                DeviceBrandListItem(false)
-            )
+        if(Bridge.useGreenModule){
+            list = listOf(DeviceBrandListItem(true))
         }else{
             list = listOf(DeviceBrandListItem(true),
                 DeviceBrandListItem(false)
@@ -57,12 +57,12 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         val devicesAdapter = FastAdapter.with(ItemAdapter<DeviceBrandListItem>().add(list))
 
         devicesAdapter.onClickListener = { _, _, item, _ ->
-            if(Bridge.usePrototype) {
+            if(Bridge.useGreenModule) {
                 navigate(NavGraphDirections.actionGlobalDeviceListFragment())
             }else{
                 Bridge.bridgeSession(sessionManager.getHardwareSessionV3().gaSession, "mainnet",null)
                 if(item.isBluetooth){
-                    Bridge.v3Implementation(requireContext())
+                    startActivity(Intent(requireContext(), DeviceSelectorActivity::class.java))
                 }else{
                     navigate(NavGraphDirections.actionGlobalDeviceListFragment())
                 }
@@ -88,9 +88,9 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
 
     private fun navigate(wallet: Wallet) {
 
-        if(Bridge.usePrototype){
+        if(Bridge.useGreenModule){
             if(sessionManager.getWalletSession(wallet).isConnected()){
-                Bridge.v4Implementation(requireContext())
+                // TODO open v4 Overview
             }else{
                 navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
             }

@@ -28,7 +28,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
 
     private Registry mRegistry;
     private String mWatchOnlyUsername;
-    private boolean pinJustSaved = false;
     private HWWallet mHWWallet = null;
     private SettingsData mSettings;
     private Boolean mTwoFAReset = false;
@@ -42,6 +41,19 @@ public class Session extends GDKSession implements HttpRequestProvider {
         return instance;
     }
 
+    public void bridgeSession(Object session, String network, String watchOnlyUsername){
+        mNativeSession = session;
+        mNetwork = network;
+        mWatchOnlyUsername = watchOnlyUsername;
+
+        // Reset
+        mHWWallet = null;
+        mSettings = null;
+        mTwoFAReset = false;
+
+        getNotificationModel().reset();
+    }
+
     public Registry getRegistry() {
         if(mRegistry == null){
             mRegistry = new Registry(this);
@@ -52,14 +64,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
 
     public boolean isWatchOnly() {
         return null != mWatchOnlyUsername;
-    }
-
-    public boolean isPinJustSaved() {
-        return pinJustSaved;
-    }
-
-    public void setPinJustSaved(final boolean pinJustSaved) {
-        this.pinJustSaved = pinJustSaved;
     }
 
     public HWWallet getHWWallet() {
@@ -78,16 +82,9 @@ public class Session extends GDKSession implements HttpRequestProvider {
         return mTwoFAReset;
     }
 
-    @Override
-    public void connect(final String network, final boolean isDebug) throws Exception {
-        mNetwork = network;
-        super.connect(network, isDebug);
-    }
 
-    @Override
-    public void connectWithProxy(final String network, final String proxyAsString, final boolean useTor, final boolean isDebug) throws Exception {
+    public void setNetwork(final String network) {
         mNetwork = network;
-        super.connectWithProxy(network, proxyAsString, useTor, isDebug);
     }
 
     public void disconnect() throws Exception {
@@ -100,12 +97,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
         mWatchOnlyUsername = null;
         mSettings = null;
         mTwoFAReset = false;
-        pinJustSaved = false;
-    }
-
-    public void loginWatchOnly(final String username, final String password) throws Exception {
-        mWatchOnlyUsername = username;
-        super.loginWatchOnly(username, password);
     }
 
     public SettingsData refreshSettings() {

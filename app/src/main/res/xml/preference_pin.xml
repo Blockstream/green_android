@@ -1,8 +1,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:key="pin_auth"
-        android:title="@string/id_setup_pin" />
+    <Preference
+        android:key="change_pin"
+        android:title="@string/id_change_pin" />
 
     <SwitchPreference
         android:key="native_auth"

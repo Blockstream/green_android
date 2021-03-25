@@ -2,8 +2,10 @@ package com.blockstream.green.di
 
 import android.content.Context
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.lifecycle.AppLifecycleObserver
+import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.AssetManager
@@ -67,6 +69,12 @@ class CryptoModule {
     @Provides
     fun provideAppKeystore(): AppKeystore {
         return AppKeystore()
+    }
+
+    @Singleton
+    @Provides
+    fun provideMigrator(@ApplicationContext context: Context, walletRepository: WalletRepository, greenWallet: GreenWallet, settingsManager: SettingsManager): Migrator {
+        return Migrator(context, walletRepository, greenWallet, settingsManager)
     }
 
     @Singleton

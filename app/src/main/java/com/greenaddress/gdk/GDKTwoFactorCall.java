@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.util.concurrent.SettableFuture;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.TwoFactorStatusData;
 
 public class GDKTwoFactorCall {
@@ -104,7 +105,7 @@ public class GDKTwoFactorCall {
 
 
     private TwoFactorStatusData twofactorGetStatus() throws JsonProcessingException {
-        final ObjectNode jsonNode = (ObjectNode) GDK.auth_handler_get_status(mTwoFactorCall);
+        final ObjectNode jsonNode = Bridge.INSTANCE.toJackson(GDK.auth_handler_get_status(mTwoFactorCall));
         final TwoFactorStatusData mStatus = mObjectMapper.treeToValue(jsonNode, TwoFactorStatusData.class);
         GDKSession.debugEqual(jsonNode, mStatus);
         return mStatus;

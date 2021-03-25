@@ -54,7 +54,7 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
 
                         if(args.wallet != null) {
 
-                            if (Bridge.usePrototype) {
+                            if (Bridge.useGreenModule) {
                                 // Back to Overview
                                 findNavController().popBackStack(R.id.recoveryIntroFragment, true)
                                 setSecureScreen(false)

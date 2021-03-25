@@ -7,24 +7,23 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Conversion;
-import com.greenaddress.greenbits.AuthenticationHandler;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ThemeUtils;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 
 
@@ -111,9 +110,6 @@ public class SubaccountSelectActivity extends LoggedActivity implements AccountA
     @Override
     public void onAccountSelected(final int subaccount) {
         setActiveAccount(subaccount);
-        if (AuthenticationHandler.hasPin(this)) {
-            cfg().edit().putInt(PrefKeys.ACTIVE_SUBACCOUNT, subaccount).apply();
-        }
         setResult(RESULT_OK);
         finishOnUiThread();
         overridePendingTransition(0,0);

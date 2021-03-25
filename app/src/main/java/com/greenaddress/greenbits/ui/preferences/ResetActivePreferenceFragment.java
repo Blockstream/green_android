@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 
+import com.greenaddress.Bridge;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -53,7 +54,7 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
         version.setSummary(String.format("%s %s",
                                          getString(R.string.app_name),
                                          getString(R.string.id_version_1s_2s,
-                                                   BuildConfig.VERSION_NAME,
+                                                   Bridge.INSTANCE.getVersionName(),
                                                    BuildConfig.BUILD_TYPE)));
 
         // Terms of service
@@ -94,6 +95,6 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
         // If reset cancelled or disputed with success, logout
         final int unmaskedRequestCode = requestCode & 0x0000ffff;
         if (unmaskedRequestCode == 101 && resultCode == RESULT_OK)
-            ((LoggedActivity) getActivity()).logout();
+            ((LoggedActivity) getActivity()).logout(-1L);
     }
 }

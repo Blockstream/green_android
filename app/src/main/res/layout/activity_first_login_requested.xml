@@ -5,8 +5,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.greenaddress.greenbits.ui.authentication.FirstScreenActivity">
+    android:paddingTop="@dimen/activity_vertical_margin">
 
 
     <LinearLayout
@@ -51,6 +50,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:visibility="invisible"
                 android:text="@string/id_please_follow_the_instructions"
                 android:textColor="@color/whiteSecondary" />
 
@@ -60,13 +60,23 @@
             android:layout_width="fill_parent"
             android:layout_height="32dp" />
 
-        <TextView
+
+        <Button
             android:id="@+id/activeNetwork"
-            android:padding="10dp"
+            style="@style/settingsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:text="@string/id_select_network"
             />
+
+        <Button
+            android:id="@+id/buttonContinue"
+            style="@style/gradientButton"
+            android:layout_marginTop="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/id_continue"/>
 
     </LinearLayout>
 </RelativeLayout>

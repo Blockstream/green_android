@@ -26,6 +26,8 @@ import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenPinViewListener
 import com.greenaddress.Bridge
+import com.greenaddress.Bridge.spv
+import com.greenaddress.greenbits.ui.TabbedMainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.UnrecoverableKeyException
 import javax.inject.Inject
@@ -71,11 +73,23 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
         viewModel.actionLogin.observe(viewLifecycleOwner) {
             if (it) {
-                if(Bridge.usePrototype) {
-                    Bridge.v4Implementation(requireContext())
-                    findNavController().popBackStack()
+                if(Bridge.useGreenModule) {
+                    // TODO implement v4
                 }else{
-                    Bridge.v3Implementation(requireContext())
+                    val intent = Intent(requireContext(), TabbedMainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+
+                    // Start v3 SPV
+                    if(!wallet.isWatchOnly && settingsManager.getApplicationSettings().spv){
+                        try {
+                            spv.startService(requireActivity())
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            errorDialog(e)
+                        }
+                    }
+
                 }
             } else {
                 // maybe show the ui?

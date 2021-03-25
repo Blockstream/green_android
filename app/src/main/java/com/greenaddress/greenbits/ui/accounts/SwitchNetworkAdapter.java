@@ -42,11 +42,13 @@ public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdap
         holder.setText(networkData.getName());
         holder.setIcon(networkData.getIcon());
         holder.setSelected(position == mSelectedItem);
-        holder.mButton.setOnClickListener(view -> {
-            mSelectedItem = holder.getAdapterPosition();
-            notifyItemRangeChanged(0, mNetworkList.size());
-            mNetworkSwitchListener.onNetworkClick(networkData);
-        });
+        if(mNetworkSwitchListener != null) {
+            holder.mButton.setOnClickListener(view -> {
+                mSelectedItem = holder.getAdapterPosition();
+                notifyItemRangeChanged(0, mNetworkList.size());
+                mNetworkSwitchListener.onNetworkClick(networkData);
+            });
+        }
     }
 
     @Override

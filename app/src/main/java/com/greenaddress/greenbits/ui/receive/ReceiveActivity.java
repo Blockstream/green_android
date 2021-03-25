@@ -200,16 +200,15 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
             showWaitingToast();
             return true;
         }
-        switch (item.getItemId()) {
-        case android.R.id.home:
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
             finish();
             return true;
-        case id.action_generate_new:
+        } else if (itemId == id.action_generate_new) {
             generateAddress();
             return true;
-        default:
-            return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
-import com.greenaddress.greenbits.GreenAddressApplication;
 import com.greenaddress.greenbits.ui.GAFragment;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -72,6 +72,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     private TextView mAssetsSelection;
     private TextView mSwitchNetwork;
     private View mView;
+    private View mRecoveryCard;
 
     private Disposable newTransactionDisposable;
     private Disposable blockDisposable;
@@ -90,6 +91,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         if (isZombie())
             return mView;
 
+        mRecoveryCard = UI.find(mView, R.id.recoveryCard);
+
         // Setup recycler & adapter
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
         txView.setHasFixedSize(true);
@@ -98,9 +101,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
-        final GreenAddressApplication app = (GreenAddressApplication) getActivity().getApplication();
         mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems,
-                                                           getSpv(), this);
+                Bridge.INSTANCE.getSpv(), this);
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
 
@@ -128,8 +130,11 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
                                                                                    AssetsSelectActivity.class),
                                                                         REQUEST_SELECT_ASSET));
 
-        final SharedPreferences preferences = getActivity().getSharedPreferences(network(), MODE_PRIVATE);
-        mActiveAccount = preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0);
+        mActiveAccount = Bridge.INSTANCE.getActiveAccount();
+
+        UI.find(mView, R.id.buttonRecovery).setOnClickListener(v -> {
+            Bridge.INSTANCE.navigateToBackupRecovery(getActivity());
+        });
 
         return mView;
     }
@@ -188,6 +193,18 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         if (mSwipeRefreshLayout != null)
             mSwipeRefreshLayout.setRefreshing(true);
 
+
+        boolean isRecoveryConfirmed = Bridge.INSTANCE.getIsRecoveryConfirmed();
+
+        mRecoveryCard.setVisibility(isRecoveryConfirmed ? View.GONE : View.VISIBLE);
+
+        if(getSession().isTwoFAReset() || !isRecoveryConfirmed){
+            mAccountView.hideActions();
+        }else{
+            mAccountView.showActions(getSession().isWatchOnly());
+        }
+
+
         update();
     }
 
@@ -195,8 +212,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     public void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SELECT_SUBACCOUNT && resultCode == RESULT_OK) {
-            final SharedPreferences preferences = getActivity().getSharedPreferences(network(), MODE_PRIVATE);
-            mActiveAccount = preferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0);
+            mActiveAccount = Bridge.INSTANCE.getActiveAccount();
         }
     }
 

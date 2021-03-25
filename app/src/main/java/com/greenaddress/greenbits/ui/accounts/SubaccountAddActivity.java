@@ -37,12 +37,10 @@ public class SubaccountAddActivity extends LoggedActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.action_cancel:
+        if (item.getItemId() == R.id.action_cancel) {
             onBackPressed();
             return true;
-        default:
-            return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 }

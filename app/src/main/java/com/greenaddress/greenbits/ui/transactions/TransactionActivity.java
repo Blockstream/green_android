@@ -25,6 +25,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.BumpTxData;
@@ -219,7 +220,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
         final boolean isSpvVerified = mTxItem.isSpent() ||
                                       mTxItem.getTxType() == TransactionData.TYPE.OUT ||
-                                      !isSpvEnabled || (isSpvEnabled && getGAApp().getSpv().isSPVVerified(
+                                      !isSpvEnabled || (isSpvEnabled && Bridge.INSTANCE.getSpv().isSPVVerified(
                                                             mTxItem.getTxhash()));
 
         if (!isSpvVerified) {
@@ -297,17 +298,16 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.action_share:
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_share) {
             final FragmentTransaction ft = getSupportFragmentManager().beginTransaction().addToBackStack(null);
             TransactionSharingFrament.createTransactionSharingFrament(getNetwork(), mTxItem).show(ft, "");
             return true;
-        case android.R.id.home:
+        } else if (itemId == android.R.id.home) {
             finish();
             return true;
-        default:
-            return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void onFinishedSavingMemo() {

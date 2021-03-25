@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 
+import com.greenaddress.Bridge;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -36,7 +37,7 @@ public class WatchOnlyPreferenceFragment extends GAPreferenceFragment
         version.setSummary(String.format("%s %s",
                                          getString(R.string.app_name),
                                          getString(R.string.id_version_1s_2s,
-                                                   BuildConfig.VERSION_NAME,
+                                                   Bridge.INSTANCE.getVersionName(),
                                                    BuildConfig.BUILD_TYPE)));
 
         // Terms of service
@@ -54,7 +55,7 @@ public class WatchOnlyPreferenceFragment extends GAPreferenceFragment
     public boolean onPreferenceClick(final Preference preference) {
         switch (preference.getKey()) {
         case "logout":
-            ((LoggedActivity) getActivity()).logout();
+            ((SettingsActivity) getActivity()).logout();
             return true;
         }
         return false;

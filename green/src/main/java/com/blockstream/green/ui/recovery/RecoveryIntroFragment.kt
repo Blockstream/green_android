@@ -17,6 +17,7 @@ import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.handleBiometricsError
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.greenaddress.Bridge
+import com.greenaddress.greenbits.ui.preferences.DisplayMnemonicActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -72,7 +73,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
 
     private fun navigateToWords(){
         // prototype or onboarding
-        if (Bridge.usePrototype || args.wallet == null){
+        if (Bridge.useGreenModule || args.wallet == null){
             navigate(
                 RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
                     wallet = args.wallet,
@@ -81,7 +82,9 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
                 )
             )
         }else{
-            Bridge.v3Implementation(requireContext())
+            val intent = Intent(requireActivity(), DisplayMnemonicActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish()
         }
     }
 

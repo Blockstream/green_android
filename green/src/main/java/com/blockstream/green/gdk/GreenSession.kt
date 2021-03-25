@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.Bridge
+import com.greenaddress.greenapi.Session.getSession
 import com.greenaddress.jade.HttpRequestHandler
 import com.greenaddress.jade.HttpRequestProvider
 import io.reactivex.rxjava3.core.Observable
@@ -94,7 +95,7 @@ class GreenSession constructor(
         disconnect()
         this.network = network
 
-        if(!Bridge.usePrototype) {
+        if(!Bridge.useGreenModule) {
             // Bridge Session to GDKSession
             Bridge.bridgeSession(gaSession, network.network, if(isWatchOnly) watchOnlyUsernameBridge else null)
         }
@@ -251,7 +252,7 @@ class GreenSession constructor(
     }
 
     private fun initializeSessionData() {
-        if(Bridge.usePrototype) {
+        if(Bridge.useGreenModule) {
             updateSubAccounts()
 
             if (network.isLiquid) {
@@ -410,7 +411,7 @@ class GreenSession constructor(
     }
 
     private fun initLiquidAssets() {
-        if(Bridge.usePrototype) {
+        if(Bridge.useGreenModule) {
 
             try {
                 if(!assetsManager.isUpToDate){
@@ -425,7 +426,17 @@ class GreenSession constructor(
                 e.printStackTrace()
             }
         }else{
-            // Implement v3 if needed
+            try {
+                if(!getSession().registry.isUpToDate){
+                    // Get cache
+                    getSession().registry.cached()
+
+                    // Try to update the registry
+                    getSession().registry.refresh()
+                }
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.utils.AssetManager
 import com.blockstream.libgreenaddress.GASession
+import com.greenaddress.greenapi.Session
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import mu.KLogging
@@ -28,7 +29,12 @@ class SessionManager(
         greenWallet.setNotificationHandler { gaSession, jsonObject ->
             sessions[gaSession]?.apply {
 
-                // TODO Pass notification to v3 if needed
+                // Pass notification to to GDKSession
+                Session.getSession().also {
+                    if(it.nativeSession == gaSession){
+                        it.notificationModel.onNewNotification(gaSession, jsonObject)
+                    }
+                }
 
                 onNewNotification(JsonDeserializer.decodeFromJsonElement(jsonObject as JsonElement))
             }

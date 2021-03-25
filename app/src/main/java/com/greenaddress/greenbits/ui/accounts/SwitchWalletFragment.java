@@ -7,25 +7,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.greenaddress.Bridge;
-import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.ui.GaActivity;
-import com.greenaddress.greenbits.ui.LoggedActivity;
-import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity;
-
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SwitchNetworkFragment extends BottomSheetDialogFragment implements NetworkSwitchListener {
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.greenaddress.Bridge;
+import com.greenaddress.greenbits.ui.LoggedActivity;
+import com.greenaddress.greenbits.ui.R;
+import com.greenaddress.greenbits.ui.UI;
 
-    public static SwitchNetworkFragment newInstance() {
-        return new SwitchNetworkFragment();
+public class SwitchWalletFragment extends BottomSheetDialogFragment implements WalletSwitchListener {
+
+    public static SwitchWalletFragment newInstance() {
+        return new SwitchWalletFragment();
     }
 
     @Override
@@ -38,7 +34,7 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.switch_network_dialog_fragment, container, false);
+        final View view = inflater.inflate(R.layout.switch_wallet_dialog_fragment, container, false);
 
         final RecyclerView recyclerView = UI.find(view, R.id.switch_network_recycler);
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL) {
@@ -48,18 +44,20 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
             }
         });
 
-        final NetworkData networkData = Bridge.INSTANCE.getCurrentNetworkData(getContext());
-        recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), ((GaActivity)getActivity()).getSession().getNetworks(),
-                                                         networkData,
-                                                         this));
+        // final NetworkData networkData = Bridge.INSTANCE.getCurrentNetworkData(getContext());
+        recyclerView.setAdapter(new SwitchWalletAdapter(getContext(), Bridge.INSTANCE.getWallets(), this));
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         return view;
     }
 
     @Override
-    public void onNetworkClick(final NetworkData networkData) {
-        ((RequestLoginActivity) getActivity()).onNetworkClick(networkData);
+    public void onWalletClick(Long walletId) {
+        final LoggedActivity activity = (LoggedActivity) getActivity();
+
+        if(walletId >= 0){
+            activity.logout(walletId);
+        }
         dismiss();
     }
 }

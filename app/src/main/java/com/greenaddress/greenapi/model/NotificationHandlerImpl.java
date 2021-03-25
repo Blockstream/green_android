@@ -9,10 +9,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.EstimatesData;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SettingsData;
-import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenbits.ui.R;
 
 import java.util.ArrayList;
@@ -36,7 +36,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     private final PublishSubject<Integer> mBlockPublish = PublishSubject.create();
     private final PublishSubject<JsonNode> mNetworkPublish = PublishSubject.create();
     private final PublishSubject<JsonNode> mTorPublish = PublishSubject.create();
-    private final PublishSubject<List<Long>> mFeesPublish = PublishSubject.create();
     private final PublishSubject<List<EventData>> mEventsPublish = PublishSubject.create();
     private final PublishSubject<SettingsData> mSettingsPublish = PublishSubject.create();
 
@@ -58,10 +57,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
 
     public Observable<JsonNode> getNetworkObservable() {
         return mNetworkPublish.hide();
-    }
-
-    public Observable<List<Long>> getFeesObservable() {
-        return mFeesPublish.hide();
     }
 
     public Observable<List<EventData>> getEventsObservable() {
@@ -97,14 +92,14 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
 
     @Override
     public synchronized void onNewNotification(final Object session, final Object jsonObject) {
-        process(jsonObject);
+        process(Bridge.INSTANCE.toJackson(jsonObject));
     }
 
-    private void process(final Object jsonObject) {
+    private void process(final ObjectNode jsonObject) {
         Log.d("OBSNTF", "notification " + jsonObject);
         if (jsonObject == null)
             return;
-        final ObjectNode objectNode = (ObjectNode) jsonObject;
+        final ObjectNode objectNode = jsonObject;
         try {
             switch (objectNode.get("event").asText()) {
             case "tor":

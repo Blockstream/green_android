@@ -9,12 +9,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -51,21 +51,13 @@ public abstract class LoginActivity extends GaActivity {
         });
     }
 
-    protected int getCode(final Exception e) {
-        try {
-            final String stringCode = e.getMessage().split(" ")[1];
-            return Integer.parseInt(stringCode);
-        } catch (final Exception ignored) {}
-        return 1;
-    }
-
     public void onPostLogin() {
         // Uncomment to test slow login post processing
         // android.os.SystemClock.sleep(10000);
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
 
         // setup data observers
-        final NetworkData networkData = getGAApp().getCurrentNetworkData();
+        final NetworkData networkData = Bridge.INSTANCE.getCurrentNetworkData(this);
         final SharedPreferences preferences = getSharedPreferences(networkData.getNetwork(), MODE_PRIVATE);
         initSettings();
 
@@ -96,7 +88,7 @@ public abstract class LoginActivity extends GaActivity {
         final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
         if (!getSession().isWatchOnly() && isSpvEnabled) {
             try {
-                getGAApp().getSpv().startService(getGAApp());
+                Bridge.INSTANCE.getSpv().startService(getApplicationContext());
             } catch (final Exception e) {
                 e.printStackTrace();
                 Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -127,34 +119,9 @@ public abstract class LoginActivity extends GaActivity {
     }
 
     public void connect() throws Exception {
-        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(
-            PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-        final SharedPreferences preferences = this.getSharedPreferences(network, MODE_PRIVATE);
-        final String proxyHost = preferences.getString(PrefKeys.PROXY_HOST, "");
-        final String proxyPort = preferences.getString(PrefKeys.PROXY_PORT, "");
-        final Boolean proxyEnabled = preferences.getBoolean(PrefKeys.PROXY_ENABLED, false);
-        final Boolean torEnabled = preferences.getBoolean(PrefKeys.TOR_ENABLED, false);
+        final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
 
-        String deviceId = preferences.getString(PrefKeys.DEVICE_ID, null);
-        if (deviceId == null) {
-            // Generate a unique device id
-            deviceId = UUID.randomUUID().toString();
-            preferences.edit().putString(PrefKeys.DEVICE_ID, deviceId).apply();
-        }
-
-        final boolean isDebug = BuildConfig.DEBUG;
-        Log.d(TAG,"connecting to " + network + (isDebug ? " in DEBUG mode" : "") + (torEnabled ? " with TOR" : ""));
-        if (proxyEnabled || torEnabled) {
-            final String proxyString;
-            if (!proxyEnabled || TextUtils.isEmpty(proxyHost)) {
-                proxyString = "";
-            } else {
-                proxyString = String.format(Locale.US, "%s:%s", proxyHost, proxyPort);
-                Log.d(TAG, "connecting with proxy " + proxyString);
-            }
-            getSession().connectWithProxy(network, proxyString, torEnabled, isDebug);
-        } else {
-            getSession().connect(network, isDebug);
-        }
+        getSession().setNetwork(network);
+        Bridge.INSTANCE.connect(this, getSession().getNativeSession(), network);
     }
 }

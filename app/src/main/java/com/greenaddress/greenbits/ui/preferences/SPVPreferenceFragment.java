@@ -16,6 +16,7 @@ import androidx.preference.Preference;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.Futures;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
@@ -58,7 +59,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
         mSPVEnabled.setSingleLineTitle(false);
         mSPVSyncOnMobile.setSingleLineTitle(false);
-        mSpv = getGAApp().getSpv();
+        mSpv = Bridge.INSTANCE.getSpv();
         final boolean isSpvEnabled = cfg().getBoolean(PrefKeys.SPV_ENABLED, false);
 
         if (getSession().isWatchOnly()) {
@@ -117,10 +118,10 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
             }
         });
         try {
-            mSpv.startService(getGAApp());
+            mSpv.startService(getActivity());
         } catch (final Exception e) {
             e.printStackTrace();
-            Toast.makeText(getGAApp(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
         }
     }
 

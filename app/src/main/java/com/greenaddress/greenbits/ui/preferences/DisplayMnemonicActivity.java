@@ -11,10 +11,9 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-
-import static com.greenaddress.greenbits.ui.authentication.MnemonicActivity.MNEMONIC_LENGTH;
-
 public class DisplayMnemonicActivity extends LoggedActivity {
+
+    public static final int MNEMONIC_LENGTH = 24;
 
     private final TextView[] mTextViews = new TextView[MNEMONIC_LENGTH];
 

@@ -4,8 +4,7 @@
     android:orientation="vertical"
     android:background="@color/buttonJungleGreen"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.greenaddress.greenbits.ui.NetworkSettingsActivity">
+    android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
