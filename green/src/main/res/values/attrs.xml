@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="icon" format="reference" />
+    <attr name="titleText" format="string" />
+    <attr name="captionText" format="string" />
+    <attr name="invalid" format="boolean" />
+    <attr name="enabled" format="boolean" />
+
+    <declare-styleable name="GreenContentCardView">
+        <attr name="icon"/>
+        <attr name="titleText" />
+        <attr name="captionText"/>
+    </declare-styleable>
+
+    <declare-styleable name="GreenSwitch">
+        <attr name="icon" />
+        <attr name="titleText"/>
+        <attr name="captionText"/>
+        <attr name="invalid"/>
+        <attr name="android:checked"/>
+        <attr name="android:enabled"/>
+    </declare-styleable>
+
+    <declare-styleable name="GappedLinearLayout">
+        <attr name="gap" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="PlaceholderTextInputEditText">
+        <attr name="placeholder" format="string" />
+    </declare-styleable>
+
+    <!--Emphasis values are used in combination with each "on" color to create three available -->
+    <!--levels of emphasis for text and content.-->
+    <attr name="emphasisHighAlpha" format="float"/>
+    <attr name="emphasisMediumAlpha" format="float"/>
+    <attr name="emphasisLowAlpha" format="float"/>
+    <attr name="emphasisDisabledAlpha" format="float"/>
+    <attr name="emphasisDividerAlpha" format="float"/>
+
+</resources>

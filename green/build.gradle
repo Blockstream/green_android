@@ -5,10 +5,46 @@ plugins {
     id 'kotlin-parcelize'
     id 'kotlinx-serialization'
     id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
     id 'com.adarshr.test-logger' version '2.1.1'
 }
 
 android {
+    // BitcoinJ excludes
+    packagingOptions {
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/INDEX.LIST'
+        exclude 'lib/x86_64/darwin/libscrypt.dylib'
+        exclude 'org/bitcoinj/crypto/mnemonic/wordlist/english.txt'
+        exclude 'org/bitcoinj/crypto/cacerts'
+        exclude 'org/codehaus/jackson/impl/VERSION.txt'
+        exclude 'org/codehaus/jackson/map/VERSION.txt'
+        exclude 'org/fusesource/leveldbjni/version.txt'
+        exclude 'org/h2/util/data.zip'
+        exclude 'META-INF/native/linux32/libleveldbjni.so'
+        exclude 'META-INF/native/linux64/libleveldbjni.so'
+        exclude 'META-INF/native/osx/libleveldbjni.jnilib'
+        exclude 'META-INF/native/windows32/leveldbjni.dll'
+        exclude 'META-INF/native/windows64/leveldbjni.dll'
+        exclude 'META-INF/services/java.sql.Driver'
+        exclude 'com/google/thirdparty/publicsuffix/PublicSuffixPatterns.gwt.xml'
+        exclude 'com/google/thirdparty/publicsuffix/PublicSuffixType.gwt.xml'
+        exclude 'com/mysql/jdbc/Charsets.properties'
+        exclude 'com/mysql/jdbc/LocalizedErrorMessages.properties'
+        exclude 'com/mysql/jdbc/TimeZoneMapping.properties'
+        exclude 'com/mysql/jdbc/configs/3-0-Compat.properties'
+        exclude 'com/mysql/jdbc/configs/5-0-Compat.properties'
+        exclude 'com/mysql/jdbc/configs/clusterBase.properties'
+        exclude 'com/mysql/jdbc/configs/coldFusion.properties'
+        exclude 'com/mysql/jdbc/configs/fullDebug.properties'
+        exclude 'com/mysql/jdbc/configs/maxPerformance.properties'
+        exclude 'com/mysql/jdbc/configs/solarisMaxPerformance.properties'
+    }
+
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
@@ -133,6 +169,13 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-process:2.3.0"
     /** ----------------------------------------------------------------------------------------- */
 
+    /**  --- Navigation ------------------------------------------------------------------------- */
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.3"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
+    testImplementation "androidx.navigation:navigation-testing:2.3.3"
+    androidTestImplementation "androidx.navigation:navigation-testing:2.3.3"
+    /** ----------------------------------------------------------------------------------------- */
+
     /**  --- Room ------------------------------------------------------------------------------- */
     implementation "androidx.room:room-runtime:2.3.0-beta03"
     implementation "androidx.room:room-rxjava3:2.3.0-beta03"
@@ -167,9 +210,24 @@ dependencies {
     implementation "com.github.akarnokd:rxjava3-bridge:3.0.0"
     /** ----------------------------------------------------------------------------------------- */
 
+    /**  --- FastAdapter  ----------------------------------------------------------------------- */
+    implementation "com.mikepenz:fastadapter:5.3.1"
+    implementation "com.mikepenz:fastadapter-extensions-diff:5.3.1" // diff util helpers
+    implementation "com.mikepenz:fastadapter-extensions-binding:5.3.1" // view binding helpers
+    implementation "com.mikepenz:fastadapter-extensions-expandable:5.3.1"
+    implementation "com.mikepenz:fastadapter-extensions-ui:5.3.1" // pre-defined ui components
+    implementation "com.mikepenz:fastadapter-extensions-utils:5.3.1"
+    implementation "com.mikepenz:itemanimators:1.1.0"
+    /** ----------------------------------------------------------------------------------------- */
+
     /**  --- Logging ---------------------------------------------------------------------------- */
     implementation 'org.slf4j:slf4j-android:1.7.30'
     implementation 'io.github.microutils:kotlin-logging:1.12.0'
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- QR Scanner ------------------------------------------------------------------------- */
+    implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
+    implementation 'com.google.zxing:core:3.4.1'
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Bluetooth -------------------------------------------------------------------------- */
@@ -179,6 +237,10 @@ dependencies {
     /**  --- Jackson ---------------------------------------------------------------------------- */
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.9.6'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.9.6'
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- BottomSheetMenu -------------------------------------------------------------------- */
+    implementation 'com.github.Kennyc1012:BottomSheetMenu:3.1.3'
     /** ----------------------------------------------------------------------------------------- */
 
     testImplementation fileTree(dir: 'libs', include: ['.jar', '.so'])

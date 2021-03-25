@@ -15,6 +15,17 @@
         <item name="textAppearanceButton">@style/TextAppearance.Green.Button</item>
         <item name="textAppearanceCaption">@style/TextAppearance.Green.Caption</item>
         <item name="textAppearanceOverline">@style/TextAppearance.Green.Overline</item>
+        <!--Material shape attributes-->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Green.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Green.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Green.LargeComponent</item>
+
+        <item name="emphasisHighAlpha">1.00</item>
+        <item name="emphasisMediumAlpha">0.74</item>
+        <item name="emphasisLowAlpha">0.54</item>
+        <item name="emphasisDisabledAlpha">0.38</item>
+        <item name="emphasisDividerAlpha">0.20</item>
+
 
 
         <!--Platform attributes-->
@@ -31,8 +42,16 @@
         <item name="elevationOverlayEnabled">false</item>
 
         <!--Component styles-->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Green.MaterialAlertDialog</item>
+        <item name="navigationViewStyle">@style/Widget.MaterialComponents.NavigationView</item>
         <item name="toolbarStyle">@style/Widget.Green.Toolbar</item>
         <item name="appBarLayoutStyle">@style/Widget.Green.AppBarLayout</item>
+        <item name="materialCardViewStyle">@style/Widget.Green.MaterialCardView</item>
+        <item name="cardViewStyle">@style/Widget.Green.MaterialCardView</item>
+        <item name="textInputStyle">@style/Widget.Green.TextInputLayout</item>
+        <item name="bottomSheetDialogTheme">@style/Green.BottomSheetDialogTheme</item>
+        <item name="circularProgressIndicatorStyle">@style/Widget.Green.CircularProgressIndicator</item>
+        <item name="linearProgressIndicatorStyle">@style/Widget.Green.LinearProgressIndicator</item>
     </style>
 
     <style name="Theme.Green" parent="Base.Green">
@@ -61,5 +80,31 @@
         <item name="colorOnSurface">@color/white</item>
         <item name="colorOnError">@color/red</item>
     </style>
+
+
+    <style name="ThemeOverlay.Green.MaterialImportantAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorSurface">@color/white</item>
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="android:textColor">@color/brand_green</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialImportantAlertDialog.Green.Title.Text</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialImportantAlertDialog.Green.Body.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.Green.ImportantDialogButton</item>
+    </style>
+
+    <style name="ThemeOverlay.Green.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Green.Title.Text</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Green.Body.Text</item>
+    </style>
+
+    <style name="Theme.Green.FullScreenDialog">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+<!--    <style name="SlideDialogAnimation">-->
+<!--        <item name="android:windowEnterAnimation">@anim/enter_slide_down</item>-->
+<!--        <item name="android:windowExitAnimation">@anim/exit_slide_up</item>-->
+<!--    </style>-->
 
 </resources>

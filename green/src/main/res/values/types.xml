@@ -3,6 +3,7 @@
     <style name="TextAppearance.Green.Headline1" parent="TextAppearance.MaterialComponents.Headline1">
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
+        <item name="android:textSize">@dimen/headline1_textsize</item>
         <item name="android:letterSpacing">0</item>
     </style>
 
@@ -40,10 +41,12 @@
     </style>
 
     <style name="TextAppearance.Green.Body1" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textSize">@dimen/body1_textsize</item>
     </style>
 
     <style name="TextAppearance.Green.Body2" parent="TextAppearance.MaterialComponents.Body2">
         <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
+        <item name="android:textSize">@dimen/body2_textsize</item>
         <item name="android:letterSpacing">0.04</item>
     </style>
 

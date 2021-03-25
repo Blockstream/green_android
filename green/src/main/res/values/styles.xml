@@ -1,5 +1,31 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="Widget.Green.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense" />
+
+    <style name="Widget.Green.Button.Big" parent="Widget.MaterialComponents.Button">
+        <item name="android:height">60dp</item>
+    </style>
+
+    <style name="Widget.Green.Button.Big.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:height">60dp</item>
+    </style>
+
+    <style name="Widget.Green.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" />
+
+    <style name="Widget.Green.Button.Outlined.Red">
+        <item name="android:textColor">@color/red</item>
+        <item name="rippleColor">@color/red</item>
+        <item name="strokeColor">@color/red</item>
+    </style>
+
+    <style name="Widget.Green.Button.Text" parent="Widget.MaterialComponents.Button.TextButton" />
+
+    <style name="Widget.Green.Button" parent="Widget.MaterialComponents.Button"/>
+
+    <style name="Widget.Green.Button.Red">
+        <item name="rippleColor">@color/red</item>
+    </style>
+
     <style name="Widget.Green.Toolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="android:elevation">0dp</item>
         <item name="elevation" ignore="NewApi">0dp</item>
@@ -22,8 +48,89 @@
         <item name="elevation" ignore="NewApi">0dp</item>
     </style>
 
+    <style name="Widget.Green.MaterialCardView" parent="Widget.MaterialComponents.CardView">
+        <item name="android:elevation" ignore="NewApi">0dp</item>
+        <item name="elevation" ignore="NewApi">0dp</item>
+        <item name="cardCornerRadius">6dp</item>
+    </style>
+
+    <style name="Widget.Green.ImportantDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Green.ImportantDialogButton</item>
+    </style>
+
+    <style name="Widget.Green.CircularProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="indicatorSize">120dp</item>
+        <item name="trackThickness">2dp</item>
+        <item name="trackCornerRadius">@dimen/progress_radius</item>
+        <item name="hideAnimationBehavior">inward</item>
+        <item name="showAnimationBehavior">outward</item>
+    </style>
+
+    <style name="Widget.Green.LinearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
+        <item name="trackThickness">1dp</item>
+        <item name="hideAnimationBehavior">inward</item>
+        <item name="showAnimationBehavior">outward</item>
+    </style>
+
     <style name="ThemeOverlay.Green.ImportantDialogButton" parent="">
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Green.BottomSheetMenuDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="bottom_sheet_menu_title_text_appearance">@style/BottomSheetMenu.Title.TextAppearance</item>
+        <item name="bottom_sheet_menu_list_text_appearance">@style/BottomSheetMenu.ListItem.TextAppearance</item>
+        <item name="bottom_sheet_menu_grid_text_appearance">@style/BottomSheetMenu.GridItem.TextAppearance</item>
+        <item name="bottom_sheet_menu_selector">@drawable/bs_list_selector</item>
+        <item name="bottomSheetStyle">@style/Green.BottomSheetStyle</item>
+    </style>
+
+    <style name="Green.BottomSheetDialogTheme" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Green.BottomSheetStyle</item>
+    </style>
+
+    <style name="Green.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_bottom_sheet</item>
+    </style>
+
+    <style name="Green.BottomSheetDialogTheme.Wallet">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="MaterialImportantAlertDialog.Green.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MaterialImportantAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="MaterialAlertDialog.Green.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
+    </style>
+
+    <style name="MaterialAlertDialog.Green.Body.Text" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="RecoveryPhraseKeyboardButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:padding">0dp</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">22sp</item>
+        <item name="backgroundTint">@color/brand_surface_light</item>
+        <item name="android:background">@drawable/recovery_phrase_keyboard_background</item>
+    </style>
+
+    <style name="TextShadow">
+        <item name="android:shadowColor">@color/text_shadow</item>
+        <item name="android:shadowDx">4</item>
+        <item name="android:shadowDy">4</item>
+        <item name="android:shadowRadius">4</item>
     </style>
 
 </resources>

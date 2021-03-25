@@ -1,0 +1,41 @@
+<resources>
+    <string name="id_host_ip" translatable="false">host:ip</string>
+    <string name="id_2fa" translatable="false">2FA</string>
+
+    <string-array name="fee_target_entries" translatable="false">
+        <item>@string/id_fast</item>
+        <item>@string/id_medium</item>
+        <item>@string/id_slow</item>
+    </string-array>
+
+    <string-array name="fee_target_values" translatable="false">
+        <item>3</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
+
+    <string-array name="btc_units_entries" translatable="false">
+        <item>BTC</item>
+        <item>mBTC</item>
+        <item>\u00B5BTC</item>
+        <item>bits</item>
+        <item>sats</item>
+    </string-array>
+
+    <string-array name="liquid_units_entries" translatable="false">
+        <item>L-BTC</item>
+        <item>L-mBTC</item>
+        <item>L-\u00B5BTC</item>
+        <item>L-bits</item>
+        <item>L-sats</item>
+    </string-array>
+
+    <string-array name="auto_logout_values" translatable="false">
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+        <item>60</item>
+    </string-array>
+
+</resources>

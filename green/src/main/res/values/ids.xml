@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="fastadapter_wallet_item_id" type="id" />
+    <item name="fastadapter_device_item_id" type="id" />
+    <item name="fastadapter_device_brand_item_id" type="id" />
+    <item name="fastadapter_transaction_item_id" type="id" />
+    <item name="fastadapter_help_item_id" type="id" />
+    <item name="fastadapter_title_item_id" type="id" />
+    <item name="fastadapter_text_item_id" type="id" />
+    <item name="fastadapter_overline_text_item_id" type="id" />
+    <item name="fastadapter_card_content_item_id" type="id" />
+    <item name="fastadapter_asset_expandable_item_id" type="id" />
+    <item name="fastadapter_account_item_id" type="id" />
+    <item name="fastadapter_account_id_item_id" type="id" />
+    <item name="fastadapter_button_action_item_id" type="id" />
+    <item name="fastadapter_network_item_id" type="id" />
+    <item name="fastadapter_asset_item_id" type="id" />
+    <item name="fastadapter_alert_item_id" type="id" />
+    <item name="fastadapter_go_back_item_id" type="id" />
+    <item name="fastadapter_preference_item_id" type="id" />
+    <item name="fastadapter_recovery_phrase_word_item_id" type="id" />
+
+    <item name="fastadapter_country_item_id" type="id" />
+
+    <item name="fastadapter_title_expandable_item_id" type="id" />
+
+
+</resources>

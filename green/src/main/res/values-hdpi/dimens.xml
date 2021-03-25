@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pin_circle">12dp</dimen>
+    <dimen name="pin_textsize">18sp</dimen>
+
+    <dimen name="headline1_textsize">22sp</dimen>
+    <dimen name="body1_textsize">14sp</dimen>
+    <dimen name="body2_textsize">14sp</dimen>
+
+</resources>

@@ -1,16 +1,27 @@
 package com.blockstream.green.ui
 
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavDirections
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
+import com.blockstream.green.R
+import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.utils.toast
+import com.greenaddress.Bridge
 import javax.inject.Inject
 
 
@@ -67,6 +78,7 @@ abstract class AppFragment<T : ViewDataBinding>(
     protected fun setSecureScreen(isSecure : Boolean){
         // In development flavor allow screen capturing
         if(isSecure && requireContext().isDevelopmentFlavor()){
+            toast("Development Flavor: FLAG_SECURE is disabled!")
             return
         }
 
@@ -77,6 +89,11 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
     }
 
+    fun setToolbar(wallet: Wallet) {
+        val icon = ContextCompat.getDrawable(requireContext(), wallet.getIcon())
+        setToolbar(wallet.name, subtitle = null, drawable = icon)
+    }
+
     fun setToolbar(title: String? = null, subtitle: String? = null, drawable: Drawable? = null, button: CharSequence? = null,
                    buttonListener: View.OnClickListener? = null){
         (requireActivity() as IActivity).setToolbar(title, subtitle, drawable, button, buttonListener)
@@ -84,5 +101,42 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     fun setToolbarVisibility(isVisible: Boolean){
         (requireActivity() as IActivity).setToolbarVisibility(isVisible)
+    }
+
+    fun navigate(directions: NavDirections) {
+        navigate(directions.actionId, directions.arguments)
+    }
+
+    fun navigate(@IdRes resId: Int) {
+        navigate(resId, null)
+    }
+
+    @SuppressLint("RestrictedApi")
+    fun navigate(@IdRes resId: Int, args: Bundle?, isLogout: Boolean = false) {
+
+        val navOptionsBuilder = NavOptions.Builder()
+
+        val animate = true
+
+        if (animate) {
+            navOptionsBuilder.setEnterAnim(R.anim.nav_enter_anim)
+                .setExitAnim(R.anim.nav_exit_anim)
+                .setPopEnterAnim(R.anim.nav_pop_enter_anim)
+                .setPopExitAnim(R.anim.nav_pop_exit_anim)
+        }
+
+        if (isLogout) {
+            navOptionsBuilder.setPopUpTo(findNavController().backStack.first.destination.id, true)
+            navOptionsBuilder.setLaunchSingleTop(true) // this is only needed on lateral movements
+        } else if (resId == R.id.action_global_loginFragment) {
+            // Allow only one Login screen
+            navOptionsBuilder.setLaunchSingleTop(true)
+        }else if (resId == R.id.action_global_addWalletFragment){
+            // Allow a single onboarding path
+            navOptionsBuilder.setPopUpTo(R.id.addWalletFragment, true)
+        }
+
+
+        findNavController().navigate(resId, args, navOptionsBuilder.build())
     }
 }
