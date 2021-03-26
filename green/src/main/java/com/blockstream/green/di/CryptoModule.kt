@@ -2,12 +2,12 @@ package com.blockstream.green.di
 
 import android.content.Context
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.lifecycle.AppLifecycleObserver
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.AssetManager
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally

@@ -61,39 +61,8 @@ public abstract class LoginActivity extends GaActivity {
         final SharedPreferences preferences = getSharedPreferences(networkData.getNetwork(), MODE_PRIVATE);
         initSettings();
 
-        // refresh assets in liquid network
-        if (networkData.getLiquid()) {
-            Observable.just(getSession())
-            .subscribeOn(Schedulers.computation())
-            .map((session) -> {
-                getSession().getRegistry().cached();
-                return session;
-            })
-            .map((session) -> {
-                getSession().getRegistry().refresh();
-                return session;
-            })
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe((session) -> {
-                Log.d(TAG, "Assets refreshed");
-            }, (final Throwable e) -> {
-                final Intent intent = new Intent();
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setClass(this, RegistryErrorActivity.class);
-                startActivity(intent);
-            });
-        }
 
-        // check and start spv if enabled
-        final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
-        if (!getSession().isWatchOnly() && isSpvEnabled) {
-            try {
-                Bridge.INSTANCE.getSpv().startService(getApplicationContext());
-            } catch (final Exception e) {
-                e.printStackTrace();
-                Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-            }
-        }
+        Bridge.INSTANCE.startSpvServiceIfNeeded(this);
     }
 
     private void initSettings() {

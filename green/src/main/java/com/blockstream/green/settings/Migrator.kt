@@ -6,7 +6,7 @@ import android.util.Base64
 import androidx.preference.PreferenceManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.PinData
-import com.blockstream.green.EncryptedData
+import com.blockstream.green.utils.EncryptedData
 import com.blockstream.green.Preferences
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
@@ -36,7 +36,6 @@ class Migrator(
             return
         }
 
-        var enableSPV = false
         var enableTOR = false
         var proxyURL : String? = null
 
@@ -58,10 +57,6 @@ class Migrator(
                 Context.MODE_PRIVATE
             )
 
-            // Migrate SPV, if any network has enabled SPV, keep it on for all
-            // TODO migrate peers
-
-
             // Update Proxy settings only if are enabled. Keep only the first value
             if(networkPreferences.getBoolean(PrefKeys.PROXY_ENABLED, false) && proxyURL == null){
                 proxyURL = networkPreferences.getString(PrefKeys.PROXY_HOST, "") + ":" + networkPreferences.getString(
@@ -70,7 +65,6 @@ class Migrator(
                 )
             }
 
-            enableSPV = networkPreferences.getBoolean(PrefKeys.SPV_ENABLED, enableSPV)
             enableTOR = networkPreferences.getBoolean(PrefKeys.TOR_ENABLED, enableTOR)
 
             val network = greenWallet.networks.getNetworkById(networkId)
@@ -78,7 +72,6 @@ class Migrator(
             val wallet = Wallet(
                 name = network.name,
                 network = network.id,
-                isElectrum = network.isElectrum,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = false,
                 activeAccount = networkPreferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0).toLong()
@@ -128,7 +121,6 @@ class Migrator(
         val appSettings = settingsManager.getApplicationSettings()
         settingsManager.saveApplicationSettings(
             appSettings.copy(
-                spv = enableSPV,
                 tor = enableTOR,
                 proxyURL = proxyURL
             )

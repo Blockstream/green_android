@@ -1,12 +1,16 @@
 package com.greenaddress
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.blockstream.crypto.BuildConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenapi.Session
+import com.greenaddress.greenapi.Session.getSession
 import com.greenaddress.greenbits.spv.SPV
+import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import com.greenaddress.jade.JadeAPI
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -116,7 +120,16 @@ object Bridge {
 
     fun getActiveAccount(): Int {
         return getSubaccountFn?.let {
-            it.invoke(Session.getSession().nativeSession)
+
+            val session = Session.getSession()
+
+            if(session != null && session.nativeSession != null){
+                session.nativeSession?.let { nativeSession ->
+                    it.invoke(nativeSession)
+                }
+            }
+
+            0
         } ?: 0
     }
 
@@ -128,6 +141,24 @@ object Bridge {
     fun getCurrentNetworkData(context: Context) = BridgeJava.getCurrentNetworkData(context)
 
     fun getCurrentNetwork(context: Context) = BridgeJava.getCurrentNetwork(context)
+
+    fun startSpvServiceIfNeeded(context: Context){
+        // check and start spv if enabled
+        // setup data observers
+        val networkData = getCurrentNetworkData(context)
+        val preferences: SharedPreferences = context.getSharedPreferences(networkData.network, Context.MODE_PRIVATE)
+
+        // check and start spv if enabled
+        val isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false)
+        if (!getSession().isWatchOnly && isSpvEnabled) {
+            try {
+                spv.startService(context)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     private val objectMapper = ObjectMapper()
     // This is needed for all GDK calls that returns a JSON

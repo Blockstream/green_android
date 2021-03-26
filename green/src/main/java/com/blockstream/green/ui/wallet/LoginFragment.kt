@@ -81,15 +81,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
                     startActivity(intent)
 
                     // Start v3 SPV
-                    if(!wallet.isWatchOnly && settingsManager.getApplicationSettings().spv){
-                        try {
-                            spv.startService(requireActivity())
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            errorDialog(e)
-                        }
-                    }
-
+                    Bridge.startSpvServiceIfNeeded(requireContext())
                 }
             } else {
                 // maybe show the ui?

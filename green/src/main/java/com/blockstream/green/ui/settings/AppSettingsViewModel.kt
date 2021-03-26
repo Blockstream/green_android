@@ -26,10 +26,9 @@ class AppSettingsViewModel @AssistedInject constructor(
     val enableTorRouting = MutableLiveData(appSettings.tor)
     val enableProxy = MutableLiveData<Boolean>(appSettings.proxyURL != null)
 
-
     fun getSettings() = ApplicationSettings(
         proxyURL = if (enableProxy.value!! && !proxyURL.value.isNullOrBlank()) proxyURL.value else null,
-        tor = enableTorRouting.value!!,
+        tor = enableTorRouting.value!!
     )
 
     fun saveSettings(){

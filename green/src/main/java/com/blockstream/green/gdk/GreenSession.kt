@@ -254,10 +254,10 @@ class GreenSession constructor(
     private fun initializeSessionData() {
         if(Bridge.useGreenModule) {
             updateSubAccounts()
+        }
 
-            if (network.isLiquid) {
-                initLiquidAssets()
-            }
+        if (network.isLiquid) {
+            initLiquidAssets()
         }
     }
 
