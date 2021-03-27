@@ -89,8 +89,8 @@ class ScreenLockViewController: UIViewController {
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_reset", comment: ""), style: .destructive) { _ in
             removeBioKeychainData()
-            try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.account!.id)
-            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.account!.id)
+            try? AuthenticationTypeHandler.removePrivateKey(forNetwork: self.account!.keychain)
+            UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + self.account!.keychain)
             self.navigationController?.popViewController(animated: true)
         })
         DispatchQueue.main.async {
@@ -114,7 +114,7 @@ class ScreenLockViewController: UIViewController {
 
     private func enableBioAuth() {
         // An auth key pin should be set before updating bio auth
-        if !AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: self.account!.id) {
+        if !AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: self.account!.keychain) {
             onAuthError(message: NSLocalizedString("id_please_enable_pin", comment: ""))
             return
         }
@@ -141,7 +141,7 @@ class ScreenLockViewController: UIViewController {
 
     private func disablePinAuth() {
         // Disable auth key Bio before removing auth key Pin
-        if AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: self.account!.id) {
+        if AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: self.account!.keychain) {
             onAuthError(message: NSLocalizedString("id_please_disable_biometric", comment: ""))
             return
         }

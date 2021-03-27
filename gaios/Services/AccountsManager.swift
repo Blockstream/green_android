@@ -69,17 +69,8 @@ class AccountsManager {
             let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
             let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
             if pinData || bioData {
-                var account = Account(name: nameLabel(network), network: network)
+                var account = Account(name: nameLabel(network), network: network, keychain: network)
                 account.attempts = UserDefaults.standard.integer(forKey: network + "_pin_attempts")
-                if bioData {
-                    try? AuthenticationTypeHandler.generateBiometricPrivateKey(network: account.id)
-                    let data = try? AuthenticationTypeHandler.getAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-                    try? AuthenticationTypeHandler.addBiometryType(data: data!, extraData: String.random(length: 14), forNetwork: account.id)
-                }
-                if pinData {
-                    let data = try? AuthenticationTypeHandler.getAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
-                    _ = try? AuthenticationTypeHandler.addPIN(data: data!, forNetwork: account.id)
-                }
                 accounts.append(account)
             }
         }

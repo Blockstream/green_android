@@ -9,8 +9,10 @@ struct Account: Codable, Equatable {
     let isLedger: Bool
     let username: String?
     var password: String?
+    let keychain: String
 
     init(name: String, network: String, isJade: Bool = false, isLedger: Bool = false) {
+        // Software / Hardware wallet account
         id = UUID().uuidString
         self.name = name
         self.network = network
@@ -18,9 +20,11 @@ struct Account: Codable, Equatable {
         self.isLedger = isLedger
         self.username = nil
         self.password = nil
+        self.keychain = id
     }
 
     init(name: String, network: String, username: String, password: String? = nil) {
+        // Watchonly account
         id = UUID().uuidString
         self.name = name
         self.network = network
@@ -28,6 +32,19 @@ struct Account: Codable, Equatable {
         self.isLedger = false
         self.username = username
         self.password = password
+        self.keychain = id
+    }
+
+    init(name: String, network: String, keychain: String) {
+        // Migrated account
+        id = UUID().uuidString
+        self.name = name
+        self.network = network
+        self.keychain = keychain
+        self.isJade = false
+        self.isLedger = false
+        self.username = nil
+        self.password = nil
     }
 
     var isWatchonly: Bool {
@@ -38,13 +55,13 @@ struct Account: Codable, Equatable {
 
     var hasManualPin: Bool {
         get {
-            return AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: id)
+            return AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: keychain)
         }
     }
 
     var hasBioPin: Bool {
         get {
-            AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: id)
+            AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: keychain)
         }
     }
 
@@ -55,7 +72,7 @@ struct Account: Codable, Equatable {
     }
 
     func auth(_ method: String) throws -> [String: Any] {
-        return try AuthenticationTypeHandler.getAuth(method: method, forNetwork: id)
+        return try AuthenticationTypeHandler.getAuth(method: method, forNetwork: keychain)
     }
 
     var icon: UIImage {
@@ -76,10 +93,10 @@ struct Account: Codable, Equatable {
 
     var attempts: Int {
         get {
-            return UserDefaults.standard.integer(forKey: id + "_pin_attempts")
+            return UserDefaults.standard.integer(forKey: keychain + "_pin_attempts")
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: id + "_pin_attempts")
+            UserDefaults.standard.set(newValue, forKey: keychain + "_pin_attempts")
         }
     }
 
@@ -90,18 +107,18 @@ struct Account: Codable, Equatable {
     }
 
     func removeBioKeychainData() {
-        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: id)
-        try? AuthenticationTypeHandler.removePrivateKey(forNetwork: id)
-        UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + id)
+        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: keychain)
+        try? AuthenticationTypeHandler.removePrivateKey(forNetwork: keychain)
+        UserDefaults.standard.set(nil, forKey: "AuthKeyBiometricPrivateKey" + keychain)
     }
 
     func removePinKeychainData() {
-        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: id)
+        _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: keychain)
     }
 
     func addBioPin(session: Session) throws {
-        if UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + id) == nil {
-            try AuthenticationTypeHandler.generateBiometricPrivateKey(network: id)
+        if UserDefaults.standard.string(forKey: "AuthKeyBiometricPrivateKey" + keychain) == nil {
+            try AuthenticationTypeHandler.generateBiometricPrivateKey(network: keychain)
         }
         let password = String.random(length: 14)
         let deviceid = String.random(length: 14)
@@ -109,7 +126,7 @@ struct Account: Codable, Equatable {
         guard let pindata = try session.setPin(mnemonic: mnemonics, pin: password, device: deviceid) else {
             throw AuthenticationTypeHandler.AuthError.NotSupported
         }
-        try AuthenticationTypeHandler.addBiometryType(data: pindata, extraData: password, forNetwork: id)
+        try AuthenticationTypeHandler.addBiometryType(data: pindata, extraData: password, forNetwork: keychain)
     }
 
     func addPin(session: Session, pin: String, mnemonic: String) throws {
@@ -117,7 +134,7 @@ struct Account: Codable, Equatable {
         guard let pindata = try session.setPin(mnemonic: mnemonic, pin: pin, device: deviceid) else {
             throw AuthenticationTypeHandler.AuthError.NotSupported
         }
-        try AuthenticationTypeHandler.addPIN(data: pindata, forNetwork: id)
+        try AuthenticationTypeHandler.addPIN(data: pindata, forNetwork: keychain)
     }
 
 }

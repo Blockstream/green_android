@@ -230,15 +230,13 @@ class Settings: Codable {
     }
 
     func getScreenLock() -> ScreenLockType {
-        let network = getNetwork()
-        let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
-        let pinData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
-        if pinData && bioData {
+        let account = AccountsManager.shared.current
+        if account?.hasBioPin ?? false && account?.hasManualPin ?? false {
             return .All
-        } else if bioData {
+        } else if account?.hasBioPin ?? false {
             let biometryType = AuthenticationTypeHandler.biometryType
             return biometryType == .faceID ? .FaceID : .TouchID
-        } else if pinData {
+        } else if account?.hasManualPin ?? false {
             return .Pin
         } else {
             return .None
