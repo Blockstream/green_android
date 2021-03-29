@@ -31,8 +31,7 @@ class RecoveryInstructionViewController: UIViewController {
     }
 
     func setStyle() {
-        btnNext.cornerRadius = 4.0
-        btnNext.backgroundColor = UIColor.customMatrixGreen()
+        btnNext.setStyle(.primary)
     }
 
     func configureTosLabel() {

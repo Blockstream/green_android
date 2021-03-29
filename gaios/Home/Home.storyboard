@@ -236,6 +236,48 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3KP-bm-CE4">
+                                        <rect key="frame" x="24" y="96" width="366" height="578"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="JbL-Jq-VKg">
+                                                <rect key="frame" x="0.0" y="225.5" width="366" height="127"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet locked hint 1" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0pT-pj-wRd">
+                                                        <rect key="frame" x="0.0" y="0.0" width="366" height="19.5"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet locked hint 2" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wid-5v-JYG">
+                                                        <rect key="frame" x="0.0" y="43.5" width="366" height="19.5"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sNg-ko-Qr8" userLabel="Next">
+                                                        <rect key="frame" x="0.0" y="87" width="366" height="40"/>
+                                                        <color key="backgroundColor" name="customMatrixGreen"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="40" id="uAI-vC-Mkl"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                                        <state key="normal" title="Next">
+                                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        </state>
+                                                        <connections>
+                                                            <action selector="btnWalletLock:" destination="jB1-8d-0nD" eventType="touchUpInside" id="j6f-hB-j5d"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                            </stackView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="JbL-Jq-VKg" firstAttribute="leading" secondItem="3KP-bm-CE4" secondAttribute="leading" id="9OF-S3-zM4"/>
+                                            <constraint firstAttribute="trailing" secondItem="JbL-Jq-VKg" secondAttribute="trailing" id="NhJ-4F-Go9"/>
+                                            <constraint firstItem="JbL-Jq-VKg" firstAttribute="centerY" secondItem="3KP-bm-CE4" secondAttribute="centerY" id="zRC-Nb-Wvh"/>
+                                        </constraints>
+                                    </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Oln-w5-tlx">
                                         <rect key="frame" x="24" y="96" width="366" height="578"/>
                                         <subviews>
@@ -489,14 +531,18 @@
                                     <constraint firstItem="dA8-XH-6Yk" firstAttribute="leading" secondItem="GIB-RJ-50z" secondAttribute="leading" constant="50" id="1Ua-X8-IBf"/>
                                     <constraint firstItem="Oln-w5-tlx" firstAttribute="leading" secondItem="GIB-RJ-50z" secondAttribute="leading" constant="24" id="WdC-k3-k5X"/>
                                     <constraint firstAttribute="trailing" secondItem="Oln-w5-tlx" secondAttribute="trailing" constant="24" id="ZwK-34-WXD"/>
+                                    <constraint firstItem="3KP-bm-CE4" firstAttribute="width" secondItem="Oln-w5-tlx" secondAttribute="width" id="bjb-J5-JpV"/>
                                     <constraint firstItem="tcs-1r-M68" firstAttribute="leading" secondItem="GIB-RJ-50z" secondAttribute="leading" constant="20" id="cFu-kk-Ykh"/>
+                                    <constraint firstItem="3KP-bm-CE4" firstAttribute="centerY" secondItem="Oln-w5-tlx" secondAttribute="centerY" id="efn-VT-6P4"/>
                                     <constraint firstItem="ITS-xt-sFy" firstAttribute="leading" secondItem="GIB-RJ-50z" secondAttribute="leading" constant="36" id="fbD-oN-IM5"/>
                                     <constraint firstAttribute="trailing" secondItem="ITS-xt-sFy" secondAttribute="trailing" constant="36" id="g0f-bD-RYP"/>
+                                    <constraint firstItem="3KP-bm-CE4" firstAttribute="height" secondItem="Oln-w5-tlx" secondAttribute="height" id="o44-9Y-VEY"/>
                                     <constraint firstAttribute="bottom" secondItem="Oln-w5-tlx" secondAttribute="bottom" constant="100" id="s09-gp-aIx"/>
                                     <constraint firstItem="Oln-w5-tlx" firstAttribute="top" secondItem="ITS-xt-sFy" secondAttribute="bottom" id="sKD-Fh-D1p"/>
                                     <constraint firstAttribute="trailing" secondItem="dA8-XH-6Yk" secondAttribute="trailing" constant="50" id="sxE-3H-vkn"/>
                                     <constraint firstItem="ITS-xt-sFy" firstAttribute="top" secondItem="GIB-RJ-50z" secondAttribute="top" constant="60" id="sza-PK-j9W"/>
                                     <constraint firstAttribute="trailing" secondItem="tcs-1r-M68" secondAttribute="trailing" constant="20" id="tUM-Hm-g0d"/>
+                                    <constraint firstItem="3KP-bm-CE4" firstAttribute="centerX" secondItem="Oln-w5-tlx" secondAttribute="centerX" id="xqg-hr-bYn"/>
                                     <constraint firstAttribute="bottom" secondItem="tcs-1r-M68" secondAttribute="bottom" constant="36" id="z4G-zT-QWP"/>
                                 </constraints>
                             </view>
@@ -515,9 +561,14 @@
                     </navigationItem>
                     <connections>
                         <outlet property="attempts" destination="qYl-e4-taf" id="Zm5-dz-EM2"/>
+                        <outlet property="btnWalletLock" destination="sNg-ko-Qr8" id="vCp-9K-mzx"/>
                         <outlet property="cancelButton" destination="UCy-am-KIJ" id="ZK7-JX-4p5"/>
+                        <outlet property="cardEnterPin" destination="Oln-w5-tlx" id="DaP-2v-bP4"/>
+                        <outlet property="cardWalletLock" destination="3KP-bm-CE4" id="Kog-tu-7Yx"/>
                         <outlet property="deleteButton" destination="IZ4-20-y34" id="nfO-Tb-wD9"/>
                         <outlet property="lblTitle" destination="ITS-xt-sFy" id="9wh-nX-C1d"/>
+                        <outlet property="lblWalletLockHint1" destination="0pT-pj-wRd" id="6Dd-Cp-Xg6"/>
+                        <outlet property="lblWalletLockHint2" destination="Wid-5v-JYG" id="nKN-df-7Il"/>
                         <outletCollection property="pinLabel" destination="uiq-XO-i24" collectionClass="NSMutableArray" id="hyc-04-s38"/>
                         <outletCollection property="pinLabel" destination="QoQ-v0-noX" collectionClass="NSMutableArray" id="VbK-ew-A0K"/>
                         <outletCollection property="pinLabel" destination="gAu-uC-oZp" collectionClass="NSMutableArray" id="etC-3a-jBm"/>

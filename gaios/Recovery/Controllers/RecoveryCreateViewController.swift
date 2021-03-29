@@ -25,14 +25,22 @@ class RecoveryCreateViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = NSLocalizedString("id_write_down_the_words", comment: "")
-        lblHint.text = "Write these words down, and save them in a safe place. We’ll test you at the end of it."
-
         let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(CreateWalletViewController.back(sender:)))
         navigationItem.leftBarButtonItem = newBackButton
         navigationItem.hidesBackButton = true
 
+        setContent()
+        setStyle()
+    }
+
+    func setContent() {
+        lblTitle.text = NSLocalizedString("id_write_down_the_words", comment: "")
+        lblHint.text = "Write these words down, and save them in a safe place. We’ll test you at the end of it."
         btnNext.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
+    }
+
+    func setStyle() {
+        btnNext.setStyle(.primary)
     }
 
     override func viewWillAppear(_ animated: Bool) {

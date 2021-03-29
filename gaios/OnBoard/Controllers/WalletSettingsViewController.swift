@@ -72,6 +72,11 @@ class WalletSettingsViewController: UIViewController {
         btnSave.cornerRadius = 4.0
         fieldProxyIp.setLeftPaddingPoints(10.0)
         fieldProxyIp.setRightPaddingPoints(10.0)
+
+        cardTxCheck.alpha = 0.5
+        cardMulti.alpha = 0.5
+        cardElectBtc.alpha = 0.5
+        cardElectLiquid.alpha = 0.5
     }
 
     func setActions() {

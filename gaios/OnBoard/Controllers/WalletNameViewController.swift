@@ -13,8 +13,10 @@ class WalletNameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        fieldName.delegate = self
         setContent()
         setStyle()
+        updateUI()
         hideKeyboardWhenTappedAround()
     }
 
@@ -28,11 +30,23 @@ class WalletNameViewController: UIViewController {
     func setStyle() {
         fieldName.setLeftPaddingPoints(10.0)
         fieldName.setRightPaddingPoints(10.0)
-        btnNext.cornerRadius = 4.0
+
         btnSettings.cornerRadius = 4.0
         btnSettings.borderWidth = 1.0
         btnSettings.borderColor = UIColor.customGrayLight()
         btnSettings.setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+    }
+
+    func updateUI() {
+        if fieldName.text?.count ?? 0 > 2 {
+            btnNext.setStyle(.primary)
+        } else {
+            btnNext.setStyle(.primaryDisabled)
+        }
+    }
+
+    @IBAction func nameDidChange(_ sender: Any) {
+        updateUI()
     }
 
     @IBAction func btnSettings(_ sender: Any) {
@@ -49,4 +63,11 @@ class WalletNameViewController: UIViewController {
         self.navigationController?.pushViewController(vc, animated: true)
     }
 
+}
+
+extension WalletNameViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
+    }
 }

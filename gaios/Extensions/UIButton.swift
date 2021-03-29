@@ -2,6 +2,7 @@ import UIKit
 
 enum ButtonStyle {
     case primary
+    case primaryDisabled
 }
 
 @IBDesignable
@@ -135,12 +136,16 @@ final class CheckButton: UIButton {
 extension UIButton {
 
     func setStyle(_ type: ButtonStyle) {
-
+        layer.cornerRadius = 4.0
         switch type {
         case .primary:
             backgroundColor = UIColor.customMatrixGreen()
             setTitleColor(.white, for: .normal)
-            layer.cornerRadius = 4.0
+            isEnabled = true
+        case .primaryDisabled:
+            backgroundColor = UIColor.customBtnOff()
+            setTitleColor(UIColor.customGrayLight(), for: .normal)
+            isEnabled = false
         }
     }
 }

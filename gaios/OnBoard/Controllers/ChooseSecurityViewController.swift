@@ -24,15 +24,17 @@ class ChooseSecurityViewController: UIViewController {
     func setContent() {
         lblTitle.text = "Choose your Security"
         lblHint.text = "Once selected, this spending policy cannot be changed. For tips on what type of security is best for you, visit our Help Center."
-        lblSimpleTitle.text = "Simple"
+        lblSimpleTitle.text = "Singlesig"
         lblSimpleHint.text = "Your funds are secured by a single key held on your device. Simpler to set up and operate than multisig. If in doubt, select this option."
-        lblAdvancedTitle.text = "Advanced"
+        lblAdvancedTitle.text = "Multisig Shield"
         lblAdvancedHint.text = "Your funds are secured by multiple keys, with one key on your device and another on our servers. For enhanced security."
     }
 
     func setStyle() {
         cardSimple.layer.cornerRadius = 5.0
         cardAdvanced.layer.cornerRadius = 5.0
+
+        cardSimple.alpha = 0.5
     }
 
     func setActions() {
@@ -43,7 +45,7 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     @objc func didPressCardSimple() {
-        next()
+        // next()
     }
 
     @objc func didPressCardAdvanced() {

@@ -635,6 +635,9 @@
                                                         <real key="value" value="3"/>
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
+                                                <connections>
+                                                    <action selector="nameDidChange:" destination="Jkm-iH-Us0" eventType="editingChanged" id="bJd-iW-PMl"/>
+                                                </connections>
                                             </textField>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0SP-es-9S0">
                                                 <rect key="frame" x="36" y="181" width="303" height="19.5"/>
@@ -764,11 +767,11 @@
             <objects>
                 <viewController storyboardIdentifier="WalletSettingsViewController" id="3CD-SY-mPZ" customClass="WalletSettingsViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="OmS-NX-36X">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="947"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="u3G-Zn-LOK">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="575"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="875"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H67-GY-xFw">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="755"/>
@@ -957,7 +960,7 @@
                                                                     </label>
                                                                 </subviews>
                                                             </stackView>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="OY0-kO-WVm">
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="OY0-kO-WVm">
                                                                 <rect key="frame" x="254" y="24.5" width="51" height="31"/>
                                                             </switch>
                                                         </subviews>
@@ -1000,7 +1003,7 @@
                                                                     </label>
                                                                 </subviews>
                                                             </stackView>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="la5-C2-lvq">
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="la5-C2-lvq">
                                                                 <rect key="frame" x="254" y="24.5" width="51" height="31"/>
                                                             </switch>
                                                         </subviews>
@@ -1043,7 +1046,7 @@
                                                                     </label>
                                                                 </subviews>
                                                             </stackView>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="qBf-ae-TEc">
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="qBf-ae-TEc">
                                                                 <rect key="frame" x="254" y="24.5" width="51" height="31"/>
                                                             </switch>
                                                         </subviews>
@@ -1086,7 +1089,7 @@
                                                                     </label>
                                                                 </subviews>
                                                             </stackView>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="7iB-ZH-fet">
+                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="7iB-ZH-fet">
                                                                 <rect key="frame" x="254" y="24.5" width="51" height="31"/>
                                                             </switch>
                                                         </subviews>
@@ -1130,7 +1133,7 @@
                                 <viewLayoutGuide key="frameLayoutGuide" id="3UF-ha-UqF"/>
                             </scrollView>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="d7S-Cv-dRv">
-                                <rect key="frame" x="161" y="591" width="178" height="40"/>
+                                <rect key="frame" x="161" y="891" width="178" height="40"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bdB-db-4gF" userLabel="Next">
                                         <rect key="frame" x="0.0" y="0.0" width="84" height="40"/>
@@ -1180,6 +1183,8 @@
                     <navigationItem key="navigationItem" id="Nvp-Ef-cND">
                         <barButtonItem key="backBarButtonItem" title=" " id="F4f-76-VkL"/>
                     </navigationItem>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="375" height="967"/>
                     <connections>
                         <outlet property="btnCancel" destination="bdB-db-4gF" id="OVr-za-N65"/>
                         <outlet property="btnSave" destination="7YO-0p-CYL" id="ife-xf-IPx"/>
@@ -1209,7 +1214,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w7h-pZ-H7y" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4069.5652173913045" y="838.39285714285711"/>
+            <point key="canvasLocation" x="4068" y="973"/>
         </scene>
         <!--Set Pin View Controller-->
         <scene sceneID="W0q-Y4-zmr">

@@ -4,6 +4,9 @@ import PromiseKit
 
 class LoginViewController: UIViewController {
 
+    @IBOutlet weak var cardEnterPin: UIView!
+    @IBOutlet weak var cardWalletLock: UIView!
+
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var attempts: UILabel!
 
@@ -12,6 +15,10 @@ class LoginViewController: UIViewController {
     @IBOutlet var keyButton: [UIButton]?
     @IBOutlet var pinLabel: [UILabel]?
     let menuButton = UIButton(type: .system)
+
+    @IBOutlet weak var lblWalletLockHint1: UILabel!
+    @IBOutlet weak var lblWalletLockHint2: UILabel!
+    @IBOutlet weak var btnWalletLock: UIButton!
 
     private var pinCode = ""
     private let MAXATTEMPTS = 3
@@ -39,8 +46,22 @@ class LoginViewController: UIViewController {
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
-        lblTitle.text = NSLocalizedString("id_enter_pin", comment: "")
+
         progressIndicator?.message = NSLocalizedString("id_logging_in", comment: "")
+
+        setContent()
+        setStyle()
+    }
+
+    func setContent() {
+        lblTitle.text = NSLocalizedString("id_enter_pin", comment: "")
+        lblWalletLockHint1.text = "You've entered an invalid PIN, you don't have any attempts left."
+        lblWalletLockHint2.text = "Get your recovery phrase to restore this wallet"
+        btnWalletLock.setTitle("Restore with recovery phrase", for: .normal)
+    }
+
+    func setStyle() {
+        btnWalletLock.setStyle(.primary)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -163,9 +184,11 @@ class LoginViewController: UIViewController {
     func wrongPin() {
         self.pinAttemptsPreference += 1
         if self.pinAttemptsPreference == self.MAXATTEMPTS {
+
+            // VERIFY LOGIC
             removeKeychainData()
-            self.pinAttemptsPreference = 0
-            getAppDelegate()?.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
+//            self.pinAttemptsPreference = 0
+//            getAppDelegate()?.instantiateViewControllerAsRoot(storyboard: "Main", identifier: "InitialViewController")
         }
     }
 
@@ -184,6 +207,13 @@ class LoginViewController: UIViewController {
     }
 
     func updateAttemptsLabel() {
+
+        let isLock = pinAttemptsPreference == MAXATTEMPTS
+
+        cardEnterPin.isHidden = isLock
+        lblTitle.isHidden = isLock
+        cardWalletLock.isHidden = !isLock
+
         if MAXATTEMPTS - pinAttemptsPreference == 1 {
             attempts.text = NSLocalizedString("id_last_attempt_if_failed_you_will", comment: "")
         } else {
@@ -254,6 +284,12 @@ class LoginViewController: UIViewController {
         let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController")
         present(vc, animated: true) {
         }
+    }
+
+    @IBAction func btnWalletLock(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 }
