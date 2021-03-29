@@ -44,6 +44,7 @@
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1A25B995A200250E23 /* CsvViewController.swift */; };
 		2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */; };
+		340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
 		344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344562EA25D297CF00A5EC18 /* BLEManager.swift */; };
 		34641F1D25F915B9002E6442 /* RecoveryPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */; };
@@ -287,6 +288,7 @@
 		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		207C121823303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyLoginViewController.swift; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
 		344562EA25D297CF00A5EC18 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhraseViewController.swift; sourceTree = "<group>"; };
@@ -615,6 +617,7 @@
 				34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */,
 				34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */,
 				341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */,
+				340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1557,6 +1560,7 @@
 				81E9B7FE21C90F74004D87B6 /* AccountsViewController.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
 				2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */,
+				340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */,
 				81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */,
 				6D8099DB23021D0F0069A69F /* PopoverMenuViewController.swift in Sources */,
 				6D7B5F9322E6852D00DE049D /* AccountMiniCollection.swift in Sources */,

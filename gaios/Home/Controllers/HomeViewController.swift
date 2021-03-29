@@ -33,6 +33,10 @@ class HomeViewController: UIViewController {
     }
 
     func enterWallet(_ index: Int) {
+//        // watch only wallet
+//        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+//        let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController")
+//        navigationController?.pushViewController(vc, animated: true)
         let storyboard = UIStoryboard(name: "Home", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController")
         navigationController?.pushViewController(vc, animated: true)
