@@ -51,7 +51,7 @@ class AppKeystore {
     }
 
     @Throws(Exception::class)
-    fun initializeKeyStoreKey(keystoreAlias: String, isBiometric: Boolean) {
+    private fun initializeKeyStoreKey(keystoreAlias: String, isBiometric: Boolean) {
         if (keyStoreKeyExists(keystoreAlias)) {
             throw KeyStoreException("KeyStore is already created for $keystoreAlias")
         }
@@ -117,6 +117,13 @@ class AppKeystore {
         return cipher
     }
 
+    /**
+     * The Key for Biometric use can be invalidated if a new fingerprint is enrolled as the key is
+     * instantiated with {@code setInvalidatedByBiometricEnrollment} option enabled.
+     * Recreate the keystore key if the key is no longer valid.
+     *
+     * The returned {@code Cipher} object must be unlocked by {@code BiometricPrompt} before use.
+     */
     @Throws(Exception::class)
     fun getBiometricsEncryptionCipher(): Cipher {
         if (!keyStoreKeyExists(BIOMETRICS_KEYSTORE_ALIAS) || !isKeyStoreValid(
@@ -129,8 +136,13 @@ class AppKeystore {
         return getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS)
     }
 
+    /**
+     * In most cases @{code keystoreAlias} should be set to null to use the default key @{code BIOMETRICS_KEYSTORE_ALIAS}.
+     * If you want to decrypt data from a different KeyStore (eg. migrated data) and the same decryption settings,
+     * you can provide the alias to be used.
+     */
     @Throws(Exception::class)
-    fun getBiometricsDecryptionCipher(keystoreAlias: String? = null, encryptedData: EncryptedData): Cipher {
+    fun getBiometricsDecryptionCipher(encryptedData: EncryptedData, keystoreAlias: String? = null): Cipher {
         return getDecryptionCipher(keystoreAlias ?: BIOMETRICS_KEYSTORE_ALIAS, encryptedData)
     }
 

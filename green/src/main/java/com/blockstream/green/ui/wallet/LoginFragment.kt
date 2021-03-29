@@ -288,8 +288,8 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
                             // Use v3 authentication system
                             try {
                                 appKeystore.getBiometricsDecryptionCipher(
-                                    loginCredentials.keystore,
-                                    encryptedData
+                                    encryptedData,
+                                    loginCredentials.keystore
                                 ).also {
                                     viewModel.loginWithBiometricsV3(it, loginCredentials)
                                 }
