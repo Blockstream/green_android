@@ -52,10 +52,6 @@ class LoginViewController: UIViewController {
 
     func setStyle() {
         btnWalletLock.setStyle(.primary)
-        
-        if account?.attempts == self.MAXATTEMPTS {
-            // TODO: show recovery page
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -75,6 +71,8 @@ class LoginViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         if account?.hasBioPin ?? false {
             loginWithPin(usingAuth: AuthenticationTypeHandler.AuthKeyBiometric, withPIN: nil)
+        } else if account?.attempts == self.MAXATTEMPTS  || account?.hasPin == false {
+            showLock()
         }
     }
 
@@ -169,7 +167,7 @@ class LoginViewController: UIViewController {
         account?.attempts += 1
         AccountsManager.shared.update(self.account!)
         if account?.attempts == self.MAXATTEMPTS {
-            // TODO: show recovery page
+            showLock()
         } else {
             self.pinCode = ""
             self.updateAttemptsLabel()
@@ -189,16 +187,17 @@ class LoginViewController: UIViewController {
         }
     }
 
+    func showLock() {
+        cardEnterPin.isHidden = true
+        lblTitle.isHidden = true
+        cardWalletLock.isHidden = false
+    }
+
     func updateAttemptsLabel() {
-
         let pinattempts = account?.attempts ?? 0
-        let isLock = pinattempts == MAXATTEMPTS
-
-        cardEnterPin.isHidden = isLock
-        lblTitle.isHidden = isLock
-        cardWalletLock.isHidden = !isLock
-
-        if MAXATTEMPTS - pinattempts == 1 {
+        if pinattempts == MAXATTEMPTS {
+            showLock()
+        } else if MAXATTEMPTS - pinattempts == 1 {
             attempts.text = NSLocalizedString("id_last_attempt_if_failed_you_will", comment: "")
         } else {
             attempts.text = String(format: NSLocalizedString("id_attempts_remaining_d", comment: ""), MAXATTEMPTS - pinattempts)
@@ -269,6 +268,8 @@ class LoginViewController: UIViewController {
     }
 
     @IBAction func btnWalletLock(_ sender: Any) {
+        LandingViewController.flowType = .restore
+        OnBoardManager.shared.params = OnBoardParams(network: account?.network, walletName: account?.name)
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
         navigationController?.pushViewController(vc, animated: true)

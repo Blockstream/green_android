@@ -38,6 +38,7 @@ class WalletNameViewController: UIViewController {
     }
 
     func updateUI() {
+        fieldName.text = OnBoardManager.shared.params?.walletName ?? ""
         if fieldName.text?.count ?? 0 > 2 {
             btnNext.setStyle(.primary)
         } else {
