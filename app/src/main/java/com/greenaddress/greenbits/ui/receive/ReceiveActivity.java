@@ -152,7 +152,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         // only show if we are on Liquid and we are using Ledger
         UI.showIf(getNetwork().getLiquid() && "Ledger".equals(hwDeviceName),
                   UI.find(this, id.assetWhitelistWarning));
-        UI.showIf(getNetwork().getLiquid() && "Ledger".equals(hwDeviceName),
+        UI.showIf(canValidateAddressInHardware(),
                   UI.find(this, id.addressWarning));
 
         findViewById(R.id.assetWhitelistWarning).setOnClickListener(v -> {
@@ -243,6 +243,21 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
         mBitmapWorkerTask.execute();
     }
 
+    private Boolean canValidateAddressInHardware(){
+        boolean hwValidation = false;
+        if (getSession().getHWWallet() != null) {
+            final HWDeviceDetailData hwDevice = getSession().getHWWallet().getHWDeviceData().getDevice();
+            if (hwDevice.getSupportsLiquid() != HWDeviceDataLiquidSupport.None) {
+                final String hwDeviceName = hwDevice.getName();
+                if ("Jade".equals(hwDeviceName) ||
+                        ("Ledger".equals(hwDeviceName) && getNetwork().getLiquid())) {
+                    hwValidation = true;
+                }
+            }
+        }
+        return hwValidation;
+    }
+
     public void generateAddress() {
         // mark generation new address as ongoing
         isGenerationOnProgress = true;
@@ -265,17 +280,7 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
             }
 
             // Optionally validate address on hardware (on Jade, and ledger [on liquid])
-            boolean hwValidation = false;
-            if (getSession().getHWWallet() != null) {
-                final HWDeviceDetailData hwDevice = getSession().getHWWallet().getHWDeviceData().getDevice();
-                if (hwDevice.getSupportsLiquid() != HWDeviceDataLiquidSupport.None) {
-                    final String hwDeviceName = hwDevice.getName();
-                    if ("Jade".equals(hwDeviceName) ||
-                        ("Ledger".equals(hwDeviceName) && getNetwork().getLiquid())) {
-                        hwValidation = true;
-                    }
-                }
-            }
+            boolean hwValidation = canValidateAddressInHardware();
 
             if (hwValidation) {
                 // Await hardware address validation
