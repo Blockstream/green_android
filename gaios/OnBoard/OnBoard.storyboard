@@ -1583,7 +1583,7 @@
                                             <constraint firstAttribute="height" constant="20" id="hFY-Bp-9Ha"/>
                                         </constraints>
                                     </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Id6-Ir-ekG" userLabel="Next">
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Id6-Ir-ekG" userLabel="Next">
                                         <rect key="frame" x="36" y="476" width="303" height="54"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.059999999999999998" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <constraints>
