@@ -138,8 +138,7 @@
             app:gap="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="gone">
+            app:layout_constraintStart_toStartOf="parent">
 
             <TextView
                 android:layout_width="match_parent"
@@ -172,6 +171,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/id_password"
+                isGone="@{vm.keystoreCredentials != null &amp;&amp; vm.initialAction == false}"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText

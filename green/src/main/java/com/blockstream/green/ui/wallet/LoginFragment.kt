@@ -126,21 +126,15 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             updateMenu()
         }
 
+
         viewModel.biometricsCredentials.observe(viewLifecycleOwner) {
             it?.let {
-                if(!viewModel.initialAction){
-                    viewModel.initialAction = true
+                /**
+                 * We can get multiple events, so launch prompt only the first time
+                 */
+                if(viewModel.initialAction.value == false){
+                    viewModel.initialAction.value = true
                     launchBiometricPrompt(it)
-                }
-
-            }
-        }
-
-        viewModel.keystoreCredentials.observe(viewLifecycleOwner) {
-            it?.let {
-                if(!viewModel.initialAction) {
-                    viewModel.initialAction = true
-                    viewModel.loginWatchOnlyWithKeyStore(it)
                 }
             }
         }
@@ -203,7 +197,13 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         }
 
         binding.buttonWatchOnlyLogin.setOnClickListener {
-            viewModel.watchOnlyLogin()
+            val watchOnlyCredentials = viewModel.keystoreCredentials.value
+
+            if(viewModel.initialAction.value == false && watchOnlyCredentials != null) {
+                viewModel.loginWatchOnlyWithKeyStore(watchOnlyCredentials)
+            }else{
+                viewModel.watchOnlyLogin()
+            }
         }
 
         binding.buttonLoginWithPassword.setOnClickListener {

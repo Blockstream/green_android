@@ -48,15 +48,26 @@ class LoginViewModel @AssistedInject constructor(
     val isWatchOnlyLoginEnabled: LiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
             val block = { _: Any? ->
-                value =
-                    !watchOnlyPassword.value.isNullOrBlank() && !isInProgress.value!!
+                val isInitial = (keystoreCredentials.value != null && initialAction.value == false)
+                value = !watchOnlyPassword.value.isNullOrBlank() && !isInProgress.value!! || isInitial
             }
             addSource(watchOnlyPassword, block)
             addSource(isInProgress, block)
+            addSource(keystoreCredentials, block)
+            addSource(initialAction, block)
         }
     }
 
-    var initialAction = false
+    /**
+     * {@code initialAction} describes if the initial action is been taken.
+     *
+     * Also is used to prevent multiple actions to be initiated automatically .eg BiometricsPrompt
+     *
+     * For example initialAction is used in Watch-only login to display only the username and the login button.
+     * If login fails, the password field is then shown.
+     *
+     */
+    var initialAction = MutableLiveData(false)
 
     init {
         if (session.isConnected()) {
@@ -96,6 +107,9 @@ class LoginViewModel @AssistedInject constructor(
     fun loginWatchOnlyWithKeyStore(loginCredentials: LoginCredentials) {
         loginCredentials.encryptedData?.let { encryptedData ->
             login(loginCredentials, isWatchOnly = true, updateWatchOnlyPassword = false) {
+
+                initialAction.postValue(true)
+
                 val password = String(appKeystore.decryptData(encryptedData))
                 session.loginWatchOnly(wallet, wallet.watchOnlyUsername!!, password)
             }
