@@ -3,6 +3,7 @@ package com.greenaddress.greenbits.ui.preferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ public class DisplayMnemonicActivity extends LoggedActivity {
     public static final int MNEMONIC_LENGTH = 24;
 
     private final TextView[] mTextViews = new TextView[MNEMONIC_LENGTH];
+    private final TextView[] mTextViewsCount = new TextView[MNEMONIC_LENGTH];
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
@@ -46,6 +48,7 @@ public class DisplayMnemonicActivity extends LoggedActivity {
         final String[] words = cleanMnemonic.split(" ");
         for (int i = 0; i < words.length; ++i) {
             mTextViews[i].setText(words[i]);
+            mTextViewsCount[i].setVisibility(View.VISIBLE);
         }
     }
 
@@ -57,7 +60,10 @@ public class DisplayMnemonicActivity extends LoggedActivity {
             final TableRow row = (TableRow) table.getChildAt(y);
 
             for (int x = 0; x < row.getChildCount() / 2; ++x) {
-                ((TextView) row.getChildAt(x * 2)).setText(String.valueOf(wordNum));
+                TextView counter = ((TextView) row.getChildAt(x * 2));
+                counter.setText(String.valueOf(wordNum));
+                counter.setVisibility(View.GONE);
+
 
                 TextView me = (TextView) row.getChildAt(x * 2 + 1);
                 me.setInputType(0);
@@ -75,6 +81,7 @@ public class DisplayMnemonicActivity extends LoggedActivity {
                 registerForContextMenu(me);
 
                 mTextViews[wordNum - 1] = me;
+                mTextViewsCount[wordNum - 1] = counter;
                 ++wordNum;
             }
         }
