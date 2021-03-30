@@ -1,4 +1,5 @@
 import UIKit
+import PromiseKit
 
 class WalletNameViewController: UIViewController {
 
@@ -60,6 +61,44 @@ class WalletNameViewController: UIViewController {
 
     @IBAction func btnNext(_ sender: Any) {
         OnBoardManager.shared.params?.walletName = fieldName.text ?? ""
+        if LandingViewController.flowType == .add {
+            next()
+        } else {
+            // Test credential on server side
+            checkCredential()
+        }
+    }
+
+    func checkCredential() {
+        let params = OnBoardManager.shared.params
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startLoader(message: "Setting Up Your Wallet")
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            appDelegate?.disconnect()
+            return try appDelegate?.connect(params?.network ?? "mainnet")
+        }.then(on: bgq) {
+            try getSession().login(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "").resolve()
+        }.ensure {
+            self.stopLoader()
+        }.done { _ in
+            self.next()
+        }.catch { error in
+            if let err = error as? GaError, err != GaError.GenericError {
+                self.showError(NSLocalizedString("id_connection_failed", comment: ""))
+            } else if let err = error as? AuthenticationTypeHandler.AuthError {
+                self.showError(err.localizedDescription)
+            } else if !error.localizedDescription.isEmpty {
+                self.showError(NSLocalizedString(error.localizedDescription, comment: ""))
+            } else {
+                self.showError(NSLocalizedString("id_login_failed", comment: ""))
+            }
+        }
+    }
+
+    func next() {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
         self.navigationController?.pushViewController(vc, animated: true)

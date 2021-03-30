@@ -22,7 +22,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     var mnemonic = [String](repeating: String(), count: 27)
     var qrCodeReader: QRCodeReaderView?
     var isTemporary = false
-//    var isScannerVisible = false
     var isPasswordProtected = false {
         willSet {
             passwordProtectedSwitch.isOn = newValue
@@ -30,9 +29,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     var currIndexPath: IndexPath?
-    var recoveryType = RecoveryType.qr //
-
-    private var progressToken: NSObjectProtocol?
+    var recoveryType = RecoveryType.qr
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +47,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
         mnemonicWords.delegate = self
         mnemonicWords.dataSource = self
+        updateDoneButton(false)
 
         createSuggestionView()
 
@@ -59,26 +57,10 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case .phrase:
             break
         }
-//        if !isScannerVisible {
-//            startScan()
-//        } else {
-//            stopScan()
-//        }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        progressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: progress)
-        updateDoneButton(false)
-
-        qrCodeReader?.startScan()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let token = progressToken {
-            NotificationCenter.default.removeObserver(token)
-        }
 
         let contentInset = UIEdgeInsets.zero
         mnemonicWords.contentInset = contentInset
@@ -99,18 +81,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         } else {
             doneButton.backgroundColor = UIColor.customBtnOff()
             doneButton.setTitleColor(UIColor.customGrayLight(), for: .normal)
-        }
-    }
-
-    func progress(_ notification: Notification) {
-        Guarantee().map(on: DispatchQueue.global(qos: .background)) { () -> UInt32 in
-            let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
-            let tor = try JSONDecoder().decode(Tor.self, from: json)
-            return tor.progress
-        }.done { progress in
-            self.progressIndicator?.message = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
-        }.catch { err in
-            print(err.localizedDescription)
         }
     }
 
@@ -163,12 +133,10 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                     seal.reject(GaError.GenericError)
                 })
                 alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
-                    self.startAnimating(message: NSLocalizedString("id_logging_in", comment: ""))
                     let textField = alert.textFields![0]
                     seal.fulfill((self.mnemonic.prefix(upTo: 27).joined(separator: " ").lowercased(), textField.text!))
                 })
                 DispatchQueue.main.async {
-                    self.stopAnimating()
                     self.present(alert, animated: true, completion: nil)
                 }
             } else {
@@ -258,24 +226,17 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             }
         }
         view.insertSubview(qrCodeReader!, belowSubview: header)
-//        view.addSubview(qrCodeReader!)
         view.layoutIfNeeded()
-
         qrCodeReader!.startScan()
-
-//        isScannerVisible = true
-
     }
 
     func stopScan() {
         qrCodeReader!.stopScan()
-//        qrCodeReader!.removeFromSuperview()
-//        isScannerVisible = false
-
+        qrCodeReader!.removeFromSuperview()
     }
 
     func onScan(mnemonic: String) {
-        validate(mnemonic, "")
+        onPaste(mnemonic)
     }
 
     @objc func onTap(sender: UITapGestureRecognizer?) {
