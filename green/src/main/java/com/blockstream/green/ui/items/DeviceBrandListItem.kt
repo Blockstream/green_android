@@ -12,7 +12,7 @@ class DeviceBrandListItem(val isBluetooth: Boolean) : AbstractBindingItem<ListIt
 
     override fun bindView(binding: ListItemDeviceBrandBinding, payloads: List<Any>) {
         binding.name = binding.root.context.getString(if(isBluetooth) R.string.id_wireless else R.string.id_cable)
-        binding.icon.setImageResource(if(isBluetooth) R.drawable.ic_baseline_bluetooth_24 else R.drawable.ic_sharp_usb_24)
+        binding.icon.setImageResource(if(isBluetooth) R.drawable.ic_ble else R.drawable.ic_sharp_usb_24)
     }
 
     override fun createBinding(

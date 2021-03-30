@@ -71,7 +71,7 @@
             android:layout_marginEnd="24dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:src="@{vm.device.type == Device.ConnectionType.USB ? @drawable/ic_sharp_usb_24 : @drawable/ic_baseline_bluetooth_24}"
+            android:src="@{vm.device.type == Device.ConnectionType.USB ? @drawable/ic_sharp_usb_24 : @drawable/ic_ble}"
             app:layout_constraintBottom_toBottomOf="@+id/icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/icon"

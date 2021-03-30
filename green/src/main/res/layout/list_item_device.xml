@@ -71,7 +71,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_usb"
-            android:src="@{device.type == Device.ConnectionType.USB ? @drawable/ic_usb : @drawable/ic_bluetooth}" />
+            android:src="@{device.type == Device.ConnectionType.USB ? @drawable/ic_usb : @drawable/ic_ble}" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
