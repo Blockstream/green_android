@@ -33,6 +33,8 @@ class WalletSettingsViewController: UIViewController {
     @IBOutlet weak var lblElectLiquidTitle: UILabel!
     @IBOutlet weak var lblElectLiquidHint: UILabel!
 
+    @IBOutlet weak var toolBar: UIToolbar!
+
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnSave: UIButton!
 
@@ -90,10 +92,23 @@ class WalletSettingsViewController: UIViewController {
         cardMulti.alpha = 0.5
         cardElectBtc.alpha = 0.5
         cardElectLiquid.alpha = 0.5
+
+        let flexButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(image: UIImage(named: "cancel"),
+                                     style: .plain,
+                                     target: self,
+                                     action: #selector(self.donePressed))
+
+        doneButton.tintColor = UIColor.customGrayLight()
+        toolBar.setItems([flexButton, doneButton], animated: true)
     }
 
     func setActions() {
 
+    }
+
+    @objc func donePressed() {
+        dismiss(animated: true, completion: nil)
     }
 
     func reload() {
