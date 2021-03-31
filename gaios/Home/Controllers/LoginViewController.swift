@@ -28,7 +28,7 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.title = account?.name ?? ""
         navigationItem.setHidesBackButton(true, animated: false)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(LoginViewController.back))
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
@@ -280,6 +280,7 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
         if var account = self.account {
             account.name = name
             AccountsManager.shared.update(account)
+            navigationItem.title = account.name
         }
     }
     func didDelete() {

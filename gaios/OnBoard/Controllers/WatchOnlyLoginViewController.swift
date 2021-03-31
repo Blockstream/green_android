@@ -13,9 +13,16 @@ class WatchOnlyLoginViewController: KeyboardViewController {
     var account: Account?
     private var buttonConstraint: NSLayoutConstraint?
     private var progressToken: NSObjectProtocol?
+    let menuButton = UIButton(type: .system)
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = account?.name ?? ""
+        navigationItem.setHidesBackButton(true, animated: false)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(WatchOnlyLoginViewController.back))
+        menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
+        menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
 
         lblTitle.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
         loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
@@ -51,6 +58,24 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }
     }
 
+    @objc func back(sender: UIBarButtonItem) {
+        navigationController?.popViewController(animated: true)
+    }
+
+    @objc func menuButtonTapped(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "PopoverMenu", bundle: nil)
+        if let popover  = storyboard.instantiateViewController(withIdentifier: "PopoverMenuWalletViewController") as? PopoverMenuWalletViewController {
+            popover.delegate = self
+            popover.modalPresentationStyle = .popover
+            let popoverPresentationController = popover.popoverPresentationController
+            popoverPresentationController?.backgroundColor = UIColor.customModalDark()
+            popoverPresentationController?.delegate = self
+            popoverPresentationController?.sourceView = self.menuButton
+            popoverPresentationController?.sourceRect = self.menuButton.bounds
+            self.present(popover, animated: true)
+        }
+    }
+
     @objc func progress(_ notification: Notification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
            let tor = try? JSONDecoder().decode(Tor.self, from: json) {
@@ -79,6 +104,24 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         UIView.animate(withDuration: 0.5, animations: { [unowned self] in
             self.buttonConstraint?.isActive = false
         })
+    }
+
+    func walletDelete() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletDeleteViewController") as? DialogWalletDeleteViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
+    }
+
+    func walletRename() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogWalletNameViewController") as? DialogWalletNameViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     @objc func click(_ sender: Any) {
@@ -119,4 +162,45 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }
     }
 
+}
+
+extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
+    func didSave(_ name: String) {
+        if var account = self.account {
+            account.name = name
+            AccountsManager.shared.update(account)
+            navigationItem.title = account.name
+        }
+    }
+    func didDelete() {
+        if let account = self.account {
+            AccountsManager.shared.remove(account)
+            navigationController?.popViewController(animated: true)
+        }
+    }
+    func didCancel() {
+        print("Cancel")
+    }
+}
+
+extension WatchOnlyLoginViewController: PopoverMenuWalletDelegate {
+    func didSelectionMenuOption(_ menuOption: MenuWalletOption) {
+        switch menuOption {
+        case .edit:
+            walletRename()
+        case .delete:
+            walletDelete()
+        }
+    }
+}
+
+extension WatchOnlyLoginViewController: UIPopoverPresentationControllerDelegate {
+
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
+    }
+
+    func presentationController(_ controller: UIPresentationController, viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle) -> UIViewController? {
+        return UINavigationController(rootViewController: controller.presentedViewController)
+    }
 }
