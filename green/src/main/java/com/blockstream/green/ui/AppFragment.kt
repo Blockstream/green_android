@@ -144,7 +144,12 @@ abstract class AppFragment<T : ViewDataBinding>(
             navOptionsBuilder.setPopUpTo(R.id.chooseSecurityFragment, true)
         }
 
-        findNavController().navigate(resId, args, navOptionsBuilder.build())
+        try{
+            // Simple fix for https://issuetracker.google.com/issues/118975714
+            findNavController().navigate(resId, args, navOptionsBuilder.build())
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
     }
 
     fun openOverview(){

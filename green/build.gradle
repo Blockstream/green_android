@@ -54,6 +54,9 @@ android {
         versionCode 350
         versionName "3.5.0"
 
+        // Stops the Gradle plugin’s automatic rasterization of vectors
+        vectorDrawables.useSupportLibrary = true
+
         testApplicationId "com.blockstream.green.test"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
