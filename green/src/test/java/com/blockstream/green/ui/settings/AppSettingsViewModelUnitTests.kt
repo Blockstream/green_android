@@ -30,53 +30,13 @@ class AppSettingsViewModelUnitTests : TestViewModel<AppSettingsViewModel>() {
         val s = viewModel.getSettings()
 
         assertNull(s.proxyURL)
-        assertNull(s.bitcoinElectrumBackendURL)
-        assertNull(s.liquidElectrumBackendURL)
         assertFalse(s.tor)
-        assertFalse(s.multiServerValidation)
-        assertFalse(s.spv)
     }
 
     @Test
     fun test_tor_routing() {
         viewModel.enableTorRouting.value = true
         assertTrue(viewModel.getSettings().tor)
-    }
-
-    @Test
-    fun test_multiServerValidation() {
-        viewModel.enableMultiServerValidation.value = true
-        assertTrue(viewModel.getSettings().multiServerValidation)
-    }
-
-    @Test
-    fun electrumBackend_shouldBe_default() {
-        viewModel.enableBitcoinElectrumBackend.value = true
-        assertEquals("DEFAULT", viewModel.bitcoinElectrumBackendURL.value)
-
-        viewModel.enableLiquidElectrumBackend.value = true
-        assertEquals("DEFAULT", viewModel.liquidElectrumBackendURL.value)
-    }
-
-    @Test
-    fun electrumBackend_shouldBeEmpty_ifIsNotEnabled() {
-        viewModel.bitcoinElectrumBackendURL.value = "customElectrumBackendURL"
-        assertTrue(viewModel.getSettings().bitcoinElectrumBackendURL.isNullOrEmpty())
-
-        viewModel.liquidElectrumBackendURL.value = "customElectrumBackendURL"
-        assertTrue(viewModel.getSettings().liquidElectrumBackendURL.isNullOrEmpty())
-    }
-
-    @Test
-    fun electrumBackend_should_haveValue() {
-        viewModel.bitcoinElectrumBackendURL.value = "customElectrumBackendURL"
-        viewModel.enableBitcoinElectrumBackend.value = true
-        assertTrue(viewModel.getSettings().bitcoinElectrumBackendURL!!.isNotEmpty())
-
-
-        viewModel.liquidElectrumBackendURL.value = "customElectrumBackendURL"
-        viewModel.enableLiquidElectrumBackend.value = true
-        assertTrue(viewModel.getSettings().liquidElectrumBackendURL!!.isNotEmpty())
     }
 
     @Test

@@ -3,7 +3,7 @@ package com.blockstream.green.ui.settings
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.green.AppKeystore
+import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.R
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.gdk.SessionManager

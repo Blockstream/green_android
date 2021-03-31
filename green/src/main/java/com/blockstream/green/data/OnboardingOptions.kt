@@ -24,7 +24,6 @@ data class OnboardingOptions(
             return OnboardingOptions(
                 isRestoreFlow = true,
                 isWatchOnly = false,
-                isBIP39 = wallet.isBIP39,
                 networkType = wallet.network,
                 network = network,
                 walletName = wallet.name

@@ -2,7 +2,7 @@ package com.blockstream.green.database
 
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
-import com.blockstream.green.EncryptedData
+import com.blockstream.green.utils.EncryptedData
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.PinData
 import kotlinx.serialization.decodeFromString

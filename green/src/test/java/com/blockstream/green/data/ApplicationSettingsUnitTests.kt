@@ -22,12 +22,7 @@ class ApplicationSettingsUnitTests {
         val appSettings = ApplicationSettings.fromSharedPreferences(prefs)
 
         Assert.assertFalse(appSettings.tor)
-        Assert.assertFalse(appSettings.multiServerValidation)
-        Assert.assertFalse(appSettings.spv)
-
         Assert.assertNull(appSettings.proxyURL)
-        Assert.assertNull(appSettings.bitcoinElectrumBackendURL)
-        Assert.assertNull(appSettings.liquidElectrumBackendURL)
     }
 
     @Test
@@ -41,12 +36,6 @@ class ApplicationSettingsUnitTests {
         val appSettings = ApplicationSettings.fromSharedPreferences(prefs)
 
         Assert.assertEquals("proxyURL", appSettings.proxyURL)
-        Assert.assertEquals("bitcoinElectrumBackendURL", appSettings.bitcoinElectrumBackendURL )
-        Assert.assertEquals("liquidElectrumBackendURL", appSettings.liquidElectrumBackendURL)
-
         Assert.assertTrue(appSettings.tor)
-        Assert.assertTrue(appSettings.multiServerValidation)
-        Assert.assertTrue(appSettings.spv)
-
     }
 }

@@ -1,4 +1,4 @@
-package com.blockstream.green
+package com.blockstream.green.utils
 
 import android.app.KeyguardManager
 import android.content.Context
@@ -7,6 +7,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import androidx.annotation.VisibleForTesting
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -50,8 +51,9 @@ class AppKeystore {
         return false
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @Throws(Exception::class)
-    private fun initializeKeyStoreKey(keystoreAlias: String, isBiometric: Boolean) {
+    fun initializeKeyStoreKey(keystoreAlias: String, isBiometric: Boolean) {
         if (keyStoreKeyExists(keystoreAlias)) {
             throw KeyStoreException("KeyStore is already created for $keystoreAlias")
         }
@@ -85,13 +87,6 @@ class AppKeystore {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 builder.setInvalidatedByBiometricEnrollment(true)
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
-            } else {
-                @Suppress("DEPRECATION")
-                builder.setUserAuthenticationValidityDurationSeconds(-1)
             }
         }
 

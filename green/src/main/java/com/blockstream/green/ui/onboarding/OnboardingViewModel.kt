@@ -30,7 +30,6 @@ open class OnboardingViewModel(
             val wallet = Wallet(
                 name = options.walletName ?: network.name,
                 network = network.id,
-                isElectrum = network.isElectrum,
                 isRecoveryPhraseConfirmed = options.isRestoreFlow || !mnemonic.isNullOrBlank(),
                 isHardware = false
             )
@@ -88,7 +87,6 @@ open class OnboardingViewModel(
             val wallet = Wallet(
                 name = options.walletName ?: network.name,
                 network = network.id,
-                isElectrum = network.isElectrum,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = true
             )
@@ -122,7 +120,6 @@ open class OnboardingViewModel(
                     ?: Wallet(
                         name = options.walletName ?: options.network.name,
                         network = network.id,
-                        isElectrum = network.isElectrum,
                         isRecoveryPhraseConfirmed = options.isRestoreFlow,
                         isHardware = false
                     )

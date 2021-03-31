@@ -3,7 +3,7 @@ package com.blockstream.green.ui.wallet
 import android.util.Base64
 import androidx.lifecycle.*
 import com.blockstream.gdk.data.TORStatus
-import com.blockstream.green.AppKeystore
+import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet

@@ -29,12 +29,6 @@ data class Wallet(
     @ColumnInfo(name = "watch_only_username")
     val watchOnlyUsername: String? = null,
 
-    @ColumnInfo(name = "is_electrum")
-    val isElectrum: Boolean = false,
-
-    @ColumnInfo(name = "is_bip39")
-    val isBIP39: Boolean = false,
-
     @ColumnInfo(name = "is_hardware")
     val isHardware: Boolean = false,
 
@@ -46,6 +40,9 @@ data class Wallet(
 ) : Parcelable {
     val isLiquid
         get() = network.contains("liquid")
+
+    val isElectrum
+        get() = network.contains("electrum")
 
     val isWatchOnly
         get() = watchOnlyUsername != null

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.blockstream.green.*
 import com.blockstream.green.databinding.IntroFragmentBinding
-import com.blockstream.green.ui.devices.DeviceBottomSheetDialogFragment
+import com.blockstream.green.utils.AppKeystore
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

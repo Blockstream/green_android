@@ -1,11 +1,10 @@
-package com.blockstream.green
+package com.blockstream.green.utils
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.lang.Exception
 
 
 @RunWith(AndroidJUnit4::class)
