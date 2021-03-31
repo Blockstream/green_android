@@ -26,11 +26,7 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let navigationBarHeight: CGFloat =  navigationController!.navigationBar.frame.height
-        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: navigationBarHeight, height: navigationBarHeight))
-        imageView.contentMode = .scaleAspectFit
-        imageView.image = account?.icon
-        navigationItem.titleView = imageView
+        navigationItem.title = account?.name ?? ""
         navigationItem.setHidesBackButton(true, animated: false)
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(PinLoginViewController.back))
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
