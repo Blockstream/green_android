@@ -104,7 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.startObserving()
 
         // Initialize network settings
-        onFirstInitialization(network: getNetwork())
+        AccountsManager.shared.onFirstInitialization()
         AppDelegate.getService().reset()
 
         // Set screen lock

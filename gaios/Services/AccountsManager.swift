@@ -8,17 +8,39 @@ class AccountsManager {
     var current: Account?
     var list: [Account] {
         get {
-            if !UserDefaults.standard.bool(forKey: "wallets_keychain") {
-                // Handle wallet migration
-                let accounts = migrationAccounts()
-                try? write(accounts)
-                UserDefaults.standard.setValue(true, forKey: "wallets_keychain")
-                return accounts
-            }
             return (try? read()) ?? []
         }
         set {
             try? write(newValue)
+        }
+    }
+
+    func onFirstInitialization() {
+        for network in ["mainnet", "testnet", "liquid"] {
+            if !UserDefaults.standard.bool(forKey: network + "FirstInitialization") {
+                _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
+                _ = AuthenticationTypeHandler.removeAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: network)
+                UserDefaults.standard.set(true, forKey: network + "FirstInitialization")
+            }
+        }
+        if !UserDefaults.standard.bool(forKey: "FirstInitialization") {
+            try? remove()
+            UserDefaults.standard.set(true, forKey: "FirstInitialization")
+
+            // Handle wallet migration
+            list = migratedAccounts()
+        }
+    }
+
+    private func remove() throws {
+        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                    kSecAttrAccount as String: attrAccount,
+                                    kSecAttrService as String: attrService,
+                                    kSecMatchLimit as String: kSecMatchLimitOne,
+                                    kSecReturnData as String: kCFBooleanTrue ?? true]
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess else {
+            throw GaError.GenericError
         }
     }
 
@@ -63,7 +85,7 @@ class AccountsManager {
         return try JSONDecoder().decode([Account].self, from: data)
     }
 
-    private func migrationAccounts() -> [Account] {
+    private func migratedAccounts() -> [Account] {
         var accounts = [Account]()
         for network in ["mainnet", "testnet", "liquid"] {
             let bioData = AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: network)
