@@ -43,7 +43,7 @@ class RecoverySuccessViewController: UIViewController {
 
     @IBAction func btnNext(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
+        let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
         navigationController?.pushViewController(vc, animated: true)
     }
 

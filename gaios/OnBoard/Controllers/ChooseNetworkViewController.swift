@@ -74,7 +74,7 @@ class ChooseNetworkViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         } else {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
+            let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
             navigationController?.pushViewController(vc, animated: true)
         }
     }
