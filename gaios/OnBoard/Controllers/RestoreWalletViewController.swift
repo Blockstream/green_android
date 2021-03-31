@@ -34,6 +34,8 @@ class RestoreWalletViewController: UIViewController {
     func setStyle() {
         cardRestore.layer.cornerRadius = 5.0
         cardMigrate.layer.cornerRadius = 5.0
+
+        cardMigrate.alpha = 0.5
     }
 
     func setActions() {
@@ -48,7 +50,7 @@ class RestoreWalletViewController: UIViewController {
     }
 
     @objc func didPressCardMigrate() {
-        next()
+//        next()
     }
 
     func next() {

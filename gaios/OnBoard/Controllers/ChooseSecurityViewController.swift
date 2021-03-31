@@ -45,8 +45,8 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     @objc func didPressCardSimple() {
-        OnBoardManager.shared.params?.singleSig = true
-        next()
+//        OnBoardManager.shared.params?.singleSig = true
+//        next()
     }
 
     @objc func didPressCardAdvanced() {
