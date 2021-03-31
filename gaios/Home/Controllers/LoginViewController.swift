@@ -141,8 +141,10 @@ class LoginViewController: UIViewController {
         }.ensure {
             self.stopLoader()
         }.done {
-            self.account?.attempts = 0
-            AccountsManager.shared.update(self.account!)
+            if withPIN != nil {
+                self.account?.attempts = 0
+                AccountsManager.shared.update(self.account!)
+            }
             AccountsManager.shared.current = self.account
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
