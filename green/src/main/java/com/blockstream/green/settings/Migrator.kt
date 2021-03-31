@@ -65,7 +65,7 @@ class Migrator(
                 )
             }
 
-            enableTOR = networkPreferences.getBoolean(PrefKeys.TOR_ENABLED, enableTOR)
+            enableTOR = networkPreferences.getBoolean(PrefKeys.TOR_ENABLED, false) || enableTOR
 
             val network = greenWallet.networks.getNetworkById(networkId)
 
