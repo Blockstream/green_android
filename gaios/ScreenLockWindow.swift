@@ -15,7 +15,7 @@ class ScreenLockWindow: UIWindow {
         windowLevel = UIWindowLevelBackground
         backgroundColor = UIColor.black
 
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyboard = UIStoryboard(name: "Home", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "ScreenProtectionViewController")
         rootViewController = viewController
     }

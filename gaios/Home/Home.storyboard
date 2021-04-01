@@ -589,13 +589,38 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DEK-OU-9BD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3680" y="167"/>
+            <point key="canvasLocation" x="3696" y="167"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="bXU-v2-DLB">
+            <objects>
+                <viewController storyboardIdentifier="ScreenProtectionViewController" id="jxq-GR-9gB" propertyAccessControl="none" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="z6s-Af-dZa">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_big" translatesAutoresizingMaskIntoConstraints="NO" id="28b-fk-hhg">
+                                <rect key="frame" x="162" y="398" width="90" height="110"/>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="uMx-0z-1KD"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
+                        <constraints>
+                            <constraint firstItem="28b-fk-hhg" firstAttribute="centerX" secondItem="uMx-0z-1KD" secondAttribute="centerX" id="SNT-4w-BXj"/>
+                            <constraint firstItem="28b-fk-hhg" firstAttribute="centerY" secondItem="uMx-0z-1KD" secondAttribute="centerY" id="vbj-Kj-t1T"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="r1y-sO-RdP" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4394" y="167"/>
         </scene>
     </scenes>
     <resources>
         <image name="blockstreamGreen" width="280" height="114.5"/>
         <image name="erase" width="25" height="25"/>
         <image name="ic_logo_green" width="60" height="60"/>
+        <image name="logo_big" width="90" height="110"/>
         <image name="ntw_btc" width="40" height="40"/>
         <image name="ntw_liquid" width="40" height="40"/>
         <namedColor name="customGrayLight">
