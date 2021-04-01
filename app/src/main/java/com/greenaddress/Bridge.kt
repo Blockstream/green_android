@@ -8,7 +8,6 @@ import com.blockstream.crypto.BuildConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenapi.Session
-import com.greenaddress.greenapi.Session.getSession
 import com.greenaddress.greenbits.spv.SPV
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import com.greenaddress.jade.JadeAPI
@@ -124,8 +123,8 @@ object Bridge {
             val session = Session.getSession()
 
             if(session != null && session.nativeSession != null){
-                session.nativeSession?.let { nativeSession ->
-                    it.invoke(nativeSession)
+                session.nativeSession.let { nativeSession ->
+                    return@getActiveAccount it.invoke(nativeSession)
                 }
             }
 
@@ -150,7 +149,7 @@ object Bridge {
 
         // check and start spv if enabled
         val isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false)
-        if (!getSession().isWatchOnly && isSpvEnabled) {
+        if (!Session.getSession().isWatchOnly && isSpvEnabled) {
             try {
                 spv.startService(context)
             } catch (e: Exception) {
