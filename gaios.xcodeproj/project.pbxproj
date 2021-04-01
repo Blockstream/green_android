@@ -676,6 +676,7 @@
 		34AB8C772603894B009C930A /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */,
 				347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */,
 			);
 			path = Cells;
@@ -1017,7 +1018,6 @@
 				0992F87120E6C7AE00F6AAAB /* PinLoginViewController.swift */,
 				8173F1DC225E2863008E35F7 /* PinSetViewController.swift */,
 				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
-				671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
