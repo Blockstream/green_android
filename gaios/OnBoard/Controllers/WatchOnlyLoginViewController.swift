@@ -133,11 +133,11 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             view.endEditing(true)
             self.startLoader(message: "Loggin in...")
             return Guarantee()
-        }.compactMap(on: bgq) { [self] in
+        }.compactMap(on: bgq) {
             appDelegate.disconnect()
-            try appDelegate.connect(account?.network ?? "mainnet")
-            try getSession().loginWatchOnly(username: account?.username ?? "",
-                                            password: account?.password ?? "")
+            try appDelegate.connect(self.account?.network ?? "mainnet")
+            try getSession().loginWatchOnly(username: self.account?.username ?? "",
+                                            password: self.account?.password ?? "")
         }.then { _ in
             Registry.shared.load()
         }.ensure {
