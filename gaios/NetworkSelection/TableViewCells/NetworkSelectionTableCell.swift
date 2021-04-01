@@ -16,7 +16,7 @@ class NetworkSelectionTableCell: UITableViewCell {
         networkNameLabel.text = ""
     }
 
-    func configure(with network: GdkNetwork, selected: Bool) {
+    func configure(with account: Account, selected: Bool) {
         cardView.shadowOpacity = 1
         cardView.shadowColor = .black
         cardView.shadowOffset = CGSize(width: 0, height: 2.0)
@@ -25,10 +25,8 @@ class NetworkSelectionTableCell: UITableViewCell {
         cardView.borderColor = selected ? UIColor.customMatrixGreen() : UIColor.customModalMedium()
         let indicatorImageName = selected ? "network_selected" : "network_deselected"
         indicatorImageView.image = UIImage(named: indicatorImageName)
-        if let iconName = network.icon {
-            logoImageView.image = UIImage(named: iconName)
-        }
-        networkNameLabel.text = network.name
+        logoImageView.image = account.icon
+        networkNameLabel.text = account.name
         selectionStyle = .none
     }
 }

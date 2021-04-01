@@ -277,16 +277,34 @@ class TransactionsController: UITableViewController {
         } else if let networkSelector = segue.destination as? NetworkSelectionSettings {
             networkSelector.transitioningDelegate = self
             networkSelector.modalPresentationStyle = .custom
-            networkSelector.onSelection = networkDidChange
             networkSelector.isLanding = false
+            networkSelector.onSelection = { account in
+                DispatchQueue.main.async {
+                    self.accountDidChange(account)
+                }
+            }
         }
     }
 
-    func networkDidChange() {
-        onFirstInitialization(network: getNetwork())
-        DispatchQueue.main.async {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.logout(with: true)
+    func accountDidChange(_ account: Account) {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.map(on: bgq) {
+            appDelegate?.disconnect()
+        }.ensure {
+            self.stopAnimating()
+        }.done {
+            let storyboard = UIStoryboard(name: "Home", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
+            vc?.account = account
+            self.navigationController?.dismiss(animated: true, completion: {})
+            self.navigationController?.popToRootViewController(animated: true)
+            UIApplication.shared.keyWindow?.rootViewController = vc
+        }.catch { _ in
+            fatalError("disconnection error never happens")
         }
     }
 }
