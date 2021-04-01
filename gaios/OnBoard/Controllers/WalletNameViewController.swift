@@ -82,9 +82,6 @@ class WalletNameViewController: UIViewController {
         }.ensure {
             self.stopLoader()
         }.done {
-            let account = OnBoardManager.shared.account()
-            AccountsManager.shared.add(account)
-            AccountsManager.shared.current = account
             self.next()
         }.catch { error in
             if let err = error as? GaError, err != GaError.GenericError {
@@ -116,9 +113,6 @@ class WalletNameViewController: UIViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            let account = OnBoardManager.shared.account()
-            AccountsManager.shared.update(account)
-            AccountsManager.shared.current = account
             self.next()
         }.catch { error in
             if let err = error as? GaError, err != GaError.GenericError {
@@ -134,6 +128,9 @@ class WalletNameViewController: UIViewController {
     }
 
     func next() {
+        let account = OnBoardManager.shared.account()
+        AccountsManager.shared.upsert(account)
+        AccountsManager.shared.current = account
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
         self.navigationController?.pushViewController(vc, animated: true)

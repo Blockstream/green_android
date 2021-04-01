@@ -172,7 +172,7 @@ class SetPinViewController: UIViewController {
         }.compactMap(on: bgq) {
             let mnemonic = try getSession().getMnemonicPassphrase(password: "")
             try account?.addPin(session: getSession(), pin: pin, mnemonic: mnemonic)
-            AccountsManager.shared.update(account!)
+            AccountsManager.shared.upsert(account!)
             AccountsManager.shared.current = account
         }.then { _ in
             Registry.shared.load()

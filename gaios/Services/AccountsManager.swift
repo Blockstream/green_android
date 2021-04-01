@@ -112,9 +112,13 @@ class AccountsManager {
         }
     }
 
-    func add(_ account: Account) {
+    func upsert(_ account: Account) {
         var currentList = list
-        currentList.append(account)
+        if let index = currentList.firstIndex(where: { $0.id == account.id }) {
+            currentList.replaceSubrange(index...index, with: [account])
+        } else {
+            currentList.append(account)
+        }
         list = currentList
     }
 
@@ -122,14 +126,6 @@ class AccountsManager {
         var currentList = list
         if let index = currentList.firstIndex(where: { $0 == account }) {
             currentList.remove(at: index)
-        }
-        list = currentList
-    }
-
-    func update(_ account: Account) {
-        var currentList = list
-        if let index = currentList.firstIndex(where: { $0.id == account.id }) {
-            currentList.replaceSubrange(index...index, with: [account])
         }
         list = currentList
     }

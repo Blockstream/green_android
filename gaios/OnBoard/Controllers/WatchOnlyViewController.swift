@@ -136,7 +136,7 @@ class WatchOnlyViewController: KeyboardViewController {
             if self.rememberSwitch.isOn {
                 account.password = password
             }
-            AccountsManager.shared.add(account)
+            AccountsManager.shared.upsert(account)
             AccountsManager.shared.current = account
             getGAService().isWatchOnly = true
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")

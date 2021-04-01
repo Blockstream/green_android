@@ -21,9 +21,6 @@ class OnBoardManager {
     }
 
     func account() -> Account {
-        if let accountId = params?.accountId {
-            return Account(id: accountId, name: params?.walletName ?? "", network: params?.network ?? "mainnet")
-        }
-        return Account(name: params?.walletName ?? "", network: params?.network ?? "mainnet")
+        return Account(id: params?.accountId, name: params?.walletName ?? "", network: params?.network ?? "mainnet")
     }
 }

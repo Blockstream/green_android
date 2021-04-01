@@ -168,7 +168,7 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
     func didSave(_ name: String) {
         if var account = self.account {
             account.name = name
-            AccountsManager.shared.update(account)
+            AccountsManager.shared.upsert(account)
             navigationItem.title = account.name
         }
     }

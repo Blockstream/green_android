@@ -139,7 +139,7 @@ class LoginViewController: UIViewController {
         }.done {
             if withPIN != nil {
                 self.account?.attempts = 0
-                AccountsManager.shared.update(self.account!)
+                AccountsManager.shared.upsert(self.account!)
             }
             AccountsManager.shared.current = self.account
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
@@ -163,7 +163,7 @@ class LoginViewController: UIViewController {
 
     func wrongPin(_ usingAuth: String) {
         account?.attempts += 1
-        AccountsManager.shared.update(self.account!)
+        AccountsManager.shared.upsert(self.account!)
         if account?.attempts == self.MAXATTEMPTS {
             showLock()
         } else {
@@ -267,7 +267,7 @@ class LoginViewController: UIViewController {
 
     @IBAction func btnWalletLock(_ sender: Any) {
         LandingViewController.flowType = .restore
-        OnBoardManager.shared.params = OnBoardParams(network: account?.network, walletName: account?.name, accountId: account?.id)
+        OnBoardManager.shared.params = OnBoardParams(network: account?.network, walletName: account?.name, accountId: account?.id ?? UUID().uuidString)
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
         navigationController?.pushViewController(vc, animated: true)
@@ -279,7 +279,7 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
     func didSave(_ name: String) {
         if var account = self.account {
             account.name = name
-            AccountsManager.shared.update(account)
+            AccountsManager.shared.upsert(account)
             navigationItem.title = account.name
         }
     }
