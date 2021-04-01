@@ -71,17 +71,22 @@ class WalletNameViewController: UIViewController {
     }
 
     fileprivate func register() {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let bgq = DispatchQueue.global(qos: .background)
+        let params = OnBoardManager.shared.params
         firstly {
             self.startLoader(message: "Setting Up Your Wallet")
             return Guarantee()
+        }.compactMap(on: bgq) {
+            appDelegate?.disconnect()
+            return try appDelegate?.connect(params?.network ?? "mainnet")
         }.then(on: bgq) {
-            OnBoardManager.shared.login()
+            try getSession().registerUser(mnemonic: params?.mnemonic ?? "").resolve()
         }.then(on: bgq) { _ in
-            Registry.shared.load()
+            try getSession().login(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "").resolve()
         }.ensure {
             self.stopLoader()
-        }.done {
+        }.done { _ in
             self.next()
         }.catch { error in
             if let err = error as? GaError, err != GaError.GenericError {
