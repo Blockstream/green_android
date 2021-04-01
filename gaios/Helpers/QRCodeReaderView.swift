@@ -3,6 +3,7 @@ import UIKit
 
 protocol QRCodeReaderDelegate: class {
     func onQRCodeReadSuccess(result: String)
+    func userDidGrant(_: Bool)
 }
 
 class QRCodeReaderView: UIView {
@@ -210,6 +211,7 @@ class QRCodeReaderView: UIView {
         if authorizationStatus == .notDetermined {
             sessionQueue.suspend()
             AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
+                self.delegate?.userDidGrant(granted)
                 if granted {
                     self.authorizationStatus = .authorized
                 }

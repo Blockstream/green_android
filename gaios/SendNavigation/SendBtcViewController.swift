@@ -154,6 +154,9 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
 }
 
 extension SendBtcViewController: QRCodeReaderDelegate {
+    func userDidGrant(_: Bool) {
+        //
+    }
 
     func onQRCodeReadSuccess(result: String) {
         qrCodeReaderBackgroundView.stopScan()

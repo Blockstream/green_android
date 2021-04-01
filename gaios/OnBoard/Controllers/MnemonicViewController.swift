@@ -35,13 +35,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         super.viewDidLoad()
 
         title = ""
-
-        switch recoveryType {
-        case .qr:
-            lblTitle.text = "Scan the QR Code"
-        case .phrase:
-            lblTitle.text = "Enter the recovery phrase"
-        }
+        updateLblTitle()
         doneButton.setTitle(NSLocalizedString("id_restore", comment: ""), for: .normal)
         passwordProtectedLabel.text = NSLocalizedString("id_password_protected", comment: "")
 
@@ -71,6 +65,15 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         super.viewDidLayoutSubviews()
 
         doneButton.updateGradientLayerFrame()
+    }
+
+    func updateLblTitle() {
+        switch recoveryType {
+        case .qr:
+            lblTitle.text = "Scan the QR Code"
+        case .phrase:
+            lblTitle.text = "Enter the recovery phrase"
+        }
     }
 
     func updateDoneButton(_ enable: Bool) {
@@ -216,6 +219,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         if !qrCodeReader!.isSessionAuthorized() {
             qrCodeReader!.requestVideoAccess(presentingViewController: self)
             if !qrCodeReader!.isSessionAuthorized() {
+                recoveryType = .phrase
+                updateLblTitle()
                 return
             }
         }
@@ -240,6 +245,15 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 }
 
 extension MnemonicViewController: QRCodeReaderDelegate {
+    func userDidGrant(_ granted: Bool) {
+        DispatchQueue.main.async {
+            if granted {
+                self.startScan()
+            } else {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
 
     private func onPaste(_ result: String) {
         let words = result.split(separator: " ")
