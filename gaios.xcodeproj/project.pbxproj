@@ -626,6 +626,8 @@
 				34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */,
 				341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */,
 				340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */,
+				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
+				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1016,8 +1018,6 @@
 				8173F1DC225E2863008E35F7 /* PinSetViewController.swift */,
 				0932D7B220FC46C30074B48F /* EnterMnemonicsViewController.swift */,
 				671FC42F21DBABCD0047AF8E /* MnemonicWordCell.swift */,
-				67439CD821D92AEA00280FE2 /* KeyboardSuggestions.xib */,
-				67439CDA21D937D300280FE2 /* KeyboardSuggestions.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
