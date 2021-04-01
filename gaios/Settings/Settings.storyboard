@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Wr3-og-deC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Wr3-og-deC">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -51,14 +51,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontSizeToFit="NO" id="GAv-cW-FrG">
-                                                    <rect key="frame" x="20" y="12" width="33.5" height="20.5"/>
+                                                    <rect key="frame" x="20" y="12" width="33" height="20.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsFontSizeToFit="NO" id="WIS-4e-KaS">
-                                                    <rect key="frame" x="316" y="12" width="59" height="20.5"/>
+                                                    <rect key="frame" x="316.5" y="12" width="58.5" height="20.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -72,6 +72,7 @@
                                 </prototypes>
                             </tableView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="Gpt-qF-R6e"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="Gpt-qF-R6e" firstAttribute="bottom" secondItem="RgQ-We-fCV" secondAttribute="bottom" id="8kk-lh-2mP"/>
@@ -79,7 +80,6 @@
                             <constraint firstItem="RgQ-We-fCV" firstAttribute="leading" secondItem="Gpt-qF-R6e" secondAttribute="leading" id="H5B-yB-j3q"/>
                             <constraint firstItem="Gpt-qF-R6e" firstAttribute="trailing" secondItem="RgQ-We-fCV" secondAttribute="trailing" id="dso-yq-Zlu"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="Gpt-qF-R6e"/>
                     </view>
                     <navigationItem key="navigationItem" title="Settings" id="yfe-Pj-zOO">
                         <barButtonItem key="backBarButtonItem" title=" " id="vfg-LR-ncy"/>
@@ -238,6 +238,7 @@
                                 </constraints>
                             </view>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="8xd-g2-I9t"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="8xd-g2-I9t" firstAttribute="bottom" secondItem="P7m-d4-QF2" secondAttribute="bottom" id="9i2-Dg-zDT"/>
@@ -245,7 +246,6 @@
                             <constraint firstItem="P7m-d4-QF2" firstAttribute="leading" secondItem="8xd-g2-I9t" secondAttribute="leading" id="TYE-HA-BFM"/>
                             <constraint firstItem="P7m-d4-QF2" firstAttribute="top" secondItem="8xd-g2-I9t" secondAttribute="top" id="bQu-Bt-FFt"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="8xd-g2-I9t"/>
                     </view>
                     <navigationItem key="navigationItem" id="g04-Sd-vuG"/>
                     <connections>
@@ -266,8 +266,8 @@
                     <view key="view" contentMode="scaleToFill" id="tTu-LY-Xj6" propertyAccessControl="none">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="6Xb-CK-OB5"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="64M-cD-aQP"/>
                 </viewController>
@@ -282,8 +282,8 @@
                     <view key="view" contentMode="scaleToFill" id="Vmz-V7-brS" customClass="PgpView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="Yj9-Yq-OMt"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <navigationItem key="navigationItem" id="P3a-Fw-YqD"/>
                     <connections>
@@ -294,6 +294,16 @@
             </objects>
             <point key="canvasLocation" x="10918" y="-2344"/>
         </scene>
+        <!--SetPinViewController-->
+        <scene sceneID="qkd-mw-akg">
+            <objects>
+                <viewControllerPlaceholder storyboardName="OnBoard" referencedIdentifier="SetPinViewController" id="UGe-RO-53v" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="DXG-2w-Wzo"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2TX-6y-NOW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6628" y="-2853"/>
+        </scene>
         <!--Screen Lock-->
         <scene sceneID="bVO-H3-bkn">
             <objects>
@@ -301,13 +311,13 @@
                     <view key="view" contentMode="scaleToFill" id="uWN-wv-UEr" customClass="ScreenLockView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="0Pk-Nw-Hkm"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="65b-Vb-Mcx"/>
                     <connections>
                         <outlet property="content" destination="uWN-wv-UEr" id="Q6u-uk-ZOf"/>
-                        <segue destination="M0F-1S-1un" kind="show" identifier="restorePin" id="BPh-Vm-bdU"/>
+                        <segue destination="UGe-RO-53v" kind="show" identifier="restorePin" id="LnU-iF-lX4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cKn-KM-QAN" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -321,8 +331,8 @@
                     <view key="view" contentMode="scaleToFill" id="Tfx-my-V6q" customClass="TwoFactorLimitView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="oVV-VZ-3IM"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="BYA-wd-bN5"/>
                     <connections>
@@ -332,27 +342,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kal-Tc-yfm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8813" y="-2344"/>
-        </scene>
-        <!--Pin Set View Controller-->
-        <scene sceneID="Ss3-il-HmR">
-            <objects>
-                <viewController storyboardIdentifier="PinSetViewController" id="M0F-1S-1un" customClass="PinSetViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="qpo-22-3X7" customClass="PinView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <viewLayoutGuide key="safeArea" id="Wl8-eo-tmm"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="gMj-I9-WZe" propertyAccessControl="all">
-                        <barButtonItem key="backBarButtonItem" title=" " id="ySE-wB-9DI"/>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="content" destination="qpo-22-3X7" id="KXt-Kw-lKI"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="qZa-K9-HD5" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6604" y="-3218"/>
         </scene>
         <!--Test-->
         <scene sceneID="kS2-NG-hGn">
@@ -389,7 +378,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Info" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iff-K7-Hzq">
-                                                    <rect key="frame" x="20" y="15" width="25.5" height="24"/>
+                                                    <rect key="frame" x="20" y="15" width="25.5" height="22"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="67J-o9-5LD"/>
                                                     </constraints>
@@ -398,10 +387,10 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Nct-6w-UZr">
-                                                    <rect key="frame" x="20" y="47" width="350" height="84"/>
+                                                    <rect key="frame" x="20" y="45" width="350" height="86"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="1 day (144 blocks)" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cFY-5b-fnQ">
-                                                            <rect key="frame" x="0.0" y="0.0" width="350" height="84"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="350" height="86"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="24" id="EYQ-3H-kQP"/>
                                                             </constraints>
@@ -412,7 +401,7 @@
                                                     </subviews>
                                                 </stackView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2oB-EK-ehS">
-                                                    <rect key="frame" x="20" y="15" width="44.5" height="24"/>
+                                                    <rect key="frame" x="20" y="15" width="44.5" height="22"/>
                                                     <state key="normal" image="helpcircle"/>
                                                     <connections>
                                                         <action selector="infoTapped:" destination="mNJ-Za-TwT" eventType="touchUpInside" id="lF0-Tr-dKM"/>
@@ -440,7 +429,7 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9W7-QZ-4nz">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9W7-QZ-4nz">
                                 <rect key="frame" x="20" y="734" width="374" height="42"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="42" id="sYS-9F-sRv"/>
@@ -454,6 +443,7 @@
                                 </connections>
                             </button>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="ldk-l4-SCv"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="ihh-42-Gtz" firstAttribute="top" secondItem="Pzf-gq-6mj" secondAttribute="bottom" constant="28" id="0Rn-7N-ksY"/>
@@ -469,7 +459,6 @@
                             <constraint firstItem="uj2-ws-a1D" firstAttribute="top" secondItem="ihh-42-Gtz" secondAttribute="bottom" constant="50" id="g0z-Cl-at4"/>
                             <constraint firstItem="9W7-QZ-4nz" firstAttribute="top" secondItem="uj2-ws-a1D" secondAttribute="bottom" constant="8" id="tXf-NV-13H"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="ldk-l4-SCv"/>
                     </view>
                     <navigationItem key="navigationItem" id="ntN-Eo-1gg"/>
                     <connections>
