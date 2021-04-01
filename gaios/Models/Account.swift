@@ -11,16 +11,16 @@ struct Account: Codable, Equatable {
     var password: String?
     let keychain: String
 
-    init(name: String, network: String, isJade: Bool = false, isLedger: Bool = false) {
+    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false) {
         // Software / Hardware wallet account
-        id = UUID().uuidString
+        self.id = id ?? UUID().uuidString
         self.name = name
         self.network = network
         self.isJade = isJade
         self.isLedger = isLedger
         self.username = nil
         self.password = nil
-        self.keychain = id
+        self.keychain = self.id
     }
 
     init(name: String, network: String, username: String, password: String? = nil) {

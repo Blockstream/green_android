@@ -267,7 +267,7 @@ class LoginViewController: UIViewController {
 
     @IBAction func btnWalletLock(_ sender: Any) {
         LandingViewController.flowType = .restore
-        OnBoardManager.shared.params = OnBoardParams(network: account?.network, walletName: account?.name)
+        OnBoardManager.shared.params = OnBoardParams(network: account?.network, walletName: account?.name, accountId: account?.id)
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
         navigationController?.pushViewController(vc, animated: true)

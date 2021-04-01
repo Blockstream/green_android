@@ -6,4 +6,5 @@ struct OnBoardParams: Codable {
     var mnemonic: String?
     var mnemomicPassword: String?
     var singleSig = false
+    var accountId: String?
 }
