@@ -6,6 +6,11 @@ enum ActionPin {
     case verify
 }
 
+enum PinFlow {
+    case onboard
+    case settings
+}
+
 class SetPinViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -17,10 +22,10 @@ class SetPinViewController: UIViewController {
     @IBOutlet var pinLabel: [UILabel]?
     @IBOutlet weak var btnNext: UIButton!
 
-    var pinCodeToVerify = ""
+    var pinFlow = PinFlow.onboard
+    private var pinCodeToVerify = ""
     private var pinCode = ""
-
-    var actionPin = ActionPin.set
+    private var actionPin = ActionPin.set
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -145,7 +150,7 @@ class SetPinViewController: UIViewController {
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .verify:
-            register(pinCode)
+            setPin(pinCode)
         }
     }
 
@@ -153,31 +158,34 @@ class SetPinViewController: UIViewController {
         moveToNext()
     }
 
-    fileprivate func register(_ pin: String) {
+    fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
+        let account = AccountsManager.shared.current
         firstly {
-            switch LandingViewController.flowType {
-            case .add:
+            switch pinFlow {
+            case .settings:
                 self.startLoader(message: "Setting Up Your Wallet")
-            case .restore:
+            case .onboard:
                 self.startLoader(message: "Finishing Up")
             }
             return Guarantee()
-        }.then {
-            OnBoardManager.shared.login()
-        }.compactMap(on: bgq) { _ in
-            let account = OnBoardManager.shared.account()
-            try account.addPin(session: getSession(), pin: pin, mnemonic: OnBoardManager.shared.params?.mnemonic ?? "")
-            AccountsManager.shared.add(account)
+        }.compactMap(on: bgq) {
+            try account?.addPin(session: getSession(), pin: pin, mnemonic: OnBoardManager.shared.params?.mnemonic ?? "")
+            AccountsManager.shared.update(account!)
             AccountsManager.shared.current = account
         }.then { _ in
             Registry.shared.load()
         }.ensure {
             self.stopLoader()
         }.done {
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "WalletSuccessViewController")
-            self.navigationController?.pushViewController(vc, animated: true)
+            switch self.pinFlow {
+            case .settings:
+                self.navigationController?.popViewController(animated: true)
+            case .onboard:
+                let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "WalletSuccessViewController")
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }.catch { error in
             if let err = error as? GaError, err != GaError.GenericError {
                 self.showError(NSLocalizedString("id_connection_failed", comment: ""))

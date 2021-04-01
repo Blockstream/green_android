@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -43,7 +44,7 @@
             <objects>
                 <viewController storyboardIdentifier="notifications" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vNx-TR-xnv" customClass="NotificationsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mCE-9M-o95">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="499"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wlu-fe-63L">
@@ -60,14 +61,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" id="XJg-8L-WEc">
-                                                    <rect key="frame" x="15" y="10" width="33.5" height="20.5"/>
+                                                    <rect key="frame" x="16" y="10" width="33" height="20.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" id="Lmg-8W-ZYE">
-                                                    <rect key="frame" x="15" y="31.5" width="44" height="14.5"/>
+                                                    <rect key="frame" x="16" y="31.5" width="44" height="14.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <color key="textColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -80,6 +81,7 @@
                                 </prototypes>
                             </tableView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="3jB-5W-Hlg"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="3jB-5W-Hlg" firstAttribute="bottom" secondItem="wlu-fe-63L" secondAttribute="bottom" id="1Yj-eb-lYj"/>
@@ -87,7 +89,6 @@
                             <constraint firstItem="wlu-fe-63L" firstAttribute="top" secondItem="3jB-5W-Hlg" secondAttribute="top" id="eEf-oG-GZg"/>
                             <constraint firstItem="wlu-fe-63L" firstAttribute="leading" secondItem="3jB-5W-Hlg" secondAttribute="leading" id="zyy-pq-oiq"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="3jB-5W-Hlg"/>
                     </view>
                     <navigationItem key="navigationItem" title="Notifications" id="CoW-VO-MaR">
                         <barButtonItem key="backBarButtonItem" title=" " id="fZk-D5-C29"/>
@@ -140,7 +141,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="TransactionsController" id="nnX-e3-FvS" customClass="TransactionsController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="lOc-MI-e19">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="499"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <color key="separatorColor" name="customGreyDark"/>
@@ -194,8 +195,8 @@
                     <view key="view" contentMode="scaleToFill" id="UDg-yk-7Wh" customClass="ReceiveBtcView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="qlN-GG-xcs"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" title="Receive" id="2PC-cD-kAY">
                         <barButtonItem key="backBarButtonItem" title=" " id="Fir-pb-QXN"/>
@@ -229,8 +230,8 @@
                     <view key="view" contentMode="scaleToFill" id="8yK-ot-Ile" customClass="SystemMessageView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="yMu-2w-bwU"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="p42-Ex-WiS"/>
                     <connections>
@@ -301,7 +302,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
-                                        <color key="backgroundColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" systemColor="systemRedColor"/>
                                         <constraints>
                                             <constraint firstAttribute="bottom" secondItem="0yy-Sc-xJs" secondAttribute="bottom" id="89x-e8-gIL"/>
                                             <constraint firstAttribute="height" constant="20" id="D9q-uL-9W8"/>
@@ -319,6 +320,7 @@
                                 </subviews>
                             </stackView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="qbj-po-6Ot"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="Eyp-hM-WIP" firstAttribute="leading" secondItem="qbj-po-6Ot" secondAttribute="leading" id="BtH-dR-aTV"/>
@@ -326,7 +328,6 @@
                             <constraint firstItem="qbj-po-6Ot" firstAttribute="bottom" secondItem="Eyp-hM-WIP" secondAttribute="bottom" id="IOC-Vo-s3g"/>
                             <constraint firstItem="Eyp-hM-WIP" firstAttribute="top" secondItem="qbj-po-6Ot" secondAttribute="top" id="jSs-nv-qEO"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="qbj-po-6Ot"/>
                     </view>
                     <navigationItem key="navigationItem" id="mJP-B9-rxm"/>
                     <connections>
@@ -393,7 +394,7 @@
         <!--NetworkSelectionSettings-->
         <scene sceneID="Nm6-3K-FAv">
             <objects>
-                <viewControllerPlaceholder storyboardName="Main" referencedIdentifier="NetworkSelectionSettings" id="95q-dx-M24" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="NetworkSelection" referencedIdentifier="NetworkSelectionSettings" id="95q-dx-M24" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zq0-4Q-PlN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6220" y="571"/>
@@ -421,5 +422,8 @@
         <namedColor name="customTitaniumDark">
             <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
 </document>

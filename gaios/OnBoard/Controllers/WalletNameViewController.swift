@@ -62,10 +62,37 @@ class WalletNameViewController: UIViewController {
     @IBAction func btnNext(_ sender: Any) {
         OnBoardManager.shared.params?.walletName = fieldName.text ?? ""
         if LandingViewController.flowType == .add {
-            next()
+            // Register new user
+            register()
         } else {
             // Test credential on server side
             checkCredential()
+        }
+    }
+
+    fileprivate func register() {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startLoader(message: "Setting Up Your Wallet")
+            return Guarantee()
+        }.then(on: bgq) {
+            OnBoardManager.shared.login()
+        }.then(on: bgq) { _ in
+            Registry.shared.load()
+        }.ensure {
+            self.stopLoader()
+        }.done {
+            self.next()
+        }.catch { error in
+            if let err = error as? GaError, err != GaError.GenericError {
+                self.showError(NSLocalizedString("id_connection_failed", comment: ""))
+            } else if let err = error as? AuthenticationTypeHandler.AuthError {
+                self.showError(err.localizedDescription)
+            } else if !error.localizedDescription.isEmpty {
+                self.showError(NSLocalizedString(error.localizedDescription, comment: ""))
+            } else {
+                self.showError(NSLocalizedString("id_operation_failure", comment: ""))
+            }
         }
     }
 
@@ -81,6 +108,8 @@ class WalletNameViewController: UIViewController {
             return try appDelegate?.connect(params?.network ?? "mainnet")
         }.then(on: bgq) {
             try getSession().login(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "").resolve()
+        }.then(on: bgq) { _ in
+            Registry.shared.load()
         }.ensure {
             self.stopLoader()
         }.done { _ in
@@ -99,6 +128,9 @@ class WalletNameViewController: UIViewController {
     }
 
     func next() {
+        let account = OnBoardManager.shared.account()
+        AccountsManager.shared.add(account)
+        AccountsManager.shared.current = account
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
         self.navigationController?.pushViewController(vc, animated: true)

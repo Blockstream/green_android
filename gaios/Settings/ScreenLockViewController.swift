@@ -169,8 +169,8 @@ class ScreenLockViewController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextController = segue.destination as? PinSetViewController {
-            nextController.mode = .edit
+        if let nextController = segue.destination as? SetPinViewController {
+            nextController.pinFlow = .settings
         }
     }
 }
