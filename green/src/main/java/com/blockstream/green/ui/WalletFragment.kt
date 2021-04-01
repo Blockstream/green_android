@@ -60,7 +60,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                     networkSnackbar?.setText(
                         getString(
                             R.string.id_not_connected_connecting_in_ds_,
-                            event.waiting
+                            (event.waiting ?: 0)
                         )
                     )?.show()
 

@@ -26,8 +26,8 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
 
     override fun onDraw(canvas: Canvas) {
         val frameRect = frameRect ?: return
-        val width = canvas.width
-        val height = canvas.height
+        val width = width
+        val height = height
         val top = frameRect.top
         val left = frameRect.left
         val right = frameRect.right

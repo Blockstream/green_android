@@ -167,25 +167,25 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
-    implementation "androidx.lifecycle:lifecycle-process:2.3.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-process:2.3.1"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Navigation ------------------------------------------------------------------------- */
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.3"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
-    testImplementation "androidx.navigation:navigation-testing:2.3.3"
-    androidTestImplementation "androidx.navigation:navigation-testing:2.3.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
+    testImplementation "androidx.navigation:navigation-testing:2.3.4"
+    androidTestImplementation "androidx.navigation:navigation-testing:2.3.4"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Room ------------------------------------------------------------------------------- */
-    implementation "androidx.room:room-runtime:2.3.0-beta03"
-    implementation "androidx.room:room-rxjava3:2.3.0-beta03"
-    kapt "androidx.room:room-compiler:2.3.0-beta03"
-    implementation "androidx.room:room-ktx:2.3.0-beta03"
-    testImplementation "androidx.room:room-testing:2.3.0-beta03"
+    implementation "androidx.room:room-runtime:2.3.0-rc01"
+    implementation "androidx.room:room-rxjava3:2.3.0-rc01"
+    kapt "androidx.room:room-compiler:2.3.0-rc01"
+    implementation "androidx.room:room-ktx:2.3.0-rc01"
+    testImplementation "androidx.room:room-testing:2.3.0-rc01"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Hilt Dependency Injection  --------------------------------------------------------- */

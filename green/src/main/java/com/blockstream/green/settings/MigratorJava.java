@@ -30,7 +30,7 @@ public class MigratorJava {
             final boolean isEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
             final boolean haveTrustedPeers = !"".equals(preferences.getString(PrefKeys.TRUSTED_ADDRESS, "").trim());
             if (haveTrustedPeers && isEnabled) {
-                preferences.edit().putBoolean(PrefKeys.SPV_ENABLED, true);
+                preferences.edit().putBoolean(PrefKeys.SPV_ENABLED, true).apply();
             }
             // mainnet PIN migration
             copyPreferences(context.getSharedPreferences("pin", MODE_PRIVATE), context.getSharedPreferences("mainnet_pin", MODE_PRIVATE));

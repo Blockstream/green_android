@@ -175,25 +175,27 @@ class WalletSettingsFragment :
         }
 
         viewModel.settingsLiveData.observe(viewLifecycleOwner) {
-            unitPreference.subtitle = StringHolder((if (session.isLiquid) "L-" else "") + it.unit)
-            priceSourcePreference.subtitle = StringHolder(
-                getString(
-                    R.string.id_s_from_s,
-                    it.pricing.currency,
-                    it.pricing.exchange
+            it?.let {
+                unitPreference.subtitle = StringHolder((if (session.isLiquid) "L-" else "") + it.unit)
+                priceSourcePreference.subtitle = StringHolder(
+                    getString(
+                        R.string.id_s_from_s,
+                        it.pricing.currency,
+                        it.pricing.exchange
+                    )
                 )
-            )
-            txPriorityPreference.subtitle = StringHolder(prioritySummary(it.requiredNumBlocks))
-            pgpPreference.subtitle = StringHolder(R.string.id_add_a_pgp_public_key_to_receive)
+                txPriorityPreference.subtitle = StringHolder(prioritySummary(it.requiredNumBlocks))
+                pgpPreference.subtitle = StringHolder(R.string.id_add_a_pgp_public_key_to_receive)
 
-            altTimeoutPreference.subtitle = StringHolder(
-                if (it.altimeout == 1) "1 " + getString(R.string.id_minute) else getString(
-                    R.string.id_1d_minutes,
-                    it.altimeout
+                altTimeoutPreference.subtitle = StringHolder(
+                    if (it.altimeout == 1) "1 " + getString(R.string.id_minute) else getString(
+                        R.string.id_1d_minutes,
+                        it.altimeout
+                    )
                 )
-            )
 
-            notifyDataSetChanged()
+                notifyDataSetChanged()
+            }
         }
 
         viewModel.watchOnlyUsernameLiveData.observe(viewLifecycleOwner) {
