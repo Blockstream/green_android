@@ -57,6 +57,14 @@ android {
         // Stops the Gradle plugin’s automatic rasterization of vectors
         vectorDrawables.useSupportLibrary = true
 
+        // Export schemas
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation":
+                                      "$projectDir/schemas".toString()]
+            }
+        }
+
         testApplicationId "com.blockstream.green.test"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
