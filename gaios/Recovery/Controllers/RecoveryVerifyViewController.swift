@@ -34,8 +34,6 @@ class RecoveryVerifyViewController: UIViewController {
     var questionPosition: Int = 0
     let numberOfSteps: Int = 4
 
-    private var progressToken: NSObjectProtocol?
-
     override func viewDidLoad() {
         super.viewDidLoad()
         expectedWordNumbers = generateRandomWordNumbers()
@@ -58,7 +56,6 @@ class RecoveryVerifyViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        progressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: progress)
         for button in buttonsArray {
             button.addTarget(self, action: #selector(self.click), for: .touchUpInside)
         }
@@ -66,29 +63,8 @@ class RecoveryVerifyViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let token = progressToken {
-            NotificationCenter.default.removeObserver(token)
-        }
         for button in buttonsArray {
             button.removeTarget(self, action: #selector(self.click), for: .touchUpInside)
-        }
-    }
-
-    func progress(_ notification: Notification) {
-        Guarantee().map(on: DispatchQueue.global(qos: .background)) { () -> UInt32 in
-            let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
-            let tor = try JSONDecoder().decode(Tor.self, from: json)
-            return tor.progress
-        }.done { progress in
-            self.progressIndicator?.message = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"
-        }.catch { err in
-            print(err.localizedDescription)
-        }
-    }
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let pinController = segue.destination as? PinSetViewController {
-            pinController.mode = .create
         }
     }
 

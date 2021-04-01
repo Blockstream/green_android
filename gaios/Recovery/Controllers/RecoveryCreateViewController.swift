@@ -25,7 +25,7 @@ class RecoveryCreateViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(CreateWalletViewController.back(sender:)))
+        let newBackButton = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(RecoveryCreateViewController.back(sender:)))
         navigationItem.leftBarButtonItem = newBackButton
         navigationItem.hidesBackButton = true
 
