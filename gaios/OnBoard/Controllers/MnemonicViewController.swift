@@ -191,12 +191,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             .done { self.validate($0.0, $0.1) }
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let pinController = segue.destination as? PinSetViewController {
-            pinController.mode = .restore
-        }
-    }
-
     func checkTextfield(textField: UITextField) {
         if let text = textField.text {
             let suggestions = getSuggestions(prefix: text)
