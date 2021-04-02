@@ -337,7 +337,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
                 // Remove invalidated login credentials
                 viewModel.deleteLoginCredentials(loginCredentials)
             } catch (e: Exception) {
-                e.printStackTrace()
+                errorDialog(e)
             }
         }
     }

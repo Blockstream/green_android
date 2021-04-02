@@ -54,9 +54,6 @@ android {
         versionCode 350
         versionName "3.5.0"
 
-        // Stops the Gradle plugin’s automatic rasterization of vectors
-        vectorDrawables.useSupportLibrary = true
-
         // Export schemas
         javaCompileOptions {
             annotationProcessorOptions {
@@ -239,7 +236,7 @@ dependencies {
 
     /**  --- QR Scanner ------------------------------------------------------------------------- */
     implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
-    implementation 'com.google.zxing:core:3.4.1'
+    implementation 'com.google.zxing:core:3.3.3' // API <= 24 compatibility
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Bluetooth -------------------------------------------------------------------------- */
