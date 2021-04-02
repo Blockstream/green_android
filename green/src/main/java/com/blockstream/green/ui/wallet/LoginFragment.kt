@@ -264,8 +264,9 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
                 // V3 only needs user presence
                 // Valid combinations for each SDK
                 if(Build.VERSION.SDK_INT == Build.VERSION_CODES.R){
+                    // SDK 30
                     promptInfo.setAllowedAuthenticators(BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-                } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
+                } else {
                     promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 }
             }

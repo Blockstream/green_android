@@ -98,7 +98,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         if(Build.VERSION.SDK_INT == Build.VERSION_CODES.R){
             // SDK 30
             promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P){
+        } else {
             promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
         }
 
@@ -134,10 +134,11 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
             // Ask for user presence
             biometricPrompt?.authenticate(promptInfo.build())
         } catch (e: Exception) {
-            errorDialog(e)
-            // If an unsupported method is initiated, it's better to show the words rather than
-            // blocking the user to retrieve his words
-            navigateToWords()
+            errorDialog(e) {
+                // If an unsupported method is initiated, it's better to show the words rather than
+                // block the user to retrieve his words
+                navigateToWords()
+            }
         }
     }
 
