@@ -34,6 +34,7 @@
   <string name="id_add_a_pgp_public_key_to_receive">Add a PGP public key to receive encrypted email and keep your privacy</string>
   <string name="id_add_amount">Add Amount</string>
   <string name="id_add_amount_optional">Add amount (optional)</string>
+  <string name="id_add_another_wallet">Add another wallet</string>
   <string name="id_add_custom_network_by_qr_code">Add custom network by QR Code</string>
   <string name="id_add_custom_network_by_url">Add custom network by URL</string>
   <string name="id_add_new_account">Add New Account</string>
@@ -162,6 +163,8 @@
   <string name="id_create_a_wallet_for_bitcoin">Create a wallet for Bitcoin, Liquid or Testnet</string>
   <string name="id_create_new_wallet">Create New Wallet</string>
   <string name="id_create_temporary_wallet">Create temporary wallet</string>
+  <string name="id_create_wallet">Create Wallet</string>
+  <string name="id_creating_wallet">Creating wallet…</string>
   <string name="id_currency">Currency</string>
   <string name="id_current_version">Current version</string>
   <string name="id_custom">Custom</string>
@@ -356,7 +359,10 @@
   <string name="id_liquid_securities">Liquid Securities</string>
   <string name="id_liquid_wallets">Liquid wallets</string>
   <string name="id_loading">Loading</string>
+  <string name="id_loading_accounts">Loading accounts…</string>
+  <string name="id_loading_assets">Loading assets…</string>
   <string name="id_loading_transactions">Loading transactions…</string>
+  <string name="id_loading_wallet">Loading wallet…</string>
   <string name="id_log_in">Log In</string>
   <string name="id_log_in_into_your_s_wallet">Log in into your %s wallet</string>
   <string name="id_log_in_to_your_multisig_shield">Log in to your Multisig Shield watch-only wallet with a username and password. You can create your watch-only credentials after logging into your Multisig Shield wallet.</string>
@@ -372,6 +378,7 @@
   <string name="id_logout">Logout</string>
   <string name="id_logout_and_switch">Logout and Switch</string>
   <string name="id_look_at_the_device_for_the">Look at the device for the number positions</string>
+  <string name="id_looks_like_you_havent_used_a">Looks like you haven\'t used a wallet yet. Try creating a new one.</string>
   <string name="id_low">Low</string>
   <string name="id_main_account">Main Account</string>
   <string name="id_make_sure_you_have_enabled_otg">Make sure you have enabled OTG option in Android Settings</string>
@@ -437,7 +444,7 @@
   <string name="id_notifications">Notifications</string>
   <string name="id_now">Now</string>
   <string name="id_of_24">of 24</string>
-  <string name="id_ok">OK</string>
+  <string name="id_ok">Ok</string>
   <string name="id_on_average">on average</string>
   <string name="id_once_selected_this_spending">Once selected, this spending policy cannot be changed. For tips on what type of security is best for you, visit our Help Center.</string>
   <string name="id_one_attempt_remaining">One attempt remaining</string>
@@ -499,6 +506,7 @@
   <string name="id_receive_email_notifications_for">Receive email notifications for sent and received transactions</string>
   <string name="id_received">Received</string>
   <string name="id_received_on">Received on</string>
+  <string name="id_recently_used_wallets">Recently used wallets</string>
   <string name="id_recipient">Recipient</string>
   <string name="id_recipient_address">Recipient address</string>
   <string name="id_recovery">Recovery</string>
@@ -537,6 +545,7 @@
   <string name="id_restore_a_wallet">Restore a Wallet</string>
   <string name="id_restore_green_wallet">Restore Green Wallet</string>
   <string name="id_restore_temporary_wallet">Restore temporary wallet</string>
+  <string name="id_restore_wallet">Restore Wallet</string>
   <string name="id_restore_with_recovery_phrase">Restore with recovery phrase</string>
   <string name="id_restoring_your_wallet">Restoring Your Wallet</string>
   <string name="id_review">Review</string>
@@ -614,6 +623,7 @@
   <string name="id_show_fiat">Show fiat</string>
   <string name="id_show_my_wallet_backup">Show my wallet backup</string>
   <string name="id_show_qr_code">Show QR code</string>
+  <string name="id_signature_validation_failed_if">Signature validation failed. If this error is unexpected and has happened repeatedly, it is possible the hardware wallet is faulty or has been compromised. It could be leaking your keys, which could lead to loss of funds. Please consider replacing the hardware wallet.</string>
   <string name="id_signup_in_progress">Signup in progress</string>
   <string name="id_simplified_payment_verification">Simplified Payment Verification verifies your transactions and balance using the Bitcoin network, outside of Green\'s servers. Enabling adds bandwidth and processing requirements</string>
   <string name="id_singlesig">Singlesig</string>
