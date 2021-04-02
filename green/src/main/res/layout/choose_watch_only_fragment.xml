@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     app:captionText="@string/id_log_in_to_your_multisig_shield"
                     app:icon="@drawable/ic_green_60"
-                    app:titleText="@string/id_standard_wallet" />
+                    app:titleText="@string/id_multisig_shield" />
 
                 <com.blockstream.green.views.GreenContentCardView
                     android:id="@+id/buttonWatchOnly"
@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     app:captionText="@string/id_enter_your_xpub_to_add_a"
                     app:icon="@drawable/ic_multisig"
-                    app:titleText="@string/id_multisig_shield" />
+                    app:titleText="@string/id_standard_wallet" />
 
             </com.blockstream.green.views.GappedLinearLayout>
 
