@@ -32,10 +32,10 @@ class DialogWalletDeleteViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = "Remove Wallet"
-        lblHint.text = "Do you have a backup?"
-        lblDesc.text = "Be sure your recovery phrase is backed up before deleting this wallet"
-        btnDelete.setTitle("Remove Wallet", for: .normal)
+        lblTitle.text = NSLocalizedString("id_remove_wallet", comment: "")
+        lblHint.text = NSLocalizedString("id_do_you_have_the_backup", comment: "")
+        lblDesc.text = NSLocalizedString("id_be_sure_your_recovery_phrase_is", comment: "")
+        btnDelete.setTitle(NSLocalizedString("id_remove_wallet", comment: ""), for: .normal)
         btnDelete.cornerRadius = 4.0
         btnDelete.setTitleColor(UIColor.customDestructiveRed(), for: .normal)
         btnDelete.borderWidth = 2.0

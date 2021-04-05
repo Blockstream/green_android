@@ -27,12 +27,12 @@ class ChooseNetworkViewController: UIViewController {
 
     func setContent() {
         title = ""
-        lblTitle.text = "Choose your Network"
-        lblHint.text = "Blockstream Green supports both  Bitcoin and the Liquid Network. Don't worry, you can create another wallet for a different network at any time."
+        lblTitle.text = NSLocalizedString("id_choose_your_network", comment: "")
+        lblHint.text = NSLocalizedString("id_blockstream_green_supports_both", comment: "")
         lblBitcoinTitle.text = "Bitcoin"
-        lblBitcoinHint.text = "Bitcoin is the world's leading P2P cryptocurrency network. Select to send and receive bitcoin."
+        lblBitcoinHint.text = NSLocalizedString("id_bitcoin_is_the_worlds_leading", comment: "")
         lblLiquidTitle.text = "Liquid"
-        lblLiquidHint.text = "The Liquid Network is a Bitcoin sidechain. Select to send and receive Liquid Bitcoin (L-BTC), Tether (USDt), and other Liquid assets."
+        lblLiquidHint.text = NSLocalizedString("id_the_liquid_network_is_a_bitcoin", comment: "")
         lblTestnetTitle.text = "Testnet"
         lblTestnetHint.text = ""
     }

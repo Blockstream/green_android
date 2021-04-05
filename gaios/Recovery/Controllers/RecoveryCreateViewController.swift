@@ -35,7 +35,7 @@ class RecoveryCreateViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = NSLocalizedString("id_write_down_the_words", comment: "")
-        lblHint.text = "Write these words down, and save them in a safe place. We’ll test you at the end of it."
+        lblHint.text = NSLocalizedString("id_write_down_your_recovery_phrase", comment: "")
         btnNext.setTitle(NSLocalizedString("id_next", comment: ""), for: .normal)
     }
 

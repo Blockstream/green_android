@@ -8,7 +8,7 @@ class HomeViewController: UIViewController {
     var accounts: [Account] { get { AccountsManager.shared.list } }
 
     enum SupportedHW: String, CaseIterable {
-        case Jade = "Jade"
+        case Jade = "Blockstream Jade"
         case LedgerNanoX = "Ledger Nano X"
     }
 
@@ -29,7 +29,7 @@ class HomeViewController: UIViewController {
     }
 
     func setContent() {
-        lblVersion.text = "App version: \(Bundle.main.versionNumber)"
+        lblVersion.text = String(format: NSLocalizedString("id_version_1s", comment: ""), "\(Bundle.main.versionNumber)")
     }
 
     func setStyle() {
@@ -95,7 +95,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         case 0:
             if accounts.count == 0 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletEmptyCell") as? WalletEmptyCell {
-                    cell.configure("It looks like you have no software wallets.  Click below to add one.", UIImage(named: "ic_logo_green")!)
+                    cell.configure(NSLocalizedString("id_it_looks_like_you_have_no", comment: ""), UIImage(named: "ic_logo_green")!)
                     cell.selectionStyle = .none
                     return cell
                 }
@@ -139,9 +139,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         switch section {
         case 0:
-            return headerView("Wallets".uppercased())
+            return headerView(NSLocalizedString("id_all_wallets", comment: "").uppercased())
         case 1:
-            return headerView("Hardware Wallets".uppercased())
+            return headerView(NSLocalizedString("id_devices", comment: "").uppercased())
         default:
             return nil
         }
@@ -150,7 +150,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch section {
         case 0:
-            return footerView("Add Wallet")
+            return footerView(NSLocalizedString("id_add_wallet", comment: ""))
         case 1:
             return nil
         default:

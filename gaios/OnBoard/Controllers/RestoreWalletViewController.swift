@@ -23,12 +23,12 @@ class RestoreWalletViewController: UIViewController {
 
     func setContent() {
         title = ""
-        lblTitle.text = "Restore a Wallet"
-        lblHint.text = "Import a wallet created with a Blockstream Green app."
-        lblRestoreTitle.text = "Restore Green Wallet"
-        lblRestoreHint.text = "Bitcoin is the world's leading P2P cryptocurrency network. Select to send and receive bitcoin."
-        lblMigrateTitle.text = "Migrate Another Wallet"
-        lblMigrateHint.text = "Import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations."
+        lblTitle.text = NSLocalizedString("id_restore_a_wallet", comment: "")
+        lblHint.text = NSLocalizedString("id_import_a_wallet_created_on", comment: "")
+        lblRestoreTitle.text = NSLocalizedString("id_restore_green_wallet", comment: "")
+        lblRestoreHint.text = NSLocalizedString("id_bitcoin_is_the_worlds_leading", comment: "")
+        lblMigrateTitle.text = NSLocalizedString("id_migrate_another_wallet", comment: "")
+        lblMigrateHint.text = NSLocalizedString("id_import_a_wallet_created_with", comment: "")
     }
 
     func setStyle() {

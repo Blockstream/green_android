@@ -70,9 +70,9 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
         }.then(on: bgq) {
             after(seconds: 1)
         }.done { _ in
-            AccountsManager.shared.current = Account(name: "Jade", network: network, isJade: true)
+            AccountsManager.shared.current = Account(name: "Blockstream Jade", network: network, isJade: true)
             BLEManager.shared.connect(peripheral, network: network)
-            DropAlert().info(message: NSLocalizedString("id_hardware_wallet_check_ready", comment: ""))
+            DropAlert().info(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""))
         }
     }
 }
@@ -124,7 +124,7 @@ extension HardwareWalletScanViewController: BLEManagerDelegate {
 
     func onPrepare(_ peripheral: Peripheral) {
         stopAnimating()
-        let alert = UIAlertController(title: NSLocalizedString("LOGIN HW", comment: ""), message: "", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: NSLocalizedString("id_login", comment: ""), message: "", preferredStyle: .actionSheet)
         if BLEManager.shared.isJade(peripheral) {
             alert.addAction(UIAlertAction(title: NSLocalizedString("Connect Liquid", comment: ""), style: .default) { _ in self.connect(peripheral, network: "liquid") })
         }

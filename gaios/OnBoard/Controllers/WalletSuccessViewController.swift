@@ -18,14 +18,14 @@ class WalletSuccessViewController: UIViewController {
 
     func setContent() {
         title = ""
-        lblHint.text = "Success"
-        lblRecoveryDone.text = "Now we’re all set up. Let’s go!"
+        lblHint.text = NSLocalizedString("id_success", comment: "")
+        lblRecoveryDone.text = NSLocalizedString("id_lets_get_you_set_up", comment: "")
 
         switch LandingViewController.flowType {
         case .add:
             lblRecoveryDone.isHidden = true
         case .restore:
-            btnWallet.setTitle("Done", for: .normal)
+            btnWallet.setTitle(NSLocalizedString("id_done", comment: ""), for: .normal)
             btnBackup.isHidden = true
         }
     }

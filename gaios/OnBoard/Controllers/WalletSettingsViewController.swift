@@ -60,24 +60,24 @@ class WalletSettingsViewController: UIViewController {
 
     func setContent() {
         title = ""
-        lblTitle.text = "Connection & Validation Settings"
-        lblHint.text = "These settings apply for every wallet you use on Green"
+        lblTitle.text = NSLocalizedString("id_connection_amp_validation", comment: "")
+        lblHint.text = NSLocalizedString("id_these_settings_apply_for_every", comment: "")
 
-        lblTorTitle.text = "Connect with Tor"
-        lblTorHint.text = "Private, but less stable connection"
-        lblProxyTitle.text = "Connect with proxy"
+        lblTorTitle.text = NSLocalizedString("id_connect_with_tor", comment: "")
+        lblTorHint.text = NSLocalizedString("id_private_but_less_stable", comment: "")
+        lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
-        lblTxCheckTitle.text = "SPV verification"
-        lblTxCheckHint.text = "Verify your transactions are included in a block"
-        lblMultiTitle.text = "Multi Server Validation"
-        lblMultiHint.text = "Double check SPV with other servers"
-        lblElectBtcTitle.text = "Bitcoin Electrum Backend"
-        lblElectBtcHint.text = "Choose the Bitcoin Electrum servers you trust"
-        lblElectLiquidTitle.text = "Liquid Electrum Backend"
-        lblElectLiquidHint.text = "Chhose the Liquid Electrum servers you trust"
+        lblTxCheckTitle.text = NSLocalizedString("id_spv_verification", comment: "")
+        lblTxCheckHint.text = NSLocalizedString("id_verify_your_transactions_are", comment: "")
+        lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
+        lblMultiHint.text = NSLocalizedString("id_double_check_spv_with_other", comment: "")
+        lblElectBtcTitle.text = NSLocalizedString("id_bitcoin_electrum_backend", comment: "")
+        lblElectBtcHint.text = NSLocalizedString("id_choose_the_electrum_servers_you", comment: "")
+        lblElectLiquidTitle.text = NSLocalizedString("id_liquid_electrum_backend", comment: "")
+        lblElectLiquidHint.text = NSLocalizedString("", comment: "")
 
-        btnCancel.setTitle("Cancel", for: .normal)
-        btnSave.setTitle("Save", for: .normal)
+        btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
+        btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
 
         cardProxyDetail.isHidden = true
     }

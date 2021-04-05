@@ -565,6 +565,7 @@
                         <outlet property="cancelButton" destination="UCy-am-KIJ" id="ZK7-JX-4p5"/>
                         <outlet property="cardEnterPin" destination="Oln-w5-tlx" id="DaP-2v-bP4"/>
                         <outlet property="cardWalletLock" destination="3KP-bm-CE4" id="Kog-tu-7Yx"/>
+                        <outlet property="connectionSettingsButton" destination="wMp-yl-7Kf" id="7D8-tj-Qri"/>
                         <outlet property="deleteButton" destination="IZ4-20-y34" id="nfO-Tb-wD9"/>
                         <outlet property="lblTitle" destination="ITS-xt-sFy" id="9wh-nX-C1d"/>
                         <outlet property="lblWalletLockHint1" destination="0pT-pj-wRd" id="6Dd-Cp-Xg6"/>

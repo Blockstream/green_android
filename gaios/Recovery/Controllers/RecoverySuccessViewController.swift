@@ -16,8 +16,8 @@ class RecoverySuccessViewController: UIViewController {
 
     func setContent() {
         title = ""
-        lblHint.text = "Success"
-        btnNext.setTitle("Continue", for: .normal)
+        lblHint.text = NSLocalizedString("id_success", comment: "")
+        btnNext.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
     }
 
     func setStyle() {

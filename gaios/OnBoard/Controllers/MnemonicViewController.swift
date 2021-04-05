@@ -70,9 +70,9 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     func updateLblTitle() {
         switch recoveryType {
         case .qr:
-            lblTitle.text = "Scan the QR Code"
+            lblTitle.text = NSLocalizedString("id_scan_qr_code", comment: "")
         case .phrase:
-            lblTitle.text = "Enter the recovery phrase"
+            lblTitle.text = NSLocalizedString("id_enter_your_recovery_phrase", comment: "")
         }
     }
 
@@ -167,7 +167,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         OnBoardManager.shared.params?.mnemomicPassword = password
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
-            self.startLoader(message: "Setting Up Your Wallet")
+            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
             guard try validateMnemonic(mnemonic: mnemonic) else {

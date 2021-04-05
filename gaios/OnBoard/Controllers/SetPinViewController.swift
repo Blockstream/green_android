@@ -41,12 +41,13 @@ class SetPinViewController: UIViewController {
 
         switch actionPin {
         case .set:
-            lblTitle.text = "Set a PIN"
+            lblTitle.text = NSLocalizedString("id_set_a_pin", comment: "")
         case .verify:
-            lblTitle.text = "Verify PIN"
+            lblTitle.text = NSLocalizedString("id_verify_your_pin", comment: "")
         }
 
-        lblHint.text = "You'll need your PIN to log in in to your wallet. This PIN secures the wallet on this device only"
+        lblHint.text = NSLocalizedString("id_youll_need_your_pin_to_log_in", comment: "")
+        btnNext.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
     }
 
     func setStyle() {
@@ -102,7 +103,7 @@ class SetPinViewController: UIViewController {
         if pinCode == pinCodeToVerify {
             nextSetEnabled(true)
         } else {
-            DropAlert().error(message: "PINs don't match")
+            DropAlert().error(message: NSLocalizedString("id_pins_do_not_match_please_try", comment: ""))
         }
 
     }
@@ -164,9 +165,9 @@ class SetPinViewController: UIViewController {
         firstly {
             switch pinFlow {
             case .settings:
-                self.startLoader(message: "Setting Up Your Wallet")
+                self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             case .onboard:
-                self.startLoader(message: "Finishing Up")
+                self.startLoader(message: NSLocalizedString("id_finishing_up", comment: ""))
             }
             return Guarantee()
         }.compactMap(on: bgq) {

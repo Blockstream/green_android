@@ -22,7 +22,7 @@ class WatchOnlyViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = "Login"
+        lblTitle.text = NSLocalizedString("id_login", comment: "")
         lblHint.text = NSLocalizedString("id_log_in_via_watchonly_to_receive", comment: "")
         rememberTitle.text = NSLocalizedString("id_remember_me", comment: "")
         warningLabel.text = NSLocalizedString("id_watchonly_mode_can_be_activated", comment: "")
@@ -34,6 +34,7 @@ class WatchOnlyViewController: KeyboardViewController {
         loginButton.setStyle(.primary)
         usernameTextField.placeholder =  NSLocalizedString("id_username", comment: "")
         passwordTextField.placeholder = NSLocalizedString("id_password", comment: "")
+        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
 
         usernameTextField.setLeftPaddingPoints(10.0)
         usernameTextField.setRightPaddingPoints(10.0)
@@ -120,7 +121,7 @@ class WatchOnlyViewController: KeyboardViewController {
 
         firstly {
             dismissKeyboard()
-            self.startLoader(message: "Loggin in...")
+            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate.disconnect()

@@ -22,12 +22,12 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Choose your Security"
-        lblHint.text = "Once selected, this spending policy cannot be changed. For tips on what type of security is best for you, visit our Help Center."
-        lblSimpleTitle.text = "Singlesig"
-        lblSimpleHint.text = "Your funds are secured by a single key held on your device. Simpler to set up and operate than multisig. If in doubt, select this option."
-        lblAdvancedTitle.text = "Multisig Shield"
-        lblAdvancedHint.text = "Your funds are secured by multiple keys, with one key on your device and another on our servers. For enhanced security."
+        lblTitle.text = NSLocalizedString("id_choose_security_policy", comment: "")
+        lblHint.text = NSLocalizedString("id_once_selected_this_spending", comment: "")
+        lblSimpleTitle.text = NSLocalizedString("id_singlesig", comment: "")
+        lblSimpleHint.text = NSLocalizedString("id_your_funds_are_secured_by_a", comment: "")
+        lblAdvancedTitle.text = NSLocalizedString("id_multisig_shield", comment: "")
+        lblAdvancedHint.text = NSLocalizedString("id_your_funds_are_secured_by", comment: "")
     }
 
     func setStyle() {

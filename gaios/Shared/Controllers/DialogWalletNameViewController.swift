@@ -31,12 +31,12 @@ class DialogWalletNameViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = "Wallet Name"
-        lblHint.text = "Choose a name for your wallet"
+        lblTitle.text = NSLocalizedString("id_set_wallet_name", comment: "")
+        lblHint.text = NSLocalizedString("id_choose_a_name_for_your_wallet", comment: "")
 
-        btnSave.setTitle("Save", for: .normal)
+        btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         btnSave.cornerRadius = 4.0
-        nameTextField.placeholder = "Wallet name"
+        nameTextField.placeholder = ""
         nameTextField.setLeftPaddingPoints(10.0)
         nameTextField.setRightPaddingPoints(10.0)
 

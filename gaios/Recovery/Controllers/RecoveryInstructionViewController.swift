@@ -23,7 +23,7 @@ class RecoveryInstructionViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = NSLocalizedString("id_save_your_mnemonic", comment: "")
-        lblHint.text = "The recovery phrase can be used to claim your funds at any point. Keep it safe, keep it secure."
+        lblHint.text = NSLocalizedString("id_the_recovery_phrase_can_be_used", comment: "")
         lblCard1Title.text = NSLocalizedString("id_write_down_your_mnemonic_on", comment: "")
         lblCard2Title.text = NSLocalizedString("id_dont_store_your_mnemonic_on", comment: "")
         lblCard3Title.text = NSLocalizedString("id_dont_take_screenshots_of_your", comment: "")

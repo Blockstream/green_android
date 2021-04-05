@@ -30,6 +30,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         loginButton.setStyle(.primary)
         usernameTextField.placeholder =  NSLocalizedString("id_username", comment: "")
         passwordTextField.placeholder = NSLocalizedString("id_password", comment: "")
+        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
 
         usernameTextField.setLeftPaddingPoints(10.0)
         usernameTextField.setRightPaddingPoints(10.0)
@@ -131,7 +132,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
         firstly {
             view.endEditing(true)
-            self.startLoader(message: "Loggin in...")
+            self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate.disconnect()

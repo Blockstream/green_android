@@ -9,6 +9,7 @@ class LoginViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var attempts: UILabel!
+    @IBOutlet weak var connectionSettingsButton: UIButton!
 
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -33,17 +34,17 @@ class LoginViewController: UIViewController {
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
 
-        progressIndicator?.message = NSLocalizedString("id_logging_in", comment: "")
-
         setContent()
         setStyle()
     }
 
     func setContent() {
         lblTitle.text = NSLocalizedString("id_enter_pin", comment: "")
-        lblWalletLockHint1.text = "You've entered an invalid PIN, you don't have any attempts left."
-        lblWalletLockHint2.text = "Get your recovery phrase to restore this wallet"
-        btnWalletLock.setTitle("Restore with recovery phrase", for: .normal)
+        lblWalletLockHint1.text = NSLocalizedString("id_youve_entered_an_invalid_pin", comment: "")
+        lblWalletLockHint2.isHidden = true
+        btnWalletLock.setTitle(NSLocalizedString("id_restore_with_recovery_phrase", comment: ""), for: .normal)
+        connectionSettingsButton.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        cancelButton.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
     }
 
     func setStyle() {

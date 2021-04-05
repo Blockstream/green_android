@@ -32,9 +32,12 @@ class LandingViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Blockstream Green: Simple and Secure"
-        lblHint.text = "We'll get you set up in no time. Make sure you have a pen and paper ready!"
-
+        lblTitle.text = NSLocalizedString("id_blockstream_greennsimple_and", comment: "")
+        lblHint.text = NSLocalizedString("id_well_get_you_set_up_in_no_time", comment: "")
+        lblTerms.text = NSLocalizedString("id_i_agree_to_the", comment: "")
+        btnNewWallet.setTitle(NSLocalizedString("id_new_wallet", comment: ""), for: .normal)
+        btnRestoreWallet.setTitle(NSLocalizedString("id_restore_wallet", comment: ""), for: .normal)
+        btnWatchOnly.setTitle(NSLocalizedString("id_watchonly", comment: ""), for: .normal)
     }
 
     func setStyle() {

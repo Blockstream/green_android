@@ -43,8 +43,8 @@ class RecoveryVerifyViewController: UIViewController {
         navigationItem.titleView = progressBarView
         reload()
 
-        lblTitle.text = "Recovery Phrase Check"
-        lblHint.text = "Write these words down, and save them in a safe place. We’ll test you at the end of it."
+        lblTitle.text = NSLocalizedString("id_recovery_phrase_check", comment: "")
+        lblHint.text = NSLocalizedString("id_write_down_your_recovery_phrase", comment: "")
 
         for btn in buttonsArray {
             btn.setTitleColor(.white, for: .normal)

@@ -23,12 +23,12 @@ class RecoveryPhraseViewController: UIViewController {
 
     func setContent() {
         title = ""
-        lblTitle.text = "Enter your Recovery Phrase"
+        lblTitle.text = NSLocalizedString("id_enter_your_recovery_phrase", comment: "")
         lblHint.text = ""
-        lblQRTitle.text = "QR Code"
-        lblQRHint.text = "As easy as snapping a photo with your phone. If you have an existing wallet, we suggest this one."
-        lblPhraseTitle.text = "Recovery Phrase"
-        lblPhraseHint.text = "Got it written down? Great. You can type it in here. Don’t lose it, it’ll stay the same."
+        lblQRTitle.text = NSLocalizedString("id_qr_code", comment: "")
+        lblQRHint.text = NSLocalizedString("id_as_easy_as_snapping_a_photo", comment: "")
+        lblPhraseTitle.text = NSLocalizedString("id_recovery_phrase", comment: "")
+        lblPhraseHint.text = NSLocalizedString("id_got_it_written_down_great_you", comment: "")
     }
 
     func setStyle() {

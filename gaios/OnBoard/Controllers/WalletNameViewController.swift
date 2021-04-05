@@ -23,10 +23,12 @@ class WalletNameViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Wallet Name"
-        lblHint.text = "Choose a name for your wallet"
-        lblSubtitle.text = "Connection & Validation Settings"
-        lblSubtitleHint.text = "You can change these later on."
+        lblTitle.text = NSLocalizedString("id_wallet_name", comment: "")
+        lblHint.text = NSLocalizedString("id_choose_a_name_for_your_wallet", comment: "")
+        lblSubtitle.text = NSLocalizedString("id_connection_amp_validation", comment: "")
+        lblSubtitleHint.text = NSLocalizedString("id_you_can_change_these_later_on", comment: "")
+        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
+        btnNext.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
     }
 
     func setStyle() {
@@ -75,7 +77,7 @@ class WalletNameViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let params = OnBoardManager.shared.params
         firstly {
-            self.startLoader(message: "Setting Up Your Wallet")
+            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate?.disconnect()
@@ -106,7 +108,7 @@ class WalletNameViewController: UIViewController {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
-            self.startLoader(message: "Setting Up Your Wallet")
+            self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate?.disconnect()
