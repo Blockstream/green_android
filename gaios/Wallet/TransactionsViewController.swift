@@ -297,12 +297,18 @@ class TransactionsController: UITableViewController {
         }.ensure {
             self.stopAnimating()
         }.done {
+
             let storyboard = UIStoryboard(name: "Home", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
-            vc?.account = account
+            let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
+
+            if let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+                vc.account = account
+                nav?.pushViewController(vc, animated: false)
+            }
+
             self.navigationController?.dismiss(animated: true, completion: {})
             self.navigationController?.popToRootViewController(animated: true)
-            UIApplication.shared.keyWindow?.rootViewController = vc
+            UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { _ in
             fatalError("disconnection error never happens")
         }
