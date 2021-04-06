@@ -19,7 +19,8 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         super.viewDidLoad()
         navigationItem.title = account?.name ?? ""
         navigationItem.setHidesBackButton(true, animated: false)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(WatchOnlyLoginViewController.back))
+        navigationItem.leftBarButtonItems = [UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(WatchOnlyLoginViewController.back)),
+            UIBarButtonItem(image: (account?.icon ?? UIImage(named: ""))?.withRenderingMode(.alwaysOriginal), style: UIBarButtonItem.Style.plain, target: self, action: #selector(WatchOnlyLoginViewController.back))]
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: menuButton)
