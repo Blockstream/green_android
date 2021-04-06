@@ -60,7 +60,7 @@ class WalletSettingsViewController: UIViewController {
 
     func setContent() {
         title = ""
-        lblTitle.text = NSLocalizedString("id_connection_amp_validation", comment: "")
+        lblTitle.text = NSLocalizedString("id_app_settings", comment: "")
         lblHint.text = NSLocalizedString("id_these_settings_apply_for_every", comment: "")
 
         lblTorTitle.text = NSLocalizedString("id_connect_with_tor", comment: "")
