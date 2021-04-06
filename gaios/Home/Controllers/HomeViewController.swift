@@ -10,6 +10,24 @@ class HomeViewController: UIViewController {
     enum SupportedHW: String, CaseIterable {
         case Jade = "Blockstream Jade"
         case LedgerNanoX = "Ledger Nano X"
+
+        func name() -> String {
+            switch self {
+            case .Jade:
+                return "Blockstream Jade"
+            case .LedgerNanoX:
+                return "Ledger"
+            }
+        }
+
+        func icon() -> UIImage {
+            switch self {
+            case .Jade:
+                return UIImage(named: "blockstreamIcon")!
+            case .LedgerNanoX:
+                return UIImage(named: "ledgerIcon")!
+            }
+        }
     }
 
     var headerH: CGFloat = 44.0
@@ -108,7 +126,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             }
         case 1:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletHDCell") as? WalletHDCell {
-                cell.configure(SupportedHW.allCases[indexPath.row].rawValue, UIImage(named: "ic_hww")!)
+                let hw = SupportedHW.allCases[indexPath.row]
+                cell.configure(hw.name(), hw.icon())
                 cell.selectionStyle = .none
                 return cell
             }
