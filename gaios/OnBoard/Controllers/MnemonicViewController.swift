@@ -180,7 +180,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
             let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
             self.navigationController?.pushViewController(vc, animated: true)
         }.catch { error in
-            DropAlert().error(message: NSLocalizedString("id_invalid_mnemonic", comment: ""))
+            DropAlert().error(message: "Invalid Recovery Phrase")
         }
     }
     func next() {

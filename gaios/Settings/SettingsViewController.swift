@@ -194,7 +194,7 @@ class SettingsViewController: UIViewController {
     func getSecurity() -> [SettingsItem] {
         guard let settings = Settings.shared else { return [] }
         let mnemonic = SettingsItem(
-            title: NSLocalizedString("id_mnemonic", comment: ""),
+            title: NSLocalizedString("id_recovery_phrase", comment: ""),
             subtitle: "",
             section: .security,
             type: .Mnemonic)

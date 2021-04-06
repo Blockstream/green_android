@@ -13,7 +13,7 @@ class ShowMnemonicsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         createViews()
-        title = NSLocalizedString("id_mnemonic", comment: "")
+        title = NSLocalizedString("id_recovery_phrase", comment: "")
     }
 
     func createViews() {
