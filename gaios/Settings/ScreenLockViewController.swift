@@ -9,6 +9,10 @@ class ScreenLockViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_screen_lock", comment: "")
+        content.pinLabel.text = NSLocalizedString("id_change_pin", comment: "")
+        content.pinLabel.isUserInteractionEnabled = true
+        content.pinLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(pinLabelTapped)))
+
         let biometryType = AuthenticationTypeHandler.biometryType
         if biometryType == .faceID {
             content.bioAuthLabel.text = NSLocalizedString("id_face_id", comment: "")
@@ -23,15 +27,17 @@ class ScreenLockViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         content.bioSwitch.addTarget(self, action: #selector(click(_:)), for: .valueChanged)
-        content.pinSwitch.addTarget(self, action: #selector(click(_:)), for: .valueChanged)
         updateValues()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
         content.bioSwitch.removeTarget(self, action: #selector(click(_:)), for: .valueChanged)
-        content.pinSwitch.removeTarget(self, action: #selector(click(_:)), for: .valueChanged)
         updateValues()
+    }
+
+    @objc func pinLabelTapped(_ recognizer: UITapGestureRecognizer) {
+        self.performSegue(withIdentifier: "restorePin", sender: nil)
     }
 
     func updateValues() {
@@ -43,29 +49,23 @@ class ScreenLockViewController: UIViewController {
         if GreenAddressService.isTemporary {
             content.bioSwitch.isOn = false
             content.bioSwitch.isEnabled = false
-            content.pinSwitch.isOn = false
-            content.pinSwitch.isEnabled = false
             content.helpLabel.numberOfLines = 0
             content.helpLabel.text = NSLocalizedString("id_green_only_supports_one_pin_per", comment: "")
         } else if screenlock == .None {
             content.bioSwitch.isOn = false
-            content.pinSwitch.isOn = false
         } else if screenlock == .All {
             content.bioSwitch.isOn = true
-            content.pinSwitch.isOn = true
         } else if screenlock == .FaceID || screenlock == .TouchID {
             // this should never happen
             NSLog("no pin exists but faceid/touchid is enabled" )
             content.bioSwitch.isOn = true
-            content.pinSwitch.isOn = false
         } else if screenlock == .Pin {
             content.bioSwitch.isOn = false
-            content.pinSwitch.isOn = true
         }
     }
 
     func onAuthRemoval(_ sender: UISwitch, _ completionHandler: @escaping () -> Void) {
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString(sender == content.pinSwitch ? "id_deleting_your_pin_will_remove" : "id_your_pin_or_your_mnemonic_will", comment: ""), preferredStyle: .alert)
+        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: NSLocalizedString("id_your_pin_or_your_mnemonic_will", comment: ""), preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
             DispatchQueue.main.async {
                 self.navigationController?.popViewController(animated: true)
@@ -108,10 +108,6 @@ class ScreenLockViewController: UIViewController {
         }
     }
 
-    private func enablePinAuth() {
-        self.performSegue(withIdentifier: "restorePin", sender: nil)
-    }
-
     private func enableBioAuth() {
         // An auth key pin should be set before updating bio auth
         if !AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: self.account!.keychain) {
@@ -139,17 +135,6 @@ class ScreenLockViewController: UIViewController {
         }
     }
 
-    private func disablePinAuth() {
-        // Disable auth key Bio before removing auth key Pin
-        if AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyBiometric, forNetwork: self.account!.keychain) {
-            onAuthError(message: NSLocalizedString("id_please_disable_biometric", comment: ""))
-            return
-        }
-        onAuthRemoval(self.content.pinSwitch) {
-            self.account?.removePinKeychainData()
-        }
-    }
-
     private func disableBioAuth() {
         onAuthRemoval(self.content.bioSwitch) {
             self.account?.removeBioKeychainData()
@@ -157,11 +142,7 @@ class ScreenLockViewController: UIViewController {
     }
 
     @objc func click(_ sender: UISwitch) {
-        if sender == self.content.pinSwitch, sender.isOn {
-            enablePinAuth()
-        } else if sender == self.content.pinSwitch, !sender.isOn {
-            disablePinAuth()
-        } else if sender == self.content.bioSwitch, sender.isOn {
+        if sender == self.content.bioSwitch, sender.isOn {
             enableBioAuth()
         } else {
             disableBioAuth()
@@ -180,8 +161,8 @@ class ScreenLockView: UIView {
 
     @IBOutlet weak var bioAuthLabel: UILabel!
     @IBOutlet weak var helpLabel: UILabel!
+    @IBOutlet weak var pinLabel: UILabel!
     @IBOutlet weak var bioSwitch: UISwitch!
-    @IBOutlet weak var pinSwitch: UISwitch!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
