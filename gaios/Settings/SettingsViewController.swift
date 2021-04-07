@@ -39,30 +39,28 @@ class SettingsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         reloadData()
+        if !isWatchOnly {
+            Guarantee()
+                .compactMap { try self.refresh() }
+                .done { self.reloadData() }
+                .catch { err in print(err) }
+        }
     }
 
     func reloadData() {
-        let bgq = DispatchQueue.global(qos: .background)
-        let isWatchOnly = getGAService().isWatchOnly
-        let session = getGAService().getSession()
-        Guarantee().compactMap(on: bgq) {
-            if !isWatchOnly {
-                self.username = try session.getWatchOnlyUsername()
-                let dataTwoFactorConfig = try session.getTwoFactorConfig()
-                self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
-            }
-            return ()
-        }.recover { _ in
-        }.done {
-            self.sections = self.getSections()
-            self.items = self.getSettings()
-            self.data = Dictionary(grouping: self.items) { (item) in
-                return item.section
-            }
-            self.tableView.reloadData()
-        }.catch { e in
-            print(e.localizedDescription)
+        self.sections = self.getSections()
+        self.items = self.getSettings()
+        self.data = Dictionary(grouping: self.items) { (item) in
+            return item.section
         }
+        self.tableView.reloadData()
+    }
+
+    func refresh() throws {
+        let session = getGAService().getSession()
+        self.username = try session.getWatchOnlyUsername()
+        let dataTwoFactorConfig = try session.getTwoFactorConfig()
+        self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
     }
 
     func getSections() -> [SettingsSections] {
@@ -308,6 +306,7 @@ extension SettingsViewController {
             return Guarantee()
         }.compactMap(on: bgq) {
             try getGAService().getSession().setWatchOnly(username: username, password: password)
+            try self.refresh()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -322,14 +321,14 @@ extension SettingsViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try getGAService().getSession().cancelTwoFactorReset()
-        }.then(on: bgq) { call in
-            call.resolve()
+        }.then(on: bgq) {
+            try getGAService().getSession().cancelTwoFactorReset().resolve()
+        }.compactMap(on: bgq) { _ in
+            try self.refresh()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.logout()
+            self.reloadData()
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
         }
@@ -345,10 +344,12 @@ extension SettingsViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            return try getSession().sendNlocktimes()
+            try getSession().sendNlocktimes()
+            try self.refresh()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
+            self.reloadData()
             DropAlert().success(message: NSLocalizedString("id_recovery_transaction_request", comment: ""))
         }.catch {_ in
             DropAlert().error(message: NSLocalizedString("id_request_failed", comment: ""))
@@ -361,10 +362,10 @@ extension SettingsViewController {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {_ in
             self.startAnimating()
+        }.then(on: bgq) { _ in
+            try session.changeSettings(details: details!).resolve()
         }.compactMap(on: bgq) { _ in
-            try session.changeSettings(details: details!)
-        }.then(on: bgq) { call in
-            call.resolve()
+            try self.refresh()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -379,10 +380,10 @@ extension SettingsViewController {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {_ in
             self.startAnimating()
+        }.then(on: bgq) { _ in
+            try session.resetTwoFactor(email: email, isDispute: false).resolve()
         }.compactMap(on: bgq) { _ in
-            try session.resetTwoFactor(email: email, isDispute: false)
-        }.then(on: bgq) { call in
-            call.resolve()
+            try self.refresh()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
