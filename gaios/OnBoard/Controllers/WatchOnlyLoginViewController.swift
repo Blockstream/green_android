@@ -168,8 +168,8 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
 extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didSave(_ name: String) {
-        if var account = self.account {
-            account.name = name
+        account?.name = name
+        if let account = self.account {
             AccountsManager.shared.upsert(account)
             navigationItem.title = account.name
         }

@@ -281,8 +281,8 @@ class LoginViewController: UIViewController {
 
 extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWalletDeleteViewControllerDelegate {
     func didSave(_ name: String) {
-        if var account = self.account {
-            account.name = name
+        self.account?.name = name
+        if let account = self.account {
             AccountsManager.shared.upsert(account)
             navigationItem.title = account.name
         }
