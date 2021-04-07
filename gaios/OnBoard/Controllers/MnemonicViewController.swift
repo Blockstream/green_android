@@ -143,7 +143,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
                     self.present(alert, animated: true, completion: nil)
                 }
             } else {
-                seal.fulfill((mnemonic.prefix(upTo: 24).joined(separator: " ").lowercased(), String()))
+                seal.fulfill((mnemonic.prefix(upTo: 24).joined(separator: " ").trimmingCharacters(in: .whitespacesAndNewlines).lowercased(), String()))
             }
         }
     }
@@ -235,6 +235,8 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     }
 
     func onScan(mnemonic: String) {
+        recoveryType = .phrase
+        updateLblTitle()
         onPaste(mnemonic)
     }
 
@@ -257,7 +259,7 @@ extension MnemonicViewController: QRCodeReaderDelegate {
 
     private func onPaste(_ result: String) {
         let words = result.split(separator: " ")
-        guard words.count == 24 || words.count == 27 else {
+        guard words.count == 12 || words.count == 24 || words.count == 27 else {
             return
         }
 
