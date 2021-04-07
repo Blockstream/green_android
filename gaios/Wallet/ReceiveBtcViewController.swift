@@ -16,7 +16,6 @@ class ReceiveBtcViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_receive", comment: "")
-        tabBarController?.tabBar.isHidden = true
         gestureTap = UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard))
         gestureTapQRCode = UITapGestureRecognizer(target: self, action: #selector(self.copyToClipboard))
         gestureTapAccountId = UITapGestureRecognizer(target: self, action: #selector(self.copyAccountIdToClipboard))
