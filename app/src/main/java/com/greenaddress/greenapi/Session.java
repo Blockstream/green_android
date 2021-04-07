@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
+import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -30,7 +31,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
     private String mWatchOnlyUsername;
     private HWWallet mHWWallet = null;
     private SettingsData mSettings;
-    private Boolean mTwoFAReset = false;
+    private EventData mTwoFAReset = null;
     private String mNetwork;
 
     private Session() {
@@ -49,7 +50,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
         // Reset
         mHWWallet = null;
         mSettings = null;
-        mTwoFAReset = false;
+        mTwoFAReset = null;
 
         getNotificationModel().reset();
     }
@@ -74,14 +75,17 @@ public class Session extends GDKSession implements HttpRequestProvider {
         mHWWallet = hwWallet;
     }
 
-    public void setTwoFAReset(final boolean m2FAReset) {
-        this.mTwoFAReset = m2FAReset;
+    public EventData getTwoFAReset() {
+        return this.mTwoFAReset;
+    }
+
+    public void setTwoFAReset(final EventData eventData) {
+        this.mTwoFAReset = eventData;
     }
 
     public boolean isTwoFAReset() {
-        return mTwoFAReset;
+        return mTwoFAReset != null;
     }
-
 
     public void setNetwork(final String network) {
         mNetwork = network;
@@ -96,7 +100,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
         }
         mWatchOnlyUsername = null;
         mSettings = null;
-        mTwoFAReset = false;
+        mTwoFAReset = null;
     }
 
     public SettingsData refreshSettings() {

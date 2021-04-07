@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.Bridge;
+import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenbits.ui.GAFragment;
@@ -72,7 +74,10 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     private TextView mAssetsSelection;
     private TextView mSwitchNetwork;
     private View mView;
-    private View mRecoveryCard;
+    private View mCard;
+    private TextView mCardTitle;
+    private TextView mCardMessage;
+    private Button mCardAction;
 
     private Disposable newTransactionDisposable;
     private Disposable blockDisposable;
@@ -91,7 +96,10 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         if (isZombie())
             return mView;
 
-        mRecoveryCard = UI.find(mView, R.id.recoveryCard);
+        mCard = UI.find(mView, R.id.card);
+        mCardTitle = UI.find(mView, R.id.cardTitle);
+        mCardMessage = UI.find(mView, R.id.cardMessage);
+        mCardAction = UI.find(mView, R.id.buttonCardAction);
 
         // Setup recycler & adapter
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
@@ -132,8 +140,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
 
         mActiveAccount = Bridge.INSTANCE.getActiveAccount();
 
-        UI.find(mView, R.id.buttonRecovery).setOnClickListener(v -> {
-            Bridge.INSTANCE.navigateToBackupRecovery(getActivity());
+        UI.find(mView, R.id.buttonCardAction).setOnClickListener(v -> {
+            Bridge.INSTANCE.twoFactorResetDialog(getActivity());
         });
 
         return mView;
@@ -194,11 +202,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             mSwipeRefreshLayout.setRefreshing(true);
 
 
-        boolean isRecoveryConfirmed = Bridge.INSTANCE.getIsRecoveryConfirmed();
-
-        mRecoveryCard.setVisibility(isRecoveryConfirmed ? View.GONE : View.VISIBLE);
-
-        if(getSession().isTwoFAReset() || !isRecoveryConfirmed){
+        if(getSession().isTwoFAReset()){
             mAccountView.hideActions();
         }else{
             mAccountView.showActions(getSession().isWatchOnly());
@@ -216,7 +220,28 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         }
     }
 
+    private void updateCard(){
+        EventData eventData = getSession().getTwoFAReset();
+
+        if(eventData != null){
+            mCardTitle.setText(eventData.getTitle());
+
+            if(eventData.getValue() instanceof Integer){ // Is Reset
+                mCardMessage.setText(getString(eventData.getDescription(), eventData.getValue()));
+                mCardAction.setText(R.string.id_learn_more);
+                mCardAction.setVisibility(View.VISIBLE);
+            }else{ // Is Dispute
+                mCardMessage.setText(eventData.getDescription());
+                mCardAction.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        mCard.setVisibility(eventData != null ? View.VISIBLE : View.GONE);
+    }
+
     private void update() {
+        updateCard();
+
         subaccountDisposable = Observable.just(getSession())
                                .observeOn(Schedulers.computation())
                                .map((session) -> {

@@ -5,10 +5,7 @@ import android.preference.PreferenceActivity;
 
 import androidx.fragment.app.Fragment;
 
-
-
 public class SettingsActivity extends GaPreferenceActivity {
-
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -29,8 +26,10 @@ public class SettingsActivity extends GaPreferenceActivity {
 
                 } else {
                     // Moved from TabbedMainActivity
-                    if (getSession().isTwoFAReset())
+                    if (getSession().isTwoFAReset()){
                         fragment = new ResetActivePreferenceFragment();
+                        fragment.setArguments(getIntent().getExtras());
+                    }
                     else if (getSession().isWatchOnly())
                         fragment = new WatchOnlyPreferenceFragment();
                     else

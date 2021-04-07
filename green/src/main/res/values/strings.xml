@@ -814,4 +814,11 @@
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.\n\nYou\'ll need your recovery phrase to restore this wallet.</string>
+
+  <string name="id_how_to_stop_this_reset">How to Stop This Reset</string>
+  <string name="id_if_you_did_not_request_the">If you did not request the reset, but you cannot cancel the reset process because you can\'t access any existing Two-Factor Authorization methods, please contact our support.</string>
+  <string name="id_if_you_have_access_to_a">If you have access to a Two-Factor method for this wallet, cancel the reset to be able to spend and receive immediately, or wait %d days.</string>
+  <string name="id_permanently_block_this_wallet">Permanently Block This Wallet</string>
+  <string name="id_the_waiting_period_is_necessary">The waiting period is necessary to ensure the security of your wallet, to prevent thieves from getting around your Two-Factor protection.</string>
+
 </resources>

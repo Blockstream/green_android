@@ -180,18 +180,16 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 //{"event":"twofactor_reset","twofactor_reset":{"days_remaining":90,"is_active":true,"is_disputed":false}}
                 final JsonNode resetData = objectNode.get("twofactor_reset");
                 if (resetData.get("is_active").asBoolean()) {
-                    getSession().setTwoFAReset(true);
                     final EventData ev;
                     if (resetData.get("is_disputed").asBoolean()) {
-                        ev = new EventData(R.string.id_twofactor_authentication,
+                        ev = new EventData(R.string.id_2fa_reset_in_progress,
                                            R.string.id_warning_wallet_locked_by);
                     } else{
                         final Integer days = resetData.get("days_remaining").asInt();
-                        ev = new EventData(R.string.id_twofactor_authentication,
+                        ev = new EventData(R.string.id_2fa_reset_in_progress,
                                            R.string.id_your_wallet_is_locked_for_a, days);
                     }
-                    mEventDataList.add(ev);
-                    mEventsPublish.onNext(mEventDataList);
+                    getSession().setTwoFAReset(ev);
                 }
                 break;
             }

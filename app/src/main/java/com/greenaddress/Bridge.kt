@@ -42,7 +42,7 @@ object Bridge {
     private var initialized = false
 
     enum class NavigateType {
-        LOGOUT, CHANGE_PIN, CONNECTION_SETTINGS, BACKUP_RECOVERY
+        LOGOUT, CHANGE_PIN, CONNECTION_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET
     }
 
     fun initializeBridge(
@@ -106,6 +106,10 @@ object Bridge {
         navigateFn?.invoke(activity, NavigateType.BACKUP_RECOVERY, Session.getSession().nativeSession)
     }
 
+    fun twoFactorResetDialog(activity: FragmentActivity){
+        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_RESET, Session.getSession().nativeSession, -1)
+    }
+
     fun bridgeSession(session: Any, networkId: String, watchOnlyUsername: String?) {
         Session.getSession().bridgeSession(session, networkId, watchOnlyUsername)
         setCurrentNetwork(context.get()!!, networkId)
@@ -163,11 +167,13 @@ object Bridge {
     // This is needed for all GDK calls that returns a JSON
     // Prototype uses Kotlin Serialization for JSON decoding
     // This method will do the transition from JsonElement to ObjectNode if needed
-    fun toJackson(obj: Any): ObjectNode {
-        if(obj is JsonElement){
-            return objectMapper.readTree(Json.encodeToString(obj)) as ObjectNode
+    fun toJackson(obj: Any?): ObjectNode? {
+        if(obj == null) return null
+        
+        return if (obj is JsonElement) {
+            objectMapper.readTree(Json.encodeToString(obj)) as ObjectNode
         } else {
-            return obj as ObjectNode
+            obj as ObjectNode
         }
     }
 }

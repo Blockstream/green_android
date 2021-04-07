@@ -7,10 +7,12 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.util.TypedValue
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.blockstream.green.R
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
@@ -84,6 +86,11 @@ fun createQrBitmap(content: String): Bitmap? {
         return null
     }
 }
+
+fun Fragment.toPixels(size: Float) =
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, resources.displayMetrics).toInt()
+
+fun Fragment.toPixels(size: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size.toFloat(), resources.displayMetrics).toInt()
 
 fun String?.nameCleanup(): String? = if (isNullOrBlank()) null else trim().replace("\n", "")
 

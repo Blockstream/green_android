@@ -40,7 +40,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/recoveryCard"
+                android:id="@+id/card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
@@ -52,28 +52,43 @@
                     tools:background="@color/white">
 
                     <TextView
-                        android:id="@+id/message"
+                        android:id="@+id/cardTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
+                        android:textSize="16sp"
                         android:textColor="@color/primaryDark"
-                        android:text="@string/id_youll_need_to_back_up_your"
-                        app:layout_constraintBottom_toTopOf="@+id/buttonRecovery"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        tools:text="@string/id_twofactor_authentication"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <TextView
+                        android:id="@+id/cardMessage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        tools:text="@string/id_twofactor_reset_in_progress"
+                        android:textColor="@color/primaryDark"
+                        app:layout_constraintBottom_toTopOf="@+id/buttonCardAction"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/cardTitle" />
+
                     <Button
-                        android:id="@+id/buttonRecovery"
+                        android:id="@+id/buttonCardAction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
                         android:textAllCaps="false"
                         android:textColor="@color/primaryDark"
                         style="@style/Widget.AppCompat.Button.Borderless"
-                        android:text="@string/id_back_up_recovery_phrase"
+                        tools:text="@string/id_more_info"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 

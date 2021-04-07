@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.preferences;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,6 +21,9 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceClickListener {
     private static final String TAG = ResetActivePreferenceFragment.class.getSimpleName();
     private static final int REQUEST_2FA = 101;
+
+    static public final String INITIATE_CANCEL = "INITIATE_CANCEL";
+
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
@@ -68,6 +72,10 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
         // Actions
         ((Preference) find(PrefKeys.CANCEL_TWOFACTOR_RESET)).setOnPreferenceClickListener(this);
         ((Preference) find(PrefKeys.DISPUTE_TWOFACTOR_RESET)).setOnPreferenceClickListener(this);
+
+        if(savedInstanceState == null && getArguments() != null && getArguments().getBoolean(INITIATE_CANCEL)){
+            startTwoFactorActivity("cancel");
+        }
     }
 
     @Override
@@ -94,7 +102,13 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
         super.onActivityResult(requestCode, resultCode, data);
         // If reset cancelled or disputed with success, logout
         final int unmaskedRequestCode = requestCode & 0x0000ffff;
-        if (unmaskedRequestCode == 101 && resultCode == RESULT_OK)
-            ((LoggedActivity) getActivity()).logout(-1L);
+        if (unmaskedRequestCode == 101 && resultCode == RESULT_OK){
+            Activity activity = getActivity();
+            if(activity instanceof GaPreferenceActivity){
+                ((GaPreferenceActivity) getActivity()).logout();
+            }else {
+                ((LoggedActivity) getActivity()).logout(-1L);
+            }
+        }
     }
 }

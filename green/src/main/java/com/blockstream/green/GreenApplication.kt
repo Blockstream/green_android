@@ -11,11 +11,14 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.lifecycle.AppLifecycleObserver
 import com.blockstream.green.ui.BridgeActivity
 import com.blockstream.green.ui.MainActivity
+import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.wallet.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragmentArgs
 import com.blockstream.green.ui.recovery.RecoveryIntroFragmentArgs
 import com.blockstream.green.ui.settings.WalletSettingsFragmentArgs
+import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.Bridge
+import com.greenaddress.greenapi.Session
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -46,7 +49,6 @@ class GreenApplication : Application(){
         Bridge.initializeBridge(this, BuildConfig.DEBUG, BuildConfig.VERSION_NAME)
 
         Bridge.setNavigateHandler { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: Any? ->
-
             when(type){
                 Bridge.NavigateType.LOGOUT -> {
 
@@ -100,9 +102,18 @@ class GreenApplication : Application(){
                 }
 
                 Bridge.NavigateType.CONNECTION_SETTINGS -> {
-
                     DeleteWalletBottomSheetDialogFragment().also {
                         it.show(activity.supportFragmentManager, it.toString())
+                    }
+                }
+
+                Bridge.NavigateType.TWO_FACTOR_RESET -> {
+                    Session.getSession().twoFAReset?.let { eventData ->
+                        if (eventData.value is Int){
+                            TwoFactorResetSheetDialogFragment.newInstance(eventData.value as Int).also {
+                                it.show(activity.supportFragmentManager, it.toString())
+                            }
+                        }
                     }
                 }
             }
