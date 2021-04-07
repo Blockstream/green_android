@@ -5,7 +5,16 @@ class AccountsManager {
     let attrService = "AccountsManager_Service"
     static let shared = AccountsManager()
 
-    var current: Account?
+    private var currentId = ""
+    var current: Account? {
+        get {
+            list.filter({ $0.id == currentId }).first
+        }
+        set {
+            currentId = newValue?.id ?? ""
+        }
+    }
+
     var list: [Account] {
         get {
             return (try? read()) ?? []
