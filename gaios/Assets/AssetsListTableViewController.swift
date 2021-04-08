@@ -27,7 +27,6 @@ class AssetsListTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(self, selector: #selector(onAssetsUpdated), name: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil)
-        reloadData()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -41,23 +40,6 @@ class AssetsListTableViewController: UITableViewController {
             .done { self.tableView.reloadData() }
             .catch { err in
                 print(err.localizedDescription)
-        }
-    }
-
-    func reloadData() {
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap {
-            Registry.shared.cache()
-        }.then { _ in
-            self.wallet!.getBalance()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.tableView.reloadData()
-        }.catch { err in
-            print(err.localizedDescription)
         }
     }
 
