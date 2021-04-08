@@ -48,8 +48,7 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
             final String touchToDisplay = getString(R.string.id_touch_to_display);
             mMemonicPref.setSummary(touchToDisplay);
             mMemonicPref.setOnPreferenceClickListener(preference -> {
-                final Intent intent = new Intent(getActivity(), DisplayMnemonicActivity.class);
-                startActivity(intent);
+                Bridge.INSTANCE.navigateToBackupRecovery(getActivity());
                 return false;
             });
         }
