@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol SubaccountDelegate: class {
-    func onChange(_ pointer: UInt32)
+    func onChange(_ wallet: WalletItem)
 }
 
 class TransactionsController: UITableViewController {
@@ -105,14 +105,14 @@ class TransactionsController: UITableViewController {
 
     func onNewBlock(_ notification: Notification) {
         self.loadTransactions().done {
-            self.reload()
+            self.showTransactions()
         }.catch { _ in }
     }
 
     func onAssetsUpdated(_ notification: Notification) {
         Guarantee()
             .compactMap { Registry.shared.cache() }
-            .done { self.reload() }
+            .done { self.showTransactions() }
             .catch { err in
                 print(err.localizedDescription)
         }
@@ -126,13 +126,16 @@ class TransactionsController: UITableViewController {
         }
     }
 
-    func reload() {
+    func showTransactions() {
         if view.subviews.contains(noTransactionsLabel) {
             noTransactionsLabel.removeFromSuperview()
         }
         let count = txs.map { $0.list.count }.reduce(0, +)
         if count == 0 {
             view.addSubview(noTransactionsLabel)
+        }
+        if tableView.refreshControl?.isRefreshing ?? false {
+            tableView.refreshControl?.endRefreshing()
         }
         tableView.reloadData()
     }
@@ -173,10 +176,7 @@ class TransactionsController: UITableViewController {
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
         when(resolved: self.loadWallet(), self.loadTransactions()).done { _ in
-            if self.tableView.refreshControl!.isRefreshing {
-                self.tableView.refreshControl!.endRefreshing()
-            }
-            self.reload()
+            self.showTransactions()
         }.catch { err in
             print(err.localizedDescription)
         }
@@ -205,9 +205,16 @@ class TransactionsController: UITableViewController {
         .recover { _ in
             getSubaccount(0)
         }.map { wallet in
-            self.onChange(wallet.pointer)
+            UserDefaults.standard.set(Int(wallet.pointer), forKey: self.pointerKey)
+            UserDefaults.standard.synchronize()
             self.presentingWallet = wallet
-            let view = self.tableView.tableHeaderView as? WalletFullCardView
+            self.showWallet()
+        }
+    }
+
+    func showWallet() {
+        let view = self.tableView.tableHeaderView as? WalletFullCardView
+        if let wallet = presentingWallet {
             view?.setup(with: wallet)
         }
     }
@@ -322,15 +329,25 @@ extension TransactionsController: UITableViewDataSourcePrefetching {
         let count = txs.map { $0.list.count }.reduce(0, +)
         fetchTxs = getTransactions(self.pointerWallet, first: UInt32(count)).map { txs in
             self.txs.append(txs)
-            self.reload()
+            self.showTransactions()
         }
     }
 }
 
 extension TransactionsController: SubaccountDelegate {
-    func onChange(_ pointer: UInt32) {
-        UserDefaults.standard.set(Int(pointer), forKey: pointerKey)
+    func onChange(_ wallet: WalletItem) {
+        // Replace wallet and balance
+        UserDefaults.standard.set(Int(wallet.pointer), forKey: pointerKey)
         UserDefaults.standard.synchronize()
+        presentingWallet = wallet
+        showWallet()
+        // Empty and reload transactions list
+        txs.removeAll()
+        tableView.reloadData()
+        tableView.refreshControl?.beginRefreshing()
+        loadTransactions().done {
+            self.showTransactions()
+        }.catch { _ in }
     }
 }
 

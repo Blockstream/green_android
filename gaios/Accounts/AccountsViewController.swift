@@ -152,7 +152,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
 
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         wallet = wallets[indexPath.row]
-        subaccountDelegate?.onChange(wallet.pointer)
+        subaccountDelegate?.onChange(wallet)
         if isSweep {
             performSegue(withIdentifier: "sweep", sender: nil)
         } else {
