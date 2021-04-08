@@ -212,7 +212,13 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func switchNetwork() {
-        self.performSegue(withIdentifier: "switch_network", sender: self)
+        let storyboard = UIStoryboard(name: "DrawerNetworkSelection", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DrawerNetworkSelection") as? DrawerNetworkSelectionViewController {
+            vc.transitioningDelegate = self
+            vc.modalPresentationStyle = .custom
+            vc.delegate = self
+            present(vc, animated: true, completion: nil)
+        }
     }
 
     @objc func wallets(_ sender: UIButton) {
@@ -324,15 +330,26 @@ extension TransactionsController: SubaccountDelegate {
 
 extension TransactionsController: UIViewControllerTransitioningDelegate {
     func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        if let presented = presented as? DrawerNetworkSelectionViewController {
+            return DrawerPresentationController(presentedViewController: presented, presenting: presenting)
+        }
         return ModalPresentationController(presentedViewController: presented, presenting: presenting)
     }
 
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        ModalAnimator(isPresenting: true)
+        if presented as? DrawerNetworkSelectionViewController != nil {
+            return DrawerAnimator(isPresenting: true)
+        } else {
+            return ModalAnimator(isPresenting: true)
+        }
     }
 
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        ModalAnimator(isPresenting: false)
+        if dismissed as? DrawerNetworkSelectionViewController != nil {
+            return DrawerAnimator(isPresenting: false)
+        } else {
+            return ModalAnimator(isPresenting: false)
+        }
     }
 }
 
@@ -340,5 +357,24 @@ extension TransactionsController: UIAdaptivePresentationControllerDelegate {
 
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         handleRefresh()
+    }
+}
+
+extension TransactionsController: DrawerNetworkSelectionDelegate {
+    func didSelectAccount(account: Account) {
+        self.accountDidChange(account)
+    }
+
+    func didSelectHDW() {
+        let storyboard = UIStoryboard(name: "Home", bundle: nil)
+        let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
+
+        let storyboard2 = UIStoryboard(name: "HardwareWallet", bundle: nil)
+        let vc = storyboard2.instantiateViewController(withIdentifier: "HardwareWalletScanViewController")
+        nav?.pushViewController(vc, animated: false)
+
+        self.navigationController?.dismiss(animated: true, completion: {})
+        self.navigationController?.popToRootViewController(animated: true)
+        UIApplication.shared.keyWindow?.rootViewController = nav
     }
 }

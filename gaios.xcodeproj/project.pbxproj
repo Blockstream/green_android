@@ -41,6 +41,10 @@
 		340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
 		344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344562EA25D297CF00A5EC18 /* BLEManager.swift */; };
+		345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */; };
+		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
+		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
+		345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */; };
 		34641F1D25F915B9002E6442 /* RecoveryPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */; };
 		3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9EF2600A8D7009B5E33 /* Bundle.swift */; };
 		3470F9F52600D1A3009B5E33 /* WalletCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9F42600D1A3009B5E33 /* WalletCell.swift */; };
@@ -73,6 +77,8 @@
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
+		34D678AF261F060F00DBC0BB /* WalletDrawerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D678AE261F060F00DBC0BB /* WalletDrawerCell.swift */; };
+		34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */; };
 		34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */; };
@@ -272,6 +278,10 @@
 		340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyLoginViewController.swift; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
 		344562EA25D297CF00A5EC18 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
+		345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimator.swift; sourceTree = "<group>"; };
+		345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerPresentationController.swift; sourceTree = "<group>"; };
+		345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DrawerNetworkSelection.storyboard; sourceTree = "<group>"; };
+		345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerNetworkSelectionViewController.swift; sourceTree = "<group>"; };
 		34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhraseViewController.swift; sourceTree = "<group>"; };
 		3470F9EF2600A8D7009B5E33 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		3470F9F42600D1A3009B5E33 /* WalletCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCell.swift; sourceTree = "<group>"; };
@@ -305,6 +315,8 @@
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
+		34D678AE261F060F00DBC0BB /* WalletDrawerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDrawerCell.swift; sourceTree = "<group>"; };
+		34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDrawerHDCell.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletNameViewController.swift; sourceTree = "<group>"; };
 		34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDeleteViewController.swift; sourceTree = "<group>"; };
@@ -547,6 +559,34 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		345E1A80261EE6A500A1D934 /* DrawerNetworkSelection */ = {
+			isa = PBXGroup;
+			children = (
+				345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */,
+				34D678AD261F05F700DBC0BB /* Cells */,
+				345E1A8F261EEB9000A1D934 /* Controllers */,
+				345E1A94261EEBF500A1D934 /* TranstionAnimator */,
+			);
+			path = DrawerNetworkSelection;
+			sourceTree = "<group>";
+		};
+		345E1A8F261EEB9000A1D934 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		345E1A94261EEBF500A1D934 /* TranstionAnimator */ = {
+			isa = PBXGroup;
+			children = (
+				345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */,
+				345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */,
+			);
+			path = TranstionAnimator;
+			sourceTree = "<group>";
+		};
 		347FD0AB25FFA8E600BB3FAB /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -668,6 +708,15 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		34D678AD261F05F700DBC0BB /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34D678AE261F060F00DBC0BB /* WalletDrawerCell.swift */,
+				34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		34DDD0A7260A484E00020380 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -716,6 +765,7 @@
 				347FD0AB25FFA8E600BB3FAB /* Home */,
 				3497935125F8B18C0029ECB1 /* OnBoard */,
 				6770BF6D235E50D400BDB7DA /* GreenAddress.swift */,
+				345E1A80261EE6A500A1D934 /* DrawerNetworkSelection */,
 				6D97046C2344141E00839598 /* ModalPresentation */,
 				81073D7A21E8B27700E08F86 /* Localizable.strings */,
 				8187B47E21E9026900235A35 /* InfoPlist.strings */,
@@ -1206,6 +1256,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */,
+				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				81E6E21F24E00E1C00853C06 /* fwserver.pem in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
@@ -1374,6 +1425,7 @@
 				3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */,
 				81923A33228084FF0097BEA8 /* AssetsListTableViewController.swift in Sources */,
 				095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */,
+				34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */,
 				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,
 				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,
 				3497936E25F8B18C0029ECB1 /* ProgressView.swift in Sources */,
@@ -1414,13 +1466,16 @@
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
 				2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */,
 				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
+				34D678AF261F060F00DBC0BB /* WalletDrawerCell.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,
+				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
 				6D707ECA229DAA830038CCA8 /* NetworkSelectionTableCell.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				6D565ED122C2E50900C20786 /* TransactionStatusTableCell.swift in Sources */,
 				09546B3721686053009BABFE /* ScreenLockViewController.swift in Sources */,
 				6D0B3DBE23A0611200C0E1C2 /* AccountTypeCell.swift in Sources */,
 				81E0B4D1255316AC001C8544 /* LiquidHWResult.swift in Sources */,
+				345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */,
 				6D3A13EC23A7F51200C69153 /* ReviewCell.swift in Sources */,
 				34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */,
 				FF29CA7222374E8B0035F95A /* URL.swift in Sources */,
@@ -1502,6 +1557,7 @@
 				093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */,
 				816282B5260BB3C6003E5FA6 /* OnBoardManager.swift in Sources */,
 				34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */,
+				345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */,
 				6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */,
 				6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */,
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,

@@ -1,34 +1,34 @@
 import UIKit
 
+enum SupportedHW: String, CaseIterable {
+    case Jade = "Blockstream Jade"
+    case LedgerNanoX = "Ledger Nano X"
+
+    func name() -> String {
+        switch self {
+        case .Jade:
+            return "Blockstream Jade"
+        case .LedgerNanoX:
+            return "Ledger"
+        }
+    }
+
+    func icon() -> UIImage {
+        switch self {
+        case .Jade:
+            return UIImage(named: "blockstreamIcon")!
+        case .LedgerNanoX:
+            return UIImage(named: "ledgerIcon")!
+        }
+    }
+}
+
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblVersion: UILabel!
 
     var accounts: [Account] { get { AccountsManager.shared.list } }
-
-    enum SupportedHW: String, CaseIterable {
-        case Jade = "Blockstream Jade"
-        case LedgerNanoX = "Ledger Nano X"
-
-        func name() -> String {
-            switch self {
-            case .Jade:
-                return "Blockstream Jade"
-            case .LedgerNanoX:
-                return "Ledger"
-            }
-        }
-
-        func icon() -> UIImage {
-            switch self {
-            case .Jade:
-                return UIImage(named: "blockstreamIcon")!
-            case .LedgerNanoX:
-                return UIImage(named: "ledgerIcon")!
-            }
-        }
-    }
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
