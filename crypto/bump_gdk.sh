@@ -29,4 +29,4 @@ sed -i '' -e "s/SHA256=.*/SHA256=\"${SHA256}\"/" ./crypto/fetch_gdk_binaries.sh
 
 
 git add ./crypto/fetch_gdk_binaries.sh ./crypto/prepare_gdk_clang.sh
-git commit -m "update gdk to ${NAME}" -S
+git commit -m "Update GDK to ${NAME}" -S
