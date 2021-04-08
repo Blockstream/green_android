@@ -107,7 +107,7 @@ object Bridge {
     }
 
     fun twoFactorResetDialog(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_RESET, Session.getSession().nativeSession, -1)
+        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_RESET, Session.getSession().nativeSession)
     }
 
     fun bridgeSession(session: Any, networkId: String, watchOnlyUsername: String?) {

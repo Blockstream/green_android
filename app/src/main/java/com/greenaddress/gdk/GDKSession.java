@@ -375,6 +375,12 @@ public class GDKSession implements HttpRequestHandler {
         return gdkTwoFactorCall;
     }
 
+    public GDKTwoFactorCall twoFactorUndoDispute(final String email) throws Exception  {
+        final Object twoFactorCall = GDK.twofactor_undo_reset(mNativeSession, email);
+        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
+        return gdkTwoFactorCall;
+    }
+
     public GDKTwoFactorCall twofactorCancelReset() throws Exception  {
         final Object twoFactorCall = GDK.twofactor_cancel_reset(mNativeSession);
         final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);

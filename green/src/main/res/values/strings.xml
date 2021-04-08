@@ -821,4 +821,10 @@
   <string name="id_permanently_block_this_wallet">Permanently Block This Wallet</string>
   <string name="id_the_waiting_period_is_necessary">The waiting period is necessary to ensure the security of your wallet, to prevent thieves from getting around your Two-Factor protection.</string>
 
+  <string name="id_your_wallet_locked_under_2fa">Your wallet locked under 2FA dispute.</string>
+  <string name="id_the_1_year_2fa_reset_process">The 1 year 2FA reset process was ongoing, but someone blocked it by disputing the 2FA reset.</string>
+  <string name="id_if_you_are_the_rightful_owner">If you are the rightful owner of this wallet, and you still possess one of its active 2FA methods, cancel the reset to be able to spend and empty this wallet.</string>
+  <string name="id_if_you_initiated_the_2fa_reset">If you initiated the 2FA reset dispute by mistake, you can undo it and set the wallet back to 2FA reset state.</string>
+  <string name="id_undo_2fa_dispute">Undo 2FA dispute</string>
+
 </resources>

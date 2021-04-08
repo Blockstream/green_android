@@ -816,7 +816,12 @@
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.\n\nYou\'ll need your recovery phrase to restore this wallet.</string>
 
   <string name="id_2fa_reset_in_progress">2FA Reset in Progress</string>
+  <string name="id_2fa_dispute_in_progress">2FA Dispute in Progress</string>
+  <string name="id_cancel_2fa_reset">Cancel 2FA Reset</string>
+  <string name="id_undo_2fa_dispute">Undo 2FA dispute</string>
+
   <string name="id_learn_more">Learn more</string>
 
+  <string name="id_enter_the_email_for_which_you_want_to_undo">Enter the email for which you want to undo a dispute request.</string>
 
 </resources>

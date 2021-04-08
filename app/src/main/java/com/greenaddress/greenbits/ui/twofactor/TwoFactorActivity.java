@@ -67,6 +67,10 @@ public class TwoFactorActivity extends LoggedActivity {
         case "dispute":
             mContinueButton.setText(R.string.id_dispute_twofactor_reset);
             break;
+        case "undo_dispute":
+            mContinueButton.setText(R.string.id_undo_2fa_dispute);
+            mPromptText.setText(R.string.id_enter_the_email_for_which_you_want_to_undo);
+            break;
         case "cancel":
             mContinueButton.setText(R.string.id_cancel_twofactor_reset);
             break;
@@ -104,11 +108,15 @@ public class TwoFactorActivity extends LoggedActivity {
         switch (mMethod) {
         case "reset":
             setTitle(R.string.id_request_twofactor_reset);
-            showResetEmail(false);
+            showResetEmail(false, false);
             break;
         case "dispute":
             setTitle(R.string.id_dispute_twofactor_reset);
-            showResetEmail(true);
+            showResetEmail(true, false);
+            break;
+        case "undo_dispute":
+            setTitle(R.string.id_undo_2fa_dispute);
+            showResetEmail(true, true);
             break;
         case "cancel":
             setTitle(R.string.id_cancel_twofactor_reset);
@@ -141,7 +149,7 @@ public class TwoFactorActivity extends LoggedActivity {
         }
     }
 
-    private void showResetEmail(final boolean isDispute) {
+    private void showResetEmail(final boolean isDispute, final boolean isUndo) {
         final TextView detailsText = setupDetailsView(
             InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, "jane@example.com");
         mPrefix.setVisibility(View.GONE);
@@ -159,7 +167,7 @@ public class TwoFactorActivity extends LoggedActivity {
                     return;
                 }
                 UI.disable(mContinueButton);
-                resetTwoFactor(details, isDispute);
+                resetTwoFactor(details, isDispute, isUndo);
             }
         });
     }
@@ -403,7 +411,7 @@ public class TwoFactorActivity extends LoggedActivity {
         });
     }
 
-    public void resetTwoFactor(final String email, final Boolean isDispute) {
+    public void resetTwoFactor(final String email, final Boolean isDispute, final Boolean isUndo) {
         if (twoFactorConfigData.getEnabledMethods().isEmpty()) {
             UI.toast(this, R.string.id_your_wallet_is_not_yet_fully, Toast.LENGTH_LONG);
             finishOnUiThread();
@@ -413,12 +421,21 @@ public class TwoFactorActivity extends LoggedActivity {
         disposable = Observable.just(getSession())
                      .subscribeOn(Schedulers.computation())
                      .map((session) -> {
-            final GDKTwoFactorCall twoFactorCall = getSession().twoFactorReset(email, isDispute);
-            twoFactorCall.resolve(popupMethodResolver, popupCodeResolver);
-            return session;
+             GDKTwoFactorCall twoFactorCall;
+             if(isDispute && isUndo){
+                 twoFactorCall = getSession().twoFactorUndoDispute(email);
+             }else{
+                 twoFactorCall = getSession().twoFactorReset(email, isDispute);
+             }
+             twoFactorCall.resolve(popupMethodResolver, popupCodeResolver);
+             return session;
         }).observeOn(AndroidSchedulers.mainThread())
                      .subscribe((session) -> {
-            UI.toast(this, R.string.id_request_twofactor_reset, Toast.LENGTH_LONG);
+            if(isDispute && isUndo) {
+                UI.toast(this, R.string.id_undo_2fa_dispute, Toast.LENGTH_LONG);
+            }else{
+                UI.toast(this, R.string.id_request_twofactor_reset, Toast.LENGTH_LONG);
+            }
             final Intent intent = getIntent();
             intent.putExtra("method","reset");
             intent.putExtra("enable", true);

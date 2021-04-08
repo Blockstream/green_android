@@ -78,6 +78,7 @@ class GreenSession constructor(
     fun getTorStatusObservable(): Observable<TORStatus> = torStatusSubject.hide()
     fun getSettingsObservable(): Observable<Settings> = settingsSubject.hide()
     fun getNetworkEventObservable(): Observable<NetworkEvent> = networkSubject.hide()
+    fun getTwoFactorResetObservable(): Observable<TwoFactorReset> = twoFactorResetSubject.hide()
     fun getBalancesObservable(): Observable<List<BalancePair>> = balancesSubject.hide()
 
 

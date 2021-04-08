@@ -108,11 +108,9 @@ class GreenApplication : Application(){
                 }
 
                 Bridge.NavigateType.TWO_FACTOR_RESET -> {
-                    Session.getSession().twoFAReset?.let { eventData ->
-                        if (eventData.value is Int){
-                            TwoFactorResetSheetDialogFragment.newInstance(eventData.value as Int).also {
-                                it.show(activity.supportFragmentManager, it.toString())
-                            }
+                    sessionManager.getWalletSession(gaSession)?.getTwoFactorResetObservable()?.blockingFirst()?.let {
+                        TwoFactorResetSheetDialogFragment.newInstance(it).also { dialog ->
+                            dialog.show(activity.supportFragmentManager, dialog.toString())
                         }
                     }
                 }

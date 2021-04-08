@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi;
 
+import com.blockstream.gdk.data.TwoFactorReset;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -31,7 +32,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
     private String mWatchOnlyUsername;
     private HWWallet mHWWallet = null;
     private SettingsData mSettings;
-    private EventData mTwoFAReset = null;
+    private TwoFactorReset mTwoFAReset = null;
     private String mNetwork;
 
     private Session() {
@@ -75,11 +76,11 @@ public class Session extends GDKSession implements HttpRequestProvider {
         mHWWallet = hwWallet;
     }
 
-    public EventData getTwoFAReset() {
+    public TwoFactorReset getTwoFAReset() {
         return this.mTwoFAReset;
     }
 
-    public void setTwoFAReset(final EventData eventData) {
+    public void setTwoFAReset(final TwoFactorReset eventData) {
         this.mTwoFAReset = eventData;
     }
 

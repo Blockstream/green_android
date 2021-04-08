@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.blockstream.gdk.data.TwoFactorReset;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.EventData;
@@ -221,22 +222,21 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     }
 
     private void updateCard(){
-        EventData eventData = getSession().getTwoFAReset();
+        TwoFactorReset twoFactorReset = getSession().getTwoFAReset();
 
-        if(eventData != null){
-            mCardTitle.setText(eventData.getTitle());
+        if(twoFactorReset != null){
 
-            if(eventData.getValue() instanceof Integer){ // Is Reset
-                mCardMessage.setText(getString(eventData.getDescription(), eventData.getValue()));
-                mCardAction.setText(R.string.id_learn_more);
-                mCardAction.setVisibility(View.VISIBLE);
-            }else{ // Is Dispute
-                mCardMessage.setText(eventData.getDescription());
-                mCardAction.setVisibility(View.INVISIBLE);
+            if(twoFactorReset.isDisputed()){
+                mCardTitle.setText(R.string.id_2fa_dispute_in_progress);
+                mCardMessage.setText(R.string.id_warning_wallet_locked_by);
+            }else{
+                mCardTitle.setText(R.string.id_2fa_reset_in_progress);
+                mCardMessage.setText(getString(R.string.id_your_wallet_is_locked_for_a, twoFactorReset.getDaysRemaining()));
             }
+            mCardAction.setText(R.string.id_learn_more);
         }
 
-        mCard.setVisibility(eventData != null ? View.VISIBLE : View.GONE);
+        mCard.setVisibility(twoFactorReset != null ? View.VISIBLE : View.GONE);
     }
 
     private void update() {

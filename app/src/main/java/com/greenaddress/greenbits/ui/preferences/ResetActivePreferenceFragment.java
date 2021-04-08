@@ -23,6 +23,7 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
     private static final int REQUEST_2FA = 101;
 
     static public final String INITIATE_CANCEL = "INITIATE_CANCEL";
+    static public final String INITIATE_UNDO_DISPUTE = "INITIATE_DISPUTE";
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
@@ -73,8 +74,13 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
         ((Preference) find(PrefKeys.CANCEL_TWOFACTOR_RESET)).setOnPreferenceClickListener(this);
         ((Preference) find(PrefKeys.DISPUTE_TWOFACTOR_RESET)).setOnPreferenceClickListener(this);
 
-        if(savedInstanceState == null && getArguments() != null && getArguments().getBoolean(INITIATE_CANCEL)){
-            startTwoFactorActivity("cancel");
+
+        if(savedInstanceState == null && getArguments() != null){
+            if(getArguments().getBoolean(INITIATE_CANCEL)){
+                startTwoFactorActivity("cancel");
+            }else if (getArguments().getBoolean(INITIATE_UNDO_DISPUTE)){
+                startTwoFactorActivity("undo_dispute");
+            }
         }
     }
 

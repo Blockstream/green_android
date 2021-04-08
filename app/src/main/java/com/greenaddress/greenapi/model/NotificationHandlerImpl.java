@@ -2,6 +2,7 @@ package com.greenaddress.greenapi.model;
 
 import android.util.Log;
 
+import com.blockstream.gdk.data.TwoFactorReset;
 import com.blockstream.libgreenaddress.GDK;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -179,17 +180,17 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
             case "twofactor_reset": {
                 //{"event":"twofactor_reset","twofactor_reset":{"days_remaining":90,"is_active":true,"is_disputed":false}}
                 final JsonNode resetData = objectNode.get("twofactor_reset");
+
                 if (resetData.get("is_active").asBoolean()) {
-                    final EventData ev;
+                    final TwoFactorReset reset;
                     if (resetData.get("is_disputed").asBoolean()) {
-                        ev = new EventData(R.string.id_2fa_reset_in_progress,
-                                           R.string.id_warning_wallet_locked_by);
+                        reset = new TwoFactorReset(true, -1, true);
                     } else{
                         final Integer days = resetData.get("days_remaining").asInt();
-                        ev = new EventData(R.string.id_2fa_reset_in_progress,
-                                           R.string.id_your_wallet_is_locked_for_a, days);
+                        reset = new TwoFactorReset(true, days, false);
                     }
-                    getSession().setTwoFAReset(ev);
+
+                    getSession().setTwoFAReset(reset);
                 }
                 break;
             }
