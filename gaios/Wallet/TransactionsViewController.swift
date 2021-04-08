@@ -165,22 +165,10 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.compactMap(on: bgq) {
-            Registry.shared.cache()
-        }.then(on: bgq) {
-            self.loadWallet()
-        }.then(on: bgq) {
-            self.loadTransactions()
-        }.ensure {
-            self.stopAnimating()
+        when(resolved: self.loadWallet(), self.loadTransactions()).done { _ in
             if self.tableView.refreshControl!.isRefreshing {
                 self.tableView.refreshControl!.endRefreshing()
             }
-        }.done { _ in
             self.reload()
         }.catch { err in
             print(err.localizedDescription)
