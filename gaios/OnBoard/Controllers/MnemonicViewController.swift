@@ -339,8 +339,8 @@ extension MnemonicViewController: MnemonicCellDelegate {
             }
         }
 
-        let foundEmpty = mnemonic.prefix(upTo: isPasswordProtected ? 27 : 24).contains(where: { $0.isEmpty })
-        updateDoneButton(!foundEmpty)
+        let len = mnemonic.filter { !$0.isEmpty }.count
+        updateDoneButton((isPasswordProtected && len == 27) || [12, 24].contains(len))
     }
 
     func collectionView(pastedIn text: String, from cell: MnemonicCell) {
