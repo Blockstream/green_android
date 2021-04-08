@@ -138,16 +138,33 @@ class LoginViewController: UIViewController {
                 return Registry.shared.load()
             }
             return Promise<Void>()
-        }.ensure {
-            self.stopLoader()
-        }.done {
+        }.compactMap { _ in
+            self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
+        }.then(on: bgq) { _ -> Promise<WalletItem> in
+            let pointerKey = String(format: "%@_wallet_pointer", self.account?.id ?? "")
+            let pointer = UserDefaults.standard.integer(forKey: pointerKey)
+            return getSubaccount(UInt32(pointer))
+                .recover {_ in
+                    getSubaccount(0)
+                }
+        }.get { _ in
             if withPIN != nil {
                 self.account?.attempts = 0
                 AccountsManager.shared.upsert(self.account!)
             }
             AccountsManager.shared.current = self.account
-            appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+        }.done { wallet in
+            let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+            let nav = storyboard.instantiateViewController(withIdentifier: "TabViewController") as? UINavigationController
+            if let vc = nav?.topViewController as? ContainerViewController {
+                vc.presentingWallet = wallet
+            }
+            self.stopLoader()
+            self.navigationController?.dismiss(animated: true, completion: {})
+            self.navigationController?.popToRootViewController(animated: true)
+            UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
+            self.stopLoader()
             switch error {
             case AuthenticationTypeHandler.AuthError.CanceledByUser:
                 return

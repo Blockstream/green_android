@@ -8,11 +8,11 @@ protocol SubaccountDelegate: class {
 
 class TransactionsController: UITableViewController {
 
-    private var presentingWallet: WalletItem?
+    var presentingWallet: WalletItem?
     private var txs: [Transactions] = []
     private var fetchTxs: Promise<Void>?
     private var isSweep: Bool = false
-    private let pointerKey = String(format: "%@_wallet_pointer", getNetwork())
+    private let pointerKey = String(format: "%@_wallet_pointer", AccountsManager.shared.current?.id ?? "")
     private var pointerWallet: UInt32 { UInt32(UserDefaults.standard.integer(forKey: pointerKey)) }
 
     private var blockToken: NSObjectProtocol?
@@ -60,6 +60,9 @@ class TransactionsController: UITableViewController {
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
         assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
+        if presentingWallet != nil {
+            showWallet()
+        }
         handleRefresh()
         checkFiatRate()
     }

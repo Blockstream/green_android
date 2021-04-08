@@ -9,6 +9,8 @@ class ContainerViewController: UIViewController {
     private var timer = Timer()
     private var seconds = 0
 
+    var presentingWallet: WalletItem?
+
     @IBOutlet weak var networkView: UIView!
     @IBOutlet weak var networkText: UILabel!
 
@@ -79,6 +81,12 @@ class ContainerViewController: UIViewController {
         self.networkView.isHidden = false
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + DispatchTimeInterval.milliseconds(2000)) {
             self.networkView.isHidden = true
+        }
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nv = segue.destination as? UINavigationController,
+           let vc = nv.topViewController as? TransactionsController {
+            vc.presentingWallet = presentingWallet
         }
     }
 }
