@@ -22,17 +22,6 @@ class DrawerNetworkSelectionViewController: UIViewController {
         super.viewDidLoad()
     }
 
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        view.roundCorners([.topRight, .topLeft], radius: 12)
-//        guard let footerView = tableView.tableFooterView else { return }
-//        let height = footerView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
-//        if height != footerView.frame.size.height {
-//            footerView.frame.size.height = height
-//            tableView.tableFooterView = footerView
-//        }
-//    }
-
     @objc func dismissModal() {
         self.dismiss(animated: true, completion: nil)
     }
