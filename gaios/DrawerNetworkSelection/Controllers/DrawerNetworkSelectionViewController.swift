@@ -9,6 +9,7 @@ protocol DrawerNetworkSelectionDelegate: class {
 class DrawerNetworkSelectionViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var lblVersion: UILabel!
 
     var onSelection: ((Account) -> Void)?
 
@@ -20,6 +21,12 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        setContent()
+    }
+
+    func setContent() {
+        lblVersion.text = String(format: NSLocalizedString("id_version_1s", comment: ""), "\(Bundle.main.versionNumber)")
     }
 
     @objc func dismissModal() {

@@ -25,7 +25,7 @@
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qcp-QV-GxT">
-                                <rect key="frame" x="0.0" y="169" width="414" height="693"/>
+                                <rect key="frame" x="0.0" y="169" width="414" height="665"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletDrawerCell" rowHeight="64" id="RjD-F7-Jtw" customClass="WalletDrawerCell" customModule="gaios" customModuleProvider="target">
@@ -115,19 +115,41 @@
                                     <outlet property="delegate" destination="gdl-iy-vFF" id="Waj-wC-7h1"/>
                                 </connections>
                             </tableView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Pze-ee-j8h">
+                                <rect key="frame" x="0.0" y="834" width="414" height="28"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2NR-gn-QDA">
+                                        <rect key="frame" x="24" y="5" width="366" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <color key="textColor" name="customGrayLight"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="2NR-gn-QDA" firstAttribute="leading" secondItem="Pze-ee-j8h" secondAttribute="leading" constant="24" id="PJV-Ad-E6y"/>
+                                    <constraint firstAttribute="trailing" secondItem="2NR-gn-QDA" secondAttribute="trailing" constant="24" id="fwC-1z-b2R"/>
+                                    <constraint firstAttribute="bottom" secondItem="2NR-gn-QDA" secondAttribute="bottom" constant="5" id="hAZ-LY-zbw"/>
+                                    <constraint firstItem="2NR-gn-QDA" firstAttribute="top" secondItem="Pze-ee-j8h" secondAttribute="top" constant="5" id="zfd-tV-po6"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="daV-B4-79u"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
-                            <constraint firstItem="daV-B4-79u" firstAttribute="bottom" secondItem="qcp-QV-GxT" secondAttribute="bottom" id="M9o-dL-k0c"/>
+                            <constraint firstItem="daV-B4-79u" firstAttribute="leading" secondItem="Pze-ee-j8h" secondAttribute="leading" id="08Q-7k-vLY"/>
+                            <constraint firstItem="Pze-ee-j8h" firstAttribute="top" secondItem="qcp-QV-GxT" secondAttribute="bottom" id="FVS-JP-2hs"/>
                             <constraint firstItem="hq7-Ge-K40" firstAttribute="leading" secondItem="daV-B4-79u" secondAttribute="leading" id="NuO-Lc-mr6"/>
                             <constraint firstItem="qcp-QV-GxT" firstAttribute="leading" secondItem="daV-B4-79u" secondAttribute="leading" id="UAj-bN-lYD"/>
+                            <constraint firstItem="daV-B4-79u" firstAttribute="bottom" secondItem="Pze-ee-j8h" secondAttribute="bottom" id="cfM-WO-cGa"/>
+                            <constraint firstItem="daV-B4-79u" firstAttribute="trailing" secondItem="Pze-ee-j8h" secondAttribute="trailing" id="g7O-gR-AKJ"/>
                             <constraint firstItem="daV-B4-79u" firstAttribute="trailing" secondItem="qcp-QV-GxT" secondAttribute="trailing" id="nWf-CB-Kyn"/>
                             <constraint firstItem="hq7-Ge-K40" firstAttribute="top" secondItem="daV-B4-79u" secondAttribute="top" constant="30" id="uTS-2e-ZWW"/>
                             <constraint firstItem="qcp-QV-GxT" firstAttribute="top" secondItem="hq7-Ge-K40" secondAttribute="bottom" constant="30" id="wjA-Tj-amE"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="lblVersion" destination="2NR-gn-QDA" id="rR7-C5-fwh"/>
                         <outlet property="tableView" destination="qcp-QV-GxT" id="onh-9U-oFK"/>
                     </connections>
                 </viewController>
@@ -1947,6 +1969,9 @@ AAGk7AABpPEAAaT5AAGk/AABpQEAAaUJAAAAAAAABAEAAAAAAAAAaAAAAAAAAAAAAAAAAAABpQw
 </mutableData>
         </image>
         <image name="ntw_btc" width="40" height="40"/>
+        <namedColor name="customGrayLight">
+            <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
