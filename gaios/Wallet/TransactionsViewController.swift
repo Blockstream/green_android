@@ -46,6 +46,13 @@ class TransactionsController: UITableViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
+
+        let networkSelector = ((Bundle.main.loadNibNamed("NetworkSelectorBarItem", owner: self, options: nil)![0] as? NetworkSelectorBarItem)!)
+        networkSelector.configure({[weak self] () in
+            self?.switchNetwork()
+        })
+        let leftItem: UIBarButtonItem = UIBarButtonItem(customView: networkSelector)
+        navigationItem.leftBarButtonItem = leftItem
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -190,7 +197,6 @@ class TransactionsController: UITableViewController {
         view.sweepView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sweepFromWallet)))
         view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.wallets)))
         view.assetsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.showAssets)))
-        view.networkSelectorStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.switchNetwork)))
         return view
     }
 

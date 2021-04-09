@@ -23,9 +23,6 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var assetsLabel: UILabel!
     @IBOutlet weak var assetsView: UIView!
     @IBOutlet weak var assetsHeight: NSLayoutConstraint!
-    @IBOutlet weak var networkSelectorStackView: UIStackView!
-    @IBOutlet weak var networkIconImageView: UIImageView!
-    @IBOutlet weak var networkTitleLabel: UILabel!
 
     var network: GdkNetwork { getGdkNetwork(getNetwork()) }
     var isLiquid: Bool { network.liquid }
@@ -72,9 +69,7 @@ class WalletFullCardView: UIView {
             unit.text = denom
             balanceFiat.text = "≈ \(fiat ?? "N.A.") \(currency)"
         }
-        networkTitleLabel.text = network.name
         walletName.text = wallet.localizedName()
-        networkIconImageView.image = UIImage(named: network.icon!)
         assetsLabel.text = String(format: NSLocalizedString(wallet.satoshi.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.satoshi.count)
         if getGAService().getTwoFactorReset()?.isResetActive ?? false {
             actionsView.isHidden = true

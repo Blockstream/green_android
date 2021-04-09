@@ -39,6 +39,8 @@
 		2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1A25B995A200250E23 /* CsvViewController.swift */; };
 		2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */; };
 		340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */; };
+		340F07E42620499A0065A986 /* NetworkSelectorBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */; };
+		340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
 		344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344562EA25D297CF00A5EC18 /* BLEManager.swift */; };
 		345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */; };
@@ -276,6 +278,8 @@
 		207C121823303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyLoginViewController.swift; sourceTree = "<group>"; };
+		340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkSelectorBarItem.xib; sourceTree = "<group>"; };
+		340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectorBarItem.swift; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
 		344562EA25D297CF00A5EC18 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimator.swift; sourceTree = "<group>"; };
@@ -1086,6 +1090,8 @@
 				81640CDD21FB2B1100E7F79C /* FeeButton.swift */,
 				81E9B80321C94525004D87B6 /* WalletFullCardView.xib */,
 				81E9B80521C946CE004D87B6 /* WalletFullCardView.swift */,
+				340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */,
+				340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1269,6 +1275,7 @@
 				81286117222212C7005598D3 /* SetPhoneView.xib in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
+				340F07E42620499A0065A986 /* NetworkSelectorBarItem.xib in Resources */,
 				81E9B80221C92EF7004D87B6 /* AccountCardView.xib in Resources */,
 				6D7176BA234FF2B3001E1538 /* NetworkSelectionSettingsView.xib in Resources */,
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
@@ -1546,6 +1553,7 @@
 				34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */,
 				81E9B7FE21C90F74004D87B6 /* AccountsViewController.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
+				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
 				2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */,
 				340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */,
 				81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */,
