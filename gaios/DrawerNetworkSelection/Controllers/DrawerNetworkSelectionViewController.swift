@@ -49,7 +49,14 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        accounts.count
+        switch section {
+        case 0:
+            return accounts.count
+        case 1:
+            return SupportedHW.allCases.count
+        default:
+            return 0
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
