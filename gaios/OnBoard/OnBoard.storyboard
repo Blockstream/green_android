@@ -1978,13 +1978,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password protected" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" translatesAutoresizingMaskIntoConstraints="NO" id="UuY-Mh-KKc">
-                                <rect key="frame" x="212" y="183" width="129" height="17"/>
+                                <rect key="frame" x="193" y="183" width="129" height="17"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="IW8-gH-cMB">
-                                <rect key="frame" x="360" y="176" width="51" height="31"/>
+                                <rect key="frame" x="341" y="176" width="51" height="31"/>
                                 <connections>
                                     <action selector="switchChanged:" destination="gpo-02-uBr" eventType="valueChanged" id="oqa-iL-haL"/>
                                 </connections>
@@ -2094,7 +2094,7 @@
                             <constraint firstItem="IW8-gH-cMB" firstAttribute="leading" secondItem="UuY-Mh-KKc" secondAttribute="trailing" constant="19" id="7kJ-C3-pIV"/>
                             <constraint firstItem="UuY-Mh-KKc" firstAttribute="centerY" secondItem="IW8-gH-cMB" secondAttribute="centerY" id="8Hu-bF-wd7"/>
                             <constraint firstItem="mCA-tT-t9b" firstAttribute="bottom" secondItem="bih-1d-59l" secondAttribute="bottom" constant="40" id="BTS-vR-36e"/>
-                            <constraint firstItem="mCA-tT-t9b" firstAttribute="trailing" secondItem="IW8-gH-cMB" secondAttribute="trailing" constant="5" id="ILg-hn-321"/>
+                            <constraint firstItem="mCA-tT-t9b" firstAttribute="trailing" secondItem="IW8-gH-cMB" secondAttribute="trailing" constant="24" id="ILg-hn-321"/>
                             <constraint firstItem="FUH-6u-iOg" firstAttribute="top" secondItem="IW8-gH-cMB" secondAttribute="bottom" constant="16" id="QQA-eh-irg"/>
                             <constraint firstItem="mCA-tT-t9b" firstAttribute="trailing" secondItem="bih-1d-59l" secondAttribute="trailing" constant="16" id="SSj-Fa-uPr"/>
                             <constraint firstItem="bih-1d-59l" firstAttribute="top" secondItem="FUH-6u-iOg" secondAttribute="bottom" constant="16" id="SzS-Mq-NMP"/>

@@ -15,6 +15,7 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     @IBOutlet weak var passwordProtectedLabel: UILabel!
     @IBOutlet weak var header: UIView!
     @IBOutlet weak var lblTitle: UILabel!
+    let helpButton = UIButton(type: .system)
 
     let WL = getBIP39WordList()
 
@@ -49,7 +50,22 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case .qr:
             startScan()
         case .phrase:
-            break
+            updateNavigationItem()
+        }
+    }
+
+    func updateNavigationItem() {
+        helpButton.setImage(UIImage(named: "ic_help"), for: .normal)
+        helpButton.addTarget(self, action: #selector(helpButtonTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpButton)
+    }
+
+    @objc func helpButtonTapped(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRecoveryHelpViewController") as? DialogRecoveryHelpViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
         }
     }
 
@@ -347,4 +363,17 @@ extension MnemonicViewController: MnemonicCellDelegate {
         currIndexPath = mnemonicWords.indexPath(for: cell)
         onPaste(text)
     }
+}
+
+extension MnemonicViewController: DialogRecoveryHelpViewControllerDelegate {
+    func didTapHelpCenter() {
+        if let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/900001388566-Why-is-my-mnemonic-backup-not-working-") {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    func didCancel() {
+        //
+    }
+
 }
