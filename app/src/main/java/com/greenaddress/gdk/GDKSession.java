@@ -38,6 +38,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import static com.blockstream.libgreenaddress.GDK.GA_ERROR;
 import static com.blockstream.libgreenaddress.GDK.GA_RECONNECT;
 
@@ -57,6 +59,7 @@ public class GDKSession implements HttpRequestHandler {
         mNotification = new NotificationHandlerImpl();
     }
 
+    @Nullable
     public Object getNativeSession(){
         return mNativeSession;
     }

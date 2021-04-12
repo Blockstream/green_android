@@ -62,7 +62,7 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     }
 
     protected void logout() {
-        Bridge.INSTANCE.navigateToLogin(this ,-1);
+        Bridge.INSTANCE.navigateToLogin(this);
     }
 
 

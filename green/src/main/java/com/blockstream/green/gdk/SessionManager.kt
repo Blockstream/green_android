@@ -51,12 +51,12 @@ class SessionManager(
     }
 
     // Used to find a GreenSession from v3 gaSession
-    fun getWalletSession(gaSession: GASession): GreenSession? {
+    fun getWalletSession(gaSession: GASession?): GreenSession? {
         return sessions[gaSession]
     }
 
     // Used to find the Wallet Id from v3 gaSession
-    fun getWalletIdFromSession(gaSession: GASession): WalletId {
+    fun getWalletIdFromSession(gaSession: GASession?): WalletId {
         getWalletSession(gaSession)?.let { greenSession ->
             for (key in walletSessions.keys){
                 if(walletSessions[key] == greenSession){
@@ -64,6 +64,7 @@ class SessionManager(
                 }
             }
         }
+
         return -1
     }
 

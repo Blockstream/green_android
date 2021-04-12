@@ -45,28 +45,17 @@ class GreenApplication : Application(){
         // Initialize Bridge
         Bridge.initializeBridge(this, BuildConfig.DEBUG, BuildConfig.VERSION_NAME)
 
-        Bridge.setNavigateHandler { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: Any, walletId: Long ->
-            when(type){
+        Bridge.setNavigateHandler { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: Any? ->
 
+            when(type){
                 Bridge.NavigateType.LOGOUT -> {
 
-                    sessionManager.getWalletSession(gaSession)?.disconnect()
-
-                    if(walletId >= 0) {
-                        walletRepository.getWalletSync(walletId)?.let {
-
-                            NavDeepLinkBuilder(activity.applicationContext)
-                                .setGraph(R.navigation.nav_graph)
-                                .setComponentName(MainActivity::class.java)
-                                .setDestination(R.id.loginFragment)
-                                .setArguments(LoginFragmentArgs(it).toBundle())
-                                .createPendingIntent()
-                                .send()
-
-                            return@setNavigateHandler
-                        }
+                    // Disconnect session
+                    gaSession?.let {
+                        sessionManager.getWalletSession(it)?.disconnectAsync()
                     }
 
+                    // Replace Activity
                     val intent = Intent(activity, MainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
@@ -76,7 +65,7 @@ class GreenApplication : Application(){
 
                     val walletId = sessionManager.getWalletIdFromSession(gaSession)
 
-                    if(walletId >= 0){
+                    if (walletId >= 0) {
 
                         GlobalScope.launch {
                             val wallet = walletRepository.getWalletSuspend(walletId)
@@ -86,7 +75,6 @@ class GreenApplication : Application(){
                             intent.action = BridgeActivity.PIN
 
                             activity.startActivity(intent)
-
                         }
                     }
                 }

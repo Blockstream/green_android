@@ -32,12 +32,12 @@ object Bridge {
 
     val spv = SPV()
 
-    private var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any, walletId: Long) -> Unit)? = null
-    private var setSubaccountFn: ((gaSession: Any, subaccount: Int) -> Unit)? = null
-    private var getSubaccountFn: ((gaSession: Any) -> Int)? = null
-    private var walletsProviderFn: ((gaSession: Any) -> List<HashMap<String, String>>)? = null
-    private var recoveryConfirmedProviderFn: ((gaSession: Any) -> Boolean)? = null
-    private var connectFn: ((context: Context, gaSession: Any, networkId: String) -> Unit)? = null
+    private var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?) -> Unit)? = null
+    private var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
+    private var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
+    private var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
+    private var recoveryConfirmedProviderFn: ((gaSession: Any?) -> Boolean)? = null
+    private var connectFn: ((context: Context, gaSession: Any?, networkId: String) -> Unit)? = null
 
     private var initialized = false
 
@@ -62,31 +62,31 @@ object Bridge {
         }
     }
 
-    fun setNavigateHandler(fn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any, walletId: Long) -> Unit)){
+    fun setNavigateHandler(fn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?) -> Unit)){
         navigateFn = fn
     }
 
-    fun setWalletProvider(fn : ((gaSession: Any) -> List<HashMap<String,String>>)){
+    fun setWalletProvider(fn : ((gaSession: Any?) -> List<HashMap<String,String>>)){
         walletsProviderFn = fn
     }
 
-    fun setRecoveryConfirmedProvider(fn : ((gaSession: Any) -> Boolean)){
+    fun setRecoveryConfirmedProvider(fn : ((gaSession: Any?) -> Boolean)){
         recoveryConfirmedProviderFn = fn
     }
 
-    fun setActiveAccountHandler(fn : ((gaSession: Any, subaccount: Int) -> Unit)){
+    fun setActiveAccountHandler(fn : ((gaSession: Any?, subaccount: Int) -> Unit)){
         setSubaccountFn = fn
     }
 
-    fun setGetActiveAccountHandler(fn: (gaSession: Any) -> Int){
+    fun setGetActiveAccountHandler(fn: (gaSession: Any?) -> Int){
         getSubaccountFn = fn
     }
 
-    fun setConnectHandler(fn: (context:Context, gaSession: Any, networkId: String) -> Unit){
+    fun setConnectHandler(fn: (context:Context, gaSession: Any?, networkId: String) -> Unit){
         connectFn = fn
     }
 
-    fun connect(context:Context, gaSession: Any, network: String){
+    fun connect(context:Context, gaSession: Any?, network: String){
         connectFn?.invoke(context, gaSession, network)
     }
 
@@ -94,16 +94,16 @@ object Bridge {
 
     fun getWallets() = walletsProviderFn?.invoke(Session.getSession().nativeSession)
 
-    fun navigateToLogin(activity: FragmentActivity, walletId: Long){
-        navigateFn?.invoke(activity, NavigateType.LOGOUT, Session.getSession().nativeSession, walletId)
+    fun navigateToLogin(activity: FragmentActivity){
+        navigateFn?.invoke(activity, NavigateType.LOGOUT, Session.getSession().nativeSession)
     }
 
     fun navigateToChangePin(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.CHANGE_PIN, Session.getSession().nativeSession, -1)
+        navigateFn?.invoke(activity, NavigateType.CHANGE_PIN, Session.getSession().nativeSession)
     }
 
     fun navigateToBackupRecovery(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.BACKUP_RECOVERY, Session.getSession().nativeSession, -1)
+        navigateFn?.invoke(activity, NavigateType.BACKUP_RECOVERY, Session.getSession().nativeSession)
     }
 
     fun bridgeSession(session: Any, networkId: String, watchOnlyUsername: String?) {
