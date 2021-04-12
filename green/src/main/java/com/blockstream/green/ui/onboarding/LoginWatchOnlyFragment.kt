@@ -25,8 +25,6 @@ class LoginWatchOnlyFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.isDevelop = requireContext().isDevelopmentFlavor()
-
         binding.vm = viewModel
 
         binding.buttonConnectionSettings.setOnClickListener {

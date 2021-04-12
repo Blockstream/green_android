@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
-        <variable
-            name="isDevelop"
-            type="Boolean" />
-
         <variable
             name="vm"
             type="com.blockstream.green.ui.onboarding.LoginWatchOnlyViewModel" />
@@ -88,7 +83,6 @@
                 app:useMaterialThemeColors="false" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
-                isVisible="@{isDevelop}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
