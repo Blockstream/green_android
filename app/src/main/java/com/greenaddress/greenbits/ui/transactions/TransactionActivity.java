@@ -247,7 +247,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         if (getSession().isWatchOnly() || mNetworkData.getLiquid() || getSession().isTwoFAReset())
             return; // FIXME: Implement RBF for elements
 
-        if (!mNetworkData.getLiquid()) {
+        if (mNetworkData.canReplaceTransactions()) {
             UI.show(mStatusIncreaseFee);
             mStatusIncreaseFee.setOnClickListener(this);
         }

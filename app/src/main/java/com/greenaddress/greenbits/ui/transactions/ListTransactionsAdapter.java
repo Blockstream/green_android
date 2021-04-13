@@ -1,7 +1,5 @@
 package com.greenaddress.greenbits.ui.transactions;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
@@ -120,7 +118,7 @@ public class ListTransactionsAdapter extends
 
         final boolean replaceable = !mNetworkData.getLiquid() &&
                                     txItem.getCanRbf() && txItem.getTxType() != TYPE.IN;
-        UI.showIf(replaceable && !mNetworkData.getLiquid(), holder.imageReplaceable);
+        UI.showIf(replaceable && mNetworkData.canReplaceTransactions(), holder.imageReplaceable);
 
         final String message;
         if (TextUtils.isEmpty(txItem.getMemo())) {

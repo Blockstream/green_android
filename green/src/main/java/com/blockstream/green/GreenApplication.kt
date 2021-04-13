@@ -17,6 +17,7 @@ import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.ui.settings.WalletSettingsFragmentArgs
 import com.blockstream.green.ui.wallet.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragmentArgs
+import com.blockstream.green.utils.isDevelopmentFlavor
 import com.greenaddress.Bridge
 import com.greenaddress.greenapi.Session
 import dagger.hilt.android.HiltAndroidApp
@@ -46,7 +47,7 @@ class GreenApplication : Application(){
         super.onCreate()
 
         // Initialize Bridge
-        Bridge.initializeBridge(this, BuildConfig.DEBUG, BuildConfig.VERSION_NAME)
+        Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.VERSION_NAME)
 
         Bridge.setNavigateHandler { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: Any?, navigateToWallet: Long? ->
             when(type){

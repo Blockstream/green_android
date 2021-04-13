@@ -47,7 +47,7 @@ object Bridge {
 
     fun initializeBridge(
         ctx: Context,
-        debug: Boolean,
+        isDevelopmentFlavor: Boolean,
         version: String
     ){
         if(!initialized) {
@@ -55,9 +55,10 @@ object Bridge {
 
             context = WeakReference(ctx.applicationContext)
 
-            isDebug = debug
+            isDebug = BuildConfig.DEBUG
             versionName = version
 
+            Session.getSession().setDevelopmentFlavor(isDevelopmentFlavor)
             JadeAPI.isDebug = BuildConfig.DEBUG
         }
     }

@@ -47,6 +47,7 @@ public class GDKSession implements HttpRequestHandler {
 
     // Fine to have a static objectMapper according to docs if using always same configuration
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
+    private Boolean mIsDevelopmentFlavor = false;
 
     protected Object mNativeSession;
     private final NotificationHandlerImpl mNotification;
@@ -60,6 +61,10 @@ public class GDKSession implements HttpRequestHandler {
 
     protected GDKSession() {
         mNotification = new NotificationHandlerImpl();
+    }
+
+    public void setDevelopmentFlavor(Boolean IsDevelopmentFlavor){
+        mIsDevelopmentFlavor = IsDevelopmentFlavor;
     }
 
     @Nullable
@@ -311,13 +316,17 @@ public class GDKSession implements HttpRequestHandler {
         final List<NetworkData> networksMap = new LinkedList<>();
         final ObjectNode networks = Bridge.INSTANCE.toJackson(GDK.get_networks());
         final ArrayNode nodes = (ArrayNode) networks.get("all_networks");
-        final boolean isProduction = !BuildConfig.DEBUG;
+        final boolean isDebug = BuildConfig.DEBUG;
+        final boolean isProduction = !mIsDevelopmentFlavor;
 
         for (final JsonNode node : nodes) {
             final String networkName = node.asText();
             try {
                 final NetworkData data = mObjectMapper.treeToValue(networks.get(networkName), NetworkData.class);
-                if (!(isProduction && (data.getDevelopment() || data.isElectrum()))) {
+
+                if(isDebug
+                        || (mIsDevelopmentFlavor && !data.getDevelopment())
+                        || (isProduction && !data.getDevelopment() && !data.isElectrum())){
                     networksMap.add(data);
                 }
             } catch (Exception e) {

@@ -89,9 +89,9 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
 
     @JsonIgnore
     public int getIcon() {
-        if (network.equals("mainnet"))
+        if (network.equals("mainnet") || network.equals("electrum-mainnet"))
             return R.drawable.ic_btc;
-        if (network.equals("testnet"))
+        if (network.equals("testnet") || network.equals("electrum-testnet"))
             return R.drawable.ic_testnet_btc;
         if (network.equals("localtest-liquid"))
             return R.drawable.ic_liquid;
@@ -161,6 +161,10 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
 
     public Boolean getLiquid() {
         return liquid;
+    }
+
+    public Boolean canReplaceTransactions(){
+        return !getLiquid() && !isElectrum();
     }
 
     public void setLiquid(final Boolean liquid) {

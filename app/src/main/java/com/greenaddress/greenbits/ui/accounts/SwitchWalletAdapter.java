@@ -37,9 +37,9 @@ public class SwitchWalletAdapter extends RecyclerView.Adapter<SwitchWalletAdapte
     }
 
     public int getIcon(String network) {
-        if (network.equals("mainnet"))
+        if (network.equals("mainnet") || network.equals("electrum-mainnet"))
             return com.blockstream.crypto.R.drawable.ic_btc;
-        if (network.equals("testnet"))
+        if (network.equals("testnet") || network.equals("electrum-testnet"))
             return com.blockstream.crypto.R.drawable.ic_testnet_btc;
         if (network.equals("localtest-liquid"))
             return com.blockstream.crypto.R.drawable.ic_liquid;

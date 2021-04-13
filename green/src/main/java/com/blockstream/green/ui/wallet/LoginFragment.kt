@@ -26,7 +26,6 @@ import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenPinViewListener
 import com.greenaddress.Bridge
-import com.greenaddress.Bridge.spv
 import com.greenaddress.greenbits.ui.TabbedMainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.UnrecoverableKeyException

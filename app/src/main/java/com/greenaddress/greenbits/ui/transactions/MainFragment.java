@@ -73,7 +73,6 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     private ListTransactionsAdapter mTransactionsAdapter;
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
     private TextView mAssetsSelection;
-    private TextView mSwitchNetwork;
     private View mView;
     private View mCard;
     private TextView mCardTitle;
