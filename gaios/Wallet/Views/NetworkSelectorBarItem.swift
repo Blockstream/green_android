@@ -5,12 +5,11 @@ class NetworkSelectorBarItem: UIView {
     @IBOutlet weak var icon: UIImageView!
     var onTap: (() -> Void)?
 
-    var network: GdkNetwork { getGdkNetwork(getNetwork()) }
-
     func configure(_ onTap:@escaping (() -> Void)) {
-        lblNetwork.text = network.name
-        if let iconName = network.icon {
-            icon.image = UIImage(named: iconName)
+        let account = AccountsManager.shared.current
+        lblNetwork.text = account?.name ?? ""
+        if let image = account?.icon {
+            icon.image = image
         }
         self.onTap = onTap
     }
