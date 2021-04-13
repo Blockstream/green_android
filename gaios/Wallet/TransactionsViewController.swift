@@ -18,6 +18,7 @@ class TransactionsController: UITableViewController {
     private var blockToken: NSObjectProtocol?
     private var transactionToken: NSObjectProtocol?
     private var assetsUpdatedToken: NSObjectProtocol?
+    private var settingsUpdatedToken: NSObjectProtocol?
 
     lazy var noTransactionsLabel: UILabel = {
         let noTransactionsLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 100, y: self.tableView.tableHeaderView!.frame.height, width: 200, height: self.view.frame.size.height - self.tableView.tableHeaderView!.frame.height))
@@ -60,6 +61,7 @@ class TransactionsController: UITableViewController {
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
         assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
+        settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: onSettingsTransaction)
         if presentingWallet != nil {
             showWallet()
         }
@@ -76,6 +78,9 @@ class TransactionsController: UITableViewController {
             NotificationCenter.default.removeObserver(token)
         }
         if let token = assetsUpdatedToken {
+            NotificationCenter.default.removeObserver(token)
+        }
+        if let token = settingsUpdatedToken {
             NotificationCenter.default.removeObserver(token)
         }
     }
@@ -127,6 +132,11 @@ class TransactionsController: UITableViewController {
         if subaccounts.contains(pointerWallet) {
             handleRefresh()
         }
+    }
+
+    func onSettingsTransaction(_ notification: Notification) {
+        self.showWallet()
+        self.showTransactions()
     }
 
     func showTransactions() {

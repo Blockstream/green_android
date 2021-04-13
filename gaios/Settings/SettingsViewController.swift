@@ -52,7 +52,7 @@ class SettingsViewController: UIViewController {
         reloadData()
         if !isWatchOnly {
             Guarantee()
-                .compactMap { try self.refresh() }
+                .compactMap { try self.load() }
                 .done { self.reloadData() }
                 .catch { err in print(err) }
         }
@@ -67,8 +67,11 @@ class SettingsViewController: UIViewController {
         self.tableView.reloadData()
     }
 
-    func refresh() throws {
+    func load() throws {
         let session = getGAService().getSession()
+        if let settings = try session.getSettings() {
+            Settings.shared = Settings.from(settings)
+        }
         self.username = try session.getWatchOnlyUsername()
         let dataTwoFactorConfig = try session.getTwoFactorConfig()
         self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
@@ -317,7 +320,7 @@ extension SettingsViewController {
             return Guarantee()
         }.compactMap(on: bgq) {
             try getGAService().getSession().setWatchOnly(username: username, password: password)
-            try self.refresh()
+            try self.load()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -335,7 +338,7 @@ extension SettingsViewController {
         }.then(on: bgq) {
             try getGAService().getSession().cancelTwoFactorReset().resolve()
         }.compactMap(on: bgq) { _ in
-            try self.refresh()
+            try self.load()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -356,7 +359,7 @@ extension SettingsViewController {
             return Guarantee()
         }.compactMap(on: bgq) {
             try getSession().sendNlocktimes()
-            try self.refresh()
+            try self.load()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -376,11 +379,12 @@ extension SettingsViewController {
         }.then(on: bgq) { _ in
             try session.changeSettings(details: details!).resolve()
         }.compactMap(on: bgq) { _ in
-            try self.refresh()
+            try self.load()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "settings"), object: nil, userInfo: nil)
         }.catch { error in
             self.showAlert(error)
         }
@@ -394,7 +398,7 @@ extension SettingsViewController {
         }.then(on: bgq) { _ in
             try session.resetTwoFactor(email: email, isDispute: false).resolve()
         }.compactMap(on: bgq) { _ in
-            try self.refresh()
+            try self.load()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

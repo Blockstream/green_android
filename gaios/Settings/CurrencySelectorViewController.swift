@@ -95,6 +95,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         }.then(on: bgq) { call in
             call.resolve()
         }.done { _ in
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "settings"), object: nil, userInfo: nil)
             self.navigationController?.popViewController(animated: true)
         }.catch {_ in
             self.showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
