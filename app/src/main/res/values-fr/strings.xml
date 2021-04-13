@@ -51,6 +51,9 @@
   <string name="id_allows_you_to_quickly_check">Vous permet de consulter rapidement votre solde, de recevoir des fonds ou de balayer un paperwallet. Vous ne pouvez pas envoyer de fonds en mode watch-only.</string>
   <string name="id_always">Toujours</string>
   <string name="id_amount">Montant</string>
+  <string name="id_amp_account">AMP Account</string>
+  <string name="id_amp_accounts_are_only_available">AMP accounts are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive an AMP Asset.</string>
+  <string name="id_amp_id">AMP ID</string>
   <string name="id_another_2fa_method_is_already">Another 2FA method is already active. Confirm via 2FA that you authorize this change.</string>
   <string name="id_app_settings">App Settings</string>
   <string name="id_are_you_sure_you_want_to_view">Êtes-vous sûr de vouloir voir la transaction avec %s ?</string>
@@ -497,6 +500,7 @@
   <string name="id_private_but_less_stable">Private, but less stable connection</string>
   <string name="id_problem_with_key_1s">Problème avec la clé %1$s</string>
   <string name="id_provide_this_id_to_the_asset">Provide this ID to the asset issuer if requested.</string>
+  <string name="id_provide_your_amp_id_to_the">Provide your AMP ID to the asset issuer if requested.</string>
   <string name="id_proxy_settings">CONFIGURATION DU PROXY</string>
   <string name="id_qr_code">QR Code</string>
   <string name="id_qr_scanner">Scanner de QR code</string>
@@ -582,6 +586,7 @@
   <string name="id_send">Envoyer</string>
   <string name="id_send_all_funds">Envoyer tous les fonds</string>
   <string name="id_send_all_requires_a_single">Envoyer tout n\'a qu\'un seul destinataire</string>
+  <string name="id_send_and_receive_liquidbased">Send and receive Liquid-based Managed Assets</string>
   <string name="id_send_to">Envoyer à </string>
   <string name="id_sending">MONTANT ENVOYÉ</string>
   <string name="id_sending_request">Envoi de la demande...</string>
@@ -773,6 +778,7 @@
   <string name="id_well_done_you_can_continue">Well done, you can continue</string>
   <string name="id_well_done_you_can_continue_with">Well done, you can continue with your password</string>
   <string name="id_well_get_you_set_up_in_no_time">We\'ll get you set up in no time. Make sure you have a pen and paper ready!</string>
+  <string name="id_well_get_you_set_up_with_an_amp">We\'ll get you set up with an AMP wallet in no time. Note that you can alternatively create AMP accounts in any existing Liquid wwallet.</string>
   <string name="id_what_type_of_account_would_you">What type of account would you like to add?</string>
   <string name="id_whats_new">What\'s new?</string>
   <string name="id_where_would_you_like_to">Où souhaitez-vous transférer les fonds?\n </string>
