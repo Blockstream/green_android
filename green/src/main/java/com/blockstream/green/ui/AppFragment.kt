@@ -16,14 +16,13 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.blockstream.green.ui.IActivity
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.utils.isProductionFlavor
 import com.blockstream.green.utils.toast
-import com.greenaddress.Bridge
 import com.greenaddress.greenbits.ui.TabbedMainActivity
 import javax.inject.Inject
 
@@ -140,7 +139,7 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
 
         // Remove chooseSecurityFragment from backstack
-        if(!Bridge.useGreenModule && findNavController().currentDestination?.id == R.id.chooseSecurityFragment){
+        if(isProductionFlavor() && findNavController().currentDestination?.id == R.id.chooseSecurityFragment){
             navOptionsBuilder.setPopUpTo(R.id.chooseSecurityFragment, true)
         }
 

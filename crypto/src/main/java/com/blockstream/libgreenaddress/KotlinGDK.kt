@@ -1,6 +1,5 @@
 package com.blockstream.libgreenaddress
 
-import com.blockstream.gdk.params.ConnectionParams
 import com.blockstream.gdk.data.PinData
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorMethodConfig
@@ -111,7 +110,9 @@ class KotlinGDK {
 
     fun getNetworks() = GDK.get_networks()
 
-    fun generateMnemonic(): String = GDK.generate_mnemonic()
+    fun generateMnemonic12(): String = GDK.generate_mnemonic_12()
+    fun generateMnemonic24(): String = GDK.generate_mnemonic()
+
 
     companion object {
         const val GA_OK = GDK.GA_OK

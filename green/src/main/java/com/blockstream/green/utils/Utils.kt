@@ -95,3 +95,7 @@ fun Fragment.toPixels(size: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_
 fun String?.nameCleanup(): String? = if (isNullOrBlank()) null else trim().replace("\n", "")
 
 fun Context.isDevelopmentFlavor() = packageName.contains(".dev")
+fun Context.isProductionFlavor() = !this.isDevelopmentFlavor()
+
+fun Fragment.isDevelopmentFlavor() = requireContext().packageName.contains(".dev")
+fun Fragment.isProductionFlavor() = !this.isDevelopmentFlavor()

@@ -50,7 +50,8 @@ class GreenWallet(val gdk: KotlinGDK, private val wally: KotlinWally, dataDir: S
         Networks.fromJsonElement(JsonDeserializer, jsonElement)
     }
 
-    fun generateMnemonic(): String = gdk.generateMnemonic()
+    fun generateMnemonic12(): String = gdk.generateMnemonic12()
+    fun generateMnemonic24(): String = gdk.generateMnemonic24()
 
     fun createSession() = gdk.createSession()
 

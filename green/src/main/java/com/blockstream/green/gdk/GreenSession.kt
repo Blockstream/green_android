@@ -7,8 +7,8 @@ import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
 import com.blockstream.green.BuildConfig
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.AssetManager
 import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.KotlinGDK
@@ -132,7 +132,8 @@ class GreenSession constructor(
         )
     }
 
-    private fun generateMnemonic() = greenWallet.generateMnemonic()
+    private fun generateMnemonic12() = greenWallet.generateMnemonic12()
+    private fun generateMnemonic24() = greenWallet.generateMnemonic24()
 
     override fun getHttpRequest(): HttpRequestHandler {
         return this
@@ -189,7 +190,7 @@ class GreenSession constructor(
         isWatchOnly = false
 
         connect(network)
-        val mnemonic = providedMnemonic ?: generateMnemonic()
+        val mnemonic = providedMnemonic ?: generateMnemonic12()
 
         AuthHandler(
             greenWallet,

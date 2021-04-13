@@ -3,11 +3,12 @@ package com.blockstream.green.ui.onboarding
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
+import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseSecurityFragmentBinding
-import com.blockstream.gdk.GreenWallet
-import com.blockstream.gdk.data.Network
+import com.blockstream.green.utils.isProductionFlavor
 import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -42,7 +43,7 @@ class ChooseSecurityFragment :
         }
 
         // Skip singlesig, check AppFragment where we remove this fragment from the backstack
-        if(!Bridge.useGreenModule){
+        if(requireContext().isProductionFlavor()){
             options?.apply {
                 navigate(copy(network = getNetwork(networkType!!, false)))
             }
@@ -76,7 +77,7 @@ class ChooseSecurityFragment :
             if(Bridge.useGreenModule){
                 navigate(ChooseSecurityFragmentDirections.actionChooseSecurityFragmentToWalletNameFragment(options, mnemonic = "", mnemonicPassword = ""))
             }else{
-                navigate(ChooseSecurityFragmentDirections.actionGlobalRecoveryIntroFragment(wallet = null, onboardingOptions = options, mnemonic = greenWallet.generateMnemonic()))
+                navigate(ChooseSecurityFragmentDirections.actionGlobalRecoveryIntroFragment(wallet = null, onboardingOptions = options, mnemonic = greenWallet.generateMnemonic12()))
             }
         }
     }

@@ -3,12 +3,12 @@ package com.blockstream.green.ui.recovery
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.gdk.observable
+import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
@@ -31,6 +31,7 @@ class RecoveryCheckViewModel @AssistedInject constructor(
 
     val words = MutableLiveData<List<String>>()
     val pointer = MutableLiveData(0)
+    val numberOfWords = MutableLiveData(mnemonic.size)
 
     var correctWordIndex = -1
     private val correctWord: String
