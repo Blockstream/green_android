@@ -563,7 +563,7 @@ extension SettingsViewController: UITableViewDelegate {
         case .LockTimeRecovery: showLockTimeRecovery()
         case .LockTimeRequest: setLockTimeRequest()
         case .CsvTime: performSegue(withIdentifier: "csv", sender: nil)
-        case .Mnemonic: performSegue(withIdentifier: "recovery", sender: nil)
+        case .Mnemonic: performSegue(withIdentifier: "auth", sender: nil)
         case .Autolock: showAutolock()
         case .Pgp: performSegue(withIdentifier: "pgp", sender: nil)
         case .Sweep: performSegue(withIdentifier: "sweep_to_wallets", sender: nil)

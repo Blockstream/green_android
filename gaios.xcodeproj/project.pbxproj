@@ -38,6 +38,7 @@
 		0B6874659AEC8ED1E0E28468 /* Pods_gaiosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B30BBDD31C5DD1AB0737D98F /* Pods_gaiosUITests.framework */; };
 		2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1A25B995A200250E23 /* CsvViewController.swift */; };
 		2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */; };
+		20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */; };
 		340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */; };
 		340F07E42620499A0065A986 /* NetworkSelectorBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */; };
 		340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */; };
@@ -277,6 +278,7 @@
 		206D7A38252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		207C121823303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicAuthViewController.swift; sourceTree = "<group>"; };
 		30E4BBC6544671082AABADC5 /* Pods_gaios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gaios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		340659D326122828006894D0 /* WatchOnlyLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyLoginViewController.swift; sourceTree = "<group>"; };
 		340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkSelectorBarItem.xib; sourceTree = "<group>"; };
@@ -968,6 +970,7 @@
 				81837789224E6D4700DC0FB1 /* PgpViewController.swift */,
 				81ACC4AE22733533004B1E92 /* Settings.storyboard */,
 				2034CE1A25B995A200250E23 /* CsvViewController.swift */,
+				20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1498,6 +1501,7 @@
 				81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
 				811ED52B21BFCE4D0033A4A1 /* GreenAddressService.swift in Sources */,
+				20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */,
 				0926C14A2117978B0008F94A /* NetworkSelectionSettings.swift in Sources */,
 				34641F1D25F915B9002E6442 /* RecoveryPhraseViewController.swift in Sources */,
 				81A062D224532454003464A0 /* HWResolverProtocol.swift in Sources */,
