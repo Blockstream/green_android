@@ -6,8 +6,8 @@ import android.content.DialogInterface
 import android.text.InputType
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import com.blockstream.green.R
 import com.blockstream.gdk.TwoFactorResolver
+import com.blockstream.green.R
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -24,10 +24,20 @@ class DialogTwoFactorResolver(val context: Context, val method: String? = null) 
                 return@create
             }
 
+            val availableMethodsChoices = availableMethods.map {
+                when(it){
+                    "email" -> context.getString(R.string.id_email)
+                    "sms" -> context.getString(R.string.id_sms)
+                    "gauth" -> context.getString(R.string.id_authenticator_app)
+                    "phone" -> context.getString(R.string.id_phone_call)
+                    else -> it
+                }
+            }
+
             MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.id_choose_method_to_authorize_the)
                 .setSingleChoiceItems(
-                    availableMethods.toTypedArray(),
+                    availableMethodsChoices.toTypedArray(),
                     0, null
                 )
                 .setPositiveButton(android.R.string.ok){ dialogInterface: DialogInterface, i: Int ->
