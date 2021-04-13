@@ -1,44 +1,98 @@
-build_tag_release:
-  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
-    expire_in: 1 hour
-    when: on_success
-    paths:
-    - green/build/outputs/apk/*/release/*.apk
-    - green/build/outputs/mapping/productionRelease/mapping.txt
-  tags:
-    - ga
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./gradlew lintProductionRelease
-    - ./gradlew assembleProductionRelease
+#####################################
+# Build
 
-build_debug:
+build_development:
   image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     expire_in: 14 days
     when: on_success
     paths:
-    - green/build/outputs/apk/*/debug/*.apk
-    - green/build/outputs/mapping/*/debug/mapping.txt
+      - green/build/outputs/apk/development/release/*.apk
+      - green/build/outputs/mapping/*/mapping.txt
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./gradlew lintDevelopmentRelease
+    - ./gradlew assembleDevelopmentRelease
+
+build_production:
+  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  stage: build
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    expire_in: 1 hour
+    when: on_success
+    paths:
+    - green/build/outputs/apk/production/release/*.apk
+    - green/build/outputs/mapping/*/mapping.txt
   tags:
     - ga
   script:
     - cd $CI_PROJECT_DIR
     - ./gradlew lintProductionRelease
-    - ./gradlew assembleProductionDebug
+    - ./gradlew assembleProductionRelease
 
 build_tag_osx_release:
+  stage: build
   tags:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
-package_release:
+build_debug:
+  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  stage: build
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    expire_in: 14 days
+    when: on_success
+    paths:
+      - green/build/outputs/apk/*/debug/*.apk
+      - green/build/outputs/mapping/*/debug/mapping.txt
+  tags:
+    - ga
+  when: manual
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./gradlew assembleDevelopmentDebug
+
+#####################################
+# Test
+
+# When bitcoinj is removed, we should do - ./gradlew test
+unit_tests:
+  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  stage: test
+  needs: []
+  tags:
+    - ga
+  script:
+    - cd $CI_PROJECT_DIR
+    - ./gradlew green:test
+
+#####################################
+# Sign builds
+
+package_development:
+  tags:
+    - garelease
+  stage: deploy
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
+    expire_in: 14 days
+    paths:
+      - green/build/outputs/*
+    when: on_success
+  script: cd $CI_PROJECT_DIR/green/build/outputs/apk && /opt/process_release
+  needs:
+    - unit_tests
+    - build_development
+
+package_production:
   tags:
     - garelease
   stage: deploy
@@ -49,5 +103,6 @@ package_release:
     - green/build/outputs/*
     when: on_success
   script: cd $CI_PROJECT_DIR/green/build/outputs/apk && /opt/process_release
-  dependencies:
-  - build_tag_release
+  needs:
+    - unit_tests
+    - build_production
