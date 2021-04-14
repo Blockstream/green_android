@@ -3,14 +3,16 @@ import PromiseKit
 import UIKit
 import AVFoundation
 
-class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
+class SendBtcViewController: KeyboardViewController {
 
     var wallet: WalletItem?
     var transaction: Transaction?
     var isSweep: Bool = false
     private var isLiquid: Bool!
 
-    @IBOutlet weak var textfield: UITextField!
+    @IBOutlet weak var textView: UITextView!
+    var placeholderLabel = UILabel()
+
     @IBOutlet weak var qrCodeReaderBackgroundView: QRCodeReaderView!
     @IBOutlet weak var bottomButton: UIButton!
     @IBOutlet weak var orLabel: UILabel!
@@ -23,17 +25,26 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         isLiquid = getGdkNetwork(getNetwork()).liquid
         orLabel.text = NSLocalizedString("id_or", comment: "")
 
-        textfield.delegate = self
-        textfield.attributedPlaceholder =
-            NSAttributedString(string: NSLocalizedString(isSweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: ""),
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
-        textfield.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textfield.frame.height))
-        textfield.leftViewMode = .always
-        textfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        textView.delegate = self
+        textView.borderWidth = 1.0
+        textView.borderColor = UIColor.white.withAlphaComponent(0.5)
+        textView.layer.cornerRadius = 3.0
 
         bottomButton.setTitle(isLiquid ? NSLocalizedString("id_select_asset", comment: "") : NSLocalizedString("id_add_amount", comment: ""), for: .normal)
 
         qrCodeReaderBackgroundView.delegate = self
+
+        addPlaceHolder()
+    }
+
+    func addPlaceHolder() {
+        placeholderLabel.text = NSLocalizedString(isSweep ? "id_enter_a_private_key_to_sweep" : "id_enter_an_address", comment: "")
+        placeholderLabel.font = UIFont.systemFont(ofSize: (textView.font?.pointSize)!)
+        placeholderLabel.sizeToFit()
+        textView.addSubview(placeholderLabel)
+        placeholderLabel.frame.origin = CGPoint(x: 5, y: (textView.font?.pointSize)! / 2)
+        placeholderLabel.textColor = UIColor.customTitaniumLight()
+        placeholderLabel.isHidden = !textView.text.isEmpty
     }
 
     private func startCapture() {
@@ -51,7 +62,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateButton(!isTextFieldEmpty())
+        updateButton(!textView.text.isEmpty)
         bottomButton.addTarget(self, action: #selector(click(_:)), for: .touchUpInside)
     }
 
@@ -72,26 +83,12 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
         bottomButton.updateGradientLayerFrame()
     }
 
-    func isTextFieldEmpty() -> Bool {
-        return textfield.text?.isEmpty ?? true
-    }
-
-    @objc func textFieldDidChange(_ textField: UITextField) {
-        updateButton(!isTextFieldEmpty())
-    }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        updateButton(!isTextFieldEmpty())
-        return true
-    }
-
     func updateButton(_ enable: Bool) {
         bottomButton.setGradient(enable)
     }
 
     @objc func click(_ sender: Any) {
-        guard let text = textfield.text else { return }
+        guard let text = textView.text else { return }
         createTransaction(userInput: text)
     }
 
@@ -148,7 +145,7 @@ class SendBtcViewController: KeyboardViewController, UITextFieldDelegate {
             self.qrCodeReaderBackgroundView.startScan()
         }.finally {
             self.stopAnimating()
-            self.updateButton(!self.isTextFieldEmpty())
+            self.updateButton(!self.textView.text.isEmpty)
         }
     }
 }
@@ -161,5 +158,21 @@ extension SendBtcViewController: QRCodeReaderDelegate {
     func onQRCodeReadSuccess(result: String) {
         qrCodeReaderBackgroundView.stopScan()
         createTransaction(userInput: result)
+    }
+}
+
+extension SendBtcViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        placeholderLabel.isHidden = !textView.text.isEmpty
+        updateButton(!textView.text.isEmpty)
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            view.endEditing(true)
+            return false
+        } else {
+            return true
+        }
     }
 }
