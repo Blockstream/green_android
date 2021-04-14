@@ -52,7 +52,7 @@ class SettingsViewController: UIViewController {
         reloadData()
         if !isWatchOnly {
             Guarantee()
-                .compactMap { try self.load() }
+                .compactMap(on: .global(qos: .background)) { try self.load() }
                 .done { self.reloadData() }
                 .catch { err in print(err) }
         }
