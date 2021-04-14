@@ -17,6 +17,7 @@ import com.blockstream.green.ui.settings.WalletSettingsFragmentArgs
 import com.blockstream.green.ui.wallet.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragmentArgs
 import com.greenaddress.Bridge
+import com.greenaddress.greenapi.Session
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -133,12 +134,13 @@ class GreenApplication : Application(){
             val walletId = sessionManager.getWalletIdFromSession(gaSession)
 
             if(walletId >= 0){
-
                 walletRepository.getWalletSync(walletId)?.let {
                     it.activeAccount = subaccount.toLong()
                     walletRepository.updateWalletSync(it)
                 }
             }
+
+            Session.getSession().subAccount = subaccount
         }
 
         Bridge.setWalletProvider { gaSession ->
@@ -180,7 +182,7 @@ class GreenApplication : Application(){
                 }
             }
 
-            0
+            Session.getSession()?.subAccount ?: 0
         }
 
         Bridge.setConnectHandler { context, gaSession, networkId ->

@@ -268,7 +268,11 @@ public class SPV {
     private void start() {
         synchronized (mStateLock) {
             Log.d(TAG, "start");
-            reset(false /* deleteAllData */, true /* deleteUnspent */);
+            try{
+                reset(false /* deleteAllData */, true /* deleteUnspent */);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -828,7 +832,11 @@ public class SPV {
         synchronized (mStateLock) {
             Log.d(TAG, "reset: " + Var("deleteAllData", deleteAllData) +
                   Var("deleteUnspent", deleteUnspent));
-            stopSync();
+            try{
+                stopSync();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
             if (deleteAllData) {
                 Log.d(TAG, "Deleting chain file");

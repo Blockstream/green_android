@@ -55,6 +55,9 @@ public class GDKSession implements HttpRequestHandler {
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    // Used mainly for HWW where we don't have a Wallet in the Database yet
+    protected int mSubAccount = 0;
+
     protected GDKSession() {
         mNotification = new NotificationHandlerImpl();
     }
@@ -62,6 +65,14 @@ public class GDKSession implements HttpRequestHandler {
     @Nullable
     public Object getNativeSession(){
         return mNativeSession;
+    }
+
+    public void setSubAccount(int subaccount) {
+        mSubAccount = subaccount;
+    }
+
+    public int getSubAccount(){
+        return mSubAccount;
     }
 
     public void disconnect() throws Exception {
