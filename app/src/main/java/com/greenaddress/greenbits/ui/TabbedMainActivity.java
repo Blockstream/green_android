@@ -1,12 +1,15 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +24,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
+import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenbits.ui.accounts.SwitchWalletFragment;
 import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 import com.greenaddress.greenbits.ui.notifications.NotificationsActivity;
@@ -69,6 +73,11 @@ public class TabbedMainActivity extends LoggedActivity  {
         }
 
         if(savedInstanceState == null){
+
+            // Copy session settings to Default SharedPreferences
+            // This will auto-set values in settings dialogs
+            initSettings();
+
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.container, new MainFragment()).commit();
         }
@@ -80,6 +89,28 @@ public class TabbedMainActivity extends LoggedActivity  {
             intentError.setClass(this, RegistryErrorActivity.class);
             startActivity(intentError);
         }
+    }
+
+    protected void initSettings() {
+        Log.d(TAG,"initSettings");
+        final SettingsData settings = getSession().getSettings();
+        final SharedPreferences pref =
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final SharedPreferences.Editor edit = pref.edit();
+        if (settings.getPricing() != null)
+            edit.putString(PrefKeys.PRICING, settings.getPricing().toString());
+        if (settings.getNotifications() != null)
+            edit.putBoolean(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS,
+                    settings.getNotifications().isEmailIncoming());
+        if (settings.getAltimeout() != null)
+            edit.putString(PrefKeys.ALTIMEOUT, String.valueOf(settings.getAltimeout()));
+        if (settings.getUnit() != null)
+            edit.putString(PrefKeys.UNIT, settings.getUnit());
+        if (settings.getRequiredNumBlocks() != null)
+            edit.putString(PrefKeys.REQUIRED_NUM_BLOCKS, String.valueOf(settings.getRequiredNumBlocks()));
+        if (settings.getPgp() != null)
+            edit.putString(PrefKeys.PGP_KEY, settings.getPgp());
+        edit.apply();
     }
 
     @Override
