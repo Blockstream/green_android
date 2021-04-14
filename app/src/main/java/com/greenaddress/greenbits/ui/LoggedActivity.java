@@ -48,7 +48,7 @@ public abstract class LoggedActivity extends GaActivity {
 
         final boolean timerExpired = mStart + delayLogoutTimer() < System.currentTimeMillis();
         if (timerExpired) {
-            exit(null);
+            exit(-1L);
             return;
         }
 
@@ -232,7 +232,7 @@ public abstract class LoggedActivity extends GaActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(() -> exit(null));
+                runOnUiThread(() -> exit(-1L));
             }
         }, delayLogoutTimer());
         mTimer = timer;

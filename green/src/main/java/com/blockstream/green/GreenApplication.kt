@@ -62,7 +62,10 @@ class GreenApplication : Application(){
                         .setDestination(R.id.introFragment).also { builder ->
                             // Navigate to Login
                             navigateToWallet?.let{ navigateToWallet ->
-                                walletRepository.getWalletSync(navigateToWallet)?.let {
+
+                                val walletId = if(navigateToWallet == -1L) sessionManager.getWalletIdFromSession(gaSession) else navigateToWallet
+
+                                walletRepository.getWalletSync(walletId)?.let {
                                     builder.setDestination(R.id.loginFragment)
                                     builder.setArguments(LoginFragmentArgs(it).toBundle())
                                 }
