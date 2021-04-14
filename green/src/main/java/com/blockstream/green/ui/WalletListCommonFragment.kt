@@ -5,7 +5,7 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.activityViewModels
-import com.blockstream.green.*
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.WalletListCommonBinding
@@ -17,7 +17,6 @@ import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-
 import javax.inject.Inject
 
 
@@ -89,7 +88,7 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
     private fun navigate(wallet: Wallet) {
 
         if(Bridge.useGreenModule){
-            if(sessionManager.getWalletSession(wallet).isConnected()){
+            if(sessionManager.getWalletSession(wallet).isConnected){
                 // TODO open v4 Overview
             }else{
                 navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))

@@ -97,5 +97,5 @@ fun String?.nameCleanup(): String? = if (isNullOrBlank()) null else trim().repla
 fun Context.isDevelopmentFlavor() = packageName.contains(".dev")
 fun Context.isProductionFlavor() = !this.isDevelopmentFlavor()
 
-fun Fragment.isDevelopmentFlavor() = requireContext().packageName.contains(".dev")
+fun Fragment.isDevelopmentFlavor() = requireContext().isDevelopmentFlavor()
 fun Fragment.isProductionFlavor() = !this.isDevelopmentFlavor()

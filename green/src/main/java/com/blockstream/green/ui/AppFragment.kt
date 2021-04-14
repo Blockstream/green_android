@@ -9,6 +9,7 @@ import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
+import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -23,6 +24,8 @@ import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isProductionFlavor
 import com.blockstream.green.utils.toast
+import com.greenaddress.greenapi.HWWallet
+import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.ui.TabbedMainActivity
 import javax.inject.Inject
 
@@ -43,7 +46,7 @@ import javax.inject.Inject
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
-) : Fragment() {
+) : Fragment() , HWWalletBridge {
     internal lateinit var binding: T
 
     @Inject
@@ -155,5 +158,25 @@ abstract class AppFragment<T : ViewDataBinding>(
         val intent = Intent(requireContext(), TabbedMainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
+    }
+
+    override fun interactionRequest(hw: HWWallet?) {
+        throw Exception("Not yet implemented")
+    }
+
+    override fun pinMatrixRequest(hw: HWWallet?): String {
+        throw Exception("Not yet implemented")
+    }
+
+    override fun passphraseRequest(hw: HWWallet?): String {
+        throw Exception("Not yet implemented")
+    }
+
+    override fun jadeAskForFirmwareUpgrade(
+        version: String?,
+        isUpgradeRequired: Boolean,
+        callback: Function<Boolean, Void>?
+    ) {
+        throw Exception("Not yet implemented")
     }
 }

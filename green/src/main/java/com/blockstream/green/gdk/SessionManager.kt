@@ -2,9 +2,9 @@ package com.blockstream.green.gdk
 
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.AssetManager
 import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.greenapi.Session
@@ -42,6 +42,12 @@ class SessionManager(
     }
 
     fun getWalletSession(wallet: Wallet): GreenSession {
+
+        // If id == -1 is a hardware wallet connection, we emulate it as currently we don't save the Wallet
+        if(wallet.isHardwareEmulated){
+            return getHardwareSessionV3()
+        }
+
         if (walletSessions[wallet.id] == null) {
             val session = createSession()
             walletSessions[wallet.id] = session

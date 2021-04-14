@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import com.greenaddress.Bridge;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.EventData;
@@ -30,7 +31,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
 
     private Registry mRegistry;
     private String mWatchOnlyUsername;
-    private HWWallet mHWWallet = null;
     private SettingsData mSettings;
     private TwoFactorReset mTwoFAReset = null;
     private String mNetwork;
@@ -49,7 +49,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
         mWatchOnlyUsername = watchOnlyUsername;
 
         // Reset
-        mHWWallet = null;
         mSettings = null;
         mTwoFAReset = null;
         mSubAccount = 0;
@@ -70,11 +69,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
     }
 
     public HWWallet getHWWallet() {
-        return mHWWallet;
-    }
-
-    public void setHWWallet(final HWWallet hwWallet) {
-        mHWWallet = hwWallet;
+        return Bridge.INSTANCE.getHWWallet();
     }
 
     public TwoFactorReset getTwoFAReset() {
@@ -96,10 +91,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
     public void disconnect() throws Exception {
         super.disconnect();
 
-        if (mHWWallet != null) {
-            mHWWallet.disconnect();
-            mHWWallet = null;
-        }
         mWatchOnlyUsername = null;
         mSettings = null;
         mTwoFAReset = null;

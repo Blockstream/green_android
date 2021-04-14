@@ -1,6 +1,7 @@
 package com.blockstream.gdk
 
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
+import com.blockstream.gdk.data.DeviceRequiredData
 import com.blockstream.gdk.data.TwoFactorStatus
 import com.blockstream.libgreenaddress.GAAuthHandler
 import com.greenaddress.greenapi.data.HWDeviceRequiredData
@@ -14,7 +15,8 @@ interface TwoFactorResolver {
 }
 
 interface HardwareWalletResolver {
-    fun dataFromDevice(requiredData: HWDeviceRequiredData): Single<String>
+    fun requestDataFromDeviceV3(requiredData: HWDeviceRequiredData): Single<String>
+    fun requestDataFromDevice(requiredData: DeviceRequiredData): Single<String>
 }
 
 class AuthHandler(
@@ -36,9 +38,17 @@ class AuthHandler(
         hardwareWalletResolver: HardwareWalletResolver? = null
     ): AuthHandler {
         while (!isDone) {
-            val twoFactorStatus: TwoFactorStatus = JsonDeserializer.decodeFromJsonElement(
-                greenWallet.getAuthHandlerStatus(gaAuthHandler)
-            )
+
+            val twoFactorStatus: TwoFactorStatus =
+                greenWallet.getAuthHandlerStatus(gaAuthHandler).let { jsonElement ->
+                    JsonDeserializer.decodeFromJsonElement<TwoFactorStatus>(jsonElement)
+                        .also { twoFactorStatus ->
+
+                            // Save the raw JsonElement for further processing if needed by v3 code
+                            twoFactorStatus.rawJsonElement = jsonElement
+                        }
+                }
+
 
             when (twoFactorStatus.status) {
                 CALL -> {
@@ -59,23 +69,39 @@ class AuthHandler(
                         }
 
                     } ?: run {
-                        TODO("TwoFactorMethodResolver was not provided")
+                        throw RuntimeException("TwoFactorMethodResolver was not provided")
                     }
 
                 }
                 RESOLVE_CODE -> {
-
-                    twoFactorResolver?.also {
-
-                        try {
-                            resolveCode(it.getCode(twoFactorStatus.method).blockingGet())
-                        }catch (e: Exception){
-                            destroy()
-                            throw Exception("id_action_canceled")
+                    if(twoFactorStatus.device == null){
+                        twoFactorResolver?.also {
+                            try {
+                                resolveCode(it.getCode(twoFactorStatus.method).blockingGet())
+                            }catch (e: Exception){
+                                e.printStackTrace()
+                                destroy()
+                                throw Exception("id_action_canceled")
+                            }
+                        } ?: run {
+                            throw RuntimeException("TwoFactorCodeResolver was not provided")
                         }
+                    }else{
+                        hardwareWalletResolver?.also {
+                            try {
+                                // Use v3 codebase for HWW handling
+                                resolveCode(it.requestDataFromDeviceV3(twoFactorStatus.getTwoFactorStatusDataV3().requiredData).blockingGet())
 
-                    } ?: run {
-                        TODO("TwoFactorCodeResolver was not provided")
+                                // Needs v4 implementation
+                                // resolveCode(it.requestDataFromDevice(twoFactorStatus.requiredData!!).blockingGet())
+                            }catch (e: Exception){
+                                e.printStackTrace()
+                                destroy()
+                                throw Exception("id_action_canceled")
+                            }
+                        } ?: run {
+                            throw RuntimeException("TwoFactorCodeResolver was not provided")
+                        }
                     }
                 }
                 ERROR -> {

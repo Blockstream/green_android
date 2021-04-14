@@ -16,10 +16,23 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-fun AccountType?.intRes(): Int = when (this) {
+fun AccountType?.titleRes(): Int = when (this) {
     AccountType.STANDARD -> R.string.id_standard_account
     AccountType.AMP_ACCOUNT -> R.string.id_amp_account
     AccountType.TWO_OF_THREE -> R.string.id_2of3_account
+    AccountType.BIP44_LEGACY -> R.string.id_bip44_legacy
+    AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_legacy_account
+    AccountType.BIP84_SEGWIT -> R.string.id_segwit_account
+    else -> R.string.id_unknown
+}
+
+fun AccountType?.descriptionRes(): Int = when (this) {
+    AccountType.STANDARD -> R.string.id_standard_accounts_allow_you_to
+    AccountType.MANAGED_ASSETS -> R.string.id_managed_assets_accounts_are
+    AccountType.TWO_OF_THREE -> R.string.id_a_2of3_account_requires_two_out
+    AccountType.BIP44_LEGACY -> R.string.id_bip44_legacy
+    AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_bip49_accounts_allow_you_to_segratate
+    AccountType.BIP84_SEGWIT -> R.string.id_bip84_accounts_allow_you_to_segregate
     else -> R.string.id_unknown
 }
 

@@ -7,9 +7,11 @@ import androidx.fragment.app.FragmentActivity
 import com.blockstream.crypto.BuildConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.Session
 import com.greenaddress.greenbits.spv.SPV
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.JadeAPI
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -32,17 +34,19 @@ object Bridge {
 
     val spv = SPV()
 
-    private var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, walletId: Long?) -> Unit)? = null
-    private var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
-    private var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
-    private var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
-    private var recoveryConfirmedProviderFn: ((gaSession: Any?) -> Boolean)? = null
-    private var connectFn: ((context: Context, gaSession: Any?, networkId: String) -> Unit)? = null
+    var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, walletId: Long?) -> Unit)? = null
+    var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
+    var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
+    var getHWWalletFn: ((gaSession: Any?) -> HWWallet?)? = null
+    var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
+    var recoveryConfirmedProviderFn: ((gaSession: Any?) -> Boolean)? = null
+    var connectFn: ((context: Context, gaSession: Any?, networkId: String, hwWallet: HWWallet?) -> Unit)? = null
+    var loginWithDeviceFn: ((context: Context, gaSession: Any?, networkId: String, connectSession: Boolean, hwWallet: HWWallet, hardwareDataResolver: HardwareCodeResolver) -> Unit)? = null
 
     private var initialized = false
 
     enum class NavigateType {
-        LOGOUT, CHANGE_PIN, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET
+        LOGOUT, CHANGE_PIN, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET, ADD_ACCOUNT
     }
 
     fun initializeBridge(
@@ -63,32 +67,12 @@ object Bridge {
         }
     }
 
-    fun setNavigateHandler(fn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, navigateToWallet: Long?) -> Unit)){
-        navigateFn = fn
+    fun connect(context:Context, gaSession: Any?, network: String, hwWallet: HWWallet?){
+        connectFn?.invoke(context, gaSession, network, hwWallet)
     }
 
-    fun setWalletProvider(fn : ((gaSession: Any?) -> List<HashMap<String,String>>)){
-        walletsProviderFn = fn
-    }
-
-    fun setRecoveryConfirmedProvider(fn : ((gaSession: Any?) -> Boolean)){
-        recoveryConfirmedProviderFn = fn
-    }
-
-    fun setActiveAccountHandler(fn : ((gaSession: Any?, subaccount: Int) -> Unit)){
-        setSubaccountFn = fn
-    }
-
-    fun setGetActiveAccountHandler(fn: (gaSession: Any?) -> Int){
-        getSubaccountFn = fn
-    }
-
-    fun setConnectHandler(fn: (context:Context, gaSession: Any?, networkId: String) -> Unit){
-        connectFn = fn
-    }
-
-    fun connect(context:Context, gaSession: Any?, network: String){
-        connectFn?.invoke(context, gaSession, network)
+    fun loginWithDevice(context:Context, gaSession: Any?, network: String,connectSession: Boolean,  hwWallet: HWWallet, hardwareDataResolver: HardwareCodeResolver){
+        loginWithDeviceFn?.invoke(context, gaSession, network, connectSession, hwWallet, hardwareDataResolver)
     }
 
     fun getIsRecoveryConfirmed() = recoveryConfirmedProviderFn?.invoke(Session.getSession().nativeSession) ?: true
@@ -113,6 +97,10 @@ object Bridge {
 
     fun twoFactorResetDialog(activity: FragmentActivity){
         navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_RESET, Session.getSession().nativeSession, null)
+    }
+
+    fun addAccount(activity: FragmentActivity){
+        navigateFn?.invoke(activity, NavigateType.ADD_ACCOUNT, Session.getSession().nativeSession, null)
     }
 
     fun bridgeSession(session: Any, networkId: String, watchOnlyUsername: String?) {
@@ -140,6 +128,8 @@ object Bridge {
             0
         } ?: 0
     }
+
+    fun getHWWallet() = getHWWalletFn?.invoke(Session.getSession().nativeSession)
 
     fun setCurrentNetwork(context: Context, networkId: String) = BridgeJava.setCurrentNetwork(
         context,

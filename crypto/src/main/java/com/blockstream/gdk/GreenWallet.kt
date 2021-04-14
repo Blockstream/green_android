@@ -69,9 +69,10 @@ class GreenWallet(val gdk: KotlinGDK, private val wally: KotlinWally, dataDir: S
     fun httpRequest(session: GASession, data: JsonElement) = gdk.httpRequest(session, data) as JsonElement
 
     fun registerUser(
-        session: GASession, device: JsonElement,
+        session: GASession,
+        deviceParams: DeviceParams,
         mnemonic: String
-    ) = gdk.registerUser(session, device, mnemonic)
+    ) = gdk.registerUser(session, deviceParams, mnemonic)
 
     fun loginWatchOnly(session: GASession, username: String, password: String) {
         gdk.loginWatchOnly(session, username, password)
@@ -79,17 +80,16 @@ class GreenWallet(val gdk: KotlinGDK, private val wally: KotlinWally, dataDir: S
 
     fun loginWithMnemonic(
         session: GASession,
-        device: JsonElement,
+        deviceParams: DeviceParams?,
         mnemonic: String,
         password: String
-    ) = gdk.loginWithMnemonic(session, device, mnemonic, password)
+    ) = gdk.loginWithMnemonic(session, deviceParams, mnemonic, password)
 
     fun loginWithPin(
         session: GASession,
         pin: String,
         pinData: PinData,
     ) = gdk.loginWithPin(session, pin, pinData)
-
 
     fun setPin(
         session: GASession,

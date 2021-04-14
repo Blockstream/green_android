@@ -310,7 +310,31 @@
             android:id="@+id/action_loginFragment_to_chooseRecoveryPhraseFragment"
             app:destination="@id/chooseRecoveryPhraseFragment" />
     </fragment>
-
+    <fragment
+        android:id="@+id/chooseAccountTypeFragment"
+        android:name="com.blockstream.green.ui.wallet.ChooseAccountTypeFragment"
+        android:label=""
+        tools:layout="@layout/choose_account_type_fragment">
+        <action
+            android:id="@+id/action_chooseAccountTypeFragment_to_addAccountFragment"
+            app:destination="@id/addAccountFragment" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/addAccountFragment"
+        android:name="com.blockstream.green.ui.wallet.AddAccountFragment"
+        android:label=""
+        tools:layout="@layout/add_account_fragment">
+        <argument
+            android:name="accountType"
+            app:argType="com.blockstream.gdk.data.AccountType" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+    </fragment>
     <action
         android:id="@+id/action_global_connectionSettingsDialogFragment"
         app:destination="@id/connectionSettingsDialogFragment" />

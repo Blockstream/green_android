@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.Bridge
+import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.Session.getSession
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.HttpRequestHandler
 import com.greenaddress.jade.HttpRequestProvider
 import io.reactivex.rxjava3.core.Observable
@@ -26,7 +28,6 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.buildJsonObject
 import mu.KLogging
 import java.net.URL
 
@@ -54,6 +55,9 @@ class GreenSession constructor(
     val gaSession: GASession = greenWallet.createSession()
     private val disposables = CompositeDisposable()
 
+    var hwWallet: HWWallet? = null
+        private set
+
     lateinit var network: Network
         private set
 
@@ -66,13 +70,12 @@ class GreenSession constructor(
     val isMainnet
         get() = network.isMainnet
 
-    private var isConnected = false
+     var isConnected = false
+        private set
 
     val userAgent by lazy {
         String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
     }
-
-    fun isConnected() = isConnected
 
     fun getSubAccountsObservable(): Observable<List<SubAccount>> = subAccountsSubject.hide()
     fun getTorStatusObservable(): Observable<TORStatus> = torStatusSubject.hide()
@@ -92,13 +95,18 @@ class GreenSession constructor(
 
     fun networkFromWallet(wallet: Wallet) = greenWallet.networks.getNetworkById(wallet.network)
 
-    fun connect(network: Network) {
+    fun connect(network: Network, hwWallet: HWWallet? = null) {
         disconnect()
         this.network = network
+        this.hwWallet = hwWallet
 
         if(!Bridge.useGreenModule) {
             // Bridge Session to GDKSession
-            Bridge.bridgeSession(gaSession, network.network, if(isWatchOnly) watchOnlyUsernameBridge else null)
+            Bridge.bridgeSession(
+                gaSession,
+                network.network,
+                if (isWatchOnly) watchOnlyUsernameBridge else null
+            )
         }
 
         val applicationSettings = settingsManager.getApplicationSettings()
@@ -108,7 +116,7 @@ class GreenSession constructor(
             ConnectionParams(
                 networkName = network.id,
                 useTor = applicationSettings.tor && network.supportTorConnection, // Exclude Singlesig from Tor connection
-                logLevel = if(BuildConfig.DEBUG) "debug" else "none",
+                logLevel = if (BuildConfig.DEBUG) "debug" else "none",
                 userAgent = userAgent,
                 proxy = applicationSettings.proxyURL ?: ""
             )
@@ -117,6 +125,8 @@ class GreenSession constructor(
 
     fun disconnect() {
         isConnected = false
+        hwWallet?.disconnect()
+        hwWallet = null
         greenWallet.disconnect(gaSession)
     }
 
@@ -189,17 +199,17 @@ class GreenSession constructor(
     fun createNewWallet(network: Network, providedMnemonic: String?) {
         isWatchOnly = false
 
-        connect(network)
+        connect(network, hwWallet)
         val mnemonic = providedMnemonic ?: generateMnemonic12()
 
         AuthHandler(
             greenWallet,
-            greenWallet.registerUser(gaSession, buildJsonObject { }, mnemonic)
+            greenWallet.registerUser(gaSession, DeviceParams(), mnemonic)
         ).resolve()
 
         AuthHandler(
             greenWallet,
-            greenWallet.loginWithMnemonic(gaSession, buildJsonObject { }, mnemonic, "")
+            greenWallet.loginWithMnemonic(gaSession, null, mnemonic, "")
         ).resolve()
 
         isConnected = true
@@ -220,6 +230,37 @@ class GreenSession constructor(
         initializeSessionData()
     }
 
+    fun loginWithDevice(
+        network: Network,
+        connectSession: Boolean,
+        hwWallet: HWWallet,
+        hardwareDataResolver: HardwareCodeResolver
+    ) {
+        isWatchOnly = false
+
+        if(connectSession) {
+            connect(network, hwWallet)
+        }
+
+        this.hwWallet = hwWallet
+
+        val device = hwWallet.hwDeviceData.toDevice()
+
+        AuthHandler(
+            greenWallet,
+            greenWallet.registerUser(gaSession, DeviceParams(device), "")
+        ).resolve(hardwareWalletResolver = hardwareDataResolver)
+
+        AuthHandler(
+            greenWallet,
+            greenWallet.loginWithMnemonic(gaSession, DeviceParams(device), "", "")
+        ).resolve(hardwareWalletResolver = hardwareDataResolver)
+
+        isConnected = true
+
+        initializeSessionData()
+    }
+
     fun loginWithMnemonic(
         network: Network,
         mnemonic: String,
@@ -230,11 +271,10 @@ class GreenSession constructor(
         connect(network)
         AuthHandler(
             greenWallet,
-            greenWallet.loginWithMnemonic(gaSession, buildJsonObject { }, mnemonic, password)
+            greenWallet.loginWithMnemonic(gaSession, null, mnemonic, password)
         ).resolve()
 
         isConnected = true
-
 
         initializeSessionData()
     }
@@ -418,10 +458,26 @@ class GreenSession constructor(
             try {
                 if(!assetsManager.isUpToDate){
                     // Update from Cache
-                    assetsManager.setCache(refreshAssets(AssetsParams(assets = true, icons = true, refresh = false)))
+                    assetsManager.setCache(
+                        refreshAssets(
+                            AssetsParams(
+                                assets = true,
+                                icons = true,
+                                refresh = false
+                            )
+                        )
+                    )
 
                     // Try to update the registry
-                    assetsManager.updateAssets(refreshAssets(AssetsParams(assets = true, icons = true, refresh = true)))
+                    assetsManager.updateAssets(
+                        refreshAssets(
+                            AssetsParams(
+                                assets = true,
+                                icons = true,
+                                refresh = true
+                            )
+                        )
+                    )
                 }
 
             }catch (e: Exception){

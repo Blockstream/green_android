@@ -5,7 +5,7 @@ import mu.KLogging
 
 class JsonConverter : GDK.JSONConverter {
     override fun toJSONObject(jsonString: String?): Any? {
-        logger.debug { "-> $jsonString" }
+        logger.info { "-> $jsonString" }
 
         if (jsonString != null && jsonString != "null") {
             // Fix bad json structure decisions eg. empty objects
@@ -16,7 +16,7 @@ class JsonConverter : GDK.JSONConverter {
     }
 
     override fun toJSONString(gaJson: Any?): String = gaJson.toString().also {
-        logger.debug { "<- $it" }
+        logger.info { "<- $it" }
     }
 
     companion object : KLogging()

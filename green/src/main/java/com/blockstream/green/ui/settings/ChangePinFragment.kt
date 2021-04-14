@@ -22,7 +22,6 @@ class ChangePinFragment : WalletFragment<ChangePinFragmentBinding>(R.layout.chan
     val args : WalletSettingsFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
-
     @Inject
     lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
     val viewModel: WalletSettingsViewModel by viewModels {

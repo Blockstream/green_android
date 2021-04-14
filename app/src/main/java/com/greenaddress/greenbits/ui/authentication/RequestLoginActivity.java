@@ -8,6 +8,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -41,6 +42,7 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.NetworkSwitchListener;
 import com.greenaddress.greenbits.ui.accounts.SwitchNetworkFragment;
 import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity;
+import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 import com.greenaddress.greenbits.wallets.JadeHWWallet;
@@ -482,7 +484,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
     private Session reconnectSession(final Session session) throws Exception {
         Log.d(TAG, "(re-)connecting gdk session)");
         session.disconnect();
-        this.connect();
+        this.connect(mHwWallet);
         return session;
     }
 
@@ -490,17 +492,14 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         mDisposables.add(Observable.just(getSession())
                 .observeOn(Schedulers.computation())
                 .map((session) -> {
-                    // Reconnect session if required
-                    if (bReConnectSession) {
-                        reconnectSession(session);
-                    }
 
-                    // Register user/hw-wallet and login
-                    session.registerUser(mHwWallet.getHWDeviceData(), "").resolve(null,
-                                                                                  new HardwareCodeResolver(this, mHwWallet));
-                    session.login(mHwWallet.getHWDeviceData(), "", "").resolve(null,
-                                                                               new HardwareCodeResolver(this, mHwWallet));
-                    session.setHWWallet(mHwWallet);
+                    final String network = PreferenceManager
+                            .getDefaultSharedPreferences(this)
+                            .getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+
+
+                    Bridge.INSTANCE.loginWithDevice(this, getSession().getNativeSession(), network, bReConnectSession, mHwWallet, new HardwareCodeResolver(this, mHwWallet));
+
                     return session;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -509,6 +508,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
                     stopLoading();
                     onLoggedIn();
                 }, (final Throwable e) -> {
+                    e.printStackTrace();
                     stopLoading();
                     getSession().disconnect();
 

@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.greenaddress.Bridge;
+import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
@@ -18,6 +19,8 @@ import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Locale;
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -59,10 +62,10 @@ public abstract class LoginActivity extends GaActivity {
         Bridge.INSTANCE.startSpvServiceIfNeeded(this);
     }
 
-    public void connect() throws Exception {
+    public void connect(@Nullable HWWallet hwWallet) throws Exception {
         final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
 
         getSession().setNetwork(network);
-        Bridge.INSTANCE.connect(this, getSession().getNativeSession(), network);
+        Bridge.INSTANCE.connect(this, getSession().getNativeSession(), network, hwWallet);
     }
 }

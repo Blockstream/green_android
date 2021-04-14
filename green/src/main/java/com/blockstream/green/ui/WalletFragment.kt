@@ -31,7 +31,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
         session = sessionManager.getWalletSession(wallet)
 
-        if (isLoggedInRequired() && !session.isConnected()) {
+        if (isLoggedInRequired() && !session.isConnected) {
             navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
             return
         }

@@ -2,15 +2,15 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.database.WalletRepository
 import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.async
 import com.blockstream.green.gdk.observable
+import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.utils.ConsumableEvent
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 
@@ -47,7 +47,7 @@ open class WalletViewModel constructor(
             }.addTo(disposables)
 
         // Only on Login Screen
-        if(session.isConnected()) {
+        if(session.isConnected) {
 
             session.observable {
                 it.getSubAccount(wallet.activeAccount).result<SubAccount>()

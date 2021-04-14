@@ -46,4 +46,7 @@ data class Wallet(
 
     val isWatchOnly
         get() = watchOnlyUsername != null
+
+    val isHardwareEmulated
+        get() = id == -1L
 }

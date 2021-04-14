@@ -3,14 +3,14 @@ package com.blockstream.green.ui.wallet
 import android.util.Base64
 import androidx.lifecycle.*
 import com.blockstream.gdk.data.TORStatus
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.async
+import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -70,7 +70,7 @@ class LoginViewModel @AssistedInject constructor(
     var initialAction = MutableLiveData(false)
 
     init {
-        if (session.isConnected()) {
+        if (session.isConnected) {
             actionLogin.value = true
         }
 

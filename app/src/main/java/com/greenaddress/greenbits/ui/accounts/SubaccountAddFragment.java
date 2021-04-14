@@ -72,8 +72,7 @@ public class SubaccountAddFragment extends GAFragment {
 
         final boolean isLiquid = getNetwork().getLiquid();
 
-        // Can't have more than one authorized subaccount
-        if (!isLiquid || hasAnyAASubaccount()) {
+        if (!isLiquid) {
             radioButtons[AUTHORIZED_ACCOUNT].setEnabled(false);
             constraintLayouts[AUTHORIZED_ACCOUNT].setOnClickListener(null);
 

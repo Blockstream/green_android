@@ -5,17 +5,17 @@ import android.graphics.drawable.Drawable;
 import android.text.InputType;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
-
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.gdk.data.DeviceRequiredData;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.data.HWDeviceRequiredData;
-import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
-
 import javax.annotation.Nullable;
+import io.reactivex.rxjava3.core.Single;
 
 public class PopupCodeResolver implements CodeResolver {
     private Activity activity;
@@ -25,9 +25,16 @@ public class PopupCodeResolver implements CodeResolver {
         this.activity=activity;
     }
 
+    @NonNull
     @Override
-    public SettableFuture<String> hardwareRequest(final HWDeviceRequiredData requiredData) {
-        return null;
+    public Single<String> requestDataFromDeviceV3(@NonNull HWDeviceRequiredData requiredData) {
+        return Single.create(emitter -> emitter.onError(new Exception("requestDataFromDeviceV3 not supported in PopupCodeResolver")));
+    }
+
+    @NonNull
+    @Override
+    public Single<String> requestDataFromDevice(@NonNull DeviceRequiredData requiredData) {
+        return Single.create(emitter -> emitter.onError(new Exception("requestDataFromDevice not supported in PopupCodeResolver")));
     }
 
     @Override

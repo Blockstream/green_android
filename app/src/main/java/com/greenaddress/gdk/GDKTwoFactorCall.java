@@ -58,7 +58,7 @@ public class GDKTwoFactorCall {
                     final String value;
                     if (mStatus.getDevice() != null) {
                         try {
-                            value = codeResolver.hardwareRequest(mStatus.getRequiredData()).get();
+                            value = codeResolver.requestDataFromDeviceV3(mStatus.getRequiredData()).blockingGet();
                         } catch (final Exception e) {
                             Log.d("RSV", "error " + mStatus);
                             throw new Exception(e.getMessage());

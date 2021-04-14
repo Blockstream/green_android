@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Conversion;
@@ -117,7 +118,8 @@ public class SubaccountSelectActivity extends LoggedActivity implements AccountA
 
     @Override
     public void onNewSubaccount() {
-        startActivityForResult(new Intent(this, SubaccountAddActivity.class), REQUEST_CREATE_SUBACCOUNT);
+        //  startActivityForResult(new Intent(this, SubaccountAddActivity.class), REQUEST_CREATE_SUBACCOUNT);
+        Bridge.INSTANCE.addAccount(this );
     }
 
     @Override

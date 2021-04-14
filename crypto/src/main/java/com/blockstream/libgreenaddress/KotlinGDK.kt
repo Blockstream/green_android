@@ -24,8 +24,8 @@ class KotlinGDK {
 
     fun httpRequest(session: GASession, data: JsonElement) = GDK.http_request(session, data)
 
-    fun registerUser(session: GASession, device: JsonElement, mnemonic: String): GAAuthHandler =
-        GDK.register_user(session, device, mnemonic)
+    fun registerUser(session: GASession, deviceParams: DeviceParams, mnemonic: String): GAAuthHandler =
+        GDK.register_user(session, deviceParams, mnemonic)
 
     fun loginWatchOnly(session: GASession, username: String, password: String) =
         GDK.login_watch_only(
@@ -34,10 +34,9 @@ class KotlinGDK {
             password
         )
 
-    // TODO replace JsonElement with the appropriate data class
     fun loginWithMnemonic(
         session: GASession,
-        device: JsonElement,
+        device: DeviceParams?,
         mnemonic: String,
         password: String
     ): GAAuthHandler = GDK.login(session, device, mnemonic, password)

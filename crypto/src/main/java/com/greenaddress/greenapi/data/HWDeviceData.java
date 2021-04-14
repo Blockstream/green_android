@@ -1,5 +1,7 @@
 package com.greenaddress.greenapi.data;
 
+import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.DeviceLiquidSupport;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -43,5 +45,9 @@ public class HWDeviceData extends JSONData {
 
     public void setDevice(final HWDeviceDetailData device) {
         this.device = device;
+    }
+
+    public Device toDevice(){
+        return new Device(device.getName(), device.isSupportsArbitraryScripts(), device.isSupportsLowR(), DeviceLiquidSupport.values()[device.getSupportsLiquid().ordinal()]);
     }
 }

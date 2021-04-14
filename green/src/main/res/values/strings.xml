@@ -838,4 +838,11 @@
   <string name="id_of_d">of %d</string>
   <string name="id_tor">Tor</string>
   <string name="id_tor_is_not_available">Tor is not available yet for singlesig wallets.</string>
+
+  <string name="id_bip44_legacy">Legacy</string>
+  <string name="id_legacy_account">Legacy Account</string>
+  <string name="id_segwit_account">SegWit Account</string>
+
+  <string name="id_bip84_accounts_allow_you_to_segregate">BIP84 accounts allow you to segregate your funds, and to receive on bech32 native segwit addresses. This account type ensures cheaper transactions when sending funds, but not all services support bech32 addresses yet.</string>
+  <string name="id_bip49_accounts_allow_you_to_segratate">BIP49 accounts allow you to segregate funds, and to receive on wrapped segwit addresses, thus ensuring the highest backwards compatibility when receiving funds from anyone on the network.</string>
 </resources>

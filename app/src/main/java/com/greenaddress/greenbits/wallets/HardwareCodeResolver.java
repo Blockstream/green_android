@@ -4,6 +4,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.blockstream.gdk.HardwareWalletResolver;
+import com.blockstream.gdk.data.DeviceRequiredData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.CodeResolver;
@@ -38,16 +39,23 @@ public class HardwareCodeResolver implements CodeResolver, HardwareWalletResolve
         this.hwWallet = Session.getSession().getHWWallet();
     }
 
-    public HardwareCodeResolver(final GaActivity activity, final HWWallet hwWallet) {
+    public HardwareCodeResolver(final HWWalletBridge activity, final HWWallet hwWallet) {
         this.parent = activity;
         this.hwWallet = hwWallet;
     }
 
+    @NotNull
     @Override
-    public synchronized SettableFuture<String> hardwareRequest(final HWDeviceRequiredData requiredData) {
-        final SettableFuture<String> future = SettableFuture.create();
-        future.set(requestDataFromHardware(requiredData));
-        return future;
+    public Single<String> requestDataFromDeviceV3(@NotNull HWDeviceRequiredData requiredData) {
+        return Single.create(emitter -> {
+            emitter.onSuccess(requestDataFromHardware(requiredData));
+        });
+    }
+
+    @NotNull
+    @Override
+    public Single<String> requestDataFromDevice(@NotNull DeviceRequiredData requiredData) {
+        return null;
     }
 
     public synchronized String requestDataFromHardware(final HWDeviceRequiredData requiredData) {
@@ -174,13 +182,5 @@ public class HardwareCodeResolver implements CodeResolver, HardwareWalletResolve
     @Override
     public SettableFuture<String> code(String method, final Integer attemptsRemaining) {
         return null;
-    }
-
-    @NotNull
-    @Override
-    public Single<String> dataFromDevice(@NotNull HWDeviceRequiredData requiredData) {
-        return Single.create(emitter -> {
-            emitter.onSuccess(requestDataFromHardware(requiredData));
-        });
     }
 }
