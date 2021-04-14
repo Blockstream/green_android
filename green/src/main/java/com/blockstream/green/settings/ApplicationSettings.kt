@@ -34,12 +34,10 @@ data class ApplicationSettings(
         }
 
         fun toSharedPreferences(appSettings: ApplicationSettings, prefs: SharedPreferences) {
-            val editor = prefs.edit()
-            editor.putString(PROXY_URL, appSettings.proxyURL)
-            editor.putBoolean(TOR , appSettings.tor)
-
-            editor.apply()
+            prefs.edit().also {
+                it.putString(PROXY_URL, appSettings.proxyURL)
+                it.putBoolean(TOR , appSettings.tor)
+            }.apply()
         }
     }
-
 }

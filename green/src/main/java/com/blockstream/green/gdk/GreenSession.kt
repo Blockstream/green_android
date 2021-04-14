@@ -107,7 +107,7 @@ class GreenSession constructor(
             gaSession,
             ConnectionParams(
                 networkName = network.id,
-                useTor = applicationSettings.tor,
+                useTor = applicationSettings.tor && network.supportTorConnection, // Exclude Singlesig from Tor connection
                 logLevel = if(BuildConfig.DEBUG) "debug" else "none",
                 userAgent = userAgent,
                 proxy = applicationSettings.proxyURL ?: ""

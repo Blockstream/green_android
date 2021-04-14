@@ -13,16 +13,20 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.green.*
-import com.blockstream.green.database.LoginCredentials
+import com.blockstream.green.NavGraphDirections
+import com.blockstream.green.R
+import com.blockstream.green.Urls
 import com.blockstream.green.data.OnboardingOptions
+import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.LoginFragmentBinding
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.dialogs.showTorSinglesigWarningIfNeeded
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenPinViewListener
 import com.greenaddress.Bridge
@@ -210,6 +214,15 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
                 viewModel.loginWithPin(viewModel.password.value ?: "", loginCredentials)
             }
             hideKeyboard()
+        }
+
+        // Show Singlesig Tor warning
+        settingsManager.getApplicationSettingsLiveData().distinctUntilChanged().observe(viewLifecycleOwner) {
+            it?.let { applicationSettings ->
+                if(applicationSettings.tor && !session.networkFromWallet(wallet).supportTorConnection){
+                    showTorSinglesigWarningIfNeeded(settingsManager)
+                }
+            }
         }
     }
 

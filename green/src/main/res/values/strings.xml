@@ -836,4 +836,6 @@
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.\n\nYou\'ll need your recovery phrase to restore this wallet.</string>
 
   <string name="id_of_d">of %d</string>
+  <string name="id_tor">Tor</string>
+  <string name="id_tor_is_not_available">Tor is not available yet for singlesig wallets.</string>
 </resources>
