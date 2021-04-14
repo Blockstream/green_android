@@ -32,7 +32,7 @@ object Bridge {
 
     val spv = SPV()
 
-    private var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?) -> Unit)? = null
+    private var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, walletId: Long?) -> Unit)? = null
     private var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
     private var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
     private var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
@@ -62,7 +62,7 @@ object Bridge {
         }
     }
 
-    fun setNavigateHandler(fn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?) -> Unit)){
+    fun setNavigateHandler(fn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, navigateToWallet: Long?) -> Unit)){
         navigateFn = fn
     }
 
@@ -94,20 +94,20 @@ object Bridge {
 
     fun getWallets() = walletsProviderFn?.invoke(Session.getSession().nativeSession)
 
-    fun navigateToLogin(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.LOGOUT, Session.getSession().nativeSession)
+    fun navigateToLogin(activity: FragmentActivity, walletId: Long? = null){
+        navigateFn?.invoke(activity, NavigateType.LOGOUT, Session.getSession().nativeSession, walletId)
     }
 
     fun navigateToChangePin(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.CHANGE_PIN, Session.getSession().nativeSession)
+        navigateFn?.invoke(activity, NavigateType.CHANGE_PIN, Session.getSession().nativeSession, null)
     }
 
     fun navigateToBackupRecovery(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.BACKUP_RECOVERY, Session.getSession().nativeSession)
+        navigateFn?.invoke(activity, NavigateType.BACKUP_RECOVERY, Session.getSession().nativeSession, null)
     }
 
     fun twoFactorResetDialog(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_RESET, Session.getSession().nativeSession)
+        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_RESET, Session.getSession().nativeSession, null)
     }
 
     fun bridgeSession(session: Any, networkId: String, watchOnlyUsername: String?) {

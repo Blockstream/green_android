@@ -42,13 +42,13 @@ public abstract class LoggedActivity extends GaActivity {
         super.onResume();
 
         if (getSession() == null || getSession().getSettings() == null) {
-            exit();
+            exit(null);
             return;
         }
 
         final boolean timerExpired = mStart + delayLogoutTimer() < System.currentTimeMillis();
         if (timerExpired) {
-            exit();
+            exit(null);
             return;
         }
 
@@ -81,10 +81,10 @@ public abstract class LoggedActivity extends GaActivity {
                 getSession().disconnect();
                 return network;
             }).subscribe(res -> {
-                exit();
+                exit(null);
             }, (final Throwable e) -> {
                 e.printStackTrace();
-                exit();
+                exit(null);
             });
         } else {
             networkDisposable = networkObservable.map(network -> {
@@ -102,7 +102,7 @@ public abstract class LoggedActivity extends GaActivity {
                 onOnline();
             }, (final Throwable e) -> {
                 e.printStackTrace();
-                exit();
+                exit(null);
             });
         }
     }
@@ -194,18 +194,18 @@ public abstract class LoggedActivity extends GaActivity {
             return session;
         }).subscribe(session -> {
             stopLoading();
-            exit();
+            exit(walletId);
         }, (final Throwable e) -> {
             stopLoading();
-            exit();
+            exit(walletId);
         });
     }
 
-    private void exit() {
+    private void exit(Long walletId) {
         if (isFinishing())
             return;
 
-        Bridge.INSTANCE.navigateToLogin(this);
+        Bridge.INSTANCE.navigateToLogin(this, walletId);
 
         finish();
     }
@@ -232,7 +232,7 @@ public abstract class LoggedActivity extends GaActivity {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(() -> exit());
+                runOnUiThread(() -> exit(null));
             }
         }, delayLogoutTimer());
         mTimer = timer;

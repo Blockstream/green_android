@@ -112,7 +112,7 @@ public class ResetActivePreferenceFragment extends GAPreferenceFragment
             if(activity instanceof GaPreferenceActivity){
                 ((GaPreferenceActivity) getActivity()).logout();
             }else {
-                ((LoggedActivity) getActivity()).logout(-1L);
+                ((LoggedActivity) getActivity()).logout(null);
             }
         }
     }

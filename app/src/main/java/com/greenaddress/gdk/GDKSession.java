@@ -350,7 +350,9 @@ public class GDKSession implements HttpRequestHandler {
         return GDK.get_mnemonic_passphrase(mNativeSession, "");
     }
 
+    @Nullable
     public ObjectNode getGDKSettings() throws Exception  {
+        if(mNativeSession == null) return null;
         return Bridge.INSTANCE.toJackson(GDK.get_settings(mNativeSession));
     }
 

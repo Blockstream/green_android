@@ -46,7 +46,7 @@ public class GAPreferenceFragment extends PreferenceFragmentCompat {
 
     protected void logout() {
         if (getActivity() instanceof LoggedActivity)
-            ((LoggedActivity) getActivity()).logout(-1L);
+            ((LoggedActivity) getActivity()).logout(null);
         else if (getActivity() instanceof GaPreferenceActivity)
             ((GaPreferenceActivity) getActivity()).logout();
     }

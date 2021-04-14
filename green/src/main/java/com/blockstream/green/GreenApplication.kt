@@ -4,21 +4,19 @@ import android.app.Application
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavDeepLinkBuilder
-import com.blockstream.green.settings.Migrator
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.lifecycle.AppLifecycleObserver
+import com.blockstream.green.settings.Migrator
 import com.blockstream.green.ui.BridgeActivity
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
-import com.blockstream.green.ui.wallet.DeleteWalletBottomSheetDialogFragment
-import com.blockstream.green.ui.wallet.LoginFragmentArgs
 import com.blockstream.green.ui.recovery.RecoveryIntroFragmentArgs
 import com.blockstream.green.ui.settings.WalletSettingsFragmentArgs
-import com.blockstream.libgreenaddress.GASession
+import com.blockstream.green.ui.wallet.DeleteWalletBottomSheetDialogFragment
+import com.blockstream.green.ui.wallet.LoginFragmentArgs
 import com.greenaddress.Bridge
-import com.greenaddress.greenapi.Session
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -48,7 +46,7 @@ class GreenApplication : Application(){
         // Initialize Bridge
         Bridge.initializeBridge(this, BuildConfig.DEBUG, BuildConfig.VERSION_NAME)
 
-        Bridge.setNavigateHandler { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: Any? ->
+        Bridge.setNavigateHandler { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: Any?, navigateToWallet: Long? ->
             when(type){
                 Bridge.NavigateType.LOGOUT -> {
 
@@ -57,10 +55,21 @@ class GreenApplication : Application(){
                         sessionManager.getWalletSession(it)?.disconnectAsync()
                     }
 
-                    // Replace Activity
-                    val intent = Intent(activity, MainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
+                    // Navigate to MainActivity
+                    NavDeepLinkBuilder(activity.applicationContext)
+                        .setGraph(R.navigation.nav_graph)
+                        .setComponentName(MainActivity::class.java)
+                        .setDestination(R.id.introFragment).also { builder ->
+                            // Navigate to Login
+                            navigateToWallet?.let{ navigateToWallet ->
+                                walletRepository.getWalletSync(navigateToWallet)?.let {
+                                    builder.setDestination(R.id.loginFragment)
+                                    builder.setArguments(LoginFragmentArgs(it).toBundle())
+                                }
+                            }
+                        }
+                        .createPendingIntent()
+                        .send()
                 }
 
                 Bridge.NavigateType.CHANGE_PIN -> {
