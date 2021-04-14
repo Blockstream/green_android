@@ -51,8 +51,8 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 355
-        versionName "3.5.5"
+        versionCode 357
+        versionName "3.5.7"
 
         // Export schemas
         javaCompileOptions {
