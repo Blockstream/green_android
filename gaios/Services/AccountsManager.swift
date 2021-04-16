@@ -6,18 +6,20 @@ class AccountsManager {
     static let shared = AccountsManager()
 
     private var currentId = ""
-    var current: Account? {
+    private var accounts: [Account] {
         get {
-            list.filter({ $0.id == currentId }).first
+            return (try? read()) ?? []
         }
         set {
-            currentId = newValue?.id ?? ""
+            try? write(newValue)
         }
     }
 
-    var list: [Account] {
+    var swAccounts: [Account] {
         get {
-            return (try? read()) ?? []
+            return accounts.filter { !$0.isJade && !$0.isLedger }
+        }
+    }
         }
         set {
             try? write(newValue)
@@ -37,7 +39,7 @@ class AccountsManager {
             UserDefaults.standard.set(true, forKey: "FirstInitialization")
 
             // Handle wallet migration
-            list = migratedAccounts()
+            accounts = migratedAccounts()
         }
     }
 
@@ -122,20 +124,20 @@ class AccountsManager {
     }
 
     func upsert(_ account: Account) {
-        var currentList = list
+        var currentList = accounts
         if let index = currentList.firstIndex(where: { $0.id == account.id }) {
             currentList.replaceSubrange(index...index, with: [account])
         } else {
             currentList.append(account)
         }
-        list = currentList
+        accounts = currentList
     }
 
     func remove(_ account: Account) {
-        var currentList = list
+        var currentList = accounts
         if let index = currentList.firstIndex(where: { $0 == account }) {
             currentList.remove(at: index)
         }
-        list = currentList
+        accounts = currentList
     }
 }

@@ -14,7 +14,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
     var onSelection: ((Account) -> Void)?
 
     private var selectedAccount =  AccountsManager.shared.current
-    private var accounts = AccountsManager.shared.list
+    private let accounts = AccountsManager.shared.swAccounts
     weak var delegate: DrawerNetworkSelectionDelegate?
 
     var headerH: CGFloat = 44.0

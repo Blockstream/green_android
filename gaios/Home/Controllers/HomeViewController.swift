@@ -28,7 +28,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblVersion: UILabel!
 
-    var accounts: [Account] { get { AccountsManager.shared.list } }
+    var accounts =  [Account]()
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
@@ -43,6 +43,7 @@ class HomeViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        accounts =  AccountsManager.shared.swAccounts
         tableView.reloadData()
     }
 
