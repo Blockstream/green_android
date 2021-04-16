@@ -72,6 +72,11 @@ dependencies {
     implementation 'com.polidea.rxandroidble2:rxandroidble:1.11.0'
     /** ----------------------------------------------------------------------------------------- */
 
+    /**  --- RxJava 3 --------------------------------------------------------------------------- */
+    implementation "io.reactivex.rxjava3:rxjava:3.0.7"
+    implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
+    /** ----------------------------------------------------------------------------------------- */
+
     /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
     implementation "com.google.dagger:hilt-android:2.31.2-alpha"
     annotationProcessor 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'

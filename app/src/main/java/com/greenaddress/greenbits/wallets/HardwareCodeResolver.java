@@ -3,15 +3,19 @@ package com.greenaddress.greenbits.wallets;
 import android.util.Log;
 import android.util.Pair;
 
+import com.blockstream.gdk.HardwareWalletResolver;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.HWWallet;
+import com.greenaddress.greenapi.HWWalletBridge;
+import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.BlindedScriptsData;
 import com.greenaddress.greenapi.data.HWDeviceRequiredData;
 import com.greenaddress.greenapi.data.HardwareCodeResolverData;
 import com.greenaddress.greenbits.ui.GaActivity;
 
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,17 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.reactivex.rxjava3.core.Single;
 
 
-public class HardwareCodeResolver implements CodeResolver {
+public class HardwareCodeResolver implements CodeResolver, HardwareWalletResolver {
     private final static String TAG = "HWC";
     private HWWallet hwWallet;
-    private GaActivity parent;
+    private HWWalletBridge parent;
     private final Map<Pair<String, String>, String> mNoncesCache = new ConcurrentHashMap<>();
 
-    public HardwareCodeResolver(final GaActivity activity) {
+    public HardwareCodeResolver(final HWWalletBridge activity) {
         this.parent = activity;
-        this.hwWallet = activity.getSession().getHWWallet();
+        this.hwWallet = Session.getSession().getHWWallet();
     }
 
     public HardwareCodeResolver(final GaActivity activity, final HWWallet hwWallet) {
@@ -41,6 +46,11 @@ public class HardwareCodeResolver implements CodeResolver {
     @Override
     public synchronized SettableFuture<String> hardwareRequest(final HWDeviceRequiredData requiredData) {
         final SettableFuture<String> future = SettableFuture.create();
+        future.set(requestDataFromHardware(requiredData));
+        return future;
+    }
+
+    public synchronized String requestDataFromHardware(final HWDeviceRequiredData requiredData) {
         final HardwareCodeResolverData data = new HardwareCodeResolverData();
 
         final List<String> nonces = new ArrayList<>();
@@ -68,8 +78,7 @@ public class HardwareCodeResolver implements CodeResolver {
                     }
                 }
             } catch (final Exception e) {
-                future.set(null);
-                return future;
+                return null;
             }
             break;
 
@@ -154,11 +163,9 @@ public class HardwareCodeResolver implements CodeResolver {
 
         default:
             Log.w(TAG, "unknown action " + requiredData.getAction());
-            future.set(null);
-            return future;
+            return null;
         }
-        future.set(data.toString());
-        return future;
+        return data.toString();
     }
 
     @Override
@@ -167,5 +174,13 @@ public class HardwareCodeResolver implements CodeResolver {
     @Override
     public SettableFuture<String> code(String method, final Integer attemptsRemaining) {
         return null;
+    }
+
+    @NotNull
+    @Override
+    public Single<String> dataFromDevice(@NotNull HWDeviceRequiredData requiredData) {
+        return Single.create(emitter -> {
+            emitter.onSuccess(requestDataFromHardware(requiredData));
+        });
     }
 }

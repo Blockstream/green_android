@@ -3,6 +3,7 @@ package com.blockstream.gdk
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
 import com.blockstream.gdk.data.TwoFactorStatus
 import com.blockstream.libgreenaddress.GAAuthHandler
+import com.greenaddress.greenapi.data.HWDeviceRequiredData
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -13,7 +14,7 @@ interface TwoFactorResolver {
 }
 
 interface HardwareWalletResolver {
-    fun dataFromDevice(method: String): Single<String>
+    fun dataFromDevice(requiredData: HWDeviceRequiredData): Single<String>
 }
 
 class AuthHandler(
