@@ -20,11 +20,19 @@ class AccountsManager {
             return accounts.filter { !$0.isJade && !$0.isLedger }
         }
     }
+
+    var current: Account? {
+        get {
+            accounts.filter({ $0.id == currentId }).first
         }
         set {
-            try? write(newValue)
+            currentId = newValue?.id ?? ""
+            if let value = newValue {
+                upsert(value)
+            }
         }
     }
+
 
     func onFirstInitialization() {
         for network in ["mainnet", "testnet", "liquid"] {

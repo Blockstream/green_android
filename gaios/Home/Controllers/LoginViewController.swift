@@ -150,7 +150,6 @@ class LoginViewController: UIViewController {
         }.get { _ in
             if withPIN != nil {
                 self.account?.attempts = 0
-                AccountsManager.shared.upsert(self.account!)
             }
             AccountsManager.shared.current = self.account
         }.done { wallet in
@@ -186,7 +185,7 @@ class LoginViewController: UIViewController {
 
     func wrongPin(_ usingAuth: String) {
         account?.attempts += 1
-        AccountsManager.shared.upsert(self.account!)
+        AccountsManager.shared.current = self.account
         if account?.attempts == self.MAXATTEMPTS {
             showLock()
         } else {
@@ -302,7 +301,7 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
     func didSave(_ name: String) {
         self.account?.name = name
         if let account = self.account {
-            AccountsManager.shared.upsert(account)
+            AccountsManager.shared.current = account
             navigationItem.title = account.name
         }
     }

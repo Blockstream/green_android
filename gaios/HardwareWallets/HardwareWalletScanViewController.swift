@@ -57,7 +57,7 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
 
     func connect(_ peripheral: Peripheral, network: String) {
         if BLEManager.shared.isLedger(peripheral) {
-            AccountsManager.shared.current = Account(name: "Ledger NanoX", network: network, isLedger: true)
+            AccountsManager.shared.current = Account(id: "", name: "Ledger NanoX", network: network, isLedger: true)
             BLEManager.shared.connect(peripheral, network: network)
             return
         }
@@ -70,7 +70,7 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
         }.then(on: bgq) {
             after(seconds: 1)
         }.done { _ in
-            AccountsManager.shared.current = Account(name: "Blockstream Jade", network: network, isJade: true)
+            AccountsManager.shared.current = Account(id: "", name: "Blockstream Jade", network: network, isJade: true)
             BLEManager.shared.connect(peripheral, network: network)
             DropAlert().info(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""))
         }

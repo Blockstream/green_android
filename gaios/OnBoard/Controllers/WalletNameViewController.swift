@@ -132,7 +132,6 @@ class WalletNameViewController: UIViewController {
 
     func next() {
         let account = OnBoardManager.shared.account()
-        AccountsManager.shared.upsert(account)
         AccountsManager.shared.current = account
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
