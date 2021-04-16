@@ -9,6 +9,7 @@ class HardwareWalletScanViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var radarImageView: RadarImageView!
 
+    var account: Account?
     var peripherals = [ScannedPeripheral]()
 
     override func viewDidLoad() {
@@ -56,8 +57,9 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
     }
 
     func connect(_ peripheral: Peripheral, network: String) {
+        account?.network = network
+        AccountsManager.shared.current = account
         if BLEManager.shared.isLedger(peripheral) {
-            AccountsManager.shared.current = Account(id: "", name: "Ledger NanoX", network: network, isLedger: true)
             BLEManager.shared.connect(peripheral, network: network)
             return
         }
@@ -70,7 +72,6 @@ extension HardwareWalletScanViewController: UITableViewDelegate, UITableViewData
         }.then(on: bgq) {
             after(seconds: 1)
         }.done { _ in
-            AccountsManager.shared.current = Account(id: "", name: "Blockstream Jade", network: network, isJade: true)
             BLEManager.shared.connect(peripheral, network: network)
             DropAlert().info(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""))
         }

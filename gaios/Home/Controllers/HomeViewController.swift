@@ -1,34 +1,12 @@
 import UIKit
 
-enum SupportedHW: String, CaseIterable {
-    case Jade = "Blockstream Jade"
-    case LedgerNanoX = "Ledger Nano X"
-
-    func name() -> String {
-        switch self {
-        case .Jade:
-            return "Blockstream Jade"
-        case .LedgerNanoX:
-            return "Ledger"
-        }
-    }
-
-    func icon() -> UIImage {
-        switch self {
-        case .Jade:
-            return UIImage(named: "blockstreamIcon")!
-        case .LedgerNanoX:
-            return UIImage(named: "ledgerIcon")!
-        }
-    }
-}
-
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblVersion: UILabel!
 
-    var accounts =  [Account]()
+    var swAccounts =  [Account]()
+    var hwAccounts =  [Account]()
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
@@ -43,7 +21,8 @@ class HomeViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        accounts =  AccountsManager.shared.swAccounts
+        swAccounts = AccountsManager.shared.swAccounts
+        hwAccounts = AccountsManager.shared.hwAccounts
         tableView.reloadData()
     }
 
@@ -59,24 +38,25 @@ class HomeViewController: UIViewController {
 
     func enterWallet(_ index: Int) {
         // watch only wallet
-        let account = accounts[index]
+        let account = swAccounts[index]
         if account.isWatchonly {
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController
-            vc?.account = accounts[index]
+            vc?.account = swAccounts[index]
             navigationController?.pushViewController(vc!, animated: true)
         } else {
             let storyboard = UIStoryboard(name: "Home", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
-            vc?.account = accounts[index]
+            vc?.account = swAccounts[index]
             navigationController?.pushViewController(vc!, animated: true)
         }
     }
 
-    func showHardwareWallet() {
+    func showHardwareWallet(_ index: Int) {
         let storyboard = UIStoryboard(name: "HardwareWallet", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "HardwareWalletScanViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        let vc = storyboard.instantiateViewController(withIdentifier: "HardwareWalletScanViewController")  as? HardwareWalletScanViewController
+        vc?.account = hwAccounts[index]
+        navigationController?.pushViewController(vc!, animated: true)
     }
 
     @objc func didPressAddWallet() {
@@ -100,9 +80,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch section {
         case 0:
-            return accounts.count == 0 ? 1 : accounts.count
+            return swAccounts.count == 0 ? 1 : swAccounts.count
         case 1:
-            return SupportedHW.allCases.count
+            return hwAccounts.count
         default:
             return 0
         }
@@ -112,7 +92,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
 
         switch indexPath.section {
         case 0:
-            if accounts.count == 0 {
+            if swAccounts.count == 0 {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletEmptyCell") as? WalletEmptyCell {
                     cell.configure(NSLocalizedString("id_it_looks_like_you_have_no", comment: ""), UIImage(named: "ic_logo_green")!)
                     cell.selectionStyle = .none
@@ -120,15 +100,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             } else {
                 if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletCell") as? WalletCell {
-                    cell.configure(accounts[indexPath.row])
+                    cell.configure(swAccounts[indexPath.row])
                     cell.selectionStyle = .none
                     return cell
                 }
             }
         case 1:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletHDCell") as? WalletHDCell {
-                let hw = SupportedHW.allCases[indexPath.row]
-                cell.configure(hw.name(), hw.icon())
+                let hw = hwAccounts[indexPath.row]
+                cell.configure(hw.name, hw.icon)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -181,11 +161,11 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
-            if accounts.count > 0 {
+            if swAccounts.count > 0 {
                 enterWallet(indexPath.row)
             }
         case 1:
-            showHardwareWallet()
+            showHardwareWallet(indexPath.row)
         default:
             break
         }

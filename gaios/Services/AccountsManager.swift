@@ -6,7 +6,8 @@ class AccountsManager {
     static let shared = AccountsManager()
 
     private var currentId = ""
-    private var accounts: [Account] {
+
+    var swAccounts: [Account] {
         get {
             return (try? read()) ?? []
         }
@@ -15,24 +16,29 @@ class AccountsManager {
         }
     }
 
-    var swAccounts: [Account] {
-        get {
-            return accounts.filter { !$0.isJade && !$0.isLedger }
-        }
-    }
+    // Hardware wallets accounts are store in temporary memory
+    var hwAccounts = [ Account(name: "Blockstream Jade", network: "mainnet", isJade: true),
+                       Account(name: "Ledger Nano X", network: "mainnet", isLedger: true) ]
 
     var current: Account? {
         get {
-            accounts.filter({ $0.id == currentId }).first
+            (swAccounts + hwAccounts).filter({ $0.id == currentId }).first
         }
         set {
             currentId = newValue?.id ?? ""
-            if let value = newValue {
-                upsert(value)
+            if let account = newValue {
+                if account.isJade || account.isLedger {
+                    // if hardware wallets, update in memory
+                    if let index = hwAccounts.firstIndex(where: { $0.id == account.id }) {
+                        hwAccounts.replaceSubrange(index...index, with: [account])
+                    }
+                } else {
+                    // if software wallets, update keychain
+                    upsert(account)
+                }
             }
         }
     }
-
 
     func onFirstInitialization() {
         for network in ["mainnet", "testnet", "liquid"] {
@@ -47,7 +53,7 @@ class AccountsManager {
             UserDefaults.standard.set(true, forKey: "FirstInitialization")
 
             // Handle wallet migration
-            accounts = migratedAccounts()
+            swAccounts = migratedAccounts()
         }
     }
 
@@ -132,20 +138,20 @@ class AccountsManager {
     }
 
     func upsert(_ account: Account) {
-        var currentList = accounts
+        var currentList = swAccounts
         if let index = currentList.firstIndex(where: { $0.id == account.id }) {
             currentList.replaceSubrange(index...index, with: [account])
         } else {
             currentList.append(account)
         }
-        accounts = currentList
+        swAccounts = currentList
     }
 
     func remove(_ account: Account) {
-        var currentList = accounts
+        var currentList = swAccounts
         if let index = currentList.firstIndex(where: { $0 == account }) {
             currentList.remove(at: index)
         }
-        accounts = currentList
+        swAccounts = currentList
     }
 }

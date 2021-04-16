@@ -401,13 +401,14 @@ extension TransactionsController: DrawerNetworkSelectionDelegate {
         self.accountDidChange(account)
     }
 
-    func didSelectHDW() {
+    func didSelectHDW(account: Account) {
         let storyboard = UIStoryboard(name: "Home", bundle: nil)
         let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
 
         let storyboard2 = UIStoryboard(name: "HardwareWallet", bundle: nil)
-        let vc = storyboard2.instantiateViewController(withIdentifier: "HardwareWalletScanViewController")
-        nav?.pushViewController(vc, animated: false)
+        let vc = storyboard2.instantiateViewController(withIdentifier: "HardwareWalletScanViewController") as? HardwareWalletScanViewController
+        vc?.account = account
+        nav?.pushViewController(vc!, animated: false)
 
         self.navigationController?.dismiss(animated: true, completion: {})
         self.navigationController?.popToRootViewController(animated: true)

@@ -3,7 +3,7 @@ import UIKit
 
 protocol DrawerNetworkSelectionDelegate: class {
     func didSelectAccount(account: Account)
-    func didSelectHDW()
+    func didSelectHDW(account: Account)
 }
 
 class DrawerNetworkSelectionViewController: UIViewController {
@@ -14,7 +14,8 @@ class DrawerNetworkSelectionViewController: UIViewController {
     var onSelection: ((Account) -> Void)?
 
     private var selectedAccount =  AccountsManager.shared.current
-    private let accounts = AccountsManager.shared.swAccounts
+    private let swAccounts = AccountsManager.shared.swAccounts
+    private let hwAccounts = AccountsManager.shared.hwAccounts
     weak var delegate: DrawerNetworkSelectionDelegate?
 
     var headerH: CGFloat = 44.0
@@ -47,9 +48,9 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return accounts.count
+            return swAccounts.count
         case 1:
-            return SupportedHW.allCases.count
+            return hwAccounts.count
         default:
             return 0
         }
@@ -59,7 +60,7 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
 
         switch indexPath.section {
         case 0:
-            let account = accounts[indexPath.row]
+            let account = swAccounts[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerCell") as? WalletDrawerCell {
                 cell.configure(account, account.id == selectedAccount?.id)
                 cell.selectionStyle = .none
@@ -67,8 +68,8 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             }
         case 1:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "WalletDrawerHDCell") as? WalletDrawerHDCell {
-                let hw = SupportedHW.allCases[indexPath.row]
-                cell.configure(hw.name(), hw.icon())
+                let hw = hwAccounts[indexPath.row]
+                cell.configure(hw.name, hw.icon)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -109,12 +110,13 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
-            let account = accounts[indexPath.row]
+            let account = swAccounts[indexPath.row]
             if selectedAccount?.id != account.id {
                 self.delegate?.didSelectAccount(account: account)
             }
         case 1:
-            self.delegate?.didSelectHDW()
+            let account = hwAccounts[indexPath.row]
+            self.delegate?.didSelectHDW(account: account)
         default:
             break
         }
