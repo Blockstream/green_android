@@ -301,15 +301,6 @@ class TransactionsController: UITableViewController {
         } else if let nextController = segue.destination as? AssetsListTableViewController {
             nextController.wallet = presentingWallet
             nextController.title = presentingWallet!.localizedName()
-        } else if let networkSelector = segue.destination as? NetworkSelectionSettings {
-            networkSelector.transitioningDelegate = self
-            networkSelector.modalPresentationStyle = .custom
-            networkSelector.isLanding = false
-            networkSelector.onSelection = { account in
-                DispatchQueue.main.async {
-                    self.accountDidChange(account)
-                }
-            }
         }
     }
 

@@ -164,7 +164,6 @@
                         <segue destination="R7F-mq-oqL" kind="show" identifier="receive" id="uYc-26-M8s"/>
                         <segue destination="h6g-rr-LAM" kind="show" identifier="send" id="U7f-MS-5Z1"/>
                         <segue destination="fuN-54-EEf" kind="show" identifier="assets" id="Azw-5Y-ZWP"/>
-                        <segue destination="95q-dx-M24" kind="presentation" identifier="switch_network" id="ol4-fX-qIa"/>
                         <segue destination="JMx-ld-n78" kind="presentation" identifier="wallets" id="sRf-Gc-KhT"/>
                         <segue destination="vNx-TR-xnv" kind="show" identifier="notifications" id="xpz-uZ-oyS"/>
                         <segue destination="30w-Nv-yEI" kind="show" identifier="settings" id="9x3-I7-Dy2"/>
@@ -330,14 +329,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3Fb-p9-zis" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6256" y="683"/>
-        </scene>
-        <!--NetworkSelectionSettings-->
-        <scene sceneID="Nm6-3K-FAv">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NetworkSelection" referencedIdentifier="NetworkSelectionSettings" id="95q-dx-M24" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Zq0-4Q-PlN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6220" y="571"/>
         </scene>
         <!--AccountsViewController-->
         <scene sceneID="vcP-LN-0oG">
