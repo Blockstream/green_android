@@ -19,8 +19,8 @@ class HomeViewController: UIViewController {
         updateUI()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         swAccounts = AccountsManager.shared.swAccounts
         hwAccounts = AccountsManager.shared.hwAccounts
         tableView.reloadData()
