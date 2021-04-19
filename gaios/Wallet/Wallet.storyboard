@@ -10,25 +10,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
-        <scene sceneID="X3k-AE-HtH">
-            <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="17q-3P-W7o" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <navigationController storyboardIdentifier="settings" useStoryboardIdentifierAsRestorationIdentifier="YES" id="U6z-UB-zVf" propertyAccessControl="none" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="settings" selectedImage="settingsSelected" id="z3p-Dc-sc8">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
-                    </tabBarItem>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="LB8-2u-FIH">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="56"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="30w-Nv-yEI" kind="relationship" relationship="rootViewController" id="M3T-S0-WYT"/>
-                    </connections>
-                </navigationController>
-            </objects>
-            <point key="canvasLocation" x="4399" y="-163"/>
-        </scene>
         <!--SettingsViewController-->
         <scene sceneID="Saq-nT-2yY">
             <objects>
@@ -44,11 +25,11 @@
             <objects>
                 <viewController storyboardIdentifier="notifications" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vNx-TR-xnv" customClass="NotificationsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mCE-9M-o95">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="528"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wlu-fe-63L">
-                                <rect key="frame" x="0.0" y="56" width="320" height="472"/>
+                                <rect key="frame" x="0.0" y="44" width="320" height="455"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <color key="separatorColor" name="customGreyDark"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -167,12 +148,12 @@
                         <rightBarButtonItems>
                             <barButtonItem title="Item" image="settings" id="mfo-Lj-aic">
                                 <connections>
-                                    <segue destination="U6z-UB-zVf" kind="presentation" identifier="settings" id="Gx9-ND-up6"/>
+                                    <action selector="settings:" destination="nnX-e3-FvS" id="agz-Rv-viS"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="Item" image="notifications" id="0xc-J5-rGy">
                                 <connections>
-                                    <segue destination="psM-aw-iJy" kind="presentation" identifier="notifications" id="O5i-4X-vyQ"/>
+                                    <action selector="notifications:" destination="nnX-e3-FvS" id="rsf-eR-3y4"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -185,6 +166,8 @@
                         <segue destination="fuN-54-EEf" kind="show" identifier="assets" id="Azw-5Y-ZWP"/>
                         <segue destination="95q-dx-M24" kind="presentation" identifier="switch_network" id="ol4-fX-qIa"/>
                         <segue destination="JMx-ld-n78" kind="presentation" identifier="wallets" id="sRf-Gc-KhT"/>
+                        <segue destination="vNx-TR-xnv" kind="show" identifier="notifications" id="xpz-uZ-oyS"/>
+                        <segue destination="30w-Nv-yEI" kind="show" identifier="settings" id="9x3-I7-Dy2"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nnN-0s-aUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -241,7 +224,7 @@
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="Toc-gk-72n" customClass="SystemMessageViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8yK-ot-Ile" customClass="SystemMessageView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="528"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="yMu-2w-bwU"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
@@ -254,31 +237,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nBZ-Ly-lYG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6604" y="1705"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="oaa-me-Sed">
-            <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="qLf-z3-0WA" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="psM-aw-iJy" propertyAccessControl="none" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="" image="notifications" selectedImage="notifications_clicked" id="Mai-6U-qn3">
-                        <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
-                    </tabBarItem>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="yWa-bM-gbX">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="56"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="61j-Qy-ta7">
-                        <rect key="frame" x="0.0" y="-20" width="0.0" height="0.0"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </toolbar>
-                    <connections>
-                        <segue destination="vNx-TR-xnv" kind="relationship" relationship="rootViewController" id="PlJ-He-IPl"/>
-                    </connections>
-                </navigationController>
-            </objects>
-            <point key="canvasLocation" x="4399" y="1705"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="IaK-fn-phY">
@@ -395,9 +353,7 @@
     <resources>
         <image name="logo" width="22.5" height="28"/>
         <image name="notifications" width="25" height="25"/>
-        <image name="notifications_clicked" width="25" height="25"/>
         <image name="settings" width="25" height="25"/>
-        <image name="settingsSelected" width="25" height="25"/>
         <namedColor name="customGreyDark">
             <color red="0.19215686274509805" green="0.23137254901960785" blue="0.27058823529411763" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

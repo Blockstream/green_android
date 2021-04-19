@@ -95,6 +95,14 @@ class TransactionsController: UITableViewController {
         }
     }
 
+    @IBAction func notifications(_ sender: Any) {
+        self.performSegue(withIdentifier: "notifications", sender: nil)
+    }
+
+    @IBAction func settings(_ sender: Any) {
+        self.performSegue(withIdentifier: "settings", sender: nil)
+    }
+
     func checkFiatRate() {
         // diplay errore if fiat_rate is missing
         let bgq = DispatchQueue.global(qos: .background)
