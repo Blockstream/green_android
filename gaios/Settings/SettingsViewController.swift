@@ -34,17 +34,6 @@ class SettingsViewController: UIViewController {
         tableView.dataSource = self
         tableView.estimatedRowHeight = 75
         tableView.rowHeight = 75
-
-        let closeButton = UIBarButtonItem(image: UIImage(named: "cancel"),
-                                     style: .plain,
-                                     target: self,
-                                     action: #selector(close))
-        closeButton.tintColor = UIColor.customGrayLight()
-        self.navigationItem.rightBarButtonItem = closeButton
-    }
-
-    @objc func close() {
-        dismiss(animated: true, completion: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
