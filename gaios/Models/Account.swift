@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 
 struct Account: Codable, Equatable {
+
     var name: String
     var network: String
     let id: String
@@ -100,9 +101,11 @@ struct Account: Codable, Equatable {
         }
     }
 
+    private var gdkNetwork_: GdkNetwork?
     var gdkNetwork: GdkNetwork {
-        get {
-            getGdkNetwork(network)
+        mutating get {
+            gdkNetwork_ = gdkNetwork_ ?? getGdkNetwork(network)
+            return gdkNetwork_!
         }
     }
 

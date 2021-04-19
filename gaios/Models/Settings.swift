@@ -55,7 +55,8 @@ public enum TransactionPriority: Int {
     }
 
     var time: String {
-        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let network = AccountsManager.shared.current?.gdkNetwork
+        let isLiquid = network?.liquid ?? false
         let blocksPerHour = isLiquid ? 60 : 6
         let blocks = self.rawValue
         let n = (blocks % blocksPerHour) == 0 ? blocks / blocksPerHour : blocks * (60 / blocksPerHour)

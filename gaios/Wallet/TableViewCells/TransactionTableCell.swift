@@ -11,7 +11,8 @@ class TransactionTableCell: UITableViewCell {
     @IBOutlet weak var imageDirection: UIImageView!
 
     var isLiquid: Bool {
-        return getGdkNetwork(getNetwork()).liquid
+        var account = AccountsManager.shared.current
+        return account?.gdkNetwork.liquid ?? false
     }
     var multipleAssets: Bool!
     var isIncoming: Bool!

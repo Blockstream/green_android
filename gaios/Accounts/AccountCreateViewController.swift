@@ -13,15 +13,17 @@ class AccountCreateViewController: UIViewController {
     public weak var subaccountDelegate: SubaccountDelegate?
     private let accountTypes = AccountType.allCases
     private let accountInfoType = AccountInfoType.allCases
-    private var network: GdkNetwork { getGdkNetwork(getNetwork()) }
+    private var account = AccountsManager.shared.current
     private var selectedAccountType: AccountType?
     private var isReview: Bool = false
     private var accountName: String?
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        networkNameLabel.text = network.name
-        networkIconImageView.image = UIImage(named: network.icon!)
+        if let network = account?.gdkNetwork {
+            networkNameLabel.text = network.name
+            networkIconImageView.image = UIImage(named: network.icon!)
+        }
         configureView()
     }
 

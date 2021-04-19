@@ -13,7 +13,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
     private let headerId = "header"
     private let footerId = "footer"
 
-    var network = { getGdkNetwork(getNetwork()) }()
+    private let network = AccountsManager.shared.current?.gdkNetwork
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,7 +85,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
                 cell.balanceFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency) "
             }
             cell.walletName.text = wallet.localizedName()
-            cell.networkImage.image = UIImage(named: network.icon!)
+            cell.networkImage.image = UIImage(named: network?.icon ?? "")
             return cell
         }
     }
@@ -116,8 +116,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.addWallet))
             footer.addGestureRecognizer(tapGestureRecognizer)
             footer.isUserInteractionEnabled = true
-            let network = getGdkNetwork(getNetwork())
-            footer.networkImage.image = UIImage(named: network.icon!)
+            footer.networkImage.image = UIImage(named: network?.icon ?? "")
             return footer
         default:
             return UICollectionReusableView()
@@ -171,7 +170,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
         } else if let controller = segue.destination as? AccountCreateViewController {
             controller.subaccountDelegate = subaccountDelegate
             controller.presentationController?.delegate = self
-            controller.canCreateAdvanced = network.liquid && !wallets.contains { $0.type == AccountType.advanced.rawValue }
+            controller.canCreateAdvanced = (network?.liquid ?? false) && !wallets.contains { $0.type == AccountType.advanced.rawValue }
         }
     }
 }

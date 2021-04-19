@@ -101,7 +101,8 @@ extension UIView {
     }
 
     func makeGradientCard() -> CAGradientLayer {
-        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        var account = AccountsManager.shared.current
+        let isLiquid = account?.gdkNetwork.liquid ?? false
         let colours = isLiquid ?
             [UIColor.cardBlueDark(), UIColor.cardBlueMediumDark(), UIColor.cardBlueMedium(), UIColor.cardBlueLight()] :
             [UIColor.cardDark(), UIColor.cardMediumDark(), UIColor.cardMedium(), UIColor.cardLight()]

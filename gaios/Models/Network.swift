@@ -1,7 +1,7 @@
 import Foundation
 import PromiseKit
 
-struct GdkNetwork: Codable {
+struct GdkNetwork: Codable, Equatable {
 
     enum CodingKeys: String, CodingKey {
         case name

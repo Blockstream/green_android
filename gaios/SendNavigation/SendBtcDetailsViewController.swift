@@ -27,7 +27,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     private var isLiquid: Bool {
-        return getGdkNetwork(getNetwork()).liquid
+        return AccountsManager.shared.current?.gdkNetwork.liquid ?? false
     }
 
     private var feeEstimates: [UInt64?] = {

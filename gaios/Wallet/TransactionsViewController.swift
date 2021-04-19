@@ -260,7 +260,8 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
-        if getGdkNetwork(getNetwork()).liquid && presentingWallet?.btc == 0 {
+        var account = AccountsManager.shared.current
+        if (account?.gdkNetwork.liquid ?? false) && presentingWallet?.btc == 0 {
             let message = NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "")
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
