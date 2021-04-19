@@ -124,7 +124,9 @@ class GreenAddressService {
         case .Settings:
             reloadSystemMessage()
             Settings.shared = Settings.from(data)
-            reloadTwoFactor()
+            if !isWatchOnly {
+                reloadTwoFactor()
+            }
             post(event: .Settings, data: data)
         case .Session:
             post(event: EventType.Network, data: data)
