@@ -149,9 +149,10 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             getGAService().isWatchOnly = true
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
-            if let err = error as? GaError, err != GaError.GenericError {
+            switch error {
+            case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-            } else {
+            default:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             }
         }

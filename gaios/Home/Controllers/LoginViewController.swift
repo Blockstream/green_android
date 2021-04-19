@@ -170,8 +170,10 @@ class LoginViewController: UIViewController {
                 return
             case AuthenticationTypeHandler.AuthError.SecurityError, AuthenticationTypeHandler.AuthError.KeychainError:
                 return self.onBioAuthError(error.localizedDescription)
+            case AuthenticationTypeHandler.AuthError.ConnectionFailed:
+                DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             case is AuthenticationTypeHandler.AuthError:
-                DropAlert().error(message: error.localizedDescription)
+                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             case TwoFactorCallError.failure(let desc):
                 if desc.contains(":login failed:") && withPIN != nil {
                     self.wrongPin(usingAuth)
