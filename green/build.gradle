@@ -179,10 +179,10 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Navigation ------------------------------------------------------------------------- */
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
-    testImplementation "androidx.navigation:navigation-testing:2.3.4"
-    androidTestImplementation "androidx.navigation:navigation-testing:2.3.4"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
+    testImplementation "androidx.navigation:navigation-testing:2.3.5"
+    androidTestImplementation "androidx.navigation:navigation-testing:2.3.5"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Room ------------------------------------------------------------------------------- */
