@@ -3,22 +3,22 @@ package com.blockstream.green.ui.settings
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.R
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.green.gdk.SessionManager
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
 import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.Limits
-import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.R
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
-import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
+import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
@@ -61,13 +61,18 @@ class WalletSettingsViewModel @AssistedInject constructor(
     }
 
     fun updateTwoFactorConfig(){
-        session.observable {
-            it.getTwoFactorConfig()
-        }.subscribeBy(
-            onSuccess = {
-                twoFactorConfigLiveData.value = it
-            }
-        )
+        if(!session.isElectrum){
+            session.observable {
+                it.getTwoFactorConfig()
+            }.subscribeBy(
+                onSuccess = {
+                    twoFactorConfigLiveData.value = it
+                },
+                onError = {
+                    it.printStackTrace()
+                }
+            )
+        }
     }
 
     fun updateWatchOnlyUsername(){

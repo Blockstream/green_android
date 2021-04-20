@@ -97,6 +97,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         mNetworkData = getNetwork();
         final SettingsData settings = getSession().getSettings();
         final boolean isLiquid = mNetworkData.getLiquid();
+        final boolean isElectrum = mNetworkData.isElectrum();
         TwoFactorConfigData twoFaData = null;
         try {
             twoFaData = getSession().getTwoFactorConfig();
@@ -116,7 +117,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // Watch-Only Login
         mWatchOnlyLogin = find(PrefKeys.WATCH_ONLY_LOGIN);
-        mWatchOnlyLogin.setVisible(!isLiquid && isRecoveryConfirmed);
+        mWatchOnlyLogin.setVisible(!isLiquid && isRecoveryConfirmed && !isElectrum);
         mWatchOnlyLogin.setOnPreferenceClickListener((preference) -> onWatchOnlyLoginClicked());
         setupWatchOnlySummary();
 
@@ -194,8 +195,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         mCustomRatePref.setOnPreferenceClickListener(this::onFeeRatePreferenceClicked);
         setFeeRateSummary();
 
+        findPreference("category_two_factor").setVisible(!isElectrum);
+
         // Two-factor Authentication Submenu
         mTwoFactorPref = find(PrefKeys.TWO_FACTOR);
+        mTwoFactorPref.setVisible(!isElectrum);
         mTwoFactorPref.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SecurityActivity.class);
             startActivity(intent);
@@ -204,7 +208,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // Two-Factor expiration period
         final Preference twoFactorCsv = find(PrefKeys.TWO_FACTOR_CSV);
-        twoFactorCsv.setVisible(!isLiquid);
+        twoFactorCsv.setVisible(!isLiquid && !isElectrum);
         twoFactorCsv.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), CSVTimeActivity.class);
             startActivity(intent);
@@ -214,13 +218,13 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         // Set two-factor threshold
         mLimitsPref = find(PrefKeys.TWO_FAC_LIMITS);
         mLimitsPref.setOnPreferenceClickListener(this::onLimitsPreferenceClicked);
-        mLimitsPref.setVisible(anyEnabled && !isLiquid);
+        mLimitsPref.setVisible(anyEnabled && !isLiquid && !isElectrum);
         if (twoFaData != null)
             setLimitsText(twoFaData.getLimits());
 
         // Enable nlocktime recovery emails
         mLocktimePref = find(PrefKeys.TWO_FAC_N_LOCKTIME_EMAILS);
-        mLocktimePref.setVisible(emailConfirmed && !isLiquid);
+        mLocktimePref.setVisible(emailConfirmed && !isLiquid && !isElectrum);
         mLocktimePref.setOnPreferenceChangeListener((preference, o) -> {
             if (warnIfOffline(getActivity())) {
                 return false;
@@ -238,18 +242,18 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // Set nlocktime email
         mSetEmail = find(PrefKeys.SET_EMAIL);
-        mSetEmail.setVisible(!emailConfirmed && !isLiquid);
+        mSetEmail.setVisible(!emailConfirmed && !isLiquid && !isElectrum);
         mSetEmail.setOnPreferenceClickListener((preference) -> onSetEmailClicked());
 
         // Send nlocktime recovery emails
         mSendLocktimePref = find(PrefKeys.SEND_NLOCKTIME);
-        mSendLocktimePref.setVisible(emailConfirmed && !isLiquid);
+        mSendLocktimePref.setVisible(emailConfirmed && !isLiquid && !isElectrum);
         mSendLocktimePref.setOnPreferenceClickListener(this::onSendNLocktimeClicked);
 
         // Cancel two factor reset
         mTwoFactorRequestResetPref = find(PrefKeys.RESET_TWOFACTOR);
         mTwoFactorRequestResetPref.setOnPreferenceClickListener(preference -> prompt2FAChange("reset", true));
-        mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid);
+        mTwoFactorRequestResetPref.setVisible(anyEnabled && !isLiquid && !isElectrum);
 
         // Mnemonic
         mMemonicPref = find(PrefKeys.MNEMONIC_PASSPHRASE);
@@ -268,7 +272,9 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         try {
             final int timeout = settings.getAltimeout();
             setTimeoutSummary(timeout);
-        } catch (final Exception e) {}
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
         mTimeoutPref.setOnPreferenceChangeListener((preference, newValue) -> {
             final Integer altimeout = Integer.parseInt(newValue.toString());
             settings.setAltimeout(altimeout);
@@ -282,10 +288,11 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         });
 
         findPreference("network_monitor").setVisible(false);
+        findPreference("category_advanced").setVisible(!isElectrum);
 
         // SPV_SYNCRONIZATION Syncronization Submenu
         mSPV = findPreference(PrefKeys.SPV_SYNCRONIZATION);
-        mSPV.setVisible(!isLiquid);
+        mSPV.setVisible(!isLiquid && !isElectrum);
         mSPV.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SettingsActivity.class);
             intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, SPVPreferenceFragment.class.getName() );
@@ -295,14 +302,16 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         // sweep from paper wallet
         mSweepPref = find(PrefKeys.SWEEP);
-        mSweepPref.setVisible(!isLiquid);
+        mSweepPref.setVisible(!isLiquid && !isElectrum);
         mSweepPref.setOnPreferenceClickListener(preference -> {
             final Intent intent = new Intent(getActivity(), SweepSelectActivity.class);
             startActivity(intent);
             return false;
         });
 
-        findPreference(PrefKeys.PGP_KEY).setOnPreferenceClickListener(this::onPGPKeyClicked);
+        Preference gpgKeyPref = findPreference(PrefKeys.PGP_KEY);
+        gpgKeyPref.setVisible(!isElectrum);
+        gpgKeyPref.setOnPreferenceClickListener(this::onPGPKeyClicked);
 
 
         // Terms of service
@@ -391,28 +400,30 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
 
         settings.getPricing().setCurrency(currency);
         settings.getPricing().setExchange(exchange);
-        setPricingSummary(null);
+        setPricingSummary(settings.getPricing());
 
-        mUpdateDisposable = updateSettings(settings)
-                            .observeOn(Schedulers.computation())
-                            .map((s) -> {
-            final TwoFactorConfigData twoFaData = getSession().getTwoFactorConfig();
-            final ObjectNode limitsData = twoFaData.getLimits();
-            return limitsData;
-        }).observeOn(AndroidSchedulers.mainThread())
-                            .subscribe((limitsData) -> {
-            setLimitsText(limitsData);
-            setPricingSummary(settings.getPricing());
-            final Integer satoshi = limitsData.get("satoshi").asInt(0);
-            if (satoshi > 0) {
-                UI.popup(
-                    getActivity(),
-                    "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to top-up the 2FA threshold after continuing.")
-                .show();
-            }
-        }, (final Throwable e) -> {
-            UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
-        });
+        if(!mNetworkData.isElectrum()) {
+            mUpdateDisposable = updateSettings(settings)
+                    .observeOn(Schedulers.computation())
+                    .map((s) -> {
+                        final TwoFactorConfigData twoFaData = getSession().getTwoFactorConfig();
+                        final ObjectNode limitsData = twoFaData.getLimits();
+                        return limitsData;
+                    }).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe((limitsData) -> {
+
+                        setLimitsText(limitsData);
+                        final Integer satoshi = limitsData.get("satoshi").asInt(0);
+                        if (satoshi > 0) {
+                            UI.popup(
+                                    getActivity(),
+                                    "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to top-up the 2FA threshold after continuing.")
+                                    .show();
+                        }
+                    }, (final Throwable e) -> {
+                        UI.toast(getActivity(), e.getMessage(), Toast.LENGTH_LONG);
+                    });
+        }
         return true;
     }
 

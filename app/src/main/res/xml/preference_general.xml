@@ -48,6 +48,7 @@
         android:title="@string/id_default_custom_fee_rate" />
 
     <PreferenceCategory android:title="@string/id_twofactor"
+        android:key="category_two_factor"
         android:icon="@drawable/ic_twofactor"
         android:layout="@layout/preference_category_green"/>
 
@@ -98,6 +99,7 @@
         android:title="@string/id_auto_logout_timeout" />
 
     <PreferenceCategory android:title="@string/id_advanced"
+        android:key="category_advanced"
         android:icon="@drawable/ic_advanced"
         android:layout="@layout/preference_category_green"/>
 
