@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.blockstream.gdk.data.AccountType;
 import com.blockstream.gdk.data.TwoFactorReset;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.greenaddress.Bridge;
@@ -257,6 +258,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             final long pointer = subaccount.getPointer();
             final String defaultName = pointer == 0 ? getString(R.string.id_main_account) : getString(R.string.id_account) + " " + pointer;
             mAccountView.setTitle(subaccount.getNameWithDefault(defaultName));
+            mAccountView.setType(AccountType.Companion.byGDKType(subaccount.getType()));
             mAccountView.setBalance(balance.get("btc").longValue());
             mAssetsSelection.setVisibility(getNetwork().getLiquid() ? View.VISIBLE : View.GONE);
             mAssetsSelection.setText(balance.size() == 1 ?

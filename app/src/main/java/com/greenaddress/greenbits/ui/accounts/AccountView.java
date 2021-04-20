@@ -18,6 +18,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.blockstream.gdk.data.AccountType;
 import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.R;
@@ -29,7 +30,7 @@ public class AccountView extends CardView {
     private Button mSendButton, mReceiveButton;
     private ImageButton mSelectButton;
     private LinearLayout mBodyLayout, mActionLayout, mSubaccount, mAddSubaccount;
-    private TextView mTitleText, mBalanceText, mBalanceUnitText, mBalanceFiatText;
+    private TextView mTitleText,mTypeText , mBalanceText, mBalanceUnitText, mBalanceFiatText;
     private Session mSession;
 
     public AccountView(final Context context) {
@@ -68,6 +69,7 @@ public class AccountView extends CardView {
         mBodyLayout = UI.find(view, R.id.body);
         mActionLayout = UI.find(view, R.id.actionLayout);
         mTitleText = UI.find(view, R.id.name);
+        mTypeText = UI.find(view, R.id.type);
         mBalanceText = UI.find(view, R.id.mainBalanceText);
         mBalanceUnitText = UI.find(view, R.id.mainBalanceUnitText);
         mBalanceFiatText = UI.find(view, R.id.mainLocalBalanceText);
@@ -110,6 +112,23 @@ public class AccountView extends CardView {
 
     public void setTitle(final String text) {
         mTitleText.setText(text);
+    }
+
+    public void setType(final AccountType accountType) {
+        switch (accountType){
+            case BIP84_SEGWIT:
+                mTypeText.setVisibility(View.VISIBLE);
+                mTypeText.setText("Segwit");
+                break;
+            case BIP44_LEGACY:
+            case BIP49_SEGWIT_WRAPPED:
+                mTypeText.setVisibility(View.VISIBLE);
+                mTypeText.setText("Legacy");
+                break;
+            default:
+                mTypeText.setVisibility(View.GONE);
+        }
+
     }
 
     public void setBalance(final long satoshi) {

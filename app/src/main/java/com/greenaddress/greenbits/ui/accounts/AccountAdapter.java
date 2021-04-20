@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.blockstream.gdk.data.AccountType;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -61,6 +63,20 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             final String defaultName = pointer == 0 ? res.getString(R.string.id_main_account) : res.getString(R.string.id_account) + " " + pointer;
 
             h.name.setText(subaccount.getNameWithDefault(defaultName));
+            switch (AccountType.Companion.byGDKType(subaccount.getType())){
+                case BIP84_SEGWIT:
+                    h.type.setVisibility(View.VISIBLE);
+                    h.type.setText("Segwit");
+                    break;
+                case BIP44_LEGACY:
+                case BIP49_SEGWIT_WRAPPED:
+                    h.type.setVisibility(View.VISIBLE);
+                    h.type.setText("Legacy");
+                    break;
+                default:
+                    h.type.setVisibility(View.GONE);
+            }
+
             try {
                 final String valueBitcoin = Conversion.getBtc(mActivity.getSession(), satoshi, false);
                 final String valueFiat = Conversion.getFiat(mActivity.getSession(), satoshi, true);
@@ -95,6 +111,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     static class Account extends RecyclerView.ViewHolder {
         final TextView name;
+        final TextView type;
         final TextView mainBalanceText;
         final TextView mainBalanceUnitText;
         final TextView mainLocalBalanceText;
@@ -102,6 +119,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         Account(final View v) {
             super(v);
             name = UI.find(v, R.id.name);
+            type = UI.find(v, R.id.type);
             mainBalanceText = UI.find(v, R.id.mainBalanceText);
             mainBalanceUnitText = UI.find(v, R.id.mainBalanceUnitText);
             mainLocalBalanceText = UI.find(v, R.id.mainLocalBalanceText);
