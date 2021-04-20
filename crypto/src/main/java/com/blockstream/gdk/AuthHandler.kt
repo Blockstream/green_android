@@ -23,7 +23,9 @@ class AuthHandler(
     private val greenWallet: GreenWallet,
     private var gaAuthHandler: GAAuthHandler
 ) {
-    private var isDone = false
+    var isCompleted = false
+        private set
+
     var result: JsonElement? = null
 
     private fun call() = greenWallet.authHandlerCall(gaAuthHandler)
@@ -37,96 +39,96 @@ class AuthHandler(
         twoFactorResolver: TwoFactorResolver? = null,
         hardwareWalletResolver: HardwareWalletResolver? = null
     ): AuthHandler {
-        while (!isDone) {
 
-            val twoFactorStatus: TwoFactorStatus =
-                greenWallet.getAuthHandlerStatus(gaAuthHandler).let { jsonElement ->
-                    JsonDeserializer.decodeFromJsonElement<TwoFactorStatus>(jsonElement)
-                        .also { twoFactorStatus ->
+        try {
 
-                            // Save the raw JsonElement for further processing if needed by v3 code
-                            twoFactorStatus.rawJsonElement = jsonElement
-                        }
-                }
+            while (!isCompleted) {
 
+                val twoFactorStatus: TwoFactorStatus =
+                    greenWallet.getAuthHandlerStatus(gaAuthHandler).let { jsonElement ->
+                        JsonDeserializer.decodeFromJsonElement<TwoFactorStatus>(jsonElement)
+                            .also { twoFactorStatus ->
 
-            when (twoFactorStatus.status) {
-                CALL -> {
-                    call()
-                }
-                REQUEST_CODE -> {
-                    twoFactorResolver?.also {
-
-                        if(twoFactorStatus.methods.size == 1) {
-                            requestCode(twoFactorStatus.methods.first())
-                        }else{
-                            try {
-                                requestCode(it.selectMethod(twoFactorStatus.methods).blockingGet())
-                            }catch (e: Exception){
-                                destroy()
-                                throw Exception("id_action_canceled")
+                                // Save the raw JsonElement for further processing if needed by v3 code
+                                twoFactorStatus.rawJsonElement = jsonElement
                             }
-                        }
-
-                    } ?: run {
-                        throw RuntimeException("TwoFactorMethodResolver was not provided")
                     }
 
-                }
-                RESOLVE_CODE -> {
-                    if(twoFactorStatus.device == null){
+
+                when (twoFactorStatus.status) {
+                    CALL -> {
+                        call()
+                    }
+                    REQUEST_CODE -> {
                         twoFactorResolver?.also {
-                            try {
-                                resolveCode(it.getCode(twoFactorStatus.method).blockingGet())
-                            }catch (e: Exception){
-                                e.printStackTrace()
-                                destroy()
-                                throw Exception("id_action_canceled")
-                            }
-                        } ?: run {
-                            throw RuntimeException("TwoFactorCodeResolver was not provided")
-                        }
-                    }else{
-                        hardwareWalletResolver?.also {
-                            try {
-                                // Use v3 codebase for HWW handling
-                                resolveCode(it.requestDataFromDeviceV3(twoFactorStatus.getTwoFactorStatusDataV3().requiredData).blockingGet())
 
-                                // Needs v4 implementation
-                                // resolveCode(it.requestDataFromDevice(twoFactorStatus.requiredData!!).blockingGet())
-                            }catch (e: Exception){
-                                e.printStackTrace()
-                                destroy()
-                                throw Exception("id_action_canceled")
+                            if(twoFactorStatus.methods.size == 1) {
+                                requestCode(twoFactorStatus.methods.first())
+                            }else{
+                                try {
+                                    requestCode(it.selectMethod(twoFactorStatus.methods).blockingGet())
+                                }catch (e: Exception){
+                                    throw Exception("id_action_canceled")
+                                }
                             }
+
                         } ?: run {
-                            throw RuntimeException("TwoFactorCodeResolver was not provided")
+                            throw RuntimeException("TwoFactorMethodResolver was not provided")
+                        }
+
+                    }
+                    RESOLVE_CODE -> {
+                        if(twoFactorStatus.device == null){
+                            twoFactorResolver?.also {
+                                try {
+                                    resolveCode(it.getCode(twoFactorStatus.method).blockingGet())
+                                } catch (e: Exception){
+                                    e.printStackTrace()
+                                    throw Exception("id_action_canceled")
+                                }
+                            } ?: run {
+                                throw RuntimeException("TwoFactorCodeResolver was not provided")
+                            }
+                        }else{
+                            hardwareWalletResolver?.also {
+                                try {
+                                    // Use v3 codebase for HWW handling
+                                    resolveCode(it.requestDataFromDeviceV3(twoFactorStatus.getTwoFactorStatusDataV3().requiredData).blockingGet())
+
+                                    // Needs v4 implementation
+                                    // resolveCode(it.requestDataFromDevice(twoFactorStatus.requiredData!!).blockingGet())
+                                }catch (e: Exception){
+                                    e.printStackTrace()
+                                    throw Exception("id_action_canceled")
+                                }
+                            } ?: run {
+                                throw RuntimeException("TwoFactorCodeResolver was not provided")
+                            }
                         }
                     }
-                }
-                ERROR -> {
-                    destroy()
-                    isDone = true
-                    throw Exception(twoFactorStatus.error)
-                }
-                DONE -> {
-                    destroy()
-                    isDone = true
-                    result = twoFactorStatus.result
+                    ERROR -> {
+                        isCompleted = true
+                        throw Exception(twoFactorStatus.error)
+                    }
+                    DONE -> {
+                        isCompleted = true
+                        result = twoFactorStatus.result
+                    }
                 }
             }
+
+        } finally {
+            destroy()
         }
 
         return this
     }
 
-    fun isCompleted() = isDone
-
     inline fun <reified T> result(
         twoFactorResolver: TwoFactorResolver? = null,
         hardwareWalletResolver: HardwareWalletResolver? = null
     ): T {
-        if (!isCompleted()) {
+        if (!isCompleted) {
             resolve(twoFactorResolver, hardwareWalletResolver)
         }
 
