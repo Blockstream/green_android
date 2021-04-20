@@ -37,7 +37,7 @@ class AddAccountViewModel @AssistedInject constructor(
     fun createAccount(hwwBridge: HWWalletBridge, hwWallet: HWWallet?) {
         session.observable {
             accountName.value.nameCleanup()?.let { name ->
-                it.createSubAccount(SubAccountParams(name, accountType.gdkType))
+                it.createSubAccount(SubAccountParams(name, accountType))
                     .result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(hwwBridge, hwWallet))
             }
         }.doOnSubscribe {

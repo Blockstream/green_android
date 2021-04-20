@@ -67,6 +67,9 @@ class GreenSession constructor(
     val isLiquid
         get() = network.isLiquid
 
+    val isElectrum
+        get() = network.isElectrum
+
     val isMainnet
         get() = network.isMainnet
 
@@ -212,6 +215,14 @@ class GreenSession constructor(
             greenWallet.loginWithMnemonic(gaSession, null, mnemonic, "")
         ).resolve()
 
+        if(network.isElectrum){
+            // Create SegWit Account
+            AuthHandler(greenWallet,
+                greenWallet
+                .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
+            ).resolve()
+        }
+
         isConnected = true
     }
 
@@ -275,6 +286,23 @@ class GreenSession constructor(
         ).resolve()
 
         isConnected = true
+
+        if(network.isElectrum){
+
+            // On Singlesig, check if there is a SegWit account already restored or create one
+            val subAccounts = AuthHandler(
+                greenWallet,
+                greenWallet.getSubAccounts(gaSession)
+            ).result<SubAccounts>().subaccounts
+
+            if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
+                // Create SegWit Account
+                AuthHandler(greenWallet,
+                    greenWallet
+                        .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
+                ).resolve()
+            }
+        }
 
         initializeSessionData()
     }
