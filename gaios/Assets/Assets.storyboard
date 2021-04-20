@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -48,42 +46,40 @@
             <objects>
                 <tableViewController storyboardIdentifier="AssetDetailTableViewController" id="o0F-xl-fvc" customClass="AssetDetailTableViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="9db-T5-kbl">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" name="customModalBlueDark"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="AssetDetailHeaderCell" rowHeight="135" id="xK4-19-Uvg" customClass="AssetDetailHeaderCell" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="414" height="135"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="AssetDetailHeaderCell" rowHeight="79" id="xK4-19-Uvg" customClass="AssetDetailHeaderCell" customModule="gaios" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="414" height="79"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xK4-19-Uvg" id="mQZ-3p-PwU">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="135"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xK4-19-Uvg" id="mQZ-3p-PwU">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="79"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QZY-KX-8B4">
-                                            <rect key="frame" x="335" y="32.5" width="40" height="29"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="29" id="L1x-sL-PlU"/>
-                                            </constraints>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QZY-KX-8B4">
+                                            <rect key="frame" x="301" y="12.5" width="39" height="34"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <state key="normal" title="Save">
                                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             </state>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VRW-Q2-1GU">
-                                            <rect key="frame" x="20" y="38" width="18" height="18"/>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VRW-Q2-1GU">
+                                            <rect key="frame" x="360" y="0.0" width="54" height="59"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="18" id="g7l-fE-chb"/>
-                                                <constraint firstAttribute="width" constant="18" id="gev-uU-H6V"/>
+                                                <constraint firstAttribute="height" constant="54" id="g7l-fE-chb"/>
+                                                <constraint firstAttribute="width" constant="54" id="gev-uU-H6V"/>
                                             </constraints>
-                                            <state key="normal" backgroundImage="cancel"/>
+                                            <inset key="imageEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
+                                            <state key="normal" image="cancel"/>
                                         </button>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="bottomMargin" secondItem="VRW-Q2-1GU" secondAttribute="bottom" constant="36" id="BNN-dD-vuL"/>
-                                        <constraint firstItem="VRW-Q2-1GU" firstAttribute="top" secondItem="mQZ-3p-PwU" secondAttribute="topMargin" constant="27" id="CCi-Ht-TQ7"/>
-                                        <constraint firstItem="VRW-Q2-1GU" firstAttribute="leading" secondItem="mQZ-3p-PwU" secondAttribute="leadingMargin" id="RiF-wu-nyq"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="QZY-KX-8B4" secondAttribute="trailing" constant="19" id="ZVF-Pl-515"/>
-                                        <constraint firstItem="QZY-KX-8B4" firstAttribute="centerY" secondItem="VRW-Q2-1GU" secondAttribute="centerY" id="fXe-qW-ajY"/>
+                                        <constraint firstAttribute="bottom" secondItem="VRW-Q2-1GU" secondAttribute="bottom" constant="20" id="jl5-PZ-XBq"/>
+                                        <constraint firstAttribute="trailing" secondItem="VRW-Q2-1GU" secondAttribute="trailing" id="jog-DO-NhK"/>
+                                        <constraint firstItem="QZY-KX-8B4" firstAttribute="centerY" secondItem="VRW-Q2-1GU" secondAttribute="centerY" id="kXa-3j-eLp"/>
+                                        <constraint firstItem="VRW-Q2-1GU" firstAttribute="top" secondItem="mQZ-3p-PwU" secondAttribute="top" id="oS3-dE-Wkc"/>
+                                        <constraint firstItem="VRW-Q2-1GU" firstAttribute="leading" secondItem="QZY-KX-8B4" secondAttribute="trailing" constant="20" id="y33-rw-tQX"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" name="customModalBlueDark"/>
@@ -93,7 +89,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="AssetDetailTableCell" rowHeight="92" id="0n1-2e-aNA" customClass="AssetDetailTableCell" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="163" width="414" height="92"/>
+                                <rect key="frame" x="0.0" y="107" width="414" height="92"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="0n1-2e-aNA" id="7Cj-wL-wRS">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="92"/>
@@ -167,10 +163,10 @@
             <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
-            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
-            <color red="0.42745098039215684" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
