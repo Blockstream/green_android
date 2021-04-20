@@ -38,15 +38,17 @@ class RecoveryCheckViewModel @AssistedInject constructor(
     var isLastPage = false
 
     init {
-        val totalPages = mnemonic.size / WORDS_PER_PAGE
+        // 3 checks on 12-words recovery phrase, 4 on 24-words
+        val totalChecks = if(mnemonic.size <= 12) 3 else 4
+        val wordsPerPage = mnemonic.size / totalChecks
 
-        isLastPage = (page + 1) >= totalPages
+        isLastPage = (page + 1) >= totalChecks
 
-        val from = 0 + (WORDS_PER_PAGE * page)
-        val to = from + WORDS_PER_PAGE
+        val from = 0 + (wordsPerPage * page)
+        val to = from + wordsPerPage
         val pageWords = mnemonic.subList(from, to)
 
-        val wordIndex = SecureRandom().asKotlinRandom().nextInt(1, 5)
+        val wordIndex = SecureRandom().asKotlinRandom().nextInt(1, wordsPerPage-1)
         correctWord = pageWords[wordIndex]
 
         val wordList = greenWallet.getMnemonicWordList().shuffled()
@@ -58,7 +60,7 @@ class RecoveryCheckViewModel @AssistedInject constructor(
         wordRight.value = pageWords[wordIndex + 1]
 
         words.value = randomChoices
-        pointer.value = (WORDS_PER_PAGE * page) + wordIndex + 1
+        pointer.value = (wordsPerPage * page) + wordIndex + 1
     }
 
     fun selectWord(selectedWord: String) {
@@ -103,8 +105,6 @@ class RecoveryCheckViewModel @AssistedInject constructor(
     }
 
     companion object {
-        private const val WORDS_PER_PAGE = 6
-
         fun provideFactory(
             assistedFactory: AssistedFactory,
             wallet: Wallet?,
