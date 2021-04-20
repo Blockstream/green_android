@@ -303,34 +303,6 @@ class TransactionsController: UITableViewController {
             nextController.title = presentingWallet!.localizedName()
         }
     }
-
-    func accountDidChange(_ account: Account) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.map(on: bgq) {
-            appDelegate?.disconnect()
-        }.ensure {
-            self.stopAnimating()
-        }.done {
-
-            let storyboard = UIStoryboard(name: "Home", bundle: nil)
-            let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-
-            if let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
-                vc.account = account
-                nav?.pushViewController(vc, animated: false)
-            }
-
-            self.navigationController?.dismiss(animated: true, completion: {})
-            self.navigationController?.popToRootViewController(animated: true)
-            UIApplication.shared.keyWindow?.rootViewController = nav
-        }.catch { _ in
-            fatalError("disconnection error never happens")
-        }
-    }
 }
 
 extension TransactionsController: UITableViewDataSourcePrefetching {
@@ -397,21 +369,51 @@ extension TransactionsController: UIAdaptivePresentationControllerDelegate {
 }
 
 extension TransactionsController: DrawerNetworkSelectionDelegate {
+
+    func logout() -> Promise<Void> {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let bgq = DispatchQueue.global(qos: .background)
+        return firstly {
+            self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
+            return Guarantee()
+        }.map(on: bgq) {
+            appDelegate?.disconnect()
+            BLEManager.shared.dispose()
+        }
+    }
+
     func didSelectAccount(account: Account) {
-        self.accountDidChange(account)
+        logout()
+            .recover { _ in }
+            .done {
+                self.navigationController?.dismiss(animated: true, completion: {})
+                self.navigationController?.popToRootViewController(animated: true)
+                let storyboard = UIStoryboard(name: "Home", bundle: nil)
+                self.stopLoader()
+                if let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                   let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+                    vc.account = account
+                    nav.pushViewController(vc, animated: false)
+                    UIApplication.shared.keyWindow?.rootViewController = nav
+                }
+            }
     }
 
     func didSelectHDW(account: Account) {
-        let storyboard = UIStoryboard(name: "Home", bundle: nil)
-        let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
-
-        let storyboard2 = UIStoryboard(name: "HardwareWallet", bundle: nil)
-        let vc = storyboard2.instantiateViewController(withIdentifier: "HardwareWalletScanViewController") as? HardwareWalletScanViewController
-        vc?.account = account
-        nav?.pushViewController(vc!, animated: false)
-
-        self.navigationController?.dismiss(animated: true, completion: {})
-        self.navigationController?.popToRootViewController(animated: true)
-        UIApplication.shared.keyWindow?.rootViewController = nav
+        logout()
+            .recover { _ in }
+            .done {
+                self.navigationController?.dismiss(animated: true, completion: {})
+                self.navigationController?.popToRootViewController(animated: true)
+                let storyboard = UIStoryboard(name: "Home", bundle: nil)
+                let storyboardHW = UIStoryboard(name: "HardwareWallet", bundle: nil)
+                self.stopLoader()
+                if let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                   let vc = storyboardHW.instantiateViewController(withIdentifier: "HardwareWalletScanViewController") as? HardwareWalletScanViewController {
+                    vc.account = account
+                    nav.pushViewController(vc, animated: false)
+                    UIApplication.shared.keyWindow?.rootViewController = nav
+                }
+            }
     }
 }
