@@ -30,14 +30,18 @@ class TransactionsController: UITableViewController {
         return noTransactionsLabel
     }()
 
+    var alertCards: [Card2faType] = [Card2faType.buildResetCard()]
+
     override func viewDidLoad() {
         super.viewDidLoad()
         let nib = UINib(nibName: "TransactionTableCell", bundle: nil)
+        let nib2 = UINib(nibName: "AlertCardCell", bundle: nil)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.prefetchDataSource = self
         tableView.tableFooterView = UIView()
         tableView.register(nib, forCellReuseIdentifier: "TransactionTableCell")
+        tableView.register(nib2, forCellReuseIdentifier: "AlertCardCell")
         tableView.allowsSelection = true
         tableView.isUserInteractionEnabled = true
         tableView.tableHeaderView = getAccountCardView()
@@ -162,11 +166,16 @@ class TransactionsController: UITableViewController {
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return txs.count
+        // section 0 is dadicated to cards
+        return txs.count + 1
     }
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return txs[section].list.count
+        if section == 0 {
+            return alertCards.count
+        } else {
+            return txs[section - 1].list.count
+        }
     }
 
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -178,6 +187,14 @@ class TransactionsController: UITableViewController {
     }
 
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        if indexPath.section == 0 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell else { fatalError("Fail to dequeue reusable cell") }
+            cell.configure(alertCards[indexPath.row])
+            cell.selectionStyle = .none
+            return cell
+        }
+
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionTableCell", for: indexPath) as? TransactionTableCell else { fatalError("Fail to dequeue reusable cell") }
         let transactions = txs[indexPath.section]
         let tx = transactions.list[indexPath.row]
@@ -186,6 +203,16 @@ class TransactionsController: UITableViewController {
     }
 
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            let card = alertCards[indexPath.row]
+            switch card {
+            case .reset:
+                self.performSegue(withIdentifier: "leaarnMore2fa", sender: self)
+            default:
+                break
+            }
+            return
+        }
         let transactions = txs[indexPath.section]
         let tx = transactions.list[indexPath.row]
         showTransaction(tx: tx)
