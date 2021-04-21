@@ -388,13 +388,25 @@ extension TransactionsController: DrawerNetworkSelectionDelegate {
             .done {
                 self.navigationController?.dismiss(animated: true, completion: {})
                 self.navigationController?.popToRootViewController(animated: true)
-                let storyboard = UIStoryboard(name: "Home", bundle: nil)
                 self.stopLoader()
-                if let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                   let vc = storyboard.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
-                    vc.account = account
-                    nav.pushViewController(vc, animated: false)
-                    UIApplication.shared.keyWindow?.rootViewController = nav
+
+                let homeS = UIStoryboard(name: "Home", bundle: nil)
+                let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
+
+                if account.isWatchonly {
+                    if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                       let vc = onBoardS.instantiateViewController(withIdentifier: "WatchOnlyLoginViewController") as? WatchOnlyLoginViewController {
+                        vc.account = account
+                        nav.pushViewController(vc, animated: false)
+                        UIApplication.shared.keyWindow?.rootViewController = nav
+                    }
+                } else {
+                    if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                       let vc = homeS.instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController {
+                        vc.account = account
+                        nav.pushViewController(vc, animated: false)
+                        UIApplication.shared.keyWindow?.rootViewController = nav
+                    }
                 }
             }
     }
