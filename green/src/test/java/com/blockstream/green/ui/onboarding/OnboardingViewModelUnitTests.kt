@@ -1,15 +1,16 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.TestViewModel
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.gdk.data.Network
+import com.blockstream.green.utils.ConsumableEvent
 import com.nhaarman.mockitokotlin2.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,13 +38,23 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
 
     private var restoreWallet: Wallet = Wallet(name = "restore", network = "testnet")
 
-    private val network = Network(
+    private val multisigNetwork = Network(
         "testnet",
         "Testnet",
         "testnet",
         false,
         false,
-        true
+        false
+    )
+
+    private val singlesigNetwork = Network(
+        "electrum-testnet",
+        "Electrum Testnet",
+        "electrum-testnet",
+        false,
+        false,
+        false,
+        serverType = "electrum"
     )
 
     @Before
@@ -73,8 +84,8 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
     }
 
     @Test
-    fun test_create_new_wallet() {
-        val options = OnboardingOptions(isRestoreFlow = false, network = network)
+    fun test_createNewWallet() {
+        val options = OnboardingOptions(isRestoreFlow = false, network = multisigNetwork)
 
         viewModel.createNewWallet(options, "123456", "")
 
@@ -83,24 +94,24 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
     }
 
     @Test
-    fun test_valid_recovery_phrase() {
-        viewModel.checkRecoveryPhrase(network, "valid", "")
+    fun test_recoveryPhrase_valid() {
+        viewModel.checkRecoveryPhrase(multisigNetwork, "valid", "")
 
         verify(eventObserver).onChanged(any())
         verify(errorObserver, never()).onChanged(any())
     }
 
     @Test
-    fun test_invalid_recovery_phrase() {
-        viewModel.checkRecoveryPhrase(network, "invalid", "")
+    fun test_recoveryPhrase_invalid() {
+        viewModel.checkRecoveryPhrase(multisigNetwork, "invalid", "")
 
         verify(eventObserver, never()).onChanged(any())
         verify(errorObserver).onChanged(any())
     }
 
     @Test
-    fun test_restore_with_pin() {
-        val options = OnboardingOptions(isRestoreFlow = true, network = network)
+    fun restoreWallet_withPin() {
+        val options = OnboardingOptions(isRestoreFlow = true, network = multisigNetwork)
 
         viewModel.restoreWithPin(options, "123456")
 
@@ -115,10 +126,10 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
     }
 
     @Test
-    fun test_restore_wallet_with_recovery_phrase() {
+    fun restoreWallet_withRecoveryPhrase() {
         setupViewModel(withRestoreWallet = true)
 
-        val options = OnboardingOptions(isRestoreFlow = true, network = network)
+        val options = OnboardingOptions(isRestoreFlow = true, network = multisigNetwork)
 
         viewModel.restoreWithPin(options, "123456")
 
@@ -130,6 +141,58 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
             true
         })
         verify(errorObserver, never()).onChanged(any())
+    }
+
+    @Test
+    fun walletName_onCreate_withoutWallets_shouldBe_multisig() {
+        var options = OnboardingOptions(isRestoreFlow = false, network = multisigNetwork)
+        viewModel.createNewWallet(options, "123456", "")
+        verify(eventObserver, only()).onChanged(argThat {
+            val wallet = this.peekContent() as Wallet
+            Assert.assertEquals("Multisig Testnet", wallet.name)
+            true
+        })
+    }
+
+    @Test
+    fun walletName_onCreate_withoutWallets_shouldBe_singlesig() {
+        var options = OnboardingOptions(isRestoreFlow = false, network = singlesigNetwork)
+        viewModel.createNewWallet(options, "123456", "")
+        verify(eventObserver, only()).onChanged(argThat {
+            val wallet = this.peekContent() as Wallet
+            Assert.assertEquals("Singlesig Testnet", wallet.name)
+            true
+        })
+    }
+
+    @Test
+    fun walletName_onCreate_withWallets_shouldBe_incremented() {
+        val options = OnboardingOptions(isRestoreFlow = false, network = multisigNetwork)
+
+        whenever(walletRepository.getWalletsForNetworkSync(any())).thenReturn(listOf(mock(), mock(), mock()))
+
+        viewModel.createNewWallet(options, "123456", "")
+
+        verify(eventObserver).onChanged(argThat {
+            val wallet = this.peekContent() as Wallet
+            Assert.assertEquals("Multisig Testnet #4", wallet.name)
+            true
+        })
+    }
+
+    @Test
+    fun walletName_onRestore_shouldBe_incremented() {
+        val options = OnboardingOptions(isRestoreFlow = true, network = multisigNetwork)
+
+        whenever(walletRepository.getWalletsForNetworkSync(any())).thenReturn(listOf(mock(), mock(), mock()))
+
+        viewModel.restoreWithPin(options, "123456")
+
+        verify(eventObserver).onChanged(argThat {
+            val wallet = this.peekContent() as Wallet
+            Assert.assertEquals("Multisig Testnet #4", wallet.name)
+            true
+        })
     }
 
 }

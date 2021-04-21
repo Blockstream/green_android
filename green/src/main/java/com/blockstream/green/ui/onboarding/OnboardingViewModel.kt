@@ -28,7 +28,7 @@ open class OnboardingViewModel(
             var pinData = it.setPin(pin)
 
             val wallet = Wallet(
-                name = options.walletName ?: network.productName,
+                name = generateWalletName(network, options.walletName),
                 network = network.id,
                 isRecoveryPhraseConfirmed = options.isRestoreFlow || !mnemonic.isNullOrBlank(),
                 isHardware = false
@@ -60,6 +60,18 @@ open class OnboardingViewModel(
         })
     }
 
+    private fun generateWalletName(network:Network, userInputName: String?) : String{
+        return userInputName ?: run {
+            val wallets = walletRepository.getWalletsForNetworkSync(network)
+
+            return@run if(wallets.isNotEmpty()){
+                "${network.productName} #${wallets.size + 1}"
+            }else{
+                network.productName
+            }
+        }
+    }
+
     fun checkRecoveryPhrase(network: Network , mnemonic: String, mnemonicPassword: String) {
         session.observable {
             it.loginWithMnemonic(network, mnemonic, mnemonicPassword)
@@ -85,7 +97,7 @@ open class OnboardingViewModel(
             it.loginWithMnemonic(network, mnemonic, "")
 
             val wallet = Wallet(
-                name = options.walletName ?: network.productName,
+                name = generateWalletName(network, options.walletName),
                 network = network.id,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = true
@@ -118,7 +130,7 @@ open class OnboardingViewModel(
             if(restoreWallet == null){
                 wallet  = restoreWallet
                     ?: Wallet(
-                        name = options.walletName ?: options.network.productName,
+                        name = generateWalletName(network, options.walletName),
                         network = network.id,
                         isRecoveryPhraseConfirmed = options.isRestoreFlow,
                         isHardware = false

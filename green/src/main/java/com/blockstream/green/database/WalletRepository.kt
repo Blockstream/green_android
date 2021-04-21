@@ -1,6 +1,7 @@
 package com.blockstream.green.database
 
 import androidx.lifecycle.LiveData
+import com.blockstream.gdk.data.Network
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,4 +40,5 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
     fun getWalletsSync() = walletDao.getWalletsSync()
     fun getSoftwareWallets(): LiveData<List<Wallet>> = walletDao.getSoftwareWallets()
     fun getHardwareWallets(): LiveData<List<Wallet>> = walletDao.getHardwareWallets()
+    fun getWalletsForNetworkSync(network: Network): List<Wallet> = walletDao.getWalletsForNetworkSync(network.network)
 }

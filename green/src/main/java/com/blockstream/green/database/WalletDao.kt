@@ -2,7 +2,7 @@ package com.blockstream.green.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import io.reactivex.rxjava3.core.*
+import io.reactivex.rxjava3.core.Observable
 
 @Dao
 interface WalletDao {
@@ -50,6 +50,10 @@ interface WalletDao {
 
     @Query("SELECT * FROM wallets WHERE is_hardware = 1")
     fun getHardwareWallets(): LiveData<List<Wallet>>
+
+    // Note: This query is not indexed
+    @Query("SELECT * FROM wallets WHERE network = :network")
+    fun getWalletsForNetworkSync(network: String): List<Wallet>
 
     @Query("SELECT EXISTS(SELECT id FROM wallets LIMIT 1)")
     fun walletsExists(): LiveData<Boolean>
