@@ -248,6 +248,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             try {
                 return session.getSubAccount(getGaActivity(), mActiveAccount);
             } catch (final Exception e) {
+                e.printStackTrace();
                 return session.getSubAccount(getGaActivity(), 0);
             }
         })
@@ -259,7 +260,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             final String defaultName = pointer == 0 ? getString(R.string.id_main_account) : getString(R.string.id_account) + " " + pointer;
             mAccountView.setTitle(subaccount.getNameWithDefault(defaultName));
             mAccountView.setType(AccountType.Companion.byGDKType(subaccount.getType()));
-            mAccountView.setBalance(balance.get("btc").longValue());
+            mAccountView.setBalance(balance.containsKey("btc") ? balance.get("btc") : 0);
             mAssetsSelection.setVisibility(getNetwork().getLiquid() ? View.VISIBLE : View.GONE);
             mAssetsSelection.setText(balance.size() == 1 ?
                                      getString(R.string.id_d_asset_in_this_account, balance.size()) :
@@ -268,7 +269,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             // ledger HW doesn't support parallel operations
             updateTransactions(true);
         }, (final Throwable e) -> {
-            Log.d(TAG, e.getLocalizedMessage());
+            e.printStackTrace();
         });
     }
 
@@ -311,7 +312,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
                 recyclerView.smoothScrollToPosition(0);
             }
         }, (final Throwable e) -> {
-            Log.d(TAG, e.getLocalizedMessage());
+            e.printStackTrace();
             isLoading = false;
             if (mSwipeRefreshLayout != null)
                 mSwipeRefreshLayout.setRefreshing(false);

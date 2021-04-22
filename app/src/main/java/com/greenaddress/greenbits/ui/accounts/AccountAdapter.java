@@ -57,7 +57,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (holder.getItemViewType() == R.layout.list_element_account) {
             final Account h = (Account) holder;
             final SubaccountData subaccount = mSubaccountList.get(position);
-            final long satoshi = subaccount.getSatoshi().get("btc");
+            final long satoshi = subaccount.getSatoshi().containsKey("btc") ? subaccount.getSatoshi().get("btc") : 0;
             final long pointer = subaccount.getPointer();
             final Resources res = holder.itemView.getResources();
             final String defaultName = pointer == 0 ? res.getString(R.string.id_main_account) : res.getString(R.string.id_account) + " " + pointer;
