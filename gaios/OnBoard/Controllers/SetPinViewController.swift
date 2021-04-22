@@ -161,7 +161,7 @@ class SetPinViewController: UIViewController {
 
     fileprivate func setPin(_ pin: String) {
         let bgq = DispatchQueue.global(qos: .background)
-        let account = AccountsManager.shared.current
+        var account = AccountsManager.shared.current
         firstly {
             switch pinFlow {
             case .settings:
@@ -173,6 +173,8 @@ class SetPinViewController: UIViewController {
         }.compactMap(on: bgq) {
             let mnemonic = try getSession().getMnemonicPassphrase(password: "")
             try account?.addPin(session: getSession(), pin: pin, mnemonic: mnemonic)
+
+            account?.attempts = 0
             AccountsManager.shared.current = account
         }.then { _ in
             Registry.shared.load()
