@@ -30,7 +30,7 @@ public class AccountView extends CardView {
     private Button mSendButton, mReceiveButton;
     private ImageButton mSelectButton;
     private LinearLayout mBodyLayout, mActionLayout, mSubaccount, mAddSubaccount;
-    private TextView mTitleText,mTypeText , mBalanceText, mBalanceUnitText, mBalanceFiatText;
+    private TextView mTitleText, mTypeText, mBalanceText, mBalanceUnitText, mBalanceFiatText;
     private Session mSession;
 
     public AccountView(final Context context) {
@@ -116,6 +116,14 @@ public class AccountView extends CardView {
 
     public void setType(final AccountType accountType) {
         switch (accountType){
+            case MANAGED_ASSETS:
+                mTypeText.setVisibility(View.VISIBLE);
+                mTypeText.setText(R.string.id_amp_account);
+                break;
+            case TWO_OF_THREE:
+                mTypeText.setVisibility(View.VISIBLE);
+                mTypeText.setText(R.string.id_2of3_account);
+                break;
             case BIP84_SEGWIT:
                 mTypeText.setVisibility(View.VISIBLE);
                 mTypeText.setText("Segwit");
