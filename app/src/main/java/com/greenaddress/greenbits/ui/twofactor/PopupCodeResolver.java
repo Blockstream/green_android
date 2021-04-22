@@ -15,6 +15,8 @@ import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
+import javax.annotation.Nullable;
+
 public class PopupCodeResolver implements CodeResolver {
     private Activity activity;
     private MaterialDialog dialog;
@@ -29,7 +31,7 @@ public class PopupCodeResolver implements CodeResolver {
     }
 
     @Override
-    public SettableFuture<String> code(final String method, final int attemptsRemaining) {
+    public SettableFuture<String> code(final String method, @Nullable final Integer attemptsRemaining) {
         final SettableFuture<String> future = SettableFuture.create();
 
         final MaterialDialog.Builder builder =
@@ -39,7 +41,7 @@ public class PopupCodeResolver implements CodeResolver {
             .icon(getIconFor(method))
             .cancelable(false)
             .alwaysCallInputCallback()
-            .input(activity.getString(R.string.id_attempts_remaining_d, attemptsRemaining), "", (dialog, input) -> {
+            .input(attemptsRemaining != null ? activity.getString(R.string.id_attempts_remaining_d, attemptsRemaining) : "", "", (dialog, input) -> {
                 if(input != null && input.length() == 6){
                     Log.d("RSV", "PopupCodeResolver OK callback");
                     future.set(input.toString());

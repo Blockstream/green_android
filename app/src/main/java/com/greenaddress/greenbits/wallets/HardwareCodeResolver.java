@@ -143,7 +143,7 @@ public class HardwareCodeResolver implements CodeResolver {
     public void dismiss() { }
 
     @Override
-    public SettableFuture<String> code(String method, final int attemptsRemaining) {
+    public SettableFuture<String> code(String method, final Integer attemptsRemaining) {
         return null;
     }
 }
