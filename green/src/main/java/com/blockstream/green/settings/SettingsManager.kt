@@ -18,7 +18,7 @@ class SettingsManager(context: Context) {
     fun getApplicationSettings() = appSettings.value!!
 
     fun saveApplicationSettings(newAppSettings: ApplicationSettings){
-        appSettings.value = newAppSettings
+        appSettings.postValue(newAppSettings)
         ApplicationSettings.toSharedPreferences(newAppSettings, appSettingsSharedPreferences)
     }
 
