@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.Serializable;
 
+import javax.annotation.Nullable;
+
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,6 +20,7 @@ public class AssetInfoData extends JSONData implements Serializable {
     private String name;
     private Integer precision;
     private String ticker;
+    @Nullable
     private EntityData entity;
 
     public AssetInfoData() {}
@@ -76,6 +79,7 @@ public class AssetInfoData extends JSONData implements Serializable {
         this.ticker = ticker;
     }
 
+    @Nullable
     public EntityData getEntity() {
         return entity;
     }

@@ -128,7 +128,7 @@ public class ListTransactionsAdapter extends
                 final String assetId =
                     txItem.getSatoshi().keySet().iterator().next();
                 final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getInfos().get(assetId);
-                message = assetInfo != null ? assetInfo.getEntity().getDomain() : assetId;
+                message = assetInfo != null && assetInfo.getEntity() != null && assetInfo.getEntity().getDomain() != null ? assetInfo.getEntity().getDomain() : assetId;
             } else if (txItem.getTxType() == TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(
                                             string.id_redeposited),

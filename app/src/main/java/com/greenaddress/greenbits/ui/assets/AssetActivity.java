@@ -61,7 +61,7 @@ public class AssetActivity extends LoggedActivity {
             mPrecisionText.setText(
                 getAssetInfo().getPrecision() == null ? "0" : getAssetInfo().getPrecision().toString());
             mDomainText.setText(
-                getAssetInfo().getEntity().getDomain() == null ? "" : getAssetInfo().getEntity().getDomain());
+                getAssetInfo().getEntity() != null && getAssetInfo().getEntity().getDomain() != null ? getAssetInfo().getEntity().getDomain() : "");
         } else {
             // only unregistered assets won't have name, ticker, domain
             mNameText.setText(getString(R.string.id_no_registered_name_for_this));
