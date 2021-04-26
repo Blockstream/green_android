@@ -125,8 +125,16 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mNextButton.setOnClickListener(this);
         UI.disable(mNextButton);
 
-        // Setup fee buttons
-        mSelectedFee = getSession().getSettings().getFeeBuckets(mBlockTargets);
+        try{
+            // Setup fee buttons
+            mSelectedFee = getSession().getSettings().getFeeBuckets(mBlockTargets);
+        }catch (Exception e){
+            e.printStackTrace();
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            finishOnUiThread();
+            return;
+        }
+
 
         final List<Long> estimates = getSession().getFees();
         mMinFeeRate = estimates.get(0);
