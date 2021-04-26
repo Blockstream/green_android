@@ -10,6 +10,7 @@ import com.google.common.io.CharStreams;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
+import com.greenaddress.jade.entities.JadeVersion;
 import com.greenaddress.jade.entities.VersionInfo;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ import io.reactivex.schedulers.Schedulers;
 public class JadeFirmwareManager {
     private static final String TAG = "JadeFirmwareManager";
 
-    private static final String JADE_MIN_ALLOWED_FW_VERSION = "0.1.24";
+    private static final JadeVersion JADE_MIN_ALLOWED_FW_VERSION = new JadeVersion("0.1.24");
     private static final String JADE_FW_VERSIONS_FILE = "LATEST";
 
     private static final String JADE_FW_SERVER_HTTPS = "https://jadefw.blockstream.com";
@@ -47,16 +48,17 @@ public class JadeFirmwareManager {
     private final HttpRequestProvider httpRequestProvider;
 
     // A firmware instance on the file server
+    // Meta data, and optionally the actual fw binary
     private static class FwFileData {
         final String filepath;
-        final String version;
+        final JadeVersion version;
         final String config;
         final int fwSize;
         private byte[] firmware;
 
         FwFileData(final String filepath, final String version, final String config, final int fwSize) {
             this.filepath = filepath;
-            this.version = version;
+            this.version = new JadeVersion(version);
             this.config = config;
             this.fwSize = fwSize;
             this.firmware = null;
@@ -77,7 +79,7 @@ public class JadeFirmwareManager {
     }
 
     // Check Jade fw against minimum allowed firmware version
-    private static boolean isJadeFwValid(final String version) {
+    private static boolean isJadeFwValid(final JadeVersion version) {
         return JADE_MIN_ALLOWED_FW_VERSION.compareTo(version) <= 0;
     }
 
@@ -203,7 +205,7 @@ public class JadeFirmwareManager {
             try {
                 // Do firmware check and ota if necessary
                 final VersionInfo verInfo = jade.getVersionInfo();
-                final String currentVersion = verInfo.getJadeVersion();
+                final JadeVersion currentVersion = new JadeVersion(verInfo.getJadeVersion());
                 final boolean fwValid = isJadeFwValid(currentVersion);
                 if (verInfo.getHasPin() != deviceHasPinFilter) {
                     emitter.onSuccess(fwValid);
@@ -239,7 +241,7 @@ public class JadeFirmwareManager {
                 // FIXME: show user full list and let them choose
                 final FwFileData fwFile = updates.get(0);
 
-                parent.jadeAskForFirmwareUpgrade(fwFile.version, !fwValid, isPositive -> {
+                parent.jadeAskForFirmwareUpgrade(fwFile.version.toString(), !fwValid, isPositive -> {
                     if(isPositive){
                         // Update firmware
                         final Disposable unused = Single.just(fwFile)
@@ -256,7 +258,8 @@ public class JadeFirmwareManager {
 
                                                     // Check fw validity again (from scratch)
                                                     final VersionInfo newInfo = jade.getVersionInfo();
-                                                    final boolean fwNowValid = isJadeFwValid(newInfo.getJadeVersion());
+                                                    final JadeVersion newVersion = new JadeVersion(newInfo.getJadeVersion());
+                                                    final boolean fwNowValid = isJadeFwValid(newVersion);
                                                     emitter.onSuccess(fwNowValid);
                                                 } catch (final Exception e) {
                                                     emitter.onError(e);

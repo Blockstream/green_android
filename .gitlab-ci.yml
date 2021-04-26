@@ -73,6 +73,7 @@ unit_tests:
   script:
     - cd $CI_PROJECT_DIR
     - ./gradlew green:test
+    - ./gradlew hardware:test
 
 #####################################
 # Sign builds
