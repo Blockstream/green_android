@@ -3,7 +3,8 @@ import UIKit
 
 protocol DrawerNetworkSelectionDelegate: class {
     func didSelectAccount(account: Account)
-    func didSelectHDW(account: Account)
+//    func didSelectHDW(account: Account)
+    func didSelectHWW(_ hwwType: SupportedHW)
 }
 
 class DrawerNetworkSelectionViewController: UIViewController {
@@ -116,7 +117,13 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
             }
         case 1:
             let account = hwAccounts[indexPath.row]
-            self.delegate?.didSelectHDW(account: account)
+//            self.delegate?.didSelectHDW(account: account)
+            if account.isJade {
+                self.delegate?.didSelectHWW(.Jade)
+            }
+            if account.isLedger {
+                self.delegate?.didSelectHWW(.LedgerNanoX)
+            }
         default:
             break
         }

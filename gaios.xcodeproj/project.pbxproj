@@ -80,6 +80,12 @@
 		34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */; };
 		34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */; };
 		34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */; };
+		34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D12636A12700FB8011 /* HWWCell.swift */; };
+		34BAD9DA2636A12700FB8011 /* HWWNetworkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D22636A12700FB8011 /* HWWNetworkCell.swift */; };
+		34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D42636A12700FB8011 /* Enums.swift */; };
+		34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34BAD9D52636A12700FB8011 /* HWW.storyboard */; };
+		34BAD9DD2636A12700FB8011 /* HWWConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */; };
+		34BAD9DE2636A12700FB8011 /* HWWScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */; };
 		34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */; };
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
@@ -321,6 +327,12 @@
 		34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCreateViewController.swift; sourceTree = "<group>"; };
 		34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerifyViewController.swift; sourceTree = "<group>"; };
 		34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactivate2faViewController.swift; sourceTree = "<group>"; };
+		34BAD9D12636A12700FB8011 /* HWWCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWCell.swift; sourceTree = "<group>"; };
+		34BAD9D22636A12700FB8011 /* HWWNetworkCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWNetworkCell.swift; sourceTree = "<group>"; };
+		34BAD9D42636A12700FB8011 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		34BAD9D52636A12700FB8011 /* HWW.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HWW.storyboard; sourceTree = "<group>"; };
+		34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWConnectViewController.swift; sourceTree = "<group>"; };
+		34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWScanViewController.swift; sourceTree = "<group>"; };
 		34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccessViewController.swift; sourceTree = "<group>"; };
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -714,6 +726,43 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		34BAD9CF2636A12700FB8011 /* HWW */ = {
+			isa = PBXGroup;
+			children = (
+				34BAD9D02636A12700FB8011 /* Cells */,
+				34BAD9D32636A12700FB8011 /* Enums */,
+				34BAD9D52636A12700FB8011 /* HWW.storyboard */,
+				34BAD9D62636A12700FB8011 /* Controllers */,
+			);
+			path = HWW;
+			sourceTree = "<group>";
+		};
+		34BAD9D02636A12700FB8011 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				34BAD9D12636A12700FB8011 /* HWWCell.swift */,
+				34BAD9D22636A12700FB8011 /* HWWNetworkCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		34BAD9D32636A12700FB8011 /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				34BAD9D42636A12700FB8011 /* Enums.swift */,
+			);
+			path = Enums;
+			sourceTree = "<group>";
+		};
+		34BAD9D62636A12700FB8011 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */,
+				34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
 		34D678AD261F05F700DBC0BB /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -767,6 +816,7 @@
 		676FCF1E1F9D0CF800354E93 /* gaios */ = {
 			isa = PBXGroup;
 			children = (
+				34BAD9CF2636A12700FB8011 /* HWW */,
 				34DDD0A7260A484E00020380 /* Shared */,
 				34B826C2260881E000579C0B /* Recovery */,
 				347FD0AB25FFA8E600BB3FAB /* Home */,
@@ -1251,6 +1301,7 @@
 				6D12C953236760A600A51F1F /* ProgressIndicator.xib in Resources */,
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
+				34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */,
 				81E6E21F24E00E1C00853C06 /* fwserver.pem in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
@@ -1445,6 +1496,7 @@
 				3497936A25F8B18C0029ECB1 /* WalletSettingsViewController.swift in Sources */,
 				09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */,
 				81BB2C7E2215B86A0015F086 /* SystemMessageViewController.swift in Sources */,
+				34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */,
 				6D2A613623302694008C518A /* UIImage.swift in Sources */,
 				344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */,
 				0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */,
@@ -1484,6 +1536,7 @@
 				34641F1D25F915B9002E6442 /* RecoveryPhraseViewController.swift in Sources */,
 				81A062D224532454003464A0 /* HWResolverProtocol.swift in Sources */,
 				8169EBBD2445F16F0053BC73 /* Jade.swift in Sources */,
+				34BAD9DE2636A12700FB8011 /* HWWScanViewController.swift in Sources */,
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
 				81E0B4C3255302BB001C8544 /* CBOR.swift in Sources */,
 				6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */,
@@ -1510,6 +1563,7 @@
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */,
 				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
+				34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,
 				6D75A3DB238F6EBD00EEA148 /* RadarImageView.swift in Sources */,
@@ -1538,10 +1592,12 @@
 				6DF2DEE923F38314005F16E9 /* HelpViewController.swift in Sources */,
 				81A062D624532643003464A0 /* HWDeviceProtocol.swift in Sources */,
 				0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */,
+				34BAD9DA2636A12700FB8011 /* HWWNetworkCell.swift in Sources */,
 				3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */,
 				34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */,
 				81E9B7FE21C90F74004D87B6 /* AccountsViewController.swift in Sources */,
 				675DBA6521B4B13B000C5D70 /* Model.swift in Sources */,
+				34BAD9DD2636A12700FB8011 /* HWWConnectViewController.swift in Sources */,
 				340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */,
 				2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */,
 				340659D426122828006894D0 /* WatchOnlyLoginViewController.swift in Sources */,

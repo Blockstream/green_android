@@ -477,21 +477,43 @@ extension TransactionsController: DrawerNetworkSelectionDelegate {
             }
     }
 
-    func didSelectHDW(account: Account) {
+//    func didSelectHDW(account: Account) {
+//        logout()
+//            .recover { _ in }
+//            .done {
+//                self.navigationController?.dismiss(animated: true, completion: {})
+//                self.navigationController?.popToRootViewController(animated: true)
+//                let storyboard = UIStoryboard(name: "Home", bundle: nil)
+//                let storyboardHW = UIStoryboard(name: "HardwareWallet", bundle: nil)
+//                self.stopLoader()
+//                if let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+//                   let vc = storyboardHW.instantiateViewController(withIdentifier: "HardwareWalletScanViewController") as? HardwareWalletScanViewController {
+//                    vc.account = account
+//                    nav.pushViewController(vc, animated: false)
+//                    UIApplication.shared.keyWindow?.rootViewController = nav
+//                }
+//            }
+//    }
+
+    func didSelectHWW(_ hwwType: SupportedHW) {
+
         logout()
             .recover { _ in }
             .done {
                 self.navigationController?.dismiss(animated: true, completion: {})
                 self.navigationController?.popToRootViewController(animated: true)
-                let storyboard = UIStoryboard(name: "Home", bundle: nil)
-                let storyboardHW = UIStoryboard(name: "HardwareWallet", bundle: nil)
                 self.stopLoader()
-                if let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-                   let vc = storyboardHW.instantiateViewController(withIdentifier: "HardwareWalletScanViewController") as? HardwareWalletScanViewController {
-                    vc.account = account
-                    nav.pushViewController(vc, animated: false)
+
+                let storyboard = UIStoryboard(name: "Home", bundle: nil)
+                let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
+
+                let storyboard2 = UIStoryboard(name: "HWW", bundle: nil)
+                if let vc = storyboard2.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
+                    vc.hwwType = hwwType
+                    nav?.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
                 }
             }
+
     }
 }

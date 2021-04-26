@@ -1,5 +1,46 @@
 import UIKit
 
+enum SupportedHW: String, CaseIterable {
+    case Jade = "Blockstream Jade"
+    case LedgerNanoX = "Ledger Nano X"
+
+    func name() -> String {
+        switch self {
+        case .Jade:
+            return "Blockstream Jade"
+        case .LedgerNanoX:
+            return "Ledger Nano X"
+        }
+    }
+
+    func icon() -> UIImage {
+        switch self {
+        case .Jade:
+            return UIImage(named: "blockstreamIcon")!
+        case .LedgerNanoX:
+            return UIImage(named: "ledgerIcon")!
+        }
+    }
+
+    func deviceImage() -> UIImage {
+        switch self {
+        case .Jade:
+            return UIImage(named: "ic_hww_jade")!
+        case .LedgerNanoX:
+            return UIImage(named: "ic_hww_ledger")!
+        }
+    }
+
+    func alignConstraint() -> CGFloat {
+        switch self {
+        case .Jade:
+            return 0.0
+        case .LedgerNanoX:
+            return (UIScreen.main.bounds.width * 0.27)
+        }
+    }
+}
+
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
@@ -52,11 +93,19 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func showHardwareWallet(_ index: Int) {
-        let storyboard = UIStoryboard(name: "HardwareWallet", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "HardwareWalletScanViewController")  as? HardwareWalletScanViewController
-        vc?.account = hwAccounts[index]
-        navigationController?.pushViewController(vc!, animated: true)
+//    func showHardwareWallet(_ index: Int) {
+//        let storyboard = UIStoryboard(name: "HardwareWallet", bundle: nil)
+//        let vc = storyboard.instantiateViewController(withIdentifier: "HardwareWalletScanViewController")  as? HardwareWalletScanViewController
+//        vc?.account = hwAccounts[index]
+//        navigationController?.pushViewController(vc!, animated: true)
+//    }
+
+    func showHardwareWallet(_ type: SupportedHW) {
+        let storyboard = UIStoryboard(name: "HWW", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
+            vc.hwwType = type
+            navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
     @objc func didPressAddWallet() {
@@ -165,7 +214,15 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 enterWallet(indexPath.row)
             }
         case 1:
-            showHardwareWallet(indexPath.row)
+//            showHardwareWallet(indexPath.row)
+            switch indexPath.row {
+            case 0:
+                showHardwareWallet(.Jade)
+            case 1:
+                showHardwareWallet(.LedgerNanoX)
+            default:
+                break
+            }
         default:
             break
         }
