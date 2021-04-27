@@ -9,7 +9,6 @@ import com.blockstream.green.databinding.LoginWatchOnlyFragmentBinding
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.gdk.getGDKErrorCode
 import com.blockstream.green.utils.hideKeyboard
-import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.libgreenaddress.KotlinGDK
 import dagger.hilt.android.AndroidEntryPoint
 

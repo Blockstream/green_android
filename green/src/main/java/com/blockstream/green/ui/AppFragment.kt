@@ -23,7 +23,7 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.isProductionFlavor
-import com.blockstream.green.utils.toast
+import com.blockstream.green.utils.notifyDevelopmentFeature
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.ui.TabbedMainActivity
@@ -83,7 +83,7 @@ abstract class AppFragment<T : ViewDataBinding>(
     protected fun setSecureScreen(isSecure : Boolean){
         // In development flavor allow screen capturing
         if(isSecure && requireContext().isDevelopmentFlavor()){
-            toast("Development Flavor: FLAG_SECURE is disabled!")
+            notifyDevelopmentFeature("FLAG_SECURE is disabled!")
             return
         }
 

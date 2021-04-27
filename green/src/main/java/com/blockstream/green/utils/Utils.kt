@@ -99,3 +99,9 @@ fun Context.isProductionFlavor() = !this.isDevelopmentFlavor()
 
 fun Fragment.isDevelopmentFlavor() = requireContext().isDevelopmentFlavor()
 fun Fragment.isProductionFlavor() = !this.isDevelopmentFlavor()
+
+fun Fragment.notifyDevelopmentFeature(message: String){
+    if(isDevelopmentFlavor()) {
+        toast("Development Flavor: $message")
+    }
+}

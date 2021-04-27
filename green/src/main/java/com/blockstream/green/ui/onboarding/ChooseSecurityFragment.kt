@@ -9,6 +9,7 @@ import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseSecurityFragmentBinding
 import com.blockstream.green.utils.isProductionFlavor
+import com.blockstream.green.utils.notifyDevelopmentFeature
 import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -47,6 +48,8 @@ class ChooseSecurityFragment :
             options?.apply {
                 navigate(copy(network = getNetwork(networkType!!, false)))
             }
+        }else{
+            notifyDevelopmentFeature("Singlesig is enabled")
         }
     }
 
