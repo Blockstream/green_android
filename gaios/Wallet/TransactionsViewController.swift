@@ -30,7 +30,7 @@ class TransactionsController: UITableViewController {
         return noTransactionsLabel
     }()
 
-    var alertCards: [Card2faType] = [Card2faType.buildResetCard()]
+    var alertCards: [Card2faType] = [Card2faType.reactivate, Card2faType.reset, Card2faType.dispute]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -180,7 +180,7 @@ class TransactionsController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let cell = cell as? TransactionTableCell else { return }
-        let transactions = txs[indexPath.section]
+        let transactions = txs[indexPath.section - 1]
         let tx = transactions.list[indexPath.row]
         cell.checkBlockHeight(transaction: tx, blockHeight: getGAService().getBlockheight())
         cell.checkTransactionType(transaction: tx)
@@ -190,13 +190,19 @@ class TransactionsController: UITableViewController {
 
         if indexPath.section == 0 {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell else { fatalError("Fail to dequeue reusable cell") }
-            cell.configure(alertCards[indexPath.row])
+            cell.configure(alertCards[indexPath.row],
+                           onReactivate: {[weak self] in
+                            self?.performSegue(withIdentifier: "reactivate2fa", sender: self)
+                           },
+                           onMore: {[weak self] in
+                            self?.performSegue(withIdentifier: "leaarnMore2fa", sender: self)
+                           })
             cell.selectionStyle = .none
             return cell
         }
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionTableCell", for: indexPath) as? TransactionTableCell else { fatalError("Fail to dequeue reusable cell") }
-        let transactions = txs[indexPath.section]
+        let transactions = txs[indexPath.section - 1]
         let tx = transactions.list[indexPath.row]
         cell.setup(with: tx)
         return cell
@@ -204,16 +210,9 @@ class TransactionsController: UITableViewController {
 
     public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
-            let card = alertCards[indexPath.row]
-            switch card {
-            case .reset:
-                self.performSegue(withIdentifier: "leaarnMore2fa", sender: self)
-            default:
-                break
-            }
             return
         }
-        let transactions = txs[indexPath.section]
+        let transactions = txs[indexPath.section - 1]
         let tx = transactions.list[indexPath.row]
         showTransaction(tx: tx)
     }
@@ -334,7 +333,8 @@ class TransactionsController: UITableViewController {
 
 extension TransactionsController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        if !indexPaths.contains(where: { $0.row >= self.txs[$0.section].list.count - 1 }) { return }
+        let filteredIndexPaths = indexPaths.filter { $0.section > 0 }
+        if !filteredIndexPaths.contains(where: { $0.row >= self.txs[$0.section - 1].list.count - 1 }) { return }
         if self.txs.count == 0 { return }
         if self.txs.last?.list.count == 0 { return }
         if fetchTxs != nil && fetchTxs!.isPending { return }

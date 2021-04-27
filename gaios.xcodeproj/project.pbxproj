@@ -79,6 +79,7 @@
 		34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */; };
 		34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */; };
 		34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */; };
+		34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */; };
 		34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */; };
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
@@ -319,6 +320,7 @@
 		34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryInstructionViewController.swift; sourceTree = "<group>"; };
 		34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCreateViewController.swift; sourceTree = "<group>"; };
 		34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerifyViewController.swift; sourceTree = "<group>"; };
+		34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactivate2faViewController.swift; sourceTree = "<group>"; };
 		34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccessViewController.swift; sourceTree = "<group>"; };
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -1004,6 +1006,7 @@
 				81ACC4B0227337F3004B1E92 /* Wallet.storyboard */,
 				81FE672423EB1D22001B2E48 /* ContainerViewController.swift */,
 				3403BDAB2630282600118C64 /* Learn2faViewController.swift */,
+				34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -1490,6 +1493,7 @@
 				81E0B4CB25531470001C8544 /* Commitment.swift in Sources */,
 				3497936525F8B18C0029ECB1 /* LandingViewController.swift in Sources */,
 				811B963821F5FC8300DE02CB /* AccountsHeaderCollection.swift in Sources */,
+				34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */,
 				34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */,
 				34CEFD9E260202010098536C /* LoginViewController.swift in Sources */,
 				092E1EB020CF993700362253 /* UIColor.swift in Sources */,

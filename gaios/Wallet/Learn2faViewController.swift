@@ -54,5 +54,6 @@ class Learn2faViewController: UIViewController {
     }
 
     @IBAction func BtnCancelReset(_ sender: Any) {
+        print("on btn cancel reset")
     }
 }

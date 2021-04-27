@@ -1,16 +1,9 @@
 import UIKit
 
 enum Card2faType {
-    case reset(title: String, hint: String, lblMore: String)
-    case dispute(title: String, hint: String, lblMore: String)
-
-    static func buildResetCard() -> Card2faType {
-        return .reset(title: "2FA Reset in Progress", hint: "Your wallet is locked for a Two-factor Authentication reset. The reset will be completed in %d days", lblMore: "Learn More")
-    }
-
-    static func buildDisputeCard() -> Card2faType {
-        return .dispute(title: "2FA Reset in Progress", hint: "WARNING: Wallet locked by Two-Factor dispute. Contact support for more information.", lblMore: "")
-    }
+    case reset
+    case dispute
+    case reactivate
 }
 
 class AlertCardCell: UITableViewCell {
@@ -18,7 +11,11 @@ class AlertCardCell: UITableViewCell {
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
-    @IBOutlet weak var lblMore: UILabel!
+    @IBOutlet weak var btnMore: UIButton!
+    @IBOutlet weak var btnReactivate: UIButton!
+
+    var onReactivate:(() -> Void)?
+    var onMore:(() -> Void)?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -28,20 +25,37 @@ class AlertCardCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
-    func configure(_ type: Card2faType) {
+    func configure(_ type: Card2faType, onReactivate:(() -> Void)?, onMore:(() -> Void)?) {
         self.backgroundColor = UIColor.customTitaniumDark()
         bg.layer.cornerRadius = 6.0
+        self.onReactivate = onReactivate
+        self.onMore = onMore
 
         switch type {
-        case .reset(let title, let hint, let more):
-            lblTitle.text = title
-            lblHint.text = hint
-            lblMore.text = more
-        case .dispute(let title, let hint, let more):
-            lblTitle.text = title
-            lblHint.text = hint
-            lblMore.text = more
+        case .reset:
+            lblTitle.text = "2FA Reset in Progress"
+            lblHint.text = "Your wallet is locked for a Two-factor Authentication reset. The reset will be completed in %d days"
+            btnMore.setTitle("Learn More", for: .normal)
+            btnReactivate.isHidden = true
+        case .dispute:
+            lblTitle.text = "2FA Reset in Progress"
+            lblHint.text = "WARNING: Wallet locked by Two-Factor dispute. Contact support for more information."
+            btnMore.setTitle("Learn More", for: .normal)
+            btnReactivate.isHidden = true
+        case .reactivate:
+            lblTitle.text = "2FA Expired"
+            lblHint.text = "2FA protection on some of your funds has expired"
+            btnMore.setTitle("Learn More", for: .normal)
+            btnReactivate.setTitle("Reactivate 2FA", for: .normal)
         }
 
+    }
+
+    @IBAction func btnMore(_ sender: Any) {
+        onMore?()
+    }
+
+    @IBAction func btnReactivate(_ sender: Any) {
+        onReactivate?()
     }
 }
