@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/ic_bitcoin_testnet_network_60"
+    tools:keep="@drawable/ic_bitcoin_network_60,@drawable/ic_liquid_network_60,@drawable/ic_bitcoin_testnet_network_60"
     tools:discard="@layout/debug" />
