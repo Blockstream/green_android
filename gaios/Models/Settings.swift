@@ -25,7 +25,6 @@ enum SettingsType: String, Codable {
     case SetRecoveryEmail
     case ResetTwoFactor
     case DisputeTwoFactor
-    case CancelTwoFactor
     case Mnemonic
     case Autolock
     case Pgp

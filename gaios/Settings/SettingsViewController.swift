@@ -17,12 +17,6 @@ class SettingsViewController: UIViewController {
             return twoFactorConfig.isResetActive
         }
     }
-    var isDisputeActive: Bool {
-        get {
-            guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return false }
-            return twoFactorConfig.isDisputeActive
-        }
-    }
     var isWatchOnly: Bool { get { return getGAService().isWatchOnly } }
     var isLiquid: Bool { get { return AccountsManager.shared.current?.gdkNetwork.liquid ?? false } }
     var isHW: Bool { get { return Ledger.shared.connected } }
@@ -162,11 +156,6 @@ class SettingsViewController: UIViewController {
             subtitle: "",
             section: .twoFactor,
             type: .ResetTwoFactor)
-        let cancelTwoFactor = SettingsItem(
-            title: NSLocalizedString("id_cancel_twofactor_reset", comment: ""),
-            subtitle: "",
-            section: .twoFactor,
-            type: .CancelTwoFactor)
         let setRecoveryEmail = SettingsItem(
             title: NSLocalizedString("id_set_an_email_for_recovery", comment: ""),
             subtitle: "",
@@ -175,8 +164,6 @@ class SettingsViewController: UIViewController {
 
         if isWatchOnly {
             return []
-        } else if isResetActive || isDisputeActive {
-            return [cancelTwoFactor]
         } else if isLiquid {
             return [setupTwoFactor]
         }
@@ -319,24 +306,6 @@ extension SettingsViewController {
         }
     }
 
-    func setCancelTwoFactor() {
-        let bgq = DispatchQueue.global(qos: .background)
-        firstly {
-            self.startAnimating()
-            return Guarantee()
-        }.then(on: bgq) {
-            try getGAService().getSession().cancelTwoFactorReset().resolve()
-        }.compactMap(on: bgq) { _ in
-            try self.load()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-            self.reloadData()
-        }.catch {_ in
-            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
-        }
-    }
-
     func setLockTimeRequest() {
         guard twoFactorConfig?.enableMethods.contains("email") == true else {
             showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_set_an_email_for_recovery", comment: ""))
@@ -379,7 +348,7 @@ extension SettingsViewController {
         }
     }
 
-    func resetTwoFactor(email: String, isDispute: Bool) {
+    func resetTwoFactor(email: String) {
         let session = getGAService().getSession()
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {_ in
@@ -488,7 +457,7 @@ extension SettingsViewController {
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
             let textField = alert.textFields!.first
             let email = textField!.text
-            self.resetTwoFactor(email: email!, isDispute: false)
+            self.resetTwoFactor(email: email!)
         })
         self.present(alert, animated: true, completion: nil)
     }
@@ -552,7 +521,6 @@ extension SettingsViewController: UITableViewDelegate {
         case .ThresholdTwoFactor: performSegue(withIdentifier: "twoFactorLimit", sender: nil)
         case .ResetTwoFactor: showResetTwoFactor()
         case .DisputeTwoFactor: return
-        case .CancelTwoFactor: setCancelTwoFactor()
         case .LockTimeRecovery: showLockTimeRecovery()
         case .LockTimeRequest: setLockTimeRequest()
         case .CsvTime: performSegue(withIdentifier: "csv", sender: nil)
