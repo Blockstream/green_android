@@ -52,7 +52,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
             adapter.add(AccountTypeListItem(AccountType.STANDARD))
 
             if(wallet.isLiquid){
-                adapter.add(AccountTypeListItem(AccountType.MANAGED_ASSETS))
+                adapter.add(AccountTypeListItem(AccountType.AMP_ACCOUNT))
             }
 
             adapter.add(AccountTypeListItem(AccountType.TWO_OF_THREE).also {

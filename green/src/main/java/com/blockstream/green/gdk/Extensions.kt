@@ -28,7 +28,7 @@ fun AccountType?.titleRes(): Int = when (this) {
 
 fun AccountType?.descriptionRes(): Int = when (this) {
     AccountType.STANDARD -> R.string.id_standard_accounts_allow_you_to
-    AccountType.MANAGED_ASSETS -> R.string.id_managed_assets_accounts_are
+    AccountType.AMP_ACCOUNT -> R.string.id_amp_accounts_are_only_available
     AccountType.TWO_OF_THREE -> R.string.id_a_2of3_account_requires_two_out
     AccountType.BIP44_LEGACY -> R.string.id_bip44_legacy
     AccountType.BIP49_SEGWIT_WRAPPED -> R.string.id_bip49_accounts_allow_you_to_segratate

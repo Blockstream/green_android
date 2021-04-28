@@ -116,7 +116,7 @@ public class AccountView extends CardView {
 
     public void setType(final AccountType accountType) {
         switch (accountType){
-            case MANAGED_ASSETS:
+            case AMP_ACCOUNT:
                 mTypeText.setVisibility(View.VISIBLE);
                 mTypeText.setText(R.string.id_amp_account);
                 break;

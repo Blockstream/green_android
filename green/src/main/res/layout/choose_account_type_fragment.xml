@@ -62,8 +62,8 @@
 <!--                    android:id="@+id/buttonManagedAssets"-->
 <!--                    android:layout_width="match_parent"-->
 <!--                    android:layout_height="wrap_content"-->
-<!--                    app:captionText="@string/id_managed_assets_accounts_are"-->
-<!--                    app:titleText="@string/id_managed_assets_account" />-->
+<!--                    app:captionText="@string/id_amp_accounts_are_only_available"-->
+<!--                    app:titleText="@string/id_amp_account" />-->
 
 <!--                <com.blockstream.green.views.GreenContentCardView-->
 <!--                    android:id="@+id/button2of3"-->
