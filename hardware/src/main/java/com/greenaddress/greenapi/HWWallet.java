@@ -12,6 +12,7 @@ import java.util.Map;
 public abstract class HWWallet {
     protected NetworkData mNetwork;
     protected HWDeviceData mHWDeviceData;
+    protected Boolean emulateAntiExfilCorruption = false;
 
     public static class SignMsgResult {
         private final String signature;
@@ -124,4 +125,8 @@ public abstract class HWWallet {
     public HWDeviceData getHWDeviceData() {
         return mHWDeviceData;
     }
+
+    public void setAntiExfilCorruptionEmulation(boolean emulate) { emulateAntiExfilCorruption = emulate; }
+
+    public Boolean getAntiExfilCorruptionEmulation() { return emulateAntiExfilCorruption; }
 }

@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -65,8 +64,9 @@ import io.reactivex.schedulers.Schedulers;
 
 
 public class RequestLoginActivity extends LoginActivity implements NetworkSwitchListener {
-
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
+
+    public static final String EMULATE_ANTI_EXFIL_CORRUPTION = "EMULATE_ANTI_EXFIL_CORRUPTION";
 
     private static final int VENDOR_BTCHIP     = 0x2581;
     private static final int VENDOR_LEDGER     = 0x2c97;
@@ -267,7 +267,13 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
                 .map(session -> new HWDeviceData("Jade", true, true,
                                                  HWDeviceData.HWDeviceDataLiquidSupport.Lite,
                                                  HWDeviceData.HWDeviceAntiExfilSupport.Optional))
-                .map(hwDeviceData -> new JadeHWWallet(jade, networkData, hwDeviceData))
+                .map(hwDeviceData -> {
+                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, networkData, hwDeviceData);
+                    if(getIntent().getBooleanExtra(EMULATE_ANTI_EXFIL_CORRUPTION, false)){
+                        jadeWallet.setAntiExfilCorruptionEmulation(true);
+                    }
+                    return jadeWallet;
+                })
                 .flatMap(jadeWallet -> jadeWallet.authenticate(this, getSession()))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error

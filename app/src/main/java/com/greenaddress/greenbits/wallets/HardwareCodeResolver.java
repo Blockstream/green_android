@@ -58,6 +58,15 @@ public class HardwareCodeResolver implements CodeResolver {
                         requiredData.getUseAeProtocol(), requiredData.getAeHostCommitment(), requiredData.getAeHostEntropy());
                 data.setSignerCommitment(result.getSignerCommitment());
                 data.setSignature(result.getSignature());
+
+                // Corrupt the commitments to emulate a corrupted wallet
+                if(hwWallet.getAntiExfilCorruptionEmulation()){
+                    // Make it random to allow proceeding to a logged in state
+                    if(result.getSignerCommitment() != null && (Math.random() > 0.33)) {
+                        // Corrupt the commitment
+                        data.setSignerCommitment(result.getSignerCommitment().replace("0", "1"));
+                    }
+                }
             } catch (final Exception e) {
                 future.set(null);
                 return future;
@@ -87,6 +96,17 @@ public class HardwareCodeResolver implements CodeResolver {
             }
             data.setSignatures(result.getSignatures());
             data.setSignerCommitments(result.getSignerCommitments());
+
+            // Corrupt the commitments to emulate a corrupted wallet
+            if(hwWallet.getAntiExfilCorruptionEmulation()){
+                if(result.getSignatures() != null) {
+                    // Corrupt the first commitment
+                    final ArrayList<String> corrupted = new ArrayList<>(result.getSignerCommitments());
+                    corrupted.set(0, corrupted.get(0).replace("0", "1"));
+                    data.setSignerCommitments(corrupted);
+                }
+            }
+
             break;
 
         case "get_receive_address":
