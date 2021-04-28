@@ -177,7 +177,7 @@
                     android:drawableEnd="@drawable/ic_help"
                     android:drawablePadding="4dp"
                     android:padding="@dimen/card_padding"
-                    android:text="@string/id_account_id" />
+                    android:text="@string/id_amp_id" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"

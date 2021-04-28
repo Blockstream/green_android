@@ -132,9 +132,9 @@ public class ReceiveActivity extends LoggedActivity implements TextWatcher {
                 v -> onCopyClicked("auth_code", receivingID, string.id_address_copied_to_clipboard));     // FIXME fix string
 
             UI.find(this, id.receivingIdTitle).setOnClickListener(v -> {
-                final SubaccountPopup s = SubaccountPopup.getInstance(getString(string.id_account_id),
+                final SubaccountPopup s = SubaccountPopup.getInstance(getString(string.id_amp_id),
                                                                       getString(
-                                                                          string.id_provide_this_id_to_the_asset));
+                                                                          string.id_provide_your_amp_id_to_the));
                 final FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.addToBackStack(null);
                 s.show(ft, "dialog");

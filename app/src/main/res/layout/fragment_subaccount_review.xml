@@ -97,7 +97,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/id_account_id"
+        android:text="@string/id_amp_id"
         android:drawableEnd="@drawable/ic_help"
         android:drawablePadding="4dp"
         android:textColor="@color/grey_light"
