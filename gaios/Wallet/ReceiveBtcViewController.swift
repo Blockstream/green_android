@@ -29,7 +29,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.walletAddressLabel.addGestureRecognizer(gestureTap!)
         content.accountValue.addGestureRecognizer(gestureTapAccountId!)
         content.amountLabel.text = NSLocalizedString("id_amount", comment: "")
-        content.accountTitle.text = NSLocalizedString("id_account_id", comment: "")
+        content.accountTitle.text = NSLocalizedString("id_amp_id", comment: "")
         content.shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
         content.shareButton.setGradient(true)
 

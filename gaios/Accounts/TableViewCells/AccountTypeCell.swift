@@ -50,7 +50,7 @@ class AccountTypeCell: UITableViewCell {
         case .advanced:
             accountInfoType = .advanced
             subtextLabel.text = NSLocalizedString("id_for_investors", comment: "")
-            headlineLabel.text = NSLocalizedString("id_managed_assets_account", comment: "")
+            headlineLabel.text = NSLocalizedString("id_amp_account", comment: "")
         }
     }
 
