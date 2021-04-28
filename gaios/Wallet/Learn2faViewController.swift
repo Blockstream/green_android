@@ -1,4 +1,5 @@
 import UIKit
+import PromiseKit
 
 class Learn2faViewController: UIViewController {
 
@@ -31,7 +32,33 @@ class Learn2faViewController: UIViewController {
         lblPermanentHint.text = "If you did not request the reset, but you cannot cancel the reset process because you can't access any existing Two-Factor Authorization methods, please contact our support."
     }
 
+    func cancelTwoFactorReset() {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then(on: bgq) {
+            try getGAService().getSession().cancelTwoFactorReset().resolve()
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.logout()
+        }.catch {_ in
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
+        }
+    }
+
     @IBAction func BtnCancelReset(_ sender: Any) {
-        print("on btn cancel reset")
+        cancelTwoFactorReset()
+    }
+}
+
+extension Learn2faViewController {
+
+    func logout() {
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.logout(with: false)
+        }
     }
 }

@@ -30,7 +30,20 @@ class TransactionsController: UITableViewController {
         return noTransactionsLabel
     }()
 
-    var alertCards: [Card2faType] = [Card2faType.reactivate, Card2faType.reset, Card2faType.dispute]
+    var isResetActive: Bool {
+        get {
+            guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return false }
+            return twoFactorConfig.isResetActive
+        }
+    }
+    var isDisputeActive: Bool {
+        get {
+            guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return false }
+            return twoFactorConfig.isDisputeActive
+        }
+    }
+
+    var alertCards: [Card2faType] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,6 +84,7 @@ class TransactionsController: UITableViewController {
         }
         handleRefresh()
         checkFiatRate()
+        loadAlertCards()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -121,6 +135,17 @@ class TransactionsController: UITableViewController {
         }.catch { err in
             print(err.localizedDescription)
         }
+    }
+
+    func loadAlertCards() {
+        alertCards = []
+        if isResetActive {
+            alertCards.append(Card2faType.reset)
+        }
+        if isDisputeActive {
+            alertCards.append(Card2faType.dispute)
+        }
+        // We will use Card2faType.reactivate for expired coins
     }
 
     func onNewBlock(_ notification: Notification) {
