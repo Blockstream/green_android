@@ -56,13 +56,14 @@ import com.satoshilabs.trezor.Trezor;
 import java.util.List;
 import java.util.Objects;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
-
+@AndroidEntryPoint
 public class RequestLoginActivity extends LoginActivity implements NetworkSwitchListener {
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
 
@@ -88,6 +89,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
     private HWWallet mHwWallet;
     private Button mActiveNetwork;
     private Button mButtonContinue;
+    private Button mButtonConnectionSettings;
     private NetworkData networkData;
     private CompositeDisposable mDisposables;
 
@@ -105,6 +107,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         mInstructionsText = UI.find(this, R.id.first_login_instructions);
         mActiveNetwork = UI.find(this, R.id.activeNetwork);
         mButtonContinue = UI.find(this, R.id.buttonContinue);
+        mButtonConnectionSettings = UI.find(this, R.id.buttonConnectionSettings);
 
 
         mActiveNetwork.setOnClickListener(v -> {
@@ -120,6 +123,10 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
              continueToConnect();
              mInstructionsText.setVisibility(View.VISIBLE);
              mActiveNetwork.setVisibility(View.GONE);
+        });
+
+        mButtonConnectionSettings.setOnClickListener(v -> {
+            Bridge.INSTANCE.appSettingsDialog(this);
         });
 
         networkData = getNetwork();
@@ -536,6 +543,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
     private void continueToConnect(){
         mButtonContinue.setVisibility(View.GONE);
+        mButtonConnectionSettings.setVisibility(View.GONE);
 
         final Intent intent = getIntent();
 

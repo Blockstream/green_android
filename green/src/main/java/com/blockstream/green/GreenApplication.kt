@@ -13,6 +13,7 @@ import com.blockstream.green.ui.BridgeActivity
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.recovery.RecoveryIntroFragmentArgs
+import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.ui.settings.WalletSettingsFragmentArgs
 import com.blockstream.green.ui.wallet.DeleteWalletBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.LoginFragmentArgs
@@ -114,8 +115,8 @@ class GreenApplication : Application(){
                     }
                 }
 
-                Bridge.NavigateType.CONNECTION_SETTINGS -> {
-                    DeleteWalletBottomSheetDialogFragment().also {
+                Bridge.NavigateType.APP_SETTINGS -> {
+                    AppSettingsDialogFragment().also {
                         it.show(activity.supportFragmentManager, it.toString())
                     }
                 }

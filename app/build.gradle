@@ -1,6 +1,7 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion 30
@@ -69,6 +70,14 @@ dependencies {
     
     /**  --- Bluetooth -------------------------------------------------------------------------- */
     implementation 'com.polidea.rxandroidble2:rxandroidble:1.11.0'
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
+    implementation "com.google.dagger:hilt-android:2.31.2-alpha"
+    annotationProcessor 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
+
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+    annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0-beta01'
     /** ----------------------------------------------------------------------------------------- */
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

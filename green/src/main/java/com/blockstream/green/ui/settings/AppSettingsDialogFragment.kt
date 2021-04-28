@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
@@ -33,6 +34,12 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
     }
 
     private lateinit var binding: DialogAppSettingsBottomSheetBinding
+
+    // Needed only for initialization from v3
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.Green_BottomSheetDialogTheme_Wallet)
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog

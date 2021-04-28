@@ -1,4 +1,5 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,11 +9,29 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonConnectionSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/id_app_settings"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -24,20 +43,20 @@
             android:id="@+id/hardwareIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="120dp"
-            android:maxHeight="120dp"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="20dp"
             android:adjustViewBounds="true"
+            android:maxWidth="120dp"
+            android:maxHeight="120dp"
             android:scaleType="fitCenter"
             tools:src="@drawable/blockstream_jade_device" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center_horizontal"
+            android:orientation="horizontal"
             android:padding="20dp">
 
 
@@ -50,9 +69,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:visibility="invisible"
                 android:text="@string/id_please_follow_the_instructions"
-                android:textColor="@color/whiteSecondary" />
+                android:textColor="@color/whiteSecondary"
+                android:visibility="invisible" />
 
         </LinearLayout>
 
@@ -67,16 +86,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="@string/id_select_network"
-            />
+            android:text="@string/id_select_network" />
 
         <Button
             android:id="@+id/buttonContinue"
             style="@style/gradientButton"
-            android:layout_marginTop="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/id_continue"/>
+            android:layout_marginTop="24dp"
+            android:text="@string/id_continue" />
 
     </LinearLayout>
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
