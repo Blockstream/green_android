@@ -3,7 +3,6 @@ import UIKit
 class Reactivate2faViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var toolBar: UIToolbar!
 
     @IBOutlet weak var lblWhyTitle: UILabel!
     @IBOutlet weak var lblWhyHint: UILabel!
@@ -39,16 +38,6 @@ class Reactivate2faViewController: UIViewController {
     }
 
     func setStyle() {
-
-        let flexButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(image: UIImage(named: "cancel"),
-                                     style: .plain,
-                                     target: self,
-                                     action: #selector(self.donePressed))
-
-        doneButton.tintColor = UIColor.customGrayLight()
-        toolBar.setItems([flexButton, doneButton], animated: true)
-
         let attr: [NSAttributedString.Key: Any] = [
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
@@ -62,14 +51,6 @@ class Reactivate2faViewController: UIViewController {
         btnRisk.setAttributedTitle(attrRiskString, for: .normal)
         btnWhy.titleLabel?.lineBreakMode = .byWordWrapping
         btnReactivate.setStyle(.primary)
-    }
-
-    func setActions() {
-
-    }
-
-    @objc func donePressed() {
-        dismiss(animated: true, completion: nil)
     }
 
     @IBAction func btnWhy(_ sender: Any) {
