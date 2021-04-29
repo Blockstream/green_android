@@ -26,7 +26,7 @@ object Bridge {
 
     const val useGreenModule = false
     
-    var isDebug = false
+    var isDevelopmentFlavor = false
         private set
 
     var versionName = "0.0.0"
@@ -59,7 +59,7 @@ object Bridge {
 
             context = WeakReference(ctx.applicationContext)
 
-            isDebug = BuildConfig.DEBUG
+            this.isDevelopmentFlavor = isDevelopmentFlavor
             versionName = version
 
             Session.getSession().setDevelopmentFlavor(isDevelopmentFlavor)

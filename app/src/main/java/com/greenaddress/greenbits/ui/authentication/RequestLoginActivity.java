@@ -92,6 +92,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
     private Button mActiveNetwork;
     private Button mButtonContinue;
     private Button mButtonConnectionSettings;
+    private TextView mSinglesigWarning;
     private NetworkData networkData;
     private CompositeDisposable mDisposables;
 
@@ -110,7 +111,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         mActiveNetwork = UI.find(this, R.id.activeNetwork);
         mButtonContinue = UI.find(this, R.id.buttonContinue);
         mButtonConnectionSettings = UI.find(this, R.id.buttonConnectionSettings);
-
+        mSinglesigWarning = UI.find(this, R.id.singleSigWarning);
 
         mActiveNetwork.setOnClickListener(v -> {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -130,6 +131,8 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         mButtonConnectionSettings.setOnClickListener(v -> {
             Bridge.INSTANCE.appSettingsDialog(this);
         });
+
+        UI.showIf(Bridge.INSTANCE.isDevelopmentFlavor(), mSinglesigWarning);
 
         networkData = getNetwork();
 

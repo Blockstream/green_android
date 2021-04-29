@@ -96,5 +96,17 @@
             android:layout_marginTop="24dp"
             android:text="@string/id_continue" />
 
+        <TextView
+            android:id="@+id/singleSigWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:textSize="12dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:text="@string/id_singlesig_wallets_are_not_supported"/>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
