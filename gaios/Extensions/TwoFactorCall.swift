@@ -118,6 +118,33 @@ extension TwoFactorCall {
     }
 }
 
+extension UIViewController {
+
+    @objc func codeResolverTextFieldDidChange(_ textField: UITextField) {
+        if textField.text?.count == 6 {
+            dismiss(animated: true) { }
+        }
+    }
+}
+
+class CodeAlertController: UIAlertController {
+
+    var willDisappearBlock: ((UIAlertController) -> Void)?
+    var didDisappearBlock: ((UIAlertController) -> Void)?
+
+    override func viewWillDisappear(_ animated: Bool) {
+        willDisappearBlock?(self)
+        super.viewWillDisappear(animated)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if self.textFields?.first?.text?.count == 6 {
+            didDisappearBlock?(self)
+        }
+    }
+}
+
 class PopupCodeResolver {
     private let viewController: UIViewController
 
@@ -130,18 +157,20 @@ class PopupCodeResolver {
             let methodDesc: String
             if method == TwoFactorType.email.rawValue { methodDesc = "id_email" } else if method == TwoFactorType.phone.rawValue { methodDesc = "id_phone_call" } else if method == TwoFactorType.sms.rawValue { methodDesc = "id_sms" } else { methodDesc = "id_authenticator_app" }
             let title = String(format: NSLocalizedString("id_please_provide_your_1s_code", comment: ""), NSLocalizedString(methodDesc, comment: ""))
-            let alert = UIAlertController(title: title, message: "", preferredStyle: .alert)
-            alert.addTextField { (textField) in
+            let alert = CodeAlertController(title: title, message: "", preferredStyle: .alert)
+            alert.addTextField {[weak self] (textField: UITextField!) in
                 textField.placeholder = ""
                 textField.keyboardType = .numberPad
+                textField.addTarget(self, action: #selector(self?.viewController.codeResolverTextFieldDidChange(_:)), for: .editingChanged)
             }
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
                 result.reject(TwoFactorCallError.cancel(localizedDescription: NSLocalizedString("id_action_canceled", comment: "")))
             })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { (_: UIAlertAction) in
-                let textField = alert.textFields![0]
-                result.fulfill(textField.text!)
-            })
+            alert.didDisappearBlock = {[weak alert] _ in
+                if alert?.textFields?.first?.text?.count == 6 {
+                    result.fulfill((alert?.textFields?.first?.text)!)
+                }
+            }
             DispatchQueue.main.async {
                 self.viewController.present(alert, animated: true, completion: nil)
             }
