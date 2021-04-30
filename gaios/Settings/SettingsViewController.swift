@@ -520,7 +520,6 @@ extension SettingsViewController: UITableViewDelegate {
         case .SetupTwoFactor: performSegue(withIdentifier: "setupTwoFactor", sender: nil)
         case .ThresholdTwoFactor: performSegue(withIdentifier: "twoFactorLimit", sender: nil)
         case .ResetTwoFactor: showResetTwoFactor()
-        case .DisputeTwoFactor: return
         case .LockTimeRecovery: showLockTimeRecovery()
         case .LockTimeRequest: setLockTimeRequest()
         case .CsvTime: performSegue(withIdentifier: "csv", sender: nil)
