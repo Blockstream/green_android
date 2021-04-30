@@ -6,12 +6,14 @@ enum HWWState {
     case connectFailed
     case selectNetwork
     case followDevice
+    case upgradingFirmware
+    case initialized
 }
 
 enum AvailableNetworks: String, CaseIterable {
-    case bitcoin
-    case liquid
-    case testnet
+    case bitcoin = "mainnet"
+    case liquid = "liquid"
+    case testnet = "testnet"
 
     func name() -> String {
         switch self {

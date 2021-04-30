@@ -38,7 +38,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.load()
 
         // setup liquid view
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork.liquid ?? false
+        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
         content.assetsView.heightAnchor.constraint(equalToConstant: 0).isActive = !isLiquid
         content.sendView.heightAnchor.constraint(equalToConstant: 0).isActive = isLiquid
         content.assetsView.isHidden = !isLiquid
@@ -76,7 +76,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     func reload() {
         let addressee = transaction.addressees.first!
         content.toLabel.text = addressee.address
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork.liquid ?? false
+        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
         if isLiquid {
             let tag = addressee.assetTag ?? "btc"
             let info = Registry.shared.infos[tag]

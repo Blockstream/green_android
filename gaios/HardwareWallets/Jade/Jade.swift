@@ -29,13 +29,11 @@ final class Jade: JadeDevice, HWResolverProtocol {
         return Jade.shared.exchange(method: "add_entropy", params: ["entropy": Data(buffer)])
     }
 
-    func httpRequest(_ httpRequest: [String: Any]) -> [String: Any] {
+    func httpRequest(_ httpRequest: [String: Any]) -> [String: Any]? {
         let httpParams = httpRequest["params"] as? [String: Any]
-        print("httpParams \(httpParams?.description)")
         let httpResponse = try? getSession().httpRequest(params: httpParams ?? [:])
         let httpResponseBody = httpResponse?["body"] as? [String: Any]
-        print("httpResponseBody \(httpResponseBody?.description)")
-        return httpResponseBody ?? [:]
+        return httpResponseBody
     }
 
     func auth(network: String) -> Observable<[String: Any]> {

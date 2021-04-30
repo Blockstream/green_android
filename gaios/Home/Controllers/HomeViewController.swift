@@ -1,46 +1,5 @@
 import UIKit
 
-enum SupportedHW: String, CaseIterable {
-    case Jade = "Blockstream Jade"
-    case LedgerNanoX = "Ledger Nano X"
-
-    func name() -> String {
-        switch self {
-        case .Jade:
-            return "Blockstream Jade"
-        case .LedgerNanoX:
-            return "Ledger Nano X"
-        }
-    }
-
-    func icon() -> UIImage {
-        switch self {
-        case .Jade:
-            return UIImage(named: "blockstreamIcon")!
-        case .LedgerNanoX:
-            return UIImage(named: "ledgerIcon")!
-        }
-    }
-
-    func deviceImage() -> UIImage {
-        switch self {
-        case .Jade:
-            return UIImage(named: "ic_hww_jade")!
-        case .LedgerNanoX:
-            return UIImage(named: "ic_hww_ledger")!
-        }
-    }
-
-    func alignConstraint() -> CGFloat {
-        switch self {
-        case .Jade:
-            return 0.0
-        case .LedgerNanoX:
-            return (UIScreen.main.bounds.width * 0.27)
-        }
-    }
-}
-
 class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
@@ -93,17 +52,10 @@ class HomeViewController: UIViewController {
         }
     }
 
-//    func showHardwareWallet(_ index: Int) {
-//        let storyboard = UIStoryboard(name: "HardwareWallet", bundle: nil)
-//        let vc = storyboard.instantiateViewController(withIdentifier: "HardwareWalletScanViewController")  as? HardwareWalletScanViewController
-//        vc?.account = hwAccounts[index]
-//        navigationController?.pushViewController(vc!, animated: true)
-//    }
-
-    func showHardwareWallet(_ type: SupportedHW) {
+    func showHardwareWallet(_ index: Int) {
         let storyboard = UIStoryboard(name: "HWW", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-            vc.hwwType = type
+            vc.account = hwAccounts[index]
             navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -112,9 +64,6 @@ class HomeViewController: UIViewController {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "LandingViewController")
         navigationController?.pushViewController(vc, animated: true)
-//        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-//        let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
-//        navigationController?.pushViewController(vc, animated: true)
     }
 
 }
@@ -214,15 +163,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                 enterWallet(indexPath.row)
             }
         case 1:
-//            showHardwareWallet(indexPath.row)
-            switch indexPath.row {
-            case 0:
-                showHardwareWallet(.Jade)
-            case 1:
-                showHardwareWallet(.LedgerNanoX)
-            default:
-                break
-            }
+            showHardwareWallet(indexPath.row)
         default:
             break
         }

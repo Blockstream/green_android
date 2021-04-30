@@ -33,7 +33,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
         content.shareButton.setGradient(true)
 
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork.liquid ?? false
+        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
         content.amountView.isHidden = isLiquid
         content.accountView.isHidden = !(isLiquid && "2of2_no_recovery" == wallet?.type)
         if isLiquid && "2of2_no_recovery" == wallet?.type {
@@ -198,7 +198,7 @@ class ReceiveBtcViewController: KeyboardViewController {
 
     func uriBitcoin(address: String) -> String {
         let satoshi = self.getSatoshi() ?? 0
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork.liquid ?? false
+        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
         if isLiquid || satoshi == 0 {
             return address
         }

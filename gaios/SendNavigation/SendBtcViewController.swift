@@ -22,7 +22,7 @@ class SendBtcViewController: KeyboardViewController {
         if let wallet = wallet {
             self.title = isSweep ? String(format: NSLocalizedString("id_sweep_into_s", comment: ""), wallet.localizedName()) : NSLocalizedString("id_send_to", comment: "")
         }
-        isLiquid = AccountsManager.shared.current?.gdkNetwork.liquid ?? false
+        isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
         orLabel.text = NSLocalizedString("id_or", comment: "")
 
         textView.delegate = self

@@ -16,6 +16,7 @@ enum BLEManagerError: Error {
     case authErr(txt: String)
     case swErr(txt: String)
     case genericErr(txt: String)
+    case firmwareErr(txt: String)
 }
 
 enum DeviceError: Error {
@@ -24,10 +25,15 @@ enum DeviceError: Error {
     case outdated_app
 }
 
-protocol BLEManagerDelegate: class {
+protocol BLEManagerScanDelegate: class {
     func didUpdatePeripherals(_: [ScannedPeripheral])
-    func onConnect(_: Peripheral)
+    func onError(_: BLEManagerError)
+}
+
+protocol BLEManagerDelegate: class {
     func onPrepare(_: Peripheral)
+    func onAuthenticate(_: Peripheral, network: String, firstInitialization: Bool)
+    func onLogin(_: Peripheral)
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
     func onCheckFirmware(_: Peripheral, fw: [String: String], currentVersion: String)
@@ -45,7 +51,8 @@ class BLEManager {
         return instance
     }
 
-    static let manager: CentralManager = CentralManager(queue: .main, options: [CBCentralManagerOptionRestoreIdentifierKey: NSString(string: "io.blockstream.greenCentralManager")])
+    let manager: CentralManager
+    let queue = DispatchQueue(label: "manager.queue")
 
     let timeout = RxTimeInterval.seconds(10)
     var peripherals = [ScannedPeripheral]()
@@ -55,42 +62,43 @@ class BLEManager {
     var statusDispose: Disposable?
 
     weak var delegate: BLEManagerDelegate?
+    weak var scanDelegate: BLEManagerScanDelegate?
+
+    init() {
+        manager = CentralManager(queue: queue, options: nil)
+    }
 
     func start() {
-        let manager = BLEManager.manager
-        switch manager.state {
-        case .poweredOn:
-            scanningDispose = scan()
-            return
-        case .poweredOff:
+        if manager.state == .poweredOff {
             let err = BLEManagerError.powerOff(txt: NSLocalizedString("id_turn_on_bluetooth_to_connect", comment: ""))
-            self.delegate?.onError(err)
-        default:
-            break
+            self.scanDelegate?.onError(err)
         }
 
         // wait bluetooth is ready
+        let sheduler = SerialDispatchQueueScheduler(queue: queue, internalSerialQueueName: "manager.sheduler")
+
         scanningDispose = manager.observeState()
+            .startWith(self.manager.state)
             .filter { $0 == .poweredOn }
-            .take(1)
+            .subscribeOn(sheduler)
             .subscribe(onNext: { _ in
                 self.scanningDispose = self.scan()
             }, onError: { err in
                 let err = BLEManagerError.notReady(txt: err.localizedDescription)
-                self.delegate?.onError(err)
+                self.scanDelegate?.onError(err)
             })
     }
 
     func scan() -> Disposable {
-        return BLEManager.manager.scanForPeripherals(withServices: nil)
+        return manager.scanForPeripherals(withServices: [JadeDevice.SERVICE_UUID, LedgerDeviceBLE.SERVICE_UUID])
             .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
             .subscribe(onNext: { p in
-                self.peripherals.removeAll { $0.rssi == p.rssi }
+                self.peripherals.removeAll { $0.advertisementData.localName == p.advertisementData.localName }
                 self.peripherals.append(p)
-                self.delegate?.didUpdatePeripherals(self.peripherals)
+                self.scanDelegate?.didUpdatePeripherals(self.peripherals)
             }, onError: { error in
                 let err = BLEManagerError.scanErr(txt: error.localizedDescription)
-                self.delegate?.onError(err)
+                self.scanDelegate?.onError(err)
             })
     }
 
@@ -103,8 +111,8 @@ class BLEManager {
     func disposeScan() {
         peripherals = []
         scanningDispose?.dispose()
-        if BLEManager.manager.state == .poweredOn {
-            BLEManager.manager.manager.stopScan()
+        if manager.state == .poweredOn {
+            manager.manager.stopScan()
         }
     }
 
@@ -116,9 +124,12 @@ class BLEManager {
         p.peripheral.name?.contains("Jade") ?? false
     }
 
-    func connectLedger(_ p: Peripheral, network: String) -> Observable<Peripheral> {
+    func connectLedger(_ p: Peripheral, network: String) {
         HWResolver.shared.hw = Ledger.shared
-        return Ledger.shared.open(p)
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        enstablishDispose = p.establishConnection()
+            .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { p in Ledger.shared.open(p) }
             .flatMap { _ in Ledger.shared.application() }
             .compactMap { res in
                 let name = res["name"] as? String ?? ""
@@ -131,31 +142,58 @@ class BLEManager {
                 } else if name == "Bitcoin" && (version[0]! < 1 || version[1]! < 4) {
                     throw DeviceError.outdated_app
                 }
-                return p
+            }.compactMap { _ in
+                appDelegate?.disconnect()
+                try appDelegate?.connect(network)
             }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                self.delegate?.onAuthenticate(p, network: network, firstInitialization: false)
+            }, onError: { err in
+                self.onError(err, network: network)
+            })
     }
 
-    func connectJade(_ p: Peripheral, network: String) -> Observable<Peripheral> {
+    func connectJade(_ p: Peripheral, network: String) {
         HWResolver.shared.hw = Jade.shared
-        return Jade.shared.open(p)
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        var hasPin = false
+        enstablishDispose = p.establishConnection()
+            .flatMap { p in Jade.shared.open(p) }
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .timeoutIfNoEvent(RxTimeInterval.seconds(3))
             .flatMap { _ in
                 Jade.shared.version()
-            }.flatMap { _ -> Observable<[String: Any]> in
-                // let hasPin = version["JADE_HAS_PIN"] as? Bool
+            }.flatMap { version -> Observable<[String: Any]> in
+                let result = version["result"] as? [String: Any]
+                hasPin = result?["JADE_HAS_PIN"] as? Bool ?? false
+                if let networks = result?["JADE_NETWORKS"] as? String {
+                    if networks == "TEST" && network != "testnet" {
+                        throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
+                    } else if networks == "MAIN" && network == "testnet" {
+                        throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
+                    }
+                }
                 // check genuine firmware
                 return Jade.shared.addEntropy()
+            }.compactMap { _ in
+                appDelegate?.disconnect()
+                try appDelegate?.connect(network)
             }.flatMap { _ in
                 Jade.shared.auth(network: network)
                     .retry(3)
-            }.compactMap { _ in
-                return p
             }
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: { _ in
+                self.delegate?.onAuthenticate(p, network: network, firstInitialization: !hasPin)
+            }, onError: { err in
+                self.onError(err, network: network)
+            })
     }
 
-    func checkFirmware(_ p: Peripheral, network: String) {
+    func checkFirmware(_ p: Peripheral) -> Observable<Peripheral> {
         var verInfo: [String: Any]?
-        _ = Observable.just(p)
+        return Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in
                 Jade.shared.version()
@@ -163,16 +201,14 @@ class BLEManager {
                 verInfo = data["result"] as? [String: Any]
                 return try Jade.shared.checkFirmware(verInfo!)
             }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { (fwFile: [String: String]?) in
+            .compactMap { (fwFile: [String: String]?) in
                 if let fw = fwFile,
                    let ver = verInfo?["JADE_VERSION"] as? String {
                     self.delegate?.onCheckFirmware(p, fw: fw, currentVersion: ver)
-                } else {
-                    self.login(p, network: network)
+                    throw BLEManagerError.firmwareErr(txt: "")
                 }
-            }, onError: { err in
-                self.onError(err, network: network)
-            })
+                return p
+            }
     }
 
     func updateFirmware(_ p: Peripheral, fwFile: [String: String]) {
@@ -190,40 +226,26 @@ class BLEManager {
     }
 
     func connect(_ p: Peripheral, network: String) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
-
         addStatusListener(p)
-
-        enstablishDispose = p.establishConnection()
-            .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .compactMap { p in
-                appDelegate?.disconnect()
-                try appDelegate?.connect(network)
-                return p
-            }.flatMap { p in
-                self.isJade(p) ? self.connectJade(p, network: network) : self.connectLedger(p, network: network)
-            }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { _ in
-                if self.isJade(p) {
-                    self.checkFirmware(p, network: network)
-                } else {
-                    self.login(p, network: network)
-                }
-            }, onError: { err in
-                self.onError(err, network: network)
-            })
+        if isJade(p) {
+            connectJade(p, network: network)
+        } else {
+            connectLedger(p, network: network)
+        }
     }
 
-    func login(_ p: Peripheral, network: String) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    func login(_ p: Peripheral, checkFirmware: Bool = true) {
         let session = getGAService().getSession()
 
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .compactMap { _ in
-                appDelegate?.disconnect()
-                try appDelegate?.connect(network)
-            }.observeOn(SerialDispatchQueueScheduler(qos: .background))
+            .flatMap { p -> Observable<Peripheral> in
+                if checkFirmware && self.isJade(p) {
+                    return self.checkFirmware(p)
+                } else {
+                    return Observable.just(p)
+                }
+            }
             .flatMap { _ in
                 return Observable<[String: Any]>.create { observer in
                     let info = HWResolver.shared.hw!.info
@@ -242,17 +264,23 @@ class BLEManager {
                 }
             }.observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onConnect(p)
+                self.delegate?.onLogin(p)
             }, onError: { err in
-                self.onError(err, network: network)
+                switch err {
+                case BLEManagerError.firmwareErr(_): // nothing to do
+                    return
+                default:
+                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                    appDelegate?.disconnect()
+                    self.onError(err, network: nil)
+                }
             })
     }
 
     func onError(_ err: Error, network: String?) {
         switch err {
-        case is BluetoothError:
-            let bleErr = err as? BluetoothError
-            let err = BLEManagerError.bleErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: "") + ": \(bleErr?.localizedDescription ?? "")")
+        case is BluetoothError, is GaError:
+            let err = BLEManagerError.bleErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
             self.delegate?.onError(err)
         case RxError.timeout:
             let err = BLEManagerError.timeoutErr(txt: NSLocalizedString("id_communication_timed_out_make", comment: ""))
@@ -301,7 +329,7 @@ class BLEManager {
 
         // dummy 1st connection for jade
         enstablishDispose = peripheral.establishConnection().subscribe()
-        _ = BLEManager.manager.observeConnect(for: peripheral).take(1)
+        _ = manager.observeConnect(for: peripheral).take(1)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in sleep(2) }
             .observeOn(MainScheduler.instance)
@@ -320,7 +348,9 @@ class BLEManager {
             .subscribe(onNext: { status in
                 self.delegate?.onConnectivityChange(peripheral: peripheral, status: status)
                 if status == false {
-                    DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+                    DispatchQueue.main.async {
+                        DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
+                    }
                 }
             }, onError: { _ in
             })

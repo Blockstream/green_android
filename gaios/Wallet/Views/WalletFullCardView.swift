@@ -25,7 +25,7 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var assetsHeight: NSLayoutConstraint!
 
     var account = AccountsManager.shared.current
-    var isLiquid: Bool { account?.gdkNetwork.liquid ?? false}
+    var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false}
 
     override func awakeFromNib() {
         super.awakeFromNib()

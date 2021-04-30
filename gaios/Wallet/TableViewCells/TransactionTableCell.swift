@@ -12,7 +12,7 @@ class TransactionTableCell: UITableViewCell {
 
     var isLiquid: Bool {
         var account = AccountsManager.shared.current
-        return account?.gdkNetwork.liquid ?? false
+        return account?.gdkNetwork?.liquid ?? false
     }
     var multipleAssets: Bool!
     var isIncoming: Bool!

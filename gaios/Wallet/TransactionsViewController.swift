@@ -322,7 +322,7 @@ class TransactionsController: UITableViewController {
 
     @objc func sendfromWallet(_ sender: UIButton) {
         var account = AccountsManager.shared.current
-        if (account?.gdkNetwork.liquid ?? false) && presentingWallet?.btc == 0 {
+        if (account?.gdkNetwork?.liquid ?? false) && presentingWallet?.btc == 0 {
             let message = NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "")
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
@@ -477,25 +477,7 @@ extension TransactionsController: DrawerNetworkSelectionDelegate {
             }
     }
 
-//    func didSelectHDW(account: Account) {
-//        logout()
-//            .recover { _ in }
-//            .done {
-//                self.navigationController?.dismiss(animated: true, completion: {})
-//                self.navigationController?.popToRootViewController(animated: true)
-//                let storyboard = UIStoryboard(name: "Home", bundle: nil)
-//                let storyboardHW = UIStoryboard(name: "HardwareWallet", bundle: nil)
-//                self.stopLoader()
-//                if let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
-//                   let vc = storyboardHW.instantiateViewController(withIdentifier: "HardwareWalletScanViewController") as? HardwareWalletScanViewController {
-//                    vc.account = account
-//                    nav.pushViewController(vc, animated: false)
-//                    UIApplication.shared.keyWindow?.rootViewController = nav
-//                }
-//            }
-//    }
-
-    func didSelectHWW(_ hwwType: SupportedHW) {
+    func didSelectHW(account: Account) {
 
         logout()
             .recover { _ in }
@@ -509,11 +491,10 @@ extension TransactionsController: DrawerNetworkSelectionDelegate {
 
                 let storyboard2 = UIStoryboard(name: "HWW", bundle: nil)
                 if let vc = storyboard2.instantiateViewController(withIdentifier: "HWWScanViewController") as? HWWScanViewController {
-                    vc.hwwType = hwwType
+                    vc.account = account
                     nav?.pushViewController(vc, animated: false)
                     UIApplication.shared.keyWindow?.rootViewController = nav
                 }
             }
-
     }
 }

@@ -69,7 +69,7 @@ class TransactionDetailViewController: KeyboardViewController {
     func configureViewAndCells() {
         isIncoming = transaction.type == "incoming"
         isRedeposit = transaction.type == "redeposit"
-        isLiquid = account?.gdkNetwork.liquid ?? false
+        isLiquid = account?.gdkNetwork?.liquid ?? false
         cellTypes.remove(at: cellTypes.firstIndex(of: .asset)!)
         if isLiquid {
             if isIncoming {
@@ -138,7 +138,7 @@ class TransactionDetailViewController: KeyboardViewController {
     }
 
     func urlForTx() -> URL? {
-        return URL(string: account?.gdkNetwork.txExplorerUrl ?? "" + self.transaction.hash)
+        return URL(string: account?.gdkNetwork?.txExplorerUrl ?? "" + self.transaction.hash)
     }
 
     func explorerUrlOrAlert() -> UIAlertController? {
@@ -172,7 +172,7 @@ class TransactionDetailViewController: KeyboardViewController {
         })
         // Share the unblinded transaction explorer url
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_share_nonconfidential", comment: ""), style: .default) { _ in
-            let unblindedUrl = self.account?.gdkNetwork.txExplorerUrl ?? "" + self.transaction.hash + self.transaction.blindingUrlString()
+            let unblindedUrl = self.account?.gdkNetwork?.txExplorerUrl ?? "" + self.transaction.hash + self.transaction.blindingUrlString()
             let shareVC = UIActivityViewController(activityItems: [unblindedUrl], applicationActivities: nil)
             self.present(shareVC, animated: true, completion: nil)
         })
@@ -252,7 +252,7 @@ extension TransactionDetailViewController: UITableViewDelegate, UITableViewDataS
         switch cellType {
         case .status:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionStatusTableCell") as? TransactionStatusTableCell {
-                cell.configure(for: transaction, isLiquid: account?.gdkNetwork.liquid ?? false)
+                cell.configure(for: transaction, isLiquid: account?.gdkNetwork?.liquid ?? false)
                 cell.increaseFeeButton.addTarget(self, action: #selector(increaseFeeTapped), for: .touchUpInside)
                 return cell
             }

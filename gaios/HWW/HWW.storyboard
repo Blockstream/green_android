@@ -295,6 +295,21 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_hww_arrow" translatesAutoresizingMaskIntoConstraints="NO" id="Tvz-0x-GXQ">
                                 <rect key="frame" x="0.0" y="243" width="320" height="45.5"/>
                             </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mgy-f1-SHM">
+                                <rect key="frame" x="0.0" y="300.5" width="320" height="51"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" image="ic_hww_ledger" translatesAutoresizingMaskIntoConstraints="NO" id="5fr-U0-x8y">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="51"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="5fr-U0-x8y" firstAttribute="centerX" secondItem="mgy-f1-SHM" secondAttribute="centerX" id="Drd-gD-Hxr"/>
+                                    <constraint firstItem="5fr-U0-x8y" firstAttribute="centerY" secondItem="mgy-f1-SHM" secondAttribute="centerY" id="Krg-3G-fKT"/>
+                                    <constraint firstItem="5fr-U0-x8y" firstAttribute="height" secondItem="mgy-f1-SHM" secondAttribute="height" id="Rgo-Dl-izg"/>
+                                    <constraint firstItem="5fr-U0-x8y" firstAttribute="width" secondItem="mgy-f1-SHM" secondAttribute="width" id="mV3-dK-dwb"/>
+                                </constraints>
+                            </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qsq-ct-wsn">
                                 <rect key="frame" x="36" y="177.5" width="248" height="219"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -357,21 +372,6 @@
                                     <outlet property="delegate" destination="v6b-PK-ro2" id="LZd-dQ-DV7"/>
                                 </connections>
                             </tableView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mgy-f1-SHM">
-                                <rect key="frame" x="0.0" y="300.5" width="320" height="51"/>
-                                <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" image="ic_hww_ledger" translatesAutoresizingMaskIntoConstraints="NO" id="5fr-U0-x8y">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="51"/>
-                                    </imageView>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="5fr-U0-x8y" firstAttribute="centerX" secondItem="mgy-f1-SHM" secondAttribute="centerX" id="Drd-gD-Hxr"/>
-                                    <constraint firstItem="5fr-U0-x8y" firstAttribute="centerY" secondItem="mgy-f1-SHM" secondAttribute="centerY" id="Krg-3G-fKT"/>
-                                    <constraint firstItem="5fr-U0-x8y" firstAttribute="height" secondItem="mgy-f1-SHM" secondAttribute="height" id="Rgo-Dl-izg"/>
-                                    <constraint firstItem="5fr-U0-x8y" firstAttribute="width" secondItem="mgy-f1-SHM" secondAttribute="width" id="mV3-dK-dwb"/>
-                                </constraints>
-                            </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4wr-jd-S1t">
                                 <rect key="frame" x="36" y="416.5" width="248" height="21.5"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
@@ -392,24 +392,41 @@
                                     <action selector="btnTryAgain:" destination="v6b-PK-ro2" eventType="touchUpInside" id="eWC-ps-zpj"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HuK-YR-FjH" userLabel="Next">
+                                <rect key="frame" x="36" y="492" width="248" height="40"/>
+                                <color key="backgroundColor" name="customMatrixGreen"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="2HL-ci-YAG"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                                <state key="normal" title="Next">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnLogin:" destination="v6b-PK-ro2" eventType="touchUpInside" id="vkA-bO-qe7"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fgq-lv-tEf"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="4wr-jd-S1t" secondAttribute="trailing" constant="36" id="00r-m6-1e0"/>
                             <constraint firstItem="wsg-i1-SUm" firstAttribute="centerX" secondItem="fgq-lv-tEf" secondAttribute="centerX" id="02x-nS-bu4"/>
+                            <constraint firstItem="fgq-lv-tEf" firstAttribute="bottom" secondItem="HuK-YR-FjH" secondAttribute="bottom" constant="36" id="3RT-lu-e0q"/>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="mgy-f1-SHM" secondAttribute="trailing" id="4PZ-Qh-rqV"/>
                             <constraint firstItem="SaN-aG-aqb" firstAttribute="centerX" secondItem="wsg-i1-SUm" secondAttribute="centerX" id="4nV-za-miS"/>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="bottom" secondItem="UrZ-GE-NqN" secondAttribute="bottom" constant="36" id="5eo-YY-ZVQ"/>
                             <constraint firstItem="mgy-f1-SHM" firstAttribute="top" secondItem="wsg-i1-SUm" secondAttribute="bottom" constant="50" id="7YQ-aQ-3Ds"/>
                             <constraint firstItem="mgy-f1-SHM" firstAttribute="height" secondItem="L7G-pK-rAm" secondAttribute="height" multiplier="0.09" id="A1v-NL-qlR"/>
                             <constraint firstItem="aUt-wd-yuI" firstAttribute="centerX" secondItem="wsg-i1-SUm" secondAttribute="centerX" id="DKS-YJ-1Qb"/>
+                            <constraint firstItem="HuK-YR-FjH" firstAttribute="leading" secondItem="fgq-lv-tEf" secondAttribute="leading" constant="36" id="Ea2-wG-Apf"/>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="SaN-aG-aqb" secondAttribute="trailing" constant="36" id="G86-2o-StB"/>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="UrZ-GE-NqN" secondAttribute="trailing" constant="36" id="HaC-oH-Y1V"/>
                             <constraint firstItem="mgy-f1-SHM" firstAttribute="leading" secondItem="fgq-lv-tEf" secondAttribute="leading" id="IhY-fz-Cv3"/>
                             <constraint firstItem="mgy-f1-SHM" firstAttribute="centerY" secondItem="fgq-lv-tEf" secondAttribute="centerY" constant="20" id="J9H-Vq-Bin"/>
                             <constraint firstItem="mgy-f1-SHM" firstAttribute="top" secondItem="Tvz-0x-GXQ" secondAttribute="bottom" constant="12" id="Jtc-20-k9E"/>
                             <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="Tvz-0x-GXQ" secondAttribute="trailing" id="KmK-V4-jBe"/>
+                            <constraint firstItem="fgq-lv-tEf" firstAttribute="trailing" secondItem="HuK-YR-FjH" secondAttribute="trailing" constant="36" id="Tw0-gS-dAV"/>
                             <constraint firstItem="Tvz-0x-GXQ" firstAttribute="height" secondItem="L7G-pK-rAm" secondAttribute="height" multiplier="0.08" id="UFh-6m-SG7"/>
                             <constraint firstItem="4wr-jd-S1t" firstAttribute="top" secondItem="qsq-ct-wsn" secondAttribute="bottom" constant="20" id="V1n-US-q6p"/>
                             <constraint firstItem="4wr-jd-S1t" firstAttribute="leading" secondItem="fgq-lv-tEf" secondAttribute="leading" constant="36" id="WeZ-Jb-Byt"/>
@@ -430,6 +447,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="arrowImage" destination="Tvz-0x-GXQ" id="56s-Pa-dh5"/>
+                        <outlet property="btnLogin" destination="HuK-YR-FjH" id="8LD-lJ-l4r"/>
                         <outlet property="btnTryAgain" destination="UrZ-GE-NqN" id="lpV-fc-OPO"/>
                         <outlet property="deviceImage" destination="5fr-U0-x8y" id="R3g-zu-0s9"/>
                         <outlet property="deviceImageAlign" destination="Drd-gD-Hxr" id="D6h-5i-9Hq"/>
@@ -445,7 +463,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="z3S-hu-CWr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2286.9565217391305" y="73.660714285714278"/>
+            <point key="canvasLocation" x="2285.625" y="72.887323943661968"/>
         </scene>
     </scenes>
     <resources>

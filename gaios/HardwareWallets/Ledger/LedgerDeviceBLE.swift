@@ -11,10 +11,10 @@ class LedgerDeviceBLE: HWDeviceProtocol {
     var characteristicWrite: Characteristic?
     var characteristicNotify: Characteristic?
 
-    let SERVICE_UUID = CBUUID(string: "13D63400-2C97-0004-0000-4C6564676572")
-    let WRITE_CHARACTERISTIC_UUID = CBUUID(string: "13D63400-2C97-0004-0002-4C6564676572")
-    let NOTIFY_CHARACTERISTIC_UUID = CBUUID(string: "13D63400-2C97-0004-0001-4C6564676572")
-    let CLIENT_CHARACTERISTIC_CONFIG = CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
+    static let SERVICE_UUID = CBUUID(string: "13D63400-2C97-0004-0000-4C6564676572")
+    static let WRITE_CHARACTERISTIC_UUID = CBUUID(string: "13D63400-2C97-0004-0002-4C6564676572")
+    static let NOTIFY_CHARACTERISTIC_UUID = CBUUID(string: "13D63400-2C97-0004-0001-4C6564676572")
+    static let CLIENT_CHARACTERISTIC_CONFIG = CBUUID(string: "00002902-0000-1000-8000-00805f9b34fb")
     var MTU: UInt8 = 128
     var TIMEOUT: Int = 30
 
@@ -131,9 +131,9 @@ class LedgerDeviceBLE: HWDeviceProtocol {
 
     private func setupWrite() -> Observable<Characteristic> {
         return Observable.from(optional: peripheral)
-            .flatMap { $0.discoverServices([self.SERVICE_UUID]) }.asObservable()
+            .flatMap { $0.discoverServices([LedgerDeviceBLE.SERVICE_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
-            .flatMap { $0.discoverCharacteristics([self.WRITE_CHARACTERISTIC_UUID]) }.asObservable()
+            .flatMap { $0.discoverCharacteristics([LedgerDeviceBLE.WRITE_CHARACTERISTIC_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { characteristic -> Observable<Characteristic> in
                 self.characteristicWrite = characteristic
@@ -143,16 +143,16 @@ class LedgerDeviceBLE: HWDeviceProtocol {
 
     private func setupNotify() -> Observable<Characteristic> {
         return Observable.from(optional: peripheral)
-            .flatMap { $0.discoverServices([self.SERVICE_UUID]) }.asObservable()
+            .flatMap { $0.discoverServices([LedgerDeviceBLE.SERVICE_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
-            .flatMap { $0.discoverCharacteristics([self.NOTIFY_CHARACTERISTIC_UUID]) }.asObservable()
+            .flatMap { $0.discoverCharacteristics([LedgerDeviceBLE.NOTIFY_CHARACTERISTIC_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { self.peripheral.discoverDescriptors(for: $0) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { descriptor -> Observable<Characteristic> in
                 // Descriptor
                 print(descriptor.uuid)
-                if descriptor.uuid == self.CLIENT_CHARACTERISTIC_CONFIG {
+                if descriptor.uuid == LedgerDeviceBLE.CLIENT_CHARACTERISTIC_CONFIG {
                     print("descriptor CLIENT_CHARACTERISTIC_CONFIG")
                 }
                 self.characteristicNotify = descriptor.characteristic

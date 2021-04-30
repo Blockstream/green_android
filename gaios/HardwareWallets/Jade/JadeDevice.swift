@@ -10,9 +10,9 @@ class JadeDevice: HWDeviceProtocol {
     var characteristicWrite: Characteristic?
     var characteristicNotify: Characteristic?
 
-    let SERVICE_UUID = CBUUID(string: "6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-    let WRITE_CHARACTERISTIC_UUID = CBUUID(string: "6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-    let CLIENT_CHARACTERISTIC_CONFIG = CBUUID(string: "6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+    static let SERVICE_UUID = CBUUID(string: "6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+    static let WRITE_CHARACTERISTIC_UUID = CBUUID(string: "6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+    static let CLIENT_CHARACTERISTIC_CONFIG = CBUUID(string: "6e400003-b5a3-f393-e0a9-e50e24dcca9e")
     var MTU: UInt8 = 128
     var TIMEOUT: Int = 30
 
@@ -134,9 +134,9 @@ class JadeDevice: HWDeviceProtocol {
 
     private func setupWrite() -> Observable<Characteristic> {
         return Observable.from(optional: peripheral)
-            .flatMap { $0.discoverServices([self.SERVICE_UUID]) }.asObservable()
+            .flatMap { $0.discoverServices([JadeDevice.SERVICE_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
-            .flatMap { $0.discoverCharacteristics([self.WRITE_CHARACTERISTIC_UUID]) }.asObservable()
+            .flatMap { $0.discoverCharacteristics([JadeDevice.WRITE_CHARACTERISTIC_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { characteristic -> Observable<Characteristic> in
                 self.characteristicWrite = characteristic
@@ -146,15 +146,15 @@ class JadeDevice: HWDeviceProtocol {
 
     private func setupNotify() -> Observable<Characteristic> {
         return Observable.from(optional: peripheral)
-            .flatMap { $0.discoverServices([self.SERVICE_UUID]) }.asObservable()
+            .flatMap { $0.discoverServices([JadeDevice.SERVICE_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
-            .flatMap { $0.discoverCharacteristics([self.CLIENT_CHARACTERISTIC_CONFIG]) }.asObservable()
+            .flatMap { $0.discoverCharacteristics([JadeDevice.CLIENT_CHARACTERISTIC_CONFIG]) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { self.peripheral.discoverDescriptors(for: $0) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { descriptor -> Observable<Characteristic> in
                 // Descriptor
-                if descriptor.uuid == self.CLIENT_CHARACTERISTIC_CONFIG {
+                if descriptor.uuid == JadeDevice.CLIENT_CHARACTERISTIC_CONFIG {
                     print("descriptor CLIENT_CHARACTERISTIC_CONFIG")
                 }
                 self.characteristicNotify = descriptor.characteristic

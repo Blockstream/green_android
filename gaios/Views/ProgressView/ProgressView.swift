@@ -103,6 +103,7 @@ class ProgressView: UIView {
             } else {
                 self.shapeLayer.removeFromSuperlayer()
                 self.layer.removeAllAnimations()
+                self.removeFromSuperview()
             }
         }
     }

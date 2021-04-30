@@ -4,13 +4,23 @@ import UIKit
 struct Account: Codable, Equatable {
 
     var name: String
-    var network: String
     let id: String
     let isJade: Bool
     let isLedger: Bool
     let username: String?
     var password: String?
     let keychain: String
+    var network: String
+
+    private var gdkNetwork_: GdkNetwork?
+    var gdkNetwork: GdkNetwork? {
+        mutating get {
+            if gdkNetwork_ == nil || gdkNetwork_?.network != network {
+                gdkNetwork_ = getGdkNetwork(network)
+            }
+            return gdkNetwork_
+        }
+    }
 
     init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false) {
         // Software / Hardware wallet account
@@ -100,14 +110,6 @@ struct Account: Codable, Equatable {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: keychain + "_pin_attempts")
-        }
-    }
-
-    private var gdkNetwork_: GdkNetwork?
-    var gdkNetwork: GdkNetwork {
-        mutating get {
-            gdkNetwork_ = gdkNetwork_ ?? getGdkNetwork(network)
-            return gdkNetwork_!
         }
     }
 
