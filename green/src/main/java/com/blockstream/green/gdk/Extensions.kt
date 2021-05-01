@@ -72,6 +72,12 @@ fun Throwable.getGDKErrorCode(): Int {
     }
 }
 
+fun Throwable.isNotAuthorized() =
+    getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || message?.contains(":login failed:") == true
+
+fun Throwable.isConnectionError() =
+    message?.contains("failed to connect") == true
+
 // Run mapper on IO, observer in Android Main
 @Suppress("UNCHECKED_CAST")
 fun <T, R> T.observable(mapper: (T) -> R): Single<R> =

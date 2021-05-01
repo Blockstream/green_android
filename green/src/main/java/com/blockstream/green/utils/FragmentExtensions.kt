@@ -15,9 +15,10 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
-import com.blockstream.green.gdk.getGDKErrorCode
-import com.blockstream.libgreenaddress.KotlinGDK
+import com.blockstream.green.gdk.isConnectionError
+import com.blockstream.green.gdk.isNotAuthorized
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
@@ -50,31 +51,30 @@ fun Context.hideKeyboard(view: View) {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
-fun Fragment.errorFromGDK(throwable: Throwable): String {
-    throwable.message?.let{
-        when(it){
-            "id_invalid_pgp_key" -> R.string.id_invalid_pgp_key
-            "id_invalid_twofactor_code" -> R.string.id_invalid_twofactor_code
-            "id_action_canceled" -> R.string.generic_error_user_canceled
-            else -> null
-        }?.let{ strRes ->
-            return getString(strRes)
+fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String {
+    throwable.message?.let {
+        val intRes = resources.getIdentifier(it, "string", BuildConfig.APPLICATION_ID)
+        if(intRes > 0){
+            return getString(intRes)
         }
-
     }
 
-    return getString(if (throwable.getGDKErrorCode() == KotlinGDK.GA_ERROR) R.string.id_login_failed else R.string.id_connection_failed)
+    if(throwable.isConnectionError()){
+        return getString(R.string.id_connection_failed)
+    }else if(throwable.isNotAuthorized()){
+        return getString(R.string.id_login_failed)
+    }
+
+    return throwable.cause?.message ?: throwable.message ?: "An error occurred"
 }
 
-fun Fragment.errorDialogFromGDK(throwable: Throwable, listener: (() -> Unit)? = null) {
-    throwable.printStackTrace()
-    errorDialog(error = errorFromGDK(throwable), listener = listener)
-}
+fun Fragment.errorDialog(throwable: Throwable, print: Boolean = false, listener: (() -> Unit)? = null) {
+    if(print) {
+        throwable.printStackTrace()
+    }
 
-fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
-    throwable.printStackTrace()
     errorDialog(
-        error = throwable.cause?.message ?: throwable.message ?: "An exception occurred",
+        error = errorFromResourcesAndGDK(throwable),
         listener = listener
     )
 }
@@ -109,9 +109,11 @@ fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(requireContext(), text, duration).show()
 }
 
-fun Fragment.errorSnackbar(throwable: Throwable, duration: Int = Snackbar.LENGTH_SHORT) {
-    throwable.printStackTrace()
-    snackbar(throwable.cause?.message ?: throwable.message ?: "An exception occurred", duration)
+fun Fragment.errorSnackbar(throwable: Throwable, duration: Int = Snackbar.LENGTH_SHORT, print: Boolean = false) {
+    if(print) {
+        throwable.printStackTrace()
+    }
+    snackbar(errorFromResourcesAndGDK(throwable), duration)
 }
 
 fun Fragment.snackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {

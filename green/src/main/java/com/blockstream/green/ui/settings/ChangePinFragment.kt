@@ -7,11 +7,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
-import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.databinding.ChangePinFragmentBinding
-import com.blockstream.green.utils.errorDialogFromGDK
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.utils.errorDialog
+import com.blockstream.green.utils.snackbar
 import com.blockstream.green.views.GreenPinViewListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -56,7 +56,7 @@ class ChangePinFragment : WalletFragment<ChangePinFragmentBinding>(R.layout.chan
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialogFromGDK(it)
+                errorDialog(it)
             }
         }
 

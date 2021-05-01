@@ -150,8 +150,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
         viewModel.onErrorMessage.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { error ->
-                 // errorDialogFromGDK(error)
-                snackbar(errorFromGDK(throwable = error))
+                errorSnackbar(error)
             }
         }
 

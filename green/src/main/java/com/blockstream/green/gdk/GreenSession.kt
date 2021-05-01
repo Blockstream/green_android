@@ -486,9 +486,5 @@ class GreenSession constructor(
         disposables.clear()
     }
 
-    fun isNotAuthorized(it: Throwable) =
-        it.getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || it.message?.contains(":login failed:") == true
-
-
     companion object: KLogging()
 }

@@ -14,7 +14,6 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.dialogs.showTorSinglesigWarningIfNeeded
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.isDevelopmentFlavor
-import com.blockstream.libgreenaddress.KotlinGDK
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -69,8 +68,8 @@ class WalletNameFragment :
         }
 
         viewModel.onError.observe(viewLifecycleOwner){
-            it?.getContentIfNotHandledOrReturnNull()?.let{ throwable ->
-                errorDialog(getString(if (throwable.getGDKErrorCode() == KotlinGDK.GA_ERROR) R.string.id_login_failed else R.string.id_connection_failed))
+            it?.getContentIfNotHandledOrReturnNull()?.let{ error ->
+                errorDialog(error)
             }
         }
 

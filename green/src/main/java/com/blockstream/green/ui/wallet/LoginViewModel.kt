@@ -9,6 +9,7 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.async
+import com.blockstream.green.gdk.isNotAuthorized
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
@@ -176,7 +177,7 @@ class LoginViewModel @AssistedInject constructor(
             .doOnError {
                 // isNotAuthorized only catches multisig login errors, singlesig or watchonly are not caught
                 // and the counter is not incremented
-                if(session.isNotAuthorized(it)){
+                if(it.isNotAuthorized()){
                     loginCredentials?.also{ loginCredentials ->
                         loginCredentials.counter += 1
 

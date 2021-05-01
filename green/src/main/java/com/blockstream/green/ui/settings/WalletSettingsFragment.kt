@@ -170,7 +170,7 @@ class WalletSettingsFragment :
 
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialogFromGDK(it)
+                errorDialog(it)
             }
         }
 

@@ -26,6 +26,12 @@ data class Network(
     val isElectrum
         get() = "electrum" == serverType
 
+    val isSinglesig
+        get() = isElectrum
+
+    val isMultisig
+        get() = !isElectrum
+
     val supportTorConnection
         get () = !isElectrum
 
