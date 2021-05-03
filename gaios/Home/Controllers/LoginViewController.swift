@@ -159,8 +159,6 @@ class LoginViewController: UIViewController {
                 vc.presentingWallet = wallet
             }
             self.stopLoader()
-            self.navigationController?.dismiss(animated: true, completion: {})
-            self.navigationController?.popToRootViewController(animated: true)
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
             self.stopLoader()

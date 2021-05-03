@@ -97,15 +97,19 @@ class TransactionsController: UITableViewController {
         super.viewWillDisappear(animated)
         if let token = transactionToken {
             NotificationCenter.default.removeObserver(token)
+            transactionToken = nil
         }
         if let token = blockToken {
             NotificationCenter.default.removeObserver(token)
+            blockToken = nil
         }
         if let token = assetsUpdatedToken {
             NotificationCenter.default.removeObserver(token)
+            assetsUpdatedToken = nil
         }
         if let token = settingsUpdatedToken {
             NotificationCenter.default.removeObserver(token)
+            settingsUpdatedToken = nil
         }
     }
 

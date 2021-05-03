@@ -25,10 +25,14 @@ class ContainerViewController: UIViewController {
         super.viewDidDisappear(animated)
         if let token = networkToken {
             NotificationCenter.default.removeObserver(token)
+            networkToken = nil
         }
         if let token = torToken {
             NotificationCenter.default.removeObserver(token)
+            torToken = nil
         }
+
+        if self.timer.isValid { self.timer.invalidate() }
     }
 
     func updateTor(_ notification: Notification) {
