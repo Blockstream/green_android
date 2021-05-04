@@ -57,11 +57,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
     }
 
     public Registry getRegistry() {
-        if(mRegistry == null){
-            mRegistry = new Registry(this);
-        }
-
-        return mRegistry;
+        return Registry.getInstance();
     }
 
     public boolean isWatchOnly() {

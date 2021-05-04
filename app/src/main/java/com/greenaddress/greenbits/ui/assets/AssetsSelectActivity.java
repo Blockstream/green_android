@@ -88,7 +88,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
         // Open selected asset detail page
         final Intent intent = new Intent(this, AssetActivity.class);
-        final AssetInfoData assetInfo = getSession().getRegistry().getInfos().get(assetId);
+        final AssetInfoData assetInfo = getSession().getRegistry().getAssetInfo(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", assetInfo)
         .putExtra("SATOSHI", mAssetsBalances.get(assetId));

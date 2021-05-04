@@ -294,7 +294,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         }
 
         final long satoshi = mSubaccount.getSatoshi().get(mSelectedAsset);
-        final AssetInfoData info = getSession().getRegistry().getInfos().get(mSelectedAsset);
+        final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
 
         final Map<String, Long> balances = new HashMap<>();
         balances.put(mSelectedAsset, satoshi);
@@ -534,7 +534,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
         if (!"btc".equals(mSelectedAsset)) {
-            final AssetInfoData info = getSession().getRegistry().getInfos().get(mSelectedAsset);
+            final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
             details.set("asset_info", info.toObjectNode());
         }
         mCurrentAmount = getSession().convert(details);
@@ -593,7 +593,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     public void onFinish(final ObjectNode transactionData) {
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
-        final AssetInfoData info = getSession().getRegistry().getInfos().get(mSelectedAsset);
+        final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
         removeUtxosIfTooBig(transactionData);
         intent.putExtra(PrefKeys.INTENT_STRING_TX, transactionData.toString());
         intent.putExtra("asset_info", info);
@@ -624,7 +624,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final ObjectNode amount = mapper.createObjectNode();
         if (isAsset()) {
             final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
-            final AssetInfoData info = getSession().getRegistry().getInfos().get(mSelectedAsset);
+            final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
             amount.set("asset_info", (info == null ? assetInfoDefault : info).toObjectNode());
         }
         try {

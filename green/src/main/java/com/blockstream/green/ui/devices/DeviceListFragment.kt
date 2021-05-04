@@ -20,9 +20,6 @@ import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.DeviceListItem
 import com.blockstream.green.utils.observe
 import com.blockstream.green.utils.openBrowser
-import com.blockstream.green.utils.showPopupMenu
-import com.blockstream.green.utils.toast
-import com.blockstream.green.utils.isDevelopmentFlavor
 import com.greenaddress.Bridge
 import com.greenaddress.greenbits.ui.GaActivity
 import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity
@@ -64,21 +61,6 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
             }
 
             true
-        }
-
-        if(requireContext().isDevelopmentFlavor()){
-            fastAdapter.onLongClickListener = { view, _, item, _ ->
-                if(item.device.hasPermissionsOrIsBonded()){
-                    showPopupMenu(view, R.menu.menu_emulate_antiexfil) { menu ->
-                        navigateToDevice(item.device, true)
-                        true
-                    }
-                }else{
-                    toast("Give USB permissions before emulating a corrupted wallet")
-                }
-
-                true
-            }
         }
 
         binding.recycler.apply {
@@ -136,7 +118,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
         }
     }
 
-    private fun navigateToDevice(device: Device, emulateAntiExfilCorruption : Boolean = false){
+    private fun navigateToDevice(device: Device){
         if(Bridge.useGreenModule){
             navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
         }else{
@@ -144,10 +126,6 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
                 if(device.isUsb){
                     it.action = GaActivity.ACTION_USB_ATTACHED
                     it.putExtra(UsbManager.EXTRA_DEVICE, device.usbDevice)
-
-                    if(emulateAntiExfilCorruption){
-                        it.putExtra(RequestLoginActivity.EMULATE_ANTI_EXFIL_CORRUPTION, true)
-                    }
                 }else{
                     it.action = DeviceSelectorActivity.ACTION_BLE_SELECTED
                     it.putExtra(BluetoothDevice.EXTRA_UUID, device.bleService)

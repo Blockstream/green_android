@@ -9,10 +9,12 @@ import com.greenaddress.greenapi.data.SubaccountData;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 public abstract class HWWallet {
     protected NetworkData mNetwork;
     protected HWDeviceData mHWDeviceData;
-    protected Boolean emulateAntiExfilCorruption = false;
+    protected HardwareQATester mHardwareQATester;
 
     public static class SignMsgResult {
         private final String signature;
@@ -126,7 +128,9 @@ public abstract class HWWallet {
         return mHWDeviceData;
     }
 
-    public void setAntiExfilCorruptionEmulation(boolean emulate) { emulateAntiExfilCorruption = emulate; }
+    @Nullable
+    public HardwareQATester getHardwareEmulator() {
+        return mHardwareQATester;
+    }
 
-    public Boolean getAntiExfilCorruptionEmulation() { return emulateAntiExfilCorruption; }
 }

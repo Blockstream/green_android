@@ -8,6 +8,7 @@ import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Longs;
+import com.greenaddress.greenapi.HardwareQATester;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.HWDeviceData;
@@ -43,11 +44,11 @@ public class JadeHWWallet extends HWWallet {
 
     private final JadeAPI jade;
 
-    public JadeHWWallet(final JadeAPI jade, final NetworkData network, final HWDeviceData hwDeviceData) {
-
+    public JadeHWWallet(final JadeAPI jade, final NetworkData network, final HWDeviceData hwDeviceData, final HardwareQATester hardwareQATester) {
         super.mNetwork = network;
         super.mHWDeviceData = hwDeviceData;
         this.jade = jade;
+        this.mHardwareQATester = hardwareQATester;
     }
 
     @Override

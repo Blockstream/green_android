@@ -78,9 +78,9 @@ public class HardwareCodeResolver implements CodeResolver, HardwareWalletResolve
                 data.setSignature(result.getSignature());
 
                 // Corrupt the commitments to emulate a corrupted wallet
-                if(hwWallet.getAntiExfilCorruptionEmulation()){
+                if(hwWallet.getHardwareEmulator() != null && hwWallet.getHardwareEmulator().getAntiExfilCorruptionForMessageSign()){
                     // Make it random to allow proceeding to a logged in state
-                    if(result.getSignerCommitment() != null && (Math.random() > 0.33)) {
+                    if(result.getSignerCommitment() != null) {
                         // Corrupt the commitment
                         data.setSignerCommitment(result.getSignerCommitment().replace("0", "1"));
                     }
@@ -115,7 +115,7 @@ public class HardwareCodeResolver implements CodeResolver, HardwareWalletResolve
             data.setSignerCommitments(result.getSignerCommitments());
 
             // Corrupt the commitments to emulate a corrupted wallet
-            if(hwWallet.getAntiExfilCorruptionEmulation()){
+            if(hwWallet.getHardwareEmulator() != null && hwWallet.getHardwareEmulator().getAntiExfilCorruptionForTxSign()){
                 if(result.getSignatures() != null) {
                     // Corrupt the first commitment
                     final ArrayList<String> corrupted = new ArrayList<>(result.getSignerCommitments());

@@ -399,7 +399,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         if (mAssetsBalances.containsKey(assetId)) {
             satoshi = mAssetsBalances.get(assetId);
         }
-        final AssetInfoData info = getSession().getRegistry().getInfos().get(assetId);
+        final AssetInfoData info = getSession().getRegistry().getAssetInfo(assetId);
         intent.putExtra("ASSET_ID", assetId)
         .putExtra("ASSET_INFO", info)
         .putExtra("SATOSHI", satoshi);

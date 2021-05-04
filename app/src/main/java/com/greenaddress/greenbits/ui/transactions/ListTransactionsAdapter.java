@@ -127,7 +127,7 @@ public class ListTransactionsAdapter extends
             else if (mNetworkData.getLiquid() && txItem.isAsset()) {
                 final String assetId =
                     txItem.getSatoshi().keySet().iterator().next();
-                final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getInfos().get(assetId);
+                final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getAssetInfo(assetId);
                 message = assetInfo != null && assetInfo.getEntity() != null && assetInfo.getEntity().getDomain() != null ? assetInfo.getEntity().getDomain() : assetId;
             } else if (txItem.getTxType() == TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(
@@ -204,7 +204,7 @@ public class ListTransactionsAdapter extends
                 final String amount = Conversion.getBtc(mActivity.getSession(), tx.getSatoshi().get("btc"), true);
                 return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
             }
-            AssetInfoData info = mActivity.getSession().getRegistry().getInfos().get(assetId);
+            AssetInfoData info = mActivity.getSession().getRegistry().getAssetInfo(assetId);
             if (info == null)
                 info = new AssetInfoData(assetId);
             final String amount = Conversion.getAsset(mActivity.getSession(), tx.getSatoshi().get(assetId), assetId, info, true);

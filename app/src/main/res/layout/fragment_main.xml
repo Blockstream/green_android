@@ -26,7 +26,7 @@
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card"
+                android:id="@+id/tfaCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
@@ -38,7 +38,7 @@
                     tools:background="@color/white">
 
                     <TextView
-                        android:id="@+id/cardTitle"
+                        android:id="@+id/tfaCardTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -53,7 +53,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/cardMessage"
+                        android:id="@+id/tfaCardMessage"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -61,13 +61,13 @@
                         android:layout_marginEnd="16dp"
                         tools:text="@string/id_twofactor_reset_in_progress"
                         android:textColor="@color/primaryDark"
-                        app:layout_constraintBottom_toTopOf="@+id/buttonCardAction"
+                        app:layout_constraintBottom_toTopOf="@+id/tfaButtonCardAction"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardTitle" />
+                        app:layout_constraintTop_toBottomOf="@+id/tfaCardTitle" />
 
                     <Button
-                        android:id="@+id/buttonCardAction"
+                        android:id="@+id/tfaButtonCardAction"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
@@ -77,6 +77,74 @@
                         tools:text="@string/id_more_info"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/assetsCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardBackgroundColor="@color/white">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:background="@color/white">
+
+                    <TextView
+                        android:id="@+id/assetsCardTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/primaryDark"
+                        android:textAppearance="?attr/textAppearanceHeadline6"
+                        tools:text="@string/id_twofactor_authentication"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/assetsCardMessage"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        tools:text="@string/id_twofactor_reset_in_progress"
+                        android:textColor="@color/primaryDark"
+                        app:layout_constraintBottom_toTopOf="@+id/assetsButtonCardAction"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/assetsCardTitle" />
+
+                    <Button
+                        android:id="@+id/assetsButtonCardAction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/primaryDark"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        tools:text="@string/id_more_info"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/assetsProgress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:indeterminate="true"
+                        app:layout_constraintBottom_toBottomOf="@+id/assetsButtonCardAction"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/assetsButtonCardAction" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>

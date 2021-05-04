@@ -5,9 +5,11 @@ import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.blockstream.crypto.BuildConfig
+import com.blockstream.gdk.AssetsProvider
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenapi.HWWallet
+import com.greenaddress.greenapi.HardwareQATester
 import com.greenaddress.greenapi.Session
 import com.greenaddress.greenbits.spv.SPV
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
@@ -21,7 +23,6 @@ import java.util.*
 
 // Bridge object is used to make the transition to Green Prototype
 object Bridge {
-
     private lateinit var context: WeakReference<Context>
 
     const val useGreenModule = false
@@ -34,10 +35,13 @@ object Bridge {
 
     val spv = SPV()
 
+    var hardwareQATester : HardwareQATester? = null
+
     var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, walletId: Long?) -> Unit)? = null
     var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
     var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
     var getWalletNameFn: ((gaSession: Any?) -> String?)? = null
+    var getActiveAssetProviderFn: ((gaSession: Any?) -> AssetsProvider?)? = null
     var getHWWalletFn: ((gaSession: Any?) -> HWWallet?)? = null
     var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
     var recoveryConfirmedProviderFn: ((gaSession: Any?) -> Boolean)? = null
@@ -53,7 +57,8 @@ object Bridge {
     fun initializeBridge(
         ctx: Context,
         isDevelopmentFlavor: Boolean,
-        version: String
+        version: String,
+        QATester : HardwareQATester
     ){
         if(!initialized) {
             initialized = true
@@ -63,7 +68,10 @@ object Bridge {
             this.isDevelopmentFlavor = isDevelopmentFlavor
             versionName = version
 
+            hardwareQATester = QATester
+
             Session.getSession().setDevelopmentFlavor(isDevelopmentFlavor)
+
             JadeAPI.isDebug = BuildConfig.DEBUG
         }
     }
@@ -143,6 +151,20 @@ object Bridge {
 
             0
         } ?: 0
+    }
+
+    fun getActiveAssetProvider(): AssetsProvider? {
+        return getActiveAssetProviderFn?.let {
+            val session = Session.getSession()
+
+            if(session != null && session.nativeSession != null){
+                session.nativeSession.let { nativeSession ->
+                    return@getActiveAssetProvider it.invoke(nativeSession)
+                }
+            }
+
+            null
+        }
     }
 
     fun getHWWallet() = getHWWalletFn?.invoke(Session.getSession().nativeSession)

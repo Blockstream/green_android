@@ -63,7 +63,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         final String assetId = mAssetsIds.get(position);
         final boolean isBTC = "btc".equals(assetId);
         final Long satoshi = mAssets.get(assetId);
-        final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getInfos().get(assetId);
+        final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getAssetInfo(assetId);
         if (mOnAccountSelected != null)
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
         if (isBTC) {
@@ -90,13 +90,8 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
             }
         }
         // Get l-btc & asset icon from asset icon map
-        final Map<String, Bitmap> icons = mActivity.getSession().getRegistry().getIcons();
         final String asset = isBTC ? mNetworkData.getPolicyAsset() : assetId;
-        if (icons.containsKey(asset)) {
-            holder.mAssetIcon.setImageBitmap(icons.get(asset));
-        } else {
-            holder.mAssetIcon.setImageResource(R.drawable.ic_generic_asset_icon);
-        }
+        holder.mAssetIcon.setImageDrawable(mActivity.getSession().getRegistry().getAssetManager().getAssetDrawableOrDefault(asset));
     }
 
     @Override

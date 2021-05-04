@@ -262,7 +262,7 @@ public abstract class LoggedActivity extends GaActivity {
 
         NumberFormat nf = Conversion.getNumberFormat(getSession());
         if (!"btc".equals(asset) && asset != null) {
-            final AssetInfoData assetInfoData = getSession().getRegistry().getInfos().get(asset);
+            final AssetInfoData assetInfoData = getSession().getRegistry().getAssetInfo(asset);
             final int precision = assetInfoData == null ? 0 : assetInfoData.getPrecision();
             nf = Conversion.getNumberFormat(precision);
         }

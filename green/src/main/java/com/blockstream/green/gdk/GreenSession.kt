@@ -1,15 +1,13 @@
 package com.blockstream.green.gdk
 
-import com.blockstream.gdk.AuthHandler
-import com.blockstream.gdk.BalanceMap
-import com.blockstream.gdk.BalancePair
-import com.blockstream.gdk.GreenWallet
+import android.graphics.drawable.Drawable
+import com.blockstream.gdk.*
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.AssetManager
+import com.blockstream.green.utils.QATester
 import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.fasterxml.jackson.databind.JsonNode
@@ -17,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.Bridge
 import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.greenapi.Session.getSession
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.HttpRequestHandler
 import com.greenaddress.jade.HttpRequestProvider
@@ -36,7 +33,8 @@ class GreenSession constructor(
     private val settingsManager: SettingsManager,
     private val assetsManager: AssetManager,
     private val greenWallet: GreenWallet,
-) : HttpRequestHandler, HttpRequestProvider {
+    private val QATester: QATester,
+) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
     var isWatchOnly: Boolean = false
 
     // Only needed for v3 codebase
@@ -327,7 +325,7 @@ class GreenSession constructor(
         }
 
         if (network.isLiquid) {
-            initLiquidAssets()
+            assetsManager.updateAssetsIfNeeded(this)
         }
     }
 
@@ -341,7 +339,7 @@ class GreenSession constructor(
         greenWallet.getReceiveAddress(gaSession, ReceiveAddressParams(index))
     )
 
-    fun refreshAssets(params: AssetsParams) = greenWallet.refreshAssets(gaSession, params)
+    override fun refreshAssets(params: AssetsParams) = greenWallet.refreshAssets(gaSession, params)
 
     fun createSubAccount(params: SubAccountParams) =
         AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
@@ -480,53 +478,8 @@ class GreenSession constructor(
         }
     }
 
-    private fun initLiquidAssets() {
-        if(Bridge.useGreenModule) {
-
-            try {
-                if(!assetsManager.isUpToDate){
-                    // Update from Cache
-                    assetsManager.setCache(
-                        refreshAssets(
-                            AssetsParams(
-                                assets = true,
-                                icons = true,
-                                refresh = false
-                            )
-                        )
-                    )
-
-                    // Try to update the registry
-                    assetsManager.updateAssets(
-                        refreshAssets(
-                            AssetsParams(
-                                assets = true,
-                                icons = true,
-                                refresh = true
-                            )
-                        )
-                    )
-                }
-
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
-        }else{
-            try {
-                if(!getSession().registry.isUpToDate){
-                    // Get cache
-                    getSession().registry.cached()
-
-                    // Try to update the registry
-                    getSession().registry.refresh()
-                }
-            }catch (e: Exception){
-                e.printStackTrace()
-            }
-        }
-    }
-
-    fun getAssets(): Assets = assetsManager.getAssets()
+    fun getAsset(assetId : String): Asset? = assetsManager.getAsset(assetId)
+    fun getAssetDrawableOrDefault(assetId : String): Drawable? = assetsManager.getAssetDrawableOrDefault(assetId)
 
     internal fun destroy() {
         disconnect()

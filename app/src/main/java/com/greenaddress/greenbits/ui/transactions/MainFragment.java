@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui.transactions;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,11 +15,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.blockstream.gdk.AssetManager;
+import com.blockstream.gdk.AssetsProvider;
+import com.blockstream.gdk.CacheStatus;
 import com.blockstream.gdk.data.AccountType;
 import com.blockstream.gdk.data.TwoFactorReset;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.greenaddress.Bridge;
-import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenbits.ui.GAFragment;
@@ -44,19 +46,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observer;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import kotlinx.coroutines.GlobalScope;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.MODE_PRIVATE;
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_SUBACCOUNT;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_TX_DETAILS;
 
+@AndroidEntryPoint
 public class MainFragment extends GAFragment implements View.OnClickListener, ListTransactionsAdapter.OnTxSelected {
 
     private static final String TAG = MainFragment.class.getSimpleName();
@@ -75,16 +81,25 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     private LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
     private TextView mAssetsSelection;
     private View mView;
-    private View mCard;
-    private TextView mCardTitle;
-    private TextView mCardMessage;
-    private Button mCardAction;
+    private View m2faCard;
+    private TextView m2faCardTitle;
+    private TextView m2faCardMessage;
+    private Button m2faCardAction;
+
+    private View mAssetsCard;
+    private TextView mAssetsCardTitle;
+    private TextView mAssetsCardMessage;
+    private Button mAssetsCardAction;
+    private LinearProgressIndicator mAssetsProgress;
 
     private Disposable newTransactionDisposable;
     private Disposable blockDisposable;
     private Disposable subaccountDisposable;
     private Disposable transactionDisposable;
     private Disposable settingsDisposable;
+
+    @Inject
+    protected AssetManager mAssetManager;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
@@ -97,10 +112,16 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         if (isZombie())
             return mView;
 
-        mCard = UI.find(mView, R.id.card);
-        mCardTitle = UI.find(mView, R.id.cardTitle);
-        mCardMessage = UI.find(mView, R.id.cardMessage);
-        mCardAction = UI.find(mView, R.id.buttonCardAction);
+        m2faCard = UI.find(mView, R.id.tfaCard);
+        m2faCardTitle = UI.find(mView, R.id.tfaCardTitle);
+        m2faCardMessage = UI.find(mView, R.id.tfaCardMessage);
+        m2faCardAction = UI.find(mView, R.id.tfaButtonCardAction);
+
+        mAssetsCard = UI.find(mView, R.id.assetsCard);
+        mAssetsCardTitle = UI.find(mView, R.id.assetsCardTitle);
+        mAssetsCardMessage = UI.find(mView, R.id.assetsCardMessage);
+        mAssetsCardAction = UI.find(mView, R.id.assetsButtonCardAction);
+        mAssetsProgress = UI.find(mView, R.id.assetsProgress);
 
         // Setup recycler & adapter
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
@@ -141,9 +162,37 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
 
         mActiveAccount = Bridge.INSTANCE.getActiveAccount();
 
-        UI.find(mView, R.id.buttonCardAction).setOnClickListener(v -> {
+        m2faCardAction.setOnClickListener(v -> {
             Bridge.INSTANCE.twoFactorResetDialog(getActivity());
         });
+
+        mAssetsCardAction.setOnClickListener(v -> {
+            AssetsProvider provider = Bridge.INSTANCE.getActiveAssetProvider();
+            if(provider != null){
+                mAssetManager.updateAssetsAsync(provider);
+            }
+        });
+
+        if(getNetwork().getLiquid()){
+            mAssetManager.getStatusLiveData().observe(getViewLifecycleOwner(), status -> {
+                UI.hideIf(status.getMetadataStatus() == CacheStatus.Latest && status.getIconStatus() == CacheStatus.Latest, mAssetsCard);
+
+                mAssetsCardAction.setVisibility(status.getOnProgress() ? View.INVISIBLE : View.VISIBLE);
+                mAssetsProgress.setVisibility(status.getOnProgress() ? View.VISIBLE : View.GONE);
+
+                if(status.getMetadataStatus() != CacheStatus.Latest){
+                    mAssetsCardTitle.setText(R.string.id_failed_to_load_asset_registry);
+                    mAssetsCardMessage.setText(R.string.id_warning_asset_amounts_might);
+                    mAssetsCardAction.setText(R.string.id_reload);
+                } else {
+                    mAssetsCardTitle.setText(R.string.id_failed_to_load_asset_icons);
+                    mAssetsCardMessage.setText(R.string.id_asset_icons_are_missing);
+                    mAssetsCardAction.setText(R.string.id_reload);
+                }
+            });
+        }else{
+            UI.hide(mAssetsCard);
+        }
 
         return mView;
     }
@@ -227,16 +276,16 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         if(twoFactorReset != null){
 
             if(twoFactorReset.isDisputed()){
-                mCardTitle.setText(R.string.id_2fa_dispute_in_progress);
-                mCardMessage.setText(R.string.id_warning_wallet_locked_by);
+                m2faCardTitle.setText(R.string.id_2fa_dispute_in_progress);
+                m2faCardMessage.setText(R.string.id_warning_wallet_locked_by);
             }else{
-                mCardTitle.setText(R.string.id_2fa_reset_in_progress);
-                mCardMessage.setText(getString(R.string.id_your_wallet_is_locked_for_a, twoFactorReset.getDaysRemaining()));
+                m2faCardTitle.setText(R.string.id_2fa_reset_in_progress);
+                m2faCardMessage.setText(getString(R.string.id_your_wallet_is_locked_for_a, twoFactorReset.getDaysRemaining()));
             }
-            mCardAction.setText(R.string.id_learn_more);
+            m2faCardAction.setText(R.string.id_learn_more);
         }
 
-        mCard.setVisibility(twoFactorReset != null ? View.VISIBLE : View.GONE);
+        m2faCard.setVisibility(twoFactorReset != null ? View.VISIBLE : View.GONE);
     }
 
     private void update() {

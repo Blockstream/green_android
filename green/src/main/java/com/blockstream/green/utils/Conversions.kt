@@ -1,10 +1,10 @@
 package com.blockstream.green.utils
 
-import com.blockstream.green.gdk.GreenSession
 import com.blockstream.gdk.data.Balance
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.params.Convert
+import com.blockstream.green.gdk.GreenSession
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.util.*
@@ -109,7 +109,7 @@ fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirectio
 }
 
 fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean = true, withDirection: Transaction.Type? = null): String {
-    val look = session.convertAmount(Convert(this, session.getAssets().assets[assetId])).asset(withUnit = withUnit)
+    val look = session.convertAmount(Convert(this, session.getAsset(assetId))).asset(withUnit = withUnit)
 
     withDirection?.let {
         if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){

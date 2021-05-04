@@ -21,6 +21,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.gdk.AssetManager;
+import com.blockstream.gdk.CacheStatus;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.Bridge;
 import com.greenaddress.gdk.GDKTwoFactorCall;
@@ -37,7 +39,12 @@ import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+
+@AndroidEntryPoint
 // Problem with the above is that in the horizontal orientation the tabs don't go in the top bar
 public class TabbedMainActivity extends LoggedActivity  {
 
@@ -52,6 +59,9 @@ public class TabbedMainActivity extends LoggedActivity  {
 
     private MaterialDialog mSubaccountDialog;
     private boolean mIsBitcoinUri = false;
+
+    @Inject
+    protected AssetManager mAssetManager;
 
     static boolean isBitcoinScheme(final Intent intent) {
         final Uri uri = intent.getData();
@@ -84,7 +94,7 @@ public class TabbedMainActivity extends LoggedActivity  {
         }
 
         // Show error if Asset registry is not updated
-        if(getNetwork().getLiquid() && !getSession().getRegistry().isUpToDate()){
+        if(getNetwork().getLiquid() && mAssetManager.getStatusLiveData().getValue().getMetadataStatus() == CacheStatus.Empty){
             final Intent intentError = new Intent();
             intentError.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intentError.setClass(this, RegistryErrorActivity.class);

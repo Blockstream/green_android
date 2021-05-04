@@ -1,14 +1,16 @@
 package com.blockstream.green.di
 
 import android.content.Context
+import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.BuildConfig
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.lifecycle.AppLifecycleObserver
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.AssetManager
+import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.utils.QATester
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
 import dagger.Module
@@ -48,15 +50,16 @@ class CryptoModule {
     fun provideSessionManager(
         settingsManager: SettingsManager,
         assetManager: AssetManager,
-        greenWallet: GreenWallet
+        greenWallet: GreenWallet,
+        QATester: QATester
     ): SessionManager {
-        return SessionManager(settingsManager, assetManager, greenWallet)
+        return SessionManager(settingsManager, assetManager, greenWallet, QATester)
     }
 
     @Singleton
     @Provides
-    fun provideAssetManager(): AssetManager {
-        return AssetManager()
+    fun provideAssetManager(@ApplicationContext context: Context, QATester: QATester): AssetManager {
+        return AssetManager(context, QATester, BuildConfig.APPLICATION_ID)
     }
 
     @Singleton
@@ -81,5 +84,11 @@ class CryptoModule {
     @Provides
     fun provideAppLifecycleObserver(sessionManager: SessionManager): AppLifecycleObserver {
         return AppLifecycleObserver(sessionManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideEmulator(): QATester {
+        return QATester()
     }
 }

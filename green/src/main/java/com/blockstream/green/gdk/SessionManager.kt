@@ -1,11 +1,12 @@
 package com.blockstream.green.gdk
 
+import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.AssetManager
+import com.blockstream.green.utils.QATester
 import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.greenapi.Session
 import kotlinx.serialization.json.JsonElement
@@ -15,7 +16,8 @@ import mu.KLogging
 class SessionManager(
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
-    private val greenWallet: GreenWallet
+    private val greenWallet: GreenWallet,
+    private val QATester: QATester
 ) {
 
     private val sessions = mutableMapOf<GASession, GreenSession>()
@@ -123,7 +125,7 @@ class SessionManager(
 
     // Always use this method to create a Session as it keeps track of gaSession & GreenSession
     private fun createSession(): GreenSession {
-        val session = GreenSession(settingsManager, assetManager, greenWallet)
+        val session = GreenSession(settingsManager, assetManager, greenWallet, QATester)
 
         sessions[session.gaSession] = session
 

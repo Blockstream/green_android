@@ -12,19 +12,19 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.blockstream.green.R
-import com.blockstream.green.databinding.MainActivityBinding
+import com.blockstream.green.databinding.BridgeActivityBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class BridgeActivity : AppCompatActivity(), IActivity {
 
     private lateinit var navController: NavController
-    private lateinit var binding: MainActivityBinding
+    private lateinit var binding: BridgeActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = MainActivityBinding.inflate(layoutInflater)
+        binding = BridgeActivityBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)

@@ -1,7 +1,6 @@
 package com.blockstream.green.gdk
 
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.blockstream.gdk.data.AccountType
@@ -36,7 +35,7 @@ fun AccountType?.descriptionRes(): Int = when (this) {
     else -> R.string.id_unknown
 }
 
-fun Asset?.getIcon(context: Context, id: String, session: GreenSession): Drawable {
+fun Asset?.getIcon(context: Context, id: String, session: GreenSession): Drawable? {
     if (id == "btc") {
         return ContextCompat.getDrawable(
             context,
@@ -44,13 +43,7 @@ fun Asset?.getIcon(context: Context, id: String, session: GreenSession): Drawabl
         )!!
     }
 
-    val networkBitmap = session.getAssets().icons[id]
-
-    return if(networkBitmap != null){
-        BitmapDrawable(context.resources, networkBitmap)
-    }else{
-        ContextCompat.getDrawable(context, R.drawable.ic_unknown_network_60)!!
-    }
+    return session.getAssetDrawableOrDefault(id)
 }
 
 fun Network.getIcon(): Int {
