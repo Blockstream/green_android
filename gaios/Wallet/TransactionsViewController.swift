@@ -436,7 +436,11 @@ extension TransactionsController: DrawerNetworkSelectionDelegate {
             return Guarantee()
         }.map(on: bgq) {
             appDelegate?.disconnect()
-            BLEManager.shared.dispose()
+            if let account = AccountsManager.shared.current {
+                if account.isJade || account.isLedger {
+                    BLEManager.shared.dispose()
+                }
+            }
         }
     }
 
