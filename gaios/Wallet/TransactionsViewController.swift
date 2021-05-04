@@ -42,6 +42,12 @@ class TransactionsController: UITableViewController {
             return twoFactorConfig.isDisputeActive
         }
     }
+    var resetDaysRemaining: Int? {
+        get {
+            guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return nil }
+            return twoFactorConfig.daysRemaining
+        }
+    }
 
     var alertCards: [Card2faType] = []
 
@@ -140,7 +146,7 @@ class TransactionsController: UITableViewController {
     func loadAlertCards() {
         alertCards = []
         if isResetActive {
-            alertCards.append(Card2faType.reset)
+            alertCards.append(Card2faType.reset(resetDaysRemaining ?? 0))
         }
         if isDisputeActive {
             alertCards.append(Card2faType.dispute)

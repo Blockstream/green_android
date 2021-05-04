@@ -1,7 +1,7 @@
 import UIKit
 
 enum Card2faType {
-    case reset
+    case reset(Int)
     case dispute
     case reactivate
 }
@@ -32,20 +32,20 @@ class AlertCardCell: UITableViewCell {
         self.onMore = onMore
 
         switch type {
-        case .reset:
-            lblTitle.text = "2FA Reset in Progress"
-            lblHint.text = "Your wallet is locked for a Two-factor Authentication reset. The reset will be completed in %d days"
-            btnMore.setTitle("Learn More", for: .normal)
+        case .reset(let resetDaysRemaining):
+            lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
+            lblHint.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), resetDaysRemaining)
+            btnMore.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnReactivate.isHidden = true
         case .dispute:
-            lblTitle.text = "2FA Reset in Progress"
-            lblHint.text = "WARNING: Wallet locked by Two-Factor dispute. Contact support for more information."
-            btnMore.setTitle("Learn More", for: .normal)
+            lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
+            lblHint.text = NSLocalizedString("id_warning_wallet_locked_by", comment: "")
+            btnMore.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnReactivate.isHidden = true
         case .reactivate:
             lblTitle.text = "2FA Expired"
             lblHint.text = "2FA protection on some of your funds has expired"
-            btnMore.setTitle("Learn More", for: .normal)
+            btnMore.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnReactivate.setTitle("Reactivate 2FA", for: .normal)
         }
 
