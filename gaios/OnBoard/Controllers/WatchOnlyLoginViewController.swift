@@ -128,6 +128,8 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
     @objc func click(_ sender: Any) {
         view.endEditing(true)
+
+        let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
 
@@ -139,7 +141,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
             appDelegate.disconnect()
             try appDelegate.connect(self.account?.network ?? "mainnet")
             try getSession().loginWatchOnly(username: self.account?.username ?? "",
-                                            password: self.account?.password ?? "")
+                                            password: password)
         }.then { _ in
             Registry.shared.load()
         }.ensure {
