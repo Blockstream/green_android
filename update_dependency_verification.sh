@@ -12,6 +12,7 @@ help_message() {
     -h, --help  Display this help message and exit
     -l, --local Run in local environment
     -a, --add   Add new checksums
+    -b, --build Run build task to get more dependencies (takes longer)
     -al         Run in local environment, only adding checksums
 
 _EOF_
@@ -21,6 +22,7 @@ _EOF_
 # ----- Vars
 GRADLE="docker"
 OVERWRITE=true
+TASK="help"
 
 # --- Argument handling
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -34,6 +36,9 @@ case $key in
       help_message ;;
     -l | --local)
       GRADLE="local"
+      shift ;;
+    -b | --build)
+      TASK="assembleDevelopmentDebug"
       shift ;;
     -a | --add | --only-add)
       OVERWRITE=false
@@ -59,7 +64,7 @@ fi
 
 # Run locally or in Docker
 if [[ $GRADLE == "local" ]]; then
-    ./gradlew --write-verification-metadata sha256 help
+    ./gradlew --write-verification-metadata sha256 "${TASK}"
 else
-  docker run --rm --name green_dependency_verification -v $PWD:/ga greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964 /bin/sh -c "cd /ga && ./gradlew --write-verification-metadata sha256 help"
+  docker run --rm --name green_dependency_verification -v $PWD:/ga greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964 /bin/sh -c "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
 fi
