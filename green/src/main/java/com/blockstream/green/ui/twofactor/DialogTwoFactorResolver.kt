@@ -40,7 +40,7 @@ class DialogTwoFactorResolver(val context: Context, val method: String? = null) 
                     availableMethodsChoices.toTypedArray(),
                     0, null
                 )
-                .setPositiveButton(android.R.string.ok){ dialogInterface: DialogInterface, i: Int ->
+                .setPositiveButton(android.R.string.ok){ dialogInterface: DialogInterface, _: Int ->
                     if(dialogInterface is AlertDialog){
                         emitter.onSuccess(availableMethods[dialogInterface.listView.checkedItemPosition])
                     }

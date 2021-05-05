@@ -4,7 +4,10 @@ import com.blockstream.gdk.GAJson
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.util.*
 
 @Serializable
@@ -20,12 +23,12 @@ data class Settings(
 ): GAJson<Settings>() {
 
     override fun kSerializer(): KSerializer<Settings> {
-        return Settings.serializer()
+        return serializer()
     }
 
     val unitKey : String
         get() {
-            return unit.toLowerCase(Locale.ROOT).replace("\u00B5", "u")
+            return unit.lowercase(Locale.ROOT).replace("\u00B5", "u")
         }
 
 }

@@ -52,7 +52,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 
         val fastAdapter = FastAdapter.with(devicesAdapter)
 
-        fastAdapter.onClickListener = { _, _, item, position ->
+        fastAdapter.onClickListener = { _, _, item, _ ->
 
             if(item.device.hasPermissionsOrIsBonded()){
                 navigateToDevice(item.device)

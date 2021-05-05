@@ -23,7 +23,7 @@ fun Fragment.showTorSinglesigWarningIfNeeded(settingsManager: SettingsManager){
             ) { _: DialogInterface, _: Int, checked: Boolean ->
                 dontAskAgain = checked
             }
-            .setPositiveButton(android.R.string.ok) { _: DialogInterface, i: Int ->
+            .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int ->
                 if (dontAskAgain) {
                     settingsManager.setTorSinglesigWarned()
                 }

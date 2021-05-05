@@ -22,7 +22,7 @@ fun getBitcoinOrLiquidUnit(session: GreenSession): String{
 }
 
 fun getDecimals(unit: String): Int {
-    return when(unit.toLowerCase(Locale.ROOT)) {
+    return when (unit.lowercase(Locale.ROOT)) {
         "btc" -> 8
         "mbtc" -> 5
         "ubtc", "bits", "\u00B5btc" -> 2

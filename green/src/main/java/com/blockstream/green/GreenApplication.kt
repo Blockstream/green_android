@@ -17,8 +17,8 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.lifecycle.AppLifecycleObserver
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.ui.BridgeActivity
-import com.blockstream.green.ui.QATesterActivity
 import com.blockstream.green.ui.MainActivity
+import com.blockstream.green.ui.QATesterActivity
 import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.recovery.RecoveryIntroFragmentArgs
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
@@ -256,13 +256,13 @@ class GreenApplication : Application(){
             sessionManager.getWalletSession(gaSession)
         }
 
-        Bridge.connectFn = { context, gaSession, networkId, hwWallet->
+        Bridge.connectFn = { _, gaSession, networkId, hwWallet->
             sessionManager.getWalletSession(gaSession)?.let {
                 it.connect(it.networks.getNetworkById(networkId), hwWallet)
             }
         }
 
-        Bridge.loginWithDeviceFn = { context, gaSession, networkId, connectSession, hwWallet , hardwareDataResolver ->
+        Bridge.loginWithDeviceFn = { _, gaSession, networkId, connectSession, hwWallet, hardwareDataResolver ->
             sessionManager.getWalletSession(gaSession)?.let {
                 it.loginWithDevice(it.networks.getNetworkById(networkId), connectSession, hwWallet, hardwareDataResolver)
             }

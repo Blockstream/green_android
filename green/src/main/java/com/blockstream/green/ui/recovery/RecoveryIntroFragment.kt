@@ -11,11 +11,11 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
-import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
+import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.handleBiometricsError
-import com.blockstream.green.ui.wallet.WalletViewModel
 import com.greenaddress.Bridge
 import com.greenaddress.greenbits.ui.preferences.DisplayMnemonicActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,7 +31,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
 
     override val wallet by lazy { args.wallet!! }
 
-    private var navListener = NavController.OnDestinationChangedListener { _, destination, _ ->
+    private var navListener = NavController.OnDestinationChangedListener { _, _, _ ->
         setSecureScreen(false)
     }
 

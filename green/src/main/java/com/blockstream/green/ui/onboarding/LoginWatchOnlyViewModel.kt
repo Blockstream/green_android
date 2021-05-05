@@ -1,12 +1,8 @@
 package com.blockstream.green.ui.onboarding
 
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.green.utils.AppKeystore
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -14,6 +10,9 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
+import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.utils.ConsumableEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -47,7 +46,7 @@ class LoginWatchOnlyViewModel @Inject constructor(
     }
 
 
-    fun login(v: View? = null) {
+    fun login() {
         val session: GreenSession = sessionManager.getOnBoardingSession()
 
         session.observable {

@@ -96,7 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.isLoginEnabled}"
-                android:onClick="@{vm::login}"
+                android:onClick="@{() -> vm.login()}"
                 android:text="@string/id_log_in" />
 
             <TextView

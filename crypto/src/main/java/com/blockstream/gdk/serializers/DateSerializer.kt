@@ -9,9 +9,15 @@ import kotlinx.serialization.encoding.Encoder
 import java.text.SimpleDateFormat
 import java.util.*
 
+object DateOrNullSerializer : KSerializer<Date?> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Date", PrimitiveKind.STRING)
+    override fun serialize(encoder: Encoder, value: Date?) = encoder.encodeString(value.toString())
+    override fun deserialize(decoder: Decoder): Date? = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(decoder.decodeString())
+}
+
 object DateSerializer : KSerializer<Date> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("Date", PrimitiveKind.STRING)
     override fun serialize(encoder: Encoder, value: Date) = encoder.encodeString(value.toString())
-    override fun deserialize(decoder: Decoder): Date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(decoder.decodeString())
+    override fun deserialize(decoder: Decoder): Date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(decoder.decodeString()) ?: Date(0)
 }
 

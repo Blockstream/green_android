@@ -43,13 +43,13 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
 
         binding.pinView.isVerifyMode = true
         binding.pinView.listener = object : GreenPinViewListener{
-            override fun onPin(newPin: String) {
-                pin = newPin
+            override fun onPin(pin: String) {
+                this@SetPinFragment.pin = pin
                 viewModel.isPinVerified.value = true
             }
 
             override fun onPinChange(pinLength: Int, intermediatePin: String?) {
-                pin = ""
+                this@SetPinFragment.pin = ""
                 viewModel.isPinVerified.value = false
             }
 

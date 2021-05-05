@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
-import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.ColorInt
@@ -176,14 +175,18 @@ class ViewFinderView(context: Context?, attrs: AttributeSet?) :
             return 31 * (31 * (31 * left + top) + right) + bottom
         }
 
-        override fun equals(obj: Any?): Boolean {
-            return if (obj === this) {
-                true
-            } else if (obj is Rect) {
-                val other = obj
-                left == other.left && top == other.top && right == other.right && bottom == other.bottom
-            } else {
-                false
+        override fun equals(other: Any?): Boolean {
+            return when {
+                other === this -> {
+                    true
+                }
+                other is Rect -> {
+                    val other = other
+                    left == other.left && top == other.top && right == other.right && bottom == other.bottom
+                }
+                else -> {
+                    false
+                }
             }
         }
 

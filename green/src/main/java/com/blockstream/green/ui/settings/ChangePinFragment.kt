@@ -37,8 +37,8 @@ class ChangePinFragment : WalletFragment<ChangePinFragmentBinding>(R.layout.chan
 
         binding.pinView.isVerifyMode = true
         binding.pinView.listener = object : GreenPinViewListener{
-            override fun onPin(newPin: String) {
-                viewModel.changePin(newPin)
+            override fun onPin(pin: String) {
+                viewModel.changePin(pin)
             }
 
             override fun onPinChange(pinLength: Int, intermediatePin: String?) {

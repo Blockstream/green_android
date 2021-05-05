@@ -1,7 +1,6 @@
 package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
@@ -19,9 +18,9 @@ data class TitleListItem(
     override val type: Int
         get() = R.id.fastadapter_title_item_id
 
-    override var identifier: Long
-        get() = title.textString?.hashCode()?.toLong() ?: title.textRes.toLong()
-        set(value) {}
+    init {
+        identifier = title.textString?.hashCode()?.toLong() ?: title.textRes.toLong()
+    }
 
     override fun bindView(binding: ListItemTitleBinding, payloads: List<Any>) {
         val res = binding.root.resources

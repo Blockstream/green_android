@@ -134,10 +134,6 @@ android {
     }
 }
 
-// Enable transforming @AndroidEntryPoint classes in local jvm tests
-hilt {
-    enableTransformForLocalTests = true
-}
 // Configure kapt to correct error types by setting correctErrorTypes to true
 kapt {
     correctErrorTypes true
