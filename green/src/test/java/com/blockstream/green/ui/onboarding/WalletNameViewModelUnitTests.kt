@@ -1,11 +1,11 @@
 package com.blockstream.green.ui.onboarding
 
 import com.blockstream.green.TestViewModel
-import com.nhaarman.mockitokotlin2.mock
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)

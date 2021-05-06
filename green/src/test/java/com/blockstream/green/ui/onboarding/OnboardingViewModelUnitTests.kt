@@ -11,9 +11,11 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert
+import com.blockstream.gdk.data.Network
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 

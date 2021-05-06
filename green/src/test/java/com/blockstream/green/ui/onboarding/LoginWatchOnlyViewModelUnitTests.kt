@@ -8,10 +8,10 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.Networks
-import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import java.lang.Exception

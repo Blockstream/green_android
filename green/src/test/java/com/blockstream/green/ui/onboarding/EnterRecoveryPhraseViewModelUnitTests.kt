@@ -1,14 +1,14 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.TestData
 import com.blockstream.green.TestViewModel
-import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
-import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 

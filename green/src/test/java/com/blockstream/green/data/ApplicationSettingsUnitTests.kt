@@ -2,14 +2,12 @@ package com.blockstream.green.data
 
 import android.content.SharedPreferences
 import com.blockstream.green.settings.ApplicationSettings
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.*
 
 @RunWith(MockitoJUnitRunner::class)
 class ApplicationSettingsUnitTests {

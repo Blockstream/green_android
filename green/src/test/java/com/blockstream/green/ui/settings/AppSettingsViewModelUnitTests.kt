@@ -3,13 +3,11 @@ package com.blockstream.green.ui.settings
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.settings.ApplicationSettings
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 

@@ -2,12 +2,12 @@ package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
 import com.blockstream.green.TestViewModel
-import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.*
 
 @RunWith(MockitoJUnitRunner::class)
 class AddWalletViewModelUnitTests : TestViewModel<AddWalletViewModel>(){
