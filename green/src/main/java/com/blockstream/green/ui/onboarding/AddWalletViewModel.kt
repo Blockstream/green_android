@@ -4,12 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.ui.AppViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 
 class AddWalletViewModel @AssistedInject constructor(
     val deviceManager: DeviceManager,
@@ -22,7 +22,7 @@ class AddWalletViewModel @AssistedInject constructor(
 
     init {
         // If you have already agreed, check by default
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             termsChecked.postValue(walletRepository.walletsExistsSuspend())
         }
     }

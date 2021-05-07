@@ -35,7 +35,7 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
     suspend fun deleteLoginCredentialsSuspend(walletId: WalletId, type: CredentialType) = walletDao.deleteLoginCredentialsSuspend(walletId, type.value)
 
     fun walletsExists() = walletDao.walletsExists()
-    fun walletsExistsSuspend() = walletDao.walletsExistsSuspend()
+    suspend fun walletsExistsSuspend() = walletDao.walletsExistsSuspend()
     fun getWallets(): LiveData<List<Wallet>> = walletDao.getWallets()
     fun getWalletsSync() = walletDao.getWalletsSync()
     fun getSoftwareWallets(): LiveData<List<Wallet>> = walletDao.getSoftwareWallets()

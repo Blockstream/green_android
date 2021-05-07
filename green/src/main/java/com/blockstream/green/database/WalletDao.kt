@@ -59,7 +59,7 @@ interface WalletDao {
     fun walletsExists(): LiveData<Boolean>
 
     @Query("SELECT EXISTS(SELECT id FROM wallets LIMIT 1)")
-    fun walletsExistsSuspend(): Boolean
+    suspend fun walletsExistsSuspend(): Boolean
 
     @Transaction
     @Query("SELECT * FROM wallets WHERE id = :id")
