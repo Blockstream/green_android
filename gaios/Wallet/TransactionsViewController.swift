@@ -42,6 +42,12 @@ class TransactionsController: UITableViewController {
             return twoFactorConfig.isDisputeActive
         }
     }
+    var isAssetRegistryFailActive: Bool {
+        get {
+            //handle logic here
+            return true
+        }
+    }
     var resetDaysRemaining: Int? {
         get {
             guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return nil }
@@ -49,7 +55,7 @@ class TransactionsController: UITableViewController {
         }
     }
 
-    var alertCards: [Card2faType] = []
+    var alertCards: [AlertCardType] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -150,10 +156,13 @@ class TransactionsController: UITableViewController {
     func loadAlertCards() {
         alertCards = []
         if isResetActive {
-            alertCards.append(Card2faType.reset(resetDaysRemaining ?? 0))
+            alertCards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
         }
         if isDisputeActive {
-            alertCards.append(Card2faType.dispute)
+            alertCards.append(AlertCardType.dispute)
+        }
+        if isAssetRegistryFailActive {
+            alertCards.append(AlertCardType.assetRegistryFail)
         }
         // We will use Card2faType.reactivate for expired coins
     }
@@ -200,6 +209,10 @@ class TransactionsController: UITableViewController {
         tableView.reloadData()
     }
 
+    func reloadRegistry() {
+        print("reloadRegistry")
+    }
+
     override func numberOfSections(in tableView: UITableView) -> Int {
         // section 0 is dadicated to cards
         return txs.count + 1
@@ -225,13 +238,24 @@ class TransactionsController: UITableViewController {
 
         if indexPath.section == 0 {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "AlertCardCell", for: indexPath) as? AlertCardCell else { fatalError("Fail to dequeue reusable cell") }
-            cell.configure(alertCards[indexPath.row],
-                           onReactivate: {[weak self] in
-                            self?.performSegue(withIdentifier: "reactivate2fa", sender: self)
-                           },
-                           onMore: {[weak self] in
-                            self?.performSegue(withIdentifier: "leaarnMore2fa", sender: self)
-                           })
+            let alertCard = alertCards[indexPath.row]
+            switch alertCard {
+            case .reset, .dispute, .reactivate:
+                cell.configure(alertCards[indexPath.row],
+                               onLeft: {[weak self] in
+                                self?.performSegue(withIdentifier: "reactivate2fa", sender: self)
+                               },
+                               onRight: {[weak self] in
+                                self?.performSegue(withIdentifier: "leaarnMore2fa", sender: self)
+                               })
+            case .assetRegistryFail:
+                cell.configure(alertCards[indexPath.row],
+                               onLeft: nil,
+                               onRight: {[weak self] in
+                                self?.reloadRegistry()
+                               })
+            }
+
             cell.selectionStyle = .none
             return cell
         }
