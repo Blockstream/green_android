@@ -26,5 +26,33 @@ data class Network(
     val isElectrum
         get() = "electrum" == serverType
 
-    val supportTorConnection = !isElectrum
+    val supportTorConnection
+        get () = !isElectrum
+
+    val isTestnet
+        get() = !isMainnet
+
+    val canonicalName: String
+        get() = if (isElectrum) {
+            when {
+                isLiquid -> {
+                    "Liquid"
+                }
+                isMainnet -> {
+                    "Bitcoin"
+                }
+                else -> {
+                    "Testnet"
+                }
+            }
+        } else {
+            name
+        }
+
+    val productName: String
+        get() = if (isElectrum) {
+            "Singlesig $canonicalName"
+        } else {
+            "Multisig $canonicalName"
+        }
 }

@@ -1,15 +1,15 @@
 package com.blockstream.green.ui.onboarding
 
-import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.gdk.SessionManager
 import com.blockstream.gdk.data.Network
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
+import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.utils.ConsumableEvent
 
 
 open class OnboardingViewModel(
@@ -28,7 +28,7 @@ open class OnboardingViewModel(
             var pinData = it.setPin(pin)
 
             val wallet = Wallet(
-                name = options.walletName ?: network.name,
+                name = options.walletName ?: network.productName,
                 network = network.id,
                 isRecoveryPhraseConfirmed = options.isRestoreFlow || !mnemonic.isNullOrBlank(),
                 isHardware = false
@@ -85,7 +85,7 @@ open class OnboardingViewModel(
             it.loginWithMnemonic(network, mnemonic, "")
 
             val wallet = Wallet(
-                name = options.walletName ?: network.name,
+                name = options.walletName ?: network.productName,
                 network = network.id,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = true
@@ -118,7 +118,7 @@ open class OnboardingViewModel(
             if(restoreWallet == null){
                 wallet  = restoreWallet
                     ?: Wallet(
-                        name = options.walletName ?: options.network.name,
+                        name = options.walletName ?: options.network.productName,
                         network = network.id,
                         isRecoveryPhraseConfirmed = options.isRestoreFlow,
                         isHardware = false

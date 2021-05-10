@@ -37,6 +37,7 @@ object Bridge {
     var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, walletId: Long?) -> Unit)? = null
     var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
     var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
+    var getWalletNameFn: ((gaSession: Any?) -> String?)? = null
     var getHWWalletFn: ((gaSession: Any?) -> HWWallet?)? = null
     var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
     var recoveryConfirmedProviderFn: ((gaSession: Any?) -> Boolean)? = null
@@ -111,6 +112,21 @@ object Bridge {
     fun setActiveAccount(account : Int){
         setSubaccountFn?.let {
             it.invoke(Session.getSession().nativeSession, account)
+        }
+    }
+
+    fun getWalletName(): String? {
+        return getWalletNameFn?.let {
+
+            val session = Session.getSession()
+
+            if(session != null && session.nativeSession != null){
+                session.nativeSession.let { nativeSession ->
+                    return@getWalletName it.invoke(nativeSession)
+                }
+            }
+
+            null
         }
     }
 

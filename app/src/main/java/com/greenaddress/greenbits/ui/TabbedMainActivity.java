@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.Bridge;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SettingsData;
@@ -191,7 +192,8 @@ public class TabbedMainActivity extends LoggedActivity  {
         setTitle(null);
 
         TextView toolbarTitle = UI.find(this, R.id.toolbarTitle);
-        toolbarTitle.setText(getNetwork().getName());
+        String walletName = Bridge.INSTANCE.getWalletName();
+        toolbarTitle.setText(walletName != null ? walletName : getNetwork().getName());
         toolbarTitle.setOnClickListener(v -> {
             showDialog();
         });
