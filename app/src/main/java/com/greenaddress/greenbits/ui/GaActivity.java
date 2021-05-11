@@ -228,22 +228,6 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
     }
 
     @Override
-    public void jadeAskForFirmwareUpgrade(String version, boolean isUpgradeRequired, Function<Boolean, Void> callback){
-        runOnUiThread(() -> {
-            UI.popup(this, isUpgradeRequired ? R.string.id_new_jade_firmware_required : R.string.id_new_jade_firmware_available, R.string.id_continue, R.string.id_cancel)
-                    .content(getString(R.string.id_install_version_s, version))
-                    .onNegative((dialog, which) -> {
-                        callback.apply(false);
-                    })
-                    .onPositive((dialog, which) -> {
-                        callback.apply(true);
-                    })
-                    .build()
-                    .show();
-        });
-    }
-
-    @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 
         if (requestCode == HARDWARE_PIN_REQUEST || requestCode == HARDWARE_PASSPHRASE_REQUEST) {

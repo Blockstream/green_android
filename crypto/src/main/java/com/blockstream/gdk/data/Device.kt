@@ -16,6 +16,15 @@ data class Device(
     @SerialName("supports_liquid") val supportsLiquid: DeviceLiquidSupport,
 ): GAJson<Device>() {
 
+    val isJade
+        get() = name.lowercase() == "jade"
+
+    val isTrezor
+        get() = name.lowercase() == "trezor"
+
+    val isLedger
+        get() = name.lowercase() == "ledger"
+
     override fun kSerializer(): KSerializer<Device> {
         return serializer()
     }

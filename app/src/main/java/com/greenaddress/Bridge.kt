@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.blockstream.crypto.BuildConfig
 import com.blockstream.gdk.AssetsProvider
+import com.blockstream.gdk.data.SubAccount
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenapi.HWWallet
@@ -37,7 +38,7 @@ object Bridge {
 
     var hardwareQATester : HardwareQATester? = null
 
-    var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, walletId: Long?) -> Unit)? = null
+    var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, extraData: Any?) -> Unit)? = null
     var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
     var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
     var getWalletNameFn: ((gaSession: Any?) -> String?)? = null
@@ -51,7 +52,7 @@ object Bridge {
     private var initialized = false
 
     enum class NavigateType {
-        LOGOUT, CHANGE_PIN, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET, ADD_ACCOUNT
+        LOGOUT, CHANGE_PIN, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET, ADD_ACCOUNT, RECEIVE, ACCOUNT_ID
     }
 
     fun initializeBridge(
@@ -92,6 +93,10 @@ object Bridge {
         navigateFn?.invoke(activity, NavigateType.LOGOUT, Session.getSession().nativeSession, walletId)
     }
 
+    fun navigateToReceive(activity: FragmentActivity){
+        navigateFn?.invoke(activity, NavigateType.RECEIVE, Session.getSession().nativeSession, null)
+    }
+
     fun navigateToChangePin(activity: FragmentActivity){
         navigateFn?.invoke(activity, NavigateType.CHANGE_PIN, Session.getSession().nativeSession, null)
     }
@@ -102,6 +107,10 @@ object Bridge {
 
     fun appSettingsDialog(activity: FragmentActivity){
         navigateFn?.invoke(activity, NavigateType.APP_SETTINGS, Session.getSession().nativeSession, null)
+    }
+
+    fun accountIdDialog(activity: FragmentActivity, subAccount: SubAccount){
+        navigateFn?.invoke(activity, NavigateType.ACCOUNT_ID, Session.getSession().nativeSession, subAccount)
     }
 
     fun twoFactorResetDialog(activity: FragmentActivity){

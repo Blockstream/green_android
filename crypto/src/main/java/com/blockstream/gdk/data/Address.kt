@@ -9,11 +9,11 @@ import kotlinx.serialization.Serializable
 @Parcelize
 data class Address(
     @SerialName("address") val address: String,
-    @SerialName("pointer") val pointer: Int,
+    @SerialName("pointer") val pointer: Long = 0,
     @SerialName("address_type") val addressType: String? = null,
-    @SerialName("branch") val branch: Int? = null,
+    @SerialName("branch") val branch: Long = 0,
     @SerialName("script") val script: String? = null,
     @SerialName("script_type") val scriptType: Int? = null,
     @SerialName("subaccount") val subaccount: Int? = null,
-    @SerialName("subtype") val subType: String? = null,
+    @SerialName("subtype") val subType: Long? = null,
 ) : Parcelable

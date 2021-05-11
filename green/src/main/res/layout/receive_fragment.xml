@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.blockstream.green.ui.receive.ReceiveViewModel" />
+
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:paddingTop="16dp"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp">
+
+                <TextView
+                    android:id="@+id/assetWhitelistWarning"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:textColor="@color/warning"
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:text="@string/id_ledger_supports_a_limited_set"
+                    android:drawablePadding="8dp"
+                    app:drawableStartCompat="@drawable/ic_baseline_warning_18"
+                    app:drawableTint="@color/warning"
+                    isVisible="@{vm.showAssetWhitelistWarning}"/>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/materialCardView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/buttonNewAddress"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="?android:attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_baseline_refresh_24"
+                            android:tooltipText="@string/id_generate_new_address"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/materialCardView"
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_marginStart="42dp"
+                            android:layout_marginEnd="42dp"
+                            android:background="@color/white"
+                            android:backgroundTint="@color/white"
+                            android:scaleType="fitCenter"
+                            app:layout_constraintDimensionRatio="1:1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHeight_max="350dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/buttonNewAddress"
+                            app:layout_constraintWidth_max="350dp"
+                            app:layout_optimizationLevel="ratio">
+
+                            <ImageView
+                                android:id="@+id/addressQR"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:scaleType="fitCenter"
+                                tools:src="@mipmap/ic_launcher" />
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <TextView
+                            android:id="@+id/address"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:layout_marginBottom="24dp"
+                            android:breakStrategy="balanced"
+                            android:drawablePadding="8dp"
+                            android:text="@{vm.addressUri}"
+                            android:textAlignment="center"
+                            android:textColor="@color/color_on_surface_emphasis_high"
+                            android:textSize="13sp"
+                            app:drawableEndCompat="@drawable/ic_baseline_content_copy_18"
+                            app:drawableTint="@color/color_on_surface_emphasis_low"
+                            app:layout_constraintBottom_toTopOf="@+id/wrap"
+                            app:layout_constraintEnd_toEndOf="@+id/materialCardView"
+                            app:layout_constraintStart_toStartOf="@+id/materialCardView"
+                            app:layout_constraintTop_toBottomOf="@+id/materialCardView"
+                            tools:text="bitcoin:VJLAD343588Ub82r23tnFfadsfafadfafasdfaiiiiii?amopas=234" />
+
+                        <LinearLayout
+                            android:id="@+id/wrap"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="32dp"
+                            android:clipChildren="false"
+                            android:clipToPadding="false"
+                            android:orientation="vertical"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/materialCardView"
+                            app:layout_constraintStart_toStartOf="@+id/materialCardView">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/buttonEdit"
+                                style="@style/Widget.Green.Button.Outlined"
+                                isVisible="@{vm.isAddressUri}"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="6dp"
+                                android:text="@string/id_edit"
+                                app:icon="@drawable/ic_baseline_edit_24"
+                                app:iconGravity="textStart"
+                                app:layout_constraintBottom_toTopOf="@id/buttonShare"
+                                app:layout_constraintEnd_toEndOf="@+id/materialCardView"
+                                app:layout_constraintStart_toStartOf="@+id/materialCardView"
+                                app:layout_constraintTop_toBottomOf="@+id/address" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/buttonShare"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/id_share"
+                                app:icon="@drawable/ic_baseline_share_18"
+                                app:iconGravity="textStart"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="@+id/materialCardView"
+                                app:layout_constraintStart_toStartOf="@+id/materialCardView" />
+
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/warning"
+                    android:textAppearance="?attr/textAppearanceCaption"
+                    android:text="@string/id_please_verify_that_the_address"
+                    android:drawablePadding="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:drawableStartCompat="@drawable/ic_baseline_warning_18"
+                    app:drawableTint="@color/warning"
+                    isVisible="@{vm.canValidateAddressInDevice}"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVerify"
+                    style="@style/Widget.Green.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_verify_on_device"
+                    android:enabled="@{!vm.onProgress}"
+                    isVisible="@{vm.canValidateAddressInDevice}" />
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonMore"
+                    style="@style/Widget.Green.Button.Outlined"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/id_more_options"
+                    android:textColor="@color/color_on_surface_emphasis_high"
+                    app:icon="@drawable/ic_baseline_arrow_drop_down_24"
+                    app:iconGravity="end"
+                    app:iconPadding="-24dp"
+                    app:iconTint="@color/color_on_surface_emphasis_high"
+                    />
+
+            </LinearLayout>
+        </ScrollView>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress"
+            isVisible="@{vm.onProgress}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:indeterminate="true"
+            app:hideAnimationBehavior="inward"
+            app:trackCornerRadius="@dimen/progress_radius"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </FrameLayout>
+
+</layout>

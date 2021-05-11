@@ -43,6 +43,7 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         val isPin = PIN == intent.action
         val isBackupRecovery = BACKUP_RECOVERY == intent.action
         val isAddAccount = ADD_ACCOUNT == intent.action
+        val isReceive = RECEIVE == intent.action
 
         val graph = when {
             isPin -> {
@@ -58,6 +59,11 @@ class BridgeActivity : AppCompatActivity(), IActivity {
                     it.startDestination = R.id.chooseAccountTypeFragment
                 }
             }
+            isReceive -> {
+                inflater.inflate(R.navigation.nav_graph).also {
+                    it.startDestination = R.id.receiveFragment
+                }
+            }
             else -> {
                 inflater.inflate(
                     R.navigation.nav_graph
@@ -65,15 +71,7 @@ class BridgeActivity : AppCompatActivity(), IActivity {
             }
         }
 
-        if(isPin){
-            navController.setGraph(graph, intent.extras)
-        } else if(isBackupRecovery){
-            navController.setGraph(graph, intent.extras)
-        } else if(isAddAccount){
-            navController.setGraph(graph, intent.extras)
-        } else{
-            navController.graph = graph
-        }
+        navController.setGraph(graph, intent.extras)
 
         val appBarConfiguration = AppBarConfiguration(
             setOf()
@@ -132,5 +130,6 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         const val PIN = "PIN"
         const val ADD_ACCOUNT = "ADD_ACCOUNT"
         const val BACKUP_RECOVERY = "BACKUP_RECOVERY"
+        const val RECEIVE = "RECEIVE"
     }
 }

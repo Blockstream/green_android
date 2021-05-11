@@ -105,6 +105,10 @@ fun Fragment.dialog(title: String, message: String, listener: (() -> Unit)? = nu
         .show()
 }
 
+fun Fragment.toast(resId: Int, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(requireContext(), getString(resId), duration).show()
+}
+
 fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(requireContext(), text, duration).show()
 }

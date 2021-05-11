@@ -14,6 +14,8 @@
     <color name="black">#ff000000</color>
     <color name="white">#ffffffff</color>
 
+    <color name="error">#b74747</color>
+    <color name="warning">#d2934a</color>
 
     <color name="bitcoin">#fe8e02</color>
     <color name="liquid">#46BEAE</color>

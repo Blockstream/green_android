@@ -35,7 +35,6 @@ import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-import com.greenaddress.greenbits.ui.receive.ReceiveActivity;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 
 import org.bitcoinj.core.Sha256Hash;
@@ -53,7 +52,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import kotlinx.coroutines.GlobalScope;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
@@ -61,6 +59,8 @@ import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_SUBACCOUNT;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_TX_DETAILS;
+import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
+import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.AUTHORIZED_ACCOUNT;
 
 @AndroidEntryPoint
 public class MainFragment extends GAFragment implements View.OnClickListener, ListTransactionsAdapter.OnTxSelected {
@@ -92,6 +92,10 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
     private Button mAssetsCardAction;
     private LinearProgressIndicator mAssetsProgress;
 
+    private View mAccountIdCard;
+    private Button mButtonAccountId;
+
+
     private Disposable newTransactionDisposable;
     private Disposable blockDisposable;
     private Disposable subaccountDisposable;
@@ -122,6 +126,9 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         mAssetsCardMessage = UI.find(mView, R.id.assetsCardMessage);
         mAssetsCardAction = UI.find(mView, R.id.assetsButtonCardAction);
         mAssetsProgress = UI.find(mView, R.id.assetsProgress);
+
+        mAccountIdCard = UI.find(mView, R.id.assetIdCard);
+        mButtonAccountId = UI.find(mView, R.id.buttonAccountId);
 
         // Setup recycler & adapter
         final RecyclerView txView = UI.find(mView, R.id.mainTransactionList);
@@ -171,6 +178,10 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             if(provider != null){
                 mAssetManager.updateAssetsAsync(provider);
             }
+        });
+
+        mButtonAccountId.setOnClickListener(v -> {
+            Bridge.INSTANCE.accountIdDialog(getGaActivity(), mSubaccount.toSubAccount());
         });
 
         if(getNetwork().getLiquid()){
@@ -317,6 +328,8 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             // Load transactions after subaccount data because
             // ledger HW doesn't support parallel operations
             updateTransactions(true);
+
+            UI.showIf(mSubaccount != null && mSubaccount.getType() != null && mSubaccount.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]), mAccountIdCard);
         }, (final Throwable e) -> {
             e.printStackTrace();
         });
@@ -409,14 +422,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         view.setEnabled(false);
         if (view.getId() == R.id.receiveButton) {
             view.setEnabled(true);
-            final Intent intent = new Intent(getActivity(), ReceiveActivity.class);
-            try {
-                final String text = mObjectMapper.writeValueAsString(mSubaccount);
-                intent.putExtra("SUBACCOUNT", text);
-                getActivity().startActivity(intent);
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
+            Bridge.INSTANCE.navigateToReceive(requireActivity());
         } else if (view.getId() == R.id.sendButton) {
             view.setEnabled(true);
             if (getBalance() == null || getBalance().get("btc") == null)
@@ -425,14 +431,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
                 UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
                 .content(R.string.id_insufficient_lbtc_to_send_a)
                 .onPositive((dialog, which) -> {
-                    try {
-                        final Intent intent = new Intent(getActivity(), ReceiveActivity.class);
-                        final String text = mObjectMapper.writeValueAsString(mSubaccount);
-                        intent.putExtra("SUBACCOUNT", text);
-                        getActivity().startActivity(intent);
-                    } catch (final Exception e) {
-                        e.printStackTrace();
-                    }
+                    Bridge.INSTANCE.navigateToReceive(requireActivity());
                 })
                 .build().show();
                 return;

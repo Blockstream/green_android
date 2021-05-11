@@ -14,6 +14,7 @@ import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 fun AccountType?.titleRes(): Int = when (this) {
     AccountType.STANDARD -> R.string.id_standard_account
@@ -80,9 +81,16 @@ fun Throwable.isConnectionError() =
 
 // Run mapper on IO, observer in Android Main
 @Suppress("UNCHECKED_CAST")
-fun <T, R> T.observable(mapper: (T) -> R): Single<R> =
+fun <T, R> T.observable(timeout: Long = 0, mapper: (T) -> R): Single<R> =
     Single.just(this)
         .subscribeOn(Schedulers.io())
+        .let {
+            if(timeout > 0){
+                it.timeout(timeout, TimeUnit.SECONDS)
+            }else{
+                it
+            }
+        }
         .map(mapper)
         .observeOn(AndroidSchedulers.mainThread())
 

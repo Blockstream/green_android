@@ -3,6 +3,7 @@ package com.greenaddress.greenapi.data;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+@Deprecated
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class HWDeviceDetailData extends JSONData {
     private String name;

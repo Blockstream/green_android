@@ -834,6 +834,13 @@
   <string name="id_your_wallet_locked_under_2fa">Your wallet locked under 2FA dispute.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.\n\nYou\'ll need your recovery phrase to restore this wallet.</string>
+  <string name="id_request_amount_label">Request Amount &amp; Label</string>
+  <string name="id_edit">Edit</string>
+  <string name="id_address_history">Address History</string>
+  <string name="id_sweep_paper">Sweep Paper</string>
+  <string name="id_verify_on_device">Verify on Device</string>
+  <string name="id_provide_this_id_to_the_asset_issuer">Provide this ID to the asset issuer if requested.</string>
+  <string name="id_managed_assets_account_id">Managed Assets Account ID</string>
 
   <string name="id_of_d">of %d</string>
   <string name="id_tor">Tor</string>

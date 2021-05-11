@@ -50,6 +50,7 @@ public class BTChipHWWallet extends HWWallet {
         mPin = pin;
         mNetwork = network;
         mHWDeviceData = hwDeviceData;
+        mDevice = hwDeviceData.toDevice();
         if (pin == null)
             return;
         mExecutor.submit(() -> {

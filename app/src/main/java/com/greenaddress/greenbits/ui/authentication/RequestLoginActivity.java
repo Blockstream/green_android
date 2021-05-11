@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.arch.core.util.Function;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -45,6 +46,7 @@ import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
+import com.greenaddress.greenbits.wallets.FirmwareInteraction;
 import com.greenaddress.greenbits.wallets.JadeHWWallet;
 import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
@@ -66,7 +68,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 @AndroidEntryPoint
-public class RequestLoginActivity extends LoginActivity implements NetworkSwitchListener {
+public class RequestLoginActivity extends LoginActivity implements NetworkSwitchListener, FirmwareInteraction {
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
 
     private static final int VENDOR_BTCHIP     = 0x2581;
@@ -124,6 +126,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
              continueToConnect();
              mInstructionsText.setVisibility(View.VISIBLE);
              mActiveNetwork.setVisibility(View.GONE);
+             mSinglesigWarning.setVisibility(View.GONE);
         });
 
         mButtonConnectionSettings.setOnClickListener(v -> {
@@ -238,6 +241,21 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         }
     }
 
+    public void jadeAskForFirmwareUpgrade(String version, boolean isUpgradeRequired, Function<Boolean, Void> callback){
+        runOnUiThread(() -> {
+            UI.popup(this, isUpgradeRequired ? R.string.id_new_jade_firmware_required : R.string.id_new_jade_firmware_available, R.string.id_continue, R.string.id_cancel)
+                    .content(getString(R.string.id_install_version_s, version))
+                    .onNegative((dialog, which) -> {
+                        callback.apply(false);
+                    })
+                    .onPositive((dialog, which) -> {
+                        callback.apply(true);
+                    })
+                    .build()
+                    .show();
+        });
+    }
+
     private void onJade(final JadeAPI jade) {
         // Connect to jade (using background thread)
         mDisposables.add(Observable.just(jade)
@@ -281,7 +299,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
                     final JadeHWWallet jadeWallet = new JadeHWWallet(jade, networkData, hwDeviceData, Bridge.INSTANCE.getHardwareQATester());
                     return jadeWallet;
                 })
-                .flatMap(jadeWallet -> jadeWallet.authenticate(this, getSession()))
+                .flatMap(jadeWallet -> jadeWallet.authenticate(this, this, getSession()))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
                 .observeOn(AndroidSchedulers.mainThread())

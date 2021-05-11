@@ -8,7 +8,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import java.util.*
 
 @Serializable
 data class Settings(
@@ -28,7 +27,7 @@ data class Settings(
 
     val unitKey : String
         get() {
-            return unit.lowercase(Locale.ROOT).replace("\u00B5", "u")
+            return unit.lowercase().replace("\u00B5", "u")
         }
 
 }

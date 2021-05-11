@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.blockstream.hardware.R;
@@ -47,6 +48,7 @@ public class JadeHWWallet extends HWWallet {
     public JadeHWWallet(final JadeAPI jade, final NetworkData network, final HWDeviceData hwDeviceData, final HardwareQATester hardwareQATester) {
         super.mNetwork = network;
         super.mHWDeviceData = hwDeviceData;
+        super.mDevice = hwDeviceData.toDevice();
         this.jade = jade;
         this.mHardwareQATester = hardwareQATester;
     }
@@ -72,14 +74,14 @@ public class JadeHWWallet extends HWWallet {
     }
 
     // Authenticate Jade with pinserver and check firmware version with fw-server
-    public Single<JadeHWWallet> authenticate(final HWWalletBridge parent, HttpRequestProvider httpRequestProvider) throws Exception {
+    public Single<JadeHWWallet> authenticate(final Context context, final FirmwareInteraction firmwareInteraction, HttpRequestProvider httpRequestProvider) throws Exception {
         /*
          * 1. check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
          * 2. authenticate the user (see above)
          * 3. check the firmware again (and maybe OTA) for devices that are set-up (and hence needed unlocking first)
          * 4. authenticate the user *if required* - as we may have OTA'd and rebooted the hww.  Should be a no-op if not needed.
          */
-        final JadeFirmwareManager fwManager = new JadeFirmwareManager(parent, httpRequestProvider);
+        final JadeFirmwareManager fwManager = new JadeFirmwareManager(context, firmwareInteraction, httpRequestProvider);
         return Single.just(this)
                 .flatMap(hww -> fwManager.checkFirmware(jade, false))
                 .map(fwValid -> authUser())

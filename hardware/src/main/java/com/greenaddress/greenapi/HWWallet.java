@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi;
 
+import com.blockstream.gdk.data.Device;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
@@ -14,6 +15,7 @@ import javax.annotation.Nullable;
 public abstract class HWWallet {
     protected NetworkData mNetwork;
     protected HWDeviceData mHWDeviceData;
+    protected Device mDevice;
     protected HardwareQATester mHardwareQATester;
 
     public static class SignMsgResult {
@@ -126,6 +128,10 @@ public abstract class HWWallet {
 
     public HWDeviceData getHWDeviceData() {
         return mHWDeviceData;
+    }
+
+    public Device getDevice() {
+        return mDevice;
     }
 
     @Nullable

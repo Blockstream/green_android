@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
+import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
@@ -7,7 +8,6 @@ import com.blockstream.hardware.R;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.JadeVersion;
@@ -43,8 +43,9 @@ public class JadeFirmwareManager {
 
     private static final String JADE_BOARD_TYPE_JADE = "JADE";
     private static final String JADE_FEATURE_SECURE_BOOT = "SB";
+    private final Context context;
 
-    private HWWalletBridge parent;
+    private FirmwareInteraction firmwareInteraction;
     private final HttpRequestProvider httpRequestProvider;
 
     // A firmware instance on the file server
@@ -73,8 +74,9 @@ public class JadeFirmwareManager {
         }
     }
 
-    public JadeFirmwareManager(final HWWalletBridge parent, HttpRequestProvider httpRequestProvider) {
-        this.parent = parent;
+    public JadeFirmwareManager(final Context context, final FirmwareInteraction firmwareInteraction, HttpRequestProvider httpRequestProvider) {
+        this.context = context.getApplicationContext();
+        this.firmwareInteraction = firmwareInteraction;
         this.httpRequestProvider = httpRequestProvider;
     }
 
@@ -107,7 +109,7 @@ public class JadeFirmwareManager {
         final URL tls = new URL(JADE_FW_SERVER_HTTPS + fwFilePath);
         final URL onion = new URL(JADE_FW_SERVER_ONION + fwFilePath);
         final String certificate = CharStreams.toString(new InputStreamReader(
-                this.parent.getResources().openRawResource(R.raw.jade_services_certificate),
+                this.context.getResources().openRawResource(R.raw.jade_services_certificate),
                 Charsets.UTF_8));
 
         // Make http GET call to fetch file
@@ -241,7 +243,7 @@ public class JadeFirmwareManager {
                 // FIXME: show user full list and let them choose
                 final FwFileData fwFile = updates.get(0);
 
-                parent.jadeAskForFirmwareUpgrade(fwFile.version.toString(), !fwValid, isPositive -> {
+                firmwareInteraction.jadeAskForFirmwareUpgrade(fwFile.version.toString(), !fwValid, isPositive -> {
                     if(isPositive){
                         // Update firmware
                         final Disposable unused = Single.just(fwFile)

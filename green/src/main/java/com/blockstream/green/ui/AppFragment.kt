@@ -9,7 +9,6 @@ import android.view.*
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
-import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -169,14 +168,6 @@ abstract class AppFragment<T : ViewDataBinding>(
     }
 
     override fun passphraseRequest(hw: HWWallet?): String {
-        throw Exception("Not yet implemented")
-    }
-
-    override fun jadeAskForFirmwareUpgrade(
-        version: String?,
-        isUpgradeRequired: Boolean,
-        callback: Function<Boolean, Void>?
-    ) {
         throw Exception("Not yet implemented")
     }
 }

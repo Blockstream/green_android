@@ -2,6 +2,7 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.gdk.data.Device
 import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.database.Wallet
@@ -11,6 +12,8 @@ import com.blockstream.green.gdk.async
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
+import com.greenaddress.greenapi.HWWallet
+import com.greenaddress.greenapi.HWWalletBridge
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 
@@ -19,7 +22,7 @@ open class WalletViewModel constructor(
     val sessionManager: SessionManager,
     val walletRepository: WalletRepository,
     var wallet: Wallet,
-) : AppViewModel() {
+) : AppViewModel(), HWWalletBridge {
 
     enum class Event{
         RENAME_WALLET, DELETE_WALLET, RENAME_ACCOUNT
@@ -34,6 +37,7 @@ open class WalletViewModel constructor(
     fun getSubAccountLiveData(): LiveData<SubAccount> = subAccountLiveData
 
     val onNetworkEvent = MutableLiveData<NetworkEvent>()
+    val onDeviceInteractionEvent = MutableLiveData<ConsumableEvent<Device>>()
 
     init {
         // Listen wallet updates from Database
@@ -123,5 +127,22 @@ open class WalletViewModel constructor(
                 onEvent.postValue(ConsumableEvent(Event.RENAME_WALLET))
             }
         )
+    }
+
+    override fun interactionRequest(hw: HWWallet?) {
+        hw?.let{
+            onDeviceInteractionEvent.postValue(ConsumableEvent(it.device))
+        }
+    }
+
+    // The following two methods are not needed
+    // it will be remove in the next iteration on simplifying
+    // hardware wallet interfaces
+    override fun pinMatrixRequest(hw: HWWallet?): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun passphraseRequest(hw: HWWallet?): String {
+        TODO("Not yet implemented")
     }
 }

@@ -39,6 +39,7 @@ public class TrezorHWWallet extends HWWallet {
         mTrezor = t;
         mNetwork = network;
         mHWDeviceData = hwDeviceData;
+        mDevice = hwDeviceData.toDevice();
     }
 
     @Override

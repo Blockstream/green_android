@@ -837,6 +837,8 @@
   <string name="id_enter_the_email_for_which_you_want_to_undo">Enter the email for which you want to undo a dispute request.</string>
 
 
+  <string name="id_managed_assets_account_id">Managed Assets Account ID</string>
+  <string name="id_get_id">Get ID</string>
   <string name="id_singlesig_wallets_are_not_supported">Singlesig wallets are not supported for use with hardware devices yet.\nBy continuing you\'ll access a Multisig Shield wallet.</string>
 
   <string name="id_failed_to_load_asset_registry">Failed to Load Asset Registry</string>

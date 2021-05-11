@@ -12,6 +12,6 @@ data class BlindedScripts(
 ): GAJson<BlindedScripts>() {
 
     override fun kSerializer(): KSerializer<BlindedScripts> {
-        return BlindedScripts.serializer()
+        return serializer()
     }
 }

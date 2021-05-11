@@ -10,6 +10,7 @@ import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -37,6 +38,13 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
         }
 
         getWalletViewModel()?.let{
+
+            it.onDeviceInteractionEvent.observe(viewLifecycleOwner) {  event ->
+                event.getContentIfNotHandledOrReturnNull()?.let {
+                    // KISS: It's not what v3 had done in the past, but it's simpler
+                    snackbar(R.string.id_please_follow_the_instructions, Snackbar.LENGTH_LONG)
+                }
+            }
 
             it.onNetworkEvent.observe(viewLifecycleOwner){ event ->
 
@@ -87,8 +95,6 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
     override fun onResume() {
         super.onResume()
-
-
     }
 
     fun logout(){

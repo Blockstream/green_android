@@ -353,6 +353,15 @@
             />
     </fragment>
 
+    <fragment
+        android:id="@+id/receiveFragment"
+        android:name="com.blockstream.green.ui.receive.ReceiveFragment"
+        tools:layout="@layout/receive_fragment"
+        android:label="@string/id_receive" >
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+    </fragment>
 
     <fragment
         android:id="@+id/deviceListFragment"

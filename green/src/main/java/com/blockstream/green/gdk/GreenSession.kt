@@ -71,8 +71,11 @@ class GreenSession constructor(
     val isMainnet
         get() = network.isMainnet
 
-     var isConnected = false
+    var isConnected = false
         private set
+
+    val hasDevice
+        get() = hwWallet != null
 
     val userAgent by lazy {
         String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)

@@ -10,6 +10,8 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavDeepLinkBuilder
 import com.blockstream.gdk.AssetManager
+import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -20,12 +22,14 @@ import com.blockstream.green.ui.BridgeActivity
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.QATesterActivity
 import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
+import com.blockstream.green.ui.receive.ReceiveFragmentArgs
 import com.blockstream.green.ui.recovery.RecoveryIntroFragmentArgs
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
 import com.blockstream.green.ui.settings.WalletSettingsFragmentArgs
 import com.blockstream.green.ui.wallet.*
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.Bridge
 import com.greenaddress.greenapi.Registry
 import com.greenaddress.greenapi.Session
@@ -65,7 +69,7 @@ class GreenApplication : Application(){
         // Initialize Bridge
         Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.VERSION_NAME, QATester)
 
-        Bridge.navigateFn = { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: Any?, navigateToWallet: Long? ->
+        Bridge.navigateFn = { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: GASession?, extraData: Any? ->
             when(type){
                 Bridge.NavigateType.LOGOUT -> {
 
@@ -80,16 +84,17 @@ class GreenApplication : Application(){
                         .setComponentName(MainActivity::class.java)
                         .setDestination(R.id.introFragment).also { builder ->
                             // Navigate to Login
-                            navigateToWallet?.let { navigateToWallet ->
+                            if(extraData is Long){
+                                extraData.let { navigateToWallet ->
+                                    val walletId =
+                                        if (navigateToWallet == -1L) sessionManager.getWalletIdFromSession(
+                                            gaSession
+                                        ) else navigateToWallet
 
-                                val walletId =
-                                    if (navigateToWallet == -1L) sessionManager.getWalletIdFromSession(
-                                        gaSession
-                                    ) else navigateToWallet
-
-                                walletRepository.getWalletSync(walletId)?.let {
-                                    builder.setDestination(R.id.loginFragment)
-                                    builder.setArguments(LoginFragmentArgs(it).toBundle())
+                                    walletRepository.getWalletSync(walletId)?.let {
+                                        builder.setDestination(R.id.loginFragment)
+                                        builder.setArguments(LoginFragmentArgs(it).toBundle())
+                                    }
                                 }
                             }
                         }
@@ -147,6 +152,14 @@ class GreenApplication : Application(){
                     }
                 }
 
+                Bridge.NavigateType.ACCOUNT_ID -> {
+                    if(extraData is SubAccount) {
+                        AccountIdBottomSheetDialogFragment(extraData).also {
+                            it.show(activity.supportFragmentManager, it.toString())
+                        }
+                    }
+                }
+
                 Bridge.NavigateType.TWO_FACTOR_RESET -> {
                     sessionManager.getWalletSession(gaSession)?.getTwoFactorResetObservable()
                         ?.blockingFirst()?.let {
@@ -157,30 +170,31 @@ class GreenApplication : Application(){
                 }
 
                 Bridge.NavigateType.ADD_ACCOUNT -> {
-
                     sessionManager.getWalletSession(gaSession)?.let { session ->
 
                         GlobalScope.launch {
 
-                            val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-                            val wallet = if (walletId >= 0) {
-                                walletRepository.getWalletSuspend(walletId)
-                            } else {
-                                // Emulated Hardware wallet
-                                Wallet(
-                                    id = -1L,
-                                    name = session.network.name,
-                                    network = session.network.network,
-                                    isRecoveryPhraseConfirmed = true,
-                                    isHardware = true,
-                                    activeAccount = Session.getSession().subAccount.toLong()
-                                )
-                            }
+                            val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
 
                             val intent = Intent(activity, BridgeActivity::class.java)
                             intent.putExtras(ChooseAccountTypeFragmentArgs(wallet).toBundle())
                             intent.action = BridgeActivity.ADD_ACCOUNT
+
+                            activity.startActivity(intent)
+                        }
+
+                    }
+                }
+
+                Bridge.NavigateType.RECEIVE -> {
+                    sessionManager.getWalletSession(gaSession)?.let { session ->
+
+                        GlobalScope.launch {
+                            val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
+
+                            val intent = Intent(activity, BridgeActivity::class.java)
+                            intent.putExtras(ReceiveFragmentArgs(wallet).toBundle())
+                            intent.action = BridgeActivity.RECEIVE
 
                             activity.startActivity(intent)
                         }
@@ -283,6 +297,24 @@ class GreenApplication : Application(){
 
         if (isDevelopmentFlavor() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             initShortcuts()
+        }
+    }
+
+    private suspend fun getWalletOrEmulatedHardwareWallet(gaSession: GASession?, network: Network): Wallet {
+        val walletId = sessionManager.getWalletIdFromSession(gaSession)
+
+        return if (walletId >= 0) {
+            walletRepository.getWalletSuspend(walletId)
+        } else {
+            // Emulated Hardware wallet
+            Wallet(
+                id = -1L,
+                name = network.name,
+                network = network.network,
+                isRecoveryPhraseConfirmed = true,
+                isHardware = true,
+                activeAccount = Session.getSession().subAccount.toLong()
+            )
         }
     }
 

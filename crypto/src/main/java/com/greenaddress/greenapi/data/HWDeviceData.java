@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+@Deprecated
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class HWDeviceData extends JSONData {
     public enum HWDeviceDataLiquidSupport {

@@ -34,13 +34,13 @@ public class HardwareCodeResolver implements CodeResolver, HardwareWalletResolve
     private HWWalletBridge parent;
     private final Map<Pair<String, String>, String> mNoncesCache = new ConcurrentHashMap<>();
 
-    public HardwareCodeResolver(final HWWalletBridge activity) {
-        this.parent = activity;
+    public HardwareCodeResolver(final HWWalletBridge hwWalletBridge) {
+        this.parent = hwWalletBridge;
         this.hwWallet = Session.getSession().getHWWallet();
     }
 
-    public HardwareCodeResolver(final HWWalletBridge activity, final HWWallet hwWallet) {
-        this.parent = activity;
+    public HardwareCodeResolver(final HWWalletBridge hwWalletBridge, final HWWallet hwWallet) {
+        this.parent = hwWalletBridge;
         this.hwWallet = hwWallet;
     }
 
