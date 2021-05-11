@@ -42,12 +42,6 @@ class TransactionsController: UITableViewController {
             return twoFactorConfig.isDisputeActive
         }
     }
-    var isAssetRegistryFailActive: Bool {
-        get {
-            //handle logic here
-            return true
-        }
-    }
     var resetDaysRemaining: Int? {
         get {
             guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return nil }
@@ -161,8 +155,13 @@ class TransactionsController: UITableViewController {
         if isDisputeActive {
             alertCards.append(AlertCardType.dispute)
         }
-        if isAssetRegistryFailActive {
-            alertCards.append(AlertCardType.assetRegistryFail)
+        switch Registry.shared.failStatus() {
+        case .assets:
+            alertCards.append(AlertCardType.assetsRegistryFail)
+        case .icons:
+            alertCards.append(AlertCardType.iconsRegistryFail)
+        case .none:
+            break
         }
         // We will use Card2faType.reactivate for expired coins
     }
@@ -210,7 +209,24 @@ class TransactionsController: UITableViewController {
     }
 
     func reloadRegistry() {
-        print("reloadRegistry")
+        let bgq = DispatchQueue.global(qos: .background)
+
+        firstly {
+            return Guarantee()
+        }.get { _ in
+            self.startLoader(message: "Reloading...")
+        }.then(on: bgq) { _ -> Promise<Void> in
+            if AccountsManager.shared.current!.network == "liquid" {
+                return Registry.shared.load()
+            }
+            return Promise<Void>()
+        }.ensure {
+            self.stopLoader()
+        }.done { _ in
+            self.loadAlertCards()
+            self.tableView.reloadData()
+        }.catch { _ in
+        }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -248,7 +264,7 @@ class TransactionsController: UITableViewController {
                                onRight: {[weak self] in
                                 self?.performSegue(withIdentifier: "leaarnMore2fa", sender: self)
                                })
-            case .assetRegistryFail:
+            case .assetsRegistryFail, .iconsRegistryFail:
                 cell.configure(alertCards[indexPath.row],
                                onLeft: nil,
                                onRight: {[weak self] in

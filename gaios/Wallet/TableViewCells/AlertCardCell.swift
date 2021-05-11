@@ -4,7 +4,8 @@ enum AlertCardType {
     case reset(Int)
     case dispute
     case reactivate
-    case assetRegistryFail
+    case assetsRegistryFail
+    case iconsRegistryFail
 }
 
 class AlertCardCell: UITableViewCell {
@@ -48,9 +49,14 @@ class AlertCardCell: UITableViewCell {
             lblHint.text = "2FA protection on some of your funds has expired"
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.setTitle("Reactivate 2FA", for: .normal)
-        case .assetRegistryFail:
-            lblTitle.text = "Failed to load asset registry"
-            lblHint.text = NSLocalizedString("id_the_asset_registry_is_currently", comment: "")
+        case .assetsRegistryFail:
+            lblTitle.text = "Failed to Load Asset Registry"
+            lblHint.text = "Warning: asset amounts might be shown with an incorrect decimal precision, and you might send more funds than intended. Reload the asset registry to avoid this issue."
+            btnRight.setTitle("Reload", for: .normal)
+            btnLeft.isHidden = true
+        case .iconsRegistryFail:
+            lblTitle.text = "Failed to Load Asset Icons"
+            lblHint.text = "Asset icons are missing, try reloading them"
             btnRight.setTitle("Reload", for: .normal)
             btnLeft.isHidden = true
         }

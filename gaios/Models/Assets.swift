@@ -34,10 +34,19 @@ struct AssetInfo: Codable {
     }
 }
 
+enum RegistryFailStatus {
+    case assets
+    case icons
+    case none
+}
+
 class Registry: Codable {
     static let shared = Registry(infos: [:], icons: [:])
     var infos: [String: AssetInfo]
     var icons: [String: String]
+
+    var iconsTask: Bool = false
+    var assetsTask: Bool = false
 
     init(infos: [String: AssetInfo], icons: [String: String]) {
         self.infos = infos
@@ -54,32 +63,55 @@ class Registry: Codable {
         return UIImage(named: "default_asset_icon")
     }
 
+    func failStatus() -> RegistryFailStatus {
+        if assetsTask == false { return .assets }
+        if iconsTask == false { return .icons }
+        return .none
+    }
+
+    func fetchIcons(refresh: Bool) -> Bool {
+        guard let data = try? getSession().refreshAssets(params: ["icons": true, "assets": false, "refresh": refresh]) else {
+            return false
+        }
+        var iconsData = data["icons"] as? [String: String]
+        if let modIndex = iconsData?.keys.firstIndex(of: "last_modified") {
+            iconsData?.remove(at: modIndex)
+        }
+        self.icons = iconsData ?? [:]
+        return iconsData != nil
+    }
+
+    func fetchAssets(refresh: Bool) -> Bool {
+        guard let data = try? getSession().refreshAssets(params: ["icons": false, "assets": true, "refresh": refresh]) else {
+            return false
+        }
+        var infosData = data["assets"] as? [String: Any]
+        if let modIndex = infosData?.keys.firstIndex(of: "last_modified") {
+            infosData?.remove(at: modIndex)
+        }
+        let infosSer = try? JSONSerialization.data(withJSONObject: infosData ?? [:])
+        let infos = try? JSONDecoder().decode([String: AssetInfo].self, from: infosSer ?? Data())
+        self.infos = infos ?? [:]
+        return infos != nil
+    }
+
     func cache() {
         return refresh(refresh: false)
     }
 
     func refresh(refresh: Bool = true) {
-        guard let data = try? getSession().refreshAssets(params: ["icons": true, "assets": true, "refresh": refresh]) else {
-            return
+
+        iconsTask = fetchIcons(refresh: refresh)
+        assetsTask = fetchAssets(refresh: refresh)
+
+        if refresh == true && (iconsTask == false || assetsTask == false) {
+            cache()
         }
-        var infosData = data["assets"] as? [String: Any]
-        var iconsData = data["icons"] as? [String: String]
-        if let modIndex = infosData?.keys.firstIndex(of: "last_modified") {
-            infosData?.remove(at: modIndex)
-        }
-        if let modIndex = iconsData?.keys.firstIndex(of: "last_modified") {
-            iconsData?.remove(at: modIndex)
-        }
-        let infosSer = try? JSONSerialization.data(withJSONObject: infosData ?? [:])
-        let infos = try? JSONDecoder().decode([String: AssetInfo].self, from: infosSer ?? Data())
-        self.infos = infos ?? [:]
-        self.icons = iconsData ?? [:]
     }
 
     func load() -> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
         return Promise()
             .compactMap(on: bgq) { self.refresh(refresh: true) }
-            .recover(on: bgq) { _ in self.cache() }
     }
 }
