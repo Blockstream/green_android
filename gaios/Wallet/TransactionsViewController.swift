@@ -77,6 +77,20 @@ class TransactionsController: UITableViewController {
         })
         let leftItem: UIBarButtonItem = UIBarButtonItem(customView: networkSelector)
         navigationItem.leftBarButtonItem = leftItem
+
+        if Registry.shared.failStatus() == .assets && AccountsManager.shared.current!.network == "liquid" {
+            presentDialogRegistryFail()
+        }
+    }
+
+    func presentDialogRegistryFail() {
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRegistryFailViewController") as? DialogRegistryFailViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.present(vc, animated: false, completion: nil)
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
