@@ -231,7 +231,9 @@ class TransactionsController: UITableViewController {
 
     func reloadRegistry() {
 
+        self.startAnimating()
         Registry.shared.load().done { () in
+            self.stopAnimating()
             self.loadAlertCards()
             self.tableView.reloadData()
         }.catch { _ in }
