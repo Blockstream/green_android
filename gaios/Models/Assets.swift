@@ -37,6 +37,7 @@ struct AssetInfo: Codable {
 enum RegistryFailStatus {
     case assets
     case icons
+    case all
     case none
 }
 
@@ -64,11 +65,13 @@ class Registry: Codable {
     }
 
     func failStatus() -> RegistryFailStatus {
+        if assetsTask == false && iconsTask == false { return .all }
         if assetsTask == false { return .assets }
         if iconsTask == false { return .icons }
         return .none
     }
 
+    @discardableResult
     func fetchIcons(refresh: Bool) -> Bool {
         guard let data = try? getSession().refreshAssets(params: ["icons": true, "assets": false, "refresh": refresh]) else {
             return false
@@ -81,6 +84,7 @@ class Registry: Codable {
         return iconsData != nil
     }
 
+    @discardableResult
     func fetchAssets(refresh: Bool) -> Bool {
         guard let data = try? getSession().refreshAssets(params: ["icons": false, "assets": true, "refresh": refresh]) else {
             return false
@@ -104,9 +108,16 @@ class Registry: Codable {
         iconsTask = fetchIcons(refresh: refresh)
         assetsTask = fetchAssets(refresh: refresh)
 
-        if refresh == true && (iconsTask == false || assetsTask == false) {
-            cache()
+        if refresh && !iconsTask {
+            //remote refresh failed for icons, than try refresh from cache
+            fetchIcons(refresh: false)
         }
+
+        if refresh && !assetsTask {
+            //remote refresh failed for assetes, than try refresh from cache
+            fetchAssets(refresh: false)
+        }
+
     }
 
     func load() -> Promise<Void> {

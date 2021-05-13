@@ -78,8 +78,13 @@ class TransactionsController: UITableViewController {
         let leftItem: UIBarButtonItem = UIBarButtonItem(customView: networkSelector)
         navigationItem.leftBarButtonItem = leftItem
 
-        if Registry.shared.failStatus() == .assets && AccountsManager.shared.current!.network == "liquid" {
-            presentDialogRegistryFail()
+        switch Registry.shared.failStatus() {
+        case .all, .assets:
+            if AccountsManager.shared.current!.network == "liquid" {
+                presentDialogRegistryFail()
+            }
+        default:
+            break
         }
     }
 
@@ -169,13 +174,15 @@ class TransactionsController: UITableViewController {
         if isDisputeActive {
             alertCards.append(AlertCardType.dispute)
         }
-        switch Registry.shared.failStatus() {
-        case .assets:
-            alertCards.append(AlertCardType.assetsRegistryFail)
-        case .icons:
-            alertCards.append(AlertCardType.iconsRegistryFail)
-        case .none:
-            break
+        if AccountsManager.shared.current!.network == "liquid" {
+            switch Registry.shared.failStatus() {
+            case .assets, .all:
+                alertCards.append(AlertCardType.assetsRegistryFail)
+            case .icons:
+                alertCards.append(AlertCardType.iconsRegistryFail)
+            case .none:
+                break
+            }
         }
         // We will use Card2faType.reactivate for expired coins
     }
@@ -223,20 +230,11 @@ class TransactionsController: UITableViewController {
     }
 
     func reloadRegistry() {
-        let bgq = DispatchQueue.global(qos: .background)
 
-        firstly {
-            return Guarantee()
-        }.then(on: bgq) { _ -> Promise<Void> in
-            if AccountsManager.shared.current!.network == "liquid" {
-                return Registry.shared.load()
-            }
-            return Promise<Void>()
-        }.done { _ in
+        Registry.shared.load().done { () in
             self.loadAlertCards()
             self.tableView.reloadData()
-        }.catch { _ in
-        }
+        }.catch { _ in }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
