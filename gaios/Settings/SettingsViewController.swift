@@ -19,7 +19,7 @@ class SettingsViewController: UIViewController {
     }
     var isWatchOnly: Bool { get { return getGAService().isWatchOnly } }
     var isLiquid: Bool { get { return AccountsManager.shared.current?.gdkNetwork?.liquid ?? false } }
-    var isHW: Bool { get { return Ledger.shared.connected } }
+    var isHW: Bool { get { return Ledger.shared.connected || Jade.shared.connected } }
 
     override func viewDidLoad() {
         super.viewDidLoad()
