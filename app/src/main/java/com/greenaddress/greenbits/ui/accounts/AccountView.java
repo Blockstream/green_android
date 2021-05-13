@@ -126,12 +126,12 @@ public class AccountView extends CardView {
                 break;
             case BIP84_SEGWIT:
                 mTypeText.setVisibility(View.VISIBLE);
-                mTypeText.setText("Segwit");
+                mTypeText.setText(R.string.segwit);
                 break;
             case BIP44_LEGACY:
             case BIP49_SEGWIT_WRAPPED:
                 mTypeText.setVisibility(View.VISIBLE);
-                mTypeText.setText("Legacy");
+                mTypeText.setText(R.string.legacy);
                 break;
             default:
                 mTypeText.setVisibility(View.GONE);

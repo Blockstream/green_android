@@ -17,6 +17,9 @@
     <string name="notification_format_string" translatable="false">%s</string>
     <string name="id_blockstream_green" translatable="false">Blockstream Green</string>
 
+    <string name="legacy" translatable="false">Legacy</string>
+    <string name="segwit" translatable="false">SegWit</string>
+
     <string-array name="twoFactorMethods" translatable="false">
         <item>email</item>
         <item>sms</item>

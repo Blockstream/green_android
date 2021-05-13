@@ -66,12 +66,20 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             switch (AccountType.Companion.byGDKType(subaccount.getType())){
                 case BIP84_SEGWIT:
                     h.type.setVisibility(View.VISIBLE);
-                    h.type.setText("Segwit");
+                    h.type.setText(R.string.segwit);
                     break;
                 case BIP44_LEGACY:
                 case BIP49_SEGWIT_WRAPPED:
                     h.type.setVisibility(View.VISIBLE);
-                    h.type.setText("Legacy");
+                    h.type.setText(R.string.legacy);
+                    break;
+                case AMP_ACCOUNT:
+                    h.type.setVisibility(View.VISIBLE);
+                    h.type.setText(R.string.id_amp_account);
+                    break;
+                case TWO_OF_THREE:
+                    h.type.setVisibility(View.VISIBLE);
+                    h.type.setText(R.string.id_2of3_account);
                     break;
                 default:
                     h.type.setVisibility(View.GONE);
