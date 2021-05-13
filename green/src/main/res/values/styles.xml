@@ -72,6 +72,23 @@
         <item name="showAnimationBehavior">outward</item>
     </style>
 
+    <style name="Widget.Green.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Green.Snackbar</item>
+        <item name="actionTextColorAlpha">1</item>
+    </style>
+
+    <style name="Widget.Green.SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
+        <item name="android:textColor">@color/green</item>
+    </style>
+
+    <style name="Widget.Green.SnackbarTextView" parent="Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">@color/color_on_surface_emphasis_high</item>
+    </style>
+
+    <style name="ThemeOverlay.Green.Snackbar" parent="">
+        <item name="colorOnSurface">@color/brand_surface_light</item>
+    </style>
+
     <style name="ThemeOverlay.Green.ImportantDialogButton" parent="">
         <item name="android:textStyle">bold</item>
     </style>

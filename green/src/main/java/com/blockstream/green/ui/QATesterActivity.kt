@@ -4,9 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.blockstream.gdk.data.NetworkEvent
+import com.blockstream.gdk.data.Notification
 import com.blockstream.green.databinding.QaTesterActivityBinding
 import com.blockstream.green.utils.QATester
+import com.blockstream.green.utils.QTNotificationDelay
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.system.exitProcess
@@ -49,6 +53,27 @@ class QATesterActivity : AppCompatActivity() {
         binding.buttonKill.setOnClickListener {
             exitProcess(0)
         }
+
+        binding.buttonBack.setOnClickListener {
+            finish()
+        }
+
+        binding.buttonRequireLoginNotification.setOnClickListener {
+            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(true, loginRequired = true, waiting = 0))))
+
+            showEventSnackbar()
+        }
+
+        binding.buttonDisconnectNotification.setOnClickListener {
+            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(false, waiting = 7, loginRequired = false))))
+            qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(true, loginRequired = false, waiting = 0)), delay = 10))
+
+            showEventSnackbar()
+        }
+    }
+
+    private fun showEventSnackbar(){
+        Snackbar.make(binding.coordinator, "Event will be dispatched in 7 seconds", Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

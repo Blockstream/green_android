@@ -38,97 +38,133 @@
                 android:fillViewport="true"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <com.blockstream.green.views.GappedLinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                <ScrollView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
                     android:paddingStart="24dp"
                     android:paddingEnd="24dp"
                     android:paddingBottom="16dp"
-                    app:gap="4dp"
+                    app:layout_constraintBottom_toTopOf="@+id/buttonBack"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <com.blockstream.green.views.GreenSwitch
+                    <com.blockstream.green.views.GappedLinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:checked="@={qaTester.corruptedHardwareMessageSign}"
-                        app:captionText="Corrupt message singing commitments"
-                        app:icon="@drawable/ic_proxy_60"
-                        app:titleText="Corrupt Hardware (Message)" />
+                        android:orientation="vertical"
+                        app:gap="4dp">
 
-                    <com.blockstream.green.views.DividerView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/settings_element_margin" />
+                        <com.blockstream.green.views.GreenSwitch
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="@={qaTester.corruptedHardwareMessageSign}"
+                            app:captionText="Corrupt message singing commitments"
+                            app:icon="@drawable/ic_proxy_60"
+                            app:titleText="Corrupt Hardware (Message)" />
 
-                    <com.blockstream.green.views.GreenSwitch
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:checked="@={qaTester.corruptedHardwareTxSign}"
-                        app:captionText="Corrupt transaction singing commitments"
-                        app:icon="@drawable/ic_transaction_verification_18"
-                        app:titleText="Corrupt Hardware (Transaction)" />
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
 
-                    <com.blockstream.green.views.DividerView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/settings_element_margin" />
+                        <com.blockstream.green.views.GreenSwitch
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="@={qaTester.corruptedHardwareTxSign}"
+                            app:captionText="Corrupt transaction singing commitments"
+                            app:icon="@drawable/ic_transaction_verification_18"
+                            app:titleText="Corrupt Hardware (Transaction)" />
 
-                    <com.blockstream.green.views.GreenSwitch
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:checked="@={qaTester.assetsAppCacheDisabled}"
-                        app:captionText="Disable Assets App Cache"
-                        app:icon="@drawable/ic_generic_asset_icon"
-                        app:titleText="Disable Assets App Cache" />
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
 
-                    <com.blockstream.green.views.DividerView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/settings_element_margin" />
+                        <com.blockstream.green.views.GreenSwitch
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="@={qaTester.assetsAppCacheDisabled}"
+                            app:captionText="Disable Assets App Cache"
+                            app:icon="@drawable/ic_generic_asset_icon"
+                            app:titleText="Disable Assets App Cache" />
 
-                    <com.blockstream.green.views.GreenSwitch
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:checked="@={qaTester.assetsGdkCacheDisabled}"
-                        app:captionText="Disable Assets GDK Cache"
-                        app:icon="@drawable/ic_generic_asset_icon"
-                        app:titleText="Disable Assets GDK Cache" />
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
 
-                    <com.blockstream.green.views.DividerView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/settings_element_margin" />
+                        <com.blockstream.green.views.GreenSwitch
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="@={qaTester.assetsGdkCacheDisabled}"
+                            app:captionText="Disable Assets GDK Cache"
+                            app:icon="@drawable/ic_generic_asset_icon"
+                            app:titleText="Disable Assets GDK Cache" />
 
-                    <com.blockstream.green.views.GreenSwitch
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:checked="@={qaTester.assetsFetchDisabled}"
-                        app:captionText="Disable Assets metadata &amp; icons fetching"
-                        app:icon="@drawable/ic_generic_asset_icon"
-                        app:titleText="Disable Assets fetching" />
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
 
-                    <com.blockstream.green.views.DividerView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/settings_element_margin" />
+                        <com.blockstream.green.views.GreenSwitch
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="@={qaTester.assetsFetchDisabled}"
+                            app:captionText="Disable Assets metadata &amp; icons fetching"
+                            app:icon="@drawable/ic_generic_asset_icon"
+                            app:titleText="Disable Assets fetching" />
 
-                    <com.blockstream.green.views.GreenSwitch
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:checked="@={qaTester.assetsIconsFetchDisabled}"
-                        app:captionText="Disable Icons fetching"
-                        app:icon="@drawable/ic_liquid_bitcoin_60"
-                        app:titleText="Disable Assets Icons fetching" />
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
 
-                    <com.blockstream.green.views.DividerView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/settings_element_margin" />
+                        <com.blockstream.green.views.GreenSwitch
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="@={qaTester.assetsIconsFetchDisabled}"
+                            app:captionText="Disable Icons fetching"
+                            app:icon="@drawable/ic_liquid_bitcoin_60"
+                            app:titleText="Disable Assets Icons fetching" />
 
-                </com.blockstream.green.views.GappedLinearLayout>
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Emulate GDK Events" />
+
+                        <Button
+                            android:id="@+id/buttonRequireLoginNotification"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:text="Send Require Login Notification" />
+
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
+
+                        <Button
+                            android:id="@+id/buttonDisconnectNotification"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:text="Send Disconnect Notification" />
+
+                        <com.blockstream.green.views.DividerView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/settings_element_margin" />
+
+                    </com.blockstream.green.views.GappedLinearLayout>
+                </ScrollView>
 
                 <Button
                     android:id="@+id/buttonKill"
@@ -138,9 +174,20 @@
                     android:layout_marginBottom="24dp"
                     android:text="Kill App"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/buttonContinue"
+                    app:layout_constraintEnd_toStartOf="@+id/buttonBack"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
+                    android:id="@+id/buttonBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:text="Go Back"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/buttonContinue"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/buttonKill" />
 
                 <Button
                     android:id="@+id/buttonContinue"
@@ -148,11 +195,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
-                    android:text="@string/id_continue"
+                    android:text="Open Green"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/buttonKill" />
+                    app:layout_constraintStart_toEndOf="@+id/buttonBack" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

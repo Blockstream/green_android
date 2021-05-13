@@ -52,6 +52,9 @@
         <item name="bottomSheetDialogTheme">@style/Green.BottomSheetDialogTheme</item>
         <item name="circularProgressIndicatorStyle">@style/Widget.Green.CircularProgressIndicator</item>
         <item name="linearProgressIndicatorStyle">@style/Widget.Green.LinearProgressIndicator</item>
+        <item name="snackbarStyle">@style/Widget.Green.Snackbar</item>
+        <item name="snackbarTextViewStyle">@style/Widget.Green.SnackbarTextView</item>
+        <item name="snackbarButtonStyle">@style/Widget.Green.SnackbarButton</item>
     </style>
 
     <style name="Theme.Green" parent="Base.Green">

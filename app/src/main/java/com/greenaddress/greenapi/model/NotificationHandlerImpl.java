@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
 import static com.greenaddress.greenapi.Session.getSession;
@@ -35,7 +36,7 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
 
     private final PublishSubject<JsonNode> mTransactionPublish = PublishSubject.create();
     private final PublishSubject<Integer> mBlockPublish = PublishSubject.create();
-    private final PublishSubject<JsonNode> mNetworkPublish = PublishSubject.create();
+    private final BehaviorSubject<JsonNode> mNetworkPublish = BehaviorSubject.create();
     private final PublishSubject<JsonNode> mTorPublish = PublishSubject.create();
     private final PublishSubject<List<EventData>> mEventsPublish = PublishSubject.create();
     private final PublishSubject<SettingsData> mSettingsPublish = PublishSubject.create();

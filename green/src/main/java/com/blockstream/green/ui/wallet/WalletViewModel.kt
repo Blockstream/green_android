@@ -14,8 +14,12 @@ import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import java.util.concurrent.TimeUnit
 
 
 open class WalletViewModel constructor(
@@ -36,8 +40,12 @@ open class WalletViewModel constructor(
     private val subAccountLiveData: MutableLiveData<SubAccount> = MutableLiveData()
     fun getSubAccountLiveData(): LiveData<SubAccount> = subAccountLiveData
 
-    val onNetworkEvent = MutableLiveData<NetworkEvent>()
     val onDeviceInteractionEvent = MutableLiveData<ConsumableEvent<Device>>()
+
+    val onNetworkEvent = MutableLiveData<NetworkEvent>()
+    val onReconnectEvent = MutableLiveData<ConsumableEvent<Long>>()
+
+    private var reconnectTimer : Disposable? = null
 
     init {
         // Listen wallet updates from Database
@@ -65,7 +73,34 @@ open class WalletViewModel constructor(
             session
                 .getNetworkEventObservable()
                 .async()
-                .subscribe(onNetworkEvent::setValue).addTo(disposables)
+                .subscribeBy(
+                    onNext = { event ->
+
+                        onNetworkEvent.value = event
+
+                        // dispose previous timer
+                        reconnectTimer?.dispose()
+
+                        if(event.connected){
+                            onReconnectEvent.value = ConsumableEvent(-1)
+                        }else{
+
+                            reconnectTimer = Observable.interval(1, TimeUnit.SECONDS)
+                                .take(event.waiting + 1)
+                                .map {
+                                    event.waiting - it
+                                }
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeBy(
+                                    onNext = {
+                                        onReconnectEvent.value = ConsumableEvent(it)
+                                    }
+                                ).addTo(disposables)
+
+                        }
+                    }
+                )
+                .addTo(disposables)
         }
     }
 

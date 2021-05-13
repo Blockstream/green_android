@@ -12,10 +12,8 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.kotlin.subscribeBy
-import java.util.concurrent.TimeUnit
+import com.greenaddress.Bridge
+import mu.KLogging
 
 abstract class WalletFragment<T : ViewDataBinding> constructor(
     @LayoutRes layout: Int,
@@ -46,45 +44,43 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                 }
             }
 
-            it.onNetworkEvent.observe(viewLifecycleOwner){ event ->
+            it.onNetworkEvent.observe(viewLifecycleOwner) { event ->
+                if(event.loginRequired){
+                    logger().info { "Logout from network event " }
+                    logout()
+                }
+            }
 
-                if(event.connected){
-
-                    networkSnackbar = networkSnackbar?.let {
-                        it.dismiss()
-                        null
-                    }
-
-                }else{
-
-                    if(networkSnackbar == null){
-                        networkSnackbar = Snackbar.make(
+            it.onReconnectEvent.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandledOrReturnNull()?.let{ time ->
+                    if(time == -1L){
+                        networkSnackbar = networkSnackbar?.let { snackbar ->
+                            snackbar.dismiss()
+                            null
+                        }
+                    }else{
+                        networkSnackbar  = networkSnackbar ?: Snackbar.make(
                             view,
                             R.string.id_you_are_not_connected,
                             Snackbar.LENGTH_INDEFINITE
+                        ).apply { show() }
+
+                        if(time == 0L){
+                            networkSnackbar?.setAction(null, null)
+                        }else{
+                            networkSnackbar?.setAction(R.string.id_now){
+                                session.reconnectHint()
+                                networkSnackbar = null
+                            }
+                        }
+
+                        networkSnackbar?.setText(
+                            getString(
+                                if(time == 0L) R.string.id_connecting else R.string.id_not_connected_connecting_in_ds_, time
+                            )
                         )
                     }
-
-                    networkSnackbar?.setText(
-                        getString(
-                            R.string.id_not_connected_connecting_in_ds_,
-                            (event.waiting ?: 0)
-                        )
-                    )?.show()
-
-                    Observable.interval(1, TimeUnit.SECONDS)
-                        .take(event.waiting ?: 0)
-                        .map {
-                            event.waiting ?: 0 - it
-                        }
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeBy(
-                            onNext = {
-                                networkSnackbar?.setText(getString(R.string.id_not_connected_connecting_in_ds_, it))
-                            }
-                        )
                 }
-
             }
         }
     }
@@ -98,9 +94,15 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     }
 
     fun logout(){
-        session.disconnectAsync()
-        NavGraphDirections.actionGlobalLoginFragment(wallet).let {
-            navigate(it.actionId, it.arguments, isLogout = true)
+        if(Bridge.useGreenModule){
+            session.disconnectAsync()
+            NavGraphDirections.actionGlobalLoginFragment(wallet).let {
+                navigate(it.actionId, it.arguments, isLogout = true)
+            }
+        }else{
+            Bridge.navigateToLogin(requireActivity(), wallet.id)
         }
     }
+
+    companion object : KLogging()
 }

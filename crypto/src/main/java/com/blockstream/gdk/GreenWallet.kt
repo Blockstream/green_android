@@ -62,6 +62,8 @@ class GreenWallet(val gdk: KotlinGDK, private val wally: KotlinWally, dataDir: S
         gdk.connect(session, params)
     }
 
+    fun reconnectHint(session: GASession) = gdk.reconnectHint(session, ReconnectHintParams())
+
     fun disconnect(session: GASession) {
         gdk.disconnect(session)
     }

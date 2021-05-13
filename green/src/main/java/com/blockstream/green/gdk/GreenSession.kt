@@ -7,7 +7,6 @@ import com.blockstream.gdk.params.*
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.utils.QATester
 import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.fasterxml.jackson.databind.JsonNode
@@ -15,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.Bridge
 import com.greenaddress.greenapi.HWWallet
+import com.greenaddress.greenapi.Session
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.HttpRequestHandler
 import com.greenaddress.jade.HttpRequestProvider
@@ -25,6 +25,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.encodeToJsonElement
 import mu.KLogging
 import java.net.URL
 
@@ -32,8 +33,7 @@ import java.net.URL
 class GreenSession constructor(
     private val settingsManager: SettingsManager,
     private val assetsManager: AssetManager,
-    private val greenWallet: GreenWallet,
-    private val QATester: QATester,
+    private val greenWallet: GreenWallet
 ) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
     var isWatchOnly: Boolean = false
 
@@ -125,7 +125,26 @@ class GreenSession constructor(
                 proxy = applicationSettings.proxyURL ?: ""
             )
         )
+
+
+        // GDK doesn't send connection events on connect
+        // to avoid having invalid events from previous connections
+        // emulate a successful connect event
+        NetworkEvent(connected = true, loginRequired = false, waiting = 0).let {
+            networkSubject.onNext(it)
+
+            // Pass notification to to GDKSession
+            Session.getSession().also { v3Session ->
+                v3Session
+                    .notificationModel
+                    .onNewNotification(
+                        v3Session.nativeSession, GreenWallet.JsonDeserializer.encodeToJsonElement(Notification("network", network = it))
+                    )
+            }
+        }
     }
+
+    fun reconnectHint() = greenWallet.reconnectHint(gaSession)
 
     fun disconnect() {
         isConnected = false
@@ -442,7 +461,6 @@ class GreenSession constructor(
     }
 
     fun convertAmount(convert: Convert) = greenWallet.convertAmount(gaSession, convert)
-
 
     fun onNewNotification(notification: Notification) {
         logger().info { "onNewNotification $notification" }

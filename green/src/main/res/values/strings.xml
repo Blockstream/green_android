@@ -841,8 +841,11 @@
   <string name="id_managed_assets_account_id">Managed Assets Account ID</string>
   <string name="id_request_amount">Request Amount</string>
   <string name="id_amount_in_">Amount in %s</string>
-
   <string name="id_ok">OK</string>
+
+  <string name="id_connecting">Connecting…</string>
+  <string name="id_reconnect">Reconnect</string>
+
   <string name="id_of_d">of %d</string>
   <string name="id_tor">Tor</string>
   <string name="id_tor_is_not_available">Tor is not available yet for singlesig wallets.</string>

@@ -88,7 +88,7 @@ class CryptoModule {
 
     @Singleton
     @Provides
-    fun provideEmulator(): QATester {
-        return QATester()
+    fun provideQATester(@ApplicationContext context: Context): QATester {
+        return QATester(context)
     }
 }

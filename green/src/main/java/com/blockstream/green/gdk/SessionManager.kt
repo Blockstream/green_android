@@ -9,15 +9,17 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.QATester
 import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.greenapi.Session
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.encodeToJsonElement
 import mu.KLogging
 
 class SessionManager(
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
-    private val QATester: QATester
+    qaTester: QATester
 ) {
 
     private val sessions = mutableMapOf<GASession, GreenSession>()
@@ -39,6 +41,18 @@ class SessionManager(
                 }
 
                 onNewNotification(JsonDeserializer.decodeFromJsonElement(jsonObject as JsonElement))
+            }
+        }
+
+        // Inject notification events from QATester to all sessions
+        qaTester.getSessionNotificationInjectorObservable().subscribeBy { notification ->
+            for(session in sessions.values){
+                session.onNewNotification(notification)
+            }
+
+            // Pass notification to to GDKSession
+            Session.getSession().also {
+                it.notificationModel.onNewNotification(it.nativeSession, JsonDeserializer.encodeToJsonElement(notification))
             }
         }
     }
@@ -125,7 +139,7 @@ class SessionManager(
 
     // Always use this method to create a Session as it keeps track of gaSession & GreenSession
     private fun createSession(): GreenSession {
-        val session = GreenSession(settingsManager, assetManager, greenWallet, QATester)
+        val session = GreenSession(settingsManager, assetManager, greenWallet)
 
         sessions[session.gaSession] = session
 

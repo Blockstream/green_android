@@ -20,6 +20,7 @@ class KotlinGDK {
     fun destroySession(session: GASession): GASession = GDK.destroy_session(session)
 
     fun connect(session: GASession, params: ConnectionParams) = GDK.connect(session, params)
+    fun reconnectHint(session: GASession, hint: ReconnectHintParams) = GDK.reconnect_hint(session, hint)
     fun disconnect(session: GASession) = GDK.disconnect(session)
 
     fun httpRequest(session: GASession, data: JsonElement) = GDK.http_request(session, data)
@@ -103,7 +104,6 @@ class KotlinGDK {
     fun destroyAuthHandler(gaAuthHandler: GAAuthHandler) = GDK.destroy_auth_handler(gaAuthHandler)
 
     fun twofactorChangeLimits(session: GASession, limits: Limits) = GDK.twofactor_change_limits(session, limits)
-
 
     fun convertAmount(session: GASession, convert: Convert) = GDK.convert_amount(session, convert)
 
