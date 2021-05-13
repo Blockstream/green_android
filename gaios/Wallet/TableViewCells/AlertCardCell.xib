@@ -90,6 +90,7 @@
                 <outlet property="bg" destination="Kgy-Kq-zWp" id="4Rk-qL-ZQn"/>
                 <outlet property="btnLeft" destination="BnY-DB-FzO" id="NcH-hY-9c5"/>
                 <outlet property="btnRight" destination="pPa-jJ-eiG" id="BBR-Uj-rEo"/>
+                <outlet property="btnsContainer" destination="6fe-xr-k0U" id="gKG-VQ-eN9"/>
                 <outlet property="lblHint" destination="hlv-5c-3AB" id="q4o-cH-Es6"/>
                 <outlet property="lblTitle" destination="uhb-s3-1zC" id="ntd-1v-T7c"/>
             </connections>

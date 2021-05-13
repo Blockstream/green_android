@@ -227,15 +227,11 @@ class TransactionsController: UITableViewController {
 
         firstly {
             return Guarantee()
-        }.get { _ in
-            self.startLoader(message: "Reloading...")
         }.then(on: bgq) { _ -> Promise<Void> in
             if AccountsManager.shared.current!.network == "liquid" {
                 return Registry.shared.load()
             }
             return Promise<Void>()
-        }.ensure {
-            self.stopLoader()
         }.done { _ in
             self.loadAlertCards()
             self.tableView.reloadData()
