@@ -95,7 +95,7 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
             return R.drawable.ic_testnet_btc;
         if (network.equals("localtest-liquid"))
             return R.drawable.ic_liquid;
-        if (network.equals("liquid") || network.equals("liquid-electrum-mainnet"))
+        if (network.equals("liquid") || network.equals("electrum-liquid"))
             return R.drawable.ic_liquid;
         return R.drawable.ic_testnet_btc;
     }

@@ -15,7 +15,7 @@ data class Networks(
     val testnetGreen by lazy { getNetworkById("testnet") }
 
     val bitcoinElectrum by lazy { getNetworkById("electrum-mainnet") }
-    val liquidElectrum by lazy { getNetworkById("liquid-electrum-mainnet") }
+    val liquidElectrum by lazy { getNetworkById("electrum-liquid") }
     val testnetElectrum by lazy { getNetworkById("electrum-testnet") }
 
 

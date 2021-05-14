@@ -59,7 +59,7 @@ class ChooseSecurityFragment :
                 if(isElectrum) "electrum-mainnet" else "mainnet"
             }
             "liquid" -> {
-                if(isElectrum) "liquid-electrum-mainnet" else "liquid"
+                if(isElectrum) "electrum-liquid" else "liquid"
             }
             else -> {
                 if(isElectrum) "electrum-testnet" else "testnet"
