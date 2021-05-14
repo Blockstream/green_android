@@ -251,9 +251,9 @@ class BLEManager {
                     let info = HWResolver.shared.hw!.info
                     _ = try? session.registerUser(mnemonic: "", hw_device: ["device": info]).resolve()
                         .then { _ in
-                            try session.login(mnemonic: "", hw_device: ["device": info]).resolve()
-                        }.get { _ in
                             Registry.shared.load()
+                        }.then { _ in
+                            try session.login(mnemonic: "", hw_device: ["device": info]).resolve()
                         }.done { res in
                             observer.onNext(res)
                             observer.onCompleted()
