@@ -42,9 +42,11 @@ object Bridge {
     var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
     var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
     var getWalletNameFn: ((gaSession: Any?) -> String?)? = null
+    var getWalletIdFn: ((gaSession: Any?) -> Long?)? = null
     var getActiveAssetProviderFn: ((gaSession: Any?) -> AssetsProvider?)? = null
     var getHWWalletFn: ((gaSession: Any?) -> HWWallet?)? = null
     var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
+    var sessionIsConnectedProviderFn: ((gaSession: Any?) -> Boolean)? = null
     var recoveryConfirmedProviderFn: ((gaSession: Any?) -> Boolean)? = null
     var connectFn: ((context: Context, gaSession: Any?, networkId: String, hwWallet: HWWallet?) -> Unit)? = null
     var loginWithDeviceFn: ((context: Context, gaSession: Any?, networkId: String, connectSession: Boolean, hwWallet: HWWallet, hardwareDataResolver: HardwareCodeResolver) -> Unit)? = null
@@ -84,6 +86,8 @@ object Bridge {
     fun loginWithDevice(context:Context, gaSession: Any?, network: String,connectSession: Boolean,  hwWallet: HWWallet, hardwareDataResolver: HardwareCodeResolver){
         loginWithDeviceFn?.invoke(context, gaSession, network, connectSession, hwWallet, hardwareDataResolver)
     }
+
+    fun isSessionConnected() = sessionIsConnectedProviderFn?.invoke(Session.getSession().nativeSession) ?: false
 
     fun getIsRecoveryConfirmed() = recoveryConfirmedProviderFn?.invoke(Session.getSession().nativeSession) ?: true
 
@@ -134,12 +138,26 @@ object Bridge {
 
     fun getWalletName(): String? {
         return getWalletNameFn?.let {
-
             val session = Session.getSession()
 
             if(session != null && session.nativeSession != null){
                 session.nativeSession.let { nativeSession ->
                     return@getWalletName it.invoke(nativeSession)
+                }
+            }
+
+            null
+        }
+    }
+
+    fun getActiveWalletId(): Long? {
+        return getWalletIdFn?.let {
+
+            val session = Session.getSession()
+
+            if(session != null && session.nativeSession != null){
+                session.nativeSession.let { nativeSession ->
+                    return@getActiveWalletId it.invoke(nativeSession)
                 }
             }
 

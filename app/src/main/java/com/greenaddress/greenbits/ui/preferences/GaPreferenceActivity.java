@@ -59,12 +59,19 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     @Override
     final public void onResume() {
         super.onResume();
+
+        if (!Bridge.INSTANCE.isSessionConnected() ||
+                getSession() == null ||
+                getSession().getSettings() == null) {
+
+            Bridge.INSTANCE.navigateToLogin(this, Bridge.INSTANCE.getActiveWalletId());
+            return;
+        }
     }
 
     protected void logout() {
         Bridge.INSTANCE.navigateToLogin(this, null);
     }
-
 
     public void toast(final int id) {
         UI.toast(this, id, Toast.LENGTH_LONG);

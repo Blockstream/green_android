@@ -1,7 +1,6 @@
 package com.greenaddress.greenbits.ui;
 
 import android.util.Log;
-import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -12,7 +11,6 @@ import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.model.Conversion;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.text.NumberFormat;
@@ -29,7 +27,6 @@ import io.reactivex.schedulers.Schedulers;
 public abstract class LoggedActivity extends GaActivity {
 
     private Timer mTimer = new Timer();
-    private long mStart = System.currentTimeMillis();
     private Snackbar mSnackbar;
     private Timer mOfflineTimer = new Timer();
     private Long mTryingAt = 0L;
@@ -41,18 +38,12 @@ public abstract class LoggedActivity extends GaActivity {
     public void onResume() {
         super.onResume();
 
-        if (getSession() == null || getSession().getSettings() == null) {
-            exit(null);
+        if (!Bridge.INSTANCE.isSessionConnected() ||
+                getSession() == null ||
+                getSession().getSettings() == null) {
+            exit(Bridge.INSTANCE.getActiveWalletId());
             return;
         }
-
-        final boolean timerExpired = mStart + delayLogoutTimer() < System.currentTimeMillis();
-        if (timerExpired) {
-            exit(-1L);
-            return;
-        }
-
-        startLogoutTimer();
 
         // check network status on resume
         final JsonNode networkNode = getSession().getNotificationModel().getNetworkNode();
@@ -112,8 +103,6 @@ public abstract class LoggedActivity extends GaActivity {
         super.onPause();
 
         cancelOfflineTimer();
-        stopLogoutTimer();
-        mStart = System.currentTimeMillis();
 
         if (mSnackbar != null) {
             mSnackbar.dismiss();
@@ -208,41 +197,6 @@ public abstract class LoggedActivity extends GaActivity {
         Bridge.INSTANCE.navigateToLogin(this, walletId);
 
         finish();
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(final MotionEvent ev) {
-        stopLogoutTimer();
-        startLogoutTimer();
-        return super.dispatchTouchEvent(ev);
-    }
-
-    private int delayLogoutTimer() {
-        if (getSession() != null && getSession().getSettings() != null
-                && getSession().getSettings().getAltimeout() != null) {
-            return getSession().getSettings().getAltimeout()  * 60 * 1000;
-        }
-        final String altimeString = cfg().getString(PrefKeys.ALTIMEOUT, "5");
-        return Integer.parseInt(altimeString) * 60 * 1000;
-    }
-
-    private void startLogoutTimer() {
-        stopLogoutTimer();
-        final Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(() -> exit(-1L));
-            }
-        }, delayLogoutTimer());
-        mTimer = timer;
-    }
-
-    private void stopLogoutTimer() {
-        if (mTimer != null) {
-            mTimer.cancel();
-            mTimer.purge();
-        }
     }
 
     protected String getBitcoinUnitClean() throws Exception {

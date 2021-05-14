@@ -1,5 +1,9 @@
 package com.blockstream.green.gdk
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
@@ -14,22 +18,29 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import mu.KLogging
+import java.util.*
+import kotlin.concurrent.schedule
 
 class SessionManager(
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
     qaTester: QATester
-) {
+) : LifecycleObserver {
 
     private val sessions = mutableMapOf<GASession, GreenSession>()
     private val walletSessions = mutableMapOf<WalletId, GreenSession>()
     private var onBoardingSession: GreenSession? = null
     private var jadeSession: GreenSession? = null
-
     private var hardwareSessionV3: GreenSession? = null
 
+    private var timeoutTimers = mutableListOf<Timer>()
+
     init {
+
+        // Listen to foreground / background events
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+
         greenWallet.setNotificationHandler { gaSession, jsonObject ->
             sessions[gaSession]?.apply {
 
@@ -130,6 +141,10 @@ class SessionManager(
         return jadeSession!!
     }
 
+    fun getConnectedSessions(): Map<GASession, GreenSession> {
+        return sessions.filter { it.value.isConnected }
+    }
+
     fun upgradeOnBoardingSessionToWallet(wallet: Wallet) {
         onBoardingSession?.let {
             walletSessions[wallet.id] = it
@@ -144,6 +159,27 @@ class SessionManager(
         sessions[session.gaSession] = session
 
         return session
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onEnterForeground() {
+        timeoutTimers.forEach { it.cancel() }
+        timeoutTimers.clear()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun onEnterBackground() {
+        for(session in sessions.filter { it.value.isConnected }.values){
+
+            val sessionTimeout = (session.getSettings()?.altimeout ?: 1) * 60 * 1000L
+
+            timeoutTimers += Timer().also {
+                it.schedule(sessionTimeout) {
+                    logger().debug { "Session timeout, disconnecting..." }
+                    session.disconnectAsync()
+                }
+            }
+        }
     }
 
     companion object: KLogging()

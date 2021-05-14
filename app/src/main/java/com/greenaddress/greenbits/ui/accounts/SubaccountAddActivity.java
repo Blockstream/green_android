@@ -10,6 +10,7 @@ import com.greenaddress.greenbits.ui.R;
 
 import androidx.fragment.app.Fragment;
 
+@Deprecated
 public class SubaccountAddActivity extends LoggedActivity {
 
     @Override

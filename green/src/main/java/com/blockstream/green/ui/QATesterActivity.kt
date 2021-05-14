@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.Notification
 import com.blockstream.green.databinding.QaTesterActivityBinding
+import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.QTNotificationDelay
 import com.blockstream.green.utils.isDevelopmentFlavor
@@ -22,6 +23,9 @@ class QATesterActivity : AppCompatActivity() {
 
     @Inject
     lateinit var qaTester: QATester
+
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,22 +62,22 @@ class QATesterActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.buttonDisconnectAll.setOnClickListener {
+            for(session in sessionManager.getConnectedSessions().values){
+                session.disconnectAsync()
+            }
+
+            Snackbar.make(binding.coordinator, "All sessions was disconnected", Snackbar.LENGTH_SHORT).show()
+        }
+
         binding.buttonRequireLoginNotification.setOnClickListener {
             qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(true, loginRequired = true, waiting = 0))))
-
-            showEventSnackbar()
         }
 
         binding.buttonDisconnectNotification.setOnClickListener {
             qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(false, waiting = 7, loginRequired = false))))
             qaTester.notificationsEvents.onNext(QTNotificationDelay(Notification(event = "network", network = NetworkEvent(true, loginRequired = false, waiting = 0)), delay = 10))
-
-            showEventSnackbar()
         }
-    }
-
-    private fun showEventSnackbar(){
-        Snackbar.make(binding.coordinator, "Event will be dispatched in 7 seconds", Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -16,7 +16,6 @@ import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.lifecycle.AppLifecycleObserver
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.ui.BridgeActivity
 import com.blockstream.green.ui.MainActivity
@@ -57,17 +56,13 @@ class GreenApplication : Application(){
     lateinit var assetManager: AssetManager
 
     @Inject
-    lateinit var QATester: QATester
-
-    @Inject
-    // Inject it just to be initialized
-    lateinit var appLifecycleObserver: AppLifecycleObserver
+    lateinit var qaTester: QATester
 
     override fun onCreate() {
         super.onCreate()
 
         // Initialize Bridge
-        Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.VERSION_NAME, QATester)
+        Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.VERSION_NAME, qaTester)
 
         Bridge.navigateFn = { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: GASession?, extraData: Any? ->
             when(type){
@@ -236,7 +231,6 @@ class GreenApplication : Application(){
         }
 
         Bridge.recoveryConfirmedProviderFn = { gaSession ->
-
             val walletId = sessionManager.getWalletIdFromSession(gaSession)
 
             if(walletId >= 0){
@@ -244,6 +238,10 @@ class GreenApplication : Application(){
             }else{
                 true
             }
+        }
+
+        Bridge.sessionIsConnectedProviderFn = { gaSession ->
+            sessionManager.getWalletSession(gaSession)?.isConnected ?: false
         }
 
         Bridge.getSubaccountFn = { gaSession ->
@@ -261,6 +259,16 @@ class GreenApplication : Application(){
 
             if(walletId >= 0){
                 walletRepository.getWalletSync(walletId)?.name
+            }else{
+                null
+            }
+        }
+
+        Bridge.getWalletIdFn = { gaSession ->
+            val walletId = sessionManager.getWalletIdFromSession(gaSession)
+
+            if(walletId >= 0){
+                walletRepository.getWalletSync(walletId)?.id
             }else{
                 null
             }

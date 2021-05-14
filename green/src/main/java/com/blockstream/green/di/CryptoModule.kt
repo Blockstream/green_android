@@ -82,8 +82,8 @@ class CryptoModule {
 
     @Singleton
     @Provides
-    fun provideAppLifecycleObserver(sessionManager: SessionManager): AppLifecycleObserver {
-        return AppLifecycleObserver(sessionManager)
+    fun provideAppLifecycleObserver(): AppLifecycleObserver {
+        return AppLifecycleObserver()
     }
 
     @Singleton

@@ -86,9 +86,9 @@ open class WalletViewModel constructor(
                         }else{
 
                             reconnectTimer = Observable.interval(1, TimeUnit.SECONDS)
-                                .take(event.waiting + 1)
+                                .take((event.waiting ?: 0) + 1)
                                 .map {
-                                    event.waiting - it
+                                    (event.waiting ?: 0) - it
                                 }
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeBy(

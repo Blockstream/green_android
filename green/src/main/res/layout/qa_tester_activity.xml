@@ -137,7 +137,20 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
-                            android:text="Emulate GDK Events" />
+                            android:text="GDK Sessions" />
+
+                        <Button
+                            android:id="@+id/buttonDisconnectAll"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:text="Disconnect all sessions" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="Emulate GDK Events (w/ 7 secs delay)" />
 
                         <Button
                             android:id="@+id/buttonRequireLoginNotification"

@@ -30,6 +30,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
         session = sessionManager.getWalletSession(wallet)
 
+        // Assuming we are in v4 codebase flow
         if (isLoggedInRequired() && !session.isConnected) {
             navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
             return
@@ -45,7 +46,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
             }
 
             it.onNetworkEvent.observe(viewLifecycleOwner) { event ->
-                if(event.loginRequired){
+                if(event.loginRequired == true){
                     logger().info { "Logout from network event " }
                     logout()
                 }
@@ -91,7 +92,12 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
     override fun onResume() {
         super.onResume()
+
+        if (isLoggedInRequired() && !session.isConnected) {
+            logout()
+        }
     }
+
 
     fun logout(){
         if(Bridge.useGreenModule){
