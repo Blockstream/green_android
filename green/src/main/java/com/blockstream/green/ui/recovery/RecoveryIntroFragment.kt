@@ -35,13 +35,14 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         setSecureScreen(false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    // Recovery screens are reused in onboarding
+    // where we don't have a session yet.
+    override fun isSessionRequired(): Boolean {
+        return args.wallet != null
+    }
 
-        // Emulate v3 Onboarding
-        // Initiate WalletFragment only if wallet exists
-        if(args.wallet != null){
-            super.onViewCreated(view, savedInstanceState)
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.buttonNext.setOnClickListener {
 

@@ -28,6 +28,10 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Recovery screens are reused in onboarding
+        // where we don't have a session yet.
+        if(!isSessionRequired()) return
+
         session = sessionManager.getWalletSession(wallet)
 
         // Assuming we are in v4 codebase flow
@@ -87,11 +91,16 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     }
 
     open fun isLoggedInRequired(): Boolean = true
+    open fun isSessionRequired(): Boolean = true
 
     abstract fun getWalletViewModel(): WalletViewModel?
 
     override fun onResume() {
         super.onResume()
+
+        // Recovery screens are reused in onboarding
+        // where we don't have a session yet.
+        if(!isSessionRequired()) return
 
         if (isLoggedInRequired() && !session.isConnected) {
             logout()

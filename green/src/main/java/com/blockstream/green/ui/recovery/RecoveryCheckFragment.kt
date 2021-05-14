@@ -7,11 +7,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
-import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.databinding.RecoveryCheckFragmentBinding
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.isDevelopmentFlavor
+import com.blockstream.green.utils.snackbar
 import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -37,12 +37,14 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
     private val args: RecoveryCheckFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet!! }
 
+    // Recovery screens are reused in onboarding
+    // where we don't have a session yet.
+    override fun isSessionRequired(): Boolean {
+        return args.wallet != null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // Emulate v3 Onboarding
-        // Initiate WalletFragment only if wallet exists
-        if(args.wallet != null){
-            super.onViewCreated(view, savedInstanceState)
-        }
+        super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
         binding.isDevelopmentFlavor = requireContext().isDevelopmentFlavor()
