@@ -68,10 +68,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.1"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1"
     /** ----------------------------------------------------------------------------------------- */
-    
-    /**  --- Bluetooth -------------------------------------------------------------------------- */
-    implementation 'com.polidea.rxandroidble2:rxandroidble:1.12.1'
-    /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava 3 --------------------------------------------------------------------------- */
     implementation "io.reactivex.rxjava3:rxjava:3.0.12"

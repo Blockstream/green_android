@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="com.polidea.rxandroidble2.RxBleClient.State"/>
+
         <variable
             name="vm"
             type="com.blockstream.green.ui.devices.DeviceListViewModel" />
@@ -16,10 +18,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--      animateLayoutChanges animates visibility changes       -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:animateLayoutChanges="true">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler"
@@ -31,6 +35,8 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.blockstream.green.views.GappedLinearLayout
+                android:id="@+id/gappedLinearLayout4"
+                isVisible="@{vm.devices.empty}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -39,11 +45,11 @@
                 android:orientation="vertical"
                 android:text="@string/id_no_device_connected"
                 app:gap="16dp"
-                isVisible="@{vm.devices.empty}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:animateLayoutChanges="true">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -63,10 +69,24 @@
 
                 <Button
                     android:id="@+id/buttonEnableBluetooth"
+                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.BLUETOOTH_NOT_ENABLED }"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     android:text="@string/id_enable_bluetooth" />
+
+                <Button
+                    android:id="@+id/buttonRequestPermission"
+                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_PERMISSION_NOT_GRANTED }"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_give_bluetooth_permissions" />
+
+                <Button
+                    android:id="@+id/buttonEnableLocationService"
+                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_SERVICES_NOT_ENABLED }"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_enable_location_service" />
 
             </com.blockstream.green.views.GappedLinearLayout>
 

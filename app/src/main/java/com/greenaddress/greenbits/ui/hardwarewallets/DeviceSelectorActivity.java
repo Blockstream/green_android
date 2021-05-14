@@ -46,9 +46,10 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
+@Deprecated
 public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapter.OnAdapterInterface {
 
-    public static final String ACTION_BLE_SELECTED = "android.hardware.ble.action.ACTION_BLE_SELECTED";
+
 
     private static final String TAG = DeviceSelectorActivity.class.getSimpleName();
 
@@ -135,8 +136,7 @@ public class DeviceSelectorActivity extends LoginActivity implements DeviceAdapt
 
         // NOTE: BLE_LOCATION_PERMISSION should be set to COARSE or FINE as appropriate for running android version
         if (ContextCompat.checkSelfPermission(this, BLE_LOCATION_PERMISSION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {BLE_LOCATION_PERMISSION},
-                                              REQUEST_PERMISSION_LOCATION);
+            ActivityCompat.requestPermissions(this, new String[] {BLE_LOCATION_PERMISSION}, REQUEST_PERMISSION_LOCATION);
             return;
         }
 

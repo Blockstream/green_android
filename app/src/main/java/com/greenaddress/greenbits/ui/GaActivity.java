@@ -45,6 +45,7 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
 
     protected static final String TAG = GaActivity.class.getSimpleName();
     public static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
+    public static final String ACTION_BLE_SELECTED = "android.hardware.ble.action.ACTION_BLE_SELECTED";
 
     private ProgressBarHandler mProgressBarHandler;
     private final SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();

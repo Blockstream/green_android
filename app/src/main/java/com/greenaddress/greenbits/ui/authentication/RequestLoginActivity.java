@@ -567,7 +567,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
             onUsbAttach(intent.getParcelableExtra(UsbManager.EXTRA_DEVICE));
         }
 
-        if (DeviceSelectorActivity.ACTION_BLE_SELECTED.equalsIgnoreCase(intent.getAction())) {
+        if (ACTION_BLE_SELECTED.equalsIgnoreCase(intent.getAction())) {
             onBleAttach(intent.getParcelableExtra(BluetoothDevice.EXTRA_UUID),
                     Objects.requireNonNull(intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)));
         }

@@ -843,6 +843,10 @@
   <string name="id_amount_in_">Amount in %s</string>
   <string name="id_ok">OK</string>
 
+  <string name="id_give_bluetooth_permissions">Give Bluetooth Permissions</string>
+  <string name="id_enable_location_service">Enable Location Service</string>
+  <string name="id_location_service_seems_to_be_disabled">Location service seems to be disabled, do you want to enable it?</string>
+
   <string name="id_connecting">Connecting…</string>
   <string name="id_reconnect">Reconnect</string>
 

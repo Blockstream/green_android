@@ -5,10 +5,32 @@ import android.hardware.usb.UsbDevice
 import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.green.R
 import com.greenaddress.jade.JadeBleImpl
 import com.polidea.rxandroidble2.RxBleDevice
 import kotlinx.parcelize.IgnoredOnParcel
 import mu.KLogging
+
+enum class DeviceBrand {
+    Blockstream, Ledger, Trezor;
+
+    val brand
+        get() =  when(this){
+            Blockstream -> "Blockstream"
+            Ledger -> "Ledger"
+            Trezor -> "Trezor"
+        }
+
+    val icon
+        get() =  when(this){
+            Blockstream -> R.drawable.ic_blockstream
+            Ledger -> R.drawable.ic_ledger
+            Trezor -> R.drawable.ic_trezor
+        }
+
+    val hasBleConnectivity
+        get() = this != Trezor
+}
 
 open class Device constructor(
     val type: ConnectionType,
@@ -49,11 +71,11 @@ open class Device constructor(
     }
 
     open val name
-        get() = if (isJade && isUsb) "Jade" else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
+        get() = if (isJade && isUsb) deviceBrand.name else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
 
+    // Jade v1 has the controller manufacturer as a productName
     open val manufacturer
-        get() = if (isJade) "Blockstream" else usbDevice?.productName
-            ?: "bleDevice?.bluetoothDevice?.name"
+        get() = if (isJade) "Blockstream" else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
 
     val vendorId
         get() = usbDevice?.vendorId
@@ -67,6 +89,14 @@ open class Device constructor(
     val isBluethooth
         get() = type == ConnectionType.BLUETOOTH
 
+    @IgnoredOnParcel
+    val deviceBrand by lazy {
+        when{
+            isTrezor -> DeviceBrand.Trezor
+            isLedger -> DeviceBrand.Ledger
+            else -> DeviceBrand.Blockstream
+        }
+    }
 
     @IgnoredOnParcel
     open val isJade by lazy {

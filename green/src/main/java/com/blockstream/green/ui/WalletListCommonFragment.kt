@@ -1,6 +1,5 @@
 package com.blockstream.green.ui
 
-import android.content.Intent
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
@@ -9,11 +8,11 @@ import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.WalletListCommonBinding
+import com.blockstream.green.devices.DeviceBrand
 import com.blockstream.green.ui.items.DeviceBrandListItem
 import com.blockstream.green.ui.items.WalletListItem
 import com.blockstream.green.utils.observe
 import com.greenaddress.Bridge
-import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -43,28 +42,19 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
             true
         }
 
-        val list: List<DeviceBrandListItem>
-
-        if(Bridge.useGreenModule){
-            list = listOf(DeviceBrandListItem(true))
-        }else{
-            list = listOf(DeviceBrandListItem(true),
-                DeviceBrandListItem(false)
-            )
-        }
+        val list: List<DeviceBrandListItem> = listOf(
+            DeviceBrandListItem(DeviceBrand.Blockstream),
+            DeviceBrandListItem(DeviceBrand.Ledger),
+            DeviceBrandListItem(DeviceBrand.Trezor)
+        )
 
         val devicesAdapter = FastAdapter.with(ItemAdapter<DeviceBrandListItem>().add(list))
 
         devicesAdapter.onClickListener = { _, _, item, _ ->
             if(Bridge.useGreenModule) {
-                navigate(NavGraphDirections.actionGlobalDeviceListFragment())
+                navigate(NavGraphDirections.actionGlobalDeviceListFragment(item.deviceBrand))
             }else{
-                Bridge.bridgeSession(sessionManager.getHardwareSessionV3().gaSession, "mainnet",null)
-                if(item.isBluetooth){
-                    startActivity(Intent(requireContext(), DeviceSelectorActivity::class.java))
-                }else{
-                    navigate(NavGraphDirections.actionGlobalDeviceListFragment())
-                }
+                navigate(NavGraphDirections.actionGlobalDeviceListFragment(item.deviceBrand))
             }
             closeDrawer()
 

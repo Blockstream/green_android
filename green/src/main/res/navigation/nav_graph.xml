@@ -370,6 +370,9 @@
         <action
             android:id="@+id/action_deviceListFragment_to_deviceInfoFragment"
             app:destination="@id/deviceInfoFragment" />
+        <argument
+            android:name="deviceBrand"
+            app:argType="com.blockstream.green.devices.DeviceBrand" />
     </fragment>
     <fragment
         android:id="@+id/deviceInfoFragment"
@@ -382,6 +385,7 @@
     </fragment>
 
     <action android:id="@+id/action_global_deviceListFragment" app:destination="@id/deviceListFragment"/>
+
     <dialog
         android:id="@+id/deviceBottomSheetDialogFragment"
         android:name="com.blockstream.green.ui.devices.DeviceBottomSheetDialogFragment"
