@@ -20,16 +20,6 @@ class TransactionsController: UITableViewController {
     private var assetsUpdatedToken: NSObjectProtocol?
     private var settingsUpdatedToken: NSObjectProtocol?
 
-    lazy var noTransactionsLabel: UILabel = {
-        let noTransactionsLabel = UILabel(frame: CGRect(x: self.view.frame.size.width/2 - 100, y: self.tableView.tableHeaderView!.frame.height, width: 200, height: self.view.frame.size.height - self.tableView.tableHeaderView!.frame.height))
-        noTransactionsLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-        noTransactionsLabel.textColor = UIColor.customTitaniumLight()
-        noTransactionsLabel.numberOfLines = 0
-        noTransactionsLabel.textAlignment = .center
-        noTransactionsLabel.text = NSLocalizedString("id_your_transactions_will_be_shown", comment: "")
-        return noTransactionsLabel
-    }()
-
     var isResetActive: Bool {
         get {
             guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return false }
@@ -58,7 +48,7 @@ class TransactionsController: UITableViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.prefetchDataSource = self
-        tableView.tableFooterView = UIView()
+        tableView.tableFooterView = getFooterView()
         tableView.register(nib, forCellReuseIdentifier: "TransactionTableCell")
         tableView.register(nib2, forCellReuseIdentifier: "AlertCardCell")
         tableView.allowsSelection = true
@@ -140,6 +130,12 @@ class TransactionsController: UITableViewController {
             headerView.frame.size.height = height
             tableView.tableHeaderView = headerView
         }
+        guard let footerView = tableView.tableFooterView else { return }
+        let fHeight = footerView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        if fHeight != footerView.frame.size.height {
+            footerView.frame.size.height = fHeight
+            tableView.tableFooterView = footerView
+        }
     }
 
     @IBAction func notifications(_ sender: Any) {
@@ -216,12 +212,12 @@ class TransactionsController: UITableViewController {
     }
 
     func showTransactions() {
-        if view.subviews.contains(noTransactionsLabel) {
-            noTransactionsLabel.removeFromSuperview()
-        }
+
         let count = txs.map { $0.list.count }.reduce(0, +)
         if count == 0 {
-            view.addSubview(noTransactionsLabel)
+            tableView.tableFooterView = getFooterView()
+        } else {
+            tableView.tableFooterView = UIView()
         }
         if tableView.refreshControl?.isRefreshing ?? false {
             tableView.refreshControl?.endRefreshing()
@@ -320,6 +316,11 @@ class TransactionsController: UITableViewController {
             self.txs.removeAll()
             self.txs.append(txs)
         }
+    }
+
+    func getFooterView() -> FooterView {
+        let view: FooterView = ((Bundle.main.loadNibNamed("FooterView", owner: self, options: nil)![0] as? FooterView)!)
+        return view
     }
 
     func getAccountCardView() -> WalletFullCardView? {

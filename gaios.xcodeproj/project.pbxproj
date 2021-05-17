@@ -46,6 +46,8 @@
 		340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */; };
 		340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340F07EF2620A6BB0065A986 /* DialogRecoveryHelpViewController.swift */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
+		342E0C87265274D70004D75B /* FooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 342E0C86265274D70004D75B /* FooterView.xib */; };
+		342E0C8B265274ED0004D75B /* FooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342E0C8A265274ED0004D75B /* FooterView.swift */; };
 		344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344562EA25D297CF00A5EC18 /* BLEManager.swift */; };
 		345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */; };
 		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
@@ -80,13 +82,13 @@
 		34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */; };
 		34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */; };
 		34B826D12608831F00579C0B /* RecoveryVerifyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */; };
-		34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */; };
 		34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D12636A12700FB8011 /* HWWCell.swift */; };
 		34BAD9DA2636A12700FB8011 /* HWWNetworkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D22636A12700FB8011 /* HWWNetworkCell.swift */; };
 		34BAD9DB2636A12700FB8011 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D42636A12700FB8011 /* Enums.swift */; };
 		34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34BAD9D52636A12700FB8011 /* HWW.storyboard */; };
 		34BAD9DD2636A12700FB8011 /* HWWConnectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */; };
 		34BAD9DE2636A12700FB8011 /* HWWScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */; };
+		34BADA1B2637F65F00FB8011 /* Reactivate2faViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */; };
 		34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */; };
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
@@ -290,6 +292,8 @@
 		340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectorBarItem.swift; sourceTree = "<group>"; };
 		340F07EF2620A6BB0065A986 /* DialogRecoveryHelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRecoveryHelpViewController.swift; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
+		342E0C86265274D70004D75B /* FooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FooterView.xib; sourceTree = "<group>"; };
+		342E0C8A265274ED0004D75B /* FooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterView.swift; sourceTree = "<group>"; };
 		344562EA25D297CF00A5EC18 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimator.swift; sourceTree = "<group>"; };
 		345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerPresentationController.swift; sourceTree = "<group>"; };
@@ -325,13 +329,13 @@
 		34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryInstructionViewController.swift; sourceTree = "<group>"; };
 		34B826CC2608830C00579C0B /* RecoveryCreateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryCreateViewController.swift; sourceTree = "<group>"; };
 		34B826D02608831F00579C0B /* RecoveryVerifyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerifyViewController.swift; sourceTree = "<group>"; };
-		34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactivate2faViewController.swift; sourceTree = "<group>"; };
 		34BAD9D12636A12700FB8011 /* HWWCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWCell.swift; sourceTree = "<group>"; };
 		34BAD9D22636A12700FB8011 /* HWWNetworkCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWNetworkCell.swift; sourceTree = "<group>"; };
 		34BAD9D42636A12700FB8011 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		34BAD9D52636A12700FB8011 /* HWW.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HWW.storyboard; sourceTree = "<group>"; };
 		34BAD9D72636A12700FB8011 /* HWWConnectViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWConnectViewController.swift; sourceTree = "<group>"; };
 		34BAD9D82636A12700FB8011 /* HWWScanViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HWWScanViewController.swift; sourceTree = "<group>"; };
+		34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactivate2faViewController.swift; sourceTree = "<group>"; };
 		34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccessViewController.swift; sourceTree = "<group>"; };
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -1126,6 +1130,8 @@
 				81E9B80521C946CE004D87B6 /* WalletFullCardView.swift */,
 				340F07E32620499A0065A986 /* NetworkSelectorBarItem.xib */,
 				340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */,
+				342E0C8A265274ED0004D75B /* FooterView.swift */,
+				342E0C86265274D70004D75B /* FooterView.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1305,6 +1311,7 @@
 				6D7B5F9422E6852D00DE049D /* AccountMiniCollection.xib in Resources */,
 				81286117222212C7005598D3 /* SetPhoneView.xib in Resources */,
 				818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */,
+				342E0C87265274D70004D75B /* FooterView.xib in Resources */,
 				34B826C42608827F00579C0B /* Recovery.storyboard in Resources */,
 				340F07E42620499A0065A986 /* NetworkSelectorBarItem.xib in Resources */,
 				81E9B80221C92EF7004D87B6 /* AccountCardView.xib in Resources */,
@@ -1481,6 +1488,7 @@
 				81DA3DA12541F2B5001159D6 /* TxInputOutputData.swift in Sources */,
 				81F74BA52278857800A397C9 /* Network.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
+				342E0C8B265274ED0004D75B /* FooterView.swift in Sources */,
 				811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
