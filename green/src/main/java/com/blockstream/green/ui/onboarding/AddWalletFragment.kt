@@ -8,6 +8,7 @@ import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.AddWalletFragmentBinding
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.openBrowser
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -18,6 +19,8 @@ class AddWalletFragment :
 
     val args: AddWalletFragmentArgs by navArgs()
 
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     @Inject
     lateinit var assistedFactory: AddWalletViewModel.AssistedFactory
@@ -55,9 +58,7 @@ class AddWalletFragment :
         }
 
         binding.termsLink.setOnClickListener {
-            context?.let {
-                openBrowser(it, Urls.TERMS_OF_SERVICE)
-            }
+            openBrowser(settingsManager.getApplicationSettings(), Urls.TERMS_OF_SERVICE)
         }
     }
 }

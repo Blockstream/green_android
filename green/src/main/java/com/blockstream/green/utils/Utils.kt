@@ -14,28 +14,51 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.blockstream.green.R
+import com.blockstream.green.settings.ApplicationSettings
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
 
 
-fun openBrowser(context: Context, url: String) {
-    try {
-        val builder = CustomTabsIntent.Builder()
-        builder.setShowTitle(true)
-        builder.setUrlBarHidingEnabled(false)
-        builder.setDefaultColorSchemeParams(CustomTabColorSchemeParams.Builder()
-            .setToolbarColor(ContextCompat.getColor(context, R.color.brand_surface))
-            .setNavigationBarColor(ContextCompat.getColor(context, R.color.brand_surface))
-            .setNavigationBarDividerColor(ContextCompat.getColor(context, R.color.brand_green))
-            .build()
-        )
-        builder.setStartAnimations(context, R.anim.enter_slide_up, R.anim.fade_out)
-        builder.setExitAnimations(context, R.anim.fade_in, R.anim.exit_slide_down)
+fun Fragment.openBrowser(appSettings: ApplicationSettings, url: String) {
 
-        val customTabsIntent = builder.build()
-        customTabsIntent.launchUrl(context, Uri.parse(url))
-    } catch (e: Exception) {
-        e.printStackTrace()
+    val openBrowserBlock =  { context : Context ->
+        try {
+            val builder = CustomTabsIntent.Builder()
+            builder.setShowTitle(true)
+            builder.setUrlBarHidingEnabled(false)
+            builder.setDefaultColorSchemeParams(CustomTabColorSchemeParams.Builder()
+                .setToolbarColor(ContextCompat.getColor(context, R.color.brand_surface))
+                .setNavigationBarColor(ContextCompat.getColor(context, R.color.brand_surface))
+                .setNavigationBarDividerColor(ContextCompat.getColor(context, R.color.brand_green))
+                .build()
+            )
+            builder.setStartAnimations(context, R.anim.enter_slide_up, R.anim.fade_out)
+            builder.setExitAnimations(context, R.anim.fade_in, R.anim.exit_slide_down)
+
+            val customTabsIntent = builder.build()
+            customTabsIntent.launchUrl(context, Uri.parse(url))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    if(appSettings.tor){
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.id_tor)
+            .setMessage(R.string.id_you_have_tor_enabled)
+            .setPositiveButton(R.string.id_continue) { _, _ ->
+                openBrowserBlock.invoke(requireContext())
+            }
+            .setNeutralButton(R.string.id_copy_to_clipboard) { _, _ ->
+                copyToClipboard("URL", url, requireContext())
+            }
+            .setNegativeButton(R.string.id_cancel) { _, _ ->
+
+            }
+            .show()
+    }else{
+        openBrowserBlock.invoke(requireContext())
     }
 }
 

@@ -23,6 +23,7 @@ import com.blockstream.green.databinding.DeviceListFragmentBinding
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceBrand
 import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.DeviceListItem
 import com.blockstream.green.utils.errorDialog
@@ -59,6 +60,9 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 
     @Inject
     lateinit var deviceManager: DeviceManager
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         // Nothing to do here, it's already handled by DeviceManager
@@ -153,7 +157,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
                     R.drawable.blockstream_jade_logo
                 ), button = getString(R.string.id_get_jade)
             ) {
-                openBrowser(requireContext(), Urls.JADE_STORE)
+                openBrowser(settingsManager.getApplicationSettings(), Urls.JADE_STORE)
             }
         }else{
             setToolbar(
@@ -163,7 +167,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
                     args.deviceBrand.icon
                 ), button = getString(R.string.id_blockstream_store)
             ) {
-                openBrowser(requireContext(), Urls.HARDWARE_STORE)
+                openBrowser(settingsManager.getApplicationSettings(), Urls.HARDWARE_STORE)
             }
         }
     }

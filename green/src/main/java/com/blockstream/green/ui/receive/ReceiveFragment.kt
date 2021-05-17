@@ -19,6 +19,7 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ReceiveFragmentBinding
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
@@ -39,6 +40,9 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
 ) {
     val args: ReceiveFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     @Inject
     lateinit var viewModelFactory: ReceiveViewModel.AssistedFactory
@@ -104,7 +108,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.assetWhitelistWarning.setOnClickListener {
-            openBrowser(requireContext(), Urls.LEDGER_SUPPORTED_ASSETS)
+            openBrowser(settingsManager.getApplicationSettings(), Urls.LEDGER_SUPPORTED_ASSETS)
         }
 
         binding.buttonVerify.setOnClickListener {
@@ -284,7 +288,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.help -> {
-                openBrowser(requireContext(), Urls.HELP_RECEIVE_ASSETS)
+                openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_RECEIVE_ASSETS)
             }
         }
         return super.onOptionsItemSelected(item)

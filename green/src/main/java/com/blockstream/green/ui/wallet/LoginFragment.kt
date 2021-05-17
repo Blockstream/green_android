@@ -250,7 +250,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             }
 
             R.id.help -> {
-                openBrowser(requireContext(), Urls.HELP_MNEMONIC_BACKUP)
+                openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_MNEMONIC_BACKUP)
             }
         }
         return super.onOptionsItemSelected(item)
