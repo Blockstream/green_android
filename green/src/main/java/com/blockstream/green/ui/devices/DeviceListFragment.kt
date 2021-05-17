@@ -100,7 +100,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.swipeRefreshLayout.isRefreshing = false
-            deviceManager.scanDevices()
+            deviceManager.refreshDevices()
         }
 
         binding.buttonEnableBluetooth.setOnClickListener {

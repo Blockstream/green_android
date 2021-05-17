@@ -306,8 +306,15 @@ class DeviceManager constructor(
         usbManager.requestPermission(device, permissionIntent)
     }
 
+    fun refreshDevices(){
+        logger.info { "Refresh device list" }
+
+        bluetoothDevicesSubject.onNext(listOf())
+        scanDevices()
+    }
+
     fun scanDevices() {
-        logger.info { "scanDevices" }
+        logger.info { "Scan for USB devices" }
 
         val newUsbDevices = usbManager.deviceList.values
 
