@@ -71,7 +71,6 @@ class DeviceManager constructor(
 
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                         device?.apply {
-                            //call method to set up device communication
                             logger.info { "Permission granted for device $device" }
                             onPermissionSuccess?.get()?.invoke()
                         }
@@ -90,7 +89,9 @@ class DeviceManager constructor(
                         if (prevState == BluetoothDevice.BOND_BONDING || prevState == BluetoothDevice.BOND_BONDED) {
                             if(bondedDevice?.bondState == BluetoothDevice.BOND_BONDED){
                                 onPermissionSuccess?.get()?.invoke()
-                                // Leave the timeout unchanged
+                                // As this device is no longer advertising itself prevent removal of the device
+                                // It can be removed by refreshDevices method
+                                pendingBondDevice.timeout = 0
                             }else{
                                 logger.error { "Bonding failed for ${pendingBondDevice.name} : ${pendingBondDevice.bleDevice?.bluetoothDevice?.address}" }
                                 // Reset timeout
