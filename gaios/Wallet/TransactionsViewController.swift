@@ -165,10 +165,8 @@ class TransactionsController: UITableViewController {
     func loadAlertCards() {
         alertCards = []
         if isResetActive {
-            alertCards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
-        }
-        if isDisputeActive {
-            alertCards.append(AlertCardType.dispute)
+            let resetCard = isDisputeActive ? AlertCardType.dispute : AlertCardType.reset(resetDaysRemaining ?? 0)
+            alertCards.append(resetCard)
         }
         if AccountsManager.shared.current!.network == "liquid" {
             switch Registry.shared.failStatus() {
