@@ -250,8 +250,11 @@ class BLEManager {
                 return Observable<[String: Any]>.create { observer in
                     let info = HWResolver.shared.hw!.info
                     _ = try? session.registerUser(mnemonic: "", hw_device: ["device": info]).resolve()
-                        .then { _ in
-                            Registry.shared.load()
+                        .then { _ -> Promise<Void> in
+                            if AccountsManager.shared.current?.network == "liquid" {
+                                return Registry.shared.load()
+                            }
+                            return Promise<Void>()
                         }.then { _ in
                             try session.login(mnemonic: "", hw_device: ["device": info]).resolve()
                         }.done { res in

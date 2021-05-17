@@ -111,9 +111,7 @@ class WalletNameViewController: UIViewController {
             appDelegate?.disconnect()
             return try appDelegate?.connect(params?.network ?? "mainnet")
         }.then(on: bgq) {
-            try getSession().login(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "").resolve()
-        }.then(on: bgq) { _ in
-            Registry.shared.load()
+            return try getSession().login(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "").resolve()
         }.ensure {
             self.stopLoader()
         }.done { _ in

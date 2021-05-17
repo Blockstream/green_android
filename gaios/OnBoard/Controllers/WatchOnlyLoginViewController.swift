@@ -140,10 +140,8 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
             try appDelegate.connect(self.account?.network ?? "mainnet")
-            try getSession().loginWatchOnly(username: self.account?.username ?? "",
+            return try getSession().loginWatchOnly(username: self.account?.username ?? "",
                                             password: password)
-        }.then { _ in
-            Registry.shared.load()
         }.ensure {
             self.stopLoader()
         }.done {
