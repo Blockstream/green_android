@@ -6,7 +6,6 @@ class DesignableView: UIView {
 
 extension UIView {
 
-    @IBInspectable
     var cornerRadius: CGFloat {
         get {
             return layer.cornerRadius
@@ -16,7 +15,6 @@ extension UIView {
         }
     }
 
-    @IBInspectable
     var borderWidth: CGFloat {
         get {
             return layer.borderWidth
@@ -26,7 +24,6 @@ extension UIView {
         }
     }
 
-    @IBInspectable
     var borderColor: UIColor? {
         get {
             if let color = layer.borderColor {
@@ -43,7 +40,6 @@ extension UIView {
         }
     }
 
-    @IBInspectable
     var shadowRadius: CGFloat {
         get {
             return layer.shadowRadius
@@ -53,7 +49,6 @@ extension UIView {
         }
     }
 
-    @IBInspectable
     var shadowOpacity: Float {
         get {
             return layer.shadowOpacity
@@ -63,7 +58,6 @@ extension UIView {
         }
     }
 
-    @IBInspectable
     var shadowOffset: CGSize {
         get {
             return layer.shadowOffset
@@ -73,7 +67,6 @@ extension UIView {
         }
     }
 
-    @IBInspectable
     var shadowColor: UIColor? {
         get {
             if let color = layer.shadowColor {
