@@ -24,8 +24,8 @@ class DeviceListViewModel @AssistedInject constructor(
     init {
         deviceManager
             .getDevices()
-            .map {
-                it.filter { it.deviceBrand == deviceBrand }
+            .map { devices ->
+                devices.filter { it.deviceBrand == deviceBrand }
             }
             .subscribe(devices::postValue)
             .addTo(disposables)

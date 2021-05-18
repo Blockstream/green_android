@@ -6,6 +6,7 @@ import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.R
+import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.jade.JadeBleImpl
 import com.polidea.rxandroidble2.RxBleDevice
 import kotlinx.parcelize.IgnoredOnParcel
@@ -71,11 +72,11 @@ open class Device constructor(
     }
 
     open val name
-        get() = if (isJade && isUsb) deviceBrand.name else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
+        get() = if (isJade && isUsb) "Jade" else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
 
     // Jade v1 has the controller manufacturer as a productName
     open val manufacturer
-        get() = if (isJade) "Blockstream" else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
+        get() = if (isJade) deviceBrand.name else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
 
     val vendorId
         get() = usbDevice?.vendorId
@@ -110,7 +111,7 @@ open class Device constructor(
 
     @IgnoredOnParcel
     val isLedger by lazy {
-        usbDevice?.vendorId == VENDOR_BTCHIP || usbDevice?.vendorId == VENDOR_LEDGER
+        bleService == ParcelUuid(LedgerDeviceBLE.SERVICE_UUID) || usbDevice?.vendorId == VENDOR_BTCHIP || usbDevice?.vendorId == VENDOR_LEDGER
     }
 
     fun hasPermissions(): Boolean {
