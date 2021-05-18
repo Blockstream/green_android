@@ -6,14 +6,16 @@ import android.util.Base64
 import androidx.preference.PreferenceManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.PinData
-import com.blockstream.green.utils.EncryptedData
 import com.blockstream.green.Preferences
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.utils.EncryptedData
 import com.blockstream.libwally.Wally
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
+import java.security.KeyStore
 
 class Migrator(
     val context: Context,
@@ -22,17 +24,22 @@ class Migrator(
     val settingsManager: SettingsManager,
 ) {
 
-    fun migrate(){
+    var keyStore: KeyStore = KeyStore.getInstance("AndroidKeyStore").apply {
+        load(null)
+    }
+
+    suspend fun migrate(){
 
         MigratorJava.migratePreferencesFromV2(context)
 
         migratePreferencesFromV3()
+        fixV4Migration()
     }
 
     private fun migratePreferencesFromV3(){
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-        if(sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4, false)){
+        if(sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4_1, false) || sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4_2, false)){
             return
         }
 
@@ -44,18 +51,17 @@ class Migrator(
         for(networkId in networks){
             val networkPreferences = context.getSharedPreferences(networkId, Context.MODE_PRIVATE)
 
-            if(!networkPreferences.contains(PrefKeys.DEVICE_ID)){
-                continue
+            val pinPreferences = listOf("pin", "pin_sec").map {
+                context.getSharedPreferences(
+                    "${networkId}_$it",
+                    Context.MODE_PRIVATE
+                )
             }
 
-            val pinPreferences = context.getSharedPreferences(
-                "${networkId}_pin",
-                Context.MODE_PRIVATE
-            )
-            val biometricsPreferences = context.getSharedPreferences(
-                "${networkId}_pin_sec",
-                Context.MODE_PRIVATE
-            )
+            // Check if wallet exists
+            if(!pinPreferences.any { it.contains("ident") }){
+                continue
+            }
 
             // Update Proxy settings only if are enabled. Keep only the first value
             if(networkPreferences.getBoolean(PrefKeys.PROXY_ENABLED, false) && proxyURL == null){
@@ -79,42 +85,41 @@ class Migrator(
 
             wallet.id = walletRepository.addWallet(wallet)
 
-            // Migrate PinData
-            if(pinPreferences.contains("encrypted")){
-                val pinData = fromV3PreferenceValues(pinPreferences)
+            for(pinPreference in pinPreferences){
+                if(pinPreference.contains("ident")){
 
-                // Important: is_six_digit flag was added in v3
-                val credentialType = if(pinPreferences.getBoolean("is_six_digit", false)) CredentialType.PIN else CredentialType.PASSWORD
+                    val pinData = fromV3PreferenceValues(pinPreference)
 
-                walletRepository.addLoginCredentials(
-                    LoginCredentials(
-                        walletId = wallet.id,
-                        credentialType = credentialType,
-                        pinData = pinData,
-                        counter = pinPreferences.getInt("counter", 0),
+                    // Beware: can be empty
+                    val nativePIN = pinPreference.getString("native", null)
+                    val nativeIV = pinPreference.getString("nativeiv", null)
+
+                    val credentialType: CredentialType
+                    var keystore : String? = null
+                    var encryptedData: EncryptedData? = null
+
+                    if(nativePIN.isNullOrBlank()){
+                        // User PIN
+                        credentialType = if(pinPreference.getBoolean("is_six_digit", false)) CredentialType.PIN else CredentialType.PASSWORD
+                    }else{
+                        // Biometrics or Screenlock
+                        credentialType = CredentialType.BIOMETRICS
+                        keystore = getV3KeyName(networkId)
+
+                        encryptedData = EncryptedData(nativePIN, nativeIV ?: "")
+                    }
+
+                    walletRepository.addLoginCredentials(
+                        LoginCredentials(
+                            walletId = wallet.id,
+                            credentialType = credentialType,
+                            pinData = pinData,
+                            keystore = keystore,
+                            encryptedData = encryptedData,
+                            counter = pinPreference.getInt("counter", 0)
+                        )
                     )
-                )
-            }
-
-            // Migrate Biometrics Data
-            if(biometricsPreferences.contains("encrypted")){
-                val pinData = fromV3PreferenceValues(biometricsPreferences)
-
-                val nativePIN = biometricsPreferences.getString("native", null)
-                val nativeIV = biometricsPreferences.getString("nativeiv", null)
-
-                val encryptedData = EncryptedData(nativePIN ?: "", nativeIV ?: "")
-
-                walletRepository.addLoginCredentials(
-                    LoginCredentials(
-                        walletId = wallet.id,
-                        credentialType = CredentialType.BIOMETRICS,
-                        pinData = pinData,
-                        keystore = getV3KeyName(networkId),
-                        encryptedData = encryptedData,
-                        counter = biometricsPreferences.getInt("counter", 0)
-                    )
-                )
+                }
             }
         }
 
@@ -126,7 +131,87 @@ class Migrator(
             )
         )
 
-        sharedPreferences.edit().putBoolean(Preferences.MIGRATED_V3_V4, true).apply()
+        sharedPreferences.edit().putBoolean(Preferences.MIGRATED_V3_V4_2, true).apply()
+    }
+
+
+    private suspend fun fixV4Migration(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        if(sharedPreferences.getBoolean(Preferences.MIGRATED_V3_V4_2, false)){
+            return
+        }
+
+        val networks = listOf("mainnet", "liquid", "testnet")
+
+        for(networkId in networks){
+            val pinPreferences = listOf("pin", "pin_sec").map {
+                context.getSharedPreferences(
+                    "${networkId}_$it",
+                    Context.MODE_PRIVATE
+                )
+            }
+
+            // Check if wallet exists
+            if(!pinPreferences.any { it.contains("ident") }){
+                continue
+            }
+
+            val batchUpdate = mutableListOf<LoginCredentials>()
+            val batchDelete = mutableListOf<LoginCredentials>()
+
+            for(pinPreference in pinPreferences){
+                if(pinPreference.contains("ident")){
+                    val pinData = fromV3PreferenceValues(pinPreference)
+
+                    // Beware: can be empty
+                    val nativePIN = pinPreference.getString("native", null)
+                    val nativeIV = pinPreference.getString("nativeiv", null)
+
+                    val credentialType: CredentialType
+                    var keystore : String? = null
+                    var encryptedData: EncryptedData? = null
+
+                    if(nativePIN.isNullOrBlank()){
+                        // User Pin
+                        credentialType = if(pinPreference.getBoolean("is_six_digit", false)) CredentialType.PIN else CredentialType.PASSWORD
+                    }else{
+                        // Biometrics or Screenlock
+                        credentialType = CredentialType.BIOMETRICS
+                        keystore = getV3KeyName(networkId)
+                        encryptedData = EncryptedData(nativePIN, nativeIV ?: "")
+                    }
+
+                    for(wallet in walletRepository.getWalletsSuspend()){
+                        for (loginCredentials in walletRepository.getLoginCredentialsSuspend(wallet.id)){
+
+                            if(pinData == loginCredentials.pinData){
+                                batchDelete += loginCredentials.copy()
+
+                                // update from SharedPreferences
+                                loginCredentials.credentialType = credentialType
+                                loginCredentials.keystore = keystore
+                                loginCredentials.encryptedData = encryptedData
+
+                                batchUpdate += loginCredentials
+                            }
+                        }
+                    }
+                }
+            }
+
+            // As we change the primary key, we have to first delete the old record
+            for(deleteLoginCredentials in batchDelete){
+                walletRepository.deleteLoginCredentials(deleteLoginCredentials)
+            }
+
+            // and insert the new login credentials
+            for(inserLoginCredentials in batchUpdate){
+                walletRepository.addLoginCredentials(inserLoginCredentials)
+            }
+        }
+
+        sharedPreferences.edit().putBoolean(Preferences.MIGRATED_V3_V4_2, true).apply()
     }
 
     private fun fromV3PreferenceValues(pin: SharedPreferences): PinData? {
@@ -147,6 +232,13 @@ class Migrator(
     }
 
     private fun getV3KeyName(network: String): String {
-        return "NativeAndroidAuth_$network"
+        // Check if the key is in the Keystore
+        val key = "NativeAndroidAuth_$network"
+        if(keyStore.getKey(key, null) != null){
+            return key
+        }
+
+        // Else is from v2
+        return "NativeAndroidAuth"
     }
 }

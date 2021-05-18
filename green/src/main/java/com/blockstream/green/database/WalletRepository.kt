@@ -22,12 +22,13 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
 
     fun addWallet(wallet: Wallet) = walletDao.insert(wallet)
     fun addLoginCredentials(loginCredentials: LoginCredentials) = walletDao.insert(loginCredentials)
-    fun updateLoginCredentials(loginCredentials: LoginCredentials) = walletDao.updateLoginCredentials(loginCredentials)
+    fun updateLoginCredentials(vararg loginCredentials: LoginCredentials) = walletDao.updateLoginCredentials(*loginCredentials)
     fun deleteLoginCredentials(loginCredentials: LoginCredentials) = walletDao.deleteLoginCredentials(loginCredentials)
 
     fun getWalletLoginCredentials(id: WalletId) = walletDao.getWalletLoginCredentials(id)
     suspend fun getWalletLoginCredentialsSuspend(id: WalletId) = walletDao.getWalletLoginCredentialsSuspend(id)
     fun getWalletLoginCredentialsObservable(id: WalletId) = walletDao.getWalletLoginCredentialsObservable(id)
+    suspend fun getLoginCredentialsSuspend(id: WalletId) = walletDao.getLoginCredentialsSuspend(id)
     suspend fun getLoginCredentialsSuspend(id: WalletId, type: CredentialType) = walletDao.getLoginCredentialsSuspend(id,type)
     fun deleteLoginCredentials() = walletDao.deleteLoginCredentials()
 
@@ -37,6 +38,7 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
     fun walletsExists() = walletDao.walletsExists()
     suspend fun walletsExistsSuspend() = walletDao.walletsExistsSuspend()
     fun getWallets(): LiveData<List<Wallet>> = walletDao.getWallets()
+    suspend fun getWalletsSuspend(): List<Wallet> = walletDao.getWalletsSuspend()
     fun getWalletsSync() = walletDao.getWalletsSync()
     fun getSoftwareWallets(): LiveData<List<Wallet>> = walletDao.getSoftwareWallets()
     fun getHardwareWallets(): LiveData<List<Wallet>> = walletDao.getHardwareWallets()

@@ -43,6 +43,9 @@ interface WalletDao {
     fun getWallets(): LiveData<List<Wallet>>
 
     @Query("SELECT * FROM wallets")
+    suspend fun getWalletsSuspend(): List<Wallet>
+
+    @Query("SELECT * FROM wallets")
     fun getWalletsSync(): List<Wallet>
 
     @Query("SELECT * FROM wallets WHERE is_hardware = 0")
@@ -72,6 +75,9 @@ interface WalletDao {
     @Transaction
     @Query("SELECT * FROM wallets WHERE id = :id")
     fun getWalletLoginCredentialsObservable(id: WalletId): Observable<WalletAndLoginCredentials>
+
+    @Query("SELECT * FROM login_credentials WHERE wallet_id = :id")
+    suspend fun getLoginCredentialsSuspend(id: WalletId): List<LoginCredentials>
 
     @Query("SELECT * FROM login_credentials WHERE wallet_id = :id AND credential_type = :type")
     suspend fun getLoginCredentialsSuspend(id: WalletId, type: CredentialType): LoginCredentials

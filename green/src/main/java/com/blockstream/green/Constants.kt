@@ -19,5 +19,6 @@ object Preferences {
     const val DEFAULT_FEE_RATE = "default_feerate_satbyte"
 
     const val MIGRATED_V2_V3 = "pref_migrated_v2_v3"
-    const val MIGRATED_V3_V4 = "pref_migrated_v3_v4"
+    const val MIGRATED_V3_V4_1 = "pref_migrated_v3_v4"
+    const val MIGRATED_V3_V4_2 = "pref_migrated_v3_v4_2"
 }
