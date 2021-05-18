@@ -312,7 +312,13 @@ class WalletItem: Codable {
     var recoveryPubKey: String?
 
     func localizedName() -> String {
-        return pointer == 0 ? NSLocalizedString("id_main_account", comment: "") : name
+        if !name.isEmpty {
+            return name
+        }
+        if pointer == 0 {
+            return NSLocalizedString("id_main_account", comment: "")
+        }
+        return NSLocalizedString("id_account", comment: "") + " \(pointer)"
     }
 
     func generateNewAddress() -> Promise<String> {
