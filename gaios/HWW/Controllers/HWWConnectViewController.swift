@@ -114,7 +114,12 @@ class HWWConnectViewController: UIViewController {
     }
 
     @IBAction func btnTryAgain(_ sender: Any) {
-        hwwState = .connecting
+        if self.account.isJade {
+            hwwState = .connecting
+        }
+        if self.account.isLedger {
+            hwwState = .selectNetwork
+        }
         BLEManager.shared.dispose()
         BLEManager.shared.prepare(peripheral)
     }
@@ -174,6 +179,7 @@ extension HWWConnectViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension HWWConnectViewController {
     func showLoader() {
+        if loadingIndicator.isAnimating { return }
         self.view.addSubview(loadingIndicator)
 
         NSLayoutConstraint.activate([
@@ -191,6 +197,7 @@ extension HWWConnectViewController {
     }
 
     func hideLoader() {
+        if !loadingIndicator.isAnimating { return }
         loadingIndicator.isAnimating = false
     }
 }
