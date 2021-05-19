@@ -45,12 +45,33 @@ class HWWConnectViewController: UIViewController {
 
         hwwState = .connecting
         BLEManager.shared.prepare(peripheral)
+
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(appMovedToBackground), name: UIApplication.willResignActiveNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(appBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 
     func setContent() {
         lblTitle.text = account.name
         btnTryAgain.setTitle("Try Again", for: .normal)
         btnLogin.setTitle(NSLocalizedString("id_login", comment: ""), for: .normal)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
+        notificationCenter.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+
+    @objc func appMovedToBackground() {
+        hideLoader()
+    }
+
+    @objc func appBecomeActive() {
+        if hwwState == .upgradingFirmware {
+            showLoader()
+        }
     }
 
     func setStyle() {
