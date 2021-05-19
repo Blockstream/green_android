@@ -132,6 +132,11 @@ class SendBtcDetailsViewController: UIViewController {
         updateReviewButton(false)
         updateFeeButtons()
         updateTransaction()
+        // Check if user needs to type an amount and open the keyboard
+        // since we have converted amounts in reloadAmount()
+        if (!transaction.addresseesReadOnly && content.amountTextField.text!.isEmpty) {
+            content.amountTextField.becomeFirstResponder()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -155,7 +160,7 @@ class SendBtcDetailsViewController: UIViewController {
         guard transaction.amounts.count >= 1 else { return }
         let satoshi = transaction.amounts[assetTag] ?? 0
         let details = "btc" != assetTag ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
-        let (amount, _) = Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetTag) ?? ("", "")
+        let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetTag) ?? ("", "")
         content.amountTextField.text = amount
     }
 
