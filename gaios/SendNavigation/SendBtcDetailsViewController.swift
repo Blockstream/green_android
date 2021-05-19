@@ -134,7 +134,7 @@ class SendBtcDetailsViewController: UIViewController {
         updateTransaction()
         // Check if user needs to type an amount and open the keyboard
         // since we have converted amounts in reloadAmount()
-        if (!transaction.addresseesReadOnly && content.amountTextField.text!.isEmpty) {
+        if !transaction.addresseesReadOnly && content.amountTextField.text!.isEmpty {
             content.amountTextField.becomeFirstResponder()
         }
     }
