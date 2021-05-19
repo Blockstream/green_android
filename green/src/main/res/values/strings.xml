@@ -456,7 +456,6 @@
   <string name="id_notifications">Notifications</string>
   <string name="id_now">Now</string>
   <string name="id_of_24">of 24</string>
-  <string name="id_ok">Ok</string>
   <string name="id_on_average">on average</string>
   <string name="id_once_selected_this_spending">Once selected, this spending policy cannot be changed. For tips on what type of security is best for you, visit our Help Center.</string>
   <string name="id_one_attempt_remaining">One attempt remaining</string>
@@ -545,7 +544,6 @@
   <string name="id_rename_account">Rename account</string>
   <string name="id_rename_wallet">Rename Wallet</string>
   <string name="id_replaceable">replaceable</string>
-  <string name="id_request_amount">REQUEST AMOUNT</string>
   <string name="id_request_failed">Request Failed</string>
   <string name="id_request_recovery_transactions">Request recovery transactions</string>
   <string name="id_request_sent">Request Sent</string>
@@ -841,7 +839,9 @@
   <string name="id_verify_on_device">Verify on Device</string>
   <string name="id_provide_this_id_to_the_asset_issuer">Provide this ID to the asset issuer if requested.</string>
   <string name="id_managed_assets_account_id">Managed Assets Account ID</string>
+  <string name="id_request_amount">Request Amount</string>
 
+  <string name="id_ok">OK</string>
   <string name="id_of_d">of %d</string>
   <string name="id_tor">Tor</string>
   <string name="id_tor_is_not_available">Tor is not available yet for singlesig wallets.</string>

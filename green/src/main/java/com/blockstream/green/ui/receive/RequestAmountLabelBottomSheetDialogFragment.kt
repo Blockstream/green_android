@@ -7,6 +7,11 @@ import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
+
+/*
+ * Request Amount is hidden at the moment, as we need implementation from GDK
+ * to save the address label
+ */
 @AndroidEntryPoint
 class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding>(
     layout = R.layout.request_amount_label_bottom_sheet
