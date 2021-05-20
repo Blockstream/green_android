@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.blockstream.crypto.BuildConfig
 import com.blockstream.gdk.AssetsProvider
+import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.SubAccount
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -40,6 +41,7 @@ object Bridge {
 
     var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, extraData: Any?) -> Unit)? = null
     var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
+    var updateSettingsFn: ((gaSession: Any?) -> Unit)? = null
     var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
     var getWalletNameFn: ((gaSession: Any?) -> String?)? = null
     var getWalletIdFn: ((gaSession: Any?) -> Long?)? = null
@@ -133,6 +135,12 @@ object Bridge {
     fun setActiveAccount(account : Int){
         setSubaccountFn?.let {
             it.invoke(Session.getSession().nativeSession, account)
+        }
+    }
+
+    fun updateSettings(){
+        updateSettingsFn?.let {
+            it.invoke(Session.getSession().nativeSession)
         }
     }
 
