@@ -5,6 +5,7 @@ import android.view.View
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
+import com.blockstream.green.utils.getBitcoinOrLiquidSymbol
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -22,8 +23,8 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
         (parentFragment as ReceiveFragment).viewModel.also {
             binding.amount = it.requestAmount.value
             binding.label = it.label.value
+            binding.amountTextView.helperText = getString(R.string.id_amount_in_, getBitcoinOrLiquidSymbol(it.session))
         }
-
 
         binding.buttonOK.setOnClickListener {
             (parentFragment as ReceiveFragment).viewModel.setRequestAmountAndLabel(binding.amount, binding.label)

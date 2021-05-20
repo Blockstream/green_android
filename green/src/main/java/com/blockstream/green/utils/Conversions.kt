@@ -21,6 +21,8 @@ fun getBitcoinOrLiquidUnit(session: GreenSession): String{
     return unit
 }
 
+fun getBitcoinOrLiquidSymbol(session: GreenSession): String = if(session.network.isLiquid) "L-BTC" else "BTC"
+
 fun getDecimals(unit: String): Int {
     return when (unit.lowercase(Locale.ROOT)) {
         "btc" -> 8

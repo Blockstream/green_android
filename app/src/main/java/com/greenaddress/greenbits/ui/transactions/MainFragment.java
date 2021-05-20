@@ -127,7 +127,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         mAssetsCardAction = UI.find(mView, R.id.assetsButtonCardAction);
         mAssetsProgress = UI.find(mView, R.id.assetsProgress);
 
-        mAccountIdCard = UI.find(mView, R.id.assetIdCard);
+        mAccountIdCard = UI.find(mView, R.id.accountIdCard);
         mButtonAccountId = UI.find(mView, R.id.buttonAccountId);
 
         // Setup recycler & adapter
@@ -329,7 +329,11 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             // ledger HW doesn't support parallel operations
             updateTransactions(true);
 
-            UI.showIf(mSubaccount != null && mSubaccount.getType() != null && mSubaccount.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]), mAccountIdCard);
+            UI.showIf(mSubaccount != null
+                    && mSubaccount.getType() != null
+                    && mSubaccount.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]),
+                    mAccountIdCard);
+
         }, (final Throwable e) -> {
             e.printStackTrace();
         });

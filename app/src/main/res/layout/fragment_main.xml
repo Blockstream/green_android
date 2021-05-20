@@ -150,7 +150,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/assetIdCard"
+                android:id="@+id/accountIdCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
@@ -158,6 +158,7 @@
                 app:cardBackgroundColor="@color/brand_background"
                 app:strokeColor="@color/color_on_surface_divider"
                 app:strokeWidth="1dp"
+                android:visibility="gone"
                 tools:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -167,8 +168,6 @@
                     android:paddingEnd="16dp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
-                    android:visibility="gone"
-                    tools:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/barrier">
