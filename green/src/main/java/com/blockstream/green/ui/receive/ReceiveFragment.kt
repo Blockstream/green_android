@@ -73,7 +73,12 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonMore.setOnClickListener {
-            showMenu(getString(R.string.id_more_options), R.menu.menu_receive_more)
+            if(session.isLiquid){
+                // Sweep is not available in Liquid
+                showMenu(getString(R.string.id_more_options), R.menu.menu_receive_more_liquid)
+            }else{
+                showMenu(getString(R.string.id_more_options), R.menu.menu_receive_more)
+            }
         }
 
         binding.buttonNewAddress.setOnClickListener {
