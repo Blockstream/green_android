@@ -18,7 +18,7 @@ class RecoveryCreateViewController: UIViewController {
     lazy var arrayLabels: [UILabel] = [self.word1, self.word2, self.word3, self.word4, self.word5, self.word6]
 
     private var mnemonic: [Substring] = {
-        return try! generateMnemonic().split(separator: " ")
+        return try! generateMnemonic12().split(separator: " ")
     }()
     private var pageCounter = 0
 
@@ -60,22 +60,22 @@ class RecoveryCreateViewController: UIViewController {
     }
 
     func loadWords() {
-        progressView.progress = Float(pageCounter + 1) / 4
-        let start = pageCounter * 6
-        let end = start + 6
+        progressView.progress = Float(pageCounter + 1) / Float((Constants.wordsCount / Constants.wordsPerPage))
+        let start = pageCounter * Constants.wordsPerPage
+        let end = start + Constants.wordsPerPage
         for index in start..<end {
             let real = index+1
             let formattedString = NSMutableAttributedString(string: String("\(real) \(mnemonic[index])"))
             formattedString.setColor(color: UIColor.customMatrixGreen(), forText: String(format: "%d", real))
             formattedString.setFont(font: UIFont.systemFont(ofSize: 18), stringValue: String(format: "%d", real))
-            arrayLabels[index % 6].attributedText = formattedString
+            arrayLabels[index % Constants.wordsPerPage].attributedText = formattedString
         }
 
         print(mnemonic)
     }
 
     @IBAction func btnNext(_ sender: Any) {
-        if pageCounter == 3 {
+        if pageCounter == (Constants.wordsCount / Constants.wordsPerPage) - 1 {
             let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryVerifyViewController") as? RecoveryVerifyViewController {
                 vc.mnemonic = mnemonic

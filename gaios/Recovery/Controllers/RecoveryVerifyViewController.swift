@@ -18,25 +18,23 @@ class RecoveryVerifyViewController: UIViewController {
     @IBOutlet weak var processNode1: UIView!
     @IBOutlet weak var processNode2: UIView!
     @IBOutlet weak var processNode3: UIView!
-    @IBOutlet weak var processNode4: UIView!
     @IBOutlet weak var progressBarConnector1: UIView!
     @IBOutlet weak var progressBarConnector2: UIView!
-    @IBOutlet weak var progressBarConnector3: UIView!
 
     lazy var buttonsArray: [UIButton] = [button0, button1, button2, button3]
-    lazy var processNodes: [UIView] = [processNode1, processNode2, processNode3, processNode4]
-    lazy var processConnectors: [UIView] = [progressBarConnector1, progressBarConnector2, progressBarConnector3]
+    lazy var processNodes: [UIView] = [processNode1, processNode2, processNode3]
+    lazy var processConnectors: [UIView] = [progressBarConnector1, progressBarConnector2]
 
     var mnemonic: [Substring]!
-    var selectionWordNumbers: [Int] = [Int](repeating: 0, count: 4)
-    var expectedWordNumbers: [Int] = [Int](repeating: 0, count: 4)
+    var selectionWordNumbers: [Int] = [Int](repeating: 0, count: Constants.wordsPerQuiz)
+    var expectedWordNumbers: [Int] = [Int](repeating: 0, count: (Constants.wordsCount / Constants.wordsPerQuiz))
     var questionCounter: Int = 0
     var questionPosition: Int = 0
-    let numberOfSteps: Int = 4
+    let numberOfSteps: Int = Constants.wordsCount / Constants.wordsPerQuiz
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        expectedWordNumbers = generateRandomWordNumbers()
+        expectedWordNumbers = generateExpectedWordNumbers()
         newRandomWords()
 
         updateProcessBar()
@@ -120,10 +118,20 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func generateRandomWordNumbers() -> [Int] {
-        var words: [Int] = [Int](repeating: 0, count: 4)
+        var words: [Int] = [Int](repeating: 0, count: Constants.wordsPerQuiz)
         repeat {
-            words = words.map { (_) -> Int in getIndexFromUniformUInt32(count: 23) }
-        } while Set(words).count != 4
+            // mnemonic.endIndex is 12
+            // words in in range 0...11
+            words = words.map { (_) -> Int in getIndexFromUniformUInt32(count: mnemonic.endIndex) }
+        } while Set(words).count != Constants.wordsPerQuiz
+        return words
+    }
+
+    func generateExpectedWordNumbers() -> [Int] {
+        var words: [Int] = [Int](repeating: 0, count: (Constants.wordsCount / Constants.wordsPerQuiz))
+        repeat {
+            words = words.map { (_) -> Int in getIndexFromUniformUInt32(count: mnemonic.endIndex) }
+        } while Set(words).count != (Constants.wordsCount / Constants.wordsPerQuiz)
         return words
     }
 
@@ -148,9 +156,9 @@ class RecoveryVerifyViewController: UIViewController {
         if questionPosition == 0 {
             rangeStart = 0
             rangeEnd = 2
-        } else if questionPosition == 23 {
-            rangeStart = 21
-            rangeEnd = 23
+        } else if questionPosition == mnemonic.endIndex - 1 {
+            rangeStart = (mnemonic.endIndex - 1) - 2
+            rangeEnd = mnemonic.endIndex - 1
         } else {
             rangeStart = questionPosition - 1
             rangeEnd = questionPosition + 1

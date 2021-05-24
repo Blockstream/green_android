@@ -488,7 +488,7 @@
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Mik-Lb-xhn">
                                                         <rect key="frame" x="0.0" y="212" width="303" height="188"/>
                                                         <subviews>
-                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_keys" translatesAutoresizingMaskIntoConstraints="NO" id="MgX-0e-pfO">
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_keys_invert" translatesAutoresizingMaskIntoConstraints="NO" id="MgX-0e-pfO">
                                                                 <rect key="frame" x="24" y="24" width="60" height="60"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="60" id="EKh-sg-Jlc"/>
@@ -2395,7 +2395,7 @@
         <image name="ic_electrum" width="60" height="60"/>
         <image name="ic_eye" width="60" height="60"/>
         <image name="ic_key" width="60" height="60"/>
-        <image name="ic_keys" width="60" height="60"/>
+        <image name="ic_keys_invert" width="60" height="60"/>
         <image name="ic_migrate" width="60" height="60"/>
         <image name="ic_multiserver" width="60" height="60"/>
         <image name="ic_plus" width="60" height="60"/>

@@ -42,6 +42,13 @@
                                                         <constraint firstAttribute="height" constant="42" id="rmD-PH-pyE"/>
                                                     </constraints>
                                                 </imageView>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_keys_invert" translatesAutoresizingMaskIntoConstraints="NO" id="atD-gB-46b">
+                                                    <rect key="frame" x="42" y="37" width="20" height="20"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="20" id="AkW-tK-grJ"/>
+                                                        <constraint firstAttribute="height" constant="20" id="U7A-HJ-dXu"/>
+                                                    </constraints>
+                                                </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Bitcoin Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Etj-W1-HWL">
                                                     <rect key="frame" x="74" y="21.5" width="324" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -51,8 +58,10 @@
                                             </subviews>
                                             <color key="backgroundColor" name="customTitaniumDark"/>
                                             <constraints>
+                                                <constraint firstItem="atD-gB-46b" firstAttribute="centerX" secondItem="BYZ-lN-dtR" secondAttribute="centerX" constant="15" id="Lr4-z3-PPa"/>
                                                 <constraint firstItem="Etj-W1-HWL" firstAttribute="leading" secondItem="BYZ-lN-dtR" secondAttribute="trailing" constant="16" id="cAb-eL-O14"/>
                                                 <constraint firstItem="BYZ-lN-dtR" firstAttribute="top" secondItem="gwe-Z1-KVs" secondAttribute="top" constant="8" id="dUd-pu-8V9"/>
+                                                <constraint firstItem="atD-gB-46b" firstAttribute="centerY" secondItem="BYZ-lN-dtR" secondAttribute="centerY" constant="15" id="dd5-7I-f3s"/>
                                                 <constraint firstAttribute="bottom" secondItem="BYZ-lN-dtR" secondAttribute="bottom" constant="8" id="dss-Pf-OAw"/>
                                                 <constraint firstItem="BYZ-lN-dtR" firstAttribute="leading" secondItem="gwe-Z1-KVs" secondAttribute="leading" constant="16" id="iJC-Sc-IDN"/>
                                                 <constraint firstItem="Etj-W1-HWL" firstAttribute="centerY" secondItem="gwe-Z1-KVs" secondAttribute="centerY" id="pYR-3s-bbn"/>
@@ -61,6 +70,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="icon" destination="BYZ-lN-dtR" id="7on-xT-bS8"/>
+                                            <outlet property="iconAccountType" destination="atD-gB-46b" id="nXn-YB-yzh"/>
                                             <outlet property="lblTitle" destination="Etj-W1-HWL" id="g3H-06-dr1"/>
                                         </connections>
                                     </tableViewCell>
@@ -620,6 +630,7 @@
     <resources>
         <image name="blockstreamGreen" width="280" height="114.5"/>
         <image name="erase" width="25" height="25"/>
+        <image name="ic_keys_invert" width="60" height="60"/>
         <image name="ic_logo_green" width="60" height="60"/>
         <image name="logo_big" width="90" height="110"/>
         <image name="ntw_btc" width="40" height="40"/>

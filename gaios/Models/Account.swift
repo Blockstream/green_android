@@ -64,6 +64,11 @@ struct Account: Codable, Equatable {
         }
     }
 
+    var isSingleSig: Bool {
+        // MISSING LOGIC
+        return false
+    }
+
     var hasManualPin: Bool {
         get {
             return AuthenticationTypeHandler.findAuth(method: AuthenticationTypeHandler.AuthKeyPIN, forNetwork: keychain)

@@ -33,8 +33,6 @@ class ChooseSecurityViewController: UIViewController {
     func setStyle() {
         cardSimple.layer.cornerRadius = 5.0
         cardAdvanced.layer.cornerRadius = 5.0
-
-        cardSimple.alpha = 0.5
     }
 
     func setActions() {
@@ -45,8 +43,8 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     @objc func didPressCardSimple() {
-//        OnBoardManager.shared.params?.singleSig = true
-//        next()
+        OnBoardManager.shared.params?.singleSig = true
+        next()
     }
 
     @objc func didPressCardAdvanced() {
@@ -57,8 +55,8 @@ class ChooseSecurityViewController: UIViewController {
     func next() {
         switch LandingViewController.flowType {
         case .add:
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "WalletNameViewController")
+            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
             navigationController?.pushViewController(vc, animated: true)
         case .restore:
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)

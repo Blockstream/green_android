@@ -4,6 +4,7 @@ class WalletCell: UITableViewCell {
 
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
+    @IBOutlet weak var iconAccountType: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -19,6 +20,14 @@ class WalletCell: UITableViewCell {
     func configure(_ item: Account) {
         self.lblTitle.text = item.name
         self.icon.image = item.icon
+
+        if item.isSingleSig {
+            self.iconAccountType.image = UIImage(named: "ic_key")!
+        }
+
+        if item.isWatchonly {
+            self.iconAccountType.image = UIImage(named: "ic_eye")!
+        }
     }
 
 }

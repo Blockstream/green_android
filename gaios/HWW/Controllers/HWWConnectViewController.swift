@@ -17,6 +17,9 @@ class HWWConnectViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var deviceImageAlign: NSLayoutConstraint!
+    @IBOutlet weak var singleSigWarnCard: UIView!
+    @IBOutlet weak var lblSingleSigWarn: UILabel!
+    @IBOutlet weak var iconSingleSigWarn: UIImageView!
 
     var account: Account!
     var peripheral: Peripheral!
@@ -55,6 +58,7 @@ class HWWConnectViewController: UIViewController {
         lblTitle.text = account.name
         btnTryAgain.setTitle("Try Again", for: .normal)
         btnLogin.setTitle(NSLocalizedString("id_login", comment: ""), for: .normal)
+        lblSingleSigWarn.text = "Singlesig wallets are not supported for use with hardware devices yet. By continuing you'll access a Multisig Shield wallet."
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -87,6 +91,11 @@ class HWWConnectViewController: UIViewController {
         tableViewHeight.constant = CGFloat(networks.count) * CGFloat(cellH)
         deviceImage.image = account.deviceImage()
         deviceImageAlign.constant = account.alignConstraint()
+        lblSingleSigWarn.textColor = UIColor.customGrayLight()
+        self.iconSingleSigWarn.image = UIImage(named: "ic_logo_green")!.maskWithColor(color: UIColor.customGrayLight())
+        singleSigWarnCard.layer.borderWidth = 1.0
+        singleSigWarnCard.layer.borderColor = UIColor.customGrayLight().cgColor
+        singleSigWarnCard.cornerRadius = 8.0
     }
 
     func updateState() {
@@ -98,6 +107,7 @@ class HWWConnectViewController: UIViewController {
         deviceImage.isHidden = false
         arrowImage.isHidden = true
         tableView.isHidden = true
+        singleSigWarnCard.isHidden = true
 
         switch hwwState {
         case .connecting:
@@ -117,6 +127,7 @@ class HWWConnectViewController: UIViewController {
             lblStateHint.text = "Select a network."
             deviceImage.isHidden = true
             tableView.isHidden = false
+            singleSigWarnCard.isHidden = false
         case .followDevice:
             hideLoader()
             lblStateHint.text = "Follow the instructions on your device."
