@@ -92,7 +92,7 @@ class LoginViewModel @AssistedInject constructor(
             ).addTo(disposables)
 
         session.getTorStatusObservable()
-            .observeOn(AndroidSchedulers.mainThread())
+            .async()
             .subscribe {
                 torStatus.value = it
             }.addTo(disposables)

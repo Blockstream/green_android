@@ -14,6 +14,7 @@ import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.gdk.async
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -46,11 +47,13 @@ class WalletSettingsViewModel @AssistedInject constructor(
     init {
         session
             .getSettingsObservable()
-            .subscribe(settingsLiveData::setValue)
+            .async()
+            .subscribe(settingsLiveData::postValue)
             .addTo(disposables)
 
         walletRepository
             .getWalletLoginCredentialsObservable(wallet.id)
+            .async()
             .subscribe {
                 biometricsLiveData.postValue(it.biometrics)
             }
