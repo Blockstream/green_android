@@ -26,7 +26,7 @@
         <item name="emphasisDisabledAlpha">0.38</item>
         <item name="emphasisDividerAlpha">0.20</item>
 
-
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
 
         <!--Platform attributes-->
         <item name="android:navigationBarColor">@color/brand_background</item>
