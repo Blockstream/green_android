@@ -198,7 +198,6 @@
 		81D94CF121B93905003B03F9 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
 		81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D922541F0D1001159D6 /* TxInputBtc.swift */; };
 		81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D962541F110001159D6 /* TxChangeOutput.swift */; };
-		81DA3DA12541F2B5001159D6 /* TxInputOutputData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3DA02541F2B5001159D6 /* TxInputOutputData.swift */; };
 		81E0B4C3255302BB001C8544 /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4C2255302BB001C8544 /* CBOR.swift */; };
 		81E0B4CB25531470001C8544 /* Commitment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4CA25531470001C8544 /* Commitment.swift */; };
 		81E0B4D1255316AC001C8544 /* LiquidHWResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4D0255316AC001C8544 /* LiquidHWResult.swift */; };
@@ -478,7 +477,6 @@
 		81D94CF021B93905003B03F9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81DA3D922541F0D1001159D6 /* TxInputBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputBtc.swift; sourceTree = "<group>"; };
 		81DA3D962541F110001159D6 /* TxChangeOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxChangeOutput.swift; sourceTree = "<group>"; };
-		81DA3DA02541F2B5001159D6 /* TxInputOutputData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputOutputData.swift; sourceTree = "<group>"; };
 		81E0B4C2255302BB001C8544 /* CBOR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBOR.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
 		81E0B4D0255316AC001C8544 /* LiquidHWResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidHWResult.swift; sourceTree = "<group>"; };
@@ -1014,7 +1012,6 @@
 				81DA3D922541F0D1001159D6 /* TxInputBtc.swift */,
 				81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */,
 				81DA3D962541F110001159D6 /* TxChangeOutput.swift */,
-				81DA3DA02541F2B5001159D6 /* TxInputOutputData.swift */,
 				81E0B4C2255302BB001C8544 /* CBOR.swift */,
 				81E0B4CA25531470001C8544 /* Commitment.swift */,
 				81E0B4D0255316AC001C8544 /* LiquidHWResult.swift */,
@@ -1485,7 +1482,6 @@
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				6D8099D222FA24200069A69F /* NotesViewController.swift in Sources */,
 				815431962445C0EE00EE34DB /* JadeDevice.swift in Sources */,
-				81DA3DA12541F2B5001159D6 /* TxInputOutputData.swift in Sources */,
 				81F74BA52278857800A397C9 /* Network.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
 				342E0C8B265274ED0004D75B /* FooterView.swift in Sources */,
