@@ -186,7 +186,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
 
         if(getNetwork().getLiquid()){
             mAssetManager.getStatusLiveData().observe(getViewLifecycleOwner(), status -> {
-                UI.hideIf(status.getMetadataStatus() == CacheStatus.Latest && status.getIconStatus() == CacheStatus.Latest, mAssetsCard);
+                UI.hideIf(status.getMetadataStatus() == CacheStatus.Latest, mAssetsCard);
 
                 mAssetsCardAction.setVisibility(status.getOnProgress() ? View.INVISIBLE : View.VISIBLE);
                 mAssetsProgress.setVisibility(status.getOnProgress() ? View.VISIBLE : View.GONE);
