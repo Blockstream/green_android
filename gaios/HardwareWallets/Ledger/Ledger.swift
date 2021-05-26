@@ -140,4 +140,7 @@ final class Ledger: LedgerCommands, HWResolverProtocol {
         return Observable.error(JadeError.Abort(""))
     }
 
+    func clear() {
+        xPubsCached = [String: String]()
+    }
 }

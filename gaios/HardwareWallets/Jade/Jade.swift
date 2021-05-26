@@ -263,6 +263,10 @@ final class Jade: JadeDevice, HWResolverProtocol {
             return Observable.just(result)
         }
     }
+
+    func clear() {
+        xPubsCached = [String: String]()
+    }
 }
 // Jade ota
 extension Jade {
