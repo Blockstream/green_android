@@ -850,6 +850,8 @@
   <string name="id_connecting">Connecting…</string>
   <string name="id_reconnect">Reconnect</string>
 
+  <string name="id_blockstream_green_needs_access_to_bluetooth">Blockstream Green needs access to Bluetooth in order to connect to hardware wallets. Your position is not used.</string>
+
   <string name="id_of_d">of %d</string>
   <string name="id_tor">Tor</string>
   <string name="id_tor_is_not_available">Tor is not available yet for singlesig wallets.</string>
