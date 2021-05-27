@@ -8,8 +8,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Convert(
-    @SerialName("satoshi") val satoshi: Long,
+    @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("asset_info") val asset: Asset? = null,
+
+    @SerialName("btc") val btc: String? = null,
+    @SerialName("mbtc") val mbtc: String? = null,
+    @SerialName("bits") val bits: String? = null,
+    @SerialName("sats") val sats: String? = null,
+
+    @SerialName("fiat") val fiat: String? = null,
 ) : GAJson<Convert>() {
 
     override val encodeDefaultsValues: Boolean
@@ -17,5 +24,18 @@ data class Convert(
 
     override fun kSerializer(): KSerializer<Convert> {
         return Convert.serializer()
+    }
+
+    companion object{
+        fun forUnit(unit: String, amount: String): Convert {
+
+            return when (unit.lowercase()) {
+                "btc" -> Convert(btc = amount)
+                "mbtc" -> Convert(mbtc = amount)
+                "ubtc", "bits", "\u00B5btc" -> Convert(bits = amount)
+                "sats" -> Convert(sats = amount)
+                else -> Convert(fiat = amount)
+            }
+        }
     }
 }

@@ -2,33 +2,100 @@ package com.blockstream.green.ui.receive
 
 import android.os.Bundle
 import android.view.View
+import com.blockstream.gdk.params.Convert
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
+import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
-import com.blockstream.green.utils.getBitcoinOrLiquidSymbol
+import com.blockstream.green.utils.UserInput
+import com.blockstream.green.utils.btc
+import com.blockstream.green.utils.getBitcoinOrLiquidUnit
+import com.blockstream.green.utils.getFiatCurrency
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 
 /*
- * Request Amount is hidden at the moment, as we need implementation from GDK
+ * Request Label is hidden at the moment, as we need implementation from GDK
  * to save the address label
  */
 @AndroidEntryPoint
 class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding>(
     layout = R.layout.request_amount_label_bottom_sheet
 ) {
+    var isFiat = false
+
+    lateinit var receiveViewModel: ReceiveViewModel
+    lateinit var session: GreenSession
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (parentFragment as ReceiveFragment).viewModel.also {
-            binding.amount = it.requestAmount.value
-            binding.label = it.label.value
-            binding.amountTextView.helperText = getString(R.string.id_amount_in_, getBitcoinOrLiquidSymbol(it.session))
+        receiveViewModel = (parentFragment as ReceiveFragment).viewModel
+        session = viewModel.session
+
+        // Init label from Receive
+        binding.label = receiveViewModel.label.value
+        // Init amount from Receive
+        binding.amount = receiveViewModel.requestAmount.value.let { amount ->
+            if(!amount.isNullOrBlank()){
+                try {
+                    // Amount is always in BTC value, convert it to user's settings
+                    session
+                        .convertAmount(Convert.forUnit("btc", amount))
+                        .btc(session, withUnit = false)
+                }catch (e: Exception){
+                    e.printStackTrace()
+                    amount
+                }
+            }else{
+                amount
+            }
         }
 
         binding.buttonOK.setOnClickListener {
-            (parentFragment as ReceiveFragment).viewModel.setRequestAmountAndLabel(binding.amount, binding.label)
+            var amount : String? = null
+
+            try{
+                val input = UserInput.parseUserInput(session, binding.amount, isFiat = isFiat)
+
+                // Convert it to BTC as per BIP21 spec
+                amount = input.getBalance(session).let { balance ->
+                    if(balance.satoshi > 0){
+                        balance.btc.let {
+                            // Remove trailing zeros if needed
+                            if(it.contains(".")) it.replace("0*$".toRegex(), "").replace("\\.$".toRegex(), "") else it
+                        }
+                    }else{
+                        null
+                    }
+                }
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+
+            (parentFragment as ReceiveFragment).viewModel.setRequestAmountAndLabel(amount, binding.label)
+
             dismiss()
+        }
+
+        binding.buttonCurrency.setOnClickListener {
+
+            // Convert between BTC / Fiat
+            binding.amount = try{
+                val input = UserInput.parseUserInput(session, binding.amount, isFiat = isFiat)
+                input.getBalance(session).let {
+                    if(it.satoshi > 0){
+                        it.getValue(if(isFiat) getBitcoinOrLiquidUnit(session) else getFiatCurrency(session))
+                    }
+                }
+                ""
+            }catch (e: Exception){
+                ""
+            }
+
+            isFiat = !isFiat
+            updateCurrency()
         }
 
         binding.buttonClear.setOnClickListener {
@@ -38,6 +105,13 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
         binding.buttonClose.setOnClickListener {
             dismiss()
+        }
+    }
+
+    private fun updateCurrency(){
+        (if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)).let {
+            binding.amountTextView.helperText = getString(R.string.id_amount_in_, it)
+            binding.symbol = it
         }
     }
 }

@@ -6,6 +6,7 @@ import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.GreenSession
 import java.text.DateFormat
+import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
 
@@ -24,7 +25,7 @@ fun getBitcoinOrLiquidUnit(session: GreenSession): String{
 fun getBitcoinOrLiquidSymbol(session: GreenSession): String = if(session.network.isLiquid) "L-BTC" else "BTC"
 
 fun getDecimals(unit: String): Int {
-    return when (unit.lowercase(Locale.ROOT)) {
+    return when (unit.lowercase()) {
         "btc" -> 8
         "mbtc" -> 5
         "ubtc", "bits", "\u00B5btc" -> 2
@@ -32,27 +33,30 @@ fun getDecimals(unit: String): Int {
     }
 }
 
-fun getNumberFormat(decimals: Int, locale: Locale = Locale.getDefault()): NumberFormat {
-    val instance = NumberFormat.getInstance(locale)
-    instance.minimumFractionDigits = decimals
-    instance.maximumFractionDigits = decimals
-    return instance
+fun getNumberFormat(decimals: Int,
+                    withDecimalSeparator: Boolean,
+                    withGrouping: Boolean = false,
+                    locale: Locale = Locale.getDefault()) = (DecimalFormat.getInstance(locale) as DecimalFormat).apply {
+    minimumFractionDigits = if(withDecimalSeparator) decimals else 0
+    maximumFractionDigits = decimals
+    isDecimalSeparatorAlwaysShown = withDecimalSeparator
+    isGroupingUsed = withGrouping
 }
 
 fun Long.feeRateWithUnit(): String {
     val feePerByte = this / 1000.0
-    return getNumberFormat(2).format(feePerByte) + " satoshi / vbyte"
+    return getNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(feePerByte) + " satoshi / vbyte"
 }
 
 fun Double.feeRateWithUnit(): String {
-    return getNumberFormat(2).format(this) + " satoshi / vbyte"
+    return getNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(this) + " satoshi / vbyte"
 }
 
 fun CharSequence.parse(decimals: Int = 2): Number? = this.toString().parse(decimals)
 
 fun String.parse(decimals: Int = 2): Number? {
     return try {
-        getNumberFormat(decimals).parse(this)
+        getNumberFormat(decimals = decimals, withDecimalSeparator = true, withGrouping = false).parse(this)
     } catch (e: Exception) {
         e.printStackTrace()
         null
@@ -62,7 +66,7 @@ fun String.parse(decimals: Int = 2): Number? {
 fun Balance.fiat(withUnit: Boolean = true): String {
     return try {
         val value = fiat.toDouble()
-        getNumberFormat(2).format(value)
+        getNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(value)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " $fiatCurrency" else ""
@@ -75,7 +79,7 @@ fun Balance.btc(session: GreenSession, withUnit: Boolean = true): String {
 private fun Balance.btc(unit: String, withUnit: Boolean = true): String {
     return try {
         val value = getValue(unit).toDouble()
-        getNumberFormat(getDecimals(unit)).format(value)
+        getNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = false).format(value)
 
     } catch (e: Exception) {
         "N.A."
@@ -84,7 +88,7 @@ private fun Balance.btc(unit: String, withUnit: Boolean = true): String {
 
 fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
     return try {
-        getNumberFormat(getDecimals(settings.unit)).format(this)
+        getNumberFormat(decimals = getDecimals(settings.unit), withDecimalSeparator = false, withGrouping = false).format(this)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " ${settings.unit}" else ""
@@ -92,7 +96,7 @@ fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
 
 fun Balance.asset(withUnit: Boolean = true): String {
     return try {
-        getNumberFormat(assetInfo?.precision ?: 0).format(assetValue?.toDouble() ?: satoshi)
+        getNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = false).format(assetValue?.toDouble() ?: satoshi)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""

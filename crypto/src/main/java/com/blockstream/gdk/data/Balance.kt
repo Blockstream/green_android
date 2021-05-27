@@ -22,12 +22,13 @@ data class Balance(
     var assetInfo : Asset? = null
 
     fun getValue(unit: String): String {
-        return when(unit){
-            "\u00B5BTC" -> ubtc
-            "mBTC" -> mbtc
+        return when(unit.lowercase()){
+            "\u00B5btc", "ubtc" -> ubtc
+            "mbtc" -> mbtc
             "bits" -> bits
             "sats" -> sats
-            else -> btc
+            "btc" -> btc
+            else -> fiat
         }
     }
 
