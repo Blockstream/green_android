@@ -357,10 +357,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="967"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="N6m-eP-XY9">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="N6m-eP-XY9">
                                 <rect key="frame" x="0.0" y="44" width="375" height="874"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="K2U-pG-X0G">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K2U-pG-X0G">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="430.5"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4Jl-7L-S3S">
@@ -473,6 +473,7 @@
                                     <constraint firstAttribute="trailing" secondItem="tvR-Jt-xwv" secondAttribute="trailing" constant="36" id="6JH-ZG-14u"/>
                                     <constraint firstItem="tvR-Jt-xwv" firstAttribute="top" secondItem="zSD-Oi-ula" secondAttribute="bottom" constant="36" id="DgE-KE-nRJ"/>
                                     <constraint firstAttribute="trailing" secondItem="K2U-pG-X0G" secondAttribute="trailing" id="aa5-XC-iFE"/>
+                                    <constraint firstItem="tvR-Jt-xwv" firstAttribute="top" secondItem="K2U-pG-X0G" secondAttribute="bottom" id="aeB-mp-dxt"/>
                                     <constraint firstItem="K2U-pG-X0G" firstAttribute="top" secondItem="N6m-eP-XY9" secondAttribute="top" id="nu5-cp-DkB"/>
                                     <constraint firstAttribute="bottom" secondItem="K2U-pG-X0G" secondAttribute="bottom" id="rXa-Qy-cMA"/>
                                     <constraint firstItem="tvR-Jt-xwv" firstAttribute="leading" secondItem="N6m-eP-XY9" secondAttribute="leading" constant="36" id="w3B-cP-77J"/>
