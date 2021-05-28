@@ -31,7 +31,7 @@ data class UserInput(val amount: String, val decimals: Int, val unitKey: String,
                 unitKey = getFiatCurrency(session)
                 numberFormat = getNumberFormat(decimals = 2, withDecimalSeparator = true)
             }else{
-                unitKey = getBitcoinOrLiquidUnit(session)
+                unitKey = getUnit(session)
                 numberFormat = getNumberFormat(getDecimals(unitKey), withDecimalSeparator = false)
             }
 

@@ -14,6 +14,10 @@ fun getFiatCurrency(session: GreenSession): String{
     return session.getSettings()?.pricing?.currency ?: "N/A"
 }
 
+// Use it for GDK purposes
+fun getUnit(session: GreenSession) = session.getSettings()?.unit ?: "btc"
+
+// Use it for UI purposes
 fun getBitcoinOrLiquidUnit(session: GreenSession): String{
     val unit = session.getSettings()?.unit ?: "N/A"
     if(session.network.isLiquid) {

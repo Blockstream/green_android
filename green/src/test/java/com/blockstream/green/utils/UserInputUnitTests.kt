@@ -20,37 +20,27 @@ class UserInputUnitTests() {
     @Mock
     private lateinit var session: GreenSession
 
-    @Before
-    fun setup() {
-
-    }
-
-    private fun initMock(unit: String, isLiquid: Boolean) {
+    private fun initMock(unit: String) {
         val settings: Settings = mock()
-        val network: Network = mock()
 
         whenever(settings.unit).thenReturn(unit)
-        whenever(network.isLiquid).thenReturn(isLiquid)
-
         whenever(session.getSettings()).thenReturn(settings)
-        whenever(session.network).thenReturn(network)
     }
 
     @Test
     fun test_valuesInBTC() {
-        initMock("BTC", false)
+        initMock("BTC")
 
         Assert.assertEquals("123", UserInput.parseUserInput(session, "123", false).amount)
         Assert.assertEquals("123.1", UserInput.parseUserInput(session, "123.1", false).amount)
         Assert.assertEquals("123.123", UserInput.parseUserInput(session, "123.123", false).amount)
 
         Assert.assertEquals("12356789.123", UserInput.parseUserInput(session, "12356789.123", false).amount)
-
     }
 
     @Test
     fun test_valuesInSat() {
-        initMock("sat", false)
+        initMock("sat")
 
         Assert.assertEquals("123", UserInput.parseUserInput(session, "123", false).amount)
         Assert.assertEquals("123", UserInput.parseUserInput(session, "123.1", false).amount)
@@ -61,7 +51,7 @@ class UserInputUnitTests() {
 
     @Test
     fun test_valuesInFiat() {
-        initMock("EUR", false)
+        initMock("EUR")
 
         Assert.assertEquals("123.00", UserInput.parseUserInput(session, "123.00", true).amount)
         Assert.assertEquals("123.10", UserInput.parseUserInput(session, "123.10", true).amount)

@@ -7,10 +7,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
-import com.blockstream.green.utils.UserInput
-import com.blockstream.green.utils.btc
-import com.blockstream.green.utils.getBitcoinOrLiquidUnit
-import com.blockstream.green.utils.getFiatCurrency
+import com.blockstream.green.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -86,11 +83,13 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
                 val input = UserInput.parseUserInput(session, binding.amount, isFiat = isFiat)
                 input.getBalance(session).let {
                     if(it.satoshi > 0){
-                        it.getValue(if(isFiat) getBitcoinOrLiquidUnit(session) else getFiatCurrency(session))
+                        it.getValue(if(isFiat) getUnit(session) else getFiatCurrency(session))
+                    }else{
+                        ""
                     }
                 }
-                ""
             }catch (e: Exception){
+                e.printStackTrace()
                 ""
             }
 
@@ -106,6 +105,8 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
         binding.buttonClose.setOnClickListener {
             dismiss()
         }
+
+        updateCurrency()
     }
 
     private fun updateCurrency(){
