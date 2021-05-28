@@ -1,1 +1,3 @@
 /build
+/src/main/res/drawable/asset_*
+/src/main/res/raw/assets.json

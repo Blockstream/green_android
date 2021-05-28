@@ -4,7 +4,7 @@ set -e
 # ----- Help
 help_message() {
   cat <<- _EOF_
-  Create a release tag and update assets
+  Bump versionCode and versionName
 
   Usage: $SCRIPT_NAME versionName [-h|--help]
 
@@ -56,12 +56,6 @@ check_command sed
 
 
 # --- Execution
-
-# Update Assets
-cd crypto
-./fetch_assets.sh
-cd ..
-
 printf "\nUpdating versionCode & VersionName...\n\n"
 
 currentVersionCode=`awk '/ versionCode / {print $2}' $GRADLE_BUILD_FILE`

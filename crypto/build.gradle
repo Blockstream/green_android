@@ -28,17 +28,26 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    task fetchdepstask (type: Exec) {
+    task fetchGdk (type: Exec) {
         workingDir '.'
         commandLine './fetch_gdk_binaries.sh'
     }
+    task fetchAssets (type: Exec) {
+        workingDir '.'
+        commandLine './fetch_assets.sh'
+    }
 }
 
-afterEvaluate {
+afterEvaluate{
     android.libraryVariants.all { variant ->
-        def folder = new File('./crypto/src/main/jniLibs')
-        if (!folder.exists()) {
-            variant.javaCompiler.dependsOn(fetchdepstask)
+        def jniLibs = new File('./crypto/src/main/jniLibs')
+        if (!jniLibs.exists()) {
+            preBuild.dependsOn fetchGdk
+        }
+
+        def assetsJson = new File('./crypto/src/main/res/assets.json')
+        if (!assetsJson.exists()) {
+            preBuild.dependsOn fetchAssets
         }
     }
 }

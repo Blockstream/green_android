@@ -60,9 +60,7 @@ check_command base64
 
 # Save assets.json
 printf "Fetching asset JSON...\n"
-curl -sL $URL_ASSETS > "${FILE_ASSETS_JSON}"
-printf "Commiting ${FILE_ASSETS_JSON}\n\n"
-git add "${FILE_ASSETS_JSON}"
+curl -sL $URL_ASSETS --create-dirs -o "${FILE_ASSETS_JSON}"
 
 # Fetch icons json
 printf "Fetching icons JSON...\n"
@@ -73,7 +71,6 @@ jq -c -r 'keys | .[]' <<< "$ICONS_JSON" | while read id; do
     printf "Saving %s to %s \n" "$id" "$ICON_FILE"
     ICON_BASE64=$(jq -c -r ".\"${id}\"" <<< "$ICONS_JSON")
     base64 -d <<< "$ICON_BASE64" > "${ICON_FILE}"
-    git add "${ICON_FILE}"
 done
 
 printf "\nAssets updated\n"
