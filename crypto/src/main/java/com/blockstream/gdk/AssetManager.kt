@@ -70,7 +70,7 @@ class AssetManager(
 
     fun setGdkCache(assets: Assets) {
         this.metadata = assets.assets
-        this.icons = assets.icons
+        this.icons = assets.icons ?: mapOf()
 
         // Status: Cached
 
@@ -86,7 +86,7 @@ class AssetManager(
 
     // Currently unused as the assets are integrated in the build
     fun updateIcons(assets: Assets) {
-        this.icons = assets.icons
+        this.icons = assets.icons ?: mapOf()
         // Status: Icons Latest
         status.iconStatus = CacheStatus.Latest
     }
