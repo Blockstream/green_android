@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -469,7 +469,7 @@
                                                 </constraints>
                                             </stackView>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gVP-hM-l5W">
-                                                <rect key="frame" x="120" y="412" width="80" height="60"/>
+                                                <rect key="frame" x="130" y="412" width="60" height="60"/>
                                                 <subviews>
                                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VHv-EU-w9f">
                                                         <rect key="frame" x="5" y="25" width="10" height="10"/>
@@ -478,6 +478,18 @@
                                                             <constraint firstAttribute="height" constant="10" id="2Th-fY-AM1"/>
                                                             <constraint firstAttribute="width" constant="10" id="FSi-qU-FIF"/>
                                                         </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                <integer key="value" value="5"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                                <real key="value" value="1"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                                <color key="value" name="customTitaniumLight"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                        </userDefinedRuntimeAttributes>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EbQ-JP-aLb">
                                                         <rect key="frame" x="14.5" y="29.5" width="10" height="1"/>
@@ -493,6 +505,18 @@
                                                             <constraint firstAttribute="width" constant="10" id="vgO-ah-8B0"/>
                                                             <constraint firstAttribute="height" constant="10" id="yTX-6T-Bco"/>
                                                         </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                <integer key="value" value="5"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                                <real key="value" value="1"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                                <color key="value" name="customTitaniumLight"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                        </userDefinedRuntimeAttributes>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zW0-cJ-CZr">
                                                         <rect key="frame" x="34.5" y="29.5" width="10" height="1"/>
@@ -508,43 +532,35 @@
                                                             <constraint firstAttribute="height" constant="10" id="2Ru-Ae-6Ro"/>
                                                             <constraint firstAttribute="width" constant="10" id="eCT-tH-bj2"/>
                                                         </constraints>
-                                                    </view>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ajE-ak-piC">
-                                                        <rect key="frame" x="54.5" y="29.5" width="10" height="1"/>
-                                                        <color key="backgroundColor" name="customTitaniumLight"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="1" id="VLb-00-WTc"/>
-                                                        </constraints>
-                                                    </view>
-                                                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ePH-u2-HEA">
-                                                        <rect key="frame" x="65" y="25" width="10" height="10"/>
-                                                        <color key="backgroundColor" red="0.1647058824" green="0.18823529410000001" blue="0.21176470589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="10" id="RcW-CM-9MS"/>
-                                                            <constraint firstAttribute="width" constant="10" id="e5y-B3-hDt"/>
-                                                        </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                                <integer key="value" value="5"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                                <real key="value" value="1"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                                <color key="value" name="customTitaniumLight"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                        </userDefinedRuntimeAttributes>
                                                     </view>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="ajE-ak-piC" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="6Cb-0v-qdm"/>
                                                     <constraint firstItem="EbQ-JP-aLb" firstAttribute="leading" secondItem="VHv-EU-w9f" secondAttribute="trailing" constant="-0.5" id="9m1-59-CPC"/>
                                                     <constraint firstItem="7jv-We-TZf" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="DZ4-oW-q24"/>
-                                                    <constraint firstItem="ePH-u2-HEA" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="JF7-w1-fEK"/>
                                                     <constraint firstItem="VHv-EU-w9f" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="Jhq-b9-31f"/>
                                                     <constraint firstItem="EbB-8S-LhX" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="O1Y-Gi-nmA"/>
-                                                    <constraint firstItem="ePH-u2-HEA" firstAttribute="leading" secondItem="EbB-8S-LhX" secondAttribute="trailing" constant="10" id="QuX-3g-RN1"/>
                                                     <constraint firstItem="VHv-EU-w9f" firstAttribute="leading" secondItem="gVP-hM-l5W" secondAttribute="leading" constant="5" id="UHJ-Rn-uIj"/>
                                                     <constraint firstItem="EbB-8S-LhX" firstAttribute="leading" secondItem="7jv-We-TZf" secondAttribute="trailing" constant="10" id="X7d-ek-gm8"/>
                                                     <constraint firstItem="EbB-8S-LhX" firstAttribute="leading" secondItem="zW0-cJ-CZr" secondAttribute="trailing" constant="0.5" id="Y3M-87-d15"/>
                                                     <constraint firstItem="7jv-We-TZf" firstAttribute="leading" secondItem="VHv-EU-w9f" secondAttribute="trailing" constant="10" id="dzE-ZN-2K2"/>
                                                     <constraint firstItem="7jv-We-TZf" firstAttribute="leading" secondItem="EbQ-JP-aLb" secondAttribute="trailing" constant="0.5" id="fkl-Zt-3rl"/>
                                                     <constraint firstItem="zW0-cJ-CZr" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="fuX-Tv-74u"/>
+                                                    <constraint firstAttribute="trailing" secondItem="EbB-8S-LhX" secondAttribute="trailing" constant="5" id="ip0-kB-beg"/>
                                                     <constraint firstAttribute="height" constant="60" id="kWe-KC-N6s"/>
                                                     <constraint firstItem="EbQ-JP-aLb" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="loU-sE-uZE"/>
-                                                    <constraint firstAttribute="trailing" secondItem="ePH-u2-HEA" secondAttribute="trailing" constant="5" id="mYD-0x-Yl7"/>
                                                     <constraint firstItem="zW0-cJ-CZr" firstAttribute="leading" secondItem="7jv-We-TZf" secondAttribute="trailing" constant="-0.5" id="mmH-9S-BbJ"/>
-                                                    <constraint firstItem="ajE-ak-piC" firstAttribute="leading" secondItem="EbB-8S-LhX" secondAttribute="trailing" constant="-0.5" id="oHi-i3-xz0"/>
-                                                    <constraint firstItem="ePH-u2-HEA" firstAttribute="leading" secondItem="ajE-ak-piC" secondAttribute="trailing" constant="0.5" id="s2v-zV-3oP"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
@@ -600,10 +616,8 @@
                         <outlet property="processNode1" destination="VHv-EU-w9f" id="7OE-Ny-kGI"/>
                         <outlet property="processNode2" destination="7jv-We-TZf" id="hCI-T1-6Cc"/>
                         <outlet property="processNode3" destination="EbB-8S-LhX" id="igh-wX-srk"/>
-                        <outlet property="processNode4" destination="ePH-u2-HEA" id="5Ah-5w-i2b"/>
                         <outlet property="progressBarConnector1" destination="EbQ-JP-aLb" id="T2e-N6-GSK"/>
                         <outlet property="progressBarConnector2" destination="zW0-cJ-CZr" id="PBu-aJ-BFI"/>
-                        <outlet property="progressBarConnector3" destination="ajE-ak-piC" id="rPz-Pb-Sp4"/>
                         <outlet property="progressBarView" destination="gVP-hM-l5W" id="jot-0S-MK8"/>
                         <outlet property="textLabel" destination="GXG-sO-nUn" id="aDl-ce-uri"/>
                         <segue destination="8b4-Np-JaJ" kind="show" id="YC6-Pi-VRi"/>
