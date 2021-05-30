@@ -15,6 +15,7 @@ build_development:
     - ga
   script:
     - cd $CI_PROJECT_DIR
+    - apt-get update && apt-get install -y jq
     - ./gradlew lintDevelopmentRelease
     - ./gradlew assembleDevelopmentRelease
 
@@ -32,6 +33,7 @@ build_production:
     - ga
   script:
     - cd $CI_PROJECT_DIR
+    - apt-get update && apt-get install -y jq
     - ./gradlew lintProductionRelease
     - ./gradlew assembleProductionRelease
 
@@ -41,6 +43,7 @@ build_tag_osx_release:
     - osx
   script:
     - cd $CI_PROJECT_DIR
+    - brew install jq
     - ./gradlew assembleProductionRelease
 
 build_debug:
@@ -58,6 +61,7 @@ build_debug:
   when: manual
   script:
     - cd $CI_PROJECT_DIR
+    - apt-get update && apt-get install -y jq
     - ./gradlew assembleDevelopmentDebug
 
 #####################################
@@ -72,6 +76,7 @@ unit_tests:
     - ga
   script:
     - cd $CI_PROJECT_DIR
+    - apt-get update && apt-get install -y jq
     - ./gradlew green:test
     - ./gradlew hardware:test
 
