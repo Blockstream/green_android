@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="com.blockstream.gdk.data.Device" />
         <variable
             name="device"
@@ -14,7 +13,6 @@
             name="confirmed"
             type="Boolean" />
     </data>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
@@ -43,7 +41,7 @@
             android:layout_marginEnd="32dp"
             android:adjustViewBounds="true"
             isInvisible="@{confirmed}"
-            android:src="@{device.isJade ? @drawable/blockstream_jade_device : @drawable/trezor_device}"
+            gdkDevice="@{device}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/buttonClose"

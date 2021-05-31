@@ -28,7 +28,7 @@
             android:layout_marginBottom="24dp"
             android:cropToPadding="false"
             android:scaleType="fitCenter"
-            android:src="@{vm.device.isJade ? @drawable/blockstream_jade_device : @drawable/trezor_device}"
+            greenDevice="@{vm.device}"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

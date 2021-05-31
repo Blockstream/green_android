@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.Asset
+import com.blockstream.gdk.data.Device
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
@@ -49,6 +50,22 @@ fun Asset?.getIcon(context: Context, id: String, session: GreenSession): Drawabl
 
 fun Network.getIcon(): Int {
     return network.getNetworkIcon()
+}
+
+fun Device.getIcon(): Int{
+    return when {
+        isTrezor -> R.drawable.trezor_device
+        isLedger -> R.drawable.ledger_device
+        else -> R.drawable.blockstream_jade_device
+    }
+}
+
+fun com.blockstream.green.devices.Device.getIcon(): Int{
+    return when {
+        isTrezor -> R.drawable.trezor_device
+        isLedger -> R.drawable.ledger_device
+        else -> R.drawable.blockstream_jade_device
+    }
 }
 
 fun String.getNetworkIcon(): Int{

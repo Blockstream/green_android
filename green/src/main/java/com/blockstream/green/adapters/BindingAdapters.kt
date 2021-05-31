@@ -7,6 +7,8 @@ import androidx.annotation.StringRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
+import com.blockstream.gdk.data.Device
+import com.blockstream.green.gdk.getIcon
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.textfield.TextInputLayout
 
@@ -66,4 +68,14 @@ fun setProgress(progressIndicator: BaseProgressIndicator<*>, progress: Int) {
     if(!progressIndicator.isIndeterminate) {
         progressIndicator.setProgressCompat(progress, true)
     }
+}
+
+@BindingAdapter("gdkDevice")
+fun setGdkDevice(view: ImageView, device: Device) {
+    view.setImageResource(device.getIcon())
+}
+
+@BindingAdapter("greenDevice")
+fun setGreenDevice(view: ImageView, device: com.blockstream.green.devices.Device) {
+    view.setImageResource(device.getIcon())
 }

@@ -25,7 +25,7 @@
             android:layout_marginBottom="16dp"
             android:adjustViewBounds="true"
             android:maxWidth="100dp"
-            android:src="@{device.isJade ? @drawable/blockstream_jade_device : device.isTrezor ? @drawable/trezor_device : @drawable/ledger_device}"
+            greenDevice="@{device}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
