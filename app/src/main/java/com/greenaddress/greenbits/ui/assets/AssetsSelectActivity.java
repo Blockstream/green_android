@@ -133,7 +133,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         final String tx = getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX);
         final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
         final ObjectNode addressee = (ObjectNode) txJson.get("addressees").get(0);
-        addressee.put("asset_tag", assetId);
+        addressee.put("asset_id", assetId);
         final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
         return call.resolve(null, new HardwareCodeResolver(this));
     }
