@@ -7,9 +7,12 @@
 
     <color name="brand_surface">#19222c</color>
     <color name="brand_surface_light">#273545</color>
+    <color name="brand_surface_light_variant">#475361</color>
     <color name="brand_background">#12161f</color>
 
     <color name="brand_surface_variant">#14161D</color>
+
+    <color name="surface_light">#e5e7e9</color>
 
     <color name="black">#ff000000</color>
     <color name="white">#ffffffff</color>
@@ -27,7 +30,6 @@
 
     <color name="text_shadow">#50000000</color>
 
-
     <color name="switch_thumb_disabled">#c1c1c1</color>
 
     <color name="color_on_surface_divider">#22ffffff</color>
@@ -36,5 +38,8 @@
     <color name="color_on_surface_emphasis_low">#8affffff</color>
     <color name="color_on_surface_emphasis_medium">#bdffffff</color>
     <color name="color_on_surface_emphasis_high">#ffffffff</color>
+
+
+    <color name="color_on_light_surface_emphasis_high">#0e1218</color>
 
 </resources>

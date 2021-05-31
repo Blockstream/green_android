@@ -35,7 +35,7 @@ class ReceiveViewModel @AssistedInject constructor(
 
     val isAddressUri = MutableLiveData(false)
 
-    val deviceAddressValidationEvent = MutableLiveData<ConsumableEvent<Boolean>>()
+    val deviceAddressValidationEvent = MutableLiveData<ConsumableEvent<Boolean?>>()
 
     // only show if we are on Liquid and we are using Ledger
     val showAssetWhitelistWarning = session.network.isLiquid && session.hwWallet?.hwDeviceData?.toDevice()?.isLedger == true
@@ -83,6 +83,7 @@ class ReceiveViewModel @AssistedInject constructor(
 
     fun validateAddressInDevice() {
         address.value?.let { address ->
+            deviceAddressValidationEvent.value = ConsumableEvent(null)
 
             session.hwWallet?.observable(timeout = 30) {
                 val subAccount = session.getSubAccount(wallet.activeAccount).result<SubAccount>(

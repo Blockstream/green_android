@@ -24,6 +24,12 @@
 
     <style name="Widget.Green.Button.Red">
         <item name="rippleColor">@color/red</item>
+        <item name="backgroundTint">@color/red</item>
+    </style>
+
+    <style name="Widget.Green.Button.Light">
+        <item name="rippleColor">@color/brand_surface_light_variant</item>
+        <item name="backgroundTint">@color/brand_surface_light_variant</item>
     </style>
 
     <style name="Widget.Green.Toolbar" parent="Widget.MaterialComponents.Toolbar">

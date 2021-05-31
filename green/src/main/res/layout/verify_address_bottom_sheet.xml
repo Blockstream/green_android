@@ -5,101 +5,111 @@
 
     <data>
 
-        <import type="com.blockstream.green.devices.Device" />
-
-        <import type="com.blockstream.green.devices.Device.DeviceState" />
+        <import type="com.blockstream.gdk.data.Device" />
+        <variable
+            name="device"
+            type="Device" />
 
         <variable
-            name="vm"
-            type="com.blockstream.green.ui.devices.DeviceInfoViewModel" />
+            name="confirmed"
+            type="Boolean" />
     </data>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingBottom="24dp">
+        android:layout_height="wrap_content"
+        android:paddingBottom="24dp"
+        android:animateLayoutChanges="true">
+
+        <ImageView
+            android:id="@+id/buttonClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/icon"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
             android:adjustViewBounds="true"
-            android:src="@{vm.device.isJade ? @drawable/blockstream_jade_device : @drawable/trezor_device}"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayoutCompat"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            isInvisible="@{confirmed}"
+            android:src="@{device.isJade ? @drawable/blockstream_jade_device : @drawable/trezor_device}"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/linearLayoutCompat"
+            app:layout_constraintTop_toBottomOf="@+id/buttonClose"
             tools:src="@drawable/blockstream_jade_device" />
 
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/linearLayoutCompat"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Blockstream Jade">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{vm.device.name}"
-                android:textAppearance="?attr/textAppearanceHeadline6"
-                tools:text="Jade" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@{vm.device.manufacturer}"
-                android:textAppearance="?attr/textAppearanceBody1"
-                tools:text="Blockstream" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-
         <ImageView
-            android:id="@+id/connectionType"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="24dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:src="@{vm.device.type == Device.ConnectionType.USB ? @drawable/ic_sharp_usb_24 : @drawable/ic_ble}"
-            app:layout_constraintBottom_toBottomOf="@+id/icon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/icon"
-            tools:src="@drawable/ic_sharp_usb_24" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
+            android:id="@+id/arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.36" />
+            android:src="@drawable/ic_baseline_arrow_downward_24"
+            isInvisible="@{confirmed}"
+            app:layout_constraintBottom_toTopOf="@+id/icon"
+            app:layout_constraintEnd_toEndOf="@+id/icon"
+            app:layout_constraintStart_toStartOf="@+id/icon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/green" />
 
         <TextView
-            android:id="@+id/status"
+            android:id="@+id/textView5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{vm.status}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginTop="16dp"
+            android:text="@string/id_verify_and_confirm"
+            isInvisible="@{confirmed}"
+            android:textAppearance="?attr/textAppearanceCaption"
+            app:layout_constraintEnd_toEndOf="@+id/icon"
+            app:layout_constraintStart_toStartOf="@+id/icon"
+            app:layout_constraintTop_toBottomOf="@+id/icon" />
 
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier"
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="icon,icon,linearLayoutCompat"
-            tools:layout_editor_absoluteY="77dp" />
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:indeterminate="false"
+            android:progress="100"
+            app:indicatorSize="64dp"
+            isInvisible="@{!confirmed}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/tick"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_progress_check"
+            isInvisible="@{!confirmed}"
+            app:layout_constraintBottom_toBottomOf="@+id/progress"
+            app:layout_constraintEnd_toEndOf="@+id/progress"
+            app:layout_constraintStart_toStartOf="@+id/progress"
+            app:layout_constraintTop_toTopOf="@+id/progress" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/id_confirmed_"
+            isInvisible="@{!confirmed}"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

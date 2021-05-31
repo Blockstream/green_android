@@ -1,8 +1,11 @@
 package com.blockstream.green.utils
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.view.View
+import android.widget.ViewAnimator
 
 fun View.shake() {
     ObjectAnimator.ofFloat(
@@ -40,6 +43,15 @@ fun View.pulse() {
 fun View.rotate() {
     ObjectAnimator.ofFloat(this, "rotation", -360f, 0f).apply {
         duration = 600
+        start()
+    }
+}
+
+fun View.bounceDown(){
+    ObjectAnimator.ofFloat(this, "translationY", 0.0f, 30.0f, 0.0f, ).apply {
+        duration = 500
+        repeatMode = ValueAnimator.RESTART
+        repeatCount = ValueAnimator.INFINITE
         start()
     }
 }

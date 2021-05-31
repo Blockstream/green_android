@@ -114,6 +114,10 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonVerify.setOnClickListener {
+            VerifyAddressBottomSheetDialogFragment().also {
+                it.show(childFragmentManager, it.toString())
+            }
+
             if(viewModel.onProgress.value == false) {
                 viewModel.validateAddressInDevice()
             }
@@ -122,16 +126,6 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         viewModel.onError.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
                 errorDialog(it)
-            }
-        }
-
-        viewModel.deviceAddressValidationEvent.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandledOrReturnNull()?.let { addressMatch ->
-                if(addressMatch){
-                    toast(getString(R.string.id_the_address_is_valid))
-                }else{
-                    errorDialog(getString(R.string.id_the_addresses_dont_match))
-                }
             }
         }
 

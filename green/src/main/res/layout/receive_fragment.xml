@@ -18,29 +18,38 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:fillViewport="true"
             android:paddingTop="16dp"
-            android:fillViewport="true">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp">
+                android:layout_marginEnd="32dp"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/assetWhitelistWarning"
+                <com.google.android.material.card.MaterialCardView
+                    isVisible="@{vm.showAssetWhitelistWarning}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:textColor="@color/warning"
-                    android:textAppearance="?attr/textAppearanceCaption"
-                    android:text="@string/id_ledger_supports_a_limited_set"
-                    android:drawablePadding="8dp"
-                    app:drawableStartCompat="@drawable/ic_baseline_warning_18"
-                    app:drawableTint="@color/warning"
-                    isVisible="@{vm.showAssetWhitelistWarning}"/>
+                    android:padding="24dp"
+                    app:cardBackgroundColor="@color/surface_light">
+
+                    <TextView
+                        android:id="@+id/assetWhitelistWarning"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:drawablePadding="8dp"
+                        android:text="@string/id_ledger_supports_a_limited_set"
+                        android:textAppearance="?attr/textAppearanceCaption"
+                        android:textColor="@color/color_on_light_surface_emphasis_high"
+                        app:drawableStartCompat="@drawable/ic_baseline_warning_18"
+                        app:drawableTint="@color/color_on_light_surface_emphasis_high" />
+
+                </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/materialCardView2"
@@ -152,28 +161,40 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <TextView
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/warning"
-                    android:textAppearance="?attr/textAppearanceCaption"
-                    android:text="@string/id_please_verify_that_the_address"
-                    android:drawablePadding="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    app:drawableStartCompat="@drawable/ic_baseline_warning_18"
-                    app:drawableTint="@color/warning"
-                    isVisible="@{vm.canValidateAddressInDevice}"/>
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/brand_surface_light"
+                    isVisible="@{vm.canValidateAddressInDevice}">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVerify"
-                    style="@style/Widget.Green.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/id_verify_on_device"
-                    android:enabled="@{!vm.onProgress}"
-                    isVisible="@{vm.canValidateAddressInDevice}" />
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:paddingStart="42dp"
+                        android:paddingEnd="42dp">
 
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonVerify"
+                            style="@style/Widget.Green.Button.Light"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/id_verify_on_device" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:drawablePadding="8dp"
+                            android:text="@string/id_please_verify_that_the_address"
+                            android:textAppearance="?attr/textAppearanceCaption" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonMore"
@@ -186,8 +207,7 @@
                     app:icon="@drawable/ic_baseline_arrow_drop_down_24"
                     app:iconGravity="end"
                     app:iconPadding="-24dp"
-                    app:iconTint="@color/color_on_surface_emphasis_high"
-                    />
+                    app:iconTint="@color/color_on_surface_emphasis_high" />
 
             </LinearLayout>
         </ScrollView>
@@ -200,10 +220,10 @@
             android:layout_gravity="bottom"
             android:indeterminate="true"
             app:hideAnimationBehavior="inward"
-            app:trackCornerRadius="@dimen/progress_radius"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:trackCornerRadius="@dimen/progress_radius" />
 
     </FrameLayout>
 
