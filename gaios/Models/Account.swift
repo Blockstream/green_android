@@ -11,18 +11,23 @@ struct Account: Codable, Equatable {
     var password: String?
     let keychain: String
     var network: String
+    var isSingleSig: Bool? // optional to support pre singleSig stored wallets
 
     private var gdkNetwork_: GdkNetwork?
     var gdkNetwork: GdkNetwork? {
         mutating get {
             if gdkNetwork_ == nil || gdkNetwork_?.network != network {
+
+                //
+                // network or check isSingleSig and prepend electrum- ????
+                //
                 gdkNetwork_ = getGdkNetwork(network)
             }
             return gdkNetwork_
         }
     }
 
-    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false) {
+    init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool = false) {
         // Software / Hardware wallet account
         self.id = id ?? UUID().uuidString
         self.name = name
@@ -32,9 +37,10 @@ struct Account: Codable, Equatable {
         self.username = nil
         self.password = nil
         self.keychain = self.id
+        self.isSingleSig = isSingleSig
     }
 
-    init(name: String, network: String, username: String, password: String? = nil) {
+    init(name: String, network: String, username: String, password: String? = nil, isSingleSig: Bool = false) {
         // Watchonly account
         id = UUID().uuidString
         self.name = name
@@ -44,9 +50,10 @@ struct Account: Codable, Equatable {
         self.username = username
         self.password = password
         self.keychain = id
+        self.isSingleSig = isSingleSig
     }
 
-    init(name: String, network: String, keychain: String) {
+    init(name: String, network: String, keychain: String, isSingleSig: Bool = false) {
         // Migrated account
         id = UUID().uuidString
         self.name = name
@@ -56,17 +63,13 @@ struct Account: Codable, Equatable {
         self.isLedger = false
         self.username = nil
         self.password = nil
+        self.isSingleSig = isSingleSig
     }
 
     var isWatchonly: Bool {
         get {
             return !(username?.isEmpty ?? true)
         }
-    }
-
-    var isSingleSig: Bool {
-        // MISSING LOGIC
-        return false
     }
 
     var hasManualPin: Bool {
@@ -149,4 +152,12 @@ struct Account: Codable, Equatable {
         try AuthenticationTypeHandler.addPIN(data: pindata, forNetwork: keychain)
     }
 
+    var networkName: String {
+        get {
+            let isSingleSig = self.isSingleSig ?? false
+            let ntw = self.network
+
+            return (isSingleSig ? Constants.electrumPrefix + ntw : ntw)
+        }
+    }
 }

@@ -184,10 +184,12 @@ class GreenAddressService {
         Guarantee().map(on: bgq) {
             try self.getSession().getTwoFactorConfig()
         }.done { dataTwoFactorConfig in
-            let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
-            let data = try JSONSerialization.jsonObject(with: JSONEncoder().encode(Settings.shared), options: .allowFragments) as? [String: Any]
-            if twoFactorConfig.enableMethods.count <= 1 {
-                self.events.append(Event(value: data!))
+            if dataTwoFactorConfig != nil {
+                let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+                let data = try JSONSerialization.jsonObject(with: JSONEncoder().encode(Settings.shared), options: .allowFragments) as? [String: Any]
+                if twoFactorConfig.enableMethods.count <= 1 {
+                    self.events.append(Event(value: data!))
+                }
             }
         }.catch { _ in
                 print("Error on get settings")

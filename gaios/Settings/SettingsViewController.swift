@@ -57,7 +57,9 @@ class SettingsViewController: UIViewController {
         }
         self.username = try session.getWatchOnlyUsername()
         let dataTwoFactorConfig = try session.getTwoFactorConfig()
-        self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+        if dataTwoFactorConfig != nil {
+            self.twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+        }
     }
 
     func getSections() -> [SettingsSections] {

@@ -21,7 +21,7 @@ class WalletCell: UITableViewCell {
         self.lblTitle.text = item.name
         self.icon.image = item.icon
 
-        if item.isSingleSig {
+        if item.isSingleSig ?? false {
             self.iconAccountType.image = UIImage(named: "ic_key")!
         }
 

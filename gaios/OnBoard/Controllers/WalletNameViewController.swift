@@ -108,7 +108,7 @@ class WalletNameViewController: UIViewController {
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate?.disconnect()
-            return try appDelegate?.connect(params?.network ?? "mainnet")
+            return try appDelegate?.connect(OnBoardManager.shared.networkName)
         }.then(on: bgq) {
             try getSession().registerUser(mnemonic: params?.mnemonic ?? "").resolve()
         }.then(on: bgq) { _ in
@@ -136,7 +136,7 @@ class WalletNameViewController: UIViewController {
             return Guarantee()
         }.compactMap(on: bgq) {
             appDelegate?.disconnect()
-            return try appDelegate?.connect(params?.network ?? "mainnet")
+            return try appDelegate?.connect(OnBoardManager.shared.networkName)
         }.then(on: bgq) {
             return try getSession().login(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "").resolve()
         }.ensure {
