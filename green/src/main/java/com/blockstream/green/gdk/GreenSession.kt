@@ -458,7 +458,7 @@ class GreenSession constructor(
             .result<BalanceMap>().let { balanceMap ->
 
                 return balanceMap.toSortedMap { o1, o2 ->
-                    if (o1 == "btc") -1 else o1.compareTo(o2)
+                    if (o1 == network.policyAsset) -1 else o1.compareTo(o2)
                 }.map { it.toPair() }
             }
     }

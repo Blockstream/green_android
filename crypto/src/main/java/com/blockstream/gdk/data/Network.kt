@@ -19,7 +19,7 @@ data class Network(
     @SerialName("tx_explorer_url") val explorerUrl: String? = null,
     @SerialName("wamp_onion_url") val wampOnioUrl: String? = null,
 
-    @SerialName("policy_asset") val policyAsset: String? = null,
+    @SerialName("policy_asset") val policyAsset: String = "btc",
     @SerialName("server_type") val serverType: String? = null,
 ) : Parcelable {
 

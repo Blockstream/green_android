@@ -72,7 +72,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private int mSelectedFee;
     private long mMinFeeRate;
     private Long mVsize;
-    private String mSelectedAsset = "btc";
+    private String mSelectedAsset = getNetwork().getPolicyAsset();
     private SubaccountData mSubaccount;
     private boolean isSweep;
 
@@ -234,7 +234,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             final ObjectNode addressee = (ObjectNode) tx.get("addressees").get(0);
             mRecipientText.setText(addressee.get("address").asText());
             // If addressee doesn't contain asset_tag, we are sending btc
-            final String asset = addressee.has("asset_id") ? addressee.get("asset_id").asText() : "btc";
+            final String asset = addressee.has("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
             final long newSatoshi = assetsMap.get(asset).asLong();
             if (newSatoshi > 0) {
                 mAmountText.removeTextChangedListener(mAmountTextWatcher);
@@ -288,9 +288,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private void updateAssetSelected() {
         try {
             final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
-            mSelectedAsset = addressee.get("asset_id").asText("btc");
+            mSelectedAsset = addressee.get("asset_id").asText(getNetwork().getPolicyAsset());
         } catch (final Exception e) {
-            // Asset not passed, default "btc"
+            // Asset not passed, default policyAsset
         }
 
         final long satoshi = mSubaccount.getSatoshi().get(mSelectedAsset);
@@ -533,7 +533,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     public ObjectNode convert(final long satoshi) throws Exception {
         final ObjectNode details = new ObjectMapper().createObjectNode();
         details.put("satoshi", satoshi);
-        if (!"btc".equals(mSelectedAsset)) {
+        if (!getNetwork().getPolicyAsset().equals(mSelectedAsset)) {
             final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
             details.set("asset_info", info.toObjectNode());
         }
@@ -643,7 +643,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private boolean isAsset() {
-        return getSession().getNetworkData().getLiquid() && !"btc".equals(mSelectedAsset);
+        return getSession().getNetworkData().getLiquid() && !getNetwork().getPolicyAsset().equals(mSelectedAsset);
     }
 
     @Override

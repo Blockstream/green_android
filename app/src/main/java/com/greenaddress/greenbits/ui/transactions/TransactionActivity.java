@@ -144,7 +144,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         final TextView amountText = UI.find(this, R.id.txAmountText);
 
         try {
-            final BalanceData balance = getSession().convertBalance(mTxItem.getSatoshi().get("btc"));
+            final BalanceData balance = getSession().convertBalance(mTxItem.getSatoshi().get(mNetworkData.getPolicyAsset()));
             final String btc = Conversion.getBtc(getSession(), balance, true);
             final String fiat = Conversion.getFiat(getSession(), balance, true);
             amountText.setText(String.format("%s%s / %s%s", neg, btc, neg, fiat));
@@ -390,7 +390,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     @Override
     public void onAssetSelected(final String assetId) {
         // Nothing for btc
-        if ("btc".equals(assetId) || mAssetsBalances == null)
+        if (getNetwork().getPolicyAsset().equals(assetId) || mAssetsBalances == null)
             return;
 
         // Open selected asset detail page

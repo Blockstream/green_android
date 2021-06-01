@@ -207,7 +207,7 @@ public abstract class LoggedActivity extends GaActivity {
     protected void setAmountText(final EditText amountText, final boolean isFiat,
                                  final ObjectNode currentAmount) throws Exception {
         final NumberFormat btcNf = Conversion.getNumberFormat(getSession());
-        setAmountText(amountText, isFiat, currentAmount, btcNf, "btc");
+        setAmountText(amountText, isFiat, currentAmount, btcNf, getNetwork().getPolicyAsset());
     }
 
     // for liquid assets and l-btc
@@ -215,7 +215,7 @@ public abstract class LoggedActivity extends GaActivity {
                                  final String asset) throws Exception {
 
         NumberFormat nf = Conversion.getNumberFormat(getSession());
-        if (!"btc".equals(asset) && asset != null) {
+        if (!getNetwork().getPolicyAsset().equals(asset) && asset != null) {
             final AssetInfoData assetInfoData = getSession().getRegistry().getAssetInfo(asset);
             final int precision = assetInfoData == null ? 0 : assetInfoData.getPrecision();
             nf = Conversion.getNumberFormat(precision);
@@ -229,7 +229,7 @@ public abstract class LoggedActivity extends GaActivity {
         final NumberFormat us = Conversion.getNumberFormat(8, Locale.US);
         final NumberFormat fiatNf = Conversion.getNumberFormat(2);
         final String fiat = fiatNf.format(us.parse(currentAmount.get("fiat").asText()));
-        final String source = currentAmount.get("btc".equals(asset) ? getBitcoinUnitClean() : asset).asText();
+        final String source = currentAmount.get(getNetwork().getPolicyAsset().equals(asset) ? getBitcoinUnitClean() : asset).asText();
         final String btc = btcOrAssetNf.format(us.parse(source));
         amountText.setText(isFiat ? fiat : btc);
     }

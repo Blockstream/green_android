@@ -38,7 +38,7 @@ fun AccountType?.descriptionRes(): Int = when (this) {
 }
 
 fun Asset?.getIcon(context: Context, id: String, session: GreenSession): Drawable? {
-    if (id == "btc") {
+    if (id == session.network.policyAsset) {
         return ContextCompat.getDrawable(
             context,
             R.drawable.ic_liquid_bitcoin_60
