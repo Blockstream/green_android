@@ -10,9 +10,7 @@ class JsonConverter(val log: Boolean) : GDK.JSONConverter {
         }
 
         if (jsonString != null && jsonString != "null") {
-            // Fix bad json structure decisions eg. empty objects // TwoFactorStatus -> device object
-            val fixedJson = jsonString.replace("{}", "null")
-            return GreenWallet.JsonDeserializer.parseToJsonElement(fixedJson)
+            return GreenWallet.JsonDeserializer.parseToJsonElement(jsonString)
         }
         return null
     }
