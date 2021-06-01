@@ -75,6 +75,8 @@ public class ListTransactionsAdapter extends
         this.currentBlock = currentBlock;
     }
 
+    public String policyAsset() { return mNetworkData.getPolicyAsset(); }
+
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext())
@@ -88,15 +90,14 @@ public class ListTransactionsAdapter extends
         }
         final TransactionData txItem = mTxItems.get(position);
 
-        // Remove to display fee as amount in liquid
-        Log.d("satoshi", txItem.getSatoshi().toString());
-        final Long btc = txItem.getSatoshi().get("btc");
+        // Remove btc from amounts when it is just fees
+        final Long policyAsset = txItem.getSatoshi().get(mNetworkData.getPolicyAsset());
         final Long fee = txItem.getFee();
-        if (btc != null && btc.equals(fee) && txItem.getSatoshi().size() > 1) {
-            txItem.getSatoshi().remove("btc");
+        if (policyAsset != null && policyAsset.equals(fee) && txItem.getSatoshi().size() > 1) {
+            txItem.getSatoshi().remove(mNetworkData.getPolicyAsset());
         }
 
-        // show assets amount or assets number
+        // show assets amount or how many different assets are sent/received
         final int assetsNumber = txItem.getSatoshi().size();
         if (assetsNumber == 1) {
             final String assetId = txItem.getSatoshi().keySet().iterator().next();
@@ -124,7 +125,7 @@ public class ListTransactionsAdapter extends
         if (TextUtils.isEmpty(txItem.getMemo())) {
             if (mNetworkData.getLiquid() && assetsNumber > 1)
                 message = mActivity.getString(string.id_multiple_assets);
-            else if (mNetworkData.getLiquid() && txItem.isAsset()) {
+            else if (mNetworkData.getLiquid() && txItem.isAsset(policyAsset())) {
                 final String assetId =
                     txItem.getSatoshi().keySet().iterator().next();
                 final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getAssetInfo(assetId);
@@ -132,15 +133,15 @@ public class ListTransactionsAdapter extends
             } else if (txItem.getTxType() == TYPE.REDEPOSIT)
                 message = String.format("%s %s", mActivity.getString(
                                             string.id_redeposited),
-                                        txItem.isAsset() ? mActivity.getString(string.id_asset) : "");
+                                        txItem.isAsset(policyAsset()) ? mActivity.getString(string.id_asset) : "");
             else if (txItem.getTxType() == TYPE.IN)
                 message = String.format("%s %s", mActivity.getString(
                                             string.id_received),
-                                        txItem.isAsset() ? mActivity.getString(string.id_asset) : "");
+                                        txItem.isAsset(policyAsset()) ? mActivity.getString(string.id_asset) : "");
             else
                 message = mNetworkData.getLiquid() ? String.format("%s %s", mActivity.getString(
                                                                        string.id_sent),
-                                                                   txItem.isAsset() ? mActivity.getString(
+                                                                   txItem.isAsset(policyAsset()) ? mActivity.getString(
                                                                        string.id_asset) : "") : txItem.getAddressee();
         } else {
             if (txItem.getTxType() == TYPE.REDEPOSIT)
@@ -200,8 +201,8 @@ public class ListTransactionsAdapter extends
                 final String fee = Conversion.getBtc(mActivity.getSession(), tx.getFee(), true);
                 return String.format("-%s", fee);
             }
-            if ("btc".equals(assetId)) {
-                final String amount = Conversion.getBtc(mActivity.getSession(), tx.getSatoshi().get("btc"), true);
+            if (mNetworkData.getPolicyAsset().equals(assetId)) {
+                final String amount = Conversion.getBtc(mActivity.getSession(), tx.getSatoshi().get(mNetworkData.getPolicyAsset()), true);
                 return String.format("%s%s", tx.getTxType() == TYPE.OUT ? "-" : "", amount);
             }
             AssetInfoData info = mActivity.getSession().getRegistry().getAssetInfo(assetId);

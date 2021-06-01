@@ -256,8 +256,12 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
         return PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
     }
 
+    NetworkData cachedNetworkData = null;
     protected NetworkData getNetwork() {
-        return Bridge.INSTANCE.getCurrentNetworkData(this);
+        if(cachedNetworkData == null){
+            cachedNetworkData = Bridge.INSTANCE.getCurrentNetworkData(this);
+        }
+        return cachedNetworkData;
     }
 
     public Session getSession() {

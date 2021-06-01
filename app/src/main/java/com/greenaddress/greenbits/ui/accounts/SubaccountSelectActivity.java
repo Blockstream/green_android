@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.common.base.MoreObjects;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -50,7 +51,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements AccountA
         final float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         final boolean isWatchonly = getSession().isWatchOnly();
-        final AccountAdapter accountsAdapter = new AccountAdapter(this, mSubaccountList, this, !isWatchonly);
+        final AccountAdapter accountsAdapter = new AccountAdapter(this, getNetwork(), mSubaccountList, this, !isWatchonly);
         mRecyclerView.addItemDecoration(bottomOffsetDecoration);
         mRecyclerView.setAdapter(accountsAdapter);
         accountsAdapter.notifyDataSetChanged();
@@ -90,7 +91,7 @@ public class SubaccountSelectActivity extends LoggedActivity implements AccountA
     private void updateBalance(final List<SubaccountData> subaccounts) {
         long totalSatoshi = 0L;
         for (int i = 0; i < subaccounts.size(); i++) {
-            final long satoshi = subaccounts.get(i).getSatoshi().get("btc");
+            final long satoshi = MoreObjects.firstNonNull(subaccounts.get(i).getSatoshi().get(getNetwork().getPolicyAsset()), 0L);
             totalSatoshi += satoshi;
         }
         final BalanceData balanceReq = new BalanceData();

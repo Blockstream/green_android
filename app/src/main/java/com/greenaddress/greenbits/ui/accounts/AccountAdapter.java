@@ -10,6 +10,8 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blockstream.gdk.data.AccountType;
+import com.google.common.base.MoreObjects;
+import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -22,6 +24,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private final List<SubaccountData> mSubaccountList;
     private final OnAccountSelected mOnAccountSelected;
+    private final NetworkData mNetworkData;
     private final boolean showNewButton;
     private final GaActivity mActivity;
 
@@ -31,9 +34,11 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public AccountAdapter(final GaActivity activity,
+                          final NetworkData networkData,
                           final List<SubaccountData> subaccountList,
                           final OnAccountSelected cb, final boolean showNewAccount) {
         mActivity = activity;
+        mNetworkData = networkData;
         mSubaccountList = subaccountList;
         mOnAccountSelected = cb;
         showNewButton = showNewAccount;
@@ -57,7 +62,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (holder.getItemViewType() == R.layout.list_element_account) {
             final Account h = (Account) holder;
             final SubaccountData subaccount = mSubaccountList.get(position);
-            final long satoshi = subaccount.getSatoshi().containsKey("btc") ? subaccount.getSatoshi().get("btc") : 0;
+            final long satoshi = MoreObjects.firstNonNull(subaccount.getSatoshi().get(mNetworkData.getPolicyAsset()), 0L);
             final long pointer = subaccount.getPointer();
             final Resources res = holder.itemView.getResources();
             final String defaultName = pointer == 0 ? res.getString(R.string.id_main_account) : res.getString(R.string.id_account) + " " + pointer;

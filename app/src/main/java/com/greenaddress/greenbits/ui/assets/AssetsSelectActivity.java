@@ -83,7 +83,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         }
 
         // Nothing for btc
-        if ("btc".equals(assetId))
+        if (getNetwork().getPolicyAsset().equals(assetId))
             return;
 
         // Open selected asset detail page

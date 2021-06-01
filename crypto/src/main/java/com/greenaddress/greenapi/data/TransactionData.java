@@ -320,12 +320,12 @@ public class TransactionData extends JSONData implements Serializable {
     }
 
     @JsonIgnore
-    public boolean isAsset() {
-        return getFirstAsset() != null;
+    public boolean isAsset(String policyAsset) {
+        return getFirstAsset(policyAsset) != null;
     }
 
     @JsonIgnore
-    public String getFirstAsset() {
+    public String getFirstAsset(String policyAsset) {
         // unblinding failed
         if (satoshi == null) {
             return null;
@@ -334,7 +334,7 @@ public class TransactionData extends JSONData implements Serializable {
         final Iterator<String> iter = satoshi.keySet().iterator();
         while (iter.hasNext()) {
             final String current = iter.next();
-            if (!"btc".equals(current))
+            if (!policyAsset.equals(current))
                 return current;
         }
         return null;

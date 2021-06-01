@@ -103,8 +103,9 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
     @JsonIgnore
     public boolean isElectrum() { return "electrum".equals(getServerType()); }
 
+    // Return the identifier of the asset used to pay transaction fees
     public String getPolicyAsset() {
-        return policyAsset;
+        return liquid ? policyAsset : "btc";
     }
 
     public void setPolicyAsset(String policyAsset) {

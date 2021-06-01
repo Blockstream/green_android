@@ -22,6 +22,7 @@ import com.blockstream.gdk.data.AccountType;
 import com.blockstream.gdk.data.TwoFactorReset;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.common.base.MoreObjects;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -320,7 +321,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             final String defaultName = pointer == 0 ? getString(R.string.id_main_account) : getString(R.string.id_account) + " " + pointer;
             mAccountView.setTitle(subaccount.getNameWithDefault(defaultName));
             mAccountView.setType(AccountType.Companion.byGDKType(subaccount.getType()));
-            mAccountView.setBalance(balance.containsKey("btc") ? balance.get("btc") : 0);
+            mAccountView.setBalance(MoreObjects.firstNonNull(balance.get(getNetwork().getPolicyAsset()), 0L));
             mAssetsSelection.setVisibility(getNetwork().getLiquid() ? View.VISIBLE : View.GONE);
             mAssetsSelection.setText(balance.size() == 1 ?
                                      getString(R.string.id_d_asset_in_this_account, balance.size()) :
@@ -429,9 +430,9 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             Bridge.INSTANCE.navigateToReceive(requireActivity());
         } else if (view.getId() == R.id.sendButton) {
             view.setEnabled(true);
-            if (getBalance() == null || getBalance().get("btc") == null)
+            if (getBalance() == null || getBalance().get(getNetwork().getPolicyAsset()) == null)
                 return;
-            if (getNetwork().getLiquid() && getBalance().get("btc") == 0L) {
+            if (getNetwork().getLiquid() && MoreObjects.firstNonNull(getBalance().get(getNetwork().getPolicyAsset()), 0L) == 0L) {
                 UI.popup(getGaActivity(), R.string.id_warning, R.string.id_receive, R.string.id_cancel)
                 .content(R.string.id_insufficient_lbtc_to_send_a)
                 .onPositive((dialog, which) -> {

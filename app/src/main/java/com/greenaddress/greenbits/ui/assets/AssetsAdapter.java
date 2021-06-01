@@ -44,10 +44,10 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         mOnAccountSelected = cb;
         mNetworkData = networkData;
         mAssetsIds = new ArrayList<>(mAssets.keySet());
-        if (mAssetsIds.contains("btc")) {
+        if (mAssetsIds.contains(mNetworkData.getPolicyAsset())) {
             // Move btc as first in the list
-            mAssetsIds.remove("btc");
-            mAssetsIds.add(0,"btc");
+            mAssetsIds.remove(mNetworkData.getPolicyAsset());
+            mAssetsIds.add(0,mNetworkData.getPolicyAsset());
         }
     }
 
@@ -61,7 +61,7 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     @Override
     public void onBindViewHolder(final Item holder, final int position) {
         final String assetId = mAssetsIds.get(position);
-        final boolean isBTC = "btc".equals(assetId);
+        final boolean isBTC = mNetworkData.getPolicyAsset().equals(assetId);
         final Long satoshi = mAssets.get(assetId);
         final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getAssetInfo(assetId);
         if (mOnAccountSelected != null)
