@@ -312,29 +312,33 @@ public class GDKSession implements HttpRequestHandler {
         return mObjectMapper.treeToValue(availableCurrencies, Map.class);
     }
 
+    private List<NetworkData> cachedNetworks = null;
     public List<NetworkData> getNetworks() {
-        final List<NetworkData> networksMap = new LinkedList<>();
-        final ObjectNode networks = Bridge.INSTANCE.toJackson(GDK.get_networks());
-        final ArrayNode nodes = (ArrayNode) networks.get("all_networks");
-        final boolean isDebug = BuildConfig.DEBUG;
-        final boolean isProduction = !mIsDevelopmentFlavor;
+        if(cachedNetworks == null) {
+            final List<NetworkData> networksMap = new LinkedList<>();
+            final ObjectNode networks = Bridge.INSTANCE.toJackson(GDK.get_networks());
+            final ArrayNode nodes = (ArrayNode) networks.get("all_networks");
+            final boolean isDebug = BuildConfig.DEBUG;
+            final boolean isProduction = !mIsDevelopmentFlavor;
 
-        for (final JsonNode node : nodes) {
-            final String networkName = node.asText();
-            try {
-                final NetworkData data = mObjectMapper.treeToValue(networks.get(networkName), NetworkData.class);
+            for (final JsonNode node : nodes) {
+                final String networkName = node.asText();
+                try {
+                    final NetworkData data = mObjectMapper.treeToValue(networks.get(networkName), NetworkData.class);
 
-                if(isDebug
-                        || (mIsDevelopmentFlavor && !data.getDevelopment())
-                        || (isProduction && !data.getDevelopment() && !data.isElectrum())){
-                    networksMap.add(data);
+                    if (isDebug
+                            || (mIsDevelopmentFlavor && !data.getDevelopment())
+                            || (isProduction && !data.getDevelopment() && !data.isElectrum())) {
+                        networksMap.add(data);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            Collections.sort(networksMap);
+            cachedNetworks = networksMap;
         }
-        Collections.sort( networksMap);
-        return networksMap;
+        return cachedNetworks;
     }
 
     public GDKTwoFactorCall getReceiveAddress(final int subAccount) throws Exception {
