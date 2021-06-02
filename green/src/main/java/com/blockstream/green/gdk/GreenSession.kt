@@ -232,7 +232,7 @@ class GreenSession constructor(
 
         AuthHandler(
             greenWallet,
-            greenWallet.loginWithMnemonic(gaSession, null, mnemonic, "")
+            greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic))
         ).resolve()
 
         if(network.isElectrum){
@@ -255,7 +255,10 @@ class GreenSession constructor(
         watchOnlyUsernameBridge = username
 
         connect(network)
-        greenWallet.loginWatchOnly(gaSession, username, password)
+        AuthHandler(
+            greenWallet,
+            greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(username = username, password = password))
+        ).resolve()
         isConnected = true
 
         initializeSessionData()
@@ -287,7 +290,7 @@ class GreenSession constructor(
 
         AuthHandler(
             greenWallet,
-            greenWallet.loginWithMnemonic(gaSession, DeviceParams(device), "", "")
+            greenWallet.loginUser(gaSession, deviceParams = DeviceParams(device))
         ).resolve(hardwareWalletResolver = hardwareCodeResolver)
 
         isConnected = true
@@ -305,7 +308,7 @@ class GreenSession constructor(
         connect(network)
         AuthHandler(
             greenWallet,
-            greenWallet.loginWithMnemonic(gaSession, null, mnemonic, password)
+            greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic, password = password))
         ).resolve()
 
         isConnected = true
@@ -336,7 +339,7 @@ class GreenSession constructor(
         connect(networkFromWallet(wallet))
         AuthHandler(
             greenWallet,
-            greenWallet.loginWithPin(gaSession, pin, pinData)
+            greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(pin = pin, pinData = pinData))
         ).resolve()
 
         isConnected = true

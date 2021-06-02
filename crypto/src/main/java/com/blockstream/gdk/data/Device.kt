@@ -14,6 +14,7 @@ data class Device(
 
     @Serializable(with = DeviceLiquidSupportSerializer::class)
     @SerialName("supports_liquid") val supportsLiquid: DeviceLiquidSupport,
+    // ae_protocol_support_level is renamed to supports_ae_protocol in HW device json 0/1
 ): GAJson<Device>() {
 
     val isJade

@@ -270,14 +270,18 @@ public class GDKSession implements HttpRequestHandler {
         return new GDKTwoFactorCall(GDK.create_transaction(mNativeSession, tx));
     }
 
-    public GDKTwoFactorCall createTransactionFromUri(final Activity parent, final String uri, final int subaccount) throws Exception {
+    public GDKTwoFactorCall createTransactionFromUri(final Activity parent, final String uri, final String assetId, final int subaccount) throws Exception {
         final ObjectNode tx = mObjectMapper.createObjectNode();
         tx.put("subaccount", subaccount);
         final ObjectNode address = mObjectMapper.createObjectNode();
         address.put("address", uri);
+        if(assetId != null){
+            address.put("asset_id", assetId);
+        }
         final ArrayNode addressees = mObjectMapper.createArrayNode();
         addressees.add(address);
         tx.set("addressees", addressees);
+
         return createTransactionRaw(parent, tx);
     }
 

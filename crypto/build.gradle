@@ -38,7 +38,7 @@ android {
     }
 }
 
-afterEvaluate{
+afterEvaluate {
     android.libraryVariants.all { variant ->
         def jniLibs = new File('./crypto/src/main/jniLibs')
         if (!jniLibs.exists()) {

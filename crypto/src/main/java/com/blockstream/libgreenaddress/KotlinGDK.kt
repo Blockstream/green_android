@@ -28,6 +28,13 @@ class KotlinGDK {
     fun registerUser(session: GASession, deviceParams: DeviceParams, mnemonic: String): GAAuthHandler =
         GDK.register_user(session, deviceParams, mnemonic)
 
+    fun loginUser(
+        session: GASession,
+        deviceParams: DeviceParams?,
+        loginCredentialsParams: LoginCredentialsParams?
+    ): GAAuthHandler = GDK.login_user(session, deviceParams, loginCredentialsParams)
+
+    @Deprecated("Use GA_login_user", ReplaceWith("GDK.login_user(...)"))
     fun loginWatchOnly(session: GASession, username: String, password: String) =
         GDK.login_watch_only(
             session,
@@ -35,6 +42,7 @@ class KotlinGDK {
             password
         )
 
+    @Deprecated("Use GA_login_user", ReplaceWith("GDK.login_user(...)"))
     fun loginWithMnemonic(
         session: GASession,
         device: DeviceParams?,
@@ -42,6 +50,7 @@ class KotlinGDK {
         password: String
     ): GAAuthHandler = GDK.login(session, device, mnemonic, password)
 
+    @Deprecated("Use GA_login_user", ReplaceWith("GDK.login_user(...)"))
     fun loginWithPin(
         session: GASession,
         pin: String,

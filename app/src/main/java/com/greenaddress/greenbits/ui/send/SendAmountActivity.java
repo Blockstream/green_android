@@ -72,7 +72,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private int mSelectedFee;
     private long mMinFeeRate;
     private Long mVsize;
-    private String mSelectedAsset = getNetwork().getPolicyAsset();
+    private String mSelectedAsset;
     private SubaccountData mSubaccount;
     private boolean isSweep;
 
@@ -92,6 +92,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         Log.d(TAG, "onCreateView -> " + TAG);
         final int[] mBlockTargets = getBlockTargets();
+        mSelectedAsset = getNetwork().getPolicyAsset();
 
         isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
 
@@ -233,7 +234,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             JsonNode assetsMap = tx.get("satoshi");
             final ObjectNode addressee = (ObjectNode) tx.get("addressees").get(0);
             mRecipientText.setText(addressee.get("address").asText());
-            // If addressee doesn't contain asset_tag, we are sending btc
+            // If addressee doesn't contain asset_id, we are sending btc
             final String asset = addressee.has("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
             final long newSatoshi = assetsMap.get(asset).asLong();
             if (newSatoshi > 0) {

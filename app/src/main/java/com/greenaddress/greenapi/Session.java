@@ -1,5 +1,8 @@
 package com.greenaddress.greenapi;
 
+import android.app.Activity;
+
+import com.blockstream.gdk.data.Network;
 import com.blockstream.gdk.data.TwoFactorReset;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -165,6 +168,15 @@ public class Session extends GDKSession implements HttpRequestProvider {
             }
         }
         return null;
+    }
+
+    public GDKTwoFactorCall createTransactionFromUri(final Activity parent, final String uri, final int subaccount) throws Exception {
+        NetworkData network = getNetworkData();
+        String assetId = null;
+        if(network.getLiquid()){
+            assetId = network.getPolicyAsset();
+        }
+        return createTransactionFromUri(parent, uri, assetId,subaccount);
     }
 
     public void setSettings(final SettingsData settings) {

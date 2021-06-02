@@ -315,7 +315,7 @@ public class InputOutputData extends JSONData implements Serializable {
     // Return blinded data as expected by the explorer
     public String getUnblindedString() {
         if (hasUnblindingData()) {
-            // <value_in_satoshi>,<asset_tag_hex>,<amount_blinder_hex>,<asset_blinder_hex>
+            // <value_in_satoshi>,<asset_id_hex>,<amount_blinder_hex>,<asset_blinder_hex>
             return String.format("%d,%s,%s,%s", satoshi, assetId, amountblinder, assetblinder);
         }
         return "";
