@@ -1,6 +1,6 @@
 package com.blockstream.gdk.data
 
 
-enum class DeviceLiquidSupport {
+enum class DeviceSupportsLiquid {
     None, Lite, Full;
 }

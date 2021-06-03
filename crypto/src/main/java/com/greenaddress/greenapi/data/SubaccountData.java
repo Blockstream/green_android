@@ -1,8 +1,6 @@
 package com.greenaddress.greenapi.data;
 
 import com.blockstream.gdk.data.AccountType;
-import com.blockstream.gdk.data.Device;
-import com.blockstream.gdk.data.DeviceLiquidSupport;
 import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)

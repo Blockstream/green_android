@@ -10,7 +10,7 @@ public class HWDeviceDetailData extends JSONData {
     private boolean supportsLowR;
     private boolean supportsArbitraryScripts;
     private HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid;
-    private HWDeviceData.HWDeviceAntiExfilSupport aeProtocolSupportLevel;
+    private HWDeviceData.HWDeviceAntiExfilSupport supportsAeProtocol;
 
     // Ctor for serialisation only
     public HWDeviceDetailData() {
@@ -18,7 +18,7 @@ public class HWDeviceDetailData extends JSONData {
         this.supportsLowR = false;
         this.supportsArbitraryScripts = false;
         this.supportsLiquid = HWDeviceData.HWDeviceDataLiquidSupport.None;
-        this.aeProtocolSupportLevel = HWDeviceData.HWDeviceAntiExfilSupport.None;
+        this.supportsAeProtocol = HWDeviceData.HWDeviceAntiExfilSupport.None;
     }
 
     public HWDeviceDetailData(final String name, final boolean supportsLowR, final boolean supportsArbitraryScripts,
@@ -28,7 +28,7 @@ public class HWDeviceDetailData extends JSONData {
         this.supportsLowR = supportsLowR;
         this.supportsArbitraryScripts = supportsArbitraryScripts;
         this.supportsLiquid = supportsLiquid;
-        this.aeProtocolSupportLevel = aeProtocolSupportLevel;
+        this.supportsAeProtocol = aeProtocolSupportLevel;
     }
 
     public String getName() {
@@ -63,11 +63,11 @@ public class HWDeviceDetailData extends JSONData {
         this.supportsLiquid = supportsLiquid;
     }
 
-    public HWDeviceData.HWDeviceAntiExfilSupport getAeProtocolSupportLevel() {
-        return this.aeProtocolSupportLevel;
+    public HWDeviceData.HWDeviceAntiExfilSupport getSupportsAeProtocol() {
+        return this.supportsAeProtocol;
     }
 
-    public void setAeProtocolSupportLevel(final HWDeviceData.HWDeviceAntiExfilSupport aeProtocolSupportLevel) {
-        this.aeProtocolSupportLevel = aeProtocolSupportLevel;
+    public void setSupportsAeProtocol(final HWDeviceData.HWDeviceAntiExfilSupport supportsAEProtocol) {
+        this.supportsAeProtocol = supportsAEProtocol;
     }
 }

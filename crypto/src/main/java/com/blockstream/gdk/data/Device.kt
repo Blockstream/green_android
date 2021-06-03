@@ -1,7 +1,8 @@
 package com.blockstream.gdk.data
 
 import com.blockstream.gdk.GAJson
-import com.blockstream.gdk.serializers.DeviceLiquidSupportSerializer
+import com.blockstream.gdk.serializers.DeviceSupportsAntiExfilProtocolSerializer
+import com.blockstream.gdk.serializers.DeviceSupportsLiquidSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,9 +13,10 @@ data class Device(
     @SerialName("supports_arbitrary_scripts") val supportsArbitraryScripts: Boolean,
     @SerialName("supports_low_r") val supportsLowR: Boolean,
 
-    @Serializable(with = DeviceLiquidSupportSerializer::class)
-    @SerialName("supports_liquid") val supportsLiquid: DeviceLiquidSupport,
-    // ae_protocol_support_level is renamed to supports_ae_protocol in HW device json 0/1
+    @Serializable(with = DeviceSupportsLiquidSerializer::class)
+    @SerialName("supports_liquid") val supportsLiquid: DeviceSupportsLiquid,
+    @Serializable(with = DeviceSupportsAntiExfilProtocolSerializer::class)
+    @SerialName("supports_ae_protocol") val supportsAntiExfilProtocol: DeviceSupportsAntiExfilProtocol,
 ): GAJson<Device>() {
 
     val isJade
