@@ -21,6 +21,8 @@ class SettingsViewController: UIViewController {
     var isLiquid: Bool { get { return AccountsManager.shared.current?.gdkNetwork?.liquid ?? false } }
     var isHW: Bool { get { return Ledger.shared.connected || Jade.shared.connected } }
 
+    var isSingleSig: Bool { get { return AccountsManager.shared.current?.isSingleSig ?? false }}
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = NSLocalizedString("id_settings", comment: "")
@@ -67,6 +69,8 @@ class SettingsViewController: UIViewController {
             return [.network, .about]
         } else if isResetActive {
             return [.network, .twoFactor, .security, .about]
+        } else if isSingleSig {
+            return [.network, .account, .security, .about]
         }
         return [.network, .account, .twoFactor, .security, .advanced, .about]
     }
@@ -82,7 +86,7 @@ class SettingsViewController: UIViewController {
             subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_disabled" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .network,
             type: .WatchOnly)
-        if isLiquid {
+        if isLiquid || isSingleSig {
             return [setupPin]
         }
         return !isWatchOnly && !isResetActive && !isHW ? [setupPin, watchOnly] : []
