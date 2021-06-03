@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -29,14 +29,14 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletDrawerCell" rowHeight="64" id="RjD-F7-Jtw" customClass="WalletDrawerCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="64"/>
+                                        <rect key="frame" x="0.0" y="24.5" width="414" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="RjD-F7-Jtw" id="QAo-qg-VqM">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S96-UH-SYs">
-                                                    <rect key="frame" x="7" y="7" width="400" height="50"/>
+                                                    <rect key="frame" x="7" y="7" width="400" height="54"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </view>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="nzY-t4-noi">
@@ -44,6 +44,13 @@
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="42" id="7Da-Mu-kj6"/>
                                                         <constraint firstAttribute="height" constant="42" id="ALH-DF-SFS"/>
+                                                    </constraints>
+                                                </imageView>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_keys_invert" translatesAutoresizingMaskIntoConstraints="NO" id="V6Z-ZR-MH6">
+                                                    <rect key="frame" x="42" y="37" width="20" height="20"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="20" id="5xu-zV-m70"/>
+                                                        <constraint firstAttribute="height" constant="20" id="Zs2-CK-B4x"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Bitcoin Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LRs-x1-rId">
@@ -59,22 +66,25 @@
                                                 <constraint firstItem="nzY-t4-noi" firstAttribute="leading" secondItem="QAo-qg-VqM" secondAttribute="leading" constant="16" id="7Pr-Bn-iiJ"/>
                                                 <constraint firstItem="LRs-x1-rId" firstAttribute="leading" secondItem="nzY-t4-noi" secondAttribute="trailing" constant="16" id="9f9-uX-yno"/>
                                                 <constraint firstAttribute="trailing" secondItem="LRs-x1-rId" secondAttribute="trailing" constant="16" id="C8q-JE-egO"/>
+                                                <constraint firstItem="V6Z-ZR-MH6" firstAttribute="centerY" secondItem="nzY-t4-noi" secondAttribute="centerY" constant="15" id="LOr-X6-TRL"/>
                                                 <constraint firstItem="S96-UH-SYs" firstAttribute="leading" secondItem="QAo-qg-VqM" secondAttribute="leading" constant="7" id="NTj-8F-k6f"/>
                                                 <constraint firstAttribute="bottom" secondItem="nzY-t4-noi" secondAttribute="bottom" constant="8" id="PxW-td-GLf"/>
                                                 <constraint firstItem="nzY-t4-noi" firstAttribute="top" secondItem="QAo-qg-VqM" secondAttribute="top" constant="8" id="Rd7-TD-hFZ"/>
                                                 <constraint firstItem="S96-UH-SYs" firstAttribute="top" secondItem="QAo-qg-VqM" secondAttribute="top" constant="7" id="SXS-pg-fXy"/>
+                                                <constraint firstItem="V6Z-ZR-MH6" firstAttribute="centerX" secondItem="nzY-t4-noi" secondAttribute="centerX" constant="15" id="bDs-Iq-xsF"/>
                                                 <constraint firstItem="LRs-x1-rId" firstAttribute="centerY" secondItem="QAo-qg-VqM" secondAttribute="centerY" id="bOi-lv-zQv"/>
-                                                <constraint firstAttribute="bottom" secondItem="S96-UH-SYs" secondAttribute="bottom" constant="7" id="q5C-ls-YnA"/>
+                                                <constraint firstAttribute="bottom" secondItem="S96-UH-SYs" secondAttribute="bottom" constant="3" id="q5C-ls-YnA"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="icon" destination="nzY-t4-noi" id="bdJ-D1-ejd"/>
+                                            <outlet property="iconAccountType" destination="V6Z-ZR-MH6" id="MoB-9y-HU7"/>
                                             <outlet property="lblTitle" destination="LRs-x1-rId" id="S6k-i0-ihZ"/>
                                             <outlet property="selectedView" destination="S96-UH-SYs" id="UDe-re-55c"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletDrawerHDCell" rowHeight="64" id="9hn-T1-Isa" customClass="WalletDrawerHDCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="92" width="414" height="64"/>
+                                        <rect key="frame" x="0.0" y="88.5" width="414" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9hn-T1-Isa" id="mBc-kl-QMb">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
@@ -160,6 +170,7 @@
     </scenes>
     <resources>
         <image name="blockstreamGreen" width="280" height="114.5"/>
+        <image name="ic_keys_invert" width="60" height="60"/>
         <image name="imageView:Kvz-KJ-HfY:image" width="40" height="40">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05T

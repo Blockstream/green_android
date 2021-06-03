@@ -5,6 +5,7 @@ class WalletDrawerCell: UITableViewCell {
     @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var selectedView: UIView!
+    @IBOutlet weak var iconAccountType: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,6 +25,14 @@ class WalletDrawerCell: UITableViewCell {
         self.selectedView.borderWidth = 1.0
         self.selectedView.borderColor = UIColor.customMatrixGreen().withAlphaComponent(0.6)
         self.selectedView.layer.cornerRadius = 4.0
+
+        if item.isSingleSig ?? false {
+            self.iconAccountType.image = UIImage(named: "ic_key")!
+        }
+
+        if item.isWatchonly {
+            self.iconAccountType.image = UIImage(named: "ic_eye")!
+        }
     }
 
 }
