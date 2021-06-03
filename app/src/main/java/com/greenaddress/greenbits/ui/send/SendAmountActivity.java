@@ -235,7 +235,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             final ObjectNode addressee = (ObjectNode) tx.get("addressees").get(0);
             mRecipientText.setText(addressee.get("address").asText());
             // If addressee doesn't contain asset_id, we are sending btc
-            final String asset = addressee.has("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
+            final String asset = addressee.hasNonNull("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
             final long newSatoshi = assetsMap.get(asset).asLong();
             if (newSatoshi > 0) {
                 mAmountText.removeTextChangedListener(mAmountTextWatcher);

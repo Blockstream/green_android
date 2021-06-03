@@ -107,9 +107,9 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
         // Use only 1st addressee
         final JsonNode addressee = mTxJson.withArray("addressees").get(0);
-        final String tag = addressee.has("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
+        final String asset = addressee.hasNonNull("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
         final String address = addressee.get("address").asText();
-        final long amount = mTxJson.get("satoshi").get(tag).asLong(0);
+        final long amount = mTxJson.get("satoshi").get(asset).asLong(0);
         final boolean isSweeping = mTxJson.get("is_sweep").asBoolean();
         UI.hideIf(isSweeping, noteTextTitle);
         UI.hideIf(isSweeping, noteText);
@@ -126,7 +126,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             sendAmount.setVisibility(View.GONE);
             UI.find(this, R.id.amountWordSending).setVisibility(View.GONE);
             final Map<String, Long> balances = new HashMap<>();
-            balances.put(tag, amount);
+            balances.put(asset, amount);
             final RecyclerView assetsList = findViewById(R.id.assetsList);
             assetsList.setLayoutManager(new LinearLayoutManager(this));
             final AssetsAdapter adapter = new AssetsAdapter(this, balances, getNetwork(), null);
