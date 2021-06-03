@@ -17,10 +17,6 @@ struct Account: Codable, Equatable {
     var gdkNetwork: GdkNetwork? {
         mutating get {
             if gdkNetwork_ == nil || gdkNetwork_?.network != network {
-
-                //
-                // network or check isSingleSig and prepend electrum- ????
-                //
                 gdkNetwork_ = getGdkNetwork(network)
             }
             return gdkNetwork_
