@@ -45,7 +45,7 @@ afterEvaluate{
             preBuild.dependsOn fetchGdk
         }
 
-        def assetsJson = new File('./crypto/src/main/res/assets.json')
+        def assetsJson = new File('./crypto/src/main/res/raw/assets.json')
         if (!assetsJson.exists()) {
             preBuild.dependsOn fetchAssets
         }
