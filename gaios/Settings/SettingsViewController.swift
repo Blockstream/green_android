@@ -107,9 +107,8 @@ class SettingsViewController: UIViewController {
             type: .ReferenceExchangeRate)
         if isWatchOnly && isResetActive {
             return []
-        } else if isLiquid {
-            return [bitcoinDenomination]
         }
+
         return [bitcoinDenomination, referenceExchangeRate]
     }
 
