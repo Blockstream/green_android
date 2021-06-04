@@ -453,8 +453,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe((transactionRaw) -> {
             removeUtxosIfTooBig(transactionRaw);
-            final boolean showAssets = !transactionRaw.get("addressees").get(0).hasNonNull("asset_id");
-            if (networkData.getLiquid() && showAssets)
+            if (networkData.getLiquid())
                 result.setClass(this, AssetsSelectActivity.class);
             else
                 result.setClass(this, SendAmountActivity.class);
