@@ -446,7 +446,10 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             if (!transactionRaw.has("addressees"))
                 throw new Exception("Missing field addressees");
             final String error = transactionRaw.get("error").asText();
-            if (!error.isEmpty() && !"id_invalid_amount".equals(error))
+            //  Missing amounts in addressees will now generate the error `id_no_amount_specified`.
+            //  Previously under certain circumstances this would return `id_invalid_amount`.
+            //  The latter error will still be returned if the amount field is present but malformed/invalid.
+            if (!error.isEmpty() && !"id_invalid_amount".equals(error) && !"id_no_amount_specified".equals(error))
                 throw new Exception(error);
             return transactionRaw;
         })
