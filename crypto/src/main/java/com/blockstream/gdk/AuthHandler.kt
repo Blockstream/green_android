@@ -78,7 +78,7 @@ class AuthHandler(
 
                     }
                     RESOLVE_CODE -> {
-                        if(twoFactorStatus.device == null){
+                        if(twoFactorStatus.device == null || twoFactorStatus.requiredData == null){
                             twoFactorResolver?.also {
                                 try {
                                     resolveCode(it.getCode(twoFactorStatus.method).blockingGet())
