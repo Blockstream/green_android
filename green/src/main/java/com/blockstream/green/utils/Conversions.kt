@@ -7,7 +7,7 @@ import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.GreenSession
 import java.text.DateFormat
 import java.text.DecimalFormat
-import java.text.NumberFormat
+import java.text.DecimalFormatSymbols
 import java.util.*
 
 fun getFiatCurrency(session: GreenSession): String{
@@ -45,6 +45,10 @@ fun getNumberFormat(decimals: Int,
     maximumFractionDigits = decimals
     isDecimalSeparatorAlwaysShown = withDecimalSeparator
     isGroupingUsed = withGrouping
+    decimalFormatSymbols = DecimalFormatSymbols(Locale.getDefault()).also {
+        it.decimalSeparator = '.'
+        it.groupingSeparator = ',' // unused
+    }
 }
 
 fun Long.feeRateWithUnit(): String {

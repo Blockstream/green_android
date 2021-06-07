@@ -35,7 +35,8 @@ data class UserInput(val amount: String, val decimals: Int, val unitKey: String,
                 numberFormat = getNumberFormat(getDecimals(unitKey), withDecimalSeparator = false)
             }
 
-            val parsed = numberFormat.parse(if(input.isNullOrBlank()) "0" else input)
+            // As a precaution replace ',' with '.'
+            val parsed = numberFormat.parse(if(input.isNullOrBlank()) "0" else input.replace(',', '.'))
             return UserInput(numberFormat.format(parsed), numberFormat.minimumFractionDigits, unitKey , isFiat)
         }
     }
