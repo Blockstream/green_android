@@ -16,8 +16,10 @@ _EOF_
 }
 
 # ----- Vars
-URL_ASSETS="https://assets.blockstream.info"
-URL_ICONS="https://assets.blockstream.info/icons"
+SHA256="40cc3b8bb9b0276e655e93626eff47860a9d92c8"
+
+URL_ASSETS="https://raw.githubusercontent.com/Blockstream/asset_registry_db/${SHA256}/index.json"
+URL_ICONS="https://raw.githubusercontent.com/Blockstream/asset_registry_db/${SHA256}/icons.json"
 
 RES_DIR="src/main/res"
 RAW_DIR="${RES_DIR}/raw"
@@ -59,11 +61,11 @@ check_command base64
 # --- Execution
 
 # Save assets.json
-printf "Fetching asset JSON...\n"
+printf "Fetching asset JSON (${SHA256})...\n"
 curl -sL $URL_ASSETS --create-dirs -o "${FILE_ASSETS_JSON}"
 
 # Fetch icons json
-printf "Fetching icons JSON...\n"
+printf "Fetching icons JSON (${SHA256})...\n"
 ICONS_JSON=$(curl -sL $URL_ICONS)
 
 jq -c -r 'keys | .[]' <<< "$ICONS_JSON" | while read id; do

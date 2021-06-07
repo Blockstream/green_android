@@ -17,6 +17,7 @@ _EOF_
 
 # ----- Vars
 GRADLE_BUILD_FILE='green/build.gradle'
+FETCH_ASSETS_FILE='crypto/fetch_assets.sh'
 
 # --- Argument handling
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
@@ -56,6 +57,10 @@ check_command sed
 
 
 # --- Execution
+printf "\nUpdate asset_registry_db SHA256 to latest master...\n"
+SHA256=$(curl -s https://api.github.com/repos/blockstream/asset_registry_db/branches/master | jq -r .commit.sha)
+sed -i '' -e "s/SHA256=.*/SHA256=\"${SHA256}\"/" $FETCH_ASSETS_FILE
+
 printf "\nUpdating versionCode & VersionName...\n\n"
 
 currentVersionCode=`awk '/ versionCode / {print $2}' $GRADLE_BUILD_FILE`
@@ -68,5 +73,5 @@ printf "* versionCode: \t${newVersionCode}\n"
 printf "* versionName: \t${VERSION_NAME}\n"
 
 printf "\nCreating git commit...\n"
-git add $GRADLE_BUILD_FILE
+git add $GRADLE_BUILD_FILE $FETCH_ASSETS_FILE
 git commit -m "Increment to version ${VERSION_NAME}"
