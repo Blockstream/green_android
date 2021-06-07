@@ -11,7 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.DialogFragment
 import com.blockstream.green.R
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -22,7 +22,7 @@ abstract class WalletBottomSheetDialogFragment<T : ViewDataBinding>(
 ) : BottomSheetDialogFragment() {
     internal lateinit var binding: T
 
-    internal val viewModel : WalletViewModel by lazy {
+    internal val viewModel : AbstractWalletViewModel by lazy {
         (requireParentFragment() as WalletFragment<*>).getWalletViewModel()!!
     }
 

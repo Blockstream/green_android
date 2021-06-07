@@ -24,7 +24,7 @@ class AddAccountViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     @Assisted wallet: Wallet,
     @Assisted val accountType: AccountType
-) : WalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
 
     val isEnabled = MutableLiveData(false)
 

@@ -20,6 +20,7 @@ import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ReceiveFragmentBinding
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.*
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
@@ -48,7 +49,7 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         )
     }
 
-    override fun getWalletViewModel(): WalletViewModel = viewModel
+    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 
     private val onBackCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {

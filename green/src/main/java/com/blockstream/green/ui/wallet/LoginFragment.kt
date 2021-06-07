@@ -156,7 +156,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
         viewModel.onEvent.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { event ->
-                if (event == WalletViewModel.Event.DELETE_WALLET) {
+                if (event == AbstractWalletViewModel.Event.DELETE_WALLET) {
                     findNavController().popBackStack()
                 }
             }

@@ -55,5 +55,5 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
         }
     }
 
-    override fun getWalletViewModel(): WalletViewModel = viewModel
+    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 }

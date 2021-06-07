@@ -28,7 +28,7 @@ class LoginViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     @Assisted wallet: Wallet
-) : WalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
 
     val onErrorMessage = MutableLiveData<ConsumableEvent<Throwable>>()
 

@@ -7,7 +7,7 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoverySetupWordsFragmentBinding
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -68,5 +68,5 @@ class RecoveryWordsFragment : WalletFragment<RecoverySetupWordsFragmentBinding>(
         setSecureScreen(true)
     }
 
-    override fun getWalletViewModel(): WalletViewModel? = null
+    override fun getWalletViewModel(): AbstractWalletViewModel? = null
 }

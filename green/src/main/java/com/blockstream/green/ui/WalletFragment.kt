@@ -9,10 +9,14 @@ import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.GreenSession
+import com.blockstream.green.gdk.observable
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
 import com.greenaddress.Bridge
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import mu.KLogging
 
 abstract class WalletFragment<T : ViewDataBinding> constructor(
@@ -42,17 +46,22 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
         getWalletViewModel()?.let{
 
+            it.onNavigationEvent.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandledOrReturnNull()?.let {
+                    if(Bridge.useGreenModule){
+                        NavGraphDirections.actionGlobalLoginFragment(wallet).let {
+                            navigate(it.actionId, it.arguments, isLogout = true)
+                        }
+                    }else{
+                        Bridge.navigateToLogin(requireActivity(), wallet.id)
+                    }
+                }
+            }
+
             it.onDeviceInteractionEvent.observe(viewLifecycleOwner) {  event ->
                 event.getContentIfNotHandledOrReturnNull()?.let {
                     // KISS: It's not what v3 had done in the past, but it's simpler
                     snackbar(R.string.id_please_follow_the_instructions, Snackbar.LENGTH_LONG)
-                }
-            }
-
-            it.onNetworkEvent.observe(viewLifecycleOwner) { event ->
-                if(event.loginRequired == true){
-                    logger().info { "Logout from network event " }
-                    logout()
                 }
             }
 
@@ -93,7 +102,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     open fun isLoggedInRequired(): Boolean = true
     open fun isSessionRequired(): Boolean = true
 
-    abstract fun getWalletViewModel(): WalletViewModel?
+    abstract fun getWalletViewModel(): AbstractWalletViewModel?
 
     override fun onResume() {
         super.onResume()
@@ -103,19 +112,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
         if(!isSessionRequired()) return
 
         if (isLoggedInRequired() && !session.isConnected) {
-            logout()
-        }
-    }
-
-
-    fun logout(){
-        if(Bridge.useGreenModule){
-            session.disconnectAsync()
-            NavGraphDirections.actionGlobalLoginFragment(wallet).let {
-                navigate(it.actionId, it.arguments, isLogout = true)
-            }
-        }else{
-            Bridge.navigateToLogin(requireActivity(), wallet.id)
+            getWalletViewModel()?.logout()
         }
     }
 

@@ -16,7 +16,7 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
@@ -34,7 +34,7 @@ class WalletSettingsViewModel @AssistedInject constructor(
     val appKeystore: AppKeystore,
     val greenWallet: GreenWallet,
     @Assisted wallet: Wallet
-) : WalletViewModel(sessionManager, walletRepository, wallet) {
+) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
 
     val onErrorStringRes = MutableLiveData<ConsumableEvent<Int>>()
 

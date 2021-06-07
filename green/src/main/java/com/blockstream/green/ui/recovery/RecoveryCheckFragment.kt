@@ -9,7 +9,7 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryCheckFragmentBinding
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.snackbar
 import com.greenaddress.Bridge
@@ -99,5 +99,5 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
         setSecureScreen(true)
     }
 
-    override fun getWalletViewModel(): WalletViewModel? = null
+    override fun getWalletViewModel(): AbstractWalletViewModel? = null
 }

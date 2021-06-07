@@ -22,7 +22,7 @@ import com.blockstream.green.filters.NumberValueFilter
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -296,7 +296,7 @@ class WalletSettingsFragment :
         FastAdapterDiffUtil.set(itemAdapter, list, false)
     }
 
-    override fun getWalletViewModel(): WalletViewModel = viewModel
+    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 
     override fun onResume() {
         super.onResume()

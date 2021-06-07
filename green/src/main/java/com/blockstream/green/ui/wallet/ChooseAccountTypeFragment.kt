@@ -2,6 +2,7 @@ package com.blockstream.green.ui.wallet
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.AccountType
@@ -13,6 +14,7 @@ import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBinding>(
@@ -20,6 +22,12 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
 ) {
     val args: ChooseAccountTypeFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
+
+    @Inject
+    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
+    val viewModel: WalletViewModel by viewModels {
+        WalletViewModel.provideFactory(viewModelFactory, wallet)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,5 +71,5 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
         return adapter
     }
 
-    override fun getWalletViewModel(): WalletViewModel? = null
+    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 }

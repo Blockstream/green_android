@@ -11,7 +11,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.createQrBitmap
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
@@ -24,7 +24,7 @@ class ReceiveViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     @Assisted wallet: Wallet,
-) : WalletViewModel(sessionManager, walletRepository, wallet){
+) : AbstractWalletViewModel(sessionManager, walletRepository, wallet){
     var address = MutableLiveData<Address>()
     var addressUri = MutableLiveData<String>()
 

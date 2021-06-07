@@ -13,7 +13,7 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.handleBiometricsError
 import com.greenaddress.Bridge
@@ -143,5 +143,5 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         }
     }
 
-    override fun getWalletViewModel(): WalletViewModel? = null
+    override fun getWalletViewModel(): AbstractWalletViewModel? = null
 }

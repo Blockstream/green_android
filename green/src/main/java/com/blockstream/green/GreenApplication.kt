@@ -290,7 +290,12 @@ class GreenApplication : Application(){
 
         Bridge.loginWithDeviceFn = { _, gaSession, networkId, connectSession, hwWallet, hardwareDataResolver ->
             sessionManager.getWalletSession(gaSession)?.let {
-                it.loginWithDevice(it.networks.getNetworkById(networkId), connectSession, hwWallet, hardwareDataResolver)
+                it.loginWithDevice(it.networks.getNetworkById(networkId),
+                    registerUser = true,
+                    connectSession = connectSession,
+                    hwWallet = hwWallet,
+                    hardwareCodeResolver = hardwareDataResolver
+                )
             }
         }
 

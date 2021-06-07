@@ -9,7 +9,7 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChangePinFragmentBinding
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.snackbar
 import com.blockstream.green.views.GreenPinViewListener
@@ -28,7 +28,7 @@ class ChangePinFragment : WalletFragment<ChangePinFragmentBinding>(R.layout.chan
         WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
     }
 
-    override fun getWalletViewModel(): WalletViewModel = viewModel
+    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

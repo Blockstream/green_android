@@ -263,9 +263,10 @@ class GreenSession constructor(
 
     fun loginWithDevice(
         network: Network,
+        registerUser: Boolean,
         connectSession: Boolean,
         hwWallet: HWWallet,
-        hardwareDataResolver: HardwareCodeResolver
+        hardwareCodeResolver: HardwareCodeResolver
     ) {
         isWatchOnly = false
 
@@ -277,15 +278,17 @@ class GreenSession constructor(
 
         val device = hwWallet.hwDeviceData.toDevice()
 
-        AuthHandler(
-            greenWallet,
-            greenWallet.registerUser(gaSession, DeviceParams(device), "")
-        ).resolve(hardwareWalletResolver = hardwareDataResolver)
+        if(registerUser) {
+            AuthHandler(
+                greenWallet,
+                greenWallet.registerUser(gaSession, DeviceParams(device), "")
+            ).resolve(hardwareWalletResolver = hardwareCodeResolver)
+        }
 
         AuthHandler(
             greenWallet,
             greenWallet.loginWithMnemonic(gaSession, DeviceParams(device), "", "")
-        ).resolve(hardwareWalletResolver = hardwareDataResolver)
+        ).resolve(hardwareWalletResolver = hardwareCodeResolver)
 
         isConnected = true
 
