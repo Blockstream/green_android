@@ -37,7 +37,17 @@ fun getDecimals(unit: String): Int {
     }
 }
 
-fun getNumberFormat(decimals: Int,
+fun gdkNumberFormat(decimals: Int) = (DecimalFormat.getInstance(Locale.US) as DecimalFormat).apply {
+    minimumFractionDigits = 0
+    maximumFractionDigits = decimals
+    isGroupingUsed = false
+    decimalFormatSymbols = DecimalFormatSymbols(Locale.US).also {
+        it.decimalSeparator = '.'
+        it.groupingSeparator = ',' // Unused
+    }
+}
+
+fun userNumberFormat(decimals: Int,
                     withDecimalSeparator: Boolean,
                     withGrouping: Boolean = false,
                     locale: Locale = Locale.getDefault()) = (DecimalFormat.getInstance(locale) as DecimalFormat).apply {
@@ -45,36 +55,21 @@ fun getNumberFormat(decimals: Int,
     maximumFractionDigits = decimals
     isDecimalSeparatorAlwaysShown = withDecimalSeparator
     isGroupingUsed = withGrouping
-    decimalFormatSymbols = DecimalFormatSymbols(Locale.getDefault()).also {
-        it.decimalSeparator = '.'
-        it.groupingSeparator = ',' // unused
-    }
 }
 
 fun Long.feeRateWithUnit(): String {
     val feePerByte = this / 1000.0
-    return getNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(feePerByte) + " satoshi / vbyte"
+    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(feePerByte) + " satoshi / vbyte"
 }
 
 fun Double.feeRateWithUnit(): String {
-    return getNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(this) + " satoshi / vbyte"
-}
-
-fun CharSequence.parse(decimals: Int = 2): Number? = this.toString().parse(decimals)
-
-fun String.parse(decimals: Int = 2): Number? {
-    return try {
-        getNumberFormat(decimals = decimals, withDecimalSeparator = true, withGrouping = false).parse(this)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
+    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(this) + " satoshi / vbyte"
 }
 
 fun Balance.fiat(withUnit: Boolean = true): String {
     return try {
         val value = fiat.toDouble()
-        getNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(value)
+        userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(value)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " $fiatCurrency" else ""
@@ -87,8 +82,7 @@ fun Balance.btc(session: GreenSession, withUnit: Boolean = true): String {
 private fun Balance.btc(unit: String, withUnit: Boolean = true): String {
     return try {
         val value = getValue(unit).toDouble()
-        getNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = false).format(value)
-
+        userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = false).format(value)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " ${unit}" else ""
@@ -96,7 +90,7 @@ private fun Balance.btc(unit: String, withUnit: Boolean = true): String {
 
 fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
     return try {
-        getNumberFormat(decimals = getDecimals(settings.unit), withDecimalSeparator = false, withGrouping = false).format(this)
+        userNumberFormat(decimals = getDecimals(settings.unit), withDecimalSeparator = false, withGrouping = false).format(this)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " ${settings.unit}" else ""
@@ -104,7 +98,7 @@ fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
 
 fun Balance.asset(withUnit: Boolean = true): String {
     return try {
-        getNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = false).format(assetValue?.toDouble() ?: satoshi)
+        userNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = false).format(assetValue?.toDouble() ?: satoshi)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""

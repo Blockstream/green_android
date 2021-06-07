@@ -50,6 +50,8 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
             }
         }
 
+        AmountTextWatcher.watch(binding.amountEditText)
+
         binding.buttonOK.setOnClickListener {
             var amount : String? = null
 
@@ -111,7 +113,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
     private fun updateCurrency(){
         (if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)).let {
-            binding.amountTextView.helperText = getString(R.string.id_amount_in_, it)
+            binding.amountTextInputLayout.helperText = getString(R.string.id_amount_in_, it)
             binding.symbol = it
         }
     }

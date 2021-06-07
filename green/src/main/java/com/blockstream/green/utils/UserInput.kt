@@ -25,19 +25,23 @@ data class UserInput(val amount: String, val decimals: Int, val unitKey: String,
         @Throws
         fun parseUserInput(session: GreenSession, input: String?, isFiat: Boolean = false): UserInput {
             val unitKey : String
-            val numberFormat : DecimalFormat
+            // Users Locale
+            val userNumberFormat : DecimalFormat
+            // GDK format
+            val gdkNumberFormat : DecimalFormat
 
             if(isFiat){
                 unitKey = getFiatCurrency(session)
-                numberFormat = getNumberFormat(decimals = 2, withDecimalSeparator = true)
+                userNumberFormat = userNumberFormat(decimals = 2, withDecimalSeparator = true)
+                gdkNumberFormat = gdkNumberFormat(decimals = 2)
             }else{
                 unitKey = getUnit(session)
-                numberFormat = getNumberFormat(getDecimals(unitKey), withDecimalSeparator = false)
+                userNumberFormat = userNumberFormat(getDecimals(unitKey), withDecimalSeparator = false)
+                gdkNumberFormat = gdkNumberFormat(getDecimals(unitKey))
             }
 
-            // As a precaution replace ',' with '.'
-            val parsed = numberFormat.parse(if(input.isNullOrBlank()) "0" else input.replace(',', '.'))
-            return UserInput(numberFormat.format(parsed), numberFormat.minimumFractionDigits, unitKey , isFiat)
+            val parsed = userNumberFormat.parse(if(input.isNullOrBlank()) "0" else input)
+            return UserInput(gdkNumberFormat.format(parsed), gdkNumberFormat.minimumFractionDigits, unitKey , isFiat)
         }
     }
 }
