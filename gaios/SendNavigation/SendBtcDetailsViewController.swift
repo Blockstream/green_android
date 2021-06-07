@@ -327,7 +327,6 @@ class SendBtcDetailsViewController: UIViewController {
             alert?.dismiss(animated: true, completion: nil)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { [weak alert] (_) in
-            let settings = Settings.shared!
             guard var amountText = alert!.textFields![0].text else { return }
             amountText = amountText.isEmpty ? "0" : amountText
             amountText = amountText.unlocaleFormattedString(8)
@@ -340,8 +339,6 @@ class SendBtcDetailsViewController: UIViewController {
             }
             self.selectedFee = self.content.feeRateButtons.count - 1
             self.feeEstimates[self.content.feeRateButtons.count - 1] = feeRate
-            settings.customFeeRate = feeRate
-            self.changeSettings(settings)
             self.updateFeeButtons()
             self.updateTransaction()
         })
@@ -366,28 +363,9 @@ class SendBtcDetailsViewController: UIViewController {
         default:
             break
         }
-        changeSettings(settings)
         updateFeeButtons()
         updateTransaction()
         dismissKeyboard(nil)
-    }
-
-    func changeSettings(_ settings: Settings) {
-        let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-        let session = getGAService().getSession()
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map {_ in
-            self.startAnimating()
-        }.compactMap(on: bgq) { _ in
-            try session.changeSettings(details: details!)
-        }.then(on: bgq) { call in
-            call.resolve()
-        }.ensure {
-            self.stopAnimating()
-        }.done { _ in
-        }.catch { error in
-            self.showAlert(error)
-        }
     }
 
     func showAlert(_ error: Error) {
