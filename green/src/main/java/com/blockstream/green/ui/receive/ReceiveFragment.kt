@@ -65,6 +65,8 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isFinishingGuard) return
+
         binding.vm = viewModel
 
         binding.address.setOnClickListener {

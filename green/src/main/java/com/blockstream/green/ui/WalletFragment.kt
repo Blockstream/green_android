@@ -29,18 +29,25 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
     private var networkSnackbar: Snackbar? = null
 
+    // Protect the fragment/vm to continue initializing when fragment is finishing
+    protected var isFinishingGuard: Boolean = false
+        private set
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Recovery screens are reused in onboarding
-        // where we don't have a session yet.
-        if(!isSessionRequired()) return
+        // Recovery screens are reused in onBoarding
+        // where we don't have a session yet. Skip initializing the WalletViewModel as it doesn't exists
+        if(!isSessionRequired()) {
+            return
+        }
 
         session = sessionManager.getWalletSession(wallet)
 
         // Assuming we are in v4 codebase flow
         if (isLoggedInRequired() && !session.isConnected) {
             navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
+            isFinishingGuard = true
             return
         }
 

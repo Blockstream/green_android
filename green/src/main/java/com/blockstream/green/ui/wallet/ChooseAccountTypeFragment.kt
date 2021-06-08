@@ -32,6 +32,8 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isFinishingGuard) return
+
         val fastItemAdapter = createAdapter()
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
