@@ -8,7 +8,7 @@ class SendBtcDetailsViewController: UIViewController {
 
     var wallet: WalletItem?
     var transaction: Transaction!
-    var assetTag: String = "btc"
+    var assetId: String = "btc"
 
     private var feeLabel: UILabel = UILabel()
     private var uiErrorLabel: UIErrorLabel!
@@ -20,7 +20,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     private var asset: AssetInfo? {
-        return Registry.shared.infos[assetTag] ?? AssetInfo(assetId: assetTag, name: assetTag, precision: 0, ticker: "")
+        return Registry.shared.infos[assetId] ?? AssetInfo(assetId: assetId, name: assetId, precision: 0, ticker: "")
     }
 
     private var oldFeeRate: UInt64? {
@@ -117,10 +117,10 @@ class SendBtcDetailsViewController: UIViewController {
         if isLiquid {
             content.assetIconImageView.image = Registry.shared.image(for: asset?.assetId)
         }
-        content.assetNameLabel.text = assetTag == btc ? "Liquid Bitcoin" : asset?.name
+        content.assetNameLabel.text = assetId == btc ? "Liquid Bitcoin" : asset?.name
         content.domainNameLabel.text = asset?.entity?.domain ?? ""
         content.domainNameLabel.isHidden = asset?.entity?.domain.isEmpty ?? true
-        content.currencySwitch.isHidden = assetTag != btc
+        content.currencySwitch.isHidden = assetId != btc
         content.amountTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         content.reviewButton.addTarget(self, action: #selector(reviewButtonClick(_:)), for: .touchUpInside)
         content.sendAllFundsButton.addTarget(self, action: #selector(sendAllFundsButtonClick(_:)), for: .touchUpInside)
@@ -163,8 +163,8 @@ class SendBtcDetailsViewController: UIViewController {
         }
         guard transaction.amounts.count >= 1 else { return }
         let satoshi = transaction.addressees.first?.satoshi
-        let details = btc != assetTag ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
-        let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetTag) ?? ("", "")
+        let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
+        let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetId) ?? ("", "")
         content.amountTextField.text = amount
     }
 
@@ -179,10 +179,10 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func reloadWalletBalance() {
-        let satoshi = wallet!.satoshi[assetTag]!
-        let details = btc != assetTag ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
+        let satoshi = wallet!.satoshi[assetId]!
+        let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
         if let balance = Balance.convert(details: details) {
-            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : assetTag)
+            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : assetId)
             content.maxAmountLabel.text =  "\(amount ?? "N.A.") \(denom)"
         }
     }
@@ -227,9 +227,9 @@ class SendBtcDetailsViewController: UIViewController {
         amountText = amountText.isEmpty ? "0" : amountText
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
-        let isBtc = assetTag == btc
+        let isBtc = assetId == btc
         let denominationBtc = Settings.shared!.denomination.rawValue
-        let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetTag)
+        let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetId)
         let details: [String: Any]
         if isBtc {
             details = [key: amountText]
@@ -247,7 +247,7 @@ class SendBtcDetailsViewController: UIViewController {
         if !transaction.addresseesReadOnly {
             let satoshi = self.getSatoshi() ?? 0
             let address = content.addressLabel.text!
-            let addressee = Addressee(address: address, satoshi: satoshi, assetTag: assetTag)
+            let addressee = Addressee(address: address, satoshi: satoshi, assetId: assetId)
             transaction.addressees = [addressee]
         }
         txTask?.cancel()

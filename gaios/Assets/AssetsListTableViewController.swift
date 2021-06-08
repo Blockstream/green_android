@@ -76,7 +76,7 @@ class AssetsListTableViewController: UITableViewController {
             next.satoshi = wallet?.satoshi[next.tag]
         } else if let next = segue.destination as? SendBtcDetailsViewController {
             next.wallet = wallet
-            next.assetTag = sender as? String ?? "btc"
+            next.assetId = sender as? String ?? "btc"
             next.transaction = transaction
         }
     }

@@ -9,6 +9,9 @@ class SendBtcViewController: KeyboardViewController {
     var transaction: Transaction?
     var isSweep: Bool = false
     private var isLiquid: Bool!
+    private var btc: String {
+        return getGdkNetwork(getNetwork()).getFeeAsset()
+    }
 
     @IBOutlet weak var textView: UITextView!
     var placeholderLabel = UILabel()
@@ -96,7 +99,7 @@ class SendBtcViewController: KeyboardViewController {
         if let next = segue.destination as? SendBtcDetailsViewController {
             next.wallet = wallet
             next.transaction = sender as? Transaction
-            next.assetTag = next.transaction?.addressees.first?.assetTag ?? "btc"
+            next.assetId = next.transaction?.addressees.first?.assetId ?? "btc"
         } else if let next = segue.destination as? AssetsListTableViewController {
             next.isSend = true
             next.wallet = wallet
@@ -114,6 +117,7 @@ class SendBtcViewController: KeyboardViewController {
             if self.isSweep {
                 return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount]
             } else {
+                // user input can be a bitcoin or liquid uri as well as an address
                 return ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount]
             }
         }.compactMap(on: bgq) { data in
@@ -124,7 +128,7 @@ class SendBtcViewController: KeyboardViewController {
             let result = data["result"] as? [String: Any]
             return Transaction(result ?? [:])
         }.done { tx in
-            if !tx.error.isEmpty && tx.error != "id_invalid_amount" {
+            if !tx.error.isEmpty && tx.error != "id_invalid_amount" && tx.error != "Invalid AssetID" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
             let haveAssets = tx.details["addressees_have_assets"] as? Bool

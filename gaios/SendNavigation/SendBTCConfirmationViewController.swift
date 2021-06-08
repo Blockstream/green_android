@@ -82,7 +82,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         content.toLabel.text = addressee.address
         let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
         if isLiquid {
-            let tag = addressee.assetTag ?? "btc"
+            let tag = addressee.assetId ?? "btc"
             let info = Registry.shared.infos[tag]
             let icon = Registry.shared.image(for: tag)
             content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: addressee.satoshi ?? 0, negative: false, isTransaction: false, sendAll: transaction.sendAll)

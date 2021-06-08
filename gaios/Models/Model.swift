@@ -18,17 +18,17 @@ struct Addressee: Codable {
     enum CodingKeys: String, CodingKey {
         case address
         case satoshi
-        case assetTag = "asset_tag"
+        case assetId = "asset_id"
     }
 
     let address: String
     let satoshi: UInt64
-    let assetTag: String?
+    let assetId: String?
 
-    init(address: String, satoshi: UInt64, assetTag: String? = nil) {
+    init(address: String, satoshi: UInt64, assetId: String? = nil) {
         self.address = address
         self.satoshi = satoshi
-        self.assetTag = assetTag
+        self.assetId = assetId
     }
 }
 
@@ -49,8 +49,8 @@ struct Transaction {
             return out.map { value in
                 let address = value["address"] as? String
                 let satoshi = value["satoshi"] as? UInt64
-                let assetTag = value["asset_tag"] as? String
-                return Addressee(address: address!, satoshi: satoshi!, assetTag: assetTag)
+                let assetId = value["asset_id"] as? String
+                return Addressee(address: address!, satoshi: satoshi ?? 0, assetId: assetId)
             }
         }
         set {
@@ -58,7 +58,7 @@ struct Transaction {
                 var out = [String: Any]()
                 out["address"] = addr.address
                 out["satoshi"] = addr.satoshi
-                out["asset_tag"] = addr.assetTag
+                out["asset_id"] = addr.assetId
                 return out
             }
             details["addressees"] = addressees
