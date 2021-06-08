@@ -42,7 +42,9 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         getSubaccounts().map(on: bgq) { wallets in
             self.wallets = wallets
             let dataTwoFactorConfig = try getSession().getTwoFactorConfig()
-            self.twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+            if dataTwoFactorConfig != nil {
+                self.twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
+            }
         }.done {
             self.tableView.reloadData()
         }.catch {_ in }
