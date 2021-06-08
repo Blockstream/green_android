@@ -10,6 +10,7 @@ class AccountCardView: UICollectionViewCell {
     @IBOutlet weak var unit: UILabel!
     var bgView: UIView?
     var layerGradient: CAGradientLayer?
+    @IBOutlet weak var legacyLbl: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()

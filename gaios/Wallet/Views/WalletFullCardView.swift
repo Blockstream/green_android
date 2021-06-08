@@ -5,6 +5,7 @@ class WalletFullCardView: UIView {
 
     @IBOutlet weak var shadowView: UIView!
     @IBOutlet weak var walletName: UILabel!
+    @IBOutlet weak var legacyLbl: UILabel!
     @IBOutlet weak var balance: UILabel!
     @IBOutlet weak var balanceFiat: UILabel!
     @IBOutlet weak var sendView: UIView!
@@ -77,5 +78,8 @@ class WalletFullCardView: UIView {
             sendView.isHidden = true
             sweepView.isHidden = false
         }
+
+        // to define
+        legacyLbl.text = "Legacy/SegWit"
     }
 }

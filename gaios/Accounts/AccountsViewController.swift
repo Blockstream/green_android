@@ -86,6 +86,9 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             }
             cell.walletName.text = wallet.localizedName()
             cell.networkImage.image = UIImage(named: network?.icon ?? "")
+
+            // to define
+            cell.legacyLbl.text = "Legacy/SegWit"
             return cell
         }
     }
