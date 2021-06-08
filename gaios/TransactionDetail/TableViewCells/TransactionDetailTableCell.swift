@@ -7,6 +7,10 @@ class TransactionDetailTableCell: UITableViewCell {
     @IBOutlet weak var titleLabelHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var notesImageView: UIImageView!
 
+    private var btc: String {
+        return getGdkNetwork(getNetwork()).getFeeAsset()
+    }
+
     override func prepareForReuse() {
         titleLabel.text = ""
         detailLabel.text = ""
@@ -18,13 +22,13 @@ class TransactionDetailTableCell: UITableViewCell {
         case .fee:
             titleLabel.text = NSLocalizedString("id_fee", comment: "")
             if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
-                let (amount, denom) = balance.get(tag: "btc")
+                let (amount, denom) = balance.get(tag: btc)
                 detailLabel.text = "\(amount ?? "") \(denom) \(String(format: "( %.2f sat / vbyte )", Double(transaction.feeRate) / 1000))"
             }
         case .amount:
             titleLabel.text = NSLocalizedString("id_amount", comment: "")
             if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
-                let (amount, denom) = balance.get(tag: "btc")
+                let (amount, denom) = balance.get(tag: btc)
                 detailLabel.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", amount ?? "", denom)
             }
         case .notes:

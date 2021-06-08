@@ -26,6 +26,11 @@ struct GdkNetwork: Codable, Equatable {
     var policyAsset: String?
     var serverType: String?
     var csvBuckets: [Int]?
+
+    /// Get the asset used to pay transaction fees
+    func getFeeAsset() -> String {
+        return self.liquid ? self.policyAsset ?? "" : "btc"
+    }
 }
 
 func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {

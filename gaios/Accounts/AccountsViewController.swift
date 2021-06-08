@@ -18,6 +18,9 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
     private let footerId = "footer"
 
     private let network = AccountsManager.shared.current?.gdkNetwork
+    private var btc: String {
+        return getGdkNetwork(getNetwork()).getFeeAsset()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +84,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             let wallet = wallets[indexPath.row]
 
             if let balance = Balance.convert(details: ["satoshi": wallet.btc]) {
-                let (amount, denom) = balance.get(tag: "btc")
+                let (amount, denom) = balance.get(tag: btc)
                 cell.balance.text = amount
                 cell.unit.text = denom
                 let (fiat, fiatCurrency) = balance.get(tag: "fiat")
@@ -105,7 +108,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             }
             header.title.text = isSweep ? NSLocalizedString("id_where_would_you_like_to", comment: ""): NSLocalizedString("id_total_balance", comment: "")
             if let balance = Balance.convert(details: ["satoshi": satoshi]) {
-                let (amount, denom) = balance.get(tag: "btc")
+                let (amount, denom) = balance.get(tag: btc)
                 header.btcLabel.text = isSweep ? "" : "\(amount ?? "") \(denom)"
                 let (fiat, fiatCurrency) = balance.get(tag: "fiat")
                 header.fiatLabel.text = isSweep ? "" : "\(fiat ?? "N.A.") \(fiatCurrency)"

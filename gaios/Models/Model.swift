@@ -272,10 +272,11 @@ struct Balance: Codable {
     }
 
     func get(tag: String) -> (String?, String) {
+        let feeAsset = getGdkNetwork(getNetwork()).getFeeAsset()
         if "fiat" == tag {
             return (fiat?.localeFormattedString(2), fiatCurrency)
         }
-        if "btc" == tag {
+        if feeAsset == tag {
             let denomination = Settings.shared?.denomination ?? .BTC
             let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
             let value = res![denomination.rawValue] as? String
@@ -307,7 +308,7 @@ class WalletItem: Codable {
     let receivingId: String
     let type: String
     var satoshi: [String: UInt64]
-    var btc: UInt64 { get { return satoshi["btc"]! }}
+    var btc: UInt64 { get { return satoshi[getGdkNetwork(getNetwork()).getFeeAsset()]! }} // needs gdk 0.0.43 for Liquid Multisig
     var recoveryChainCode: String?
     var recoveryPubKey: String?
 

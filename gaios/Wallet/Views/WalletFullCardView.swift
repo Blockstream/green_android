@@ -27,6 +27,9 @@ class WalletFullCardView: UIView {
 
     var account = AccountsManager.shared.current
     var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false}
+    private var btc: String {
+        return getGdkNetwork(getNetwork()).getFeeAsset()
+    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -69,7 +72,7 @@ class WalletFullCardView: UIView {
 
     func setup(with wallet: WalletItem) {
         if let converted = Balance.convert(details: ["satoshi": wallet.btc]) {
-            let (amount, denom) = converted.get(tag: "btc")
+            let (amount, denom) = converted.get(tag: btc)
             let (fiat, currency) = converted.get(tag: "fiat")
             balance.text = amount
             unit.text = denom

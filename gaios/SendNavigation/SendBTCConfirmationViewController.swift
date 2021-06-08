@@ -11,6 +11,10 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     private var isFiat = false
     private var connected = true
 
+    private var btc: String {
+        return getGdkNetwork(getNetwork()).getFeeAsset()
+    }
+
     private var updateToken: NSObjectProtocol?
 
     override func viewDidLoad() {
@@ -81,19 +85,20 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             let tag = addressee.assetTag ?? "btc"
             let info = Registry.shared.infos[tag]
             let icon = Registry.shared.image(for: tag)
-            content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: transaction.amounts[tag] ?? 0, negative: false, isTransaction: false, sendAll: transaction.sendAll)
+            content.assetTableCell?.configure(tag: tag, info: info, icon: icon, satoshi: addressee.satoshi ?? 0, negative: false, isTransaction: false, sendAll: transaction.sendAll)
         }
         if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
-            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : "btc")
+            let (amount, denom) = balance.get(tag: isFiat ? "fiat" : btc)
             content.assetsFeeLabel.text = "\(amount ?? "N.A.") \(denom)"
             content.feeLabel.text = "\(amount ?? "N.A.") \(denom)"
         }
         if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
-            let (amount, _) = balance.get(tag: isFiat ? "fiat" : "btc")
-            content.amountText.text = amount ?? "N.A."
-        }
-        if transaction.sendAll {
-            content.amountText.text = NSLocalizedString("id_all", comment: "")
+            let (amount, _) = balance.get(tag: isFiat ? "fiat" : btc)
+            if transaction.sendAll {
+                content.amountText.text! = NSLocalizedString("id_all", comment: "")
+            } else {
+                content.amountText.text = amount ?? "N.A."
+            }
         }
 
         // Show change address only for hardware wallet transaction

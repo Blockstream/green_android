@@ -10,6 +10,10 @@ class AssetTableCell: UITableViewCell {
     @IBOutlet weak var assetIconImageView: UIImageView!
     @IBOutlet weak var bgView: UIView!
 
+    private var btc: String {
+        return getGdkNetwork(getNetwork()).getFeeAsset()
+    }
+
     override func prepareForReuse() {
         headerLabel.text = ""
         headerLabel.isHidden = false
@@ -20,7 +24,7 @@ class AssetTableCell: UITableViewCell {
     }
 
     func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64, negative: Bool = false, isTransaction: Bool = false, sendAll: Bool = false) {
-        let isBtc = tag == "btc"
+        let isBtc = tag == btc
         let asset = info ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
         let details = ["satoshi": satoshi, "asset_info": asset.encode()!] as [String: Any]
         if let balance = Balance.convert(details: details) {
