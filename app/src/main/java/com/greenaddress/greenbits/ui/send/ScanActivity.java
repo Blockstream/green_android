@@ -427,7 +427,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
         }, (e) -> {
             e.printStackTrace();
-            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+            UI.toast(this, UI.i18n(getResources(), e.getMessage()), Toast.LENGTH_SHORT);
             cameraHandler.post(fetchAndDecodeRunnable);
         });
     }
@@ -464,7 +464,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
         }, (e) -> {
             e.printStackTrace();
-            UI.toast(this, e.getMessage(), Toast.LENGTH_LONG);
+            UI.toast(this, UI.i18n(getResources(), e.getMessage()), Toast.LENGTH_SHORT);
             cameraHandler.post(fetchAndDecodeRunnable);
         });
     }
