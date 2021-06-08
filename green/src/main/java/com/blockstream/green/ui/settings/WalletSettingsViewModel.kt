@@ -82,6 +82,9 @@ class WalletSettingsViewModel @AssistedInject constructor(
         session.observable {
             it.getWatchOnlyUsername()
         }.subscribeBy(
+            onError = {
+                onError.postValue(ConsumableEvent(it))
+            },
             onSuccess = {
                 watchOnlyUsernameLiveData.value = it
             }
