@@ -30,7 +30,7 @@ class WalletNameFragment :
     @Inject
     lateinit var viewModelFactory: WalletNameViewModel.AssistedFactory
     val viewModel: WalletNameViewModel by viewModels {
-        WalletNameViewModel.provideFactory(viewModelFactory, args.restoreWallet)
+        WalletNameViewModel.provideFactory(viewModelFactory, args.onboardingOptions, args.restoreWallet)
     }
     private val args: WalletNameFragmentArgs by navArgs()
 
@@ -43,8 +43,9 @@ class WalletNameFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        options = args.onboardingOptions
         binding.vm = viewModel
+
+        options = args.onboardingOptions
 
         binding.buttonContinue.setOnClickListener {
             options?.let {

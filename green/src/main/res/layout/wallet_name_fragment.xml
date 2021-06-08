@@ -141,7 +141,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="24dp"
                 android:layout_marginBottom="24dp"
-                android:text="@{@string/id_recovery_phrase_check }"
+                android:text="@{vm.onboardingOptions.network.isSinglesig ? @string/id_restoring_your_wallet : @string/id_recovery_phrase_check }"
                 android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceHeadline1"
                 app:layout_constraintBottom_toBottomOf="parent"
