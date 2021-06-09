@@ -1,6 +1,8 @@
 package com.blockstream.green.di
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.BuildConfig
@@ -91,5 +93,11 @@ class CryptoModule {
     @Provides
     fun provideQATester(@ApplicationContext context: Context): QATester {
         return QATester(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(context)
     }
 }
