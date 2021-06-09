@@ -70,7 +70,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="icon" destination="BYZ-lN-dtR" id="7on-xT-bS8"/>
-                                            <outlet property="iconAccountType" destination="atD-gB-46b" id="nXn-YB-yzh"/>
+                                            <outlet property="iconSecurityType" destination="atD-gB-46b" id="Hug-HL-uhW"/>
                                             <outlet property="lblTitle" destination="Etj-W1-HWL" id="g3H-06-dr1"/>
                                         </connections>
                                     </tableViewCell>

@@ -94,6 +94,8 @@
 		34BCA44F2608FDAA00371A8F /* RecoverySuccessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */; };
 		34C2464B26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464A26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift */; };
 		34C2464D2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */; };
+		34C2464F2670ECE0009E8FCE /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464E2670ECE0009E8FCE /* AccountType.swift */; };
+		34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C246502670F0BB009E8FCE /* UINavigationController.swift */; };
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
@@ -344,6 +346,8 @@
 		34BCA44E2608FDAA00371A8F /* RecoverySuccessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccessViewController.swift; sourceTree = "<group>"; };
 		34C2464A26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSelectTypeViewController.swift; sourceTree = "<group>"; };
 		34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSetNameViewController.swift; sourceTree = "<group>"; };
+		34C2464E2670ECE0009E8FCE /* AccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountType.swift; sourceTree = "<group>"; };
+		34C246502670F0BB009E8FCE /* UINavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationController.swift; sourceTree = "<group>"; };
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
@@ -910,6 +914,7 @@
 				6D0B3DBF23A0870100C0E1C2 /* AccountInfoViewController.swift */,
 				34C2464A26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift */,
 				34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */,
+				34C2464E2670ECE0009E8FCE /* AccountType.swift */,
 			);
 			path = Accounts;
 			sourceTree = "<group>";
@@ -1173,6 +1178,7 @@
 				816F0AF323E4713600569A5D /* UIViewController.swift */,
 				8122D7282554848C003F2785 /* Promise.swift */,
 				3470F9EF2600A8D7009B5E33 /* Bundle.swift */,
+				34C246502670F0BB009E8FCE /* UINavigationController.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1582,6 +1588,7 @@
 				3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */,
 				34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */,
 				81205D6921C3B7EB005180CF /* Events.swift in Sources */,
+				34C2464F2670ECE0009E8FCE /* AccountType.swift in Sources */,
 				FF29CA7822374F8D0035F95A /* UILabel.swift in Sources */,
 				092D47F920EA2907005720F3 /* TransactionTableCell.swift in Sources */,
 				81E0B4D725531AD6001C8544 /* TxInputLiquid.swift in Sources */,
@@ -1625,6 +1632,7 @@
 				345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */,
 				6D3A13EA23A43B6200C69153 /* UITableViewCell.swift in Sources */,
 				6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */,
+				34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */,
 				6D970470234418A600839598 /* ModalPresentationController.swift in Sources */,
 				81E9B80021C92DB1004D87B6 /* AccountCardView.swift in Sources */,
 				81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */,

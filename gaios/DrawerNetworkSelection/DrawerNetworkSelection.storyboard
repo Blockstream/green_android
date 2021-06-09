@@ -78,7 +78,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="icon" destination="nzY-t4-noi" id="bdJ-D1-ejd"/>
-                                            <outlet property="iconAccountType" destination="V6Z-ZR-MH6" id="MoB-9y-HU7"/>
+                                            <outlet property="iconSecurityType" destination="V6Z-ZR-MH6" id="Y88-QI-x7V"/>
                                             <outlet property="lblTitle" destination="LRs-x1-rId" id="S6k-i0-ihZ"/>
                                             <outlet property="selectedView" destination="S96-UH-SYs" id="UDe-re-55c"/>
                                         </connections>

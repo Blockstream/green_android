@@ -121,11 +121,11 @@ extension AccountCreateViewController: UITableViewDelegate, UITableViewDataSourc
         if let cell = isReview ? tableView.dequeueReusableCell(withIdentifier: "ReviewCell") as? ReviewCell : tableView.dequeueReusableCell(withIdentifier: "AccountTypeCell") as? AccountTypeCell {
             if let accountType = isReview ? selectedAccountType : accountTypes[indexPath.row] {
                 cell.configure(for: accountType, indexPath: indexPath, delegate: self)
-                if accountType == .advanced {
-                    cell.selectable(canCreateAdvanced)
-                } else {
-                    cell.selectable(true)
-                }
+//                if accountType == .advanced {
+//                    cell.selectable(canCreateAdvanced)
+//                } else {
+//                    cell.selectable(true)
+//                }
                 return cell
             }
         }
@@ -133,17 +133,17 @@ extension AccountCreateViewController: UITableViewDelegate, UITableViewDataSourc
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let cell = tableView.cellForRow(at: indexPath) as? AccountTypeCell {
-            if cell.accountType == .advanced && !canCreateAdvanced {
-                cell.accessoryType = .none
-                cell.delegate?.didTapInfo(for: .advanced)
-            } else if !isReview {
-                cell.accessoryType = .checkmark
-                selectedAccountType = accountTypes[indexPath.row]
-                nextButton.backgroundColor = UIColor.customMatrixGreen()
-                nextButton.isUserInteractionEnabled = true
-            }
-        }
+//        if let cell = tableView.cellForRow(at: indexPath) as? AccountTypeCell {
+//            if cell.accountType == .advanced && !canCreateAdvanced {
+//                cell.accessoryType = .none
+//                cell.delegate?.didTapInfo(for: .advanced)
+//            } else if !isReview {
+//                cell.accessoryType = .checkmark
+//                selectedAccountType = accountTypes[indexPath.row]
+//                nextButton.backgroundColor = UIColor.customMatrixGreen()
+//                nextButton.isUserInteractionEnabled = true
+//            }
+//        }
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {

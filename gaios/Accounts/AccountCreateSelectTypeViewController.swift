@@ -24,6 +24,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
     @IBOutlet weak var lbl2of3Title: UILabel!
     @IBOutlet weak var lbl2of3Hint: UILabel!
 
+    var canCreateAmp = true
     var cards: [UIView] = []
 
     override func viewDidLoad() {
@@ -56,6 +57,10 @@ class AccountCreateSelectTypeViewController: UIViewController {
             card.layer.cornerRadius = 5.0
         }
         card2of3.alpha = 0.5
+
+        if !canCreateAmp {
+            cardAmp.alpha = 0.5
+        }
     }
 
     func setActions() {
@@ -83,28 +88,32 @@ class AccountCreateSelectTypeViewController: UIViewController {
     }
 
     @objc func didPressCardLegacy() {
-        // hold type
-        next()
+        next(.legacy)
     }
 
     @objc func didPressCardSegWit() {
-        // hold type
-        next()
+        next(.segWit)
     }
 
     @objc func didPressCardStandard() {
-        // hold type
-        next()
+        next(.standard)
     }
 
     @objc func didPressCardAmp() {
-        // hold type
-        next()
+        if canCreateAmp {
+            next(.amp)
+        }
     }
 
-    @objc func didPressCard2of3() { /* for future usage */ }
+    @objc func didPressCard2of3() { /* for future usage: next(.threeSig) */ }
 
-    func next() {
-        performSegue(withIdentifier: "set-name", sender: nil)
+    func next(_ accountType: AccountType) {
+        performSegue(withIdentifier: "set-name", sender: accountType)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nextController = segue.destination as? AccountCreateSetNameViewController, let accountType = sender as? AccountType {
+            nextController.accountType = accountType
+        }
     }
 }

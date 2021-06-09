@@ -79,7 +79,7 @@ class WalletFullCardView: UIView {
             sweepView.isHidden = false
         }
 
-        // to define
-        legacyLbl.text = "Legacy/SegWit"
+        let accountType: AccountType? = AccountType(rawValue: wallet.type)
+        legacyLbl.text = accountType?.name ?? ""
     }
 }

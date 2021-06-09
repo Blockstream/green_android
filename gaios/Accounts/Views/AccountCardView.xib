@@ -85,9 +85,9 @@
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="accountTypeLbl" destination="OdR-fV-Oyz" id="ujc-UU-RFN"/>
                 <outlet property="balance" destination="kdG-sY-PrR" id="EkC-C8-2bX"/>
                 <outlet property="balanceFiat" destination="sTd-PD-Ybf" id="eYU-el-a8b"/>
-                <outlet property="legacyLbl" destination="OdR-fV-Oyz" id="yce-rj-6YD"/>
                 <outlet property="networkImage" destination="SP0-Rh-nTe" id="NAm-lK-FSo"/>
                 <outlet property="unit" destination="0Jd-1l-uFU" id="Ijc-Ig-xTm"/>
                 <outlet property="walletName" destination="2kz-WR-rIH" id="AxA-lr-aBx"/>

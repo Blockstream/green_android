@@ -6,11 +6,11 @@ class AccountCreateSetNameViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var fieldName: UITextField!
     @IBOutlet weak var lblHint: UILabel!
-
     @IBOutlet weak var lblAccountTypeTitle: UILabel!
     @IBOutlet weak var lblAccountTypeHint: UILabel!
-
     @IBOutlet weak var btnNext: UIButton!
+
+    var accountType: AccountType!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +26,7 @@ class AccountCreateSetNameViewController: UIViewController {
         lblTitle.text = "Rivedi le informazioni account"
         lblHint.text = "Nome account"
         lblAccountTypeTitle.text = "TIPO DI ACCOUNT"
-        lblAccountTypeHint.text = "Legacy Account"
+        lblAccountTypeHint.text = accountType.name
         btnNext.setTitle("Aggiungi Nuovo Account", for: .normal)
     }
 
@@ -43,17 +43,44 @@ class AccountCreateSetNameViewController: UIViewController {
         }
     }
 
+    func next() {
+        if let name = fieldName.text {
+            createAccount(name: name, type: accountType)
+        }
+    }
+
+    func dismiss() {
+        DispatchQueue.main.async {
+            self.navigationController?.popToViewController(ofClass: AccountsViewController.self)
+        }
+    }
+
+    func createAccount(name: String, type: AccountType) {
+        let bgq = DispatchQueue.global(qos: .background)
+        let session = getGAService().getSession()
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.compactMap(on: bgq) {
+            try session.createSubaccount(details: ["name": name, "type": type.rawValue])
+        }.then(on: bgq) { call in
+            call.resolve()
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.dismiss()
+        }.catch { e in
+            DropAlert().error(message: e.localizedDescription)
+            print(e.localizedDescription)
+        }
+    }
+
     @IBAction func nameDidChange(_ sender: Any) {
         updateUI()
     }
 
     @IBAction func btnNext(_ sender: Any) {
         next()
-    }
-
-    func next() {
-
-        print("create account ...")
     }
 
 }

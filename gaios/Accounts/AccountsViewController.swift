@@ -89,9 +89,8 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             }
             cell.walletName.text = wallet.localizedName()
             cell.networkImage.image = UIImage(named: network?.icon ?? "")
-
-            // to define
-            cell.legacyLbl.text = "Legacy/SegWit"
+            let accountType: AccountType? = AccountType(rawValue: wallet.type)
+            cell.accountTypeLbl.text = accountType?.name ?? ""
             return cell
         }
     }
@@ -170,7 +169,9 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
         } else if let controller = segue.destination as? AccountCreateViewController {
             controller.subaccountDelegate = subaccountDelegate
             controller.presentationController?.delegate = self
-            controller.canCreateAdvanced = (network?.liquid ?? false) && !wallets.contains { $0.type == AccountType.advanced.rawValue }
+//            controller.canCreateAdvanced = (network?.liquid ?? false) && !wallets.contains { $0.type == AccountType.advanced.rawValue }
+        } else if let controller = segue.destination as? AccountCreateSelectTypeViewController {
+            controller.canCreateAmp = (network?.liquid ?? false) && !wallets.contains { $0.type == AccountType.amp.rawValue }
         }
     }
 }

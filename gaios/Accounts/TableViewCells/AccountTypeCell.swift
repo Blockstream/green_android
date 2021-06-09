@@ -1,13 +1,6 @@
 import UIKit
 
-enum AccountType: String {
-    case simple = "2of2"
-    case advanced = "2of2_no_recovery"
-}
-
-extension AccountType: CaseIterable {}
-
-protocol AccountTypeInfoDelegate: class {
+protocol AccountTypeInfoDelegate: AnyObject {
     func didTapInfo(for accountInfoType: AccountInfoType)
     func didChange(_ name: String)
 }
@@ -42,16 +35,16 @@ class AccountTypeCell: UITableViewCell {
         accessoryType = .none
         nameTextField.isHidden = true
         isUserInteractionEnabled = true
-        switch accountType {
-        case .simple:
-            accountInfoType = .simple
-            subtextLabel.text = NSLocalizedString("id_for_most_users", comment: "")
-            headlineLabel.text = NSLocalizedString("id_standard_account", comment: "")
-        case .advanced:
-            accountInfoType = .advanced
-            subtextLabel.text = NSLocalizedString("id_for_investors", comment: "")
-            headlineLabel.text = NSLocalizedString("id_amp_account", comment: "")
-        }
+//        switch accountType {
+//        case .simple:
+//            accountInfoType = .simple
+//            subtextLabel.text = NSLocalizedString("id_for_most_users", comment: "")
+//            headlineLabel.text = NSLocalizedString("id_standard_account", comment: "")
+//        case .advanced:
+//            accountInfoType = .advanced
+//            subtextLabel.text = NSLocalizedString("id_for_investors", comment: "")
+//            headlineLabel.text = NSLocalizedString("id_amp_account", comment: "")
+//        }
     }
 
     @objc func infoTapped() {
