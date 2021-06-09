@@ -247,7 +247,8 @@ class SendBtcDetailsViewController: UIViewController {
         if !transaction.addresseesReadOnly {
             let satoshi = self.getSatoshi() ?? 0
             let address = content.addressLabel.text!
-            let addressee = Addressee(address: address, satoshi: satoshi, assetId: assetId)
+            // AssetId must not be present for bitcoin
+            let addressee = isLiquid ? Addressee(address: address, satoshi: satoshi, assetId: assetId) : Addressee(address: address, satoshi: satoshi)
             transaction.addressees = [addressee]
         }
         txTask?.cancel()
