@@ -14,6 +14,7 @@ import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HardwareQATester
 import com.greenaddress.greenapi.Session
 import com.greenaddress.greenbits.spv.SPV
+import com.greenaddress.greenbits.ui.UI
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.JadeAPI
@@ -62,7 +63,8 @@ object Bridge {
     fun initializeBridge(
         ctx: Context,
         isDevelopmentFlavor: Boolean,
-        version: String,
+        applicationId: String,
+        versionName: String,
         QATester : HardwareQATester
     ){
         if(!initialized) {
@@ -71,7 +73,9 @@ object Bridge {
             context = WeakReference(ctx.applicationContext)
 
             this.isDevelopmentFlavor = isDevelopmentFlavor
-            versionName = version
+            this.versionName = versionName
+
+            UI.PACKAGE_NAME = applicationId
 
             hardwareQATester = QATester
 

@@ -57,6 +57,8 @@ import java.util.Set;
 public abstract class UI {
     private static final String TAG = UI.class.getSimpleName();
 
+    public static String PACKAGE_NAME = "com.greenaddress.greenbits_android_wallet";
+
     static final int INVALID_RESOURCE_ID = 0;
     public static final String[] UNITS = {"BTC", "mBTC", "\u00B5BTC", "bits", "sats"};
     public static final String[] LIQUID_UNITS = {"L-BTC", "L-mBTC", "L-\u00B5BTC", "L-bits", "L-sats"};
@@ -440,7 +442,7 @@ public abstract class UI {
         if (!textOrIdentifier.startsWith("id_"))
             return textOrIdentifier; // Not a string id
         try {
-            int resId = res.getIdentifier(textOrIdentifier, "string", "com.greenaddress.greenbits_android_wallet");
+            int resId = res.getIdentifier(textOrIdentifier, "string", PACKAGE_NAME);
             return res.getString(resId);
         } catch (final Exception e) {
             return textOrIdentifier; // Unknown id

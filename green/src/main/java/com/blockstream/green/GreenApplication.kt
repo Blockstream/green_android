@@ -62,7 +62,7 @@ class GreenApplication : Application(){
         super.onCreate()
 
         // Initialize Bridge
-        Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.VERSION_NAME, qaTester)
+        Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME, qaTester)
 
         Bridge.navigateFn = { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: GASession?, extraData: Any? ->
             when(type){
