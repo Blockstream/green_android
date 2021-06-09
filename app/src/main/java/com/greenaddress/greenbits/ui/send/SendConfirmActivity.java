@@ -115,7 +115,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         UI.hideIf(isSweeping, noteText);
 
         addressText.setText(address);
-        noteText.setText(mTxJson.get("memo") == null ? "" : mTxJson.get("memo").asText());
+        noteText.setText(mTxJson.get("memo") == null ? "" : mTxJson.get("memo").asText(""));
         CharInputFilter.setIfNecessary(noteText);
 
         // Set currency & amount
