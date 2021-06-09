@@ -2,6 +2,10 @@ import Foundation
 import UIKit
 import PromiseKit
 
+protocol SubaccountDelegate: AnyObject {
+    func onChange(_ wallet: WalletItem)
+}
+
 class AccountsViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
 
     var isSweep: Bool = false
@@ -32,14 +36,13 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(!isSweep, animated: true)
+//        navigationController?.setNavigationBarHidden(!isSweep, animated: true)
         title = ""
         reloadData()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
     func reloadData() {
@@ -109,8 +112,6 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
                 header.fiatLabel.text = isSweep ? "" : "\(fiat ?? "N.A.") \(fiatCurrency)"
             }
             header.equalsLabel.isHidden = isSweep
-            header.dismissButton.isHidden = isSweep
-            header.dismissButton.addTarget(self, action: #selector(dismissModal), for: .touchUpInside)
             header.bringSubviewToFront(header.stackView)
             return header
         case UICollectionView.elementKindSectionFooter:
@@ -126,13 +127,8 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
         }
     }
 
-    @objc func dismissModal() {
-        if #available(iOS 13.0, *) {
-            if let presentationController = presentationController {
-                presentationController.delegate?.presentationControllerDidDismiss?(presentationController)
-            }
-        }
-        dismiss(animated: true, completion: nil)
+    @objc func dismiss() {
+        navigationController?.popViewController(animated: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -158,12 +154,13 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
         if isSweep {
             performSegue(withIdentifier: "sweep", sender: nil)
         } else {
-            dismissModal()
+            dismiss()
         }
     }
 
     @objc func addWallet(_ sender: Any?) {
-        performSegue(withIdentifier: "create", sender: nil)
+//        performSegue(withIdentifier: "create", sender: nil)
+        performSegue(withIdentifier: "select-type", sender: nil)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

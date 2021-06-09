@@ -172,7 +172,7 @@
                         <segue destination="R7F-mq-oqL" kind="show" identifier="receive" id="uYc-26-M8s"/>
                         <segue destination="h6g-rr-LAM" kind="show" identifier="send" id="U7f-MS-5Z1"/>
                         <segue destination="fuN-54-EEf" kind="show" identifier="assets" id="Azw-5Y-ZWP"/>
-                        <segue destination="JMx-ld-n78" kind="presentation" identifier="wallets" id="sRf-Gc-KhT"/>
+                        <segue destination="JMx-ld-n78" kind="show" identifier="wallets" id="sRf-Gc-KhT"/>
                         <segue destination="vNx-TR-xnv" kind="show" identifier="notifications" id="xpz-uZ-oyS"/>
                         <segue destination="30w-Nv-yEI" kind="show" identifier="settings" id="9x3-I7-Dy2"/>
                         <segue destination="Tml-O4-tHP" kind="show" identifier="leaarnMore2fa" id="Cai-01-qcB"/>

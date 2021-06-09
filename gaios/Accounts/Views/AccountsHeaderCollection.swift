@@ -7,6 +7,5 @@ class AccountsHeaderCollection: UICollectionViewCell {
     @IBOutlet weak var btcLabel: UILabel!
     @IBOutlet weak var fiatLabel: UILabel!
     @IBOutlet weak var equalsLabel: UILabel!
-    @IBOutlet weak var dismissButton: UIButton!
     @IBOutlet weak var stackView: UIStackView!
 }

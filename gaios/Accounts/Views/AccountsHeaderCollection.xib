@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,15 +18,8 @@
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="cfs-uU-yZf">
                     <rect key="frame" x="20" y="20" width="363" height="90"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xdJ-gQ-Wjx">
-                            <rect key="frame" x="0.0" y="0.0" width="363" height="18"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="18" id="did-nn-udG"/>
-                            </constraints>
-                            <state key="normal" image="cancel"/>
-                        </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mGJ-qi-Mue">
-                            <rect key="frame" x="0.0" y="30" width="363" height="22.5"/>
+                            <rect key="frame" x="0.0" y="0.0" width="363" height="52.5"/>
                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
@@ -41,13 +34,13 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" ≈ " textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u4v-wX-c20">
-                                    <rect key="frame" x="44" y="0.0" width="22.5" height="25.5"/>
+                                    <rect key="frame" x="44" y="0.0" width="23" height="25.5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="21"/>
                                     <color key="textColor" name="customTitaniumLight"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PSE-FT-7DY">
-                                    <rect key="frame" x="66.5" y="0.0" width="296.5" height="25.5"/>
+                                    <rect key="frame" x="67" y="0.0" width="296" height="25.5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                     <color key="textColor" name="customTitaniumLight"/>
                                     <nil key="highlightedColor"/>
@@ -55,11 +48,9 @@
                             </subviews>
                         </stackView>
                     </subviews>
-                    <constraints>
-                        <constraint firstAttribute="trailing" secondItem="xdJ-gQ-Wjx" secondAttribute="trailing" id="yVx-fy-Vc8"/>
-                    </constraints>
                 </stackView>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <constraints>
                 <constraint firstItem="cfs-uU-yZf" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="20" id="Daj-jH-6sc"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="cfs-uU-yZf" secondAttribute="bottom" constant="20" id="Ity-Le-7Va"/>
@@ -67,10 +58,8 @@
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="cfs-uU-yZf" secondAttribute="trailing" constant="20" id="tmb-Kn-1CX"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
                 <outlet property="btcLabel" destination="5rk-wF-FDb" id="7T0-e6-teA"/>
-                <outlet property="dismissButton" destination="xdJ-gQ-Wjx" id="6XZ-BK-MxA"/>
                 <outlet property="equalsLabel" destination="u4v-wX-c20" id="mrx-Ax-cpT"/>
                 <outlet property="fiatLabel" destination="PSE-FT-7DY" id="Leq-1u-xZg"/>
                 <outlet property="stackView" destination="cfs-uU-yZf" id="DJu-MT-oSA"/>
@@ -80,7 +69,6 @@
         </view>
     </objects>
     <resources>
-        <image name="cancel" width="14" height="14"/>
         <namedColor name="customMatrixGreen">
             <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -2,10 +2,6 @@ import Foundation
 import UIKit
 import PromiseKit
 
-protocol SubaccountDelegate: class {
-    func onChange(_ wallet: WalletItem)
-}
-
 class TransactionsController: UITableViewController {
 
     var presentingWallet: WalletItem?
@@ -407,7 +403,6 @@ class TransactionsController: UITableViewController {
             nextController.wallet = presentingWallet
         } else if let nextController = segue.destination as? AccountsViewController {
             nextController.subaccountDelegate = self
-            nextController.presentationController?.delegate = self
         } else if let nextController = segue.destination as? AssetsListTableViewController {
             nextController.wallet = presentingWallet
             nextController.title = presentingWallet!.localizedName()
@@ -440,7 +435,6 @@ extension TransactionsController: SubaccountDelegate {
         // Empty and reload transactions list
         txs.removeAll()
         tableView.reloadData()
-        tableView.refreshControl?.beginRefreshing()
         loadTransactions().done {
             self.showTransactions()
         }.catch { _ in }
@@ -469,13 +463,6 @@ extension TransactionsController: UIViewControllerTransitioningDelegate {
         } else {
             return ModalAnimator(isPresenting: false)
         }
-    }
-}
-
-extension TransactionsController: UIAdaptivePresentationControllerDelegate {
-
-    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        handleRefresh()
     }
 }
 
