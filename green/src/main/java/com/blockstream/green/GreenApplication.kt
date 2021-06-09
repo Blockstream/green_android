@@ -101,7 +101,7 @@ class GreenApplication : Application(){
                         .send()
                 }
 
-                Bridge.NavigateType.CHANGE_PIN -> {
+                Bridge.NavigateType.CHANGE_PIN, Bridge.NavigateType.SETTINGS -> {
 
                     val walletId = sessionManager.getWalletIdFromSession(gaSession)
 
@@ -111,7 +111,7 @@ class GreenApplication : Application(){
                             val wallet = walletRepository.getWalletSuspend(walletId)
 
                             val intent = Intent(activity, BridgeActivity::class.java)
-                            intent.putExtras(WalletSettingsFragmentArgs(wallet, true).toBundle())
+                            intent.putExtras(WalletSettingsFragmentArgs(wallet, type == Bridge.NavigateType.CHANGE_PIN).toBundle())
                             intent.action = BridgeActivity.PIN
 
                             activity.startActivity(intent)

@@ -40,13 +40,14 @@ class BridgeActivity : AppCompatActivity(), IActivity {
 
         val inflater = navController.navInflater
 
+        val isSettings = SETTINGS == intent.action
         val isPin = PIN == intent.action
         val isBackupRecovery = BACKUP_RECOVERY == intent.action
         val isAddAccount = ADD_ACCOUNT == intent.action
         val isReceive = RECEIVE == intent.action
 
         val graph = when {
-            isPin -> {
+            isSettings || isPin -> {
                 inflater.inflate(R.navigation.settings_nav_graph)
             }
             isBackupRecovery -> {
@@ -128,6 +129,7 @@ class BridgeActivity : AppCompatActivity(), IActivity {
 
     companion object{
         const val PIN = "PIN"
+        const val SETTINGS = "SETTINGS"
         const val ADD_ACCOUNT = "ADD_ACCOUNT"
         const val BACKUP_RECOVERY = "BACKUP_RECOVERY"
         const val RECEIVE = "RECEIVE"

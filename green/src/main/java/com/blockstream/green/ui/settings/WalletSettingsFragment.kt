@@ -26,6 +26,8 @@ import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.greenaddress.Bridge.versionName
+import com.greenaddress.greenbits.ui.BuildConfig
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.IAdapter
@@ -57,6 +59,11 @@ class WalletSettingsFragment :
     private lateinit var biometricsPreference: PreferenceListItem
     private lateinit var changePinPreference: PreferenceListItem
 
+    private lateinit var versionPreference: PreferenceListItem
+    private lateinit var termsOfServicePreference: PreferenceListItem
+    private lateinit var privacyPolicyPreference: PreferenceListItem
+
+    @Inject
     lateinit var sharedPreferences: SharedPreferences
 
     @Inject
@@ -75,8 +82,6 @@ class WalletSettingsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         binding.vm = viewModel
 
@@ -102,6 +107,19 @@ class WalletSettingsFragment :
         )
         twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_authentication))
         pgpPreference = PreferenceListItem(StringHolder(R.string.id_pgp_key))
+
+        versionPreference = PreferenceListItem(StringHolder(R.string.id_version), StringHolder(
+            String.format(
+                "%s %s",
+                getString(R.string.app_name),
+                getString(
+                    R.string.id_version_1s_2s,
+                    versionName,
+                    BuildConfig.BUILD_TYPE
+                )
+            )))
+        termsOfServicePreference = PreferenceListItem(StringHolder(R.string.id_terms_of_service))
+        privacyPolicyPreference = PreferenceListItem(StringHolder(R.string.id_privacy_policy))
 
         updateAdapter()
 
@@ -147,6 +165,12 @@ class WalletSettingsFragment :
                     }
                     pgpPreference -> {
                         handlePGP()
+                    }
+                    termsOfServicePreference -> {
+                        openBrowser(requireContext(), Urls.TERMS_OF_SERVICE)
+                    }
+                    privacyPolicyPreference -> {
+                        openBrowser(requireContext(), Urls.PRIVACY_POLICY)
                     }
 
                     biometricsPreference -> {
@@ -289,6 +313,12 @@ class WalletSettingsFragment :
             list += TitleListItem(StringHolder(R.string.id_advanced))
 
             list += pgpPreference
+
+            list += TitleListItem(StringHolder(R.string.id_about))
+
+            list += versionPreference
+            list += termsOfServicePreference
+            list += privacyPolicyPreference
         }
 
         updateBiometricsSubtitle()

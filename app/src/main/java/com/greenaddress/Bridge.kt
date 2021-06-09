@@ -58,7 +58,7 @@ object Bridge {
     private var initialized = false
 
     enum class NavigateType {
-        LOGOUT, CHANGE_PIN, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET, ADD_ACCOUNT, RECEIVE, ACCOUNT_ID
+        LOGOUT, CHANGE_PIN, SETTINGS, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET, ADD_ACCOUNT, RECEIVE, ACCOUNT_ID
     }
 
     fun initializeBridge(
@@ -111,6 +111,10 @@ object Bridge {
 
     fun navigateToChangePin(activity: FragmentActivity){
         navigateFn?.invoke(activity, NavigateType.CHANGE_PIN, Session.getSession().nativeSession, null)
+    }
+
+    fun navigateToSettings(activity: FragmentActivity){
+        navigateFn?.invoke(activity, NavigateType.SETTINGS, Session.getSession().nativeSession, null)
     }
 
     fun navigateToBackupRecovery(activity: FragmentActivity){
