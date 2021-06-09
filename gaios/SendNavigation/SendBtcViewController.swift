@@ -128,7 +128,7 @@ class SendBtcViewController: KeyboardViewController {
             let result = data["result"] as? [String: Any]
             return Transaction(result ?? [:])
         }.done { tx in
-            if !tx.error.isEmpty && tx.error != "id_invalid_amount" && tx.error != "Invalid AssetID" {
+            if !tx.error.isEmpty && tx.error != "id_no_amount_specified" && tx.error != "id_invalid_amount" && tx.error != "Invalid AssetID" {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(tx.error, comment: ""))
             }
             let haveAssets = tx.details["addressees_have_assets"] as? Bool
