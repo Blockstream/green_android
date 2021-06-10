@@ -61,11 +61,11 @@ check_command base64
 # --- Execution
 
 # Save assets.json
-printf "Fetching asset JSON (${SHA256})...\n"
+printf "Fetching asset JSON (commit: ${SHA256})...\n"
 curl -sL $URL_ASSETS --create-dirs -o "${FILE_ASSETS_JSON}"
 
 # Fetch icons json
-printf "Fetching icons JSON (${SHA256})...\n"
+printf "Fetching icons JSON (commit: ${SHA256})...\n"
 ICONS_JSON=$(curl -sL $URL_ICONS)
 
 jq -c -r 'keys | .[]' <<< "$ICONS_JSON" | while read id; do
