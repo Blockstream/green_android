@@ -37,8 +37,8 @@ fun getDecimals(unit: String): Int {
     }
 }
 
-fun gdkNumberFormat(decimals: Int) = (DecimalFormat.getInstance(Locale.US) as DecimalFormat).apply {
-    minimumFractionDigits = 0
+fun gdkNumberFormat(decimals: Int, withDecimalSeparator: Boolean = false) = (DecimalFormat.getInstance(Locale.US) as DecimalFormat).apply {
+    minimumFractionDigits = if(withDecimalSeparator) decimals else 0
     maximumFractionDigits = decimals
     isGroupingUsed = false
     decimalFormatSymbols = DecimalFormatSymbols(Locale.US).also {

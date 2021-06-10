@@ -13,12 +13,17 @@ import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.text.DecimalFormat
+import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
-class UserInputUnitTests() {
+class UserInputUnitTests {
 
     @Mock
     private lateinit var session: GreenSession
+
+    private val dotLocale = Locale.US
+    private val commaLocale = Locale.ITALIAN
 
     private fun initMock(unit: String) {
         val settings: Settings = mock()
@@ -31,33 +36,108 @@ class UserInputUnitTests() {
     fun test_valuesInBTC() {
         initMock("BTC")
 
-        Assert.assertEquals("123", UserInput.parseUserInput(session, "123", false).amount)
-        Assert.assertEquals("123.1", UserInput.parseUserInput(session, "123.1", false).amount)
-        Assert.assertEquals("123.123", UserInput.parseUserInput(session, "123.123", false).amount)
+        val tests = mapOf(
+            "123" to "123",
+            "123.1" to "123.1",
+            "123.123" to "123.123",
+            "12356789.123" to "12356789.123",
+            "12356789.123" to "12 356 789.123"
+        )
 
-        Assert.assertEquals("12356789.123", UserInput.parseUserInput(session, "12356789.123", false).amount)
+        // Dot - US Locale
+        for (test in tests) {
+            Assert.assertEquals(
+                test.key,
+                UserInput.parseUserInput(
+                    session,
+                    test.value.replace(' ', ','),
+                    false,
+                    dotLocale
+                ).amount
+            )
+        }
+
+        // Comma - IT Locale
+        for (test in tests) {
+            Assert.assertEquals(
+                test.key,
+                UserInput.parseUserInput(
+                    session,
+                    test.value.replace('.', ',').replace(' ', '.'),
+                    false,
+                    commaLocale
+                ).amount
+            )
+        }
     }
 
     @Test
     fun test_valuesInSat() {
         initMock("sat")
 
-        Assert.assertEquals("123", UserInput.parseUserInput(session, "123", false).amount)
-        Assert.assertEquals("123", UserInput.parseUserInput(session, "123.1", false).amount)
-        Assert.assertEquals("123", UserInput.parseUserInput(session, "123.123", false).amount)
+        val tests = mapOf(
+            "123" to "123",
+            "123" to "123.1",
+            "123456789" to "123456789",
+            "123456789" to "123456789.123",
+            "123456789" to "123 456 789.123",
+        )
 
-        Assert.assertEquals("123456789", UserInput.parseUserInput(session, "123456789", false).amount)
+        // Dot - US Locale
+        for (test in tests) {
+            Assert.assertEquals(
+                test.key,
+                UserInput.parseUserInput(session, test.value.replace(' ', ','), false, dotLocale).amount
+            )
+        }
+
+        // Comma - IT Locale
+        for (test in tests) {
+            Assert.assertEquals(
+                test.key,
+                UserInput.parseUserInput(
+                    session,
+                    test.value.replace('.', ',').replace(' ', '.'),
+                    false,
+                    commaLocale
+                ).amount
+            )
+        }
     }
 
     @Test
     fun test_valuesInFiat() {
         initMock("EUR")
 
-        Assert.assertEquals("123.00", UserInput.parseUserInput(session, "123.00", true).amount)
-        Assert.assertEquals("123.10", UserInput.parseUserInput(session, "123.10", true).amount)
-        Assert.assertEquals("123.12", UserInput.parseUserInput(session, "123.123", true).amount)
-        Assert.assertEquals("123.13", UserInput.parseUserInput(session, "123.129", true).amount)
+        val tests = mapOf(
+            "123.00" to "123",
+            "123.10" to "123.10",
+            "123.12" to "123.123",
+            "123.13" to "123.129",
+            "123456789.00" to "123456789",
+            "123456789.00" to "123 456 789",
+            "123456789.12" to "123 456 789.123",
+        )
 
-        Assert.assertEquals("123456789.00", UserInput.parseUserInput(session, "123456789", true).amount)
+        // Dot - US Locale
+        for (test in tests) {
+            Assert.assertEquals(
+                test.key,
+                UserInput.parseUserInput(session, test.value.replace(' ', ','), true, dotLocale).amount
+            )
+        }
+
+        // Comma - IT Locale
+        for (test in tests) {
+            Assert.assertEquals(
+                test.key,
+                UserInput.parseUserInput(
+                    session,
+                    test.value.replace('.', ',').replace(' ', '.'),
+                    true,
+                    commaLocale
+                ).amount
+            )
+        }
     }
 }
