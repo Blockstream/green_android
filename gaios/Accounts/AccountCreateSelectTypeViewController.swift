@@ -24,7 +24,6 @@ class AccountCreateSelectTypeViewController: UIViewController {
     @IBOutlet weak var lbl2of3Title: UILabel!
     @IBOutlet weak var lbl2of3Hint: UILabel!
 
-    var canCreateAmp = true
     var cards: [UIView] = []
 
     override func viewDidLoad() {
@@ -57,10 +56,6 @@ class AccountCreateSelectTypeViewController: UIViewController {
             card.layer.cornerRadius = 5.0
         }
         card2of3.alpha = 0.5
-
-        if !canCreateAmp {
-            cardAmp.alpha = 0.5
-        }
     }
 
     func setActions() {
@@ -100,9 +95,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
     }
 
     @objc func didPressCardAmp() {
-        if canCreateAmp {
             next(.amp)
-        }
     }
 
     @objc func didPressCard2of3() { /* for future usage: next(.threeSig) */ }

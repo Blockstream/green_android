@@ -169,9 +169,6 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
         } else if let controller = segue.destination as? AccountCreateViewController {
             controller.subaccountDelegate = subaccountDelegate
             controller.presentationController?.delegate = self
-//            controller.canCreateAdvanced = (network?.liquid ?? false) && !wallets.contains { $0.type == AccountType.advanced.rawValue }
-        } else if let controller = segue.destination as? AccountCreateSelectTypeViewController {
-            controller.canCreateAmp = (network?.liquid ?? false) && !wallets.contains { $0.type == AccountType.amp.rawValue }
         }
     }
 }
