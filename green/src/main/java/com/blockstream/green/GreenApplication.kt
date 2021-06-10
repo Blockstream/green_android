@@ -216,7 +216,7 @@ class GreenApplication : Application(){
             Session.getSession().subAccount = subaccount
         }
 
-        Bridge.updateSettingsFn = { gaSession ->
+        Bridge.updateSettingsV4Fn = { gaSession ->
             sessionManager.getWalletSession(gaSession)?.updateSettings()
         }
 

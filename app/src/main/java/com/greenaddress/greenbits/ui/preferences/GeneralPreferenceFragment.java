@@ -372,7 +372,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
             details.set("settings", mObjectMapper.valueToTree(settingsData));
 
             getSession().getNotificationModel().onNewNotification(getSession(), details);
-            Bridge.INSTANCE.updateSettings();
+            Bridge.INSTANCE.updateSettingsV4();
 
             return settingsData;
         }).map((settingsData) -> {

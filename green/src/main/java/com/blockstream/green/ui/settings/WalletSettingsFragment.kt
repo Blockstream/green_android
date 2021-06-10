@@ -19,6 +19,8 @@ import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.SettingsWatchOnlyDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.filters.NumberValueFilter
+import com.blockstream.green.settings.ApplicationSettings
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
@@ -68,6 +70,9 @@ class WalletSettingsFragment :
 
     @Inject
     lateinit var appKeystore: AppKeystore
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     @Inject
     lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
@@ -167,10 +172,10 @@ class WalletSettingsFragment :
                         handlePGP()
                     }
                     termsOfServicePreference -> {
-                        openBrowser(requireContext(), Urls.TERMS_OF_SERVICE)
+                        openBrowser(settingsManager.getApplicationSettings(), Urls.TERMS_OF_SERVICE)
                     }
                     privacyPolicyPreference -> {
-                        openBrowser(requireContext(), Urls.PRIVACY_POLICY)
+                        openBrowser(settingsManager.getApplicationSettings(), Urls.PRIVACY_POLICY)
                     }
 
                     biometricsPreference -> {

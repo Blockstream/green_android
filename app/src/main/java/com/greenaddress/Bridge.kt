@@ -43,7 +43,7 @@ object Bridge {
 
     var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, extraData: Any?) -> Unit)? = null
     var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
-    var updateSettingsFn: ((gaSession: Any?) -> Unit)? = null
+    var updateSettingsV4Fn: ((gaSession: Any?) -> Unit)? = null
     var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
     var getWalletNameFn: ((gaSession: Any?) -> String?)? = null
     var getWalletIdFn: ((gaSession: Any?) -> Long?)? = null
@@ -143,15 +143,17 @@ object Bridge {
     }
 
     fun setActiveAccount(account : Int){
-        setSubaccountFn?.let {
-            it.invoke(Session.getSession().nativeSession, account)
-        }
+        setSubaccountFn?.invoke(Session.getSession().nativeSession, account)
     }
 
-    fun updateSettings(){
-        updateSettingsFn?.let {
-            it.invoke(Session.getSession().nativeSession)
-        }
+    // Send signal to v4 codebase to update settings data
+    fun updateSettingsV4(){
+        updateSettingsV4Fn?.invoke(Session.getSession().nativeSession)
+    }
+
+    // Send signal to v3 codebase to update settings data
+    fun updateSettingsV3(){
+        Session.getSession().refreshSettings()
     }
 
     fun getWalletName(): String? {

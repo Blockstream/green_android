@@ -46,30 +46,22 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         val isAddAccount = ADD_ACCOUNT == intent.action
         val isReceive = RECEIVE == intent.action
 
-        val graph = when {
+        val graph = inflater.inflate(R.navigation.nav_graph)
+
+        graph.startDestination = when {
             isSettings || isPin -> {
-                inflater.inflate(R.navigation.settings_nav_graph)
+                R.id.settings_nav_graph
             }
             isBackupRecovery -> {
-                inflater.inflate(R.navigation.nav_graph).also {
-                    it.startDestination = R.id.recoveryIntroFragment
-                }
+                 R.id.recoveryIntroFragment
             }
             isAddAccount -> {
-                inflater.inflate(R.navigation.nav_graph).also {
-                    it.startDestination = R.id.chooseAccountTypeFragment
-                }
+                 R.id.chooseAccountTypeFragment
             }
             isReceive -> {
-                inflater.inflate(R.navigation.nav_graph).also {
-                    it.startDestination = R.id.receiveFragment
-                }
+                 R.id.receiveFragment
             }
-            else -> {
-                inflater.inflate(
-                    R.navigation.nav_graph
-                )
-            }
+            else -> graph.startDestination
         }
 
         navController.setGraph(graph, intent.extras)
