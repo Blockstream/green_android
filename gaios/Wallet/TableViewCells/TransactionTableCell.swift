@@ -11,11 +11,11 @@ class TransactionTableCell: UITableViewCell {
     @IBOutlet weak var imageDirection: UIImageView!
 
     var isLiquid: Bool {
-        var account = AccountsManager.shared.current
+        let account = AccountsManager.shared.current
         return account?.gdkNetwork?.liquid ?? false
     }
     private var btc: String {
-        return getGdkNetwork(getNetwork()).getFeeAsset()
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     var multipleAssets: Bool!

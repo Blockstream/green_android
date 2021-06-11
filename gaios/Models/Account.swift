@@ -12,16 +12,7 @@ struct Account: Codable, Equatable {
     let keychain: String
     var network: String
     var isSingleSig: Bool? // optional to support pre singleSig stored wallets
-
-    private var gdkNetwork_: GdkNetwork?
-    var gdkNetwork: GdkNetwork? {
-        mutating get {
-            if gdkNetwork_ == nil || gdkNetwork_?.network != network {
-                gdkNetwork_ = getGdkNetwork(network)
-            }
-            return gdkNetwork_
-        }
-    }
+    var gdkNetwork: GdkNetwork? { get { getGdkNetwork(network) }}
 
     init(id: String? = nil, name: String, network: String, isJade: Bool = false, isLedger: Bool = false, isSingleSig: Bool = false) {
         // Software / Hardware wallet account

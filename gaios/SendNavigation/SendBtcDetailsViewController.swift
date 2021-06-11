@@ -162,7 +162,7 @@ class SendBtcDetailsViewController: UIViewController {
             return
         }
         guard transaction.amounts.count >= 1 else { return }
-        let satoshi = transaction.addressees.first?.satoshi
+        let satoshi = transaction.addressees.first?.satoshi ?? 0
         let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
         let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: details)?.get(tag: isFiat ? "fiat" : assetId) ?? ("", "")
         content.amountTextField.text = amount

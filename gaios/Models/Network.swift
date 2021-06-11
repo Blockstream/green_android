@@ -33,29 +33,19 @@ struct GdkNetwork: Codable, Equatable {
     }
 }
 
+var cachedNetworks: [String: Any]?
 func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork {
-    let res = data ?? (try! getNetworks())
-    let jsonData = try! JSONSerialization.data(withJSONObject: res![network]!)
-    var network = try! JSONDecoder().decode(GdkNetwork.self, from: jsonData)
+    if data ?? cachedNetworks == nil {
+        cachedNetworks = try? getNetworks()
+    }
+    guard let res = data ?? cachedNetworks,
+          let net = res[network] as? [String: Any],
+          let jsonData = try? JSONSerialization.data(withJSONObject: net),
+          var network = try? JSONDecoder().decode(GdkNetwork.self, from: jsonData)
+    else {
+        fatalError("invalid network")
+    }
     network.icon = network.network.lowercased() == "mainnet" ? "btc" : "btc_testnet"
     network.icon = network.liquid ? "btc_liquid" : network.icon
     return network
-}
-
-func getGdkNetworks() -> [GdkNetwork] {
-    let data = try! getNetworks()
-    let list = data!["all_networks"] as? [String] ?? []
-    return list.filter {
-        #if DEBUG
-        return true
-        #else
-        let net = data![$0] as? [String: Any]
-        let development = net!["development"] as? Bool
-        let serverType = net!["server_type"] as? String ?? ""
-        let isElectrum = serverType == "electrum"
-        return !development! && !isElectrum
-        #endif
-    }.map { name in
-        return getGdkNetwork(name, data: data)
-    }
 }
