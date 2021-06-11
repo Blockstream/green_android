@@ -12,7 +12,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     private var connected = true
 
     private var btc: String {
-        return getGdkNetwork(getNetwork()).getFeeAsset()
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     private var updateToken: NSObjectProtocol?
@@ -92,7 +92,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             content.assetsFeeLabel.text = "\(amount ?? "N.A.") \(denom)"
             content.feeLabel.text = "\(amount ?? "N.A.") \(denom)"
         }
-        if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
+        if let balance = Balance.convert(details: ["satoshi": addressee.satoshi]) {
             let (amount, _) = balance.get(tag: isFiat ? "fiat" : btc)
             if transaction.sendAll {
                 content.amountText.text! = NSLocalizedString("id_all", comment: "")

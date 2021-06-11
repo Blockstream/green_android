@@ -10,7 +10,7 @@ class SendBtcViewController: KeyboardViewController {
     var isSweep: Bool = false
     private var isLiquid: Bool!
     private var btc: String {
-        return getGdkNetwork(getNetwork()).getFeeAsset()
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     @IBOutlet weak var textView: UITextView!

@@ -16,7 +16,7 @@ class SendBtcDetailsViewController: UIViewController {
     private var txTask: TransactionTask?
 
     private var btc: String {
-        return getGdkNetwork(getNetwork()).getFeeAsset()
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     private var asset: AssetInfo? {

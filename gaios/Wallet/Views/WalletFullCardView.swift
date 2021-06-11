@@ -28,7 +28,8 @@ class WalletFullCardView: UIView {
     var account = AccountsManager.shared.current
     var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false}
     private var btc: String {
-        return getGdkNetwork(getNetwork()).getFeeAsset()
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+
     }
 
     override func awakeFromNib() {

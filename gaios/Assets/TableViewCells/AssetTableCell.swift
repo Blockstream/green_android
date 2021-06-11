@@ -11,7 +11,7 @@ class AssetTableCell: UITableViewCell {
     @IBOutlet weak var bgView: UIView!
 
     private var btc: String {
-        return getGdkNetwork(getNetwork()).getFeeAsset()
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func prepareForReuse() {

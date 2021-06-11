@@ -8,7 +8,7 @@ class TransactionDetailTableCell: UITableViewCell {
     @IBOutlet weak var notesImageView: UIImageView!
 
     private var btc: String {
-        return getGdkNetwork(getNetwork()).getFeeAsset()
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func prepareForReuse() {

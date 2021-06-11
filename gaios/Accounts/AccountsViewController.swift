@@ -19,7 +19,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
 
     private let network = AccountsManager.shared.current?.gdkNetwork
     private var btc: String {
-        return getGdkNetwork(getNetwork()).getFeeAsset()
+        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func viewDidLoad() {
