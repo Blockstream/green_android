@@ -43,7 +43,7 @@
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="terms of service" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bSI-kZ-HoP">
-                            <rect key="frame" x="49" y="0.0" width="310" height="17"/>
+                            <rect key="frame" x="57" y="0.0" width="302" height="17"/>
                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <nil key="highlightedColor"/>
@@ -77,7 +77,7 @@
                         <constraint firstItem="Ewo-FC-l7L" firstAttribute="top" secondItem="bSI-kZ-HoP" secondAttribute="bottom" constant="16" id="UVW-Hf-KyS"/>
                         <constraint firstItem="c5A-mQ-JyF" firstAttribute="top" secondItem="bSI-kZ-HoP" secondAttribute="bottom" constant="16" id="b8C-4M-xLS"/>
                         <constraint firstAttribute="trailing" secondItem="bSI-kZ-HoP" secondAttribute="trailing" constant="16" id="fjK-66-ogC"/>
-                        <constraint firstItem="bSI-kZ-HoP" firstAttribute="leading" secondItem="z73-gY-8Fn" secondAttribute="trailing" constant="8" id="khc-cK-SW1"/>
+                        <constraint firstItem="bSI-kZ-HoP" firstAttribute="leading" secondItem="z73-gY-8Fn" secondAttribute="trailing" constant="16" id="khc-cK-SW1"/>
                         <constraint firstItem="bSI-kZ-HoP" firstAttribute="top" secondItem="M5D-Ua-ILg" secondAttribute="top" id="mcO-Zt-2cc"/>
                         <constraint firstItem="c5A-mQ-JyF" firstAttribute="leading" secondItem="M5D-Ua-ILg" secondAttribute="leading" constant="16" id="uLm-Ho-QHR"/>
                         <constraint firstItem="c5A-mQ-JyF" firstAttribute="width" secondItem="Ewo-FC-l7L" secondAttribute="width" id="yaQ-cb-D5y"/>
