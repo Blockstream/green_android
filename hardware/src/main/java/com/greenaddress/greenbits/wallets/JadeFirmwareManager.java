@@ -33,15 +33,18 @@ public class JadeFirmwareManager {
 
     private static final JadeVersion JADE_MIN_ALLOWED_FW_VERSION = new JadeVersion("0.1.24");
     private static final String JADE_FW_VERSIONS_FILE = "LATEST";
+    private static final String JADE_FW_SUFFIX = "fw.bin";
 
     private static final String JADE_FW_SERVER_HTTPS = "https://jadefw.blockstream.com";
     private static final String JADE_FW_SERVER_ONION = "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion";
 
     private static final String JADE_FW_JADE_PATH = "/bin/jade/";
+    private static final String JADE_FW_JADE1_1_PATH = "/bin/jade1.1/";
     private static final String JADE_FW_JADEDEV_PATH = "/bin/jadedev/";
-    private static final String JADE_FW_SUFFIX = "fw.bin";
+    private static final String JADE_FW_JADE1_1DEV_PATH = "/bin/jade1.1dev/";
 
     private static final String JADE_BOARD_TYPE_JADE = "JADE";
+    private static final String JADE_BOARD_TYPE_JADE_V1_1 = "JADE_V1.1";
     private static final String JADE_FEATURE_SECURE_BOOT = "SB";
     private final Context context;
 
@@ -87,19 +90,20 @@ public class JadeFirmwareManager {
 
     // Check Jade version info to deduce which firmware flavour/directory to use
     private static String getFirmwarePath(final VersionInfo info) {
-        if (info.getBoardType() == null || JADE_BOARD_TYPE_JADE.equals(info.getBoardType())) {
+        final boolean prod = info.getJadeFeatures().contains(JADE_FEATURE_SECURE_BOOT);
+        Log.d(TAG, prod ? "SecureBoot/FlashEncryption detected" : "dev/test unit detected");
+
+        final String boardType = info.getBoardType();
+        if (boardType == null || JADE_BOARD_TYPE_JADE.equals(boardType)) {
             // Alas the first version of the jade fw didn't have 'BoardType' - so we assume an early jade.
-            if (info.getJadeFeatures().contains(JADE_FEATURE_SECURE_BOOT)) {
-                // Production Jade (Secure-Boot [and flash-encryption] enabled)
-                Log.d(TAG, "Production Jade detected");
-                return JADE_FW_JADE_PATH;
-            } else {
-                // Unsigned/development/testing Jade
-                Log.d(TAG, "dev/test Jade detected");
-                return JADE_FW_JADEDEV_PATH;
-            }
+            Log.d(TAG, "Jade 1.0 detected");
+            return prod ? JADE_FW_JADE_PATH : JADE_FW_JADEDEV_PATH;
+        } else if (JADE_BOARD_TYPE_JADE_V1_1.equals(boardType)) {
+            // Jade 1.1
+            Log.d(TAG, "Jade 1.1 detected");
+            return prod ? JADE_FW_JADE1_1_PATH : JADE_FW_JADE1_1DEV_PATH;
         } else {
-            Log.w(TAG, "Unsupported hardware detected - " + info.getBoardType());
+            Log.w(TAG, "Unsupported hardware detected - " + boardType);
             return null;
         }
     }
