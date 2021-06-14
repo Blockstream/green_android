@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hka-zm-5l0">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hka-zm-5l0">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,11 +14,11 @@
             <objects>
                 <viewController id="hL4-OQ-Xvc" customClass="NotesViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="RxB-LG-8LY">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhB-DC-PBV">
-                                <rect key="frame" x="344" y="63.5" width="40" height="29"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhB-DC-PBV">
+                                <rect key="frame" x="345" y="19.5" width="39" height="29"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="29" id="FGD-aw-AQT"/>
                                 </constraints>
@@ -32,8 +30,8 @@
                                     <action selector="saveButtonTapped:" destination="hL4-OQ-Xvc" eventType="touchUpInside" id="cEG-mw-SVZ"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ONO-OP-uPi">
-                                <rect key="frame" x="19" y="69" width="18" height="18"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ONO-OP-uPi">
+                                <rect key="frame" x="19" y="25" width="18" height="18"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="18" id="hTX-WB-KMi"/>
                                     <constraint firstAttribute="height" constant="18" id="qd4-p1-vns"/>
@@ -44,7 +42,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="My Notes" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lkb-Vt-5u9">
-                                <rect key="frame" x="19" y="119" width="71" height="20"/>
+                                <rect key="frame" x="19" y="75" width="71" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="HaF-Fy-neW"/>
                                 </constraints>
@@ -53,24 +51,17 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="notepen" translatesAutoresizingMaskIntoConstraints="NO" id="0Lc-nJ-KHY">
-                                <rect key="frame" x="98" y="124" width="10" height="10"/>
+                                <rect key="frame" x="98" y="80" width="10" height="10"/>
                             </imageView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="yQe-BD-mlB">
-                                <rect key="frame" x="19" y="147" width="375" height="306"/>
+                                <rect key="frame" x="19" y="103" width="375" height="301"/>
                                 <color key="tintColor" name="customMatrixGreen"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                        <color key="value" name="customTitaniumLight"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                        <real key="value" value="2"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
                             </textView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="1LH-xp-Mmy"/>
                         <color key="backgroundColor" name="customModalMedium"/>
                         <constraints>
                             <constraint firstItem="1LH-xp-Mmy" firstAttribute="centerY" secondItem="yQe-BD-mlB" secondAttribute="bottom" id="4g8-qj-L3g"/>
@@ -86,7 +77,6 @@
                             <constraint firstItem="ONO-OP-uPi" firstAttribute="leading" secondItem="1LH-xp-Mmy" secondAttribute="leading" constant="19" id="piN-G7-i5V"/>
                             <constraint firstItem="1LH-xp-Mmy" firstAttribute="trailing" secondItem="yQe-BD-mlB" secondAttribute="trailing" constant="20" id="pjc-Ba-iBN"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="1LH-xp-Mmy"/>
                     </view>
                     <connections>
                         <outlet property="dismissButton" destination="ONO-OP-uPi" id="ZaS-7u-M0Z"/>
@@ -117,7 +107,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6gH-NR-P3Y">
                                 <rect key="frame" x="0.0" y="788" width="414" height="74"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YVY-xF-86f">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YVY-xF-86f">
                                         <rect key="frame" x="16" y="16" width="382" height="42"/>
                                         <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
@@ -144,7 +134,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="TransactionDetailHeaderCell" rowHeight="58" id="n9r-WJ-xJl" customClass="TransactionDetailHeaderCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="58"/>
+                                        <rect key="frame" x="0.0" y="24.5" width="414" height="58"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="n9r-WJ-xJl" id="zjS-au-mxq">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="58"/>
@@ -170,14 +160,14 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="TransactionStatusTableCell" rowHeight="52" id="hf4-4P-Mpn" customClass="TransactionStatusTableCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="86" width="414" height="52"/>
+                                        <rect key="frame" x="0.0" y="82.5" width="414" height="52"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hf4-4P-Mpn" id="kXl-7H-sTS">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="52"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unconfirmed" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8G7-vK-r0n">
-                                                    <rect key="frame" x="20" y="11" width="108" height="22"/>
+                                                    <rect key="frame" x="20" y="11" width="107.5" height="22"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
@@ -214,26 +204,9 @@
                                                             </constraints>
                                                         </view>
                                                     </subviews>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
-                                                            <real key="value" value="0.5"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="shadowRadius">
-                                                            <real key="value" value="4"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                            <real key="value" value="1"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                                            <color key="value" name="customTitaniumLight"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="size" keyPath="shadowOffset">
-                                                            <size key="value" width="0.0" height="2"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
                                                 </stackView>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="check" translatesAutoresizingMaskIntoConstraints="NO" id="j57-MW-JY0">
-                                                    <rect key="frame" x="136" y="9.5" width="25" height="25"/>
+                                                    <rect key="frame" x="135.5" y="9.5" width="25" height="25"/>
                                                 </imageView>
                                             </subviews>
                                             <constraints>
@@ -255,7 +228,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="TransactionDetailTableCell" rowHeight="92" id="pTh-LR-sFe" customClass="TransactionDetailTableCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="138" width="414" height="92"/>
+                                        <rect key="frame" x="0.0" y="134.5" width="414" height="92"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="pTh-LR-sFe" id="DTs-1N-k7B">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="92"/>
@@ -302,6 +275,7 @@
                                 </prototypes>
                             </tableView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="3BM-05-WB9"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="kTL-Ty-wUs" firstAttribute="top" secondItem="3BM-05-WB9" secondAttribute="top" id="0Fq-fz-8oe"/>
@@ -312,7 +286,6 @@
                             <constraint firstItem="6gH-NR-P3Y" firstAttribute="top" secondItem="kTL-Ty-wUs" secondAttribute="bottom" id="kdz-4t-bkP"/>
                             <constraint firstItem="6gH-NR-P3Y" firstAttribute="leading" secondItem="3BM-05-WB9" secondAttribute="leading" id="ksR-Qu-jCB"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="3BM-05-WB9"/>
                     </view>
                     <navigationItem key="navigationItem" title="Transaction detail" id="4Wz-Xh-DRS">
                         <barButtonItem key="backBarButtonItem" title=" " id="FyW-iO-wcH"/>
@@ -340,25 +313,30 @@
             <point key="canvasLocation" x="8753" y="1324"/>
         </scene>
     </scenes>
+    <designables>
+        <designable name="ONr-jl-VsU">
+            <size key="intrinsicContentSize" width="85.5" height="19.5"/>
+        </designable>
+    </designables>
     <resources>
         <image name="cancel" width="14" height="14"/>
         <image name="check" width="25" height="25"/>
         <image name="increase_fee" width="11" height="10"/>
         <image name="notepen" width="10" height="10"/>
         <namedColor name="customLowerBar">
-            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.097999997437000275" green="0.13300000131130219" blue="0.17299999296665192" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customMatrixGreen">
-            <color red="0.0" green="0.70588235294117652" blue="0.35294117647058826" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.70599997043609619" blue="0.3529999852180481" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customModalMedium">
-            <color red="0.16470588235294117" green="0.20784313725490197" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.16500000655651093" green="0.20800000429153442" blue="0.25099998712539673" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
-            <color red="0.070588235294117646" green="0.090196078431372548" blue="0.11764705882352941" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumLight">
-            <color red="0.42745098039215684" green="0.47058823529411764" blue="0.50196078431372548" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

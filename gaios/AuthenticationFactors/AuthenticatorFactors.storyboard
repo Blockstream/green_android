@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dGf-TK-g1U">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="dGf-TK-g1U">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,8 +16,8 @@
                     <view key="view" contentMode="scaleToFill" id="yh0-N9-MNt" customClass="SetGauthView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="1eN-ao-dyo"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="0Sk-wl-NI2"/>
                     <connections>
@@ -35,8 +35,8 @@
                     <view key="view" contentMode="scaleToFill" id="BYC-ce-u1j" customClass="SetPhoneView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="Jxl-Qt-Z5T"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="Paw-t0-ZzH"/>
                     <connections>
@@ -54,8 +54,8 @@
                     <view key="view" contentMode="scaleToFill" id="ga2-KA-e3U" customClass="SetEmailView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
                         <viewLayoutGuide key="safeArea" id="VM0-Bu-6cm"/>
+                        <color key="backgroundColor" name="customTitaniumDark"/>
                     </view>
                     <navigationItem key="navigationItem" id="zT6-i1-t5N"/>
                     <connections>
@@ -74,7 +74,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dFa-cW-V2m">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dFa-cW-V2m">
                                 <rect key="frame" x="16" y="506" width="288" height="42"/>
                                 <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.35294117650000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -93,27 +93,22 @@
                                 <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" textLabel="AS1-Pn-v9P" imageView="gT2-Nh-PaO" style="IBUITableViewCellStyleDefault" id="sXQ-WU-1k6">
-                                        <rect key="frame" x="0.0" y="28" width="288" height="44"/>
+                                        <rect key="frame" x="0.0" y="24.5" width="288" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="sXQ-WU-1k6" id="agO-nw-A4o">
                                             <rect key="frame" x="0.0" y="0.0" width="288" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" id="AS1-Pn-v9P">
-                                                    <rect key="frame" x="55" y="0.0" width="218" height="44"/>
+                                                    <rect key="frame" x="56" y="0.0" width="216" height="44"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" image="2fa_email" id="gT2-Nh-PaO">
-                                                    <rect key="frame" x="15" y="9.5" width="25" height="25"/>
+                                                    <rect key="frame" x="16" y="9.5" width="25" height="25"/>
                                                     <autoresizingMask key="autoresizingMask"/>
-                                                    <userDefinedRuntimeAttributes>
-                                                        <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                                            <real key="value" value="0.0"/>
-                                                        </userDefinedRuntimeAttribute>
-                                                    </userDefinedRuntimeAttributes>
                                                 </imageView>
                                             </subviews>
                                         </tableViewCellContentView>
@@ -127,6 +122,7 @@
                                 </connections>
                             </tableView>
                         </subviews>
+                        <viewLayoutGuide key="safeArea" id="CEi-QX-Id0"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
                             <constraint firstItem="CEi-QX-Id0" firstAttribute="trailing" secondItem="UQ9-2j-HKB" secondAttribute="trailing" constant="16" id="4hs-WV-sth"/>
@@ -137,7 +133,6 @@
                             <constraint firstItem="UQ9-2j-HKB" firstAttribute="leading" secondItem="CEi-QX-Id0" secondAttribute="leading" constant="16" id="hEr-R5-Cju"/>
                             <constraint firstItem="dFa-cW-V2m" firstAttribute="leading" secondItem="CEi-QX-Id0" secondAttribute="leading" constant="16" id="xwO-oI-Rda"/>
                         </constraints>
-                        <viewLayoutGuide key="safeArea" id="CEi-QX-Id0"/>
                     </view>
                     <navigationItem key="navigationItem" title="Improve Security" id="el7-T0-fdP">
                         <barButtonItem key="backBarButtonItem" title=" " id="bvf-pm-gLf"/>

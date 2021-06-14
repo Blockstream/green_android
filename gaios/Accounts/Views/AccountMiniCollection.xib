@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -44,21 +44,16 @@
                             <constraint firstItem="xub-Ie-73j" firstAttribute="leading" secondItem="wve-GE-Z6b" secondAttribute="trailing" constant="8" id="qss-RH-sTS"/>
                             <constraint firstItem="wve-GE-Z6b" firstAttribute="top" secondItem="vWN-1X-zxe" secondAttribute="top" constant="16" id="xoZ-bE-10j"/>
                         </constraints>
-                        <userDefinedRuntimeAttributes>
-                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                <real key="value" value="6"/>
-                            </userDefinedRuntimeAttribute>
-                        </userDefinedRuntimeAttributes>
                     </view>
                 </subviews>
             </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="vWN-1X-zxe" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="8av-Gi-MoI"/>
                 <constraint firstAttribute="trailing" secondItem="vWN-1X-zxe" secondAttribute="trailing" id="Mq3-dV-8uI"/>
                 <constraint firstAttribute="bottom" secondItem="vWN-1X-zxe" secondAttribute="bottom" id="Qc2-qb-mQd"/>
                 <constraint firstItem="vWN-1X-zxe" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="q9L-IA-aPb"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <size key="customSize" width="380" height="52"/>
             <connections>
                 <outlet property="bgView" destination="vWN-1X-zxe" id="8cN-aF-mim"/>
@@ -70,7 +65,7 @@
     <resources>
         <image name="rightArrow" width="9" height="14"/>
         <namedColor name="customModalBlueDark">
-            <color red="0.097999997437000275" green="0.13300000131130219" blue="0.17299999296665192" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.098039215686274508" green="0.13333333333333333" blue="0.17254901960784313" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
