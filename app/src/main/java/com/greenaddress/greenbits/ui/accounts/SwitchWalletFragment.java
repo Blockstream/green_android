@@ -18,6 +18,8 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
+import javax.annotation.Nullable;
+
 public class SwitchWalletFragment extends BottomSheetDialogFragment implements WalletSwitchListener {
 
     public static SwitchWalletFragment newInstance() {
@@ -52,12 +54,9 @@ public class SwitchWalletFragment extends BottomSheetDialogFragment implements W
     }
 
     @Override
-    public void onWalletClick(Long walletId) {
+    public void onWalletClick(@Nullable Long walletId) {
         final LoggedActivity activity = (LoggedActivity) getActivity();
-
-        if(walletId >= 0){
-            activity.logout(walletId);
-        }
+        activity.logout(walletId);
         dismiss();
     }
 }

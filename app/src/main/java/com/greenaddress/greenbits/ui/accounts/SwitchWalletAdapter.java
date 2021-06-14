@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,8 +58,9 @@ public class SwitchWalletAdapter extends RecyclerView.Adapter<SwitchWalletAdapte
         Boolean isActive = "true".equals(wallet.get("active"));
         holder.setSelected(isActive);
         holder.mButton.setOnClickListener(view -> {
-            mWalletSwitchListener.onWalletClick(isActive ? -1 : Long.parseLong(wallet.get("id")));
+            mWalletSwitchListener.onWalletClick(isActive ? null : Long.parseLong(wallet.get("id")));
         });
+        UI.showIf(isActive, holder.mLogout);
     }
 
     @Override
@@ -68,10 +70,12 @@ public class SwitchWalletAdapter extends RecyclerView.Adapter<SwitchWalletAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final Button mButton;
+        private final TextView mLogout;
 
         ViewHolder(final View itemView) {
             super(itemView);
             mButton = UI.find(itemView, R.id.switchNetworkButton);
+            mLogout = UI.find(itemView, R.id.switchNetworkLogout);
         }
 
         public void setText(final String text) {

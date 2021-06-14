@@ -1,20 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="1dp">
 
     <Button
         android:id="@+id/switchNetworkButton"
+        style="@style/selectionButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="16sp"
-        android:textAlignment="textStart"
-        android:padding="8dp"
-        style="@style/selectionButton"
         android:clickable="false"
         android:drawablePadding="10dp"
+        android:padding="8dp"
         android:paddingLeft="0dp"
-        />
+        android:textAlignment="textStart"
+        android:textSize="16sp" />
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/switchNetworkLogout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|right"
+        android:text="@string/id_logout"
+        android:padding="16dp"
+        android:textColor="@color/red" />
+
+</FrameLayout>
