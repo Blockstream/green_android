@@ -43,11 +43,12 @@ class TransactionTableCell: UITableViewCell {
         isIncoming = transaction.type == "incoming"
         isRedeposit = transaction.type == "redeposit"
         if isRedeposit, let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
-            let (fee, denom) = balance.get(tag: assetTag)
+            // For redeposits we show fees paid in btc
+            let (fee, denom) = balance.get(tag: btc)
             amount.text = "-\(fee ?? "") \(denom)"
         } else if multipleAssets && isIncoming {
             amount.text = NSLocalizedString("id_multiple_assets", comment: "")
-        } else if "btc" == transaction.defaultAsset {
+        } else if transaction.defaultAsset == btc {
             if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
                 let (value, denom) = balance.get(tag: btc)
                 amount.text = String(format: "%@%@ %@", transaction.type == "outgoing" || transaction.type == "redeposit" ? "-" : "", value ?? "", denom)

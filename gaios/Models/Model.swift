@@ -111,7 +111,8 @@ struct Transaction {
     var satoshi: UInt64 {
         get {
             let dict = get("satoshi") as [String: Any]?
-            return dict?["btc"] as? UInt64 ?? 0
+            let btc = getGdkNetwork(getNetwork()).getFeeAsset()
+            return dict?[btc] as? UInt64 ?? 0
         }
     }
 
@@ -122,15 +123,17 @@ struct Transaction {
     }
 
     static func sort<T>(_ dict: [String: T]) -> [(key: String, value: T)] {
-        var sorted = dict.filter { $0.key != "btc" }.sorted(by: {$0.0 < $1.0 })
-        if dict.contains(where: { $0.key == "btc" }) {
-            sorted.insert((key: "btc", value: dict["btc"]!), at: 0)
+        let btc = getGdkNetwork(getNetwork()).getFeeAsset()
+        var sorted = dict.filter { $0.key != btc }.sorted(by: {$0.0 < $1.0 })
+        if dict.contains(where: { $0.key == btc }) {
+            sorted.insert((key: btc, value: dict[btc]!), at: 0)
         }
         return Array(sorted)
     }
 
+    /// Asset we are trying to send or receive, other than bitcoins for fees
     var defaultAsset: String {
-        return Transaction.sort(amounts).filter { $0.key != "btc" }.first?.key ?? "btc"
+        return Transaction.sort(amounts).filter { $0.key != getGdkNetwork(getNetwork()).getFeeAsset() }.first?.key ?? getGdkNetwork(getNetwork()).getFeeAsset()
     }
 
     var sendAll: Bool {
