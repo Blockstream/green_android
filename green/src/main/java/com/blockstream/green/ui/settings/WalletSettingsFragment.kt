@@ -151,7 +151,11 @@ class WalletSettingsFragment :
                         )
                     }
                     twoFactorAuthenticationPreference -> {
-                        // TODO navigate to 2fa
+                        navigate(
+                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFractorAuthenticationFragment(
+                                wallet
+                            )
+                        )
                     }
                     unitPreference -> {
                         handleUnit()
@@ -349,7 +353,7 @@ class WalletSettingsFragment :
     }
 
     private fun updateSharedPreferencesSummaries() {
-        customFeeRatePreference?.subtitle = StringHolder(getDefaultFeeRateAsDouble().feeRateWithUnit())
+        customFeeRatePreference.subtitle = StringHolder(getDefaultFeeRateAsDouble().feeRateWithUnit())
         notifyDataSetChanged()
     }
 

@@ -34,6 +34,19 @@
                 android:name="bridgeShowPIN"
                 app:argType="boolean"
                 android:defaultValue="false" />
+            <action
+                android:id="@+id/action_walletSettingsFragment_to_twoFractorAuthenticationFragment"
+                app:destination="@id/twoFractorAuthenticationFragment" />
+        </fragment>
+
+        <fragment
+            android:id="@+id/twoFractorAuthenticationFragment"
+            android:name="com.blockstream.green.ui.settings.TwoFractorAuthenticationFragment"
+            android:label="@string/id_2fa"
+            tools:layout="@layout/wallet_settings_fragment">
+            <argument
+                android:name="wallet"
+                app:argType="com.blockstream.green.database.Wallet" />
         </fragment>
 
     </navigation>
