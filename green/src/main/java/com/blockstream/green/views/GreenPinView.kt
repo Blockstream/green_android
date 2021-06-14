@@ -56,6 +56,7 @@ class GreenPinView @JvmOverloads constructor(
             context.obtainStyledAttributes(attrs, R.styleable.GreenPinView)
 
         binding.withPaste = attributes.getBoolean(R.styleable.GreenPinView_withPaste, false)
+        binding.withShuffle = attributes.getBoolean(R.styleable.GreenPinView_withShuffle, false)
         showDigits = attributes.getBoolean(R.styleable.GreenPinView_showDigits, false).also {
             binding.showDigits = it
         }
@@ -63,6 +64,36 @@ class GreenPinView @JvmOverloads constructor(
         attributes.recycle()
 
         pinUpdated()
+
+        val digitButtons = listOf(
+            binding.button0,
+            binding.button1,
+            binding.button2,
+            binding.button3,
+            binding.button4,
+            binding.button5,
+            binding.button6,
+            binding.button7,
+            binding.button8,
+            binding.button9
+        )
+
+        binding.shuffleListener = OnClickListener {
+            // shuffle digits values array
+            val digitsValues: List<String> = digitButtons.mapIndexed { index, _ -> "$index" }.shuffled()
+            // set new buttons values
+            digitButtons.forEachIndexed { index, button ->
+                button.text = digitsValues[index]
+            }
+        }
+
+        binding.shuffleLongClickListener = OnLongClickListener {
+            // reset values
+            digitButtons.forEachIndexed { index, button ->
+                button.text = "$index"
+            }
+            true
+        }
     }
 
     private fun shakeIndicator() {

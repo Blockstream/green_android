@@ -26,6 +26,7 @@
 
     <declare-styleable name="GreenPinView">
         <attr name="withPaste" />
+        <attr name="withShuffle"  format="boolean" />
         <attr name="showDigits" />
     </declare-styleable>
 

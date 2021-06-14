@@ -26,12 +26,24 @@
             type="Boolean" />
 
         <variable
+            name="withShuffle"
+            type="Boolean" />
+
+        <variable
             name="showDigits"
             type="Boolean" />
 
         <variable
             name="clickListener"
             type="android.view.View.OnClickListener" />
+
+        <variable
+            name="shuffleListener"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="shuffleLongClickListener"
+            type="android.view.View.OnLongClickListener" />
 
     </data>
 
@@ -378,6 +390,25 @@
             app:iconTint="@color/material_on_surface_emphasis_medium"
             app:iconGravity="textStart"
             app:iconSize="20dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button0"
+            app:layout_constraintEnd_toEndOf="@+id/button7"
+            app:layout_constraintStart_toStartOf="@+id/button7"
+            app:layout_constraintTop_toTopOf="@+id/button0" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonShuffle"
+            style="@style/GreenPinViewButton"
+            isVisible="@{withShuffle &amp;&amp; !withPaste}"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:enabled="@{keysEnabled}"
+            android:onClick="@{shuffleListener}"
+            android:onLongClick="@{shuffleLongClickListener}"
+            app:icon="@drawable/ic_autorenew"
+            app:iconGravity="textStart"
+            app:iconSize="20dp"
+            app:iconTint="@color/material_on_surface_emphasis_medium"
             app:layout_constraintBottom_toBottomOf="@+id/button0"
             app:layout_constraintEnd_toEndOf="@+id/button7"
             app:layout_constraintStart_toStartOf="@+id/button7"
