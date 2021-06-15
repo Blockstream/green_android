@@ -55,11 +55,6 @@
                                 <constraint firstAttribute="height" constant="60" id="hd9-4Y-sGS"/>
                                 <constraint firstItem="Eno-Ow-heH" firstAttribute="centerX" secondItem="C5I-Cm-13D" secondAttribute="centerX" id="z6I-Ni-iKU"/>
                             </constraints>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="6"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
                         </view>
                         <view hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kSh-A5-3io" userLabel="Sweep View">
                             <rect key="frame" x="211" y="0.0" width="211" height="60"/>
@@ -99,11 +94,6 @@
                                 <constraint firstAttribute="height" constant="60" id="MQh-8r-1dF"/>
                                 <constraint firstItem="rWO-tt-H7B" firstAttribute="centerX" secondItem="kSh-A5-3io" secondAttribute="centerX" id="zgp-Me-v2m"/>
                             </constraints>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="6"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
                         </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CsW-qN-0Af">
                             <rect key="frame" x="211" y="0.0" width="1" height="60"/>
@@ -146,17 +136,6 @@
                                 <constraint firstItem="nKZ-s8-WZu" firstAttribute="centerY" secondItem="NhV-2c-ij4" secondAttribute="centerY" constant="5" id="siJ-sN-H8h"/>
                                 <constraint firstAttribute="height" constant="60" id="zzZ-Rp-Nga"/>
                             </constraints>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
-                                    <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
-                                    <real key="value" value="0.0"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="6"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
                         </view>
                     </subviews>
                     <viewLayoutGuide key="safeArea" id="eoo-Vv-CRV"/>
@@ -234,23 +213,6 @@
                                 <constraint firstItem="MzI-bI-RMA" firstAttribute="leading" secondItem="1lQ-Zl-5eN" secondAttribute="trailing" constant="8" id="zd5-E5-M94"/>
                                 <constraint firstAttribute="bottom" secondItem="sbk-4L-NhS" secondAttribute="bottom" constant="20" id="zhV-Ql-c14"/>
                             </constraints>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                    <real key="value" value="6"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="shadowRadius">
-                                    <real key="value" value="6"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
-                                    <real key="value" value="1"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="size" keyPath="shadowOffset">
-                                    <size key="value" width="0.0" height="4"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                                    <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
                         </view>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -260,20 +222,6 @@
                         <constraint firstItem="Nnw-r6-HbC" firstAttribute="leading" secondItem="830-81-4ER" secondAttribute="leading" id="afr-me-tta"/>
                         <constraint firstAttribute="trailing" secondItem="Nnw-r6-HbC" secondAttribute="trailing" id="hhM-SO-5m1"/>
                     </constraints>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                            <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="size" keyPath="shadowOffset">
-                            <size key="value" width="0.0" height="4"/>
-                        </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="number" keyPath="shadowRadius">
-                            <real key="value" value="6"/>
-                        </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
-                            <real key="value" value="1"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
                 </view>
                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tmT-Nd-Dm7">
                     <rect key="frame" x="20" y="262" width="419" height="50"/>
@@ -300,20 +248,6 @@
                         <constraint firstItem="uHM-Kg-65L" firstAttribute="centerY" secondItem="tmT-Nd-Dm7" secondAttribute="centerY" id="esA-zM-f9F"/>
                         <constraint firstItem="YYU-EL-Mom" firstAttribute="centerY" secondItem="tmT-Nd-Dm7" secondAttribute="centerY" id="ggW-1s-rye"/>
                     </constraints>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                            <real key="value" value="6"/>
-                        </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="number" keyPath="shadowRadius">
-                            <real key="value" value="4"/>
-                        </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
-                            <real key="value" value="4"/>
-                        </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="color" keyPath="shadowColor">
-                            <color key="value" name="customTitaniumDark"/>
-                        </userDefinedRuntimeAttribute>
-                    </userDefinedRuntimeAttributes>
                 </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
