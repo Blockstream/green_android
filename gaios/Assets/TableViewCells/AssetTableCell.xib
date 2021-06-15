@@ -91,6 +91,7 @@
             <connections>
                 <outlet property="amountTickerLabel" destination="3KG-Z4-BBO" id="J0B-a5-iEH"/>
                 <outlet property="assetIconImageView" destination="n3x-c1-uy2" id="VcA-rS-SrF"/>
+                <outlet property="bgView" destination="FXP-Qv-ED2" id="HCM-k9-C50"/>
                 <outlet property="domainLabel" destination="zBL-Tv-x9z" id="sMP-ZE-srT"/>
                 <outlet property="headerLabel" destination="ieV-Vw-Irv" id="F0k-bf-Ija"/>
                 <outlet property="nameLabel" destination="dlp-Vj-oWD" id="VaU-at-O3e"/>

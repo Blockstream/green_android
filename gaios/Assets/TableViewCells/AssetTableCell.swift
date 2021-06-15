@@ -8,7 +8,8 @@ class AssetTableCell: UITableViewCell {
     @IBOutlet weak var domainLabel: UILabel!
     @IBOutlet weak var amountTickerLabel: UILabel!
     @IBOutlet weak var assetIconImageView: UIImageView!
-
+    @IBOutlet weak var bgView: UIView!
+    
     override func prepareForReuse() {
         headerLabel.text = ""
         headerLabel.isHidden = false
@@ -35,5 +36,6 @@ class AssetTableCell: UITableViewCell {
         domainLabel.isHidden = info?.entity?.domain.isEmpty ?? true
         assetIconImageView.image = icon
         self.backgroundColor = UIColor.customTitaniumDark()
+        bgView.layer.cornerRadius = 6.0
     }
 }

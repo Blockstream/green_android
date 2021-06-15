@@ -19,6 +19,8 @@ class SetPhoneViewController: KeyboardViewController {
         content.nextButton.setTitle(NSLocalizedString("id_get_code", comment: ""), for: .normal)
         content.nextButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         content.nextButton.setGradient(true)
+        content.textField.layer.cornerRadius = 5.0
+        content.countryCodeField.layer.cornerRadius = 5.0
     }
 
     override func viewWillAppear(_ animated: Bool) {

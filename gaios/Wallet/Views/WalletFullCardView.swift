@@ -36,6 +36,10 @@ class WalletFullCardView: UIView {
         sendImage.tintColor = isLiquid ? .white : UIColor.customMatrixGreen()
         sweepImage.tintColor = isLiquid ? .white : UIColor.customMatrixGreen()
         receiveImage.tintColor = isLiquid ? .white : UIColor.customMatrixGreen()
+        assetsView.layer.cornerRadius = 6.0
+        sendView.layer.cornerRadius = 6.0
+        sweepView.layer.cornerRadius = 6.0
+        receiveView.layer.cornerRadius = 6.0
     }
 
     override func layoutSubviews() {
@@ -49,7 +53,7 @@ class WalletFullCardView: UIView {
         gradient.frame = backgroundView.bounds
         backgroundView.layer.insertSublayer(gradient, at: 0)
         backgroundView.layer.masksToBounds = true
-
+        backgroundView.layer.cornerRadius = 6.0
         sendView.layer.maskedCorners = [.layerMinXMaxYCorner]
         receiveView.layer.maskedCorners = [.layerMaxXMaxYCorner]
 
