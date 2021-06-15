@@ -50,6 +50,9 @@ class RecoveryVerifyViewController: UIViewController {
             btn.borderColor = UIColor.customGrayLight()
             btn.layer.cornerRadius = 4.0
         }
+        for node in processNodes {
+            node.layer.cornerRadius = node.frame.size.width / 2.0
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
