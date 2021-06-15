@@ -9,7 +9,7 @@ class AssetTableCell: UITableViewCell {
     @IBOutlet weak var amountTickerLabel: UILabel!
     @IBOutlet weak var assetIconImageView: UIImageView!
     @IBOutlet weak var bgView: UIView!
-    
+
     override func prepareForReuse() {
         headerLabel.text = ""
         headerLabel.isHidden = false
