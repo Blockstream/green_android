@@ -17,6 +17,8 @@ data class TwoFactorStatus(
     @SerialName("result") val result: JsonElement? = null,
     @SerialName("error") val error: String? = null,
 
+    @SerialName("attempts_remaining") val attemptsRemaining: Int? = null,
+
     @SerialName("device") val device: Device? = null,
     @SerialName("required_data") val requiredData: DeviceRequiredData? = null,
 ) {

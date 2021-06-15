@@ -6,6 +6,8 @@ import android.content.DialogInterface
 import android.text.InputType
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
 import com.blockstream.gdk.TwoFactorResolver
 import com.blockstream.green.R
 import com.blockstream.green.databinding.EditTextDialogBinding
@@ -56,15 +58,16 @@ class DialogTwoFactorResolver(val context: Context, val method: String? = null) 
 
         }.subscribeOn(AndroidSchedulers.mainThread())
 
-    override fun getCode(method: String): Single<String> =
+    override fun getCode(method: String, attemptsRemaining: Int): Single<String> =
         Single.create<String> { emitter ->
 
             val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
 
             dialogBinding.hint = context.getString(R.string.id_code)
             dialogBinding.editText.inputType = InputType.TYPE_CLASS_NUMBER
+            dialogBinding.textInputLayout.helperText = context.getString(R.string.id_attempts_remaining_d, attemptsRemaining)
 
-            MaterialAlertDialogBuilder(context)
+           val dialog = MaterialAlertDialogBuilder(context)
                 .setTitle(context.getString(R.string.id_please_provide_your_1s_code, method))
                 .setView(dialogBinding.root)
                 .setPositiveButton(R.string.id_ok) { _, _ ->
@@ -78,6 +81,14 @@ class DialogTwoFactorResolver(val context: Context, val method: String? = null) 
                     }
                 }
                 .show()
+
+            // Auto proceed on 6 digits input
+            dialogBinding.editText.doAfterTextChanged {
+                if(it?.length == 6){
+                    emitter.onSuccess(dialogBinding.text ?: "")
+                    dialog.dismiss()
+                }
+            }
 
             // set focus to the input field
             dialogBinding.editText.requestFocus()
