@@ -116,7 +116,7 @@ class WalletNameViewController: UIViewController {
         }.ensure {
             self.stopLoader()
         }.done { _ in
-            self.next()
+            self.finalizeRegister()
         }.catch { error in
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
@@ -155,12 +155,37 @@ class WalletNameViewController: UIViewController {
         }
     }
 
+    func finalizeRegister() {
+        let params = OnBoardManager.shared.params
+        let bgq = DispatchQueue.global(qos: .background)
+
+        if params?.singleSig ?? false {
+            firstly {
+                return Guarantee()
+            }.compactMap(on: bgq) {
+                try getSession().createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue]).resolve()
+            }.ensure {
+                self.stopLoader()
+            }.done { _ in
+                self.next()
+            }.catch { e in
+                // Do we need a retry?
+                DropAlert().error(message: e.localizedDescription)
+            }
+        } else {
+            stopLoader()
+            next()
+        }
+    }
+
     func next() {
-        let account = OnBoardManager.shared.account()
-        AccountsManager.shared.current = account
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
-        self.navigationController?.pushViewController(vc, animated: true)
+        DispatchQueue.main.async {
+            let account = OnBoardManager.shared.account()
+            AccountsManager.shared.current = account
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController")
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 
 }
