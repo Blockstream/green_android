@@ -10,7 +10,7 @@ import java.util.*
 class AmountTextWatcher private constructor(val editText: TextInputEditText) : TextWatcher {
     private val decFormat = DecimalFormat.getInstance(Locale.getDefault()) as DecimalFormat
     private val symbols = decFormat.decimalFormatSymbols
-    private val defaultSeparator = Character.toString(symbols.decimalSeparator)
+    private val defaultSeparator = symbols.decimalSeparator.toString()
     private val otherSeparator = if ("." == defaultSeparator) "," else "."
 
     private val decimalKeyListener = DigitsKeyListener.getInstance("0123456789.,")

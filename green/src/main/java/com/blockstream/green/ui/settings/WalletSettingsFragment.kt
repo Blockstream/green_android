@@ -24,6 +24,7 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
+import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -181,7 +182,6 @@ class WalletSettingsFragment :
                     privacyPolicyPreference -> {
                         openBrowser(settingsManager.getApplicationSettings(), Urls.PRIVACY_POLICY)
                     }
-
                     biometricsPreference -> {
                         if (viewModel.biometricsLiveData.value == null) {
                             enableBiometrics()
@@ -289,39 +289,46 @@ class WalletSettingsFragment :
             list += changePinPreference
             list += biometricsPreference
         }else {
+            val is2faReset = session.getTwoFactorReset()?.isActive == true
 
-            list += TitleListItem(StringHolder(R.string.id_general))
+            if (is2faReset) {
 
-            if (!isLiquid) {
-                list += watchOnlyPreference
+                list += TitleListItem(StringHolder(R.string.id_recovery))
+                list += recoveryPreference
+
+            } else {
+                list += TitleListItem(StringHolder(R.string.id_general))
+
+                if (!isLiquid) {
+                    list += watchOnlyPreference
+                }
+
+                list += unitPreference
+
+                if (!isLiquid) {
+                    list += priceSourcePreference
+                    list += txPriorityPreference
+                    list += customFeeRatePreference
+                }
+
+
+                list += TitleListItem(StringHolder(R.string.id_security))
+
+                list += changePinPreference
+
+                list += biometricsPreference
+
+                list += altTimeoutPreference
+
+                list += twoFactorAuthenticationPreference
+
+                list += TitleListItem(StringHolder(R.string.id_recovery))
+                list += recoveryPreference
+
+                list += TitleListItem(StringHolder(R.string.id_advanced))
+
+                list += pgpPreference
             }
-
-            list += unitPreference
-
-            if (!isLiquid) {
-                list += priceSourcePreference
-                list += txPriorityPreference
-                list += customFeeRatePreference
-            }
-
-
-            list += TitleListItem(StringHolder(R.string.id_security))
-
-            list += changePinPreference
-
-            list += biometricsPreference
-
-            list += altTimeoutPreference
-
-            list += twoFactorAuthenticationPreference
-
-            list += TitleListItem(StringHolder(R.string.id_recovery))
-
-            list += recoveryPreference
-
-            list += TitleListItem(StringHolder(R.string.id_advanced))
-
-            list += pgpPreference
 
             list += TitleListItem(StringHolder(R.string.id_about))
 
@@ -395,7 +402,6 @@ class WalletSettingsFragment :
         viewModel.settingsLiveData.value?.let { settings ->
 
             val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
-
             dialogBinding.text = settings.pgp
 
             MaterialAlertDialogBuilder(requireContext())

@@ -1,6 +1,7 @@
 package com.blockstream.green.utils
 
 import com.blockstream.gdk.params.Convert
+import com.blockstream.gdk.params.Limits
 import com.blockstream.green.gdk.GreenSession
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
@@ -13,12 +14,7 @@ import kotlin.jvm.Throws
 // Parse user input respecting user Locale and convert the value to GDK compatible value (US Locale)
 data class UserInput(val amount: String, val decimals: Int, val unitKey: String, val isFiat: Boolean) {
 
-    fun toLimit(): JsonElement {
-        return buildJsonObject {
-            put("is_fiat", isFiat)
-            put(if(isFiat) "fiat" else unitKey, amount)
-        }
-    }
+    fun toLimit() = Limits.fromUnit(unitKey, amount)
 
     fun getBalance(session: GreenSession) = session.convertAmount(Convert.forUnit(unitKey, amount))
 

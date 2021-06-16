@@ -15,7 +15,10 @@ fun getFiatCurrency(session: GreenSession): String{
 }
 
 // Use it for GDK purposes
-fun getUnit(session: GreenSession) = session.getSettings()?.unit ?: "btc"
+// Lowercase & replace μbtc -> ubtc
+fun getUnit(session: GreenSession) = session.getSettings()?.unit?.lowercase()
+    ?.replace("\u00B5btc", "ubtc")
+    ?: "btc"
 
 // Use it for UI purposes
 fun getBitcoinOrLiquidUnit(session: GreenSession): String{

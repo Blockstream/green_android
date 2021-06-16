@@ -88,6 +88,7 @@ class GreenSession constructor(
     fun getTwoFactorResetObservable(): Observable<TwoFactorReset> = twoFactorResetSubject.hide()
     fun getBalancesObservable(): Observable<List<BalancePair>> = balancesSubject.hide()
 
+    fun getTwoFactorReset(): TwoFactorReset? = twoFactorResetSubject.value
 
     fun getSettings() : Settings? = settingsSubject.value
 
@@ -406,7 +407,10 @@ class GreenSession constructor(
         password
     )
 
-    fun twofactorChangeLimits(limits: JsonElement) =
+    fun twofactorCancelReset() =
+        AuthHandler(greenWallet, greenWallet.twofactorCancelReset(gaSession))
+
+    fun twofactorChangeLimits(limits: Limits) =
         AuthHandler(greenWallet, greenWallet.twofactorChangeLimits(gaSession, limits))
 
     fun changeSettings(settings: Settings) =

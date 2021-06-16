@@ -189,8 +189,10 @@ class GreenWallet(
 
     fun destroyAuthHandler(gaAuthHandler: GAAuthHandler) = gdk.destroyAuthHandler(gaAuthHandler)
 
-    fun twofactorChangeLimits(session: GASession, limits: JsonElement) =
-        GDK.twofactor_change_limits(session, limits)
+    fun twofactorCancelReset(session: GASession) = gdk.twofactorCancelReset(session)
+
+    fun twofactorChangeLimits(session: GASession, limits: Limits) =
+        gdk.twofactorChangeLimits(session, limits)
 
     fun convertAmount(session: GASession, amount: Convert): Balance = Balance.fromJsonElement(
         JsonDeserializer,

@@ -108,11 +108,12 @@ class WalletSettingsViewModel @AssistedInject constructor(
         )
     }
 
-    fun setLimits(limits: JsonElement, twoFactorResolver: DialogTwoFactorResolver){
+    fun setLimits(limits: Limits, twoFactorResolver: DialogTwoFactorResolver){
         session.observable {
             session.twofactorChangeLimits(limits).result<Limits>(twoFactorResolver = twoFactorResolver)
         }.subscribeBy(
             onError = {
+                it.printStackTrace()
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {

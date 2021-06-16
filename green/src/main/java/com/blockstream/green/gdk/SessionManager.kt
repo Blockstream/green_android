@@ -161,13 +161,13 @@ class SessionManager(
         return session
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onEnterForeground() {
         timeoutTimers.forEach { it.cancel() }
         timeoutTimers.clear()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     fun onEnterBackground() {
         for(session in sessions.filter { it.value.isConnected }.values){
 

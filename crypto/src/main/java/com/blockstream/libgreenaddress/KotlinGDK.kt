@@ -112,6 +112,8 @@ class KotlinGDK {
 
     fun destroyAuthHandler(gaAuthHandler: GAAuthHandler) = GDK.destroy_auth_handler(gaAuthHandler)
 
+    fun twofactorCancelReset(session: GASession) = GDK.twofactor_cancel_reset(session)
+
     fun twofactorChangeLimits(session: GASession, limits: Limits) = GDK.twofactor_change_limits(session, limits)
 
     fun convertAmount(session: GASession, convert: Convert) = GDK.convert_amount(session, convert)

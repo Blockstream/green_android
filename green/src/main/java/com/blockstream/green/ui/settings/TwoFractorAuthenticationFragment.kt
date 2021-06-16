@@ -253,11 +253,11 @@ class TwoFractorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBi
 
             if (limits.isFiat) {
                 binding.amount = limits.fiat(withUnit = false)
-            } else {
-                binding.amount = limits.btc(session, withUnit = false)
+            } else { binding.amount = limits.btc(session, withUnit = false)
             }
         }
 
+        AmountTextWatcher.watch(binding.amountEditText)
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.id_set_twofactor_threshold)
@@ -307,6 +307,8 @@ class TwoFractorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBi
     }
 
     private fun reset2FA() {
+
+
 
     }
 }
