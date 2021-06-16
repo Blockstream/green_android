@@ -1,5 +1,9 @@
 import UIKit
 
+protocol WalletSettingsViewControllerDelegate: AnyObject {
+    func didSet(tor: Bool)
+}
+
 class WalletSettingsViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -37,6 +41,8 @@ class WalletSettingsViewController: UIViewController {
 
     @IBOutlet weak var btnCancel: UIButton!
     @IBOutlet weak var btnSave: UIButton!
+
+    weak var delegate: WalletSettingsViewControllerDelegate?
 
     private var networkSettings: [String: Any] {
         get {
@@ -141,6 +147,7 @@ class WalletSettingsViewController: UIViewController {
             "tor": switchTor.isOn,
             "socks5_hostname": socks5.split(separator: ":").first ?? "",
             "socks5_port": socks5.split(separator: ":").last ?? ""]
+        delegate?.didSet(tor: switchTor.isOn)
         dismiss(animated: true, completion: nil)
     }
 

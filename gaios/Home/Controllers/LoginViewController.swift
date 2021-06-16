@@ -308,8 +308,9 @@ class LoginViewController: UIViewController {
 
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController")
-        present(vc, animated: true) {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            vc.delegate = self
+            present(vc, animated: true) {}
         }
     }
 
@@ -367,5 +368,15 @@ extension LoginViewController: UIPopoverPresentationControllerDelegate {
 extension LoginViewController: DialogTorSingleSigViewControllerDelegate {
     func didContinue() {
         torCheckDone()
+    }
+}
+
+extension LoginViewController: WalletSettingsViewControllerDelegate {
+    func didSet(tor: Bool) {
+        if tor == true && account?.isSingleSig ?? false {
+            DispatchQueue.main.async {
+                self.presentDialogTorUnavailable()
+            }
+        }
     }
 }
