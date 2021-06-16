@@ -20,6 +20,7 @@ class AccountCreateSetNameViewController: UIViewController {
         setStyle()
         updateUI()
         hideKeyboardWhenTappedAround()
+        fieldName.becomeFirstResponder()
     }
 
     func setContent() {
