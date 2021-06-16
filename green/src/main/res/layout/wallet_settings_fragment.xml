@@ -10,6 +10,10 @@
             name="vm"
             type="com.blockstream.green.ui.settings.WalletSettingsViewModel" />
 
+        <variable
+            name="withSaveButton"
+            type="Boolean" />
+
     </data>
 
 
@@ -27,6 +31,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/id_save"
+            tools:visibility="visible"
+            isVisible="@{withSaveButton}"
+            android:enabled="@{!vm.onProgress}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
 
         <com.google.android.material.progressindicator.LinearProgressIndicator

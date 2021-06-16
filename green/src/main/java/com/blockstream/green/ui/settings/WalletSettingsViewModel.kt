@@ -190,6 +190,26 @@ class WalletSettingsViewModel @AssistedInject constructor(
         )
     }
 
+    fun setCsvTime(csvTime: Int, twoFactorResolver: DialogTwoFactorResolver){
+        session.observable {
+            it.setCsvTime(csvTime).resolve(twoFactorResolver = twoFactorResolver)
+
+            it.updateSettings()
+            Bridge.updateSettingsV3()
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onError = {
+                onError.postValue(ConsumableEvent(it))
+            },
+            onSuccess = {
+                onEvent.postValue(ConsumableEvent(true))
+            }
+        )
+    }
+
     fun enableBiometrics(cipher: Cipher) {
         session.observable {
             val pin = greenWallet.randomChars(15)

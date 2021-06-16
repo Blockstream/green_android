@@ -31,7 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TwoFractorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
+class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
     val args: WalletSettingsFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
@@ -42,6 +42,7 @@ class TwoFractorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBi
     private lateinit var callPreference: PreferenceListItem
     private lateinit var toptPreference: PreferenceListItem
     private lateinit var thresholdPreference: PreferenceListItem
+    private lateinit var expirationPreference: PreferenceListItem
 
     @Inject
     lateinit var settingsManager: SettingsManager
@@ -64,6 +65,7 @@ class TwoFractorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBi
             PreferenceListItem(StringHolder(R.string.id_authenticator_app), withSwitch = true)
 
         thresholdPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_threshold))
+        expirationPreference = PreferenceListItem(StringHolder(R.string.id_customize_2fa_expiration_of))
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
@@ -105,6 +107,12 @@ class TwoFractorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBi
 
                         thresholdPreference -> {
                             handleTwoFactorThreshold()
+                        }
+
+                        expirationPreference -> {
+                            navigate(TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorExpirationFragment(
+                                wallet
+                            ))
                         }
 
                         else -> {
@@ -203,6 +211,12 @@ class TwoFractorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBi
             it.subtitle =
                 StringHolder(if (twoFactorConfig.gauth.enabled) getString(R.string.id_enabled) else null)
             it.withButton = twoFactorConfig.gauth.enabled
+        }
+
+        list += TitleListItem(StringHolder(R.string.id_2fa_expiration))
+
+        if(!session.isLiquid && !session.isElectrum) {
+            list += expirationPreference
         }
 
         list += TitleListItem(StringHolder(R.string.id_2fa_threshold))

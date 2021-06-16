@@ -416,6 +416,9 @@ class GreenSession constructor(
     fun changeSettings(settings: Settings) =
         AuthHandler(greenWallet, greenWallet.changeSettings(gaSession, settings))
 
+    fun setCsvTime(value: Int) =
+        AuthHandler(greenWallet, greenWallet.setCsvTime(gaSession, value))
+
     fun updateSettings(){
         observable {
             greenWallet.getSettings(gaSession)

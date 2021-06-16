@@ -96,6 +96,9 @@ class KotlinGDK {
     fun changeSettings(session: GASession, settings: Settings): GAAuthHandler =
         GDK.change_settings(session, settings)
 
+    fun setCsvTime(session: GASession, value: JsonElement): GAAuthHandler =
+        GDK.set_csvtime(session, value)
+
     fun getSettings(session: GASession) = GDK.get_settings(session)
 
     fun getAvailableCurrencies(session: GASession) = GDK.get_available_currencies(session)

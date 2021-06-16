@@ -12,9 +12,11 @@ data class PreferenceListItem(
     var title: StringHolder = StringHolder(null),
     var subtitle: StringHolder = StringHolder(null),
     val withSwitch : Boolean = false,
-    var withButton: Boolean = false
+    var withButton: Boolean = false,
+    val withRadio : Boolean = false,
 ) : AbstractBindingItem<ListItemPreferenceBinding>() {
     var switchChecked: Boolean = false
+    var radioChecked: Boolean = false
     var buttonText : String? = null
 
     override val type: Int
@@ -30,6 +32,8 @@ data class PreferenceListItem(
 
         binding.switchMaterial.isVisible = withSwitch
         binding.switchMaterial.isChecked = switchChecked
+        binding.radionMaterial.isVisible = withRadio
+        binding.radionMaterial.isChecked = radioChecked
         binding.button.isVisible = withButton
 
     }

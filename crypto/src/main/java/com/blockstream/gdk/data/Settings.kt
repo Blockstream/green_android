@@ -12,13 +12,14 @@ import kotlinx.serialization.json.jsonPrimitive
 @Serializable
 data class Settings(
     @SerialName("altimeout") val altimeout: Int,
-    @SerialName("csvtime") val csvtime: Int = 0,
+    @SerialName("csvtime") val csvTime: Int = 0,
     @SerialName("nlocktime") val nlocktime: Int = 0,
     @SerialName("notifications") val notifications: Map<String, Boolean>? = null,
     @SerialName("pricing") val pricing: Pricing,
     @SerialName("required_num_blocks") val requiredNumBlocks: Int,
     @SerialName("unit") val unit: String,
     @SerialName("pgp") val pgp: String? = null,
+
 ): GAJson<Settings>() {
 
     override fun kSerializer(): KSerializer<Settings> {

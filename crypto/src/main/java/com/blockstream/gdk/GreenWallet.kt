@@ -8,9 +8,7 @@ import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.GDK
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.*
 import java.security.SecureRandom
 import kotlin.random.asKotlinRandom
 
@@ -158,6 +156,10 @@ class GreenWallet(
 
     fun changeSettings(session: GASession, settings: Settings) =
         gdk.changeSettings(session, settings)
+
+    fun setCsvTime(session: GASession, value: Int) = gdk.setCsvTime(session, buildJsonObject {
+            put("value", value)
+        })
 
     fun getAvailableCurrencies(session: GASession): List<Pricing> =
         Pricing.fromJsonElement(gdk.getAvailableCurrencies(session) as JsonElement)

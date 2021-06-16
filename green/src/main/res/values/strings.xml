@@ -868,5 +868,6 @@
   <string name="id_bip49_accounts_allow_you_to_segratate">BIP49 accounts allow you to segregate funds, and to receive on wrapped segwit addresses, thus ensuring the highest backwards compatibility when receiving funds from anyone on the network.</string>
 
   <string name="id_you_have_tor_enabled">You have Tor enabled, are you sure you want to open this webpage?</string>
+  <string name="id_2fa_expiration">2FA Expiration</string>
 
 </resources>
