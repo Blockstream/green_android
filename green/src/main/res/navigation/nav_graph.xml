@@ -43,20 +43,7 @@
             android:id="@+id/twoFractorAuthenticationFragment"
             android:name="com.blockstream.green.ui.settings.TwoFactorAuthenticationFragment"
             android:label="@string/id_2fa"
-            tools:layout="@layout/wallet_settings_fragment"
-            app:startDestination="@id/action_twoFractorAuthenticationFragment_to_twoFactorExpirationFragment">
-            <argument
-                android:name="wallet"
-                app:argType="com.blockstream.green.database.Wallet" />
-            <action
-                android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorExpirationFragment"
-                app:destination="@id/twoFactorExpirationFragment" />
-        </fragment>
-        <fragment
-            android:id="@+id/twoFactorExpirationFragment"
-            android:name="com.blockstream.green.ui.settings.TwoFactorExpirationFragment"
-            tools:layout="@layout/wallet_settings_fragment"
-            android:label="@string/id_2fa_expiration">
+            tools:layout="@layout/wallet_settings_fragment">
             <argument
                 android:name="wallet"
                 app:argType="com.blockstream.green.database.Wallet" />

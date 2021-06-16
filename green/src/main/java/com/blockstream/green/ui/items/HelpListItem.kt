@@ -7,14 +7,17 @@ import com.blockstream.green.databinding.ListItemHelpBinding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.ui.utils.StringHolder
 
-class HelpListItem(
+data class HelpListItem(
     private val title: StringHolder = StringHolder(null),
     private val message: StringHolder = StringHolder(null),
     private val buttonText: StringHolder = StringHolder(null)
-) :
-    AbstractBindingItem<ListItemHelpBinding>() {
+) : AbstractBindingItem<ListItemHelpBinding>() {
     override val type: Int
         get() = R.id.fastadapter_help_item_id
+
+    init {
+        identifier = hashCode().toLong()
+    }
 
     override fun bindView(binding: ListItemHelpBinding, payloads: List<Any>) {
         title.applyToOrHide(binding.title)

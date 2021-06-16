@@ -202,6 +202,7 @@ class WalletSettingsViewModel @AssistedInject constructor(
             onProgress.postValue(false)
         }.subscribeBy(
             onError = {
+                it.printStackTrace()
                 onError.postValue(ConsumableEvent(it))
             },
             onSuccess = {

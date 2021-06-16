@@ -68,9 +68,14 @@ fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String {
     return throwable.cause?.message ?: throwable.message ?: "An error occurred"
 }
 
-fun Fragment.errorDialog(throwable: Throwable, print: Boolean = false, listener: (() -> Unit)? = null) {
-    if(print) {
+fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
+    if(isDevelopmentFlavor()) {
         throwable.printStackTrace()
+    }
+
+    // Prevent showing user triggered cancel events as errors
+    if(throwable.message == "id_action_canceled"){
+        return
     }
 
     errorDialog(

@@ -75,15 +75,7 @@ class TwoFactorExpirationFragment : WalletFragment<WalletSettingsFragmentBinding
             adapter = fastAdapter
         }
 
-        binding.buttonSave.setOnClickListener {
-            viewModel.settingsLiveData.value?.let { settings ->
-                val selectedIndex = radioPreferences.indexOfFirst { it.radioChecked }
-                if(selectedIndex > -1) {
-                    val csvTime = session.network.csvBuckets[selectedIndex]
-                    viewModel.setCsvTime(csvTime, DialogTwoFactorResolver(requireContext()))
-                }
-            }
-        }
+
 
         viewModel.onError.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandledOrReturnNull()?.let {

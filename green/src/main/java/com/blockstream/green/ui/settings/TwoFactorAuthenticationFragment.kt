@@ -4,8 +4,11 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
+import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
 import com.blockstream.green.*
 import com.blockstream.green.databinding.*
@@ -42,7 +45,15 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
     private lateinit var callPreference: PreferenceListItem
     private lateinit var toptPreference: PreferenceListItem
     private lateinit var thresholdPreference: PreferenceListItem
-    private lateinit var expirationPreference: PreferenceListItem
+
+    private val csvBucketPreferences by lazy {
+        val titles = resources.getStringArray(R.array.csv_titles)
+        val subtitles = resources.getStringArray(R.array.csv_subtitles)
+
+        titles.mapIndexed { index, title ->
+            PreferenceListItem(StringHolder(title), StringHolder(subtitles[index]), withRadio = true)
+        }
+    }
 
     @Inject
     lateinit var settingsManager: SettingsManager
@@ -65,7 +76,6 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
             PreferenceListItem(StringHolder(R.string.id_authenticator_app), withSwitch = true)
 
         thresholdPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_threshold))
-        expirationPreference = PreferenceListItem(StringHolder(R.string.id_customize_2fa_expiration_of))
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 
@@ -109,14 +119,18 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
                             handleTwoFactorThreshold()
                         }
 
-                        expirationPreference -> {
-                            navigate(TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorExpirationFragment(
-                                wallet
-                            ))
-                        }
-
                         else -> {
+                            if(csvBucketPreferences.contains(item)){
+                                csvBucketPreferences.forEach { it -> it.radioChecked = false }
+                                (item as PreferenceListItem).radioChecked = true
+                                notifyDataSetChanged()
 
+                                val selectedIndex = csvBucketPreferences.indexOfFirst { it.radioChecked }
+                                if(selectedIndex > -1) {
+                                    val csvTime = session.network.csvBuckets[selectedIndex]
+                                    viewModel.setCsvTime(csvTime, DialogTwoFactorResolver(requireContext()))
+                                }
+                            }
                         }
                     }
                 }
@@ -157,30 +171,29 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
         viewModel.onError.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandledOrReturnNull()?.let {
                 errorDialog(it)
+                updateAdapter()
             }
         }
 
-        viewModel.twoFactorConfigLiveData.observe(viewLifecycleOwner) {
-            updateAdapter(it)
+        viewModel.onEvent.observe(viewLifecycleOwner) { event ->
+            event?.getContentIfNotHandledOrReturnNull()?.let {
+                updateAdapter()
+            }
         }
 
-
-//        viewModel.twoFactorConfigLiveData.observe(viewLifecycleOwner) {
-//            twoFactorLimitsPreference.subtitle = StringHolder(it.limits.let { limits ->
-//                if(!limits.isFiat && limits.satoshi == 0L){
-//                    getString(R.string.id_set_twofactor_threshold)
-//                }else if(limits.isFiat){
-//                    limits.fiat()
-//                }else{
-//                    limits.btc(session)
-//                }
-//            })
-//
-//            updateAdapter()
-//        }
+        MediatorLiveData<Boolean>().apply {
+            val block = { _: Any? -> value = true }
+            addSource(viewModel.settingsLiveData, block)
+            addSource(viewModel.twoFactorConfigLiveData, block)
+        }.observe(viewLifecycleOwner) {
+            updateAdapter()
+        }
     }
 
-    private fun updateAdapter(twoFactorConfig: TwoFactorConfig) {
+    private fun updateAdapter() {
+        val settings = viewModel.settingsLiveData.value!!
+        val twoFactorConfig = viewModel.twoFactorConfigLiveData.value!!
+
         val list = mutableListOf<GenericItem>()
 
         list += HelpListItem(
@@ -213,12 +226,6 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
             it.withButton = twoFactorConfig.gauth.enabled
         }
 
-        list += TitleListItem(StringHolder(R.string.id_2fa_expiration))
-
-        if(!session.isLiquid && !session.isElectrum) {
-            list += expirationPreference
-        }
-
         list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
 
         list += HelpListItem(message = StringHolder(R.string.id_spend_your_bitcoin_without_2fa))
@@ -236,6 +243,19 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
         }
 
         list += TitleListItem(StringHolder(R.string.id_2fa_expiry))
+
+        if(!session.isLiquid) {
+
+            list += HelpListItem(message = StringHolder(R.string.id_customize_2fa_expiration_of))
+
+            list += csvBucketPreferences
+
+            val selectedIndex = session.network.csvBuckets.indexOf(settings.csvTime)
+
+            csvBucketPreferences.forEachIndexed { index, radioPreference ->
+                radioPreference.radioChecked = index == selectedIndex
+            }
+        }
 
         list += HelpListItem(
             message = StringHolder(R.string.id_your_2fa_expires_so_that_if_you),
