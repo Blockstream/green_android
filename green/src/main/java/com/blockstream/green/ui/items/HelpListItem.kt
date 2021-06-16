@@ -4,13 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemHelpBinding
+import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 
 data class HelpListItem(
-    private val title: StringHolder = StringHolder(null),
-    private val message: StringHolder = StringHolder(null),
-    private val buttonText: StringHolder = StringHolder(null)
+    private val title: StringHolder = StringHolder(),
+    private val message: StringHolder = StringHolder(),
+    private val buttonText: StringHolder = StringHolder()
 ) : AbstractBindingItem<ListItemHelpBinding>() {
     override val type: Int
         get() = R.id.fastadapter_help_item_id

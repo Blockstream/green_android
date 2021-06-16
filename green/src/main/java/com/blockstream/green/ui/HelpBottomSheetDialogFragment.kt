@@ -5,11 +5,11 @@ import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

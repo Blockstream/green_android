@@ -6,14 +6,13 @@ import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.utils.StringHolder
 import com.greenaddress.Bridge
-import com.greenaddress.greenapi.data.EventData
 import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment
 import com.greenaddress.greenbits.ui.preferences.SettingsActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 
 // TODO this could be a WalletBottomSheetDialogFragment in v4
 class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment() {
