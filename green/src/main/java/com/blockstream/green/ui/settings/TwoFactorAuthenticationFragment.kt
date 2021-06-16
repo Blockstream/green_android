@@ -4,15 +4,13 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
 import com.blockstream.green.*
 import com.blockstream.green.databinding.*
-import com.blockstream.green.settings.ApplicationSettings
+import com.blockstream.green.lifecycle.MergeLiveData
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.HelpListItem
@@ -180,10 +178,9 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
             }
         }
 
-        MediatorLiveData<Boolean>().apply {
-            val block = { _: Any? -> value = true }
-            addSource(viewModel.settingsLiveData, block)
-            addSource(viewModel.twoFactorConfigLiveData, block)
+        // Update when both available
+        MergeLiveData(viewModel.settingsLiveData, viewModel.twoFactorConfigLiveData) { settings: Settings, twoFactorConfig: TwoFactorConfig ->
+            settings to twoFactorConfig
         }.observe(viewLifecycleOwner) {
             updateAdapter()
         }
