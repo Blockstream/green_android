@@ -33,6 +33,10 @@ class ChooseSecurityViewController: UIViewController {
     func setStyle() {
         cardSimple.layer.cornerRadius = 5.0
         cardAdvanced.layer.cornerRadius = 5.0
+
+        if OnBoardManager.shared.params?.network != "testnet" {
+            cardSimple.alpha = 0.5
+        }
     }
 
     func setActions() {
@@ -43,6 +47,7 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     @objc func didPressCardSimple() {
+        if OnBoardManager.shared.params?.network != "testnet" { return }
         OnBoardManager.shared.params?.singleSig = true
         next()
     }
