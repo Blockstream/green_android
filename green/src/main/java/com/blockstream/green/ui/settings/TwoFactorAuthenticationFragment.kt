@@ -9,6 +9,7 @@ import androidx.navigation.navGraphViewModels
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
 import com.blockstream.green.*
+import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.*
 import com.blockstream.green.lifecycle.MergeLiveData
 import com.blockstream.green.settings.SettingsManager
@@ -31,7 +32,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
+class TwoFactorAuthenticationFragment :
+    WalletFragment<WalletSettingsFragmentBinding>(R.layout.wallet_settings_fragment, 0) {
     val args: WalletSettingsFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
@@ -48,7 +50,11 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
         val subtitles = resources.getStringArray(R.array.csv_subtitles)
 
         titles.mapIndexed { index, title ->
-            PreferenceListItem(StringHolder(title), StringHolder(subtitles[index]), withRadio = true)
+            PreferenceListItem(
+                StringHolder(title),
+                StringHolder(subtitles[index]),
+                withRadio = true
+            )
         }
     }
 
@@ -82,33 +88,33 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
                     when (item) {
                         emailPreference -> {
                             if (it.email.enabled) {
-                                disable2FA("email")
+                                disable2FA(TwoFactorMethod.EMAIL)
                             } else {
-                                enable2FA("email")
+                                enable2FA(TwoFactorMethod.EMAIL)
                             }
                         }
 
                         smsPreference -> {
                             if (it.sms.enabled) {
-                                disable2FA("sms")
+                                disable2FA(TwoFactorMethod.SMS)
                             } else {
-                                enable2FA("sms")
+                                enable2FA(TwoFactorMethod.SMS)
                             }
                         }
 
                         callPreference -> {
                             if (it.phone.enabled) {
-                                disable2FA("phone")
+                                disable2FA(TwoFactorMethod.PHONE)
                             } else {
-                                enable2FA("phone")
+                                enable2FA(TwoFactorMethod.PHONE)
                             }
                         }
 
                         toptPreference -> {
                             if (it.gauth.enabled) {
-                                disable2FA("gauth")
+                                disable2FA(TwoFactorMethod.AUTHENTICATOR)
                             } else {
-                                enable2FA("gauth")
+                                enable2FA(TwoFactorMethod.AUTHENTICATOR)
                             }
                         }
 
@@ -117,15 +123,19 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
                         }
 
                         else -> {
-                            if(csvBucketPreferences.contains(item)){
+                            if (csvBucketPreferences.contains(item)) {
                                 csvBucketPreferences.forEach { it -> it.radioChecked = false }
                                 (item as PreferenceListItem).radioChecked = true
                                 notifyDataSetChanged()
 
-                                val selectedIndex = csvBucketPreferences.indexOfFirst { it.radioChecked }
-                                if(selectedIndex > -1) {
+                                val selectedIndex =
+                                    csvBucketPreferences.indexOfFirst { it.radioChecked }
+                                if (selectedIndex > -1) {
                                     val csvTime = session.network.csvBuckets[selectedIndex]
-                                    viewModel.setCsvTime(csvTime, DialogTwoFactorResolver(requireContext()))
+                                    viewModel.setCsvTime(
+                                        csvTime,
+                                        DialogTwoFactorResolver(requireContext())
+                                    )
                                 }
                             }
                         }
@@ -179,7 +189,10 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
         }
 
         // Update when both available
-        MergeLiveData(viewModel.settingsLiveData, viewModel.twoFactorConfigLiveData) { settings: Settings, twoFactorConfig: TwoFactorConfig ->
+        MergeLiveData(
+            viewModel.settingsLiveData,
+            viewModel.twoFactorConfigLiveData
+        ) { settings: Settings, twoFactorConfig: TwoFactorConfig ->
             settings to twoFactorConfig
         }.observe(viewLifecycleOwner) {
             updateAdapter()
@@ -240,7 +253,7 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
 
         list += TitleListItem(StringHolder(R.string.id_2fa_expiry))
 
-        if(!session.isLiquid) {
+        if (!session.isLiquid) {
 
             list += HelpListItem(message = StringHolder(R.string.id_customize_2fa_expiration_of))
 
@@ -283,7 +296,8 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
 
             if (limits.isFiat) {
                 binding.amount = limits.fiat(withUnit = false)
-            } else { binding.amount = limits.btc(session, withUnit = false)
+            } else {
+                binding.amount = limits.btc(session, withUnit = false)
             }
         }
 
@@ -306,11 +320,16 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
             .show()
     }
 
-    private fun enable2FA(method: String) {
-
+    private fun enable2FA(method: TwoFactorMethod) {
+        navigate(
+            TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorEditFragment(
+                wallet,
+                method
+            )
+        )
     }
 
-    private fun disable2FA(method: String) {
+    private fun disable2FA(method: TwoFactorMethod) {
         viewModel.twoFactorConfigLiveData.value?.let {
             val binding = CustomTitleDialogBinding.inflate(requireActivity().layoutInflater)
 
@@ -324,20 +343,19 @@ class TwoFactorAuthenticationFragment : WalletFragment<WalletSettingsFragmentBin
                 .setSingleChoiceItems(it.enabledMethods.toTypedArray(), -1) { dialog, i: Int ->
                     viewModel.disable2FA(
                         method,
-                        DialogTwoFactorResolver(requireContext(), method = method)
+                        DialogTwoFactorResolver(requireContext(), method = it.enabledMethods[i])
                     )
                     dialog.dismiss()
                 }
                 .setNegativeButton(android.R.string.cancel, null)
-                .setNeutralButton(R.string.id_i_lost_my_2fa) { dialogInterface: DialogInterface, i: Int ->
-                    reset2FA()
+                .setNeutralButton(R.string.id_i_lost_my_2fa) { _: DialogInterface, _: Int ->
+                    reset2FA(method)
                 }
                 .show()
         }
     }
 
-    private fun reset2FA() {
-
+    private fun reset2FA(method: TwoFactorMethod) {
 
 
     }

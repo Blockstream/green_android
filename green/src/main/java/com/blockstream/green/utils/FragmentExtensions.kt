@@ -13,6 +13,7 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.biometric.BiometricPrompt
 import androidx.core.app.ShareCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.BuildConfig
@@ -22,13 +23,17 @@ import com.blockstream.green.gdk.isNotAuthorized
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
-fun <T>Fragment.getNavigationResult(key: String = "result") = findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(
-    key
-)
-fun Fragment.clearNavigationResult(key: String = "result") = findNavController().currentBackStackEntry?.savedStateHandle?.set(
-    key,
-    null
-)
+
+fun <T> Fragment.getNavigationResult(key: String = "result") =
+    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(
+        key
+    )
+
+fun Fragment.clearNavigationResult(key: String = "result") =
+    findNavController().currentBackStackEntry?.savedStateHandle?.set(
+        key,
+        null
+    )
 
 fun <T> Fragment.setNavigationResult(
     result: T,
@@ -46,6 +51,12 @@ fun Fragment.hideKeyboard() {
     view?.let { context?.hideKeyboard(it) }
 }
 
+fun Fragment.openKeyboard() {
+    (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)?.toggleSoftInputFromWindow(
+        view?.applicationWindowToken, InputMethodManager.SHOW_FORCED, 0
+    )
+}
+
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
@@ -54,14 +65,14 @@ fun Context.hideKeyboard(view: View) {
 fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String {
     throwable.message?.let {
         val intRes = resources.getIdentifier(it, "string", BuildConfig.APPLICATION_ID)
-        if(intRes > 0){
+        if (intRes > 0) {
             return getString(intRes)
         }
     }
 
-    if(throwable.isConnectionError()){
+    if (throwable.isConnectionError()) {
         return getString(R.string.id_connection_failed)
-    }else if(throwable.isNotAuthorized()){
+    } else if (throwable.isNotAuthorized()) {
         return getString(R.string.id_login_failed)
     }
 
@@ -69,12 +80,12 @@ fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String {
 }
 
 fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
-    if(isDevelopmentFlavor()) {
+    if (isDevelopmentFlavor()) {
         throwable.printStackTrace()
     }
 
     // Prevent showing user triggered cancel events as errors
-    if(throwable.message == "id_action_canceled"){
+    if (throwable.message == "id_action_canceled") {
         return
     }
 
@@ -118,8 +129,12 @@ fun Fragment.toast(text: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(requireContext(), text, duration).show()
 }
 
-fun Fragment.errorSnackbar(throwable: Throwable, duration: Int = Snackbar.LENGTH_SHORT, print: Boolean = false) {
-    if(print) {
+fun Fragment.errorSnackbar(
+    throwable: Throwable,
+    duration: Int = Snackbar.LENGTH_SHORT,
+    print: Boolean = false
+) {
+    if (print) {
         throwable.printStackTrace()
     }
     snackbar(errorFromResourcesAndGDK(throwable), duration)
@@ -130,7 +145,7 @@ fun Fragment.snackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
 }
 
 fun Fragment.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
-    view?.let{
+    view?.let {
         Snackbar.make(it, text, duration).show()
     }
 }
@@ -172,7 +187,7 @@ fun Fragment.showPopupMenu(
     popup.show()
 }
 
-fun Fragment.handleBiometricsError(errorCode: Int, errString: CharSequence){
+fun Fragment.handleBiometricsError(errorCode: Int, errString: CharSequence) {
     if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
         // This is OK
     } else {

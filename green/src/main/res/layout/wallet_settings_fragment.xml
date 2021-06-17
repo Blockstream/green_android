@@ -10,10 +10,6 @@
             name="vm"
             type="com.blockstream.green.ui.settings.WalletSettingsViewModel" />
 
-        <variable
-            name="withSaveButton"
-            type="Boolean" />
-
     </data>
 
 

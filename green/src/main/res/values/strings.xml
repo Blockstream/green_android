@@ -869,4 +869,7 @@
 
   <string name="id_you_have_tor_enabled">You have Tor enabled, are you sure you want to open this webpage?</string>
 
+  <string name="id_country">Country</string>
+  <string name="id_mobile_number">Mobile Number</string>
+
 </resources>

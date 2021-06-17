@@ -9,6 +9,7 @@ import com.blockstream.gdk.data.TwoFactorConfig
 import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.Limits
 import com.blockstream.green.R
+import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -122,10 +123,25 @@ class WalletSettingsViewModel @AssistedInject constructor(
         )
     }
 
-    fun disable2FA(method: String, twoFactorResolver: DialogTwoFactorResolver){
+    fun enable2FA(method: TwoFactorMethod, data: String, twoFactorResolver: DialogTwoFactorResolver){
         session.observable {
             session
-                .changeSettingsTwoFactor(method, TwoFactorMethodConfig(enabled = false))
+                .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(confirmed = true, enabled = true, data = data))
+                .resolve(twoFactorResolver = twoFactorResolver)
+        }.subscribeBy(
+            onError = {
+                onError.value = ConsumableEvent(it)
+            },
+            onSuccess = {
+                updateTwoFactorConfig()
+            }
+        )
+    }
+
+    fun disable2FA(method: TwoFactorMethod, twoFactorResolver: DialogTwoFactorResolver){
+        session.observable {
+            session
+                .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(enabled = false))
                 .resolve(twoFactorResolver = twoFactorResolver)
         }.subscribeBy(
             onError = {
