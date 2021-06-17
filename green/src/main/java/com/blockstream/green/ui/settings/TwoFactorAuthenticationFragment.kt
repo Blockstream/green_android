@@ -224,7 +224,8 @@ class TwoFactorAuthenticationFragment :
 
         list += emailPreference.also {
             it.switchChecked = twoFactorConfig.email.enabled
-            it.subtitle = StringHolder(twoFactorConfig.email.data.ifBlank { null })
+            // email has the old value even if disabled
+            it.subtitle = StringHolder(if(twoFactorConfig.email.enabled) twoFactorConfig.email.data.ifBlank { null } else null)
             // it.withButton = twoFactorConfig.email.enabled
 
         }

@@ -5,7 +5,7 @@
     tools:context=".ui.onboarding.WalletNameFragment">
 
     <data>
-        
+
         <variable
             name="vm"
             type="com.blockstream.green.ui.settings.WalletSettingsViewModel" />
