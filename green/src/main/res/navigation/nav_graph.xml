@@ -50,6 +50,9 @@
             <action
                 android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorEditFragment"
                 app:destination="@id/twoFactorEditFragment" />
+            <action
+                android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorResetFragment"
+                app:destination="@id/twoFactorResetFragment" />
         </fragment>
         <fragment
             android:id="@+id/twoFactorEditFragment"
@@ -62,6 +65,15 @@
             <argument
                 android:name="method"
                 app:argType="com.blockstream.green.data.TwoFactorMethod" />
+        </fragment>
+        <fragment
+            android:id="@+id/twoFactorResetFragment"
+            android:name="com.blockstream.green.ui.settings.TwoFactorResetFragment"
+            tools:layout="@layout/twofactor_reset_fragment"
+            android:label="@string/id_request_twofactor_reset" >
+            <argument
+                android:name="wallet"
+                app:argType="com.blockstream.green.database.Wallet" />
         </fragment>
 
     </navigation>

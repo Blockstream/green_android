@@ -8,17 +8,20 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
+import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.*
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.*
 import com.blockstream.green.lifecycle.MergeLiveData
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.ui.wallet.RenameWalletBottomSheetDialogFragment
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.FastAdapter
@@ -357,14 +360,9 @@ class TwoFactorAuthenticationFragment :
                 }
                 .setNegativeButton(android.R.string.cancel, null)
                 .setNeutralButton(R.string.id_i_lost_my_2fa) { _: DialogInterface, _: Int ->
-                    reset2FA(method)
+                    navigate(TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorResetFragment(wallet))
                 }
                 .show()
         }
-    }
-
-    private fun reset2FA(method: TwoFactorMethod) {
-
-
     }
 }

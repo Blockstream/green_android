@@ -115,6 +115,10 @@ class KotlinGDK {
 
     fun destroyAuthHandler(gaAuthHandler: GAAuthHandler) = GDK.destroy_auth_handler(gaAuthHandler)
 
+    fun twofactorReset(session: GASession, email: String, isDispute: Boolean) = GDK.twofactor_reset(session, email,
+        (if(isDispute) GDK.GA_TRUE else GDK.GA_FALSE).toLong()
+    )
+
     fun twofactorCancelReset(session: GASession) = GDK.twofactor_cancel_reset(session)
 
     fun twofactorChangeLimits(session: GASession, limits: Limits) = GDK.twofactor_change_limits(session, limits)

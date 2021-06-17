@@ -148,6 +148,10 @@ class WalletSettingsViewModel @AssistedInject constructor(
             session
                 .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(enabled = false))
                 .resolve(twoFactorResolver = twoFactorResolver)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
         }.subscribeBy(
             onError = {
                 onError.value = ConsumableEvent(it)
@@ -155,6 +159,25 @@ class WalletSettingsViewModel @AssistedInject constructor(
             onSuccess = {
                 updateTwoFactorConfig()
                 onEvent.postValue(ConsumableEvent(true))
+            }
+        )
+    }
+
+    fun reset2FA(email: String, isDispute: Boolean, twoFactorResolver: DialogTwoFactorResolver){
+        session.observable {
+            session
+                .twofactorReset(email, isDispute)
+                .resolve(twoFactorResolver = twoFactorResolver)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onError = {
+                onError.value = ConsumableEvent(it)
+            },
+            onSuccess = {
+                logout()
             }
         )
     }

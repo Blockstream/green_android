@@ -191,6 +191,8 @@ class GreenWallet(
 
     fun destroyAuthHandler(gaAuthHandler: GAAuthHandler) = gdk.destroyAuthHandler(gaAuthHandler)
 
+    fun twofactorReset(session: GASession, email: String, isDispute: Boolean) = gdk.twofactorReset(session, email, isDispute)
+
     fun twofactorCancelReset(session: GASession) = gdk.twofactorCancelReset(session)
 
     fun twofactorChangeLimits(session: GASession, limits: Limits) =
