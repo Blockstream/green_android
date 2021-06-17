@@ -469,10 +469,10 @@
                                                 </constraints>
                                             </stackView>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gVP-hM-l5W">
-                                                <rect key="frame" x="130" y="412" width="60" height="60"/>
+                                                <rect key="frame" x="130" y="428" width="60" height="44"/>
                                                 <subviews>
                                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VHv-EU-w9f">
-                                                        <rect key="frame" x="5" y="25" width="10" height="10"/>
+                                                        <rect key="frame" x="5" y="17" width="10" height="10"/>
                                                         <color key="backgroundColor" red="0.1647058824" green="0.18823529410000001" blue="0.21176470589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="10" id="2Th-fY-AM1"/>
@@ -480,14 +480,14 @@
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EbQ-JP-aLb">
-                                                        <rect key="frame" x="14.5" y="29.5" width="10" height="1"/>
+                                                        <rect key="frame" x="14.5" y="21.5" width="10" height="1"/>
                                                         <color key="backgroundColor" name="customTitaniumLight"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="1" id="GR0-74-YZs"/>
                                                         </constraints>
                                                     </view>
                                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7jv-We-TZf">
-                                                        <rect key="frame" x="25" y="25" width="10" height="10"/>
+                                                        <rect key="frame" x="25" y="17" width="10" height="10"/>
                                                         <color key="backgroundColor" red="0.1647058824" green="0.18823529410000001" blue="0.21176470589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="10" id="vgO-ah-8B0"/>
@@ -495,14 +495,14 @@
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zW0-cJ-CZr">
-                                                        <rect key="frame" x="34.5" y="29.5" width="10" height="1"/>
+                                                        <rect key="frame" x="34.5" y="21.5" width="10" height="1"/>
                                                         <color key="backgroundColor" name="customTitaniumLight"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="1" id="FqF-JG-vOl"/>
                                                         </constraints>
                                                     </view>
                                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EbB-8S-LhX">
-                                                        <rect key="frame" x="45" y="25" width="10" height="10"/>
+                                                        <rect key="frame" x="45" y="17" width="10" height="10"/>
                                                         <color key="backgroundColor" red="0.1647058824" green="0.18823529410000001" blue="0.21176470589999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="10" id="2Ru-Ae-6Ro"/>
@@ -522,7 +522,7 @@
                                                     <constraint firstItem="7jv-We-TZf" firstAttribute="leading" secondItem="EbQ-JP-aLb" secondAttribute="trailing" constant="0.5" id="fkl-Zt-3rl"/>
                                                     <constraint firstItem="zW0-cJ-CZr" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="fuX-Tv-74u"/>
                                                     <constraint firstAttribute="trailing" secondItem="EbB-8S-LhX" secondAttribute="trailing" constant="5" id="ip0-kB-beg"/>
-                                                    <constraint firstAttribute="height" constant="60" id="kWe-KC-N6s"/>
+                                                    <constraint firstAttribute="height" constant="44" id="kWe-KC-N6s"/>
                                                     <constraint firstItem="EbQ-JP-aLb" firstAttribute="centerY" secondItem="gVP-hM-l5W" secondAttribute="centerY" id="loU-sE-uZE"/>
                                                     <constraint firstItem="zW0-cJ-CZr" firstAttribute="leading" secondItem="7jv-We-TZf" secondAttribute="trailing" constant="-0.5" id="mmH-9S-BbJ"/>
                                                 </constraints>
