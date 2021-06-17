@@ -13,8 +13,14 @@ class ChooseSecurityViewController: UIViewController {
     @IBOutlet weak var lblAdvancedTitle: UILabel!
     @IBOutlet weak var lblAdvancedHint: UILabel!
 
+    var isDebug = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        #if DEBUG
+        isDebug = true
+        #endif
 
         setContent()
         setStyle()
@@ -34,7 +40,7 @@ class ChooseSecurityViewController: UIViewController {
         cardSimple.layer.cornerRadius = 5.0
         cardAdvanced.layer.cornerRadius = 5.0
 
-        if OnBoardManager.shared.params?.network != "testnet" {
+        if !isDebug && OnBoardManager.shared.params?.network != "testnet" {
             cardSimple.alpha = 0.5
         }
     }
@@ -47,7 +53,7 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     @objc func didPressCardSimple() {
-        if OnBoardManager.shared.params?.network != "testnet" { return }
+        if !isDebug && OnBoardManager.shared.params?.network != "testnet" { return }
         OnBoardManager.shared.params?.singleSig = true
         next()
     }
