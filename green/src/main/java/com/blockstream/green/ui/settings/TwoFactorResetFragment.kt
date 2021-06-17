@@ -31,6 +31,8 @@ class TwoFactorResetFragment : WalletFragment<TwofactorResetFragmentBinding>(R.l
     val args: TwoFactorResetFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
+    override val isAdjustResize: Boolean = true
+
     @Inject
     lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
     val viewModel: WalletSettingsViewModel by navGraphViewModels(R.id.settings_nav_graph) {

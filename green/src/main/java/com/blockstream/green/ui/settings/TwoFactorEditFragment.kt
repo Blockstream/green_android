@@ -31,6 +31,7 @@ class TwoFactorEditFragment : WalletFragment<TwofactorEditFragmentBinding>(R.lay
     val args: TwoFactorEditFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
+    override val isAdjustResize: Boolean = true
 
     @Inject
     lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory

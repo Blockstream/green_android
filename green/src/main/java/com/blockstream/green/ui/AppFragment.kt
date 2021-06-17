@@ -45,7 +45,9 @@ import javax.inject.Inject
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
-) : Fragment() , HWWalletBridge {
+) : Fragment(), HWWalletBridge {
+    open val isAdjustResize = false
+
     internal lateinit var binding: T
 
     @Inject
@@ -64,6 +66,11 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().window.setSoftInputMode(if (isAdjustResize) WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE else WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
