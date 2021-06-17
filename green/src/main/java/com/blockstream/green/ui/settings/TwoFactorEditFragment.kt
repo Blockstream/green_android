@@ -5,32 +5,22 @@ import android.view.View
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
-import com.blockstream.gdk.data.Settings
 import com.blockstream.green.R
 import com.blockstream.green.data.Countries.COUNTRIES
 import com.blockstream.green.data.Country
+import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorEditFragmentBinding
-import com.blockstream.green.databinding.WalletSettingsFragmentBinding
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.FilterableDataProvider
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.CountryListItem
-import com.blockstream.green.ui.items.HelpListItem
-import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.hideKeyboard
+import com.blockstream.green.utils.localized2faMethod
 import com.blockstream.green.utils.openKeyboard
-import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.IAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
@@ -51,10 +41,27 @@ class TwoFactorEditFragment : WalletFragment<TwofactorEditFragmentBinding>(R.lay
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.vm = viewModel
+        val method = args.method
+        val methodLocalized = localized2faMethod(method.gdkType)
 
-        binding.buttonAction.setOnClickListener {
-            viewModel.enable2FA(args.method, binding.countryEditText.text.toString() + binding.phoneNumberEditText.text.toString(), DialogTwoFactorResolver(requireContext()))
+        setToolbar(title = getString(R.string.id_1s_twofactor_set_up, methodLocalized))
+
+        binding.vm = viewModel
+        binding.method = method
+        binding.title = getString(R.string.id_please_provide_your_1s, method)
+
+        binding.buttonContinue.setOnClickListener {
+            var data = ""
+            when(method){
+                TwoFactorMethod.SMS, TwoFactorMethod.PHONE -> {
+                    data = binding.countryEditText.text.toString() + binding.phoneNumberEditText.text.toString()
+                }
+                TwoFactorMethod.EMAIL -> {
+                    data = binding.emailEditText.text.toString()
+                }
+                TwoFactorMethod.AUTHENTICATOR -> TODO()
+            }
+            viewModel.enable2FA(args.method, data, DialogTwoFactorResolver(requireContext()))
         }
 
         binding.countryEditText.setOnFocusChangeListener { v, hasFocus ->
@@ -90,7 +97,7 @@ class TwoFactorEditFragment : WalletFragment<TwofactorEditFragmentBinding>(R.lay
         }.set(COUNTRIES)
 
         adapter.itemFilter.filterPredicate = { item: CountryListItem, constraint: CharSequence? ->
-            item.country.name.toLowerCase(Locale.getDefault()).contains(
+            item.country.name.lowercase().contains(
                 constraint.toString().lowercase()
             )
         }

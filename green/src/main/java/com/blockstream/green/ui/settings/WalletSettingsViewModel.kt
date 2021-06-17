@@ -128,12 +128,17 @@ class WalletSettingsViewModel @AssistedInject constructor(
             session
                 .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(confirmed = true, enabled = true, data = data))
                 .resolve(twoFactorResolver = twoFactorResolver)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
         }.subscribeBy(
             onError = {
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {
                 updateTwoFactorConfig()
+                onEvent.postValue(ConsumableEvent(true))
             }
         )
     }
@@ -149,6 +154,7 @@ class WalletSettingsViewModel @AssistedInject constructor(
             },
             onSuccess = {
                 updateTwoFactorConfig()
+                onEvent.postValue(ConsumableEvent(true))
             }
         )
     }

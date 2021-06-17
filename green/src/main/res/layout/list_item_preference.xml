@@ -81,7 +81,7 @@
                     style="@style/Widget.Green.Button.Text"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
-                    android:text="Change"
+                    android:text="@string/id_change"
                     android:textSize="12sp"
                     app:textAllCaps="true" />
 

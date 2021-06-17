@@ -13,7 +13,6 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.biometric.BiometricPrompt
 import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.BuildConfig
@@ -22,6 +21,7 @@ import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import java.util.*
 
 
 fun <T> Fragment.getNavigationResult(key: String = "result") =
@@ -61,6 +61,8 @@ fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
+
+fun Fragment.localized2faMethod(method: String): String = resources.getStringArray(R.array.twoFactorChoices)[resources.getStringArray(R.array.twoFactorMethods).indexOf(method)]
 
 fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String {
     throwable.message?.let {

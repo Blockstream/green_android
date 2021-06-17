@@ -156,7 +156,14 @@ class TwoFactorAuthenticationFragment :
 
                         }
 
+                    }
 
+                    smsPreference -> {
+                        enable2FA(TwoFactorMethod.SMS)
+                    }
+
+                    callPreference -> {
+                        enable2FA(TwoFactorMethod.PHONE)
                     }
 
                     else -> {
@@ -215,24 +222,24 @@ class TwoFactorAuthenticationFragment :
         list += emailPreference.also {
             it.switchChecked = twoFactorConfig.email.enabled
             it.subtitle = StringHolder(twoFactorConfig.email.data.ifBlank { null })
-            it.withButton = twoFactorConfig.email.enabled
+            // it.withButton = twoFactorConfig.email.enabled
 
         }
         list += smsPreference.also {
             it.switchChecked = twoFactorConfig.sms.enabled
             it.subtitle = StringHolder(twoFactorConfig.sms.data.ifBlank { null })
-            it.withButton = twoFactorConfig.sms.enabled
+            // it.withButton = twoFactorConfig.sms.enabled
         }
         list += callPreference.also {
             it.switchChecked = twoFactorConfig.phone.enabled
             it.subtitle = StringHolder(twoFactorConfig.phone.data.ifBlank { null })
-            it.withButton = twoFactorConfig.phone.enabled
+            // it.withButton = twoFactorConfig.phone.enabled
         }
         list += toptPreference.also {
             it.switchChecked = twoFactorConfig.gauth.enabled
             it.subtitle =
                 StringHolder(if (twoFactorConfig.gauth.enabled) getString(R.string.id_enabled) else null)
-            it.withButton = twoFactorConfig.gauth.enabled
+            // it.withButton = twoFactorConfig.gauth.enabled
         }
 
         list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
@@ -337,13 +344,14 @@ class TwoFactorAuthenticationFragment :
             binding.message =
                 getString(if (it.enabledMethods.size == 1) R.string.id_confirm_via_2fa_that_you else R.string.id_another_2fa_method_is_already)
 
+            val methods = if(it.enabledMethods.size > 1) it.enabledMethods.filter { it -> it != method.gdkType } else it.enabledMethods
 
             MaterialAlertDialogBuilder(requireContext())
                 .setCustomTitle(binding.root)
-                .setSingleChoiceItems(it.enabledMethods.toTypedArray(), -1) { dialog, i: Int ->
+                .setSingleChoiceItems(methods.toTypedArray(), -1) { dialog, i: Int ->
                     viewModel.disable2FA(
                         method,
-                        DialogTwoFactorResolver(requireContext(), method = it.enabledMethods[i])
+                        DialogTwoFactorResolver(requireContext(), method = methods[i])
                     )
                     dialog.dismiss()
                 }

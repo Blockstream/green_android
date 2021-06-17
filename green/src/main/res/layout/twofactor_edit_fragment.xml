@@ -6,9 +6,19 @@
 
     <data>
 
+        <import type="com.blockstream.green.data.TwoFactorMethod"/>
+
         <variable
             name="vm"
             type="com.blockstream.green.ui.settings.WalletSettingsViewModel" />
+
+        <variable
+            name="method"
+            type="TwoFactorMethod" />
+
+        <variable
+            name="title"
+            type="String" />
 
     </data>
 
@@ -21,7 +31,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonAction"
+            app:layout_constraintBottom_toTopOf="@+id/buttonContinue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -29,19 +39,30 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="32dp">
+
+                <TextView
+                    android:text="@{title}"
+                    isVisible="@{!title.empty}"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    tools:text="Please provide your phone."
+                    android:layout_marginBottom="24dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    isVisible="@{method == TwoFactorMethod.SMS || method == TwoFactorMethod.PHONE}">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/countryTextInputLayout"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                         android:layout_width="130dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
-                        android:layout_marginTop="32dp"
                         android:hint="@string/id_country"
                         app:endIconDrawable="@drawable/ic_baseline_arrow_drop_down_24"
                         app:endIconMode="custom"
@@ -64,8 +85,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
-                        android:layout_marginTop="32dp"
-                        android:layout_marginEnd="24dp"
                         android:hint="@string/id_mobile_number"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/countryTextInputLayout"
@@ -81,18 +100,37 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/emailTextInputLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    isVisible="@{method == TwoFactorMethod.EMAIL}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/id_email">
+
+                    <com.blockstream.green.views.PlaceholderTextInputEditText
+                        android:id="@+id/emailEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:placeholder="jane@example.com"
+                        android:inputType="textWebEmailAddress" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.core.widget.NestedScrollView>
 
 
         <Button
-            android:id="@+id/buttonAction"
+            android:id="@+id/buttonContinue"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="16dp"
+            android:text="@string/id_continue"
+            android:enabled="@{!vm.onProgress}"
             app:layout_constraintBottom_toTopOf="@+id/progress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
