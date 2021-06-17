@@ -46,6 +46,12 @@ class TransactionDetailViewController: KeyboardViewController {
 
     private var transactionToken: NSObjectProtocol?
     private var blockToken: NSObjectProtocol?
+    private var cantBumpFees: Bool {
+        get {
+            guard let resetStatus = getGAService().getTwoFactorReset() else { return false }
+            return resetStatus.isResetActive || !transaction.canRBF || getGAService().isWatchOnly
+        }
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -207,7 +213,7 @@ class TransactionDetailViewController: KeyboardViewController {
     }
 
     @objc func increaseFeeTapped(_ sender: UIButton) {
-        if !transaction.canRBF || getGAService().isWatchOnly || getGAService().getTwoFactorReset()!.isResetActive { return }
+        if self.cantBumpFees { return }
         let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate, "subaccount": wallet.pointer]
         gaios.createTransaction(details: details).done { tx in
             self.performSegue(withIdentifier: "rbf", sender: tx)
