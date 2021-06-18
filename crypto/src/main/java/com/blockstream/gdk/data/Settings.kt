@@ -14,13 +14,14 @@ data class Settings(
     @SerialName("altimeout") val altimeout: Int,
     @SerialName("csvtime") val csvTime: Int = 0,
     @SerialName("nlocktime") val nlocktime: Int = 0,
-    @SerialName("notifications") val notifications: Map<String, Boolean>? = null,
+    @SerialName("notifications") val notifications: SettingsNotification? = null,
     @SerialName("pricing") val pricing: Pricing,
     @SerialName("required_num_blocks") val requiredNumBlocks: Int,
     @SerialName("unit") val unit: String,
     @SerialName("pgp") val pgp: String? = null,
 
 ): GAJson<Settings>() {
+    override val encodeDefaultsValues: Boolean = false
 
     override fun kSerializer(): KSerializer<Settings> {
         return serializer()
@@ -34,13 +35,24 @@ data class Settings(
 }
 
 @Serializable
+data class SettingsNotification(
+    @SerialName("email_incoming") val emailIncoming: Boolean,
+    @SerialName("email_outgoing") val emailOutgoing: Boolean,
+): GAJson<SettingsNotification>() {
+
+    override fun kSerializer(): KSerializer<SettingsNotification> {
+        return serializer()
+    }
+}
+
+@Serializable
 data class Pricing(
     @SerialName("currency") val currency: String,
     @SerialName("exchange") val exchange: String,
 ): GAJson<Pricing>() {
 
     override fun kSerializer(): KSerializer<Pricing> {
-        return Pricing.serializer()
+        return serializer()
     }
 
     fun toIdentifiable() = String.format("%s %s", currency, exchange)

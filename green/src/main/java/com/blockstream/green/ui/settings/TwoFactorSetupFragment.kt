@@ -89,6 +89,10 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
 
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandledOrReturnNull()?.let {
+
+                // Hint TwoFactorAuthenticationFragment to update TwoFactorConfig
+                setNavigationResult(result = true)
+
                 hideKeyboard() // hide keyboard as is no longer required for the backstacked fragments
                 findNavController().popBackStack()
             }

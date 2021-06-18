@@ -73,6 +73,13 @@ class TwoFactorAuthenticationFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        getNavigationResult<Boolean>()?.observe(viewLifecycleOwner) {
+            it?.let {
+                viewModel.updateTwoFactorConfig()
+                clearNavigationResult()
+            }
+        }
+
         binding.vm = viewModel
 
         emailPreference = PreferenceListItem(StringHolder(R.string.id_email), withSwitch = true)

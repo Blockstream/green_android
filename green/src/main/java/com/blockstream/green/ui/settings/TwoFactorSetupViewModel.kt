@@ -1,22 +1,19 @@
 package com.blockstream.green.ui.settings
 
 import android.graphics.Bitmap
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import android.util.Patterns
+import androidx.lifecycle.*
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.async
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.createQrBitmap
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 
 class TwoFactorSetupViewModel @AssistedInject constructor(
@@ -35,9 +32,26 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
     var authenticatorCode = MutableLiveData("")
     var authenticatorQRBitmap = MutableLiveData<Bitmap?>()
 
+    val isValid: LiveData<Boolean> by lazy {
+        MediatorLiveData<Boolean>().apply {
+            val block = { _: Any? ->
+                value = if(method == TwoFactorMethod.EMAIL){
+                    Patterns.EMAIL_ADDRESS.matcher(email.value ?: "").matches()
+                }else if(method == TwoFactorMethod.SMS || method == TwoFactorMethod.PHONE){
+                    !country.value.isNullOrBlank() && (phoneNumber.value?.trim()?.length ?: 0) > 7
+                }else{
+                    true
+                }
+            }
+
+            addSource(country, block)
+            addSource(phoneNumber, block)
+            addSource(email, block)
+        }
+    }
+
     init {
         if(method == TwoFactorMethod.AUTHENTICATOR){
-
             session.observable {
                 it.getTwoFactorConfig()
             }.subscribeBy(
