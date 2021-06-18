@@ -6,24 +6,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.blockstream.green.R
-import com.blockstream.green.data.Countries.COUNTRIES
-import com.blockstream.green.data.Country
-import com.blockstream.green.data.TwoFactorMethod
-import com.blockstream.green.databinding.TwofactorEditFragmentBinding
 import com.blockstream.green.databinding.TwofactorResetFragmentBinding
-import com.blockstream.green.ui.FilterBottomSheetDialogFragment
-import com.blockstream.green.ui.FilterableDataProvider
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.localized2faMethod
-import com.blockstream.green.utils.openKeyboard
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint

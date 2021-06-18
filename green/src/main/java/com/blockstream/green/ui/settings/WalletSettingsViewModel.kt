@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 import javax.crypto.Cipher
 
-class WalletSettingsViewModel @AssistedInject constructor(
+open class WalletSettingsViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     val appKeystore: AppKeystore,

@@ -333,7 +333,7 @@ class TwoFactorAuthenticationFragment :
 
     private fun enable2FA(method: TwoFactorMethod) {
         navigate(
-            TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorEditFragment(
+            TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
                 wallet,
                 method
             )

@@ -11,7 +11,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 
 interface TwoFactorResolver {
     fun selectMethod(availableMethods: List<String>): Single<String>
-    fun getCode(method: String, attemptsRemaining: Int): Single<String>
+    fun getCode(method: String, attemptsRemaining: Int?): Single<String>
 }
 
 interface HardwareWalletResolver {
@@ -81,7 +81,7 @@ class AuthHandler(
                         if(twoFactorStatus.device == null || twoFactorStatus.requiredData == null){
                             twoFactorResolver?.also {
                                 try {
-                                    resolveCode(it.getCode(twoFactorStatus.method, twoFactorStatus.attemptsRemaining ?: 1).blockingGet())
+                                    resolveCode(it.getCode(twoFactorStatus.method, twoFactorStatus.attemptsRemaining).blockingGet())
                                 } catch (e: Exception){
                                     e.printStackTrace()
                                     throw Exception("id_action_canceled")

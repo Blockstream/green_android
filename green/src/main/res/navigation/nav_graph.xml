@@ -47,17 +47,18 @@
             <argument
                 android:name="wallet"
                 app:argType="com.blockstream.green.database.Wallet" />
-            <action
-                android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorEditFragment"
-                app:destination="@id/twoFactorEditFragment" />
+
             <action
                 android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorResetFragment"
                 app:destination="@id/twoFactorResetFragment" />
+            <action
+                android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorSetupFragment"
+                app:destination="@id/twoFactorSetupFragment" />
         </fragment>
         <fragment
-            android:id="@+id/twoFactorEditFragment"
-            android:name="com.blockstream.green.ui.settings.TwoFactorEditFragment"
-            tools:layout="@layout/twofactor_edit_fragment"
+            android:id="@+id/twoFactorSetupFragment"
+            android:name="com.blockstream.green.ui.settings.TwoFactorSetupFragment"
+            tools:layout="@layout/twofactor_setup_fragment"
             android:label="">
             <argument
                 android:name="wallet"

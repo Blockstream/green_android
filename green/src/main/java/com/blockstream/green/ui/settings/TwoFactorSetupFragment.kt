@@ -1,7 +1,9 @@
 package com.blockstream.green.ui.settings
 
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -9,16 +11,14 @@ import com.blockstream.green.R
 import com.blockstream.green.data.Countries.COUNTRIES
 import com.blockstream.green.data.Country
 import com.blockstream.green.data.TwoFactorMethod
-import com.blockstream.green.databinding.TwofactorEditFragmentBinding
+import com.blockstream.green.databinding.TwofactorSetupFragmentBinding
 import com.blockstream.green.ui.FilterBottomSheetDialogFragment
 import com.blockstream.green.ui.FilterableDataProvider
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.localized2faMethod
-import com.blockstream.green.utils.openKeyboard
+import com.blockstream.green.utils.*
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,49 +26,59 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class TwoFactorEditFragment : WalletFragment<TwofactorEditFragmentBinding>(R.layout.twofactor_edit_fragment, 0),
+class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.layout.twofactor_setup_fragment, 0),
     FilterableDataProvider {
-    val args: TwoFactorEditFragmentArgs by navArgs()
+    val args: TwoFactorSetupFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
 
     override val isAdjustResize: Boolean = true
 
     @Inject
-    lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
-    val viewModel: WalletSettingsViewModel by navGraphViewModels(R.id.settings_nav_graph) {
-        WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
+    lateinit var viewModelFactory: TwoFactorSetupViewModel.AssistedFactory
+    val viewModel: TwoFactorSetupViewModel by viewModels {
+        TwoFactorSetupViewModel.provideFactory(viewModelFactory, args.wallet, args.method)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val method = args.method
-        val methodLocalized = localized2faMethod(method.gdkType)
+        val methodLocalized = localized2faMethod(args.method.gdkType)
 
         setToolbar(title = getString(R.string.id_1s_twofactor_set_up, methodLocalized))
 
         binding.vm = viewModel
-        binding.method = method
-        binding.title = getString(R.string.id_please_provide_your_1s, method)
-
         binding.buttonContinue.setOnClickListener {
             var data = ""
-            when(method){
+            when(viewModel.method){
                 TwoFactorMethod.SMS, TwoFactorMethod.PHONE -> {
-                    data = binding.countryEditText.text.toString() + binding.phoneNumberEditText.text.toString()
+                    data = viewModel.getPhoneNumberValue()
                 }
                 TwoFactorMethod.EMAIL -> {
-                    data = binding.emailEditText.text.toString()
+                    data = viewModel.getEmailValue()
                 }
-                TwoFactorMethod.AUTHENTICATOR -> TODO()
+                TwoFactorMethod.AUTHENTICATOR -> {
+                    data = viewModel.authenticatorUrl ?: ""
+                }
             }
             viewModel.enable2FA(args.method, data, DialogTwoFactorResolver(requireContext()))
+        }
+
+        binding.authenticatorCode.setOnClickListener {
+            copyToClipboard("Address", viewModel.authenticatorCode.value ?: "", requireContext())
+            snackbar(R.string.id_copied_to_clipboard)
+            binding.authenticatorCode.pulse()
         }
 
         binding.countryEditText.setOnFocusChangeListener { v, hasFocus ->
             if(hasFocus){
                 openCountryFilter()
             }
+        }
+
+        viewModel.authenticatorQRBitmap.observe(viewLifecycleOwner) {
+            binding.authenticatorQR.setImageDrawable(BitmapDrawable(resources, it).also { bitmap ->
+                bitmap.isFilterBitmap = false
+            })
         }
 
         viewModel.onError.observe(viewLifecycleOwner) { event ->
@@ -79,6 +89,7 @@ class TwoFactorEditFragment : WalletFragment<TwofactorEditFragmentBinding>(R.lay
 
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandledOrReturnNull()?.let {
+                hideKeyboard() // hide keyboard as is no longer required for the backstacked fragments
                 findNavController().popBackStack()
             }
         }

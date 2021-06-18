@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.onboarding.WalletNameFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -10,15 +9,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.settings.WalletSettingsViewModel" />
-
-        <variable
-            name="method"
-            type="TwoFactorMethod" />
-
-        <variable
-            name="title"
-            type="String" />
+            type="com.blockstream.green.ui.settings.TwoFactorSetupViewModel" />
 
     </data>
 
@@ -41,18 +32,18 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                isVisible="@{!title.empty}"
+                isVisible="@{vm.method != TwoFactorMethod.AUTHENTICATOR}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:text="@{title}"
+                android:text="@{String.format(@string/id_please_provide_your_1s, vm.method)}"
                 android:textAppearance="?attr/textAppearanceBody1"
                 tools:text="Please provide your phone." />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                isVisible="@{method == TwoFactorMethod.SMS || method == TwoFactorMethod.PHONE}"
+                isVisible="@{vm.method == TwoFactorMethod.SMS || vm.method == TwoFactorMethod.PHONE}"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/countryTextInputLayout"
@@ -71,6 +62,7 @@
                         android:layout_height="wrap_content"
                         android:editable="false"
                         android:inputType="none"
+                        android:text="@={vm.country}"
                         tools:ignore="Deprecated" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -90,6 +82,7 @@
                         android:id="@+id/phoneNumberEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:text="@={vm.phoneNumber}"
                         android:inputType="phone" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -99,7 +92,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/emailTextInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                isVisible="@{method == TwoFactorMethod.EMAIL}"
+                isVisible="@{vm.method == TwoFactorMethod.EMAIL}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_email">
@@ -109,9 +102,68 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textWebEmailAddress"
+                    android:text="@={vm.email}"
                     app:placeholder="jane@example.com" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                isVisible="@{vm.method == TwoFactorMethod.AUTHENTICATOR}"
+                android:id="@+id/scrollView">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:layout_marginBottom="24dp"
+                        android:text="@string/id_scan_the_qr_code_with_an"
+                        android:gravity="center" />
+
+                    <ImageView
+                        android:id="@+id/authenticatorQR"
+                        android:layout_width="170dp"
+                        android:layout_height="170dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@color/white"
+                        android:contentDescription="@string/id_authenticator_qr_code"
+                        android:padding="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/id_the_recovery_key_below_will_not"
+                        android:gravity="center"
+                        android:textAppearance="?attr/textAppearanceSubtitle1"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="24dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/authenticatorCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:breakStrategy="balanced"
+                        android:drawablePadding="8dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="13sp"
+                        android:text="@{vm.authenticatorCode}"
+                        android:layout_marginTop="16dp"
+                        app:drawableEndCompat="@drawable/ic_baseline_content_copy_18"
+                        app:drawableTint="@color/color_on_surface_emphasis_low"
+                        tools:text="fafadfafasdfaiiiiii" />
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
