@@ -871,5 +871,7 @@
 
   <string name="id_country">Country</string>
   <string name="id_mobile_number">Mobile Number</string>
-
+  <string name="id_if_you_have_some_coins_on_the_legacy">If you have some coins on the legacy address type, and you won\'t spend them shortly, you might need to setup an email and receive your recovery transactions to be sure you are always in control of your funds.</string>
+  <string name="id_read_more">Read more</string>
+  <string name="id_legacy_outputs">Legacy outputs</string>
 </resources>

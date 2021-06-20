@@ -123,6 +123,8 @@ class KotlinGDK {
 
     fun twofactorChangeLimits(session: GASession, limits: Limits) = GDK.twofactor_change_limits(session, limits)
 
+    fun sendNlocktimes(session: GASession) = GDK.send_nlocktimes(session)
+
     fun convertAmount(session: GASession, convert: Convert) = GDK.convert_amount(session, convert)
 
     fun getNetworks() = GDK.get_networks()

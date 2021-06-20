@@ -37,6 +37,9 @@
             <action
                 android:id="@+id/action_walletSettingsFragment_to_twoFractorAuthenticationFragment"
                 app:destination="@id/twoFractorAuthenticationFragment" />
+            <action
+                android:id="@+id/action_walletSettingsFragment_to_twoFactorSetupFragment"
+                app:destination="@id/twoFactorSetupFragment" />
         </fragment>
 
         <fragment
@@ -66,6 +69,10 @@
             <argument
                 android:name="method"
                 app:argType="com.blockstream.green.data.TwoFactorMethod" />
+            <argument
+                android:name="setupEmail"
+                app:argType="boolean"
+                android:defaultValue="false" />
         </fragment>
         <fragment
             android:id="@+id/twoFactorResetFragment"

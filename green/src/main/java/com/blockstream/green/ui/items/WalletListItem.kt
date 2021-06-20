@@ -21,7 +21,6 @@ class WalletListItem(val wallet: Wallet) : AbstractBindingItem<ListItemWalletBin
         if(wallet.isHardware) {
             binding.hardware.setImageResource(R.drawable.ic_jade)
         }
-
     }
 
     override fun createBinding(

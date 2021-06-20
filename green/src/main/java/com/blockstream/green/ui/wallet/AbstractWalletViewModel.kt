@@ -103,16 +103,16 @@ abstract class AbstractWalletViewModel constructor(
                                 }.subscribeBy(
                                     onError = {
                                         it.printStackTrace()
-                                        logger().info { "Logout from Device reconnection failure" }
+                                        logger.info { "Logout from Device reconnection failure" }
                                         logout()
                                     },
                                     onSuccess = {
-                                        logger().info { "Device login was successful" }
+                                        logger.info { "Device login was successful" }
                                     }
                                 )
 
                             } else {
-                                logger().info { "Logout from network event" }
+                                logger.info { "Logout from network event" }
                                 logout()
                             }
                         } else {

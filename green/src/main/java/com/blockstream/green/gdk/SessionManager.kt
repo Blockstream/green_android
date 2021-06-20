@@ -175,7 +175,7 @@ class SessionManager(
 
             timeoutTimers += Timer().also {
                 it.schedule(sessionTimeout) {
-                    logger().debug { "Session timeout, disconnecting..." }
+                    logger.debug { "Session timeout, disconnecting..." }
                     session.disconnectAsync()
                 }
             }

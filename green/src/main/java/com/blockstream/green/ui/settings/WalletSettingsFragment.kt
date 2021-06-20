@@ -12,19 +12,22 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.preference.*
+import com.blockstream.gdk.data.Notification
+import com.blockstream.gdk.data.SettingsNotification
 import com.blockstream.gdk.data.asPricing
 import com.blockstream.green.*
 import com.blockstream.green.R
+import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.EditTextDialogBinding
+import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.databinding.SettingsWatchOnlyDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.filters.NumberValueFilter
-import com.blockstream.green.settings.ApplicationSettings
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
+import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
-import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -35,8 +38,8 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.IAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.InvalidAlgorithmParameterException
@@ -59,6 +62,9 @@ class WalletSettingsFragment :
     private lateinit var altTimeoutPreference: PreferenceListItem
     private lateinit var twoFactorAuthenticationPreference: PreferenceListItem
     private lateinit var recoveryPreference: PreferenceListItem
+    private lateinit var emailRecoveryTransactionsPreference: PreferenceListItem
+    private lateinit var recoveryTransactionsPreference: PreferenceListItem
+    private lateinit var requestRecoveryTransactionsPreference: PreferenceListItem
     private lateinit var biometricsPreference: PreferenceListItem
     private lateinit var changePinPreference: PreferenceListItem
 
@@ -89,6 +95,13 @@ class WalletSettingsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        getNavigationResult<Boolean>()?.observe(viewLifecycleOwner) {
+            it?.let {
+                viewModel.updateTwoFactorConfig()
+                clearNavigationResult()
+            }
+        }
+
         binding.vm = viewModel
 
         if(args.bridgeShowPIN){
@@ -110,6 +123,19 @@ class WalletSettingsFragment :
             StringHolder(R.string.id_back_up_recovery_phrase), StringHolder(
                 R.string.id_touch_to_display
             )
+        )
+        requestRecoveryTransactionsPreference = PreferenceListItem(
+            StringHolder(R.string.id_request_recovery_transactions)
+        )
+        emailRecoveryTransactionsPreference = PreferenceListItem(
+            StringHolder(R.string.id_set_an_email_for_recovery)
+        )
+        recoveryTransactionsPreference = PreferenceListItem(
+            StringHolder(R.string.id_recovery_transactions),
+            StringHolder(
+                R.string.id_legacy_outputs
+            ),
+            withSwitch = true
         )
         twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_authentication))
         pgpPreference = PreferenceListItem(StringHolder(R.string.id_pgp_key))
@@ -150,6 +176,21 @@ class WalletSettingsFragment :
                                 wallet = wallet
                             )
                         )
+                    }
+                    emailRecoveryTransactionsPreference -> {
+                        navigate(
+                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
+                                wallet = wallet,
+                                method = TwoFactorMethod.EMAIL,
+                                setupEmail = true
+                            )
+                        )
+                    }
+                    recoveryTransactionsPreference -> {
+                        toggleRecoveryTransactions()
+                    }
+                    requestRecoveryTransactionsPreference -> {
+                        viewModel.sendNlocktimes()
                     }
                     twoFactorAuthenticationPreference -> {
                         navigate(
@@ -196,6 +237,10 @@ class WalletSettingsFragment :
                 true
             }
 
+        fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, item ->
+            openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_NLOCKTIMES)
+        }
+
         binding.recycler.apply {
             itemAnimator = SlideDownAlphaAnimator()
             adapter = fastAdapter
@@ -227,6 +272,8 @@ class WalletSettingsFragment :
                     )
                 )
 
+                recoveryTransactionsPreference.switchChecked = it.notifications?.emailIncoming == true
+
                 notifyDataSetChanged()
             }
         }
@@ -250,8 +297,7 @@ class WalletSettingsFragment :
         }
 
         viewModel.twoFactorConfigLiveData.observe(viewLifecycleOwner) {
-            // MAYBE THIS IS NOT NEEDED ANYMORE
-
+            // use updateAdapter as we show/hide elements related to twofactorconfig eg. set recovery email
             updateAdapter()
         }
     }
@@ -278,10 +324,10 @@ class WalletSettingsFragment :
     private fun updateAdapter(){
         val isLiquid = wallet.isLiquid
 
+        val settings = viewModel.settingsLiveData.value
         val twoFactorConfig = viewModel.twoFactorConfigLiveData.value
 
         val anyTwoFactorEnabled = twoFactorConfig?.anyEnabled ?: false
-
 
         val list = mutableListOf<GenericItem>()
 
@@ -324,6 +370,20 @@ class WalletSettingsFragment :
 
                 list += TitleListItem(StringHolder(R.string.id_recovery))
                 list += recoveryPreference
+
+                if(!session.isLiquid && !session.isElectrum) {
+                    list += HelpListItem(
+                        message = StringHolder(R.string.id_if_you_have_some_coins_on_the_legacy),
+                        buttonOutline = StringHolder(R.string.id_read_more)
+                    )
+
+                    if(twoFactorConfig?.email?.confirmed == false){
+                        list += emailRecoveryTransactionsPreference
+                    }else{
+                        list += recoveryTransactionsPreference
+                        list += requestRecoveryTransactionsPreference
+                    }
+                }
 
                 list += TitleListItem(StringHolder(R.string.id_advanced))
 
@@ -468,6 +528,22 @@ class WalletSettingsFragment :
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun toggleRecoveryTransactions() {
+        viewModel.settingsLiveData.value?.let { settings ->
+            settings.notifications?.let { notifications ->
+                val toggled = !notifications.emailIncoming
+                viewModel.saveSettings(
+                    settings.copy(
+                        notifications = SettingsNotification(
+                            emailIncoming = toggled,
+                            emailOutgoing = toggled
+                        )
+                    )
+                )
             }
         }
     }

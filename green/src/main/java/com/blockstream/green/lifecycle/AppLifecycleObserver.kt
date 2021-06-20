@@ -17,13 +17,13 @@ class AppLifecycleObserver : LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onEnterForeground() {
-        logger().debug { "onEnterForeground" }
+        logger.debug { "onEnterForeground" }
 
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onEnterBackground() {
-        logger().debug { "onEnterBackground" }
+        logger.debug { "onEnterBackground" }
 
     }
 

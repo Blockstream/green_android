@@ -198,6 +198,8 @@ class GreenWallet(
     fun twofactorChangeLimits(session: GASession, limits: Limits) =
         gdk.twofactorChangeLimits(session, limits)
 
+    fun sendNlocktimes(session: GASession) = gdk.sendNlocktimes(session)
+
     fun convertAmount(session: GASession, amount: Convert): Balance = Balance.fromJsonElement(
         JsonDeserializer,
         gdk.convertAmount(session, amount) as JsonElement,

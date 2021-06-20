@@ -417,6 +417,8 @@ class GreenSession constructor(
     fun twofactorChangeLimits(limits: Limits) =
         AuthHandler(greenWallet, greenWallet.twofactorChangeLimits(gaSession, limits))
 
+    fun sendNlocktimes() = greenWallet.sendNlocktimes(gaSession)
+
     fun changeSettings(settings: Settings) =
         AuthHandler(greenWallet, greenWallet.changeSettings(gaSession, settings))
 
@@ -480,7 +482,7 @@ class GreenSession constructor(
     fun convertAmount(convert: Convert) = greenWallet.convertAmount(gaSession, convert)
 
     fun onNewNotification(notification: Notification) {
-        logger().info { "onNewNotification $notification" }
+        logger.info { "onNewNotification $notification" }
 
         when (notification.event) {
             "block" -> {

@@ -64,14 +64,14 @@ class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment(
 
             list += HelpListItem(
                 message = StringHolder(R.string.id_if_you_are_the_rightful_owner),
-                buttonText = StringHolder(R.string.id_cancel_2fa_reset),
+                button = StringHolder(R.string.id_cancel_2fa_reset),
             ).also {
                 cancelItem = it
             }
 
             list += HelpListItem(
                 message = StringHolder(R.string.id_if_you_initiated_the_2fa_reset),
-                buttonText = StringHolder(R.string.id_undo_2fa_dispute),
+                button = StringHolder(R.string.id_undo_2fa_dispute),
             ).also {
                 disputeItem = it
             }

@@ -60,7 +60,8 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                     data = viewModel.authenticatorUrl ?: ""
                 }
             }
-            viewModel.enable2FA(args.method, data, DialogTwoFactorResolver(requireContext()))
+            // setupEmail is used only to setup the email address for recovery transactions legacy option
+            viewModel.enable2FA(args.method, data = data, enabled = !args.setupEmail, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
         }
 
         binding.authenticatorCode.setOnClickListener {
@@ -90,7 +91,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandledOrReturnNull()?.let {
 
-                // Hint TwoFactorAuthenticationFragment to update TwoFactorConfig
+                // Hint TwoFactorAuthenticationFragment / WalletSettingsFragment to update TwoFactorConfig
                 setNavigationResult(result = true)
 
                 hideKeyboard() // hide keyboard as is no longer required for the backstacked fragments

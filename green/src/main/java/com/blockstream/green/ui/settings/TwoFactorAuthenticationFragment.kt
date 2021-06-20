@@ -286,7 +286,7 @@ class TwoFactorAuthenticationFragment :
 
         list += HelpListItem(
             message = StringHolder(R.string.id_your_2fa_expires_so_that_if_you),
-            buttonText = StringHolder(R.string.id_recovery_tool)
+            button = StringHolder(R.string.id_recovery_tool)
         )
 
         FastAdapterDiffUtil.set(itemAdapter, list, false)

@@ -123,10 +123,27 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         )
     }
 
-    fun enable2FA(method: TwoFactorMethod, data: String, twoFactorResolver: DialogTwoFactorResolver){
+    fun sendNlocktimes(){
+        session.observable {
+            session.sendNlocktimes()
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onError = {
+                onError.value = ConsumableEvent(it)
+            },
+            onSuccess = {
+
+            }
+        )
+    }
+
+    fun enable2FA(method: TwoFactorMethod, data: String, enabled: Boolean = true, twoFactorResolver: DialogTwoFactorResolver){
         session.observable {
             session
-                .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(confirmed = true, enabled = true, data = data))
+                .changeSettingsTwoFactor(method.gdkType, TwoFactorMethodConfig(confirmed = true, enabled = enabled, data = data))
                 .resolve(twoFactorResolver = twoFactorResolver)
         }.doOnSubscribe {
             onProgress.postValue(true)
