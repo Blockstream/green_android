@@ -3,9 +3,11 @@ package com.blockstream.gdk
 import com.blockstream.libgreenaddress.GDK
 import mu.KLogging
 
-class JsonConverter : GDK.JSONConverter {
+class JsonConverter(val log: Boolean) : GDK.JSONConverter {
     override fun toJSONObject(jsonString: String?): Any? {
-        logger.info { "-> $jsonString" }
+        if(log){
+            logger.info { "-> $jsonString" }
+        }
 
         if (jsonString != null && jsonString != "null") {
             // Fix bad json structure decisions eg. empty objects // TwoFactorStatus -> device object
@@ -16,7 +18,9 @@ class JsonConverter : GDK.JSONConverter {
     }
 
     override fun toJSONString(gaJson: Any?): String = gaJson.toString().also {
-        logger.info { "<- $it" }
+        if(log) {
+            logger.info { "<- $it" }
+        }
     }
 
     companion object : KLogging()

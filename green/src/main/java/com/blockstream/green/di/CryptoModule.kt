@@ -11,6 +11,7 @@ import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.QATester
+import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
 import dagger.Module
@@ -42,7 +43,7 @@ class CryptoModule {
         gdk: KotlinGDK,
         wally: KotlinWally
     ): GreenWallet {
-        return GreenWallet(gdk, wally, context.filesDir.absolutePath)
+        return GreenWallet(gdk, wally, context.filesDir.absolutePath, context.isDevelopmentFlavor())
     }
 
     @Singleton

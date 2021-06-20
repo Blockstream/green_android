@@ -16,12 +16,17 @@ import kotlin.random.asKotlinRandom
 typealias BalanceMap = Map<String, Long>
 typealias BalancePair = Pair<String, Long>
 
-class GreenWallet(val gdk: KotlinGDK, private val wally: KotlinWally, dataDir: String) {
+class GreenWallet(
+    val gdk: KotlinGDK,
+    private val wally: KotlinWally,
+    dataDir: String,
+    developmentFlavor: Boolean
+) {
 
     private val bip39WordList by lazy { wally.bip39Wordlist(BIP39_WORD_LIST_LANG) }
 
     init {
-        gdk.init(JsonConverter(), InitConfig(dataDir))
+        gdk.init(JsonConverter(developmentFlavor), InitConfig(dataDir))
         wally.init(0, randomBytes(KotlinWally.WALLY_SECP_RANDOMIZE_LEN))
     }
 
