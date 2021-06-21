@@ -312,7 +312,7 @@ extension SettingsViewController {
     }
 
     func setLockTimeRequest() {
-        guard twoFactorConfig?.enableMethods.contains("email") == true else {
+        guard let email = twoFactorConfig?.email.data else {
             showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_set_an_email_for_recovery", comment: ""))
             return
         }
@@ -327,7 +327,11 @@ extension SettingsViewController {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            DropAlert().success(message: NSLocalizedString("id_recovery_transaction_request", comment: ""))
+            let alert = UIAlertController(title: NSLocalizedString("id_request_sent", comment: ""),
+                                          message: String(format: "Recovery transactions sent at\n%@", email),
+                                          preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+            self.present(alert, animated: true, completion: nil)
         }.catch {_ in
             DropAlert().error(message: NSLocalizedString("id_request_failed", comment: ""))
         }
