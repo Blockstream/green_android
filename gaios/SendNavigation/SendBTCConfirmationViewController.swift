@@ -146,6 +146,7 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
     }
 
     func completed(slidingButton: SlidingButton) {
+        self.view.endEditing(true)
         let bgq = DispatchQueue.global(qos: .background)
 
         firstly {
