@@ -12,7 +12,6 @@ import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.preference.*
-import com.blockstream.gdk.data.Notification
 import com.blockstream.gdk.data.SettingsNotification
 import com.blockstream.gdk.data.asPricing
 import com.blockstream.green.*
@@ -62,9 +61,13 @@ class WalletSettingsFragment :
     private lateinit var altTimeoutPreference: PreferenceListItem
     private lateinit var twoFactorAuthenticationPreference: PreferenceListItem
     private lateinit var recoveryPreference: PreferenceListItem
-    private lateinit var emailRecoveryTransactionsPreference: PreferenceListItem
+
+    // Recovery Transactions
     private lateinit var recoveryTransactionsPreference: PreferenceListItem
+    private lateinit var setupEmailRecoveryTransactionsPreference: PreferenceListItem
+    private lateinit var recoveryTransactionEmailsPreference: PreferenceListItem
     private lateinit var requestRecoveryTransactionsPreference: PreferenceListItem
+
     private lateinit var biometricsPreference: PreferenceListItem
     private lateinit var changePinPreference: PreferenceListItem
 
@@ -104,7 +107,9 @@ class WalletSettingsFragment :
 
         binding.vm = viewModel
 
-        if(args.bridgeShowPIN){
+        if(args.showRecoveryTransactions) {
+            setToolbar(getString(R.string.id_recovery_transactions))
+        }else if(args.bridgeShowPIN){
             setToolbar(getString(R.string.id_setup_pin))
         }
 
@@ -124,19 +129,22 @@ class WalletSettingsFragment :
                 R.string.id_touch_to_display
             )
         )
+        // Recovery Transactions
+        recoveryTransactionsPreference = PreferenceListItem(
+            StringHolder(R.string.id_recovery_transactions),
+            StringHolder(R.string.id_legacy_outputs)
+        )
+        setupEmailRecoveryTransactionsPreference = PreferenceListItem(
+            StringHolder(R.string.id_set_an_email_for_recovery)
+        )
+        recoveryTransactionEmailsPreference = PreferenceListItem(
+            StringHolder(R.string.id_recovery_transaction_emails),
+            withSwitch = true
+        )
         requestRecoveryTransactionsPreference = PreferenceListItem(
             StringHolder(R.string.id_request_recovery_transactions)
         )
-        emailRecoveryTransactionsPreference = PreferenceListItem(
-            StringHolder(R.string.id_set_an_email_for_recovery)
-        )
-        recoveryTransactionsPreference = PreferenceListItem(
-            StringHolder(R.string.id_recovery_transactions),
-            StringHolder(
-                R.string.id_legacy_outputs
-            ),
-            withSwitch = true
-        )
+
         twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_authentication))
         pgpPreference = PreferenceListItem(StringHolder(R.string.id_pgp_key))
 
@@ -177,7 +185,7 @@ class WalletSettingsFragment :
                             )
                         )
                     }
-                    emailRecoveryTransactionsPreference -> {
+                    setupEmailRecoveryTransactionsPreference -> {
                         navigate(
                             WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
                                 wallet = wallet,
@@ -187,7 +195,15 @@ class WalletSettingsFragment :
                         )
                     }
                     recoveryTransactionsPreference -> {
-                        toggleRecoveryTransactions()
+                        navigate(
+                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentSelf(
+                                wallet = wallet,
+                                showRecoveryTransactions = true
+                            )
+                        )
+                    }
+                    recoveryTransactionEmailsPreference -> {
+                        toggleRecoveryTransactionsEmails()
                     }
                     requestRecoveryTransactionsPreference -> {
                         viewModel.sendNlocktimes()
@@ -272,7 +288,7 @@ class WalletSettingsFragment :
                     )
                 )
 
-                recoveryTransactionsPreference.switchChecked = it.notifications?.emailIncoming == true
+                recoveryTransactionEmailsPreference.switchChecked = it.notifications?.emailIncoming == true
 
                 notifyDataSetChanged()
             }
@@ -331,7 +347,21 @@ class WalletSettingsFragment :
 
         val list = mutableListOf<GenericItem>()
 
-        if(args.bridgeShowPIN){
+        if(args.showRecoveryTransactions){
+
+            list += HelpListItem(
+                message = StringHolder(R.string.id_if_you_have_some_coins_on_the_legacy),
+                buttonOutline = StringHolder(R.string.id_read_more)
+            )
+
+            if(twoFactorConfig?.email?.confirmed == false){
+                list += setupEmailRecoveryTransactionsPreference
+            }else{
+                list += recoveryTransactionEmailsPreference
+                list += requestRecoveryTransactionsPreference
+            }
+
+        }else if(args.bridgeShowPIN){
             list += changePinPreference
             list += biometricsPreference
         }else {
@@ -372,17 +402,7 @@ class WalletSettingsFragment :
                 list += recoveryPreference
 
                 if(!session.isLiquid && !session.isElectrum) {
-                    list += HelpListItem(
-                        message = StringHolder(R.string.id_if_you_have_some_coins_on_the_legacy),
-                        buttonOutline = StringHolder(R.string.id_read_more)
-                    )
-
-                    if(twoFactorConfig?.email?.confirmed == false){
-                        list += emailRecoveryTransactionsPreference
-                    }else{
-                        list += recoveryTransactionsPreference
-                        list += requestRecoveryTransactionsPreference
-                    }
+                    list += recoveryTransactionsPreference
                 }
 
                 list += TitleListItem(StringHolder(R.string.id_advanced))
@@ -532,7 +552,7 @@ class WalletSettingsFragment :
         }
     }
 
-    private fun toggleRecoveryTransactions() {
+    private fun toggleRecoveryTransactionsEmails() {
         viewModel.settingsLiveData.value?.let { settings ->
             settings.notifications?.let { notifications ->
                 val toggled = !notifications.emailIncoming
