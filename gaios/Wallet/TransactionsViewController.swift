@@ -484,6 +484,25 @@ extension TransactionsController: DrawerNetworkSelectionDelegate {
         }
     }
 
+    func didSelectAddWallet() {
+        logout()
+            .recover { _ in }
+            .done {
+                self.navigationController?.dismiss(animated: true, completion: {})
+                self.navigationController?.popToRootViewController(animated: true)
+                self.stopLoader()
+
+                let homeS = UIStoryboard(name: "Home", bundle: nil)
+                let onBoardS = UIStoryboard(name: "OnBoard", bundle: nil)
+
+                if let nav = homeS.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController,
+                   let vc = onBoardS.instantiateViewController(withIdentifier: "LandingViewController") as? LandingViewController {
+                    nav.pushViewController(vc, animated: false)
+                    UIApplication.shared.keyWindow?.rootViewController = nav
+                }
+            }
+    }
+
     func didSelectAccount(account: Account) {
         logout()
             .recover { _ in }

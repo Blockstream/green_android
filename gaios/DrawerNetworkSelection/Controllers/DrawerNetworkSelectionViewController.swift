@@ -1,9 +1,10 @@
 import Foundation
 import UIKit
 
-protocol DrawerNetworkSelectionDelegate: class {
+protocol DrawerNetworkSelectionDelegate: AnyObject {
     func didSelectAccount(account: Account)
     func didSelectHW(account: Account)
+    func didSelectAddWallet()
 }
 
 class DrawerNetworkSelectionViewController: UIViewController {
@@ -19,6 +20,7 @@ class DrawerNetworkSelectionViewController: UIViewController {
     weak var delegate: DrawerNetworkSelectionDelegate?
 
     var headerH: CGFloat = 44.0
+    var footerH: CGFloat = 54.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +38,10 @@ class DrawerNetworkSelectionViewController: UIViewController {
 
     @objc func saveAndDismiss() {
        self.dismiss(animated: true, completion: nil)
+    }
+
+    @objc func didPressAddWallet() {
+        delegate?.didSelectAddWallet()
     }
 }
 
@@ -85,7 +91,12 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 0
+        switch section {
+        case 0:
+            return footerH
+        default:
+            return 0
+        }
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -104,7 +115,14 @@ extension DrawerNetworkSelectionViewController: UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        return nil
+        switch section {
+        case 0:
+            return footerView(NSLocalizedString("id_add_wallet", comment: ""))
+        case 1:
+            return nil
+        default:
+            return nil
+        }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -146,4 +164,40 @@ extension DrawerNetworkSelectionViewController {
         return section
     }
 
+    func footerView(_ txt: String) -> UIView {
+        let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
+        section.backgroundColor = UIColor.customTitaniumDark().withAlphaComponent(0.8)
+
+        let icon = UIImageView(frame: .zero)
+        icon.image = UIImage(named: "ic_plus")?.maskWithColor(color: .white)
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        section.addSubview(icon)
+
+        let title = UILabel(frame: .zero)
+        title.text = txt
+        title.textColor = .white
+        title.font = .systemFont(ofSize: 17.0, weight: .semibold)
+        title.numberOfLines = 0
+
+        title.translatesAutoresizingMaskIntoConstraints = false
+        section.addSubview(title)
+
+        NSLayoutConstraint.activate([
+            icon.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            icon.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 16),
+            icon.widthAnchor.constraint(equalToConstant: 40.0),
+            icon.heightAnchor.constraint(equalToConstant: 40.0)
+        ])
+
+        NSLayoutConstraint.activate([
+            title.centerYAnchor.constraint(equalTo: section.centerYAnchor),
+            title.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: (40 + 16 * 2)),
+            title.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -24)
+        ])
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didPressAddWallet))
+        section.addGestureRecognizer(tapGesture)
+
+        return section
+    }
 }

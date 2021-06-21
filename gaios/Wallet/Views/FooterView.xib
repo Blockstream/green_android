@@ -26,7 +26,7 @@
             <constraints>
                 <constraint firstItem="coL-1P-7ZR" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="36" id="9ER-Ll-KXW"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="coL-1P-7ZR" secondAttribute="trailing" constant="36" id="9Yk-H2-qae"/>
-                <constraint firstItem="coL-1P-7ZR" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="saW-6c-INg"/>
+                <constraint firstItem="coL-1P-7ZR" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="75" id="fFR-6M-3XC"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
