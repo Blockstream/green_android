@@ -1,5 +1,6 @@
 # Uncomment the next line to define a global platform for your project
 platform :ios, '11.0'
+install! 'cocoapods', :warn_for_unused_master_specs_repo => false
 
 target 'gaios' do
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
@@ -11,16 +12,17 @@ target 'gaios' do
   pod 'RxSwift', '~> 5.1'
   pod 'RxBluetoothKit', '6.0.0'
   pod 'SwiftCBOR', :git => 'https://github.com/lvaccaro/SwiftCBOR.git', :branch => 'green'
-  target 'gaiosTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
 
-  target 'gaiosUITests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
+end
 
+target 'gaiosTests' do
+  inherit! :search_paths
+  # Pods for testing
+end
+
+target 'gaiosUITests' do
+  inherit! :search_paths
+  # Pods for testing
 end
 
 post_install do |installer|

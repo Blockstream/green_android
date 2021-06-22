@@ -1,8 +1,3 @@
-//
-//  gaiosTests.swift
-//  gaiosTests
-//
-
 import XCTest
 @testable import gaios
 

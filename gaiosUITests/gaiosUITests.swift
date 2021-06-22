@@ -1,8 +1,3 @@
-//
-//  gaiosUITests.swift
-//  gaiosUITests
-//
-
 import XCTest
 
 class gaiosUITests: XCTestCase {
