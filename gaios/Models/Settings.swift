@@ -2,7 +2,7 @@ import Foundation
 import PromiseKit
 
 // Section of settings
-enum SettingsSections: String, Codable {
+enum SettingsSections: String, Codable, CaseIterable {
     case network = "Network"
     case account = "Account"
     case twoFactor = "Two Factor"

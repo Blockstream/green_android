@@ -72,7 +72,7 @@ class SettingsViewController: UIViewController {
         } else if isSingleSig {
             return [.network, .account, .security, .about]
         }
-        return [.network, .account, .twoFactor, .security, .advanced, .about]
+        return SettingsSections.allCases
     }
 
     func getNetworks() -> [SettingsItem] {
@@ -173,9 +173,12 @@ class SettingsViewController: UIViewController {
             return [setupTwoFactor]
         }
         var menu = [SettingsItem]()
-        menu.append(contentsOf: [setupTwoFactor])
+        menu.append(setupTwoFactor)
         if twoFactorConfig?.anyEnabled ?? false {
-            menu.append(contentsOf: [thresholdTwoFactor, resetTwoFactor])
+            menu.append(thresholdTwoFactor)
+        }
+        if !isResetActive {
+            menu.append(resetTwoFactor)
         }
         menu.append(contentsOf: [locktimeRecovery, locktimeRequest, csvTime])
         if !(twoFactorConfig?.email.confirmed ?? false) {
@@ -221,7 +224,7 @@ class SettingsViewController: UIViewController {
             type: .Sweep)
 
         var advanced = [SettingsItem]()
-        if !isWatchOnly && !isResetActive {
+        if !isWatchOnly {
             advanced.append(pgp)
         }
         if !isLiquid {
