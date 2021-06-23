@@ -37,13 +37,14 @@ class Learn2faViewController: UIViewController {
         title = ""
         if isDisputeActive {
             lblTitle.text = NSLocalizedString("id_2fa_dispute_in_progress", comment: "")
-            lblResetTitle.text = NSLocalizedString("id_the_1_year_2fa_reset_process", comment: "")
+            lblResetTitle.text = NSLocalizedString("id_your_wallet_is_locked_under_2fa", comment: "")
             lblResetHint.text = NSLocalizedString("id_the_1_year_2fa_reset_process", comment: "")
             lblHowtoTitle.text = NSLocalizedString("id_how_to_stop_this_reset", comment: "")
             lblHowtoHint.text = NSLocalizedString("id_if_you_are_the_rightful_owner", comment: "")
             btnCancelReset.setTitle(NSLocalizedString("id_cancel_2fa_reset", comment: ""), for: .normal)
             lblPermanentTitle.text = NSLocalizedString("id_undo_2fa_dispute", comment: "")
             lblPermanentHint.text = NSLocalizedString("id_if_you_initiated_the_2fa_reset", comment: "")
+            // when in dispute, use the button to undo a dispute
             btnUndoReset.setTitle(NSLocalizedString("id_undo_2fa_dispute", comment: ""), for: .normal)
             return
         }
@@ -55,7 +56,8 @@ class Learn2faViewController: UIViewController {
         btnCancelReset.setTitle(NSLocalizedString("id_cancel_2fa_reset", comment: ""), for: .normal)
         lblPermanentTitle.text = NSLocalizedString("id_permanently_block_this_wallet", comment: "")
         lblPermanentHint.text = NSLocalizedString("id_if_you_did_not_request_the", comment: "")
-        btnUndoReset.isHidden = true
+        // when not in dispute, use the button to dispute
+        btnUndoReset.setTitle(NSLocalizedString("id_dispute_twofactor_reset", comment: ""), for: .normal)
     }
 
     func cancelTwoFactorReset() {
@@ -71,6 +73,22 @@ class Learn2faViewController: UIViewController {
             self.logout()
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
+        }
+    }
+
+    func disputeReset(email: String) {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then(on: bgq) {
+            try getGAService().getSession().resetTwoFactor(email: email, isDispute: true).resolve()
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            self.logout()
+        }.catch {_ in
+            self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
         }
     }
 
@@ -95,12 +113,18 @@ class Learn2faViewController: UIViewController {
     }
 
     @IBAction func BtnUndoReset(_ sender: Any) {
-        let alert = UIAlertController(title: NSLocalizedString("id_undo_2fa_dispute", comment: ""), message: "Provide the email you previously used to dispute", preferredStyle: .alert)
+        let alertTitle = isDisputeActive ? NSLocalizedString("id_undo_2fa_dispute", comment: "") : NSLocalizedString("id_dispute_twofactor_reset", comment: "")
+        let alertMsg = isDisputeActive ? "Provide the email you previously used to dispute" : ""
+        let alert = UIAlertController(title: alertTitle, message: alertMsg, preferredStyle: .alert)
         alert.addTextField { (textField) in textField.placeholder = NSLocalizedString("id_email", comment: "") }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_next", comment: ""), style: .default) { _ in
             let email = alert.textFields![0].text!
-            self.undoReset(email: email)
+            if self.isDisputeActive {
+                self.undoReset(email: email)
+            } else {
+                self.disputeReset(email: email)
+            }
         })
         self.present(alert, animated: true, completion: nil)
     }

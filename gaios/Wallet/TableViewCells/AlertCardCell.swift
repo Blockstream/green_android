@@ -43,7 +43,7 @@ class AlertCardCell: UITableViewCell {
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.isHidden = true
         case .dispute:
-            lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
+            lblTitle.text = NSLocalizedString("id_2fa_dispute_in_progress", comment: "")
             lblHint.text = NSLocalizedString("id_warning_wallet_locked_by", comment: "")
             btnRight.setTitle(NSLocalizedString("id_learn_more", comment: ""), for: .normal)
             btnLeft.isHidden = true
