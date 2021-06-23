@@ -185,6 +185,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
         if(Bridge.useGreenModule){
             navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
         }else{
+//            navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
             Bridge.bridgeSession(sessionManager.getHardwareSessionV3().gaSession, "mainnet",null)
 
             val intent = Intent(requireContext(), RequestLoginActivity::class.java).also {

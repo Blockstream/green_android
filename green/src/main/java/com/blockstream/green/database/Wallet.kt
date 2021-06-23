@@ -1,21 +1,23 @@
 package com.blockstream.green.database
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 import kotlinx.parcelize.Parcelize
 
 typealias WalletId = Long
 
-@Entity(tableName = "wallets", indices = [Index(value = ["order"]), Index(value = ["is_hardware"])])
+@Entity(tableName = "wallets", indices = [Index(value = ["order"]), Index(value = ["is_hardware"]), Index(value = ["wallet_hash_id"])])
 @Parcelize
 data class Wallet(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: WalletId = 0,
+
+    // defaultValue used for AutoMigration
+    // Don't make it unique as a user can have a mnemonic used both as a software wallet and in a hww device
+    @ColumnInfo(name = "wallet_hash_id", defaultValue = "")
+    var walletHashId: String,
 
     @ColumnInfo(name = "name")
     var name: String,

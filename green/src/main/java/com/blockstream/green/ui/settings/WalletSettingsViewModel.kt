@@ -244,7 +244,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             val pinData = it.setPin(newPin)
 
             // Replace PinData
-            walletRepository.addLoginCredentials(
+            walletRepository.addLoginCredentialsSync(
                 LoginCredentials(
                     walletId = wallet.id,
                     credentialType = CredentialType.PIN,
@@ -320,7 +320,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
 
             val encryptedData = appKeystore.encryptData(cipher, pin.toByteArray())
 
-            walletRepository.addLoginCredentials(
+            walletRepository.addLoginCredentialsSync(
                 LoginCredentials(
                     walletId = wallet.id,
                     credentialType = CredentialType.BIOMETRICS,

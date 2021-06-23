@@ -16,6 +16,7 @@ import com.greenaddress.Bridge
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
+import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import javax.inject.Inject
 
 
@@ -63,6 +64,7 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
 
         binding.recyclerSoftwareWallets.apply {
             adapter = softwareWalletsAdapter
+            itemAnimator = SlideDownAlphaAnimator()
         }
 
         binding.recyclerDevices.apply {

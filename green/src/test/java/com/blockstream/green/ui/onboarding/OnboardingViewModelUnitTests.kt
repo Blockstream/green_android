@@ -1,6 +1,7 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
+import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.data.OnboardingOptions
@@ -36,7 +37,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
     private lateinit var errorObserver: Observer<ConsumableEvent<Throwable>>
 
 
-    private var restoreWallet: Wallet = Wallet(name = "restore", network = "testnet")
+    private var restoreWallet: Wallet = Wallet(walletHashId = "", name = "restore", network = "testnet")
 
     private val multisigNetwork = Network(
         "testnet",
@@ -66,8 +67,14 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
             val recovery = it.arguments[1] as String
             if (recovery != "valid") {
                 throw Exception("invalid recovery phrase")
+            }else{
+                LoginData("")
             }
         }
+
+        whenever(session.walletHashId).thenReturn("")
+
+        whenever(session.createNewWallet(any(), any())).thenAnswer { LoginData("") }
 
         setupViewModel()
     }

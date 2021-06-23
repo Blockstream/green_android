@@ -158,17 +158,23 @@ class LoginViewModel @AssistedInject constructor(
             .map(mapper)
             .map {
 
+                // Migrate - add walletHashId
+                if(wallet.walletHashId.isBlank()){
+                    wallet.walletHashId = session.walletHashId ?: ""
+                    walletRepository.updateWalletSync(wallet)
+                }
+
                 // Reset counter
                 loginCredentials?.also{
                     it.counter = 0
-                    walletRepository.updateLoginCredentials(it)
+                    walletRepository.updateLoginCredentialsSync(it)
                 }
 
                 // Update watchonly password if needed
                 if(updateWatchOnlyPassword){
                     keystoreCredentials.value?.let {
                         it.encryptedData = appKeystore.encryptData(watchOnlyPassword.value!!.toByteArray())
-                        walletRepository.updateLoginCredentials(it)
+                        walletRepository.updateLoginCredentialsSync(it)
                     }
                 }
 
@@ -182,9 +188,9 @@ class LoginViewModel @AssistedInject constructor(
                         loginCredentials.counter += 1
 
                         if(loginCredentials.counter < 3){
-                            walletRepository.updateLoginCredentials(loginCredentials)
+                            walletRepository.updateLoginCredentialsSync(loginCredentials)
                         }else{
-                             walletRepository.deleteLoginCredentials(loginCredentials)
+                             walletRepository.deleteLoginCredentialsSync(loginCredentials)
                         }
                     }
 
@@ -214,7 +220,7 @@ class LoginViewModel @AssistedInject constructor(
 
     fun deleteLoginCredentials(loginCredentials: LoginCredentials){
         GlobalScope.launch {
-            walletRepository.deleteLoginCredentials(loginCredentials)
+            walletRepository.deleteLoginCredentialsSuspend(loginCredentials)
         }
     }
 

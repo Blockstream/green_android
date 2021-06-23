@@ -51,9 +51,10 @@ class LoginWatchOnlyViewModel @Inject constructor(
 
         session.observable {
             val network = if (isTestnet.value == true) it.networks.testnetGreen else it.networks.bitcoinGreen
-            it.loginWatchOnly(network, username.value ?: "", password.value ?: "")
+            val loginData = it.loginWatchOnly(network, username.value ?: "", password.value ?: "")
 
             val wallet = Wallet(
+                walletHashId = loginData.walletHashId,
                 name = "Bitcoin Watch Only",
                 network = session.network.id,
                 isRecoveryPhraseConfirmed = true,
@@ -64,7 +65,7 @@ class LoginWatchOnlyViewModel @Inject constructor(
 
             if (isRememberMe.value == true) {
                 val encryptedData = appKeystore.encryptData(password.value!!.toByteArray())
-                walletRepository.addLoginCredentials(
+                walletRepository.addLoginCredentialsSync(
                     LoginCredentials(
                         walletId = wallet.id,
                         credentialType = CredentialType.KEYSTORE,

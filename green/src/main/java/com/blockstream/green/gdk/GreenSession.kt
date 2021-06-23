@@ -74,6 +74,9 @@ class GreenSession constructor(
     var isConnected = false
         private set
 
+    var walletHashId : String? = null
+        private set
+
     val hasDevice
         get() = hwWallet != null
 
@@ -220,7 +223,7 @@ class GreenSession constructor(
         return httpRequest(details)
     }
 
-    fun createNewWallet(network: Network, providedMnemonic: String?) {
+    fun createNewWallet(network: Network, providedMnemonic: String?): LoginData {
         isWatchOnly = false
 
         connect(network, hwWallet)
@@ -231,38 +234,40 @@ class GreenSession constructor(
             greenWallet.registerUser(gaSession, DeviceParams(), mnemonic)
         ).resolve()
 
-        AuthHandler(
+        return AuthHandler(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic))
-        ).resolve()
+        ).result<LoginData>().also {
+            if(network.isElectrum){
+                // Create SegWit Account
+                AuthHandler(greenWallet,
+                    greenWallet
+                        .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
+                ).resolve()
+            }
 
-        if(network.isElectrum){
-            // Create SegWit Account
-            AuthHandler(greenWallet,
-                greenWallet
-                .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
-            ).resolve()
+            isConnected = true
+            walletHashId = it.walletHashId
         }
-
-        isConnected = true
     }
 
     fun loginWatchOnly(wallet: Wallet, username: String, password: String) {
         loginWatchOnly(networkFromWallet(wallet), username, password)
     }
 
-    fun loginWatchOnly(network: Network, username: String, password: String) {
+    fun loginWatchOnly(network: Network, username: String, password: String): LoginData {
         isWatchOnly = true
         watchOnlyUsernameBridge = username
 
         connect(network)
-        AuthHandler(
+        return AuthHandler(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(username = username, password = password))
-        ).resolve()
-        isConnected = true
-
-        initializeSessionData()
+        ).result<LoginData>().also {
+            isConnected = true
+            walletHashId = it.walletHashId
+            initializeSessionData()
+        }
     }
 
     fun loginWithDevice(
@@ -271,7 +276,7 @@ class GreenSession constructor(
         connectSession: Boolean,
         hwWallet: HWWallet,
         hardwareCodeResolver: HardwareCodeResolver
-    ) {
+    ): LoginData {
         isWatchOnly = false
 
         if(connectSession) {
@@ -289,63 +294,65 @@ class GreenSession constructor(
             ).resolve(hardwareWalletResolver = hardwareCodeResolver)
         }
 
-        AuthHandler(
+        return AuthHandler(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = DeviceParams(device))
-        ).resolve(hardwareWalletResolver = hardwareCodeResolver)
-
-        isConnected = true
-
-        initializeSessionData()
+        ).result<LoginData>(hardwareWalletResolver = hardwareCodeResolver).also {
+            isConnected = true
+            walletHashId = it.walletHashId
+            initializeSessionData()
+        }
     }
 
     fun loginWithMnemonic(
         network: Network,
         mnemonic: String,
         password: String = ""
-    ) {
+    ): LoginData {
         isWatchOnly = false
 
         connect(network)
-        AuthHandler(
+        return AuthHandler(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic, password = password))
-        ).resolve()
+        ).result<LoginData>().also {
+           isConnected = true
+           walletHashId = it.walletHashId
 
-        isConnected = true
+           if(network.isElectrum){
 
-        if(network.isElectrum){
+               // On Singlesig, check if there is a SegWit account already restored or create one
+               val subAccounts = AuthHandler(
+                   greenWallet,
+                   greenWallet.getSubAccounts(gaSession)
+               ).result<SubAccounts>().subaccounts
 
-            // On Singlesig, check if there is a SegWit account already restored or create one
-            val subAccounts = AuthHandler(
-                greenWallet,
-                greenWallet.getSubAccounts(gaSession)
-            ).result<SubAccounts>().subaccounts
+               if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
+                   // Create SegWit Account
+                   AuthHandler(greenWallet,
+                       greenWallet
+                           .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
+                   ).resolve()
+               }
+           }
 
-            if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
-                // Create SegWit Account
-                AuthHandler(greenWallet,
-                    greenWallet
-                        .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
-                ).resolve()
-            }
+           initializeSessionData()
         }
-
-        initializeSessionData()
     }
 
-    fun loginWithPin(wallet: Wallet, pin: String, pinData: PinData) {
+    fun loginWithPin(wallet: Wallet, pin: String, pinData: PinData): LoginData {
         isWatchOnly = false
 
         connect(networkFromWallet(wallet))
-        AuthHandler(
+        return AuthHandler(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(pin = pin, pinData = pinData))
-        ).resolve()
+        ).result<LoginData>().also {
+            isConnected = true
+            walletHashId = it.walletHashId
 
-        isConnected = true
-
-        initializeSessionData()
+            initializeSessionData()
+        }
     }
 
     private fun initializeSessionData() {

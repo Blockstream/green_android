@@ -19,13 +19,16 @@ interface WalletDao {
     fun updateSync(vararg wallet: Wallet)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(loginCredentials: LoginCredentials)
+    fun insertSync(loginCredentials: LoginCredentials)
 
     @Update
-    fun updateLoginCredentials(vararg loginCredentials: LoginCredentials)
+    fun updateLoginCredentialsSync(vararg loginCredentials: LoginCredentials)
 
     @Delete
-    fun deleteLoginCredentials(loginCredentials: LoginCredentials)
+    fun deleteLoginCredentialsSync(loginCredentials: LoginCredentials)
+
+    @Delete
+    suspend fun deleteLoginCredentialsSuspend(loginCredentials: LoginCredentials)
 
     @Query("SELECT * FROM wallets WHERE id = :id")
     fun getWalletLiveData(id: WalletId): LiveData<Wallet>
@@ -60,6 +63,9 @@ interface WalletDao {
 
     @Query("SELECT EXISTS(SELECT id FROM wallets LIMIT 1)")
     fun walletsExists(): LiveData<Boolean>
+
+    @Query("SELECT EXISTS(SELECT id FROM wallets WHERE wallet_hash_id = :walletHashId AND is_hardware = :isHardware LIMIT 1)")
+    fun walletsExistsSync(walletHashId: String, isHardware: Boolean): Boolean
 
     @Query("SELECT EXISTS(SELECT id FROM wallets LIMIT 1)")
     suspend fun walletsExistsSuspend(): Boolean

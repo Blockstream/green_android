@@ -376,6 +376,7 @@ class GreenApplication : Application(){
             // Emulated Hardware wallet
             Wallet(
                 id = -1L,
+                walletHashId = network.id,
                 name = network.name,
                 network = network.network,
                 isRecoveryPhraseConfirmed = true,

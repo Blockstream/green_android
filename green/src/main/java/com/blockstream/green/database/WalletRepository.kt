@@ -21,9 +21,12 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
     suspend fun getWalletSuspend(id: WalletId) = walletDao.getWalletSuspend(id)
 
     fun addWallet(wallet: Wallet) = walletDao.insert(wallet)
-    fun addLoginCredentials(loginCredentials: LoginCredentials) = walletDao.insert(loginCredentials)
-    fun updateLoginCredentials(vararg loginCredentials: LoginCredentials) = walletDao.updateLoginCredentials(*loginCredentials)
-    fun deleteLoginCredentials(loginCredentials: LoginCredentials) = walletDao.deleteLoginCredentials(loginCredentials)
+
+    fun addLoginCredentialsSync(loginCredentials: LoginCredentials) = walletDao.insertSync(loginCredentials)
+    fun updateLoginCredentialsSync(vararg loginCredentials: LoginCredentials) = walletDao.updateLoginCredentialsSync(*loginCredentials)
+    fun deleteLoginCredentialsSync(loginCredentials: LoginCredentials) = walletDao.deleteLoginCredentialsSync(loginCredentials)
+
+    suspend fun deleteLoginCredentialsSuspend(loginCredentials: LoginCredentials) = walletDao.deleteLoginCredentialsSuspend(loginCredentials)
 
     fun getWalletLoginCredentials(id: WalletId) = walletDao.getWalletLoginCredentials(id)
     suspend fun getWalletLoginCredentialsSuspend(id: WalletId) = walletDao.getWalletLoginCredentialsSuspend(id)
@@ -34,6 +37,8 @@ class WalletRepository @Inject constructor(private val walletDao: WalletDao) {
 
     fun deleteLoginCredentialsSync(walletId: WalletId, type: CredentialType) = walletDao.deleteLoginCredentialsSync(walletId, type.value)
     suspend fun deleteLoginCredentialsSuspend(walletId: WalletId, type: CredentialType) = walletDao.deleteLoginCredentialsSuspend(walletId, type.value)
+
+    fun walletsExistsSync(walletHashId: String, isHardware: Boolean) = walletDao.walletsExistsSync(walletHashId, isHardware)
 
     fun walletsExists() = walletDao.walletsExists()
     suspend fun walletsExistsSuspend() = walletDao.walletsExistsSuspend()

@@ -1,6 +1,7 @@
 package com.blockstream.green.ui.onboarding
 
 import androidx.lifecycle.Observer
+import com.blockstream.gdk.data.LoginData
 import com.blockstream.green.TestViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.database.Wallet
@@ -122,11 +123,14 @@ class LoginWatchOnlyViewModelUnitTests : TestViewModel<LoginWatchOnlyViewModel>(
     }
 
     private fun mockSession(isSuccess: Boolean) {
-        if (!isSuccess) {
+        if (isSuccess) {
+            whenever(greenSession.loginWatchOnly(any<Network>(), any(), any())).then {
+                LoginData("")
+            }
+        }else{
             whenever(greenSession.loginWatchOnly(any<Network>(), any(), any())).then {
                 throw Exception("-1")
             }
-
         }
     }
 

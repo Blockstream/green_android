@@ -77,6 +77,7 @@ class Migrator(
             val network = greenWallet.networks.getNetworkById(networkId)
 
             val wallet = Wallet(
+                walletHashId = "",
                 name = network.name,
                 network = network.id,
                 isRecoveryPhraseConfirmed = true,
@@ -110,7 +111,7 @@ class Migrator(
                         encryptedData = EncryptedData(nativePIN, nativeIV ?: "")
                     }
 
-                    walletRepository.addLoginCredentials(
+                    walletRepository.addLoginCredentialsSync(
                         LoginCredentials(
                             walletId = wallet.id,
                             credentialType = credentialType,
@@ -203,12 +204,12 @@ class Migrator(
 
             // As we change the primary key, we have to first delete the old record
             for(deleteLoginCredentials in batchDelete){
-                walletRepository.deleteLoginCredentials(deleteLoginCredentials)
+                walletRepository.deleteLoginCredentialsSync(deleteLoginCredentials)
             }
 
             // and insert the new login credentials
             for(inserLoginCredentials in batchUpdate){
-                walletRepository.addLoginCredentials(inserLoginCredentials)
+                walletRepository.addLoginCredentialsSync(inserLoginCredentials)
             }
         }
 

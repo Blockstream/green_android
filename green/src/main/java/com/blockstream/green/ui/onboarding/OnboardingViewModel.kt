@@ -23,11 +23,12 @@ open class OnboardingViewModel(
 
         session.observable {
             val network = options.network!!
-            it.createNewWallet(network, mnemonic)
+            val loginData = it.createNewWallet(network, mnemonic)
 
             var pinData = it.setPin(pin)
 
             val wallet = Wallet(
+                walletHashId = loginData.walletHashId,
                 name = generateWalletName(network, options.walletName),
                 network = network.id,
                 isRecoveryPhraseConfirmed = options.isRestoreFlow || !mnemonic.isNullOrBlank(),
@@ -37,7 +38,7 @@ open class OnboardingViewModel(
             wallet.id = walletRepository.addWallet(wallet)
 
             pinData.let {
-                walletRepository.addLoginCredentials(
+                walletRepository.addLoginCredentialsSync(
                     LoginCredentials(
                         walletId = wallet.id,
                         credentialType = CredentialType.PIN,
@@ -74,7 +75,23 @@ open class OnboardingViewModel(
 
     fun checkRecoveryPhrase(network: Network , mnemonic: String, mnemonicPassword: String) {
         session.observable {
-            it.loginWithMnemonic(network, mnemonic, mnemonicPassword)
+            val loginData = it.loginWithMnemonic(network, mnemonic, mnemonicPassword)
+
+            if(restoreWallet == null) {
+                // Check if wallet already exists
+                it.walletHashId?.let { walletHashId ->
+                    if (walletRepository.walletsExistsSync(walletHashId, false)) {
+                        throw Exception("id_wallet_already_exists")
+                    }
+                }
+            }else{
+                // check if walletHashId is the same
+                if(restoreWallet.walletHashId.isNotBlank() && restoreWallet.walletHashId != it.walletHashId){
+                    throw Exception("id_the_recovery_phrase_youve_entered_doesnt_match")
+                }
+            }
+
+            it
         }.doOnSubscribe {
             onProgress.value = true
         }.doOnTerminate {
@@ -94,9 +111,10 @@ open class OnboardingViewModel(
             // DON'T MOVE ANY FUNDS, It's just here for development purposes and should be removed
             val network = options.network!!
             val mnemonic = "ADD MNEMONIC HERE"
-            it.loginWithMnemonic(network, mnemonic, "")
+            val loginData = it.loginWithMnemonic(network, mnemonic, "")
 
             val wallet = Wallet(
+                walletHashId = loginData.walletHashId,
                 name = generateWalletName(network, options.walletName),
                 network = network.id,
                 isRecoveryPhraseConfirmed = true,
@@ -130,6 +148,7 @@ open class OnboardingViewModel(
             if(restoreWallet == null){
                 wallet  = restoreWallet
                     ?: Wallet(
+                        walletHashId = it.walletHashId ?: "",
                         name = generateWalletName(network, options.walletName),
                         network = network.id,
                         isRecoveryPhraseConfirmed = options.isRestoreFlow,
@@ -145,7 +164,7 @@ open class OnboardingViewModel(
                 walletRepository.updateWalletSync(wallet)
             }
 
-            walletRepository.addLoginCredentials(
+            walletRepository.addLoginCredentialsSync(
                 LoginCredentials(
                     walletId = wallet.id,
                     credentialType = CredentialType.PIN,
