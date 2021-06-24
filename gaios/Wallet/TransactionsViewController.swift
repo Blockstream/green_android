@@ -72,6 +72,7 @@ class TransactionsController: UITableViewController {
         default:
             break
         }
+        view.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.view
     }
 
     func presentDialogRegistryFail() {

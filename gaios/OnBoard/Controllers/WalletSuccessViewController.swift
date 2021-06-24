@@ -14,6 +14,9 @@ class WalletSuccessViewController: UIViewController {
         setContent()
         setStyle()
         setActions()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.WalletSuccessScreen.view
+        btnWallet.accessibilityIdentifier = AccessibilityIdentifiers.WalletSuccessScreen.nextBtn
     }
 
     func setContent() {

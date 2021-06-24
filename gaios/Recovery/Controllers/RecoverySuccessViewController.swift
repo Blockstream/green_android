@@ -12,6 +12,9 @@ class RecoverySuccessViewController: UIViewController {
         setContent()
         setStyle()
         setActions()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.RecoverySuccessScreen.view
+        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.RecoverySuccessScreen.nextBtn
     }
 
     func setContent() {

@@ -26,6 +26,10 @@ class WalletNameViewController: UIViewController {
         setStyle()
         updateUI()
         hideKeyboardWhenTappedAround()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.view
+        fieldName.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.nameField
+        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.nextBtn
     }
 
     func setContent() {

@@ -19,6 +19,7 @@ class ContainerViewController: UIViewController {
         networkToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: updateConnection)
         torToken  = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Tor.rawValue), object: nil, queue: .main, using: updateTor)
         self.networkView.isHidden = true
+        view.accessibilityIdentifier = AccessibilityIdentifiers.ContainerScreen.view
     }
 
     override func viewDidDisappear(_ animated: Bool) {

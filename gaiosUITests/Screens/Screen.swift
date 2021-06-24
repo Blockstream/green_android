@@ -36,9 +36,10 @@ class Screen {
     }
     
     @discardableResult
-    func memo() -> String {
-        
-        return "memo"
+    func type(value: String, in element: XCUIElement) -> Self {
+        element.tap()
+        element.typeText(value)
+        return self
     }
     
 //    @discardableResult

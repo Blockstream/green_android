@@ -58,6 +58,33 @@ class AddWalletUITests: XCTestCase {
             .pause(1)
             .chooseWord()
             .pause(1)
+        
+        RecoverySuccess()
+            .pause(1)
+            .tapNext()
+
+        WalletName()
+            .pause(1)
+            .typeName()
+            .pause(1)
+            .closeKey() 
+            .pause(1)
+            .tapNext()
+            .pause(1)
+        
+        SetPin()
+            .pause(2)
+            .setPin()
+            .pause(2)
+            .setPin()
+            .tapNext()
+        
+        WalletSuccess()
+            .pause(2)
+            .tapNext()
+            
+        Transactions()
+            .pause(3)
     }
     
 }

@@ -47,4 +47,34 @@ struct AccessibilityIdentifiers {
         static let word3btn = "word3_btn"
         static let quizLbl = "quiz_lbl"
     }
+    
+    struct RecoverySuccessScreen {
+        static let view = "view"
+        static let nextBtn = "next_btn"
+    }
+    
+    struct WalletNameScreen {
+        static let view = "view"
+        static let nameField = "name_field"
+        static let nextBtn = "next_btn"
+    }
+    
+    struct SetPinScreen {
+        static let view = "view"
+        static let btn1 = "btn_1"
+        static let nextBtn = "next_btn"
+    }
+    
+    struct WalletSuccessScreen {
+        static let view = "view"
+        static let nextBtn = "next_btn"
+    }
+    
+    struct ContainerScreen {
+        static let view = "view"
+    }
+    
+    struct TransactionsScreen {
+        static let view = "view"
+    }
 }
