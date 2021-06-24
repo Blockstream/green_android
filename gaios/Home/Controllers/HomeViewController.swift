@@ -17,6 +17,7 @@ class HomeViewController: UIViewController {
         setContent()
         setStyle()
         updateUI()
+        view.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.view
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -225,7 +226,7 @@ extension HomeViewController {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didPressAddWallet))
         section.addGestureRecognizer(tapGesture)
-
+        section.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.addWalletView
         return section
     }
 }

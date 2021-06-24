@@ -19,6 +19,9 @@ class RecoveryInstructionViewController: UIViewController {
         setStyle()
 
         configureTosLabel()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryInstructionsScreen.view
+        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryInstructionsScreen.continueBtn
     }
 
     func setContent() {

@@ -53,6 +53,13 @@ class RecoveryVerifyViewController: UIViewController {
         for node in processNodes {
             node.layer.cornerRadius = node.frame.size.width / 2.0
         }
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.view
+        button0.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word0btn
+        button1.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word1btn
+        button2.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word2btn
+        button3.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word3btn
+        textLabel.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.quizLbl
     }
 
     override func viewWillAppear(_ animated: Bool) {

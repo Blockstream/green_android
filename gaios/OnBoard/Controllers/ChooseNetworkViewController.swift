@@ -23,6 +23,9 @@ class ChooseNetworkViewController: UIViewController {
         setContent()
         setStyle()
         setActions()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.view
+        cardTestnet.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.testnetCard
     }
 
     func setContent() {
