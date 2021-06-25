@@ -55,7 +55,6 @@ class RecoveryPhraseViewController: UIViewController {
 
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicViewController") as? MnemonicViewController {
-            vc.isTemporary = false // tempRestore
             vc.recoveryType = recoveryType
             navigationController?.pushViewController(vc, animated: true)
         }

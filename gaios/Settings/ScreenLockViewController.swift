@@ -46,12 +46,7 @@ class ScreenLockViewController: UIViewController {
             DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return
         }
-        if GreenAddressService.isTemporary {
-            content.bioSwitch.isOn = false
-            content.bioSwitch.isEnabled = false
-            content.helpLabel.numberOfLines = 0
-            content.helpLabel.text = NSLocalizedString("id_green_only_supports_one_pin_per", comment: "")
-        } else if screenlock == .None {
+        if screenlock == .None {
             content.bioSwitch.isOn = false
         } else if screenlock == .All {
             content.bioSwitch.isOn = true

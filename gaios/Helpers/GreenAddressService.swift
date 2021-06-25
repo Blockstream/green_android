@@ -48,7 +48,6 @@ class GreenAddressService {
     private var session: Session?
     private var twoFactorReset: TwoFactorReset?
     private var events = [Event]()
-    static var isTemporary = false
     var blockHeight: UInt32 = 0
     var account: Account? { AccountsManager.shared.current }
 
@@ -64,7 +63,6 @@ class GreenAddressService {
         twoFactorReset = nil
         events = [Event]()
         blockHeight = 0
-        GreenAddressService.isTemporary = false
         Ledger.shared.xPubsCached.removeAll()
     }
 

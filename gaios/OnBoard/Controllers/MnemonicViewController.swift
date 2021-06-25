@@ -22,7 +22,6 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
     var suggestions: KeyboardSuggestions?
     var mnemonic = [String](repeating: String(), count: 27)
     var qrCodeReader: QRCodeReaderView?
-    var isTemporary = false
     var isPasswordProtected = false {
         willSet {
             passwordProtectedSwitch.isOn = newValue
