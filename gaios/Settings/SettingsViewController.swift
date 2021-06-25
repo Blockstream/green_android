@@ -17,11 +17,12 @@ class SettingsViewController: UIViewController {
             return twoFactorConfig.isResetActive
         }
     }
-    var isWatchOnly: Bool { get { return getGAService().isWatchOnly } }
-    var isLiquid: Bool { get { return AccountsManager.shared.current?.gdkNetwork?.liquid ?? false } }
+    var account = { AccountsManager.shared.current }()
+    var isWatchOnly: Bool { get { return account?.isWatchonly ?? false } }
+    var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
     var isHW: Bool { get { return Ledger.shared.connected || Jade.shared.connected } }
 
-    var isSingleSig: Bool { get { return AccountsManager.shared.current?.isSingleSig ?? false }}
+    var isSingleSig: Bool { get { return account?.isSingleSig ?? false }}
 
     override func viewDidLoad() {
         super.viewDidLoad()

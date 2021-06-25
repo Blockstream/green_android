@@ -138,7 +138,8 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        if getGAService().isWatchOnly || isSweep {
+        let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false
+        if isWatchonly || isSweep {
             return CGSize.zero
         }
         return CGSize(width: self.view.frame.width, height: 184)

@@ -26,10 +26,9 @@ class WalletFullCardView: UIView {
     @IBOutlet weak var assetsHeight: NSLayoutConstraint!
 
     var account = AccountsManager.shared.current
-    var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false}
+    private var isLiquid: Bool { account?.gdkNetwork?.liquid ?? false }
     private var btc: String {
-        return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-
+        return account?.gdkNetwork?.getFeeAsset() ?? ""
     }
 
     override func awakeFromNib() {
@@ -83,7 +82,7 @@ class WalletFullCardView: UIView {
         assetsLabel.text = String(format: NSLocalizedString(wallet.satoshi.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.satoshi.count)
         if getGAService().getTwoFactorReset()?.isResetActive ?? false {
             actionsView.isHidden = true
-        } else if getGAService().isWatchOnly {
+        } else if account?.isWatchonly ?? false {
             sendView.isHidden = true
             sweepView.isHidden = false
         }

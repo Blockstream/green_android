@@ -35,8 +35,8 @@ class TransactionStatusTableCell: UITableViewCell {
             statusLabel.textColor = UIColor.customMatrixGreen()
             statusLabel.text = NSLocalizedString("id_completed", comment: "")
         }
-
-        let showBumpFee = !isLiquid && transaction.canRBF && !getGAService().isWatchOnly && !(getGAService().getTwoFactorReset()?.isResetActive ?? false)
+        let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false
+        let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(getGAService().getTwoFactorReset()?.isResetActive ?? false)
         statusImageView.isHidden = !(status == .confirmed)
         increaseFeeStackView.isHidden = !showBumpFee
     }

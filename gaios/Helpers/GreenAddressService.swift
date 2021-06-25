@@ -50,7 +50,7 @@ class GreenAddressService {
     private var events = [Event]()
     static var isTemporary = false
     var blockHeight: UInt32 = 0
-    var isWatchOnly: Bool = false
+    var account: Account? { AccountsManager.shared.current }
 
     public init() {
         let url = try! FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true)
@@ -64,7 +64,6 @@ class GreenAddressService {
         twoFactorReset = nil
         events = [Event]()
         blockHeight = 0
-        isWatchOnly = false
         GreenAddressService.isTemporary = false
         Ledger.shared.xPubsCached.removeAll()
     }
@@ -124,7 +123,7 @@ class GreenAddressService {
         case .Settings:
             reloadSystemMessage()
             Settings.shared = Settings.from(data)
-            if !isWatchOnly {
+            if let acc = account, !acc.isWatchonly {
                 reloadTwoFactor()
             }
             post(event: .Settings, data: data)

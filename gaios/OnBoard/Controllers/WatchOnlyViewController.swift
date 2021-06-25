@@ -136,7 +136,6 @@ class WatchOnlyViewController: KeyboardViewController {
                 account.password = password
             }
             AccountsManager.shared.current = account
-            getGAService().isWatchOnly = true
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             switch error {
