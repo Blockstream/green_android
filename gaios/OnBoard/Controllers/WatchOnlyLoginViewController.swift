@@ -129,6 +129,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
     @objc func click(_ sender: Any) {
         view.endEditing(true)
 
+        let username = self.account?.username ?? ""
         let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
@@ -140,11 +141,11 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
             try appDelegate.connect(self.account?.network ?? "mainnet")
-            return try getSession().loginWatchOnly(username: self.account?.username ?? "",
-                                            password: password)
+        }.then(on: bgq) { _ in
+            try getSession().loginUser(details: ["username": username, "password": password]).resolve()
         }.ensure {
             self.stopLoader()
-        }.done {
+        }.done { _ in
             AccountsManager.shared.current = self.account
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in

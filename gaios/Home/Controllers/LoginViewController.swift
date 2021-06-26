@@ -159,7 +159,7 @@ class LoginViewController: UIViewController {
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-            let resolver = try getSession().loginWithPin(pin: pin!, pin_data: pinData!)
+            let resolver = try getSession().loginUser(details: ["pin": pin!, "pin_data": pinData!])
             return resolver.resolve()
         }.then { _ -> Promise<Void> in
             if self.account?.network == "liquid" {

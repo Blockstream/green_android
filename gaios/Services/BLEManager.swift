@@ -256,7 +256,7 @@ class BLEManager {
                             }
                             return Promise<Void>()
                         }.then { _ in
-                            try session.login(mnemonic: "", hw_device: ["device": info]).resolve()
+                            try session.loginUser(details: [:], hw_device: ["device": info]).resolve()
                         }.done { res in
                             observer.onNext(res)
                             observer.onCompleted()

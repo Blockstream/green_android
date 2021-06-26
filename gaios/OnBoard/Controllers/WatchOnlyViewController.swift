@@ -126,10 +126,11 @@ class WatchOnlyViewController: KeyboardViewController {
         }.compactMap(on: bgq) {
             appDelegate.disconnect()
             try appDelegate.connect(network)
-            return try getSession().loginWatchOnly(username: username, password: password)
+        }.then(on: bgq) { _ in
+            try getSession().loginUser(details: ["username": username, "password": password]).resolve()
         }.ensure {
             self.stopLoader()
-        }.done {
+        }.done { _ in
             let name = "\(AccountsManager.shared.nameLabel(network)) watch-only"
             var account = Account(name: name, network: network, username: username)
             if self.rememberSwitch.isOn {
