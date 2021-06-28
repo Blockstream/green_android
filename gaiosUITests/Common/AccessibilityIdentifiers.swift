@@ -23,6 +23,11 @@ struct AccessibilityIdentifiers {
         static let testnetCard = "testnet_card"
     }
     
+    struct ChooseSecurityScreen {
+        static let view = "view"
+        static let multiSigCard = "multi_sig_card"
+    }
+    
     struct RecoveryInstructionsScreen {
         static let view = "view"
         static let continueBtn = "continue_btn"

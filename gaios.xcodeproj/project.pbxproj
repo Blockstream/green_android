@@ -59,6 +59,7 @@
 		34347677268320C200D7AD43 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347676268320C200D7AD43 /* Utils.swift */; };
 		34347679268322A100D7AD43 /* RecoveryVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347678268322A100D7AD43 /* RecoveryVerify.swift */; };
 		344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344562EA25D297CF00A5EC18 /* BLEManager.swift */; };
+		344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344698EA268A215800387BA7 /* ChooseSecurity.swift */; };
 		344FE3492684BD9700C087A5 /* RecoverySuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE3482684BD9700C087A5 /* RecoverySuccess.swift */; };
 		344FE34B2684C77900C087A5 /* WalletName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34A2684C77900C087A5 /* WalletName.swift */; };
 		344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34C2684CB3900C087A5 /* SetPin.swift */; };
@@ -327,6 +328,7 @@
 		34347676268320C200D7AD43 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		34347678268322A100D7AD43 /* RecoveryVerify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerify.swift; sourceTree = "<group>"; };
 		344562EA25D297CF00A5EC18 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
+		344698EA268A215800387BA7 /* ChooseSecurity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseSecurity.swift; sourceTree = "<group>"; };
 		344FE3482684BD9700C087A5 /* RecoverySuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccess.swift; sourceTree = "<group>"; };
 		344FE34A2684C77900C087A5 /* WalletName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletName.swift; sourceTree = "<group>"; };
 		344FE34C2684CB3900C087A5 /* SetPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPin.swift; sourceTree = "<group>"; };
@@ -627,6 +629,7 @@
 				3434766726822A5800D7AD43 /* Home.swift */,
 				3434766D268233C000D7AD43 /* Landing.swift */,
 				3434766F26823B1A00D7AD43 /* ChooseNetwork.swift */,
+				344698EA268A215800387BA7 /* ChooseSecurity.swift */,
 				343476722682432900D7AD43 /* RecoveryInstructions.swift */,
 				34347674268247F400D7AD43 /* RecoveryCreate.swift */,
 				34347678268322A100D7AD43 /* RecoveryVerify.swift */,
@@ -1742,6 +1745,7 @@
 				344FE34B2684C77900C087A5 /* WalletName.swift in Sources */,
 				3434766E268233C000D7AD43 /* Landing.swift in Sources */,
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
+				344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */,
 				344FE355268512CE00C087A5 /* Transactions.swift in Sources */,
 				676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */,
 				34347675268247F400D7AD43 /* RecoveryCreate.swift in Sources */,

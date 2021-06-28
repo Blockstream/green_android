@@ -14,7 +14,7 @@ class AddWalletUITests: XCTestCase {
         super.tearDown()
     }
     
-    func testAddWallet24() {
+    func testAddWallet() {
         
         Home()
             .tapAddWalletView()
@@ -26,6 +26,9 @@ class AddWalletUITests: XCTestCase {
         
         ChooseNetwork()
             .tapTestnetCard()
+    
+        ChooseSecurity()
+            .tapMultiSigCard()
             
         RecoveryInstructions()
             .tapContinue()
@@ -39,20 +42,10 @@ class AddWalletUITests: XCTestCase {
             .pause(1)
             .tapNext()
             .pause(1)
-            .readWords()
-            .pause(1)
-            .tapNext()
-            .pause(1)
-            .readWords()
-            .pause(1)
-            .tapNext()
-            .pause(1)
         
         RecoveryVerify()
             .pause(1)
             .chooseWord() 
-            .pause(1)
-            .chooseWord()
             .pause(1)
             .chooseWord()
             .pause(1)
