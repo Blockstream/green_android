@@ -40,6 +40,7 @@ class WalletFullCardView: UIView {
         sendView.layer.cornerRadius = 6.0
         sweepView.layer.cornerRadius = 6.0
         receiveView.layer.cornerRadius = 6.0
+        actionsView.layer.cornerRadius = 6.0
     }
 
     override func layoutSubviews() {
