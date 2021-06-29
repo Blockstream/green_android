@@ -30,6 +30,7 @@ import java.util.Locale;
 import static android.content.Context.MODE_PRIVATE;
 
 
+@Deprecated
 public class SPVPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceChangeListener,
                                            Preference.OnPreferenceClickListener {

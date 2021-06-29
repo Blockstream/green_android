@@ -16,6 +16,7 @@ import com.greenaddress.greenbits.ui.UI;
 // only way they can be created is from internal GaActivity derived activities.
 // This means we always have our service available and don't need to check it,
 // except when resuming the activity where the service may have been destroyed.
+@Deprecated
 public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
 
     @Override

@@ -199,6 +199,44 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         )
     }
 
+    fun undoReset2FA(email: String, twoFactorResolver: DialogTwoFactorResolver){
+        session.observable {
+            session
+                .twofactorUndoReset(email)
+                .resolve(twoFactorResolver = twoFactorResolver)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onError = {
+                onError.value = ConsumableEvent(it)
+            },
+            onSuccess = {
+                logout()
+            }
+        )
+    }
+
+    fun cancel2FA(twoFactorResolver: DialogTwoFactorResolver){
+        session.observable {
+            session
+                .twofactorCancelReset()
+                .resolve(twoFactorResolver = twoFactorResolver)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onError = {
+                onError.value = ConsumableEvent(it)
+            },
+            onSuccess = {
+                logout()
+            }
+        )
+    }
+
     fun changePin(newPin: String){
         session.observable {
             val pinData = it.setPin(newPin)

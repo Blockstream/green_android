@@ -11,6 +11,7 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
+@Deprecated
 public class WatchOnlyPreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceClickListener {
     private static final String TAG = WatchOnlyPreferenceFragment.class.getSimpleName();

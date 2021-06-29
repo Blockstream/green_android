@@ -407,9 +407,11 @@ class GreenSession constructor(
         password
     )
 
-
     fun twofactorReset(email:String, isDispute: Boolean) =
         AuthHandler(greenWallet, greenWallet.twofactorReset(gaSession, email, isDispute))
+
+    fun twofactorUndoReset(email: String) =
+        AuthHandler(greenWallet, greenWallet.twofactorUndoReset(gaSession, email))
 
     fun twofactorCancelReset() =
         AuthHandler(greenWallet, greenWallet.twofactorCancelReset(gaSession))

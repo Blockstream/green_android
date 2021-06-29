@@ -160,6 +160,10 @@ abstract class AppFragment<T : ViewDataBinding>(
         startActivity(intent)
     }
 
+    private fun popBackStack(){
+        findNavController().popBackStack()
+    }
+
     override fun interactionRequest(hw: HWWallet?) {
         throw Exception("Not yet implemented")
     }

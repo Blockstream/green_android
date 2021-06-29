@@ -47,6 +47,14 @@
             <action
                 android:id="@+id/action_walletSettingsFragment_self"
                 app:destination="@id/walletSettingsFragment" />
+            <argument
+                android:name="bridgeTwoFactor"
+                app:argType="boolean"
+                android:defaultValue="false" />
+            <argument
+                android:name="bridgeTwoFactorActionType"
+                app:argType="com.blockstream.green.ui.settings.TwoFactorResetAction"
+                android:defaultValue="RESET" />
         </fragment>
 
         <fragment
@@ -85,11 +93,15 @@
             android:id="@+id/twoFactorResetFragment"
             android:name="com.blockstream.green.ui.settings.TwoFactorResetFragment"
             tools:layout="@layout/twofactor_reset_fragment"
-            android:label="@string/id_request_twofactor_reset" >
+            android:label="" >
             <argument
                 android:name="wallet"
                 app:argType="com.blockstream.green.database.Wallet" />
-        </fragment>
+            <argument
+                android:name="actionType"
+                app:argType="com.blockstream.green.ui.settings.TwoFactorResetAction"
+                android:defaultValue="RESET" />
+        </fragment><action android:id="@+id/action_global_twoFactorResetFragment" app:destination="@id/twoFactorResetFragment"/>
 
     </navigation>
 

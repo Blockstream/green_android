@@ -5,6 +5,7 @@ import android.preference.PreferenceActivity;
 
 import androidx.fragment.app.Fragment;
 
+@Deprecated
 public class SettingsActivity extends GaPreferenceActivity {
 
     @Override

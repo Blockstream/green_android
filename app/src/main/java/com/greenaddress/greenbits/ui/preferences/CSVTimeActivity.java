@@ -26,7 +26,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-
+@Deprecated
 public class CSVTimeActivity extends GaActivity {
 
     private PopupMethodResolver popupMethodResolver;

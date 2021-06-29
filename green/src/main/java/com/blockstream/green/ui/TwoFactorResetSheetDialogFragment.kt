@@ -5,7 +5,9 @@ import android.os.Bundle
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemHelpBinding
+import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.StringHolder
 import com.greenaddress.Bridge
 import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment
@@ -13,6 +15,7 @@ import com.greenaddress.greenbits.ui.preferences.SettingsActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
+import io.reactivex.rxjava3.kotlin.subscribeBy
 
 // TODO this could be a WalletBottomSheetDialogFragment in v4
 class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment() {
@@ -79,20 +82,25 @@ class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment(
         }else{
 
             list += HelpListItem(
-                StringHolder(getString(R.string.id_your_wallet_is_locked_for_a, twoFactorReset.daysRemaining)),
-                StringHolder(R.string.id_the_waiting_period_is_necessary),
+                title = StringHolder(getString(R.string.id_your_wallet_is_locked_for_a, twoFactorReset.daysRemaining)),
+                message = StringHolder(R.string.id_the_waiting_period_is_necessary),
             )
 
             list += HelpListItem(
-                StringHolder(R.string.id_how_to_stop_this_reset),
-                StringHolder(getString(R.string.id_if_you_have_access_to_a, twoFactorReset.daysRemaining)),
-                StringHolder(R.string.id_cancel_twofactor_reset)
-            )
+                title = StringHolder(R.string.id_how_to_stop_this_reset),
+                message = StringHolder(getString(R.string.id_if_you_have_access_to_a, twoFactorReset.daysRemaining)),
+                button = StringHolder(R.string.id_cancel_twofactor_reset)
+            ).also {
+                cancelItem = it
+            }
 
             list += HelpListItem(
-                StringHolder(R.string.id_permanently_block_this_wallet),
-                StringHolder(R.string.id_if_you_did_not_request_the)
-            )
+                title = StringHolder(R.string.id_permanently_block_this_wallet),
+                message = StringHolder(R.string.id_if_you_did_not_request_the),
+                button = StringHolder(R.string.id_dispute_twofactor_reset),
+            ).also {
+                disputeItem = it
+            }
         }
 
         itemAdapter.add(list)
@@ -102,15 +110,17 @@ class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment(
         fastAdapter.addClickListener<ListItemHelpBinding, HelpListItem>({ binding -> binding.button }) { _, _, _, item ->
             if(Bridge.useGreenModule){
                 // TODO implement v4
+                // navigate
             } else {
-                if(twoFactorReset.isDisputed){
-                    if(item == disputeItem) {
-                        initiateAction(ResetActivePreferenceFragment.INITIATE_UNDO_DISPUTE)
-                    }else {
-                        initiateAction(ResetActivePreferenceFragment.INITIATE_CANCEL)
-                    }
+
+                if(item == cancelItem){
+                    Bridge.twoFactorCancelReset(requireActivity())
                 }else{
-                    initiateAction(ResetActivePreferenceFragment.INITIATE_CANCEL)
+                    if(twoFactorReset.isDisputed) {
+                        Bridge.twoFactorUndoDisputeReset(requireActivity())
+                    }else {
+                        Bridge.twoFactorDisputeReset(requireActivity())
+                    }
                 }
 
                 dismiss()
@@ -118,11 +128,5 @@ class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment(
         }
 
         return fastAdapter
-    }
-
-    private fun initiateAction(action : String){
-        requireActivity().startActivity(Intent(requireContext(), SettingsActivity::class.java).also {
-            it.putExtra(action, true)
-        })
     }
 }

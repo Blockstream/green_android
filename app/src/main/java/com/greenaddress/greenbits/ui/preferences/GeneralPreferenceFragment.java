@@ -56,6 +56,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
 
+@Deprecated
 public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private static final String TAG = GeneralPreferenceFragment.class.getSimpleName();
 

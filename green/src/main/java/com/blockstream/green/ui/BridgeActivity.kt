@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.get
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
@@ -44,9 +45,11 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         val isPin = PIN == intent.action
         val isBackupRecovery = BACKUP_RECOVERY == intent.action
         val isAddAccount = ADD_ACCOUNT == intent.action
+        val isTwoFactorReset = TWO_FACTOR_RESET == intent.action
         val isReceive = RECEIVE == intent.action
 
         val graph = inflater.inflate(R.navigation.nav_graph)
+        var extras = intent.extras
 
         graph.startDestination = when {
             isSettings || isPin -> {
@@ -61,10 +64,13 @@ class BridgeActivity : AppCompatActivity(), IActivity {
             isReceive -> {
                  R.id.receiveFragment
             }
+            isTwoFactorReset  -> {
+                R.id.settings_nav_graph
+            }
             else -> graph.startDestination
         }
 
-        navController.setGraph(graph, intent.extras)
+        navController.setGraph(graph, extras)
 
         val appBarConfiguration = AppBarConfiguration(
             setOf()
@@ -123,6 +129,7 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         const val PIN = "PIN"
         const val SETTINGS = "SETTINGS"
         const val ADD_ACCOUNT = "ADD_ACCOUNT"
+        const val TWO_FACTOR_RESET = "TWO_FACTOR_RESET"
         const val BACKUP_RECOVERY = "BACKUP_RECOVERY"
         const val RECEIVE = "RECEIVE"
     }

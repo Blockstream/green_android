@@ -17,6 +17,7 @@ import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.gdk.observable
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.ui.BridgeActivity
 import com.blockstream.green.ui.MainActivity
@@ -25,15 +26,21 @@ import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.receive.ReceiveFragmentArgs
 import com.blockstream.green.ui.recovery.RecoveryIntroFragmentArgs
 import com.blockstream.green.ui.settings.AppSettingsDialogFragment
+import com.blockstream.green.ui.settings.TwoFactorResetAction
+import com.blockstream.green.ui.settings.TwoFactorResetFragment
 import com.blockstream.green.ui.settings.WalletSettingsFragmentArgs
+import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.*
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.Bridge
+import com.greenaddress.Bridge.getActiveWalletId
+import com.greenaddress.Bridge.navigateToLogin
 import com.greenaddress.greenapi.Registry
 import com.greenaddress.greenapi.Session
 import dagger.hilt.android.HiltAndroidApp
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -164,6 +171,29 @@ class GreenApplication : Application(){
                         ?.blockingFirst()?.let {
                         TwoFactorResetSheetDialogFragment.newInstance(it).also { dialog ->
                             dialog.show(activity.supportFragmentManager, dialog.toString())
+                        }
+                    }
+                }
+
+                Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET,
+                Bridge.NavigateType.TWO_FACTOR_DISPUTE,
+                Bridge.NavigateType.TWO_FACTOR_UNDO_DISPUTE -> {
+                    sessionManager.getWalletSession(gaSession)?.let { session ->
+
+                        GlobalScope.launch {
+
+                            val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
+
+                            val intent = Intent(activity, BridgeActivity::class.java)
+                            intent.putExtras(WalletSettingsFragmentArgs(wallet = wallet, bridgeTwoFactor = true, bridgeTwoFactorActionType = when(type){
+                                Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET -> TwoFactorResetAction.CANCEL
+                                Bridge.NavigateType.TWO_FACTOR_DISPUTE -> TwoFactorResetAction.DISPUTE
+                                else -> TwoFactorResetAction.UNDO_DISPUTE
+                            }).toBundle())
+
+                            intent.action = BridgeActivity.TWO_FACTOR_RESET
+
+                            activity.startActivity(intent)
                         }
                     }
                 }

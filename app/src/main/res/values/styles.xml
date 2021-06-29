@@ -14,6 +14,11 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="colorBackgroundFloating">@color/buttonJungleGreen</item>
         <item name="android:itemBackground">@color/buttonJungleGreen</item>
+
+        <item name="colorPrimaryVariant">@color/accentPressed</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accentPressed</item>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense</item>
     </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -26,6 +31,10 @@
 
     <style name="AppTheme.Base" parent="Theme.MaterialComponents.Bridge">
         <!-- Customize your theme here. -->
+        <item name="colorPrimaryVariant">@color/accentPressed</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorSecondaryVariant">@color/accentPressed</item>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense</item>
 
         <!-- colorPrimary is used for the default action bar background -->
         <item name="colorPrimary">@color/primary</item>

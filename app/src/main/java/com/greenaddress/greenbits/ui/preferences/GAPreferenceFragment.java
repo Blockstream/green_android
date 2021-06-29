@@ -17,6 +17,7 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 
 import static android.content.Context.MODE_PRIVATE;
 
+@Deprecated
 public class GAPreferenceFragment extends PreferenceFragmentCompat {
     private static final String TAG = GAPreferenceFragment.class.getSimpleName();
 

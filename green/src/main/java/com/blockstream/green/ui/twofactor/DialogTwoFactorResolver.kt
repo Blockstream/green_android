@@ -51,7 +51,7 @@ class DialogTwoFactorResolver(val context: Context, val method: String? = null) 
                 .setCancelable(false)
                 .setOnDismissListener {
                     if (!emitter.isDisposed) {
-                        emitter.tryOnError(Exception("id_user_cancel"))
+                        emitter.tryOnError(Exception("id_action_canceled"))
                     }
                 }
                 .show()
@@ -79,7 +79,7 @@ class DialogTwoFactorResolver(val context: Context, val method: String? = null) 
                 .setCancelable(false)
                 .setOnDismissListener {
                     if (!emitter.isDisposed) {
-                        emitter.tryOnError(Exception("id_user_cancel"))
+                        emitter.tryOnError(Exception("id_action_canceled"))
                     }
                 }
                 .show()

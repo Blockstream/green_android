@@ -145,8 +145,6 @@ public class TabbedMainActivity extends LoggedActivity  {
         if (itemId == R.id.action_notifications) {
             startActivity(new Intent(this, NotificationsActivity.class));
         } else if (itemId == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-        } else if (itemId == R.id.action_settings_new) {
             Bridge.INSTANCE.navigateToSettings(this);
         }
         return super.onOptionsItemSelected(item);

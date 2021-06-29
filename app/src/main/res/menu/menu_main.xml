@@ -12,10 +12,4 @@
         android:title="@string/id_settings"
         android:icon="@drawable/ic_settings"
         app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_settings_new"
-        android:title="v4 Settings"
-        android:icon="@drawable/ic_settings"
-        app:showAsAction="ifRoom" />
 </menu>

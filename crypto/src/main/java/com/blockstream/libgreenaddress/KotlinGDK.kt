@@ -96,6 +96,8 @@ class KotlinGDK {
         (if(isDispute) GDK.GA_TRUE else GDK.GA_FALSE).toLong()
     )
 
+    fun twofactorUndoReset(session: GASession, email: String) = GDK.twofactor_undo_reset(session, email)
+
     fun twofactorCancelReset(session: GASession) = GDK.twofactor_cancel_reset(session)
 
     fun twofactorChangeLimits(session: GASession, limits: Limits) = GDK.twofactor_change_limits(session, limits)

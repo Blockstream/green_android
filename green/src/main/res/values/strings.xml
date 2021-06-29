@@ -317,7 +317,7 @@
   <string name="id_i_typed_all_my_recovery_phrase">I typed all my recovery phrase why can\'t I continue?</string>
   <string name="id_id">ID</string>
   <string name="id_if_you_are_the_rightful_owner">If you are the rightful owner of this wallet, and you still possess one of its active 2FA methods, cancel the reset to be able to spend and empty this wallet.</string>
-  <string name="id_if_you_did_not_request_the">If you did not request the reset, but you cannot cancel the reset process because you can\'t access any existing Two-Factor Authorization methods, please contact our support.</string>
+  <string name="id_if_you_did_not_request_the">If you did not request the reset, but you cannot cancel the reset process because you can\'t access any existing Two-Factor Authorization methods, dispute this 2FA reset. This will permanently block your wallet, but you can undo this action.</string>
   <string name="id_if_you_have_access_to_a">If you have access to a Two-Factor method for this wallet, cancel the reset to be able to spend and receive immediately, or wait %d days.</string>
   <string name="id_if_you_initiated_the_2fa_reset">If you initiated the 2FA reset dispute by mistake, you can undo it and set the wallet back to 2FA reset state.</string>
   <string name="id_import_a_wallet_created_on">Import a wallet created on Blockstream Green.</string>
@@ -829,7 +829,7 @@
   <string name="id_your_wallet_backup_is_made_of">Your wallet backup is made of 24 words, also known as your mnemonic. Make sure you have a backup and keep it safe. Anyone who finds it can steal your money. You can use it to restore your Blockstream Green wallet on another device in case yours is lost, damaged or stolen.</string>
   <string name="id_your_wallet_is_locked_for_a">Your wallet is locked for a Two-Factor Authentication reset. The reset will be completed in %d days.</string>
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
-  <string name="id_your_wallet_locked_under_2fa">Your wallet locked under 2FA dispute.</string>
+  <string name="id_your_wallet_is_locked_under_2fa">Your wallet is locked under 2FA dispute.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.\n\nYou\'ll need your recovery phrase to restore this wallet.</string>
   <string name="id_request_amount_label">Request Amount &amp; Label</string>

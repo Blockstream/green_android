@@ -16,7 +16,7 @@ import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 
 import static android.app.Activity.RESULT_OK;
 
-
+@Deprecated
 public class ResetActivePreferenceFragment extends GAPreferenceFragment
     implements Preference.OnPreferenceClickListener {
     private static final String TAG = ResetActivePreferenceFragment.class.getSimpleName();

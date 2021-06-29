@@ -88,6 +88,7 @@ fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {
 
     // Prevent showing user triggered cancel events as errors
     if (throwable.message == "id_action_canceled") {
+        listener?.invoke()
         return
     }
 

@@ -173,6 +173,8 @@ class GreenWallet(
 
     fun twofactorReset(session: GASession, email: String, isDispute: Boolean) = gdk.twofactorReset(session, email, isDispute)
 
+    fun twofactorUndoReset(session: GASession, email: String) = gdk.twofactorUndoReset(session, email)
+
     fun twofactorCancelReset(session: GASession) = gdk.twofactorCancelReset(session)
 
     fun twofactorChangeLimits(session: GASession, limits: Limits) =

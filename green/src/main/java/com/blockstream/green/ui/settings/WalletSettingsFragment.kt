@@ -9,6 +9,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.distinctUntilChanged
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.preference.*
@@ -103,6 +104,17 @@ class WalletSettingsFragment :
                 viewModel.updateTwoFactorConfig()
                 clearNavigationResult()
             }
+        }
+
+        if (args.bridgeTwoFactor) {
+            navigate(
+                directions = WalletSettingsFragmentDirections.actionGlobalTwoFactorResetFragment(
+                    wallet = wallet,
+                    actionType = args.bridgeTwoFactorActionType
+                ),
+                navOptionsBuilder = NavOptions.Builder()
+                    .setPopUpTo(R.id.walletSettingsFragment, true)
+            )
         }
 
         binding.vm = viewModel
