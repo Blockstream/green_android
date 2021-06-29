@@ -148,6 +148,7 @@ class SetPinViewController: UIViewController {
             if let vc = storyboard.instantiateViewController(withIdentifier: "SetPinViewController") as? SetPinViewController {
                 vc.pinCodeToVerify = pinCode
                 vc.actionPin = .verify
+                vc.pinFlow = self.pinFlow
                 navigationController?.pushViewController(vc, animated: true)
             }
         case .verify:
@@ -186,7 +187,7 @@ class SetPinViewController: UIViewController {
         }.done {
             switch self.pinFlow {
             case .settings:
-                self.navigationController?.popViewController(animated: true)
+                self.navigationController?.popToViewController(ofClass: SettingsViewController.self, animated: true)
             case .onboard:
                 let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
                 let vc = storyboard.instantiateViewController(withIdentifier: "WalletSuccessViewController")
