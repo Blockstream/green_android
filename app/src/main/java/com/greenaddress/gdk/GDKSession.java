@@ -5,10 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
-
 import com.blockstream.gdk.GreenWallet;
 import com.blockstream.gdk.data.Network;
 import com.blockstream.gdk.params.DeviceParams;
+import com.blockstream.gdk.data.Device;
 import com.blockstream.libgreenaddress.GDK;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -22,7 +22,6 @@ import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.EstimatesData;
-import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.JSONData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
@@ -99,8 +98,8 @@ public class GDKSession implements HttpRequestHandler {
         return GDK.get_watch_only_username(mNativeSession);
     }
 
-    public GDKTwoFactorCall login(final HWDeviceData hwDevice) throws Exception {
-        return new GDKTwoFactorCall(GDK.login_user(mNativeSession, new DeviceParams(hwDevice.toDevice()), null));
+    public GDKTwoFactorCall login(final Device device) throws Exception {
+        return new GDKTwoFactorCall(GDK.login_user(mNativeSession, new DeviceParams(device), null));
     }
 
     // Pass ready-assembled json parameters
@@ -366,11 +365,6 @@ public class GDKSession implements HttpRequestHandler {
 
     public boolean isEnabled() {
         return GDK.isEnabled();
-    }
-
-    public GDKTwoFactorCall registerUser(final HWDeviceData hwDevice, final String mnemonic) throws Exception {
-        final ObjectNode hw = hwDevice == null ? mObjectMapper.createObjectNode() : mObjectMapper.valueToTree(hwDevice);
-        return new GDKTwoFactorCall(GDK.register_user(mNativeSession, hw, mnemonic));
     }
 
     public Boolean changeMemo(final String txHashHex, final String memo) throws Exception {

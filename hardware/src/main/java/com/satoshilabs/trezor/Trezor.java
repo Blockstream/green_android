@@ -33,6 +33,7 @@ import com.satoshilabs.trezor.protobuf.TrezorMessage.TxSize;
 import com.satoshilabs.trezor.protobuf.TrezorMessage.WordRequest;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,17 +50,20 @@ public class Trezor {
 
     public static Trezor getDevice(final Context context) {
         final UsbManager manager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
+        return getDevice(manager, new ArrayList<>(manager.getDeviceList().values()));
+    }
 
-        for (final UsbDevice device: manager.getDeviceList().values()) {
+    public static Trezor getDevice(UsbManager manager, List<UsbDevice> devices) {
+        for (final UsbDevice device: devices) {
             // Check if the device is TREZOR (or AvalonWallet or BWALLET)
 
             final int vendorId = device.getVendorId();
             final int productId = device.getProductId();
 
             if ((vendorId != 0x534c || productId != 0x0001) &&
-                (vendorId != 0x1209 || productId != 0x53c0) &&
-                (vendorId != 0x1209 || productId != 0x53c1) &&
-                (vendorId != 0x10c4 || productId != 0xea80)) {
+                    (vendorId != 0x1209 || productId != 0x53c0) &&
+                    (vendorId != 0x1209 || productId != 0x53c1) &&
+                    (vendorId != 0x10c4 || productId != 0xea80)) {
                 continue;
             }
 

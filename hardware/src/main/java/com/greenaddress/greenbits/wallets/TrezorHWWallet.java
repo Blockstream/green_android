@@ -2,15 +2,15 @@ package com.greenaddress.greenbits.wallets;
 
 import android.util.Log;
 
+import com.blockstream.gdk.data.Device;
 import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
-import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenapi.data.HWDeviceData;
+import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -35,11 +35,10 @@ public class TrezorHWWallet extends HWWallet {
     private final Map<String, TrezorType.HDNodeType> mRecoveryXPubs = new HashMap<>();
     private final Map<String, Object> mPrevTxs = new HashMap<>();
 
-    public TrezorHWWallet(final Trezor t, final NetworkData network, final HWDeviceData hwDeviceData) {
+    public TrezorHWWallet(final Trezor t, final NetworkData network, final Device device) {
         mTrezor = t;
         mNetwork = network;
-        mHWDeviceData = hwDeviceData;
-        mDevice = hwDeviceData.toDevice();
+        mDevice = device;
     }
 
     @Override

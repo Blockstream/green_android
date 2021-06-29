@@ -8,8 +8,6 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.ParcelUuid;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,18 +21,11 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.btchip.BTChipConstants;
-import com.btchip.BTChipDongle;
-import com.btchip.BTChipDongle.BTChipFirmware;
-import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerDeviceBLE;
 import com.btchip.comm.android.BTChipTransportAndroid;
-import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenapi.Session;
-import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoginActivity;
@@ -42,33 +33,25 @@ import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.NetworkSwitchListener;
 import com.greenaddress.greenbits.ui.accounts.SwitchNetworkFragment;
-import com.greenaddress.greenbits.ui.hardwarewallets.DeviceSelectorActivity;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-import com.greenaddress.greenbits.wallets.BTChipHWWallet;
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 import com.greenaddress.greenbits.wallets.FirmwareInteraction;
-import com.greenaddress.greenbits.wallets.JadeHWWallet;
 import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
-import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.JadeBleImpl;
-import com.greenaddress.jade.entities.JadeError;
 import com.polidea.rxandroidble2.RxBleClient;
 import com.polidea.rxandroidble2.RxBleDevice;
-import com.satoshilabs.trezor.Trezor;
 
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Objects;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
 @AndroidEntryPoint
-public class RequestLoginActivity extends LoginActivity implements NetworkSwitchListener, FirmwareInteraction {
+public class RequestLoginActivity extends LoginActivity implements NetworkSwitchListener, FirmwareInteraction, HardwareConnectInteraction {
     private static final String TAG = RequestLoginActivity.class.getSimpleName();
 
     private static final int VENDOR_BTCHIP     = 0x2581;
@@ -95,6 +78,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
     private TextView mSinglesigWarning;
     private NetworkData networkData;
     private CompositeDisposable mDisposables;
+    private HardwareConnect mHardwareConnect;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
@@ -103,6 +87,8 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitleBackTransparent();
+
+        mHardwareConnect = new HardwareConnect();
 
         mInLedgerDashboard = false;
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
@@ -142,6 +128,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
     @Override
     protected void onNewIntent(final Intent intent) {
+        super.onNewIntent(intent);
         Log.d(TAG, "onNewIntent");
         setIntent(intent);
     }
@@ -175,13 +162,13 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         case VENDOR_JADE:
             hardwareIcon.setImageResource(R.drawable.blockstream_jade_device);
             final JadeAPI jadeAPI = JadeAPI.createSerial(getSession(), mUsbManager, mUsb, 115200);
-            onJade(jadeAPI);
+            mHardwareConnect.onJade(this, jadeAPI);
             return;
 
         case VENDOR_TREZOR:
         case VENDOR_TREZOR_V2:
             hardwareIcon.setImageResource(R.drawable.trezor_device);
-            onTrezor();
+            mHardwareConnect.onTrezor(this, mUsbManager, mUsb);
             return;
 
         case VENDOR_BTCHIP:
@@ -200,7 +187,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
             if (BTChipTransportAndroid.isLedgerWithScreen(usb)) {
                 // User entered PIN on-device
-                onLedger(transport, true);
+                mHardwareConnect.onLedger(this, transport, true);
             } else {
                 // Prompt for PIN to unlock device before setting it up
                 showLedgerPinDialog(transport);
@@ -227,14 +214,20 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
             // Create JadeAPI on BLE device
             final JadeAPI jadeAPI = JadeAPI.createBle(getSession(), bleDevice);
-            onJade(jadeAPI);
+            mHardwareConnect.onJade(this, jadeAPI);
 
         } else if (LedgerDeviceBLE.SERVICE_UUID.equals(serviceId.getUuid())) {
             // Ledger (Nano X)
             hardwareIcon.setImageResource(R.drawable.ledger_device);
 
             // Ledger BLE adapter will call the 'onLedger' function when the BLE connection is established
-            LedgerBLEAdapter.connectLedgerBLE(this, btDevice, this::onLedger, this::onLedgerError);
+            // LedgerBLEAdapter.connectLedgerBLE(this, btDevice, this::onLedger, this::onLedgerError);
+
+            LedgerBLEAdapter.connectLedgerBLE(this, btDevice, (final BTChipTransport transport, final boolean hasScreen) -> {
+                mHardwareConnect.onLedger(this, transport, hasScreen);
+            }, (final BTChipTransport transport) -> {
+                mHardwareConnect.onLedgerError(this, transport);
+            });
         } else {
             mBleDevice = null;
             onNoHardwareWallet();
@@ -256,123 +249,6 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         });
     }
 
-    private void onJade(final JadeAPI jade) {
-        // Connect to jade (using background thread)
-        mDisposables.add(Observable.just(jade)
-                .subscribeOn(Schedulers.computation())
-                .map(JadeAPI::connect)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        rslt -> {
-                            if (rslt) {
-                                // Connected - ok to proceed to fw check, pin, login etc.
-                                onJadeConnected(jade);
-                            } else {
-                                Log.e(TAG, "Failed to connect to Jade");
-                                showInstructions(R.string.id_please_reconnect_your_hardware);
-                            }
-                        },
-                        throwable -> {
-                            Log.e(TAG, "Exception connecting to Jade");
-                            showInstructions(R.string.id_please_reconnect_your_hardware);
-                        }
-                )
-        );
-    }
-
-    private void onJadeConnected(final JadeAPI jade) {
-        mDisposables.add(Single.just(getSession())
-                .subscribeOn(Schedulers.computation())
-
-                // Connect GDKSession first (on a background thread), as we use httpRequest() as part of
-                // Jade login (to access firmware server and to interact with the pinserver).
-                // This also acts as a handy check that we have network connectivity before we start.
-                .map(this::reconnectSession)
-                .doOnError(throwable -> Log.e(TAG, "Exception connecting GDK - " + throwable))
-
-                // Then create JadeHWWallet instance and authenticate (with pinserver) still on background thread
-                .doOnSuccess(session -> Log.d(TAG, "Creating Jade HW Wallet)"))
-                .map(session -> new HWDeviceData("Jade", true, true, false,
-                                                 HWDeviceData.HWDeviceDataLiquidSupport.Lite,
-                                                 HWDeviceData.HWDeviceAntiExfilSupport.Optional))
-                .map(hwDeviceData -> {
-                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, networkData, hwDeviceData, Bridge.INSTANCE.getHardwareQATester());
-                    return jadeWallet;
-                })
-                .flatMap(jadeWallet -> jadeWallet.authenticate(this, this, getSession()))
-
-                // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        jadeWallet -> {
-                            showInstructions(R.string.id_logging_in);
-                            mHwWallet = jadeWallet;
-                            doLogin(false);
-                        },
-                        throwable -> {
-                            Log.e(TAG, "Connecting to Jade HW wallet got error: " + throwable);
-                            if (throwable instanceof JadeError) {
-                                final JadeError jaderr = (JadeError)throwable;
-                                if (jaderr.getCode()  == JadeError.UNSUPPORTED_FIRMWARE_VERSION) {
-                                    showInstructions(R.string.id_outdated_hardware_wallet);
-                                } else if (jaderr.getCode()  == JadeError.CBOR_RPC_NETWORK_MISMATCH) {
-                                    showInstructions(R.string.id_the_network_selected_on_the);
-                                } else {
-                                    // Error from Jade hw - show the hw error message as a toast
-                                    UI.toast(this, jaderr.getMessage(), Toast.LENGTH_LONG);
-                                    showInstructions(R.string.id_please_reconnect_your_hardware);
-                                }
-                            } else if ("GDK_ERROR_CODE -1 GA_connect".equals(throwable.getMessage())) {
-                                showInstructions(R.string.id_unable_to_contact_the_green);
-                            } else {
-                                showInstructions(R.string.id_please_reconnect_your_hardware);
-                            }
-                            jade.disconnect();
-                        }
-                )
-        );
-    }
-
-    private void onTrezor() {
-        final Trezor t;
-        t = Trezor.getDevice(this);
-
-        if (networkData.getLiquid()) {
-            showInstructions(R.string.id_hardware_wallet_support_for);
-            return;
-        }
-        if (t == null)
-            return;
-
-        final List<Integer> version = t.getFirmwareVersion();
-        final int vendorId = t.getVendorId();
-        Log.d(TAG,"Trezor Version: " + version + " vendorid:" + vendorId + " productid:" + t.getProductId());
-
-        // Min allowed: v1.6.0 & v2.1.0
-        final boolean isFirmwareOutdated = version.get(0) < 1 ||
-                                           (version.get(0) == 1 && version.get(1) < 6) ||
-                                           (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0) ||
-                                           (version.get(0) == 2 && version.get(1) < 1);
-        if (isFirmwareOutdated) {
-            showFirmwareOutdated(() -> onTrezorConnected(t), null);
-            return;
-        }
-
-        // All good
-        onTrezorConnected(t);
-    }
-
-    private void onTrezorConnected(final Trezor t) {
-
-        Log.d(TAG, "Creating Trezor HW wallet");
-        final HWDeviceData hwDeviceData = new HWDeviceData("Trezor", false, false, false,
-                                                           HWDeviceData.HWDeviceDataLiquidSupport.None,
-                                                           HWDeviceData.HWDeviceAntiExfilSupport.None);
-        mHwWallet = new TrezorHWWallet(t, networkData, hwDeviceData);
-
-        doLogin(true);
-    }
-
     private void showLedgerPinDialog(final BTChipTransport transport) {
         mPinDialog = UI.dismiss(this, mPinDialog);
 
@@ -385,7 +261,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
                          mPin = UI.getText(v, R.id.btchipPINValue);
                          mDisposables.add(Observable.just(getSession())
                                  .observeOn(Schedulers.computation())
-                                 .subscribe(session -> onLedger(transport, false))
+                                 .subscribe(session -> mHardwareConnect.onLedger(this, transport, false))
                          );
                      })
                      .onNegative((dialog, which) -> {
@@ -397,150 +273,6 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         UI.showDialog(mPinDialog);
     }
 
-    private void closeLedger(final BTChipTransport transport) {
-        try {
-            transport.close();
-        } catch (final BTChipException ignored) {}
-
-        mUsb = null;
-        mBleDevice = null;
-        mInLedgerDashboard = true;
-    }
-
-    private void onLedgerError(final BTChipTransport transport) {
-        showInstructions(R.string.id_please_reconnect_your_hardware);
-        closeLedger(transport);
-    }
-
-    private void onLedger(final BTChipTransport transport, final boolean hasScreen) {
-        showInstructions(R.string.id_logging_in);
-        final String pin = mPin;
-        mPin = null;
-
-        transport.setDebug(BuildConfig.DEBUG);
-        try {
-            final BTChipDongle dongle = new BTChipDongle(transport, hasScreen);
-            try {
-                // This should only be supported by the Nano X
-                final BTChipDongle.BTChipApplication application = dongle.getApplication();
-                Log.d(TAG, "Ledger application:" + application);
-
-                if (application.getName().contains("OLOS")) {
-                    showInstructions(R.string.id_ledger_dashboard_detected);
-                    closeLedger(transport);
-                    return;
-                }
-
-                final boolean netMainnet = networkData.getMainnet();
-                final boolean netLiquid = networkData.getLiquid();
-                final boolean hwMainnet = !application.getName().contains("Test");
-                final boolean hwLiquid = application.getName().contains("Liquid");
-                Log.d(TAG, "Ledger application:" + application.getName() + ", network is mainnet:"+ netMainnet);
-
-                if (netMainnet != hwMainnet || netLiquid != hwLiquid) {
-                    // We using the wrong app, prompt the user to open the right app.
-                    showInstructions(R.string.id_the_network_selected_on_the);
-                    closeLedger(transport);
-                    return;
-                }
-            } catch (final Exception e) {
-                // Log but otherwise ignore
-                Log.e(TAG, "Error trying to get Ledger application details: " + e);
-            }
-
-            // We don't ask for firmware version while in the dashboard, since the Ledger Nano X would return invalid status
-            final BTChipFirmware fw = dongle.getFirmwareVersion();
-            Log.d(TAG, "BTChip/Ledger firmware version " + fw);
-
-            boolean isFirmwareOutdated = true;
-            if (fw.getArchitecture() == BTChipDongle.BTCHIP_ARCH_LEDGER_1 && fw.getMajor() > 0) {
-                // Min allowed: v1.0.4
-                isFirmwareOutdated = (fw.getMajor() == 1 && fw.getMinor() < 0) ||
-                                     (fw.getMajor() == 1 && fw.getMinor() == 0 && fw.getPatch() < 4);
-            } else if (fw.getArchitecture() == BTChipDongle.BTCHIP_ARCH_NANO_SX && fw.getMajor() > 0) {
-                // Min allowed: v1.3.7
-                isFirmwareOutdated = (fw.getMajor() == 1 && fw.getMinor() < 3) ||
-                                     (fw.getMajor() == 1 && fw.getMinor() == 3 && fw.getPatch() < 7);
-            }
-
-            if (isFirmwareOutdated) {
-                showFirmwareOutdated(() -> onLedgerConnected(dongle, pin),
-                                     () -> closeLedger(transport));
-                return;
-            }
-
-            // All good
-            onLedgerConnected(dongle, pin);
-        } catch (final BTChipException e) {
-            if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
-                e.printStackTrace();
-
-            if (e.getSW() == 0x6faa) {
-                showInstructions(R.string.id_please_disconnect_your_ledger);
-            } else {
-                showInstructions(R.string.id_ledger_dashboard_detected);
-            }
-            closeLedger(transport);
-        }
-    }
-
-    private void onLedgerConnected(final BTChipDongle dongle, final String pin) {
-        final SettableFuture<Integer> pinCB = SettableFuture.create();
-
-        final boolean havePin = !TextUtils.isEmpty(pin);
-        Log.d(TAG, "Creating Ledger HW wallet" + (havePin ? " with PIN" : ""));
-        final HWDeviceData hwDeviceData = new HWDeviceData("Ledger", false, true, false,
-                                                           HWDeviceData.HWDeviceDataLiquidSupport.Lite,
-                                                           HWDeviceData.HWDeviceAntiExfilSupport.None);
-        mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData, hwDeviceData);
-
-        doLogin(true);
-    }
-
-    private Session reconnectSession(final Session session) throws Exception {
-        Log.d(TAG, "(re-)connecting gdk session)");
-        session.disconnect();
-        this.connect(mHwWallet);
-        return session;
-    }
-
-    private void doLogin(final boolean bReConnectSession) {
-        mDisposables.add(Observable.just(getSession())
-                .observeOn(Schedulers.computation())
-                .map((session) -> {
-
-                    final String network = PreferenceManager
-                            .getDefaultSharedPreferences(this)
-                            .getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-
-
-                    Bridge.INSTANCE.loginWithDevice(this, getSession().getNativeSession(), network, bReConnectSession, mHwWallet, new HardwareCodeResolver(this, mHwWallet));
-
-                    return session;
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((session) -> {
-                    onPostLogin();
-                    stopLoading();
-                    onLoggedIn();
-                }, (final Throwable e) -> {
-                    e.printStackTrace();
-                    stopLoading();
-                    getSession().disconnect();
-
-                    // If the error is the Anti-Exfil validation violation we show that prominently.
-                    // Otherwise show a generic error and reconnect/retry message.
-                    final String idValidationFailed = getResources().getResourceEntryName(R.string.id_signature_validation_failed_if);
-                    if (idValidationFailed.equals(e.getMessage())) {
-                        showInstructions(R.string.id_signature_validation_failed_if);
-                    } else {
-                        UI.toast(this, R.string.id_error_logging_in_with_hardware, Toast.LENGTH_LONG);
-                        showInstructions(R.string.id_please_reconnect_your_hardware);
-                    }
-                })
-        );
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -548,6 +280,8 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         if (mDisposables != null) {
             mDisposables.dispose();
         }
+
+        mHardwareConnect.onDestroy();
     }
 
     @Override
@@ -583,25 +317,17 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
     }
 
     private void onNoHardwareWallet() {
-        // No hardware wallet, jump to PIN or 1st screen entry
-
-//        final Intent intent = getIntent();
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        if (AuthenticationHandler.hasPin(this))
-//            startActivityForResult(new Intent(this, PinActivity.class), 0);
-//        else
-//            startActivityForResult(new Intent(this, FirstScreenActivity.class), 0);
         finish();
     }
 
-    private void showInstructions(final int resId) {
+    public void showInstructions(final int resId) {
         runOnUiThread(() -> {
             mInstructionsText.setText(resId);
             UI.show(mInstructionsText);
         });
     }
 
-    private void showFirmwareOutdated(final Runnable onContinue, final Runnable onClose) {
+    public void showFirmwareOutdated(final Runnable onContinue, final Runnable onClose) {
         if (!BuildConfig.DEBUG) {
             // Only allow the user to skip firmware checks in debug builds.
             showInstructions(R.string.id_outdated_hardware_wallet);
@@ -628,5 +354,46 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         networkData = nd;
         mActiveNetwork.setText(getString(R.string.id_s_network, networkData.getName()));
         Bridge.INSTANCE.setCurrentNetwork(this, networkData.getNetwork());
+    }
+
+    @NotNull
+    @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public HWWallet getHwwallet() {
+        return mHwWallet;
+    }
+
+    @Override
+    public void showError(@NotNull String error) {
+        UI.toast(this, error, Toast.LENGTH_LONG);
+    }
+
+    @Override
+    public void setHwwallet(@NotNull HWWallet hwWallet) {
+        mHwWallet = hwWallet;
+    }
+
+    @NotNull
+    @Override
+    public NetworkData getNetworkData() {
+        return networkData;
+    }
+
+    @Override
+    public void onLoginSuccess() {
+        super.onLoggedIn();
+    }
+
+    @Nullable
+    @Override
+    public String getPin() {
+        String tempPin = mPin;
+        mPin = null;
+        return tempPin;
     }
 }

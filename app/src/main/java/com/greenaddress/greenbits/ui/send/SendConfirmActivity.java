@@ -12,17 +12,13 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
+import com.blockstream.gdk.data.Device;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.Bridge;
-import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.LoggedActivity;
@@ -38,11 +34,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class SendConfirmActivity extends LoggedActivity implements SwipeButton.OnActiveListener {
     private static final String TAG = SendConfirmActivity.class.getSimpleName();
     private final ObjectMapper mObjectMapper = new ObjectMapper();
 
-    private HWDeviceData mHwData;
+    private Device mDevice;
     private ObjectNode mTxJson;
     private SwipeButton mSwipeButton;
 
@@ -58,7 +59,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
-        final String hwwJson = getIntent().getStringExtra("hww");
+        final Device mDevice = getIntent().getParcelableExtra("hww");
 
         setTitle(isSweep ? R.string.id_sweep : R.string.id_send);
 
@@ -66,8 +67,6 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         setupDisposable = Observable.just(getSession())
                           .observeOn(AndroidSchedulers.mainThread())
                           .map((session) -> {
-            if (hwwJson != null)
-                mHwData = mObjectMapper.readValue(hwwJson, HWDeviceData.class);
             return mObjectMapper.readValue(getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX), ObjectNode.class);
         })
                           .observeOn(Schedulers.computation())
@@ -130,7 +129,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         }
         sendFee.setText(getFormatAmount(fee));
 
-        if (mHwData != null && mTxJson.has("transaction_outputs")) {
+        if (mDevice != null && mTxJson.has("transaction_outputs")) {
             UI.show(UI.find(this, R.id.changeLayout));
             final TextView view = UI.find(this, R.id.changeAddressText);
             final Collection<String> changesList = new ArrayList<>();

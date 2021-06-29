@@ -3,16 +3,16 @@ package com.greenaddress.greenbits.wallets;
 import android.content.Context;
 import android.util.Log;
 
+import com.blockstream.gdk.data.Device;
 import com.blockstream.hardware.R;
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Longs;
-import com.greenaddress.greenapi.HardwareQATester;
-import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenapi.data.HWDeviceData;
+import com.greenaddress.greenapi.HWWalletBridge;
+import com.greenaddress.greenapi.HardwareQATester;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -45,10 +45,9 @@ public class JadeHWWallet extends HWWallet {
 
     private final JadeAPI jade;
 
-    public JadeHWWallet(final JadeAPI jade, final NetworkData network, final HWDeviceData hwDeviceData, final HardwareQATester hardwareQATester) {
+    public JadeHWWallet(final JadeAPI jade, final NetworkData network, final Device device, final HardwareQATester hardwareQATester) {
         super.mNetwork = network;
-        super.mHWDeviceData = hwDeviceData;
-        super.mDevice = hwDeviceData.toDevice();
+        super.mDevice = device;
         this.jade = jade;
         this.mHardwareQATester = hardwareQATester;
     }

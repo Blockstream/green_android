@@ -2,7 +2,6 @@ package com.greenaddress.greenapi;
 
 import com.blockstream.gdk.data.Device;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -14,7 +13,6 @@ import javax.annotation.Nullable;
 
 public abstract class HWWallet {
     protected NetworkData mNetwork;
-    protected HWDeviceData mHWDeviceData;
     protected Device mDevice;
     protected HardwareQATester mHardwareQATester;
 
@@ -126,10 +124,6 @@ public abstract class HWWallet {
 
     public NetworkData getNetwork() {
         return mNetwork;
-    }
-
-    public HWDeviceData getHWDeviceData() {
-        return mHWDeviceData;
     }
 
     public Device getDevice() {

@@ -52,8 +52,4 @@ public class HWDeviceData extends JSONData {
     public void setDevice(final HWDeviceDetailData device) {
         this.device = device;
     }
-
-    public Device toDevice(){
-        return new Device(device.getName(), device.isSupportsArbitraryScripts(), device.isSupportsLowR(), device.isSupportsHostUnblinding(), DeviceSupportsLiquid.values()[device.getSupportsLiquid().ordinal()], DeviceSupportsAntiExfilProtocol.values()[device.getSupportsAeProtocol().ordinal()]);
-    }
 }

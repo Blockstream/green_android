@@ -285,7 +285,7 @@ class GreenSession constructor(
 
         this.hwWallet = hwWallet
 
-        val device = hwWallet.hwDeviceData.toDevice()
+        val device = hwWallet.device
 
         if(registerUser) {
             AuthHandler(

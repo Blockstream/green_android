@@ -7,6 +7,9 @@ import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.green.R
 import com.btchip.comm.LedgerDeviceBLE
+import com.greenaddress.greenapi.HWWallet
+import com.greenaddress.jade.HttpRequestProvider
+import com.greenaddress.jade.JadeAPI
 import com.greenaddress.jade.JadeBleImpl
 import com.polidea.rxandroidble2.RxBleDevice
 import kotlinx.parcelize.IgnoredOnParcel
@@ -16,14 +19,14 @@ enum class DeviceBrand {
     Blockstream, Ledger, Trezor;
 
     val brand
-        get() =  when(this){
+        get() = when (this) {
             Blockstream -> "Blockstream"
             Ledger -> "Ledger"
             Trezor -> "Trezor"
         }
 
     val icon
-        get() =  when(this){
+        get() = when (this) {
             Blockstream -> R.drawable.ic_blockstream
             Ledger -> R.drawable.ic_ledger
             Trezor -> R.drawable.ic_trezor
@@ -46,17 +49,40 @@ open class Device constructor(
 
     val deviceState = MutableLiveData(DeviceState.DISCONNECTED)
 
+    val hwWallet: HWWallet? = null
+
     init {
-        usbDevice?.let{
-            if(deviceManager.hasPermissions(it)){
+        usbDevice?.let {
+            if (deviceManager.hasPermissions(it)) {
                 deviceState.value = DeviceState.CONNECTED
-            }else{
+            } else {
                 deviceState.value = DeviceState.UNAUTHORIZED
             }
         }
     }
 
-    fun askForPermissions(onSuccess: (() -> Unit)? = null){
+    fun createHwwallet(requestProvider: HttpRequestProvider): HWWallet {
+        if (hwWallet == null) {
+
+            when (deviceBrand) {
+                DeviceBrand.Blockstream -> {
+                    if (isUsb) {
+                        val jadeAPI = JadeAPI.createSerial(requestProvider, deviceManager.usbManager, usbDevice, 115200)
+                    } else {
+                        val jadeAPI = JadeAPI.createBle(requestProvider, bleDevice)
+                    }
+                    // Create JadeAPI on BLE device
+
+
+                }
+                DeviceBrand.Ledger -> TODO()
+                DeviceBrand.Trezor -> TODO()
+            }
+        }
+        return hwWallet!!
+    }
+
+    fun askForPermissions(onSuccess: (() -> Unit)? = null) {
         usbDevice?.let {
             deviceManager.askForPermissions(it) {
                 deviceState.postValue(DeviceState.CONNECTED)
@@ -72,11 +98,13 @@ open class Device constructor(
     }
 
     open val name
-        get() = if (isJade && isUsb) "Jade" else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
+        get() = if (isJade && isUsb) "Jade" else usbDevice?.productName
+            ?: bleDevice?.bluetoothDevice?.name
 
     // Jade v1 has the controller manufacturer as a productName
     open val manufacturer
-        get() = if (isJade) deviceBrand.name else usbDevice?.productName ?: bleDevice?.bluetoothDevice?.name
+        get() = if (isJade) deviceBrand.name else usbDevice?.productName
+            ?: bleDevice?.bluetoothDevice?.name
 
     val vendorId
         get() = usbDevice?.vendorId
@@ -92,7 +120,7 @@ open class Device constructor(
 
     @IgnoredOnParcel
     val deviceBrand by lazy {
-        when{
+        when {
             isTrezor -> DeviceBrand.Trezor
             isLedger -> DeviceBrand.Ledger
             else -> DeviceBrand.Blockstream
@@ -119,13 +147,14 @@ open class Device constructor(
     }
 
     fun isBonded(): Boolean {
-        return bleDevice?.let { it.bluetoothDevice.bondState == BluetoothDevice.BOND_BONDED } ?: false
+        return bleDevice?.let { it.bluetoothDevice.bondState == BluetoothDevice.BOND_BONDED }
+            ?: false
     }
 
     fun hasPermissionsOrIsBonded(): Boolean {
-        return if(isUsb){
+        return if (isUsb) {
             hasPermissions()
-        }else{
+        } else {
             isBonded()
         }
     }
@@ -154,7 +183,11 @@ open class Device constructor(
             )
         }
 
-        fun fromScan(deviceManager: DeviceManager, bleDevice: RxBleDevice, bleService: ParcelUuid?): Device {
+        fun fromScan(
+            deviceManager: DeviceManager,
+            bleDevice: RxBleDevice,
+            bleService: ParcelUuid?
+        ): Device {
             return Device(
                 ConnectionType.BLUETOOTH,
                 deviceManager,

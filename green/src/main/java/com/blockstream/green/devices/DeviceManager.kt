@@ -34,8 +34,8 @@ import java.util.concurrent.TimeUnit
 
 class DeviceManager constructor(
     private val context: Context,
-    private val usbManager: UsbManager,
-    private val bluetoothManager: BluetoothManager,
+    val usbManager: UsbManager,
+    val bluetoothManager: BluetoothManager,
     private val rxBleClient: RxBleClient
 ) {
     private var onPermissionSuccess: WeakReference<(() -> Unit)>? = null

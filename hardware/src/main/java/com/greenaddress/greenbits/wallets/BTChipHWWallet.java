@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.wallets;
 
+import com.blockstream.gdk.data.Device;
 import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.btchip.BTChipDongle;
@@ -13,9 +14,8 @@ import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenapi.data.HWDeviceData;
+import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -42,12 +42,11 @@ public class BTChipHWWallet extends HWWallet {
 
     public BTChipHWWallet(final BTChipDongle dongle, final String pin,
                           final SettableFuture<Integer> remainingAttemptsFuture, final NetworkData network,
-                          final HWDeviceData hwDeviceData) {
+                          final Device device) {
         mDongle = dongle;
         mPin = pin;
         mNetwork = network;
-        mHWDeviceData = hwDeviceData;
-        mDevice = hwDeviceData.toDevice();
+        mDevice = device;
         if (pin == null)
             return;
         mExecutor.submit(() -> {

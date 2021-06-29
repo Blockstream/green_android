@@ -1,13 +1,16 @@
 package com.blockstream.gdk.data
 
+import android.os.Parcelable
 import com.blockstream.gdk.GAJson
 import com.blockstream.gdk.serializers.DeviceSupportsAntiExfilProtocolSerializer
 import com.blockstream.gdk.serializers.DeviceSupportsLiquidSerializer
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Parcelize
 data class Device constructor(
     @SerialName("name") val name: String,
     @SerialName("supports_arbitrary_scripts") val supportsArbitraryScripts: Boolean,
@@ -21,8 +24,7 @@ data class Device constructor(
 
     // Ignore it for now
     // @SerialName("device_type") val deviceType: String?, // is set by GDK (hardware)
-): GAJson<Device>() {
-
+): GAJson<Device>(), Parcelable {
     val isJade
         get() = name.lowercase() == "jade"
 

@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi.data;
 
+import com.blockstream.gdk.data.Device;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 

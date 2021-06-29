@@ -81,7 +81,7 @@ public abstract class LoggedActivity extends GaActivity {
             networkDisposable = networkObservable.map(network -> {
                 return getSession();
             }).map(session -> {
-                return session.login(hwWallet.getHWDeviceData());
+                return session.login(hwWallet.getDevice());
             }).flatMap(c -> {
                 return Observable.just(c).map(call -> {
                     return call.resolve(new HardwareCodeResolver(this, hwWallet), null);
