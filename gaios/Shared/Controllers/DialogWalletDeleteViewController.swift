@@ -45,7 +45,8 @@ class DialogWalletDeleteViewController: KeyboardViewController {
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
         view.alpha = 0.0
-
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletDeleteScreen.view
+        btnDelete.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletDeleteScreen.deleteBtn
     }
 
     override func viewDidAppear(_ animated: Bool) {

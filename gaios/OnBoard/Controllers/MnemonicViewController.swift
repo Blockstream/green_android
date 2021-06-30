@@ -51,6 +51,10 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
         case .phrase:
             updateNavigationItem()
         }
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.view
+        lblTitle.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.titleLbl
+        doneButton.accessibilityIdentifier = AccessibilityIdentifiers.MnemonicScreen.doneBtn
     }
 
     func updateNavigationItem() {
@@ -299,6 +303,7 @@ extension MnemonicViewController: UICollectionViewDelegate {
         cell.wordText.text = mnemonic[indexPath.row + indexPath.section * 3]
         checkTextfield(textField: cell.wordText)
         cell.delegate = self
+        cell.wordText.accessibilityIdentifier = String(indexPath.row + indexPath.section * 3 + 1)
         return cell
     }
 }

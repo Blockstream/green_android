@@ -7,8 +7,12 @@ class WalletName: Screen {
     }
     
     @discardableResult
-    func typeName() -> Self {
-        let txt = Utils.randomString(length: 6)
+    func typeName(_ name: String?) -> Self {
+        var txt = Utils.randomString(length: 6)
+        if name != nil {
+            txt = name!
+        }
+
         let e = app.textFields[AccessibilityIdentifiers.WalletNameScreen.nameField]
         return type(value: txt, in: e)
     }

@@ -45,6 +45,10 @@
 		340F07E826204AA40065A986 /* NetworkSelectorBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */; };
 		340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340F07EF2620A6BB0065A986 /* DialogRecoveryHelpViewController.swift */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
+		342560A8268B2BB900136ACC /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560A7268B2BB900136ACC /* Login.swift */; };
+		342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */; };
+		342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */; };
+		342560B0268B52E100136ACC /* RestoreWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AF268B52E100136ACC /* RestoreWallet.swift */; };
 		342E0C87265274D70004D75B /* FooterView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 342E0C86265274D70004D75B /* FooterView.xib */; };
 		342E0C8B265274ED0004D75B /* FooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342E0C8A265274ED0004D75B /* FooterView.swift */; };
 		34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347662268228C600D7AD43 /* AddWalletUITests.swift */; };
@@ -60,6 +64,8 @@
 		34347679268322A100D7AD43 /* RecoveryVerify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34347678268322A100D7AD43 /* RecoveryVerify.swift */; };
 		344562EB25D297CF00A5EC18 /* BLEManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344562EA25D297CF00A5EC18 /* BLEManager.swift */; };
 		344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344698EA268A215800387BA7 /* ChooseSecurity.swift */; };
+		344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */; };
+		344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344B1BBB268C5567000182B0 /* Mnemonic.swift */; };
 		344FE3492684BD9700C087A5 /* RecoverySuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE3482684BD9700C087A5 /* RecoverySuccess.swift */; };
 		344FE34B2684C77900C087A5 /* WalletName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34A2684C77900C087A5 /* WalletName.swift */; };
 		344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE34C2684CB3900C087A5 /* SetPin.swift */; };
@@ -315,6 +321,10 @@
 		340F07E726204AA40065A986 /* NetworkSelectorBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectorBarItem.swift; sourceTree = "<group>"; };
 		340F07EF2620A6BB0065A986 /* DialogRecoveryHelpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRecoveryHelpViewController.swift; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
+		342560A7268B2BB900136ACC /* Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login.swift; sourceTree = "<group>"; };
+		342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWallet.swift; sourceTree = "<group>"; };
+		342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDelete.swift; sourceTree = "<group>"; };
+		342560AF268B52E100136ACC /* RestoreWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWallet.swift; sourceTree = "<group>"; };
 		342E0C86265274D70004D75B /* FooterView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FooterView.xib; sourceTree = "<group>"; };
 		342E0C8A265274ED0004D75B /* FooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FooterView.swift; sourceTree = "<group>"; };
 		34347662268228C600D7AD43 /* AddWalletUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWalletUITests.swift; sourceTree = "<group>"; };
@@ -329,6 +339,8 @@
 		34347678268322A100D7AD43 /* RecoveryVerify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryVerify.swift; sourceTree = "<group>"; };
 		344562EA25D297CF00A5EC18 /* BLEManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEManager.swift; sourceTree = "<group>"; };
 		344698EA268A215800387BA7 /* ChooseSecurity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseSecurity.swift; sourceTree = "<group>"; };
+		344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhrase.swift; sourceTree = "<group>"; };
+		344B1BBB268C5567000182B0 /* Mnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mnemonic.swift; sourceTree = "<group>"; };
 		344FE3482684BD9700C087A5 /* RecoverySuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverySuccess.swift; sourceTree = "<group>"; };
 		344FE34A2684C77900C087A5 /* WalletName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletName.swift; sourceTree = "<group>"; };
 		344FE34C2684CB3900C087A5 /* SetPin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPin.swift; sourceTree = "<group>"; };
@@ -639,6 +651,12 @@
 				344FE34E2684D2E800C087A5 /* WalletSuccess.swift */,
 				344FE35226850C8500C087A5 /* Container.swift */,
 				344FE354268512CE00C087A5 /* Transactions.swift */,
+				342560A7268B2BB900136ACC /* Login.swift */,
+				342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */,
+				342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */,
+				342560AF268B52E100136ACC /* RestoreWallet.swift */,
+				344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */,
+				344B1BBB268C5567000182B0 /* Mnemonic.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -1740,19 +1758,25 @@
 				34347679268322A100D7AD43 /* RecoveryVerify.swift in Sources */,
 				343476732682432A00D7AD43 /* RecoveryInstructions.swift in Sources */,
 				344FE34F2684D2E800C087A5 /* WalletSuccess.swift in Sources */,
+				342560B0268B52E100136ACC /* RestoreWallet.swift in Sources */,
 				3434766826822A5800D7AD43 /* Home.swift in Sources */,
 				3434766B26822AA000D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
 				344FE34B2684C77900C087A5 /* WalletName.swift in Sources */,
 				3434766E268233C000D7AD43 /* Landing.swift in Sources */,
+				342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */,
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
 				344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */,
 				344FE355268512CE00C087A5 /* Transactions.swift in Sources */,
 				676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */,
+				344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */,
+				342560A8268B2BB900136ACC /* Login.swift in Sources */,
 				34347675268247F400D7AD43 /* RecoveryCreate.swift in Sources */,
 				34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */,
+				344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */,
 				344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */,
 				3434767026823B1A00D7AD43 /* ChooseNetwork.swift in Sources */,
 				344FE35326850C8500C087A5 /* Container.swift in Sources */,
+				342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

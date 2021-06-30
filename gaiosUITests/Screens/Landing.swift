@@ -17,4 +17,10 @@ class Landing: Screen {
         tap(button: AccessibilityIdentifiers.LandingScreen.newWalletBtn)
         return self
     }
+    
+    @discardableResult
+    func tapRestoreWallet() -> Self {
+        tap(button: AccessibilityIdentifiers.LandingScreen.restoreWalletBtn)
+        return self
+    }
 }

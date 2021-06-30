@@ -7,7 +7,7 @@ enum MenuWalletOption {
 
 extension MenuWalletOption: CaseIterable {}
 
-protocol PopoverMenuWalletDelegate: class {
+protocol PopoverMenuWalletDelegate: AnyObject {
     func didSelectionMenuOption(_ menuOption: MenuWalletOption)
 }
 
@@ -26,6 +26,8 @@ class PopoverMenuWalletViewController: UIViewController {
         menuTableView.dataSource = self
         menuTableView.estimatedRowHeight = 44
         menuTableView.rowHeight = UITableView.automaticDimension
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.PopoverMenuWalletScreen.view
     }
 }
 

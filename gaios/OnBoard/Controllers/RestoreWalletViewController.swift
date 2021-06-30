@@ -19,6 +19,9 @@ class RestoreWalletViewController: UIViewController {
         setContent()
         setStyle()
         setActions()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.RestoreWalletScreen.view
+        cardRestore.accessibilityIdentifier = AccessibilityIdentifiers.RestoreWalletScreen.restoreCard
     }
 
     func setContent() {

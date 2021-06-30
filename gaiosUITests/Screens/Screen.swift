@@ -2,6 +2,7 @@ import XCTest
 
 class Screen {
     static let defautlTimeOut: TimeInterval = 20
+    let maxSwipeUp = 1
     let app = XCUIApplication()
 
     typealias Completion = (() -> Void)?
@@ -42,6 +43,49 @@ class Screen {
         return self
     }
     
+    @discardableResult
+    func existsWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Bool {
+        let walletExistance = NSPredicate(format: "label CONTAINS '\(name)'")
+        let walletLabel = app.otherElements[AccessibilityIdentifiers.HomeScreen.view].tables
+            .children(matching: .cell).staticTexts.element(matching: walletExistance)
+        var existsWallet = walletLabel.waitForExistence(timeout: 3)
+
+        var swipeUpTimes = 0
+        while !existsWallet && swipeUpTimes < maxSwipeUp {
+            rootElement.tables.cells.element(boundBy: 0).swipeUp()
+            swipeUpTimes += 1
+
+            existsWallet = walletLabel.exists
+        }
+
+        return existsWallet
+    }
+    
+    
+    @discardableResult
+    func selectWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Self {
+        let walletExistance = NSPredicate(format: "label CONTAINS '\(name)'")
+        let walletLabel = app.otherElements[AccessibilityIdentifiers.HomeScreen.view].tables
+            .children(matching: .cell).staticTexts.element(matching: walletExistance)
+        var existsWallet = walletLabel.waitForExistence(timeout: 3)
+
+        var swipeUpTimes = 0
+        while !existsWallet && swipeUpTimes < maxSwipeUp {
+            rootElement.tables.cells.element(boundBy: 0).swipeUp()
+            swipeUpTimes += 1
+
+            existsWallet = walletLabel.exists
+        }
+
+        let cell = app.collectionViews
+            .children(matching: .cell)
+            .element(matching: walletExistance)
+
+        XCTAssertNotNil(cell, "Appliance '\(name)' cannot be found in account")
+
+        return tap(walletLabel)
+    }
+
 //    @discardableResult
 //    func matchStaticText(identifier: String) -> Self {
 //        XCTAssert(exists(staticText: identifier, timeout: 10))

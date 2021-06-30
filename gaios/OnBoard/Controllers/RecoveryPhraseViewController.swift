@@ -19,6 +19,9 @@ class RecoveryPhraseViewController: UIViewController {
         setContent()
         setStyle()
         setActions()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryPhraseScreen.view
+        cardPhrase.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryPhraseScreen.phraseCard
     }
 
     func setContent() {
