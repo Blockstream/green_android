@@ -279,6 +279,7 @@ extension Jade {
     static let FW_JADEDEV_PATH = "/bin/jadedev/"
     static let FW_SUFFIX = "fw.bin"
     static let BOARD_TYPE_JADE = "JADE"
+    static let BOARD_TYPE_JADE_V1_1 = "JADE_V1.1"
     static let FEATURE_SECURE_BOOT = "SB"
 
     // Check Jade fw against minimum allowed firmware version
@@ -288,7 +289,7 @@ extension Jade {
 
     func firmwarePath(_ info: [String: Any]) -> String? {
         let boardType = info["BOARD_TYPE"] as? String
-        if boardType != nil && boardType != Jade.BOARD_TYPE_JADE {
+        if boardType != nil && ![Jade.BOARD_TYPE_JADE, Jade.BOARD_TYPE_JADE_V1_1].contains(boardType) {
             return nil
         }
         // Alas the first version of the jade fw didn't have 'BoardType' - so we assume an early jade.
