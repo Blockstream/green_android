@@ -56,12 +56,12 @@ class ChooseSecurityFragment :
             binding.singleSig.disable()
 
             // Or proceed immediately to next destination
-//            options?.apply {
-//                // Remove chooseSecurityFragment from backstack
-//                val navOptionsBuilder =
-//                    NavOptions.Builder().setPopUpTo(R.id.chooseSecurityFragment, true)
-//                navigate(copy(network = getNetwork(networkType!!, false)), navOptionsBuilder)
-//            }
+            options?.apply {
+                // Remove chooseSecurityFragment from backstack
+                val navOptionsBuilder =
+                    NavOptions.Builder().setPopUpTo(R.id.chooseSecurityFragment, true)
+                navigate(copy(network = getNetwork(networkType!!, false)), navOptionsBuilder)
+            }
         }
     }
 
