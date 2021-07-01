@@ -1,8 +1,10 @@
 package com.blockstream.green.data
 
+import android.content.Context
 import android.os.Parcelable
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.utils.isProductionFlavor
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -17,6 +19,15 @@ data class OnboardingOptions(
 ) : Parcelable{
 
     fun isHardwareOnboarding() = deviceId > 0
+
+    // Singlesig mainnet/liquid is enabled only in Development flavor
+    // Singlesig testnet is available in production
+    fun isSinglesigNetworkEnabledForBuildFlavor(context: Context): Boolean {
+        if(context.isProductionFlavor()){
+            return networkType == "testnet"
+        }
+        return true
+    }
 
     companion object{
         fun fromWallet(wallet: Wallet, network: Network): OnboardingOptions {

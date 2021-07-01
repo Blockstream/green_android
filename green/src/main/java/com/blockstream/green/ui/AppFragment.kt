@@ -107,19 +107,18 @@ abstract class AppFragment<T : ViewDataBinding>(
         (requireActivity() as IActivity).setToolbarVisibility(isVisible)
     }
 
-    fun navigate(directions: NavDirections) {
-        navigate(directions.actionId, directions.arguments)
+    fun navigate(directions: NavDirections, navOptionsBuilder: NavOptions.Builder? = null) {
+        navigate(directions.actionId, directions.arguments, false, navOptionsBuilder)
     }
 
-    fun navigate(@IdRes resId: Int) {
-        navigate(resId, null)
+    fun navigate(@IdRes resId: Int, navOptionsBuilder: NavOptions.Builder? = null) {
+        navigate(resId, null, false, navOptionsBuilder)
     }
 
     @SuppressLint("RestrictedApi")
-    fun navigate(@IdRes resId: Int, args: Bundle?, isLogout: Boolean = false) {
+    fun navigate(@IdRes resId: Int, args: Bundle?, isLogout: Boolean = false, optionsBuilder: NavOptions.Builder? = null) {
 
-        val navOptionsBuilder = NavOptions.Builder()
-
+        val navOptionsBuilder = optionsBuilder ?: NavOptions.Builder()
         val animate = true
 
         if (animate) {
@@ -138,11 +137,6 @@ abstract class AppFragment<T : ViewDataBinding>(
         }else if (resId == R.id.action_global_addWalletFragment){
             // Allow a single onboarding path
             navOptionsBuilder.setPopUpTo(R.id.addWalletFragment, true)
-        }
-
-        // Remove chooseSecurityFragment from backstack
-        if(isProductionFlavor() && findNavController().currentDestination?.id == R.id.chooseSecurityFragment){
-            navOptionsBuilder.setPopUpTo(R.id.chooseSecurityFragment, true)
         }
 
         try{

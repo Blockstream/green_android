@@ -13,7 +13,7 @@ class WalletNameViewModelUnitTests : TestViewModel<WalletNameViewModel>(){
 
     @Before
     fun setup(){
-        viewModel = WalletNameViewModel(mock(), mock(), mock())
+        viewModel = WalletNameViewModel(mock(), mock(), mock(), mock())
     }
 
     @Test

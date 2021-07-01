@@ -58,6 +58,7 @@ class GreenContentCardView @JvmOverloads constructor(
 
     // TODO Temp method to change the colors, should be removed or refactored
     fun disable() {
+        binding.root.isClickable = false
         binding.title.setTextColor(ContextCompat.getColor(context, R.color.color_on_surface_emphasis_disabled))
         binding.caption.setTextColor(ContextCompat.getColor(context, R.color.color_on_surface_emphasis_disabled))
         binding.icon.setColorFilter(ContextCompat.getColor(context, R.color.color_on_surface_emphasis_disabled), PorterDuff.Mode.SRC_IN)
