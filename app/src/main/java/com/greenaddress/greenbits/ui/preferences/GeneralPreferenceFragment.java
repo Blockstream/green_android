@@ -102,8 +102,8 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         try {
             twoFaData = getSession().getTwoFactorConfig();
         } catch (final Exception e) { }
-        final boolean anyEnabled = twoFaData != null ? twoFaData.isAnyEnabled() : false;
-        final boolean emailConfirmed = twoFaData != null ? twoFaData.getEmail().isConfirmed() : false;
+        final boolean anyEnabled = twoFaData != null && twoFaData.isAnyEnabled();
+        final boolean emailConfirmed = twoFaData != null && twoFaData.getEmail() != null && twoFaData.getEmail().isConfirmed();
 
         // Pin submenu
         mPinPref = find(PrefKeys.DELETE_OR_CONFIGURE_PIN);
