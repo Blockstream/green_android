@@ -85,26 +85,6 @@ class GreenWallet(
                   loginCredentialsParams: LoginCredentialsParams? = null
     ) = gdk.loginUser(session, deviceParams, loginCredentialsParams)
 
-    @Deprecated("Use GA_login_user", ReplaceWith("gdk.loginUser(session, loginParams)"))
-    fun loginWatchOnly(session: GASession, username: String, password: String) {
-        gdk.loginWatchOnly(session, username, password)
-    }
-
-    @Deprecated("Use GA_login_user", ReplaceWith("gdk.loginUser(session, loginParams)"))
-    fun loginWithMnemonic(
-        session: GASession,
-        deviceParams: DeviceParams?,
-        mnemonic: String,
-        password: String
-    ) = gdk.loginWithMnemonic(session, deviceParams, mnemonic, password)
-
-    @Deprecated("Use GA_login_user", ReplaceWith("gdk.loginUser(session, loginParams)"))
-    fun loginWithPin(
-        session: GASession,
-        pin: String,
-        pinData: PinData,
-    ) = gdk.loginWithPin(session, pin, pinData)
-
     fun setPin(
         session: GASession,
         mnemonicPassphrase: String,
