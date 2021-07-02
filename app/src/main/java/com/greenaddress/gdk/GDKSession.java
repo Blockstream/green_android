@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
+import com.blockstream.gdk.GreenWallet;
+import com.blockstream.gdk.data.Network;
 import com.blockstream.libgreenaddress.GDK;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -31,6 +33,7 @@ import com.greenaddress.jade.HttpRequestHandler;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -49,6 +52,7 @@ public class GDKSession implements HttpRequestHandler {
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private Boolean mIsDevelopmentFlavor = false;
 
+    protected GreenWallet mGreenWallet;
     protected Object mNativeSession;
     private final NotificationHandlerImpl mNotification;
 
@@ -63,8 +67,9 @@ public class GDKSession implements HttpRequestHandler {
         mNotification = new NotificationHandlerImpl();
     }
 
-    public void setDevelopmentFlavor(Boolean IsDevelopmentFlavor){
+    public void initFromV4(Boolean IsDevelopmentFlavor, GreenWallet greenWallet){
         mIsDevelopmentFlavor = IsDevelopmentFlavor;
+        mGreenWallet = greenWallet;
     }
 
     @Nullable
@@ -319,30 +324,35 @@ public class GDKSession implements HttpRequestHandler {
     private List<NetworkData> cachedNetworks = null;
     public List<NetworkData> getNetworks() {
         if(cachedNetworks == null) {
-            final List<NetworkData> networksMap = new LinkedList<>();
-            final ObjectNode networks = Bridge.INSTANCE.toJackson(GDK.get_networks());
-            final ArrayNode nodes = (ArrayNode) networks.get("all_networks");
-            final boolean isDebug = BuildConfig.DEBUG;
-            final boolean isProduction = !mIsDevelopmentFlavor;
+            ArrayList<NetworkData> list = new ArrayList<>();
+            Map<String, Network> networks = mGreenWallet.getNetworks().getNetworks();
 
-            for (final JsonNode node : nodes) {
-                final String networkName = node.asText();
+            for (Map.Entry<String, Network> networkEntry : networks.entrySet()) {
                 try {
-                    final NetworkData data = mObjectMapper.treeToValue(networks.get(networkName), NetworkData.class);
-
-                    if (isDebug
-                            || (mIsDevelopmentFlavor && !data.getDevelopment())
-                            || (isProduction && !data.getDevelopment() && !data.isElectrum())) {
-                        networksMap.add(data);
-                    }
-                } catch (Exception e) {
+                    list.add(mObjectMapper.treeToValue(mObjectMapper.readTree(networkEntry.getValue().toString()), NetworkData.class));
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            Collections.sort(networksMap);
-            cachedNetworks = networksMap;
+
+            cachedNetworks = list;
         }
         return cachedNetworks;
+    }
+
+    public List<NetworkData> getHardwareSupportedNetworks() {
+        ArrayList<NetworkData> list = new ArrayList<>();
+
+        List<Network> networks = mGreenWallet.getNetworks().getHardwareSupportedNetworks();
+        for(Network network : networks) {
+            try {
+                list.add(mObjectMapper.treeToValue(mObjectMapper.readTree(network.toString()), NetworkData.class));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return list;
     }
 
     public GDKTwoFactorCall getReceiveAddress(final int subAccount) throws Exception {

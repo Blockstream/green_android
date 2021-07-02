@@ -14,6 +14,7 @@ import com.greenaddress.greenbits.ui.UI;
 import java.util.List;
 import androidx.recyclerview.widget.RecyclerView;
 
+@Deprecated
 public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdapter.ViewHolder> {
 
     private final List<NetworkData> mNetworkList;

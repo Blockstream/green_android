@@ -49,7 +49,7 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
         });
 
         final NetworkData networkData = Bridge.INSTANCE.getCurrentNetworkData(getContext());
-        recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), ((GaActivity)getActivity()).getSession().getNetworks(),
+        recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), ((GaActivity)getActivity()).getSession().getHardwareSupportedNetworks(),
                                                          networkData,
                                                          this));
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));

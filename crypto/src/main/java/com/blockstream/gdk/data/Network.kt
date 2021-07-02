@@ -1,7 +1,9 @@
 package com.blockstream.gdk.data
 
 import android.os.Parcelable
+import com.blockstream.gdk.GAJson
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -21,7 +23,7 @@ data class Network(
 
     @SerialName("policy_asset") val policyAsset: String = "btc",
     @SerialName("server_type") val serverType: String? = null,
-) : Parcelable {
+) : GAJson<Network>(), Parcelable {
 
     val isElectrum
         get() = "electrum" == serverType
@@ -61,4 +63,6 @@ data class Network(
         } else {
             "Multisig $canonicalName"
         }
+
+    override fun kSerializer(): KSerializer<Network> = serializer()
 }

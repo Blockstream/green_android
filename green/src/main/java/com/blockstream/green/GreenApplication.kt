@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavDeepLinkBuilder
 import com.blockstream.gdk.AssetManager
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.data.OnboardingOptions
@@ -58,11 +59,14 @@ class GreenApplication : Application(){
     @Inject
     lateinit var qaTester: QATester
 
+    @Inject
+    lateinit var greenWallet: GreenWallet
+
     override fun onCreate() {
         super.onCreate()
 
         // Initialize Bridge
-        Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME, qaTester)
+        Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME, qaTester, greenWallet)
 
         Bridge.navigateFn = { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: GASession?, extraData: Any? ->
             when(type){

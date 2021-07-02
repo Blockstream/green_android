@@ -18,10 +18,12 @@ data class Networks(
     val liquidElectrum by lazy { getNetworkById("electrum-liquid") }
     val testnetElectrum by lazy { getNetworkById("electrum-testnet") }
 
+    val hardwareSupportedNetworks by lazy { listOf(bitcoinGreen, liquidGreen, testnetGreen) }
 
     fun getNetworkById(id: String): Network {
         return networks[id] ?: bitcoinGreen
     }
+
 
     companion object {
         /**
@@ -29,7 +31,7 @@ data class Networks(
          */
         fun fromJsonElement(json: Json, element: JsonElement): Networks {
 
-            val networks: MutableMap<String, JsonObject> = mutableMapOf<String, JsonObject>()
+            val networks: MutableMap<String, JsonObject> = mutableMapOf()
 
             element.jsonObject["all_networks"]?.jsonArray?.let{
                 for (key in it){

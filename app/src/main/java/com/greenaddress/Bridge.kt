@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import com.blockstream.crypto.BuildConfig
 import com.blockstream.gdk.AssetsProvider
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.SubAccount
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -65,7 +66,8 @@ object Bridge {
         isDevelopmentFlavor: Boolean,
         applicationId: String,
         versionName: String,
-        QATester : HardwareQATester
+        QATester : HardwareQATester,
+        greenWallet: GreenWallet,
     ){
         if(!initialized) {
             initialized = true
@@ -79,7 +81,7 @@ object Bridge {
 
             hardwareQATester = QATester
 
-            Session.getSession().setDevelopmentFlavor(isDevelopmentFlavor)
+            Session.getSession().initFromV4(isDevelopmentFlavor, greenWallet)
 
             JadeAPI.isDebug = BuildConfig.DEBUG
         }
