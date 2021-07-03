@@ -1,5 +1,6 @@
 package com.blockstream.gdk
 
+import com.blockstream.crypto.BuildConfig
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
 import com.blockstream.libgreenaddress.GAAuthHandler
@@ -26,7 +27,7 @@ class GreenWallet(
     private val bip39WordList by lazy { wally.bip39Wordlist(BIP39_WORD_LIST_LANG) }
 
     init {
-        gdk.init(JsonConverter(developmentFlavor), InitConfig(dataDir))
+        gdk.init(JsonConverter(developmentFlavor, !BuildConfig.DEBUG), InitConfig(dataDir))
         wally.init(0, randomBytes(KotlinWally.WALLY_SECP_RANDOMIZE_LEN))
     }
 
