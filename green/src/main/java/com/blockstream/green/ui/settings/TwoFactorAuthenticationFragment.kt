@@ -8,20 +8,18 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
-import com.blockstream.gdk.data.TwoFactorReset
-import com.blockstream.green.*
+import com.blockstream.green.R
+import com.blockstream.green.Urls
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.*
 import com.blockstream.green.lifecycle.MergeLiveData
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
 import com.blockstream.green.ui.items.TitleListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.RenameWalletBottomSheetDialogFragment
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mikepenz.fastadapter.FastAdapter
@@ -341,8 +339,9 @@ class TwoFactorAuthenticationFragment :
     private fun enable2FA(method: TwoFactorMethod) {
         navigate(
             TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
-                wallet,
-                method
+                wallet = wallet,
+                method = method,
+                action = TwoFactorSetupAction.SETUP
             )
         )
     }
@@ -368,7 +367,10 @@ class TwoFactorAuthenticationFragment :
                 }
                 .setNegativeButton(android.R.string.cancel, null)
                 .setNeutralButton(R.string.id_i_lost_my_2fa) { _: DialogInterface, _: Int ->
-                    navigate(TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorResetFragment(wallet))
+                    navigate(TwoFactorAuthenticationFragmentDirections.actionTwoFractorAuthenticationFragmentToTwoFactorSetupFragment(
+                        wallet = wallet,
+                        action = TwoFactorSetupAction.RESET
+                    ))
                 }
                 .show()
         }

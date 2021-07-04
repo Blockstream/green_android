@@ -10,6 +10,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.preference.*
@@ -106,14 +107,15 @@ class WalletSettingsFragment :
             }
         }
 
-        if (args.bridgeTwoFactor) {
+        if (args.bridgeTwoFactorReset) {
             navigate(
-                directions = WalletSettingsFragmentDirections.actionGlobalTwoFactorResetFragment(
+                directions = WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
                     wallet = wallet,
-                    actionType = args.bridgeTwoFactorActionType
+                    method = TwoFactorMethod.EMAIL,
+                    action = args.bridgeTwoFactorSetupType
                 ),
                 navOptionsBuilder = NavOptions.Builder()
-                    .setPopUpTo(R.id.walletSettingsFragment, true)
+                    .setPopUpTo(findNavController().backStack.first.destination.id, true)
             )
         }
 
@@ -202,7 +204,7 @@ class WalletSettingsFragment :
                             WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
                                 wallet = wallet,
                                 method = TwoFactorMethod.EMAIL,
-                                setupEmail = true
+                                action = TwoFactorSetupAction.SETUP_EMAIL
                             )
                         )
                     }

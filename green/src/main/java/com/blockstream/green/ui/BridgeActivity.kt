@@ -79,12 +79,7 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 
         binding.toolbar.setNavigationOnClickListener {
-            if(!NavigationUI.navigateUp(
-                navController,
-                appBarConfiguration
-            )) {
-                finish()
-            }
+            onBackPressed()
         }
     }
 

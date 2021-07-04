@@ -25,10 +25,7 @@ import com.blockstream.green.ui.QATesterActivity
 import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.receive.ReceiveFragmentArgs
 import com.blockstream.green.ui.recovery.RecoveryIntroFragmentArgs
-import com.blockstream.green.ui.settings.AppSettingsDialogFragment
-import com.blockstream.green.ui.settings.TwoFactorResetAction
-import com.blockstream.green.ui.settings.TwoFactorResetFragment
-import com.blockstream.green.ui.settings.WalletSettingsFragmentArgs
+import com.blockstream.green.ui.settings.*
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.*
 import com.blockstream.green.utils.QATester
@@ -185,10 +182,10 @@ class GreenApplication : Application(){
                             val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
 
                             val intent = Intent(activity, BridgeActivity::class.java)
-                            intent.putExtras(WalletSettingsFragmentArgs(wallet = wallet, bridgeTwoFactor = true, bridgeTwoFactorActionType = when(type){
-                                Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET -> TwoFactorResetAction.CANCEL
-                                Bridge.NavigateType.TWO_FACTOR_DISPUTE -> TwoFactorResetAction.DISPUTE
-                                else -> TwoFactorResetAction.UNDO_DISPUTE
+                            intent.putExtras(WalletSettingsFragmentArgs(wallet = wallet, bridgeTwoFactorReset = true, bridgeTwoFactorSetupType = when(type){
+                                Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET -> TwoFactorSetupAction.CANCEL
+                                Bridge.NavigateType.TWO_FACTOR_DISPUTE -> TwoFactorSetupAction.DISPUTE
+                                else -> TwoFactorSetupAction.UNDO_DISPUTE
                             }).toBundle())
 
                             intent.action = BridgeActivity.TWO_FACTOR_RESET

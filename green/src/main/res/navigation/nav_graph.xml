@@ -48,13 +48,13 @@
                 android:id="@+id/action_walletSettingsFragment_self"
                 app:destination="@id/walletSettingsFragment" />
             <argument
-                android:name="bridgeTwoFactor"
+                android:name="bridgeTwoFactorReset"
                 app:argType="boolean"
                 android:defaultValue="false" />
             <argument
-                android:name="bridgeTwoFactorActionType"
-                app:argType="com.blockstream.green.ui.settings.TwoFactorResetAction"
-                android:defaultValue="RESET" />
+                android:name="bridgeTwoFactorSetupType"
+                app:argType="com.blockstream.green.ui.settings.TwoFactorSetupAction"
+                android:defaultValue="SETUP" />
         </fragment>
 
         <fragment
@@ -66,9 +66,6 @@
                 android:name="wallet"
                 app:argType="com.blockstream.green.database.Wallet" />
 
-            <action
-                android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorResetFragment"
-                app:destination="@id/twoFactorResetFragment" />
             <action
                 android:id="@+id/action_twoFractorAuthenticationFragment_to_twoFactorSetupFragment"
                 app:destination="@id/twoFactorSetupFragment" />
@@ -83,25 +80,13 @@
                 app:argType="com.blockstream.green.database.Wallet" />
             <argument
                 android:name="method"
-                app:argType="com.blockstream.green.data.TwoFactorMethod" />
+                app:argType="com.blockstream.green.data.TwoFactorMethod"
+                android:defaultValue="EMAIL" />
             <argument
-                android:name="setupEmail"
-                app:argType="boolean"
-                android:defaultValue="false" />
+                android:name="action"
+                app:argType="com.blockstream.green.ui.settings.TwoFactorSetupAction"
+                android:defaultValue="SETUP" />
         </fragment>
-        <fragment
-            android:id="@+id/twoFactorResetFragment"
-            android:name="com.blockstream.green.ui.settings.TwoFactorResetFragment"
-            tools:layout="@layout/twofactor_reset_fragment"
-            android:label="" >
-            <argument
-                android:name="wallet"
-                app:argType="com.blockstream.green.database.Wallet" />
-            <argument
-                android:name="actionType"
-                app:argType="com.blockstream.green.ui.settings.TwoFactorResetAction"
-                android:defaultValue="RESET" />
-        </fragment><action android:id="@+id/action_global_twoFactorResetFragment" app:destination="@id/twoFactorResetFragment"/>
 
     </navigation>
 

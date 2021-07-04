@@ -4,12 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="com.blockstream.green.ui.settings.TwoFactorSetupAction"/>
         <import type="com.blockstream.green.data.TwoFactorMethod" />
 
         <variable
             name="vm"
             type="com.blockstream.green.ui.settings.TwoFactorSetupViewModel" />
+
+        <variable
+            name="message"
+            type="String" />
+
+        <variable
+            name="button"
+            type="String" />
 
     </data>
 
@@ -36,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:text="@{String.format(@string/id_please_provide_your_1s, vm.method)}"
+                android:text="@{message}"
                 android:textAppearance="?attr/textAppearanceBody1"
                 tools:text="Please provide your phone." />
 
@@ -92,7 +100,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/emailTextInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                isVisible="@{vm.method == TwoFactorMethod.EMAIL}"
+                isVisible="@{vm.method == TwoFactorMethod.EMAIL &amp;&amp; vm.action != TwoFactorSetupAction.CANCEL}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/id_email">
@@ -176,7 +184,8 @@
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="16dp"
             android:enabled="@{!vm.onProgress &amp;&amp; vm.isValid}"
-            android:text="@string/id_continue"
+            android:text="@{button}"
+            isGone="@{vm.action == TwoFactorSetupAction.CANCEL}"
             app:layout_constraintBottom_toTopOf="@+id/progress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

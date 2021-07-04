@@ -19,11 +19,16 @@ import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
+import com.greenaddress.Bridge
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
+
+enum class TwoFactorSetupAction {
+    SETUP, SETUP_EMAIL, RESET, CANCEL, DISPUTE, UNDO_DISPUTE
+}
 
 @AndroidEntryPoint
 class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.layout.twofactor_setup_fragment, 0),
@@ -36,7 +41,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
     @Inject
     lateinit var viewModelFactory: TwoFactorSetupViewModel.AssistedFactory
     val viewModel: TwoFactorSetupViewModel by viewModels {
-        TwoFactorSetupViewModel.provideFactory(viewModelFactory, args.wallet, args.method)
+        TwoFactorSetupViewModel.provideFactory(viewModelFactory, args.wallet, args.method, args.action)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,24 +49,80 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
 
         val methodLocalized = localized2faMethod(args.method.gdkType)
 
-        setToolbar(title = getString(R.string.id_1s_twofactor_set_up, methodLocalized))
+        val action = args.action
 
         binding.vm = viewModel
+
+        when(action){
+            TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
+                setToolbar(title = getString(R.string.id_1s_twofactor_set_up, methodLocalized))
+                binding.message = getString(R.string.id_please_provide_your_1s, args.method)
+                binding.button = getString(R.string.id_continue)
+            }
+            TwoFactorSetupAction.RESET -> {
+                setToolbar(title = getString(R.string.id_request_twofactor_reset))
+                binding.message = getString(R.string.id_resetting_your_twofactor_takes)
+                binding.button = getString(R.string.id_request_twofactor_reset)
+            }
+            TwoFactorSetupAction.CANCEL -> {
+                setToolbar(title = getString(R.string.id_cancel_2fa_reset))
+
+                // Cancel action
+                viewModel.cancel2FA(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+            }
+            TwoFactorSetupAction.DISPUTE -> {
+                setToolbar(title = getString(R.string.id_dispute_twofactor_reset))
+                binding.message = getString(R.string.id_if_you_did_not_request_the)
+                binding.button = getString(R.string.id_dispute_twofactor_reset)
+            }
+            TwoFactorSetupAction.UNDO_DISPUTE -> {
+                setToolbar(title = getString(R.string.id_undo_2fa_dispute))
+                binding.message = getString(R.string.id_if_you_initiated_the_2fa_reset)
+                binding.button = getString(R.string.id_undo_2fa_dispute)
+            }
+        }
+
         binding.buttonContinue.setOnClickListener {
-            var data = ""
-            when(viewModel.method){
-                TwoFactorMethod.SMS, TwoFactorMethod.PHONE -> {
-                    data = viewModel.getPhoneNumberValue()
+            if(action == TwoFactorSetupAction.SETUP || action == TwoFactorSetupAction.SETUP_EMAIL){
+                var data = ""
+                when(viewModel.method){
+                    TwoFactorMethod.SMS, TwoFactorMethod.PHONE -> {
+                        data = viewModel.getPhoneNumberValue()
+                    }
+                    TwoFactorMethod.EMAIL -> {
+                        data = viewModel.getEmailValue()
+                    }
+                    TwoFactorMethod.AUTHENTICATOR -> {
+                        data = viewModel.authenticatorUrl ?: ""
+                    }
                 }
-                TwoFactorMethod.EMAIL -> {
-                    data = viewModel.getEmailValue()
-                }
-                TwoFactorMethod.AUTHENTICATOR -> {
-                    data = viewModel.authenticatorUrl ?: ""
+                // setupEmail is used only to setup the email address for recovery transactions legacy option
+                viewModel.enable2FA(args.method, data = data, enabled = args.action != TwoFactorSetupAction.SETUP_EMAIL, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+            }else{
+                val email = binding.emailEditText.text.toString()
+                when(action){
+                    TwoFactorSetupAction.RESET -> {
+                        viewModel.reset2FA(
+                            email = email,
+                            isDispute = false,
+                            twoFactorResolver = DialogTwoFactorResolver(requireContext())
+                        )
+                    }
+                    TwoFactorSetupAction.DISPUTE -> {
+                        viewModel.reset2FA(
+                            email = email,
+                            isDispute = true,
+                            twoFactorResolver = DialogTwoFactorResolver(requireContext())
+                        )
+                    }
+                    TwoFactorSetupAction.UNDO_DISPUTE -> {
+                        viewModel.undoReset2FA(
+                            email = email,
+                            twoFactorResolver = DialogTwoFactorResolver(requireContext())
+                        )
+                    }
                 }
             }
-            // setupEmail is used only to setup the email address for recovery transactions legacy option
-            viewModel.enable2FA(args.method, data = data, enabled = !args.setupEmail, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
         }
 
         binding.authenticatorCode.setOnClickListener {
@@ -84,18 +145,34 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
 
         viewModel.onError.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandledOrReturnNull()?.let {
-                errorDialog(it)
+                errorDialog(it) {
+                    if(action == TwoFactorSetupAction.CANCEL){
+                        popBackStack()
+                    }
+                }
             }
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
             event?.getContentIfNotHandledOrReturnNull()?.let {
-
                 // Hint TwoFactorAuthenticationFragment / WalletSettingsFragment to update TwoFactorConfig
                 setNavigationResult(result = true)
+                popBackStack()
+            }
+        }
+    }
 
-                hideKeyboard() // hide keyboard as is no longer required for the backstacked fragments
+    private fun popBackStack(){
+        hideKeyboard() // hide keyboard as is no longer required for the backstacked fragments
+        if(Bridge.useGreenModule){
+            findNavController().popBackStack()
+        }else{
+            // Initiated from v4 codebase
+            if(args.action == TwoFactorSetupAction.SETUP || args.action == TwoFactorSetupAction.SETUP_EMAIL){
                 findNavController().popBackStack()
+            }else{
+                // Initiated from v3 codebase
+                requireActivity().finish()
             }
         }
     }

@@ -22,7 +22,8 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
     appKeystore: AppKeystore,
     greenWallet: GreenWallet,
     @Assisted wallet: Wallet,
-    @Assisted val method: TwoFactorMethod
+    @Assisted val method: TwoFactorMethod,
+    @Assisted val action: TwoFactorSetupAction
 ) : WalletSettingsViewModel(sessionManager, walletRepository, appKeystore, greenWallet, wallet) {
 
     var authenticatorUrl: String? = null
@@ -75,7 +76,8 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
     interface AssistedFactory {
         fun create(
             wallet: Wallet,
-            method: TwoFactorMethod
+            method: TwoFactorMethod,
+            action: TwoFactorSetupAction
         ): TwoFactorSetupViewModel
     }
 
@@ -83,11 +85,12 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
         fun provideFactory(
             assistedFactory: AssistedFactory,
             wallet: Wallet,
-            method: TwoFactorMethod
+            method: TwoFactorMethod,
+            action: TwoFactorSetupAction
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, method) as T
+                return assistedFactory.create(wallet, method, action) as T
             }
         }
     }

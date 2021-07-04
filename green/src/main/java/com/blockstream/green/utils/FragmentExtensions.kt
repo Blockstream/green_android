@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -13,6 +14,7 @@ import androidx.annotation.MenuRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.biometric.BiometricPrompt
 import androidx.core.app.ShareCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.BuildConfig
@@ -52,14 +54,23 @@ fun Fragment.hideKeyboard() {
 }
 
 fun Fragment.openKeyboard() {
-    (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)?.toggleSoftInputFromWindow(
-        view?.applicationWindowToken, InputMethodManager.SHOW_FORCED, 0
-    )
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        view?.windowInsetsController?.show(WindowInsetsCompat.Type.ime())
+    }else{
+        (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)?.toggleSoftInputFromWindow(
+            view?.applicationWindowToken, InputMethodManager.SHOW_FORCED, 0
+        )
+    }
 }
 
 fun Context.hideKeyboard(view: View) {
-    val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        view.windowInsetsController?.hide(WindowInsetsCompat.Type.ime())
+    }else {
+        val inputMethodManager =
+            getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 }
 
 fun Fragment.localized2faMethod(method: String): String = resources.getStringArray(R.array.twoFactorChoices)[resources.getStringArray(R.array.twoFactorMethods).indexOf(method)]
