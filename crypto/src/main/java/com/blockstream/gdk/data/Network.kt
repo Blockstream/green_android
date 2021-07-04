@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import mu.KLogging
 
 @Serializable
 @Parcelize
@@ -43,11 +44,14 @@ data class Network(
     val canonicalName: String
         get() = if (isElectrum) {
             when {
-                isLiquid -> {
-                    "Liquid"
-                }
                 isMainnet -> {
                     "Bitcoin"
+                }
+                isLiquid && !isTestnet-> {
+                    "Liquid"
+                }
+                isLiquid && isTestnet-> {
+                    "Testnet Liquid"
                 }
                 else -> {
                     "Testnet"
@@ -65,4 +69,21 @@ data class Network(
         }
 
     override fun kSerializer(): KSerializer<Network> = serializer()
+
+    companion object: KLogging(){
+        const val GreenMainnet = "mainnet"
+        const val GreenLiquid = "liquid"
+        const val GreenTestnet = "testnet"
+        const val GreenTestnetLiquid = "testnet-liquid"
+
+        const val ElectrumMainnet = "electrum-mainnet"
+        const val ElectrumLiquid = "electrum-liquid"
+        const val ElectrumTestnet = "electrum-testnet"
+        const val ElectrumTestnetLiquid = "electrum-testnet-liquid"
+
+        fun isMainnet(id: String) = (id == GreenMainnet || id == ElectrumMainnet)
+        fun isLiquid(id: String) = (id == GreenLiquid || id == ElectrumLiquid)
+        fun isTestnet(id: String) = (id == GreenTestnet || id == ElectrumTestnet)
+        fun isTestnetLiquid(id: String) = (id == GreenTestnetLiquid || id == ElectrumTestnetLiquid)
+    }
 }

@@ -24,7 +24,6 @@ data class Networks(
         return networks[id] ?: bitcoinGreen
     }
 
-
     companion object {
         /**
         Transform the gdk json to a more appropriate format

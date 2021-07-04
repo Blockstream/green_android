@@ -69,9 +69,10 @@ fun com.blockstream.green.devices.Device.getIcon(): Int{
 }
 
 fun String.getNetworkIcon(): Int{
-    if (this == "mainnet" || this == "electrum-mainnet") return R.drawable.ic_bitcoin_network_60
-    if (this == "liquid" || this == "electrum-liquid") return R.drawable.ic_liquid_network_60
-    if (this == "testnet" || this == "electrum-testnet") return R.drawable.ic_bitcoin_testnet_network_60
+    if (Network.isMainnet(this)) return R.drawable.ic_bitcoin_network_60
+    if (Network.isLiquid(this)) return R.drawable.ic_liquid_network_60
+    if (Network.isTestnet(this)) return R.drawable.ic_bitcoin_testnet_network_60
+    if (Network.isTestnetLiquid(this)) return R.drawable.ic_liquid_testnet_network_60
     return R.drawable.ic_unknown_network_60
 }
 

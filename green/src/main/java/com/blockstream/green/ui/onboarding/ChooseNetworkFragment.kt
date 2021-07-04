@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseNetworkFragmentBinding
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
+import com.blockstream.green.utils.isDevelopmentFlavor
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
@@ -55,11 +57,21 @@ class ChooseNetworkFragment :
         val fastItemAdapter = FastItemAdapter<GenericItem>()
         fastItemAdapter.getExpandableExtension()
 
-        fastItemAdapter.add(NetworkListItem("mainnet","Bitcoin", getCaption("mainnet")))
-        fastItemAdapter.add(NetworkListItem("liquid", "Liquid", getCaption("liquid")))
+        fastItemAdapter.add(NetworkListItem(Network.GreenMainnet,"Bitcoin", getCaption("mainnet")))
+        fastItemAdapter.add(NetworkListItem(Network.GreenLiquid, "Liquid", getCaption("liquid")))
 
         val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
-        expandable.subItems.add(NetworkListItem("testnet", "Testnet", getCaption("testnet")))
+        expandable.subItems.add(NetworkListItem(Network.GreenTestnet, "Testnet", getCaption("testnet")))
+
+        if (isDevelopmentFlavor()) {
+            expandable.subItems.add(
+                NetworkListItem(
+                    Network.GreenTestnetLiquid,
+                    "Testnet Liquid",
+                    getCaption("testnet-liquid")
+                )
+            )
+        }
 
         fastItemAdapter.add(expandable)
 

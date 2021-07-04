@@ -67,14 +67,17 @@ class ChooseSecurityFragment :
 
     private fun getNetwork(networkType: String, isElectrum: Boolean): Network {
         val id = when (networkType) {
-            "mainnet" -> {
-                if (isElectrum) "electrum-mainnet" else "mainnet"
+            Network.GreenMainnet -> {
+                if (isElectrum) Network.ElectrumMainnet else Network.GreenMainnet
             }
-            "liquid" -> {
-                if (isElectrum) "electrum-liquid" else "liquid"
+            Network.GreenLiquid -> {
+                if (isElectrum) Network.ElectrumLiquid else Network.GreenLiquid
+            }
+            Network.GreenTestnetLiquid -> {
+                if (isElectrum) Network.ElectrumTestnetLiquid else Network.GreenTestnetLiquid
             }
             else -> {
-                if (isElectrum) "electrum-testnet" else "testnet"
+                if (isElectrum) Network.ElectrumTestnet else Network.GreenTestnet
             }
         }
 
