@@ -165,7 +165,7 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
     }
 
     public Boolean canReplaceTransactions(){
-        return !getLiquid() && !isElectrum();
+        return !getLiquid();
     }
 
     public void setLiquid(final Boolean liquid) {
