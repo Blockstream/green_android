@@ -17,7 +17,7 @@ import java.text.DecimalFormat
 import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
-class UserInputUnitTests {
+class JsonConverterUnitTest {
 
     @Mock
     private lateinit var session: GreenSession

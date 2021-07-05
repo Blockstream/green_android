@@ -5,7 +5,7 @@ import mu.KLogging
 
 
 class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean) : GDK.JSONConverter {
-    val maskFields = listOf("pin", "mnemonic", "password", "recovery_xpub", "recovery_chain_code")
+    val maskFields = listOf("pin", "mnemonic", "password", "recovery_mnemonic")
 
     override fun toJSONObject(jsonString: String?): Any? {
         if (log) {
@@ -25,7 +25,7 @@ class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean) : GDK.JS
     }
 
     // Extra protection from logging sensitive information
-    private fun mask(jsonString: String?): String? {
+    fun mask(jsonString: String?): String? {
         var processed = jsonString
         if(maskSensitiveFields) {
             for (mask in maskFields) {
