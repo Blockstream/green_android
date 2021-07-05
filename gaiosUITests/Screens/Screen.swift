@@ -77,12 +77,6 @@ class Screen {
             existsWallet = walletLabel.exists
         }
 
-        let cell = app.collectionViews
-            .children(matching: .cell)
-            .element(matching: walletExistance)
-
-        XCTAssertNotNil(cell, "Appliance '\(name)' cannot be found in account")
-
         return tap(walletLabel)
     }
 
