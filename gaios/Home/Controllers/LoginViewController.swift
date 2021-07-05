@@ -47,6 +47,7 @@ class LoginViewController: UIViewController {
         setStyle()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.view
+        navigationItem.leftBarButtonItem?.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.backBtn
         menuButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.menuBtn
         keyButton![0].accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.btn1
         keyButton![1].accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.btn2

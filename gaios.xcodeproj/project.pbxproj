@@ -36,6 +36,7 @@
 		09DA612620E73A2300C3EA03 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DA612520E73A2300C3EA03 /* String.swift */; };
 		2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1A25B995A200250E23 /* CsvViewController.swift */; };
 		2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */; };
+		20516D042693969B00BA1F4C /* DialogWalletRename.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20516D032693969B00BA1F4C /* DialogWalletRename.swift */; };
 		20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */; };
 		3403BDA72630281600118C64 /* AlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403BDA52630281600118C64 /* AlertCardCell.swift */; };
 		3403BDA82630281600118C64 /* AlertCardCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3403BDA62630281600118C64 /* AlertCardCell.xib */; };
@@ -318,6 +319,7 @@
 		1C8F983FC2E40ECF752CFD96 /* Pods-gaiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosTests/Pods-gaiosTests.release.xcconfig"; sourceTree = "<group>"; };
 		2034CE1A25B995A200250E23 /* CsvViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewController.swift; sourceTree = "<group>"; };
 		2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvTimeCell.swift; sourceTree = "<group>"; };
+		20516D032693969B00BA1F4C /* DialogWalletRename.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletRename.swift; sourceTree = "<group>"; };
 		206D7A37252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		206D7A38252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -686,6 +688,7 @@
 				345142882693445000E8BE1B /* SendBtcDetails.swift */,
 				34767E0D269439F4005F938B /* SendBtcConfirmation.swift */,
 				3452E6012696E756003F3FAA /* ScreenLock.swift */,
+				20516D032693969B00BA1F4C /* DialogWalletRename.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -1825,6 +1828,7 @@
 				3451428526932B9300E8BE1B /* ReceiveBtc.swift in Sources */,
 				344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */,
 				3434767026823B1A00D7AD43 /* ChooseNetwork.swift in Sources */,
+				20516D042693969B00BA1F4C /* DialogWalletRename.swift in Sources */,
 				344FE35326850C8500C087A5 /* Container.swift in Sources */,
 				34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */,
 				345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */,

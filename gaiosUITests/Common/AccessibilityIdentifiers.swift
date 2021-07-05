@@ -95,6 +95,7 @@ struct AccessibilityIdentifiers {
         static let btn1 = "btn_1_login"
         static let btn2 = "btn_2_login"
         static let nextBtn = "next_btn"
+        static let backBtn = "back_btn"
     }
     
     struct PopoverMenuWalletScreen {
@@ -102,6 +103,12 @@ struct AccessibilityIdentifiers {
         static let deleteBtn = "delete_btn"
     }
     
+    struct DialogWalletRenameScreen {
+        static let view = "view_dialog_wallet_rename"
+        static let nameField = "name_field"
+        static let saveBtn = "save_button"
+    }
+
     struct DialogWalletDeleteScreen {
         static let view = "view_dialog_wallet_delete"
         static let deleteBtn = "delete_btn"

@@ -46,6 +46,10 @@ class DialogWalletNameViewController: KeyboardViewController {
         view.alpha = 0.0
 
         updateUI()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletRenameScreen.view
+        nameTextField.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletRenameScreen.nameField
+        btnSave.accessibilityIdentifier = AccessibilityIdentifiers.DialogWalletRenameScreen.saveBtn
     }
 
     override func viewDidAppear(_ animated: Bool) {

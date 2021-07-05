@@ -31,4 +31,11 @@ class Login: Screen {
         
         return self
     }
+
+    @discardableResult
+    func back() -> Self {
+        tap(button: AccessibilityIdentifiers.LoginScreen.backBtn)
+        sleep(1)
+        return self
+    }
 }
