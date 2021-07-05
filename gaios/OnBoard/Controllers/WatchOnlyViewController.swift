@@ -43,6 +43,12 @@ class WatchOnlyViewController: KeyboardViewController {
 
         usernameTextField.leftViewMode = .always
         passwordTextField.leftViewMode = .always
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.view
+        usernameTextField.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.usernameField
+        passwordTextField.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.passwordField
+        testnetSwitch.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.testnetSwitch
+        loginButton.accessibilityIdentifier = AccessibilityIdentifiers.WatchOnlyScreen.loginBtn
     }
 
     @objc func rememberSwitchChange(_ sender: UISwitch) {

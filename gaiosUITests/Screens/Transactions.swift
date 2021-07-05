@@ -6,4 +6,9 @@ class Transactions: Screen {
         return app.otherElements[AccessibilityIdentifiers.TransactionsScreen.view]
     }
     
+    @discardableResult
+    func tapSettings() -> Self {
+        tap(button: AccessibilityIdentifiers.TransactionsScreen.settingsBtn)
+        return self
+    }
 }

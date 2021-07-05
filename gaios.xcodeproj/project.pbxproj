@@ -101,6 +101,7 @@
 		3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3497937E25F8B3F90029ECB1 /* Loader.xib */; };
 		3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */; };
 		3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */; };
+		349D7FED268D9470009E1815 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D7FEC268D9470009E1815 /* Constants.swift */; };
 		349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B826C42608827F00579C0B /* Recovery.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B826C32608827F00579C0B /* Recovery.storyboard */; };
@@ -119,6 +120,9 @@
 		34C2464D2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */; };
 		34C2464F2670ECE0009E8FCE /* AccountType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2464E2670ECE0009E8FCE /* AccountType.swift */; };
 		34C246512670F0BB009E8FCE /* UINavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C246502670F0BB009E8FCE /* UINavigationController.swift */; };
+		34C978A5268DAF740061264D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A4268DAF740061264D /* Settings.swift */; };
+		34C978A8268DC14D0061264D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A7268DC14D0061264D /* Extensions.swift */; };
+		34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A9268DDD8C0061264D /* WatchOnly.swift */; };
 		34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD372600F2D60098536C /* WalletEmptyCell.swift */; };
 		34CEFD9E260202010098536C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34CEFD9D260202010098536C /* LoginViewController.swift */; };
 		34D369C125FA3ED0001B32A3 /* MnemonicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */; };
@@ -139,7 +143,6 @@
 		676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF281F9D0CF800354E93 /* Assets.xcassets */; };
 		676FCF2C1F9D0CF800354E93 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */; };
 		676FCF371F9D0CF800354E93 /* gaiosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF361F9D0CF800354E93 /* gaiosTests.swift */; };
-		676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676FCF411F9D0CF800354E93 /* gaiosUITests.swift */; };
 		6770BF6E235E50D400BDB7DA /* GreenAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6770BF6D235E50D400BDB7DA /* GreenAddress.swift */; };
 		6D0983C623FC848C00289ACA /* HelpCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0983C523FC848C00289ACA /* HelpCell.swift */; };
 		6D0983F323FF033900289ACA /* DropAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0983F223FF033900289ACA /* DropAlert.swift */; };
@@ -376,6 +379,7 @@
 		3497937E25F8B3F90029ECB1 /* Loader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Loader.xib; sourceTree = "<group>"; };
 		3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletViewController.swift; sourceTree = "<group>"; };
 		3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSigViewController.swift; sourceTree = "<group>"; };
+		349D7FEC268D9470009E1815 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRegistryFailViewController.swift; sourceTree = "<group>"; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
@@ -395,6 +399,9 @@
 		34C2464C2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateSetNameViewController.swift; sourceTree = "<group>"; };
 		34C2464E2670ECE0009E8FCE /* AccountType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountType.swift; sourceTree = "<group>"; };
 		34C246502670F0BB009E8FCE /* UINavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UINavigationController.swift; sourceTree = "<group>"; };
+		34C978A4268DAF740061264D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		34C978A7268DC14D0061264D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		34C978A9268DDD8C0061264D /* WatchOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnly.swift; sourceTree = "<group>"; };
 		34CEFD372600F2D60098536C /* WalletEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEmptyCell.swift; sourceTree = "<group>"; };
 		34CEFD9D260202010098536C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		34D369C025FA3ED0001B32A3 /* MnemonicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicViewController.swift; sourceTree = "<group>"; };
@@ -421,7 +428,6 @@
 		676FCF361F9D0CF800354E93 /* gaiosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gaiosTests.swift; sourceTree = "<group>"; };
 		676FCF381F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		676FCF3D1F9D0CF800354E93 /* gaiosUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = gaiosUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		676FCF411F9D0CF800354E93 /* gaiosUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gaiosUITests.swift; sourceTree = "<group>"; };
 		676FCF431F9D0CF800354E93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6770BF6D235E50D400BDB7DA /* GreenAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GreenAddress.swift; path = "gdk-iphone/share/gdk/GreenAddress.swift"; sourceTree = SOURCE_ROOT; };
 		6A591AB8B8630E95027C9F8C /* Pods-gaios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-gaios/Pods-gaios.debug.xcconfig"; sourceTree = "<group>"; };
@@ -657,6 +663,8 @@
 				342560AF268B52E100136ACC /* RestoreWallet.swift */,
 				344B1BB9268C53F1000182B0 /* RecoveryPhrase.swift */,
 				344B1BBB268C5567000182B0 /* Mnemonic.swift */,
+				34C978A4268DAF740061264D /* Settings.swift */,
+				34C978A9268DDD8C0061264D /* WatchOnly.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -666,6 +674,7 @@
 			children = (
 				3434766A26822AA000D7AD43 /* AccessibilityIdentifiers.swift */,
 				34347676268320C200D7AD43 /* Utils.swift */,
+				349D7FEC268D9470009E1815 /* Constants.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -674,7 +683,6 @@
 			isa = PBXGroup;
 			children = (
 				34347662268228C600D7AD43 /* AddWalletUITests.swift */,
-				676FCF411F9D0CF800354E93 /* gaiosUITests.swift */,
 			);
 			path = Suite;
 			sourceTree = "<group>";
@@ -866,6 +874,14 @@
 			path = Controllers;
 			sourceTree = "<group>";
 		};
+		34C978A6268DC1300061264D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				34C978A7268DC14D0061264D /* Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		34D678AD261F05F700DBC0BB /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -970,6 +986,7 @@
 		676FCF401F9D0CF800354E93 /* gaiosUITests */ = {
 			isa = PBXGroup;
 			children = (
+				34C978A6268DC1300061264D /* Extensions */,
 				3434766926822A8200D7AD43 /* Common */,
 				343476642682298B00D7AD43 /* Screens */,
 				3434767126823F5B00D7AD43 /* Suite */,
@@ -1753,6 +1770,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				349D7FED268D9470009E1815 /* Constants.swift in Sources */,
 				344FE3492684BD9700C087A5 /* RecoverySuccess.swift in Sources */,
 				343476662682299B00D7AD43 /* Screen.swift in Sources */,
 				34347679268322A100D7AD43 /* RecoveryVerify.swift in Sources */,
@@ -1761,21 +1779,23 @@
 				342560B0268B52E100136ACC /* RestoreWallet.swift in Sources */,
 				3434766826822A5800D7AD43 /* Home.swift in Sources */,
 				3434766B26822AA000D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
+				34C978A5268DAF740061264D /* Settings.swift in Sources */,
 				344FE34B2684C77900C087A5 /* WalletName.swift in Sources */,
 				3434766E268233C000D7AD43 /* Landing.swift in Sources */,
 				342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */,
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
 				344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */,
 				344FE355268512CE00C087A5 /* Transactions.swift in Sources */,
-				676FCF421F9D0CF800354E93 /* gaiosUITests.swift in Sources */,
 				344B1BBC268C5567000182B0 /* Mnemonic.swift in Sources */,
 				342560A8268B2BB900136ACC /* Login.swift in Sources */,
 				34347675268247F400D7AD43 /* RecoveryCreate.swift in Sources */,
 				34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */,
 				344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */,
+				34C978A8268DC14D0061264D /* Extensions.swift in Sources */,
 				344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */,
 				3434767026823B1A00D7AD43 /* ChooseNetwork.swift in Sources */,
 				344FE35326850C8500C087A5 /* Container.swift in Sources */,
+				34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */,
 				342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -17,6 +17,7 @@ struct AccessibilityIdentifiers {
         static let acceptTermsBtn = "accept_terms_btn"
         static let newWalletBtn = "new_wallet_btn"
         static let restoreWalletBtn = "restore_wallet_btn"
+        static let watchOnlyWalletBtn = "watch_only_wallet_btn"
     }
 
     struct ChooseNetworkScreen {
@@ -82,11 +83,14 @@ struct AccessibilityIdentifiers {
     
     struct TransactionsScreen {
         static let view = "view"
+        static let settingsBtn = "settings_btn"
     }
     
     struct LoginScreen {
         static let view = "view"
         static let menuBtn = "menu_btn"
+        static let btn1 = "btn_1"
+        static let nextBtn = "next_btn"
     }
     
     struct PopoverMenuWalletScreen {
@@ -113,5 +117,20 @@ struct AccessibilityIdentifiers {
         static let view = "view"
         static let titleLbl = "title_lbl"
         static let doneBtn = "done_btn"
+    }
+    
+    struct SettingsScreen {
+        static let view = "view"
+        static let usernameField = "username_field"
+        static let passwordField = "password_field"
+        static let saveBtn = "save_btn"
+    }
+    
+    struct WatchOnlyScreen {
+        static let view = "view"
+        static let usernameField = "username_field"
+        static let passwordField = "password_field"
+        static let testnetSwitch = "testnet_switch"
+        static let loginBtn = "login_btn"
     }
 }

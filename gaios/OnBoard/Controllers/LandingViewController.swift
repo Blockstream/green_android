@@ -34,6 +34,7 @@ class LandingViewController: UIViewController {
         btnCheckTerms.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.acceptTermsBtn
         btnNewWallet.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.newWalletBtn
         btnRestoreWallet.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.restoreWalletBtn
+        btnWatchOnly.accessibilityIdentifier = AccessibilityIdentifiers.LandingScreen.watchOnlyWalletBtn
     }
 
     func setContent() {

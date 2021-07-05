@@ -168,6 +168,7 @@
                     </navigationItem>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="btnSettings" destination="mfo-Lj-aic" id="gkp-2J-bBf"/>
                         <segue destination="4Ad-Du-Nja" kind="show" identifier="detail" id="4Ob-Ap-ykz"/>
                         <segue destination="R7F-mq-oqL" kind="show" identifier="receive" id="uYc-26-M8s"/>
                         <segue destination="h6g-rr-LAM" kind="show" identifier="send" id="U7f-MS-5Z1"/>

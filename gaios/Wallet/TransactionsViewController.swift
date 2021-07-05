@@ -15,6 +15,7 @@ class TransactionsController: UITableViewController {
     private var transactionToken: NSObjectProtocol?
     private var assetsUpdatedToken: NSObjectProtocol?
     private var settingsUpdatedToken: NSObjectProtocol?
+    @IBOutlet weak var btnSettings: UIBarButtonItem!
 
     var isResetActive: Bool {
         get {
@@ -72,7 +73,9 @@ class TransactionsController: UITableViewController {
         default:
             break
         }
+
         view.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.view
+        btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.settingsBtn
     }
 
     func presentDialogRegistryFail() {

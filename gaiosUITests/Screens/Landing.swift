@@ -23,4 +23,11 @@ class Landing: Screen {
         tap(button: AccessibilityIdentifiers.LandingScreen.restoreWalletBtn)
         return self
     }
+    
+    @discardableResult
+    func tapWatchOnlyWallet() -> Self {
+        tap(button: AccessibilityIdentifiers.LandingScreen.watchOnlyWalletBtn)
+        return self
+    }
+    
 }

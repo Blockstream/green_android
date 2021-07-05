@@ -12,4 +12,13 @@ class Login: Screen {
         return self
     }
     
+    @discardableResult
+    func digitPin() -> Self {
+        for _ in 0..<6 {
+            tap(button: AccessibilityIdentifiers.SetPinScreen.btn1)
+            sleep(1)
+        }
+        
+        return self
+    }
 }

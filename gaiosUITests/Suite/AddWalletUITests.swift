@@ -21,7 +21,7 @@ class AddWalletUITests: XCTestCase {
         
         Landing()
             .tapAcceptTerms()
-            .pause(2)
+            .pause(1)
             .tapNewWallet()
         
         ChooseNetwork()
@@ -66,23 +66,23 @@ class AddWalletUITests: XCTestCase {
             .pause(1)
         
         SetPin()
-            .pause(2)
+            .pause(1)
             .setPin()
-            .pause(2)
+            .pause(1)
             .setPin()
             .tapNext()
         
         WalletSuccess()
-            .pause(2)
+            .pause(1)
             .tapNext()
             
         Transactions()
-            .pause(3)
+            .pause(1)
     }
     
     func testRestoreWallet() {
-        let walletName = "crypto"
-        let words = ["urge", "gaze", "divert", "say", "ready", "spike", "shrimp", "comfort", "tide", "impulse", "rookie", "tell"]
+        let walletName = Constants.walletName
+        
         if Home().existsWallet(named: walletName) {
             
             Home()
@@ -105,12 +105,72 @@ class AddWalletUITests: XCTestCase {
                 .tapDelete()
         }
         
+        restoreWallet()
+    }
+    
+    func testWatchOnlySetUp() {
+        let walletName = Constants.walletName
+        if Home().existsWallet(named: walletName) {
+            
+            Home()
+                .selectWallet(named: walletName)
+
+            Login()
+                .pause(1)
+                .digitPin()
+            
+        } else {
+            restoreWallet()
+        }
+        
+        Transactions()
+            .pause(1)
+            .tapSettings()
+        
+        Settings()
+            .pause(1)
+            .tapWatchOnly()
+            .pause(1)
+            .typeUsername(Constants.cryptoUser)
+            .pause(1)
+            .typePassword(Constants.cryptoPwd)
+            .tapSave()
+            .pause(1)
+            .tapLogOut()
+        
+        Home()
+            .pause(1)
+            .tapAddWalletView()
+        
+        Landing()
+            .tapAcceptTerms()
+            .pause(1)
+            .tapWatchOnlyWallet()
+        
+        WatchOnly()
+            .pause(1)
+            .typeUsername(Constants.cryptoUser)
+            .pause(1)
+            .typePassword(Constants.cryptoPwd)
+            .pause(1)
+            .tapTestnetSwitch()
+            .pause(1)
+            .tapLogin()
+            
+        Transactions()
+            .pause(2)
+    }
+    
+    func restoreWallet() {
+        let walletName = Constants.walletName
+        let words = Constants.mnemonic
+        
         Home()
             .tapAddWalletView()
         
         Landing()
             .tapAcceptTerms()
-            .pause(2)
+            .pause(1)
             .tapRestoreWallet()
         
         RestoreWallet()
@@ -142,17 +202,17 @@ class AddWalletUITests: XCTestCase {
             .pause(1)
         
         SetPin()
-            .pause(2)
+            .pause(1)
             .setPin()
-            .pause(2)
+            .pause(1)
             .setPin()
             .tapNext()
         
         WalletSuccess()
-            .pause(2)
+            .pause(1)
             .tapNext()
             
         Transactions()
-            .pause(3)
+            .pause(1)
     }
 }
