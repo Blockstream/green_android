@@ -42,7 +42,7 @@ if [[ "$BUILD_GDK" -eq 1 ]]; then
     git fetch origin -t
     git checkout release_0.0.43
     rm -rf build-*
-    ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone
+    ./tools/build.sh --$TARGET static --lto=true --install=$PWD/../gdk-iphone --enable-rust
     cd ..
 else
     ./tools/fetch_gdk_binaries.sh
