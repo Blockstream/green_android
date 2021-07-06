@@ -38,6 +38,10 @@ class SendBtcViewController: KeyboardViewController {
         qrCodeReaderBackgroundView.delegate = self
 
         addPlaceHolder()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcScreen.view
+        textView.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcScreen.textView
+        bottomButton.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcScreen.nextBtn
     }
 
     func addPlaceHolder() {

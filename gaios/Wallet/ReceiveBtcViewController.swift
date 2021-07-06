@@ -39,6 +39,9 @@ class ReceiveBtcViewController: KeyboardViewController {
         if isLiquid && "2of2_no_recovery" == wallet?.type {
             content.accountValue.text = wallet?.receivingId ?? ""
         }
+
+        content.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveBtcScreen.view
+        content.walletQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveBtcScreen.qrCodeView
     }
 
     override func viewWillAppear(_ animated: Bool) {

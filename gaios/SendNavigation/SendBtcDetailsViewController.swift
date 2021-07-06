@@ -110,6 +110,11 @@ class SendBtcDetailsViewController: UIViewController {
         content.amountTextField.isUserInteractionEnabled = !transaction.addresseesReadOnly
         content.sendAllFundsButton.isHidden = transaction.addresseesReadOnly
         content.maxAmountLabel.isHidden = transaction.addresseesReadOnly
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcDetailsScreen.view
+        content.amountTextField.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcDetailsScreen.amountTextField
+        content.recipientTitle.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcDetailsScreen.recipientTitle
+        content.reviewButton.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcDetailsScreen.reviewBtn
     }
 
     override func viewWillAppear(_ animated: Bool) {

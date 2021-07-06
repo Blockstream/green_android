@@ -53,6 +53,9 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         // load content
         setupCurrencyButton()
         reload()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcConfirmationScreen.view
+        content.slidingButton.accessibilityIdentifier = AccessibilityIdentifiers.SendBtcConfirmationScreen.slidingBtn
     }
 
     override func viewWillAppear(_ animated: Bool) {

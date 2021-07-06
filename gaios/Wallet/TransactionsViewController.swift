@@ -74,7 +74,7 @@ class TransactionsController: UITableViewController {
             break
         }
 
-        view.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.view
+        tableView.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.view
         btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.settingsBtn
     }
 
@@ -336,6 +336,9 @@ class TransactionsController: UITableViewController {
         view.sweepView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.sweepFromWallet)))
         view.stackButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.wallets)))
         view.assetsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.showAssets)))
+
+        view.sendView.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.sendView
+        view.receiveView.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.receiveView
         return view
     }
 

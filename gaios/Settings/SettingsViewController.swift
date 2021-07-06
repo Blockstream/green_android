@@ -32,7 +32,7 @@ class SettingsViewController: UIViewController {
         tableView.estimatedRowHeight = 75
         tableView.rowHeight = 75
 
-        view.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.view
+        view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
     }
 
     override func viewWillAppear(_ animated: Bool) {
