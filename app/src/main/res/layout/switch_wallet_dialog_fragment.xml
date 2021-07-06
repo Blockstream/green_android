@@ -1,21 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryDark">
+    android:background="@color/primaryDark"
+    android:orientation="vertical">
 
     <View
         android:layout_width="wrap_content"
         android:layout_height="20dp" />
 
-    <TextView
-        android:text="@string/id_select_wallet"
-        android:gravity="center"
+
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="25sp"
-        android:textColor="@color/secondaryTextColor"
-        />
+        android:gravity="center_vertical"
+        android:paddingStart="24dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/id_select_wallet"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="25sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonLogout"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/colorAccent"
+            android:text="@string/id_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
         android:layout_width="wrap_content"
@@ -24,12 +41,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/switch_network_recycler"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
 
     <View
         android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        />
+        android:layout_height="20dp" />
 
 </LinearLayout>

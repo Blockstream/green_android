@@ -106,13 +106,9 @@ class GreenApplication : Application(){
                 }
 
                 Bridge.NavigateType.CHANGE_PIN, Bridge.NavigateType.SETTINGS -> {
-
-                    val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-                    if (walletId >= 0) {
-
+                    sessionManager.getWalletSession(gaSession)?.let { session ->
                         GlobalScope.launch {
-                            val wallet = walletRepository.getWalletSuspend(walletId)
+                            val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
 
                             val intent = Intent(activity, BridgeActivity::class.java)
                             intent.putExtras(WalletSettingsFragmentArgs(wallet, type == Bridge.NavigateType.CHANGE_PIN).toBundle())

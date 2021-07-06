@@ -404,16 +404,23 @@ class WalletSettingsFragment :
 
                 list += TitleListItem(StringHolder(R.string.id_security))
 
-                list += changePinPreference
-
-                list += biometricsPreference
+                if(!session.hasDevice) {
+                    list += changePinPreference
+                    list += biometricsPreference
+                }
 
                 list += altTimeoutPreference
 
                 list += twoFactorAuthenticationPreference
 
-                list += TitleListItem(StringHolder(R.string.id_recovery))
-                list += recoveryPreference
+
+                if(!session.isLiquid && !session.isElectrum || !session.hasDevice) {
+                    list += TitleListItem(StringHolder(R.string.id_recovery))
+                }
+
+                if(!session.hasDevice) {
+                    list += recoveryPreference
+                }
 
                 if(!session.isLiquid && !session.isElectrum) {
                     list += recoveryTransactionsPreference

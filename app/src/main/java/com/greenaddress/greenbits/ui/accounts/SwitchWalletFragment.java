@@ -50,13 +50,21 @@ public class SwitchWalletFragment extends BottomSheetDialogFragment implements W
         recyclerView.setAdapter(new SwitchWalletAdapter(getContext(), Bridge.INSTANCE.getWallets(), this));
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
+        UI.find(view, R.id.buttonLogout).setOnClickListener(v -> {
+            final LoggedActivity activity = (LoggedActivity) getActivity();
+            activity.logout(null);
+            dismiss();
+        });
+
         return view;
     }
 
     @Override
     public void onWalletClick(@Nullable Long walletId) {
         final LoggedActivity activity = (LoggedActivity) getActivity();
-        activity.logout(walletId);
+        if(walletId != null){
+            activity.logout(walletId);
+        }
         dismiss();
     }
 }

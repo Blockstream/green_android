@@ -60,7 +60,6 @@ public class SwitchWalletAdapter extends RecyclerView.Adapter<SwitchWalletAdapte
         holder.mButton.setOnClickListener(view -> {
             mWalletSwitchListener.onWalletClick(isActive ? null : Long.parseLong(wallet.get("id")));
         });
-        UI.showIf(isActive, holder.mLogout);
     }
 
     @Override
@@ -70,12 +69,10 @@ public class SwitchWalletAdapter extends RecyclerView.Adapter<SwitchWalletAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final Button mButton;
-        private final TextView mLogout;
 
         ViewHolder(final View itemView) {
             super(itemView);
             mButton = UI.find(itemView, R.id.switchNetworkButton);
-            mLogout = UI.find(itemView, R.id.switchNetworkLogout);
         }
 
         public void setText(final String text) {
