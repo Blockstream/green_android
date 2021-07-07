@@ -7,6 +7,7 @@ import com.btchip.BTChipException;
 import com.btchip.BitcoinTransaction;
 import com.btchip.utils.BufferUtils;
 import com.btchip.utils.KeyUtils;
+import com.btchip.utils.VarintUtils;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -530,8 +531,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     private ByteArrayOutputStream putVarInt(final ByteArrayOutputStream os, final long v) {
-        final byte[] buf = new VarInt(v).encode();
-        os.write(buf, 0, buf.length);
+        VarintUtils.write(os, v);
         return os;
     }
 

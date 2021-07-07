@@ -364,7 +364,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             if (mSwipeRefreshLayout != null)
                 mSwipeRefreshLayout.setRefreshing(false);
 
-            final Sha256Hash oldTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhashAsSha256Hash() : null;
+            final String oldTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhash() : null;
             if (clean)
                 mTxItems.clear();
             mTxItems.addAll(transactions);
@@ -372,7 +372,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
             mTransactionsAdapter.notifyDataSetChanged();
             showTxView(!mTxItems.isEmpty());
 
-            final Sha256Hash newTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhashAsSha256Hash() : null;
+            final String newTop = !mTxItems.isEmpty() ? mTxItems.get(0).getTxhash() : null;
             if (oldTop != null && newTop != null && !oldTop.equals(newTop)) {
                 // A new tx has arrived; scroll to the top to show it
                 final RecyclerView recyclerView = UI.find(mView, R.id.mainTransactionList);
