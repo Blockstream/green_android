@@ -15,26 +15,13 @@ import java.util.Objects;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class NetworkData extends JSONData implements Comparable<NetworkData>, Serializable {
-    private String addressExplorerUrl;
     private String txExplorerUrl;
-    private String bech32Prefix;
     private Boolean development;
     private Boolean liquid;
     private Boolean mainnet;
     private String name;
     private String network;
-    private Integer p2pkhVersion;
-    private Integer p2shVersion;
-    private String serviceChainCode;
-    private String servicePubkey;
-    private String wampOnionUrl;
-    private String wampUrl;
-    private List<String> wampCertPins;
-    private List<String> wampCertRoots;
     private List<String> defaultPeers;
-    private Integer blindedPrefix;
-    private Integer ctBits;
-    private Integer ctExponent;
     private String policyAsset;
     private String serverType;
     private List<Integer> csvBuckets;
@@ -112,52 +99,12 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
         this.policyAsset = policyAsset;
     }
 
-    public Integer getCtBits() {
-        return ctBits;
-    }
-
-    public void setCtBits(Integer ctBits) {
-        this.ctBits = ctBits;
-    }
-
-    public Integer getCtExponent() {
-        return ctExponent;
-    }
-
-    public void setCtExponent(Integer ctExponent) {
-        this.ctExponent = ctExponent;
-    }
-
-    public Integer getBlindedPrefix() {
-        return blindedPrefix;
-    }
-
-    public void setBlindedPrefix(Integer blindedPrefix) {
-        this.blindedPrefix = blindedPrefix;
-    }
-
     public Boolean getDevelopment() {
         return development;
     }
 
     public void setDevelopment(Boolean development) {
         this.development = development;
-    }
-
-    public String getAddressExplorerUrl() {
-        return addressExplorerUrl;
-    }
-
-    public void setAddressExplorerUrl(final String addressExplorerUrl) {
-        this.addressExplorerUrl = addressExplorerUrl;
-    }
-
-    public String getBech32Prefix() {
-        return bech32Prefix;
-    }
-
-    public void setBech32Prefix(final String bech32Prefix) {
-        this.bech32Prefix = bech32Prefix;
     }
 
     public Boolean getLiquid() {
@@ -196,76 +143,12 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
         this.network = network;
     }
 
-    public Integer getP2pkhVersion() {
-        return p2pkhVersion;
-    }
-
-    public void setP2pkhVersion(final Integer p2pkhVersion) {
-        this.p2pkhVersion = p2pkhVersion;
-    }
-
-    public Integer getP2shVersion() {
-        return p2shVersion;
-    }
-
-    public void setP2shVersion(final Integer p2shVersion) {
-        this.p2shVersion = p2shVersion;
-    }
-
-    public String getServiceChainCode() {
-        return serviceChainCode;
-    }
-
-    public void setServiceChainCode(final String serviceChainCode) {
-        this.serviceChainCode = serviceChainCode;
-    }
-
-    public String getServicePubkey() {
-        return servicePubkey;
-    }
-
-    public void setServicePubkey(final String servicePubkey) {
-        this.servicePubkey = servicePubkey;
-    }
-
     public String getTxExplorerUrl() {
         return txExplorerUrl;
     }
 
     public void setTxExplorerUrl(final String txExplorerUrl) {
         this.txExplorerUrl = txExplorerUrl;
-    }
-
-    public String getWampOnionUrl() {
-        return wampOnionUrl;
-    }
-
-    public void setWampOnionUrl(final String wampOnionUrl) {
-        this.wampOnionUrl = wampOnionUrl;
-    }
-
-    public String getWampUrl() {
-        return wampUrl;
-    }
-
-    public void setWampUrl(final String wampUrl) {
-        this.wampUrl = wampUrl;
-    }
-
-    public List<String> getWampCertPins() {
-        return wampCertPins;
-    }
-
-    public void setWampCertPins(final List<String> wampCertPins) {
-        this.wampCertPins = wampCertPins;
-    }
-
-    public List<String> getWampCertRoots() {
-        return wampCertRoots;
-    }
-
-    public void setWampCertRoots(final List<String> wampCertRoots) {
-        this.wampCertRoots = wampCertRoots;
     }
 
     public List<String> getDefaultPeers() {

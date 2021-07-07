@@ -17,13 +17,11 @@ data class Network(
     @SerialName("mainnet") val isMainnet: Boolean,
     @SerialName("liquid") val isLiquid: Boolean,
     @SerialName("development") val isDevelopment: Boolean,
-
     @SerialName("default_peers") val defaultPeers: List<String> = listOf(),
     @SerialName("tx_explorer_url") val explorerUrl: String? = null,
-    @SerialName("wamp_onion_url") val wampOnioUrl: String? = null,
-
     @SerialName("policy_asset") val policyAsset: String = "btc",
     @SerialName("server_type") val serverType: String? = null,
+    @SerialName("csv_buckets") val csvBuckets: List<Int> = listOf(),
 ) : GAJson<Network>(), Parcelable {
 
     val isElectrum
