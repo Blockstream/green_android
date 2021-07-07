@@ -22,7 +22,6 @@ import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenapi.data.TransactionData.TYPE;
 import com.greenaddress.greenapi.model.Conversion;
-import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R.color;
 import com.greenaddress.greenbits.ui.R.drawable;
@@ -48,7 +47,6 @@ public class ListTransactionsAdapter extends
     private final List<TransactionData> mTxItems;
     private final GaActivity mActivity;
     private final NetworkData mNetworkData;
-    private final SPV mSPV;
     private final boolean isSpvEnabled;
     private int currentBlock = 0;
     private final OnTxSelected mOnTxSelected;
@@ -61,13 +59,12 @@ public class ListTransactionsAdapter extends
     public ListTransactionsAdapter(final GaActivity activity,
                                    final NetworkData networkData,
                                    final List<TransactionData> txItems,
-                                   final SPV spv, final OnTxSelected selector) {
+                                   final OnTxSelected selector) {
         mTxItems = txItems;
         mActivity = activity;
         mNetworkData = networkData;
         final SharedPreferences preferences = activity.getSharedPreferences(mNetworkData.getNetwork(), MODE_PRIVATE);
         isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
-        mSPV = spv;
         mOnTxSelected = selector;
     }
 
@@ -106,14 +103,16 @@ public class ListTransactionsAdapter extends
             holder.textValue.setText(mActivity.getString(string.id_d_assets, assetsNumber));
         }
 
+
         // Hide question mark if we know this tx is verified
         // (or we are in watch only mode and so have no SPV_SYNCRONIZATION to verify it with)
-        final boolean isSpvVerified = txItem.isSpent() ||
-                                      txItem.getTxType() == TYPE.OUT ||
-                                      !isSpvEnabled || (isSpvEnabled &&
-                                                        mSPV.isSPVVerified(txItem.getTxhash()));
+//        final boolean isSpvVerified = txItem.isSpent() ||
+//                                      txItem.getTxType() == TYPE.OUT ||
+//                                      !isSpvEnabled || (isSpvEnabled && mSPV.isSPVVerified(txItem.getTxhash()));
 
-        holder.spvUnconfirmed.setVisibility(isSpvVerified ? View.GONE : View.VISIBLE);
+        // holder.spvUnconfirmed.setVisibility(isSpvVerified ? View.GONE : View.VISIBLE);
+
+        holder.spvUnconfirmed.setVisibility(View.GONE);
         holder.textWhen.setTextColor(ContextCompat.getColor(mActivity, color.tertiaryTextColor));
         holder.textWhen.setText(txItem.getLocalizedDate(DateFormat.MEDIUM));
 

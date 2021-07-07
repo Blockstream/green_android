@@ -216,20 +216,20 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mMemoTitle.setFocusableInTouchMode(true);
 
         // SPV
-        final SharedPreferences preferences = getSharedPreferences(getNetwork().getNetwork(), MODE_PRIVATE);
-        final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
-        final boolean isSpvVerified = mTxItem.isSpent() ||
-                                      mTxItem.getTxType() == TransactionData.TYPE.OUT ||
-                                      !isSpvEnabled || (isSpvEnabled && Bridge.INSTANCE.getSpv().isSPVVerified(
-                                                            mTxItem.getTxhash()));
+//        final SharedPreferences preferences = getSharedPreferences(getNetwork().getNetwork(), MODE_PRIVATE);
+//        final boolean isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
+//        final boolean isSpvVerified = mTxItem.isSpent() ||
+//                                      mTxItem.getTxType() == TransactionData.TYPE.OUT ||
+//                                      !isSpvEnabled || (isSpvEnabled && Bridge.INSTANCE.getSpv().isSPVVerified(mTxItem.getTxhash()));
+//
+//        if (!isSpvVerified) {
+//            mStatusSPVUnverified.setVisibility(View.VISIBLE);
+//            mStatusSPVUnverified.setText(String.format("⚠️ %s", getString(R.string.id_spv_unverified)));
+//        } else {
+//            mStatusSPVUnverified.setVisibility(View.GONE);
+//        }
 
-        if (!isSpvVerified) {
-            mStatusSPVUnverified.setVisibility(View.VISIBLE);
-            mStatusSPVUnverified.setText(String.format("⚠️ %s", getString(R.string.id_spv_unverified)));
-        } else {
-            mStatusSPVUnverified.setVisibility(View.GONE);
-        }
-
+        mStatusSPVUnverified.setVisibility(View.GONE);
     }
 
     private void showFeeInfo(final long fee, final long vSize, final long feeRate) {

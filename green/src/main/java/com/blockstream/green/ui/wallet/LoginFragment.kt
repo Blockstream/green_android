@@ -82,9 +82,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
                     val intent = Intent(requireContext(), TabbedMainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
-
-                    // Start v3 SPV
-                    Bridge.startSpvServiceIfNeeded(requireContext())
                 }
             } else {
                 // maybe show the ui?

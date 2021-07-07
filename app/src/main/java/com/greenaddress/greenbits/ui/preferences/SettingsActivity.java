@@ -18,13 +18,7 @@ public class SettingsActivity extends GaPreferenceActivity {
         if(savedInstanceState == null) {
             try {
                 if (getIntent().hasExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT)) {
-                    final String preference = getIntent().getStringExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT);
-
-                    if (preference.equals(SPVPreferenceFragment.class.getName()))
-                        fragment = new SPVPreferenceFragment();
-                    else
-                        fragment = new GeneralPreferenceFragment();
-
+                    fragment = new GeneralPreferenceFragment();
                 } else {
                     // Moved from TabbedMainActivity
                     if (getSession().isTwoFAReset()){

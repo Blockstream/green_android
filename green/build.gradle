@@ -10,41 +10,6 @@ plugins {
 }
 
 android {
-    // BitcoinJ excludes
-    packagingOptions {
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/INDEX.LIST'
-        exclude 'lib/x86_64/darwin/libscrypt.dylib'
-        exclude 'org/bitcoinj/crypto/mnemonic/wordlist/english.txt'
-        exclude 'org/bitcoinj/crypto/cacerts'
-        exclude 'org/codehaus/jackson/impl/VERSION.txt'
-        exclude 'org/codehaus/jackson/map/VERSION.txt'
-        exclude 'org/fusesource/leveldbjni/version.txt'
-        exclude 'org/h2/util/data.zip'
-        exclude 'META-INF/native/linux32/libleveldbjni.so'
-        exclude 'META-INF/native/linux64/libleveldbjni.so'
-        exclude 'META-INF/native/osx/libleveldbjni.jnilib'
-        exclude 'META-INF/native/windows32/leveldbjni.dll'
-        exclude 'META-INF/native/windows64/leveldbjni.dll'
-        exclude 'META-INF/services/java.sql.Driver'
-        exclude 'com/google/thirdparty/publicsuffix/PublicSuffixPatterns.gwt.xml'
-        exclude 'com/google/thirdparty/publicsuffix/PublicSuffixType.gwt.xml'
-        exclude 'com/mysql/jdbc/Charsets.properties'
-        exclude 'com/mysql/jdbc/LocalizedErrorMessages.properties'
-        exclude 'com/mysql/jdbc/TimeZoneMapping.properties'
-        exclude 'com/mysql/jdbc/configs/3-0-Compat.properties'
-        exclude 'com/mysql/jdbc/configs/5-0-Compat.properties'
-        exclude 'com/mysql/jdbc/configs/clusterBase.properties'
-        exclude 'com/mysql/jdbc/configs/coldFusion.properties'
-        exclude 'com/mysql/jdbc/configs/fullDebug.properties'
-        exclude 'com/mysql/jdbc/configs/maxPerformance.properties'
-        exclude 'com/mysql/jdbc/configs/solarisMaxPerformance.properties'
-    }
-
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 

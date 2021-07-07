@@ -19,9 +19,6 @@ import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
-
-import org.bitcoinj.core.VarInt;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
-
 import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
 
 

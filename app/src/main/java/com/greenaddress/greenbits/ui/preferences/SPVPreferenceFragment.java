@@ -17,7 +17,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.common.util.concurrent.Futures;
 import com.greenaddress.Bridge;
-import com.greenaddress.greenbits.spv.SPV;
 import com.greenaddress.greenbits.ui.CB;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.ScanForResultActivity;
@@ -44,7 +43,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     private Preference mScanSPV;
     private CheckBoxPreference mSPVEnabled;
     private CheckBoxPreference mSPVSyncOnMobile;
-    private SPV mSpv;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
@@ -60,7 +58,6 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
         mSPVEnabled.setSingleLineTitle(false);
         mSPVSyncOnMobile.setSingleLineTitle(false);
-        mSpv = Bridge.INSTANCE.getSpv();
         final boolean isSpvEnabled = cfg().getBoolean(PrefKeys.SPV_ENABLED, false);
 
         if (getSession().isWatchOnly()) {
@@ -108,18 +105,18 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     private void setTrustedPeers(final String peers) {
         final boolean setTextValue = false;
         setTrustedPeersPreference(peers, setTextValue);
-        mSpv.setSPVTrustedPeersAsync(peers);
+//        mSpv.setSPVTrustedPeersAsync(peers);
     }
 
     private void runOnService(final Runnable runnable) {
-        Futures.addCallback(mSpv.onServiceAttached, new CB.Op<Void>() {
-            @Override
-            public void onSuccess(final Void result) {
-                runnable.run();
-            }
-        });
+//        Futures.addCallback(mSpv.onServiceAttached, new CB.Op<Void>() {
+//            @Override
+//            public void onSuccess(final Void result) {
+//                runnable.run();
+//            }
+//        });
         try {
-            mSpv.startService(getActivity());
+//            mSpv.startService(getActivity());
         } catch (final Exception e) {
             e.printStackTrace();
             Toast.makeText(getContext(), e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -128,7 +125,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
     private boolean onSPVEnabledChanged(final Boolean newValue) {
         mTrustedPeer.setEnabled(newValue);
-        mSpv.setSPVEnabledAsync(newValue);
+//        mSpv.setSPVEnabledAsync(newValue);
         mSPVSyncOnMobile.setEnabled(newValue);
         mScanSPV.setEnabled(newValue);
         final String network = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(
@@ -141,7 +138,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
 
         if (!newValue) {
             mSPVSyncOnMobile.setChecked(false);
-            mSpv.setSPVSyncOnMobileEnabledAsync(false);
+//            mSpv.setSPVSyncOnMobileEnabledAsync(false);
         } else if ((torEnabled || proxyEnabled) && peers.isEmpty()) {
             if (getActivity() == null) {
                 return true;
@@ -161,7 +158,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     }
 
     private boolean onSPVSyncOnMobileChanged(final Boolean newValue) {
-        mSpv.setSPVSyncOnMobileEnabledAsync(newValue);
+//        mSpv.setSPVSyncOnMobileEnabledAsync(newValue);
         return true;
     }
 
@@ -247,7 +244,7 @@ public class SPVPreferenceFragment extends GAPreferenceFragment
     public boolean onPreferenceClick(final Preference preference) {
         if (preference == mResetSPV) {
             UI.toast(getActivity(), R.string.id_spv_reset_and_restarted, Toast.LENGTH_LONG);
-            runOnService(() -> { mSpv.resetSPVAsync(); });
+            // runOnService(() -> { mSpv.resetSPVAsync(); });
         } else if (preference == mScanSPV) {
             onScanClicked();
         }

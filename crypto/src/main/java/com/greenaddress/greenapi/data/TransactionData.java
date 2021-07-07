@@ -10,8 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import org.bitcoinj.core.Sha256Hash;
-
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -78,11 +76,6 @@ public class TransactionData extends JSONData implements Serializable {
         default:
             return TYPE.OUT;
         }
-    }
-
-    @JsonIgnore
-    public Sha256Hash getTxhashAsSha256Hash() {
-        return txhash == null ? null : Sha256Hash.wrap(txhash);
     }
 
     @JsonIgnore

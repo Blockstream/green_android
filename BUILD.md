@@ -71,29 +71,6 @@ You can speed up builds by limiting the tasks which run. Use:
 
 To see a list of available tasks.
 
-#### Rebuild the checkpoints (optional)
-
-Checkpoint files reduce the amount of data that SPV has to download. The
-checkpoint data is rebuilt periodically but you may wish to update it if
-you will be making and testing changes.
-
-To rebuild, start both MAINNET and TESTNET instances of bitcoind on
-localhost. Make sure they are fully synchronized and have finished
-booting (verifying blocks, etc).
-
-On MAINNET:
-
-`./gradlew --project-dir=bitcoinj/tools buildMainnetCheckpoints && mv bitcoinj/tools/checkpoints app/src/main/assets/production/checkpoints`
-
-
-On TESTNET:
-
-`./gradlew --project-dir=bitcoinj/tools buildTestnetCheckpoints && mv bitcoinj/tools/checkpoints-testnet app/src/main/assets/btctestnet/checkpoints`
-
-Or to build both at once, run:
-
-`./buildCheckpoints.sh`
-
 #### Rebuilding with docker (optional)
 
 If you have docker configured and want to build the app in release mode

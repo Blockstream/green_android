@@ -58,8 +58,6 @@ public abstract class LoginActivity extends GaActivity {
         // Uncomment to test slow login post processing
         // android.os.SystemClock.sleep(10000);
         Log.d(TAG, "Success LOGIN callback onPostLogin" );
-
-        Bridge.INSTANCE.startSpvServiceIfNeeded(this);
     }
 
     public void connect(@Nullable HWWallet hwWallet) throws Exception {

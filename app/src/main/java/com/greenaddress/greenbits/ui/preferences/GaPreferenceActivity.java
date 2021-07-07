@@ -40,8 +40,7 @@ public abstract class GaPreferenceActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(final String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName) ||
                GAPreferenceFragment.class.getName().equals(fragmentName) ||
-               GeneralPreferenceFragment.class.getName().equals(fragmentName) ||
-               SPVPreferenceFragment.class.getName().equals(fragmentName);
+               GeneralPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     @Override

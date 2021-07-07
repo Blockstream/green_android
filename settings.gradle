@@ -1,4 +1,4 @@
 include ':crypto'
 include ':hardware'
 include ':green'
-include ':app', ':bitcoinj:core', ':bitcoinj:tools'
+include ':app'

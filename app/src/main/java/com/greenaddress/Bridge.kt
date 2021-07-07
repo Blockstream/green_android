@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HardwareQATester
 import com.greenaddress.greenapi.Session
-import com.greenaddress.greenbits.spv.SPV
 import com.greenaddress.greenbits.ui.UI
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
@@ -38,8 +37,6 @@ object Bridge {
 
     var versionName = "0.0.0"
         private set
-
-    val spv = SPV()
 
     var hardwareQATester : HardwareQATester? = null
 
@@ -245,24 +242,6 @@ object Bridge {
     fun getCurrentNetwork(context: Context) = BridgeJava.getCurrentNetwork(context)
 
     fun createTwoFactorResolver(context: Context): TwoFactorResolver? = createTwoFactorResolverFn?.invoke(context)
-
-    fun startSpvServiceIfNeeded(context: Context){
-        // check and start spv if enabled
-        // setup data observers
-        val networkData = getCurrentNetworkData(context)
-        val preferences: SharedPreferences = context.getSharedPreferences(networkData.network, Context.MODE_PRIVATE)
-
-        // check and start spv if enabled
-        val isSpvEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false)
-        if (!Session.getSession().isWatchOnly && isSpvEnabled) {
-            try {
-                spv.startService(context)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
-            }
-        }
-    }
 
     private val objectMapper = ObjectMapper()
     // This is needed for all GDK calls that returns a JSON

@@ -43,16 +43,6 @@
 -dontwarn sun.nio.**
 -dontwarn sun.misc.**
 -dontwarn okio.**
--dontwarn org.bitcoinj.store.**
--dontwarn com.mysql.**
--dontwarn org.h2.**
--dontwarn org.postgresql.**
--dontwarn org.jboss.**
--dontwarn org.eclipse.**
--dontwarn org.apache.**
--dontwarn org.w3c.**
--dontwarn com.ibm.**
--dontwarn com.sun.**
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
 

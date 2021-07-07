@@ -70,16 +70,6 @@
 -dontwarn sun.nio.**
 -dontwarn sun.misc.**
 -dontwarn okio.**
--dontwarn org.bitcoinj.store.**
--dontwarn com.mysql.**
--dontwarn org.h2.**
--dontwarn org.postgresql.**
--dontwarn org.jboss.**
--dontwarn org.eclipse.**
--dontwarn org.apache.**
--dontwarn org.w3c.**
--dontwarn com.ibm.**
--dontwarn com.sun.**
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
 
@@ -87,11 +77,6 @@
 -keepattributes SourceFile,LineNumberTable
 
 -keep class mehdi.sakout.aboutpage.** {*;}
--keep class com.google.common.collect.BiMap {*;}
--keep class com.google.common.collect.ImmutableList {*;}
--keep class com.google.common.collect.ImmutableMap {*;}
--keep class com.google.common.collect.Lists {*;}
--keep class com.google.common.collect.Maps {*;}
 -keep class com.blockstream.libwally.** {*;}
 -keep class com.blockstream.libgreenaddress.** {*;}
 -keep class com.greenaddress.greenapi.data.** {*;}

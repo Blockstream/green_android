@@ -67,7 +67,6 @@ build_debug:
 #####################################
 # Test
 
-# When bitcoinj is removed, we should do - ./gradlew test
 unit_tests:
   image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
   stage: test
@@ -77,8 +76,7 @@ unit_tests:
   script:
     - cd $CI_PROJECT_DIR
     - apt-get update && apt-get install -y jq
-    - ./gradlew green:test
-    - ./gradlew hardware:test
+    - ./gradlew test
 
 #####################################
 # Sign builds

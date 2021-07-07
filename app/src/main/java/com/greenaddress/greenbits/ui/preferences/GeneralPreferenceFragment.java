@@ -78,7 +78,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
     private Preference mSweepPref;
     private ListPreference mTimeoutPref;
     private PreferenceCategory mAccountTitle;
-    private Preference mSPV;
     private NetworkData mNetworkData;
     private Disposable mUpdateDisposable;
 
@@ -289,15 +288,6 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         findPreference("network_monitor").setVisible(false);
         findPreference("category_advanced").setVisible(!isElectrum);
 
-        // SPV_SYNCRONIZATION Syncronization Submenu
-        mSPV = findPreference(PrefKeys.SPV_SYNCRONIZATION);
-        mSPV.setVisible(!isLiquid && !isElectrum);
-        mSPV.setOnPreferenceClickListener(preference -> {
-            final Intent intent = new Intent(getActivity(), SettingsActivity.class);
-            intent.putExtra( PreferenceActivity.EXTRA_SHOW_FRAGMENT, SPVPreferenceFragment.class.getName() );
-            startActivity(intent);
-            return false;
-        });
 
         // sweep from paper wallet
         mSweepPref = find(PrefKeys.SWEEP);

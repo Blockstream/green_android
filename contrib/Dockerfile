@@ -4,4 +4,4 @@ RUN /deps.sh && rm /deps.sh
 VOLUME /ga
 ENV JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64
 ENV ANDROID_HOME=/opt
-CMD cd /ga/app && ./prepare_fdroid.sh && cd /ga && ./gradlew --project-dir=bitcoinj/tools build && ./gradlew assembleRelease
+CMD cd /ga/app && ./prepare_fdroid.sh && cd /ga && ./gradlew assembleRelease

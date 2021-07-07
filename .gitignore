@@ -21,9 +21,5 @@ app/gdk
 *.so
 GreenBits.iml
 app/app.iml
-bitcoinj/tools/checkpoints.txt
-bitcoinj/tools/checkpoints-testnet.txt
-bitcoinj/tools/checkpoints-testnet
-bitcoinj/tools/checkpoints
 crypto/src/main/java/com/blockstream/libgreenaddress/GDK.java
 crypto/src/main/java/com/blockstream/libwally/Wally.java

@@ -38,8 +38,6 @@ import com.greenaddress.greenbits.ui.components.DividerItem;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 
-import org.bitcoinj.core.Sha256Hash;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -139,8 +137,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
         float offsetPx = getResources().getDimension(R.dimen.adapter_bar);
         final BottomOffsetDecoration bottomOffsetDecoration = new BottomOffsetDecoration((int) offsetPx);
         txView.addItemDecoration(bottomOffsetDecoration);
-        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems,
-                Bridge.INSTANCE.getSpv(), this);
+        mTransactionsAdapter = new ListTransactionsAdapter(getGaActivity(), getNetwork(),  mTxItems, this);
         txView.setAdapter(mTransactionsAdapter);
         txView.addOnScrollListener(recyclerViewOnScrollListener);
 

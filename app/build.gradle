@@ -57,7 +57,6 @@ configurations {
 
 dependencies {
     /**  --- Modules ---------------------------------------------------------------------------- */
-    implementation project(':bitcoinj:core')
     implementation project(':crypto')
     implementation project(':hardware')
     /** ----------------------------------------------------------------------------------------- */
@@ -78,6 +77,17 @@ dependencies {
     /**  --- Hilt Dependency Injection  --------------------------------------------------------- */
     implementation "com.google.dagger:hilt-android:2.35.1"
     annotationProcessor 'com.google.dagger:hilt-android-compiler:2.35.1'
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Logging ---------------------------------------------------------------------------- */
+    implementation 'org.slf4j:slf4j-android:1.7.30'
+    /** ----------------------------------------------------------------------------------------- */
+
+    /**  --- Guava ------------------------------------------------------------------------------ */
+    // Upgrade Guava to remove this package
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
+    implementation 'com.google.guava:guava:24.1-android'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version:'3.4.0'
     /** ----------------------------------------------------------------------------------------- */
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
