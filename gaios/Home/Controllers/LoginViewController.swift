@@ -49,6 +49,7 @@ class LoginViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.view
         menuButton.accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.menuBtn
         keyButton![0].accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.btn1
+        keyButton![1].accessibilityIdentifier = AccessibilityIdentifiers.LoginScreen.btn2
     }
 
     func setContent() {

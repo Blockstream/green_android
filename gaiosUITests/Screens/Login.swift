@@ -15,7 +15,17 @@ class Login: Screen {
     @discardableResult
     func digitPin() -> Self {
         for _ in 0..<6 {
-            tap(button: AccessibilityIdentifiers.SetPinScreen.btn1)
+            tap(button: AccessibilityIdentifiers.LoginScreen.btn1)
+            sleep(1)
+        }
+        
+        return self
+    }
+    
+    @discardableResult
+    func digitPin2() -> Self {
+        for _ in 0..<6 {
+            tap(button: AccessibilityIdentifiers.LoginScreen.btn2)
             sleep(1)
         }
         

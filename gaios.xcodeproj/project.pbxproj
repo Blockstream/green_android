@@ -77,6 +77,8 @@
 		3451428526932B9300E8BE1B /* ReceiveBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428426932B9300E8BE1B /* ReceiveBtc.swift */; };
 		3451428726933C6E00E8BE1B /* SendBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428626933C6E00E8BE1B /* SendBtc.swift */; };
 		345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142882693445000E8BE1B /* SendBtcDetails.swift */; };
+		3452E6002696E2F4003F3FAA /* ChangePinUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */; };
+		3452E6022696E756003F3FAA /* ScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452E6012696E756003F3FAA /* ScreenLock.swift */; };
 		345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */; };
 		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
 		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
@@ -361,6 +363,8 @@
 		3451428426932B9300E8BE1B /* ReceiveBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveBtc.swift; sourceTree = "<group>"; };
 		3451428626933C6E00E8BE1B /* SendBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtc.swift; sourceTree = "<group>"; };
 		345142882693445000E8BE1B /* SendBtcDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetails.swift; sourceTree = "<group>"; };
+		3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePinUITests.swift; sourceTree = "<group>"; };
+		3452E6012696E756003F3FAA /* ScreenLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLock.swift; sourceTree = "<group>"; };
 		345E1A81261EE6CD00A1D934 /* DrawerAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerAnimator.swift; sourceTree = "<group>"; };
 		345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerPresentationController.swift; sourceTree = "<group>"; };
 		345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DrawerNetworkSelection.storyboard; sourceTree = "<group>"; };
@@ -681,6 +685,7 @@
 				3451428626933C6E00E8BE1B /* SendBtc.swift */,
 				345142882693445000E8BE1B /* SendBtcDetails.swift */,
 				34767E0D269439F4005F938B /* SendBtcConfirmation.swift */,
+				3452E6012696E756003F3FAA /* ScreenLock.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -701,6 +706,7 @@
 				345142822693154100E8BE1B /* XCTestBase.swift */,
 				34347662268228C600D7AD43 /* AddWalletUITests.swift */,
 				345142802693148B00E8BE1B /* TransactionsUITests.swift */,
+				3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */,
 			);
 			path = Suite;
 			sourceTree = "<group>";
@@ -1799,6 +1805,7 @@
 				3434766B26822AA000D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
 				34C978A5268DAF740061264D /* Settings.swift in Sources */,
 				344FE34B2684C77900C087A5 /* WalletName.swift in Sources */,
+				3452E6002696E2F4003F3FAA /* ChangePinUITests.swift in Sources */,
 				3434766E268233C000D7AD43 /* Landing.swift in Sources */,
 				342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */,
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
@@ -1812,6 +1819,7 @@
 				34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */,
 				34767E0E269439F4005F938B /* SendBtcConfirmation.swift in Sources */,
 				344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */,
+				3452E6022696E756003F3FAA /* ScreenLock.swift in Sources */,
 				34C978A8268DC14D0061264D /* Extensions.swift in Sources */,
 				345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */,
 				3451428526932B9300E8BE1B /* ReceiveBtc.swift in Sources */,

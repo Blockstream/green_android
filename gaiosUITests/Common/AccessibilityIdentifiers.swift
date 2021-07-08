@@ -68,7 +68,8 @@ struct AccessibilityIdentifiers {
     
     struct SetPinScreen {
         static let view = "view_set_pin"
-        static let btn1 = "btn_1"
+        static let btn1 = "btn_1_set_pin"
+        static let btn2 = "btn_2_set_pin"
         static let nextBtn = "next_btn"
     }
     
@@ -91,7 +92,8 @@ struct AccessibilityIdentifiers {
     struct LoginScreen {
         static let view = "view_login"
         static let menuBtn = "menu_btn"
-        static let btn1 = "btn_1"
+        static let btn1 = "btn_1_login"
+        static let btn2 = "btn_2_login"
         static let nextBtn = "next_btn"
     }
     
@@ -158,5 +160,10 @@ struct AccessibilityIdentifiers {
     struct SendBtcConfirmationScreen {
         static let view = "view_send_btc_confirmation"
         static let slidingBtn = "sliding_btn"
+    }
+    
+    struct ScreenLockScreen {
+        static let view = "view_screen_lock"
+        static let pinLbl = "pin_lbl"
     }
 }

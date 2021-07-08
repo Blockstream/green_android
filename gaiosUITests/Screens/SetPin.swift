@@ -17,6 +17,16 @@ class SetPin: Screen {
     }
     
     @discardableResult
+    func setPin2() -> Self {
+        for _ in 0..<6 {
+            tap(button: AccessibilityIdentifiers.SetPinScreen.btn2)
+            sleep(1)
+        }
+        
+        return self
+    }
+    
+    @discardableResult
     func tapNext() -> Self {
         tap(button: AccessibilityIdentifiers.SetPinScreen.nextBtn)
         return self

@@ -22,6 +22,9 @@ class ScreenLockViewController: UIViewController {
             content.bioAuthLabel.text = NSLocalizedString("id_touchface_id_not_available", comment: "")
             content.bioSwitch.isEnabled = false
         }
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.ScreenLockScreen.view
+        content.pinLabel.accessibilityIdentifier = AccessibilityIdentifiers.ScreenLockScreen.pinLbl
     }
 
     override func viewWillAppear(_ animated: Bool) {

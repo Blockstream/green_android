@@ -36,6 +36,7 @@ class SetPinViewController: UIViewController {
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.view
         keyButton![0].accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.btn1
+        keyButton![1].accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.btn2
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.SetPinScreen.nextBtn
     }
 
