@@ -21,6 +21,10 @@
             name="clickListener"
             type="android.view.View.OnClickListener" />
 
+        <variable
+            name="shuffleListener"
+            type="android.view.View.OnClickListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -254,6 +258,20 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/button8"
             app:layout_constraintTop_toTopOf="@+id/button8" />
+
+        <Button
+            android:id="@+id/buttonDelete2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:enabled="@{keysEnabled}"
+            android:onClick="@{shuffleListener}"
+            app:icon="@drawable/ic_autorenew"
+            app:iconGravity="textStart"
+            app:layout_constraintBottom_toBottomOf="@+id/button0"
+            app:layout_constraintEnd_toEndOf="@+id/button7"
+            app:layout_constraintStart_toStartOf="@+id/button7"
+            app:layout_constraintTop_toTopOf="@+id/button0" />
 
         <Button
             android:id="@+id/button0"
