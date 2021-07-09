@@ -149,46 +149,4 @@ class AddWalletUITests: XCTestBase {
         Transactions()
             .pause(2)
     }
-
-    func testRenameWallet() {
-        // test fails when I have 7 or more wallets
-        let walletName = Constants.walletName
-        let walletNameRenamed = Constants.walletNameRenamed
-        if !Home().existsWallet(named: walletName) {
-            restoreWallet()
-
-            Transactions()
-                .pause(1)
-                .tapSettings()
-
-            Settings()
-                .pause(1)
-                .tapLogOut()
-        }
-
-        Home()
-            .selectWallet(named: walletName)
-
-        Login()
-            .pause(1)
-            .tapMenu()
-            .pause(1)
-
-        PopoverMenuWallet()
-            .pause(1)
-            .tapRenameWallet()
-            .pause(1)
-
-        DialogWalletRename()
-            .pause(1)
-            .typeNewName(name: walletNameRenamed)
-            .pause(1)
-            .tapSave()
-
-        Login()
-            .back()
-            .pause(1)
-
-        XCTAssert(Home().existsWallet(named: walletNameRenamed))
-    }
 }

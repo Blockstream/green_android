@@ -43,6 +43,11 @@ class Screen {
         return self
     }
     
+    func swipeUp() -> Self {
+        rootElement.tables.cells.element(boundBy: 0).swipeUp()
+        return self
+    }
+
     @discardableResult
     func existsWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Bool {
         let walletExistance = NSPredicate(format: "label CONTAINS '\(name)'")

@@ -37,6 +37,7 @@
 		2034CE1B25B995A200250E23 /* CsvViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1A25B995A200250E23 /* CsvViewController.swift */; };
 		2034CE1E25B99CF300250E23 /* CsvTimeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */; };
 		20516D042693969B00BA1F4C /* DialogWalletRename.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20516D032693969B00BA1F4C /* DialogWalletRename.swift */; };
+		20516D062698A2C600BA1F4C /* EditWalletUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20516D052698A2C600BA1F4C /* EditWalletUITests.swift */; };
 		20E15EE22625AC6300DB8F43 /* MnemonicAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20E15EE12625AC6300DB8F43 /* MnemonicAuthViewController.swift */; };
 		3403BDA72630281600118C64 /* AlertCardCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3403BDA52630281600118C64 /* AlertCardCell.swift */; };
 		3403BDA82630281600118C64 /* AlertCardCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3403BDA62630281600118C64 /* AlertCardCell.xib */; };
@@ -320,6 +321,7 @@
 		2034CE1A25B995A200250E23 /* CsvViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvViewController.swift; sourceTree = "<group>"; };
 		2034CE1D25B99CF300250E23 /* CsvTimeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CsvTimeCell.swift; sourceTree = "<group>"; };
 		20516D032693969B00BA1F4C /* DialogWalletRename.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletRename.swift; sourceTree = "<group>"; };
+		20516D052698A2C600BA1F4C /* EditWalletUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditWalletUITests.swift; sourceTree = "<group>"; };
 		206D7A37252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		206D7A38252F3108002429BB /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		207C121723303BFC002F80FC /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -710,6 +712,7 @@
 				34347662268228C600D7AD43 /* AddWalletUITests.swift */,
 				345142802693148B00E8BE1B /* TransactionsUITests.swift */,
 				3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */,
+				20516D052698A2C600BA1F4C /* EditWalletUITests.swift */,
 			);
 			path = Suite;
 			sourceTree = "<group>";
@@ -1812,6 +1815,7 @@
 				3434766E268233C000D7AD43 /* Landing.swift in Sources */,
 				342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */,
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
+				20516D062698A2C600BA1F4C /* EditWalletUITests.swift in Sources */,
 				3451428726933C6E00E8BE1B /* SendBtc.swift in Sources */,
 				344698EB268A215800387BA7 /* ChooseSecurity.swift in Sources */,
 				344FE355268512CE00C087A5 /* Transactions.swift in Sources */,
