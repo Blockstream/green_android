@@ -16,6 +16,7 @@ import com.blockstream.green.utils.EncryptedData
 import com.blockstream.libwally.Wally
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import java.security.KeyStore
+import java.security.UnrecoverableKeyException
 
 class Migrator(
     val context: Context,
@@ -234,7 +235,13 @@ class Migrator(
     private fun getV3KeyName(network: String): String {
         // Check if the key is in the Keystore
         val key = "NativeAndroidAuth_$network"
-        if(keyStore.getKey(key, null) != null){
+        try {
+            if(keyStore.getKey(key, null) != null){
+                return key
+            }
+        }catch (e: UnrecoverableKeyException){
+            // Key is invalidated, let LoginFragment handle it
+            e.printStackTrace()
             return key
         }
 
