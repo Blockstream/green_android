@@ -57,9 +57,12 @@ class Registry: Codable {
     func image(for key: String?) -> UIImage? {
         let network = getGdkNetwork(getNetwork())
         let id = "btc" == key ? network.policyAsset : key
-        let icon = icons.filter { $0.key == id }.first
-        if icon != nil {
-            return UIImage(base64: icon!.value)
+        if let path = Bundle.main.path(forResource: "asset_\(id ?? "")", ofType: "png") {
+            // read icon from file
+            return UIImage(contentsOfFile: path)
+        } else if let icon = icons.filter({ $0.key == id }).first {
+            // read icon from memory
+            return UIImage(base64: icon.value)
         }
         return UIImage(named: "default_asset_icon")
     }
@@ -105,13 +108,8 @@ class Registry: Codable {
 
     func refresh(refresh: Bool = true) {
 
-        iconsTask = fetchIcons(refresh: refresh)
+        iconsTask = fetchIcons(refresh: false)
         assetsTask = fetchAssets(refresh: refresh)
-
-        if refresh && !iconsTask {
-            //remote refresh failed for icons, than try refresh from cache
-            fetchIcons(refresh: false)
-        }
 
         if refresh && !assetsTask {
             //remote refresh failed for assetes, than try refresh from cache
