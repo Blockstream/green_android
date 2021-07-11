@@ -178,9 +178,12 @@ class TransactionsController: UITableViewController {
     }
 
     func onNewBlock(_ notification: Notification) {
-        self.loadTransactions().done {
-            self.showTransactions()
-        }.catch { _ in }
+        // update txs only if pending txs > 0
+        if txs.first?.list.filter({ $0.blockHeight == 0 }).first != nil {
+            self.loadTransactions().done {
+                self.showTransactions()
+            }.catch { _ in }
+        }
     }
 
     func onAssetsUpdated(_ notification: Notification) {
