@@ -3,17 +3,12 @@ package com.blockstream.green.ui.twofactor
 
 import android.content.Context
 import android.content.DialogInterface
-import android.text.InputType
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doAfterTextChanged
 import com.blockstream.gdk.TwoFactorResolver
 import com.blockstream.green.R
-import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.TwofactorCodeDialogBinding
-import com.blockstream.green.databinding.TwofactorCodeDialogBindingImpl
+import com.blockstream.green.views.GreenPinViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -70,10 +65,9 @@ class DialogTwoFactorResolver(val context: Context, val method: String? = null) 
             dialogBinding.icon.setImageResource(getIconForMethod(method))
             dialogBinding.title = context.getString(R.string.id_please_provide_your_1s_code, method)
             dialogBinding.hint = context.getString(R.string.id_code)
-            dialogBinding.editText.inputType = InputType.TYPE_CLASS_NUMBER
+
             attemptsRemaining?.let {
-                dialogBinding.textInputLayout.helperText =
-                    context.getString(R.string.id_attempts_remaining_d, it)
+                dialogBinding.attemptsRemaining = context.getString(R.string.id_attempts_remaining_d, it)
             }
 
             val dialog = MaterialAlertDialogBuilder(context)
@@ -87,16 +81,16 @@ class DialogTwoFactorResolver(val context: Context, val method: String? = null) 
                 }
                 .show()
 
-            // Auto proceed on 6 digits input
-            dialogBinding.editText.doAfterTextChanged {
-                if (it?.length == 6) {
-                    emitter.onSuccess(dialogBinding.text ?: "")
+            dialogBinding.pinView.listener = object : GreenPinViewListener {
+                override fun onPin(pin: String) {
+                    emitter.onSuccess(pin)
                     dialog.dismiss()
                 }
-            }
 
-            // set focus to the input field
-            dialogBinding.editText.requestFocus()
+                override fun onPinChange(pinLength: Int, intermediatePin: String?) {}
+                override fun onPinNotVerified() {}
+                override fun onChangeMode(isVerify: Boolean) {}
+            }
 
         }.subscribeOn(AndroidSchedulers.mainThread())
 

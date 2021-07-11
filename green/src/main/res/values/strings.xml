@@ -884,4 +884,5 @@
   <string name="id_enable_2fa_authentication">Enable 2FA to protect your wallet from unauthorized transactions or changes to critical security settings</string>
   <string name="id_set_2fa_threshold">Set 2FA threshold</string>
   <string name="id_advanced">Advanced</string>
+  <string name="id_invalid_clipboard_contents">Invalid clipboard contents</string>
 </resources>

@@ -8,10 +8,14 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.text.isDigitsOnly
 import androidx.core.view.isVisible
 import com.blockstream.green.R
 import com.blockstream.green.databinding.GreenPinViewBinding
+import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.utils.shake
+import com.google.android.material.snackbar.Snackbar
 
 class GreenPinView @JvmOverloads constructor(
     context: Context,
@@ -25,6 +29,7 @@ class GreenPinView @JvmOverloads constructor(
     private var pin = ""
     private var pinToBeVerified = ""
 
+    val showDigits : Boolean
     var isVerifyMode = false
     var listener: GreenPinViewListener? = null
 
@@ -35,6 +40,8 @@ class GreenPinView @JvmOverloads constructor(
         binding.clickListener = OnClickListener { view ->
             if (view.id == R.id.buttonDelete) {
                 deletePinDigit(false)
+            } else if (view.id == R.id.buttonPaste) {
+                paste()
             } else {
                 setPinDigit((view as Button).text.toString())
             }
@@ -44,30 +51,53 @@ class GreenPinView @JvmOverloads constructor(
             deletePinDigit(true)
             true
         }
+
+        val attributes =
+            context.obtainStyledAttributes(attrs, R.styleable.GreenPinView)
+
+        binding.withPaste = attributes.getBoolean(R.styleable.GreenPinView_withPaste, false)
+        showDigits = attributes.getBoolean(R.styleable.GreenPinView_showDigits, false).also {
+            binding.showDigits = it
+        }
+
+        attributes.recycle()
+
+        pinUpdated()
     }
 
-    private fun shakeIndicator(){
+    private fun shakeIndicator() {
         binding.indicatorDots.shake()
     }
 
     fun reset(withShakeAnimation: Boolean) {
         deletePinDigit(true)
-        if(withShakeAnimation){
+        if (withShakeAnimation) {
             shakeIndicator()
         }
     }
 
-    private fun deletePinDigit(deleteAllDigis: Boolean){
-        if(pin.isNotEmpty()){
-            if(deleteAllDigis){
+    private fun paste() {
+        getClipboard(context)?.let{
+            if(it.length == 6 && it.isDigitsOnly()){
+                pin = it
+                validatePin()
+            }else{
+                Snackbar.make(this, R.string.id_invalid_clipboard_contents, Snackbar.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun deletePinDigit(deleteAllDigis: Boolean) {
+        if (pin.isNotEmpty()) {
+            if (deleteAllDigis) {
                 pin = ""
                 deletePinDigit(false) // call recursive to clear the verify mode
-            }else{
+            } else {
                 pin = pin.substring(0, pin.length - 1)
             }
 
             listener?.onPinChange(pin.length, pin)
-        }else if(isVerifyMode){
+        } else if (isVerifyMode) {
             pinToBeVerified = ""
             listener?.onChangeMode(false)
         }
@@ -75,45 +105,56 @@ class GreenPinView @JvmOverloads constructor(
     }
 
     private fun setPinDigit(digit: String) {
-        if(pin.length < 6){
+        if (pin.length < 6) {
             pin += digit
 
-            if (pin.length == 6) {
-                if (isVerifyMode) {
-                    when {
-                        pinToBeVerified.isEmpty() -> {
-                            pinToBeVerified = pin
-                            pin = ""
-                            listener?.onChangeMode(true)
-                        }
-                        pin == pinToBeVerified -> {
-                            listener?.onPin(pin)
-                        }
-                        else -> {
-                            pin = ""
-                            pinToBeVerified = ""
-                            listener?.onPinNotVerified()
-                            listener?.onChangeMode(false)
-                            shakeIndicator()
-                        }
-                    }
-                } else {
-                    listener?.onPin(pin)
-                }
-            } else {
-                listener?.onPinChange(pin.length, pin)
-            }
-
-            pinUpdated()
+            validatePin()
         }
     }
 
+    private fun validatePin(){
+        if (pin.length == 6) {
+            if (isVerifyMode) {
+                when {
+                    pinToBeVerified.isEmpty() -> {
+                        pinToBeVerified = pin
+                        pin = ""
+                        listener?.onChangeMode(true)
+                    }
+                    pin == pinToBeVerified -> {
+                        listener?.onPin(pin)
+                    }
+                    else -> {
+                        pin = ""
+                        pinToBeVerified = ""
+                        listener?.onPinNotVerified()
+                        listener?.onChangeMode(false)
+                        shakeIndicator()
+                    }
+                }
+            } else {
+                listener?.onPin(pin)
+            }
+        } else {
+            listener?.onPinChange(pin.length, pin)
+        }
+
+        pinUpdated()
+    }
+
     private fun pinUpdated() {
+
+        if(showDigits) {
+            // Create an array with space or the digit value
+            binding.pin =
+                (0 until 6).mapIndexed { index, _ -> pin.getOrElse(index) { ' ' }.toString() }
+                    .toTypedArray()
+        }
         binding.keysEnabled = pin.length < 6
         binding.deleteEnabled = pin.isNotEmpty() || pinToBeVerified.isNotEmpty()
         binding.pinLength = pin.length
     }
-    
+
     fun setError(text: String?) {
         binding.error.text = text
         binding.error.isVisible = !text.isNullOrBlank()

@@ -17,6 +17,10 @@
             name="hint"
             type="String" />
 
+        <variable
+            name="attemptsRemaining"
+            type="String" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,24 +49,30 @@
             app:layout_constraintTop_toTopOf="@+id/icon"
             tools:text="@string/id_please_provide_your_1s" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
+        <com.blockstream.green.views.GreenPinView
+            android:id="@+id/pinView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="@{hint}"
-            app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/icon">
+            app:layout_constraintTop_toBottomOf="@+id/icon"
+            app:showDigits="true"
+            app:withPaste="true" />
 
-            <com.blockstream.green.views.PlaceholderTextInputEditText
-                android:id="@+id/editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@={text}" />
-        </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            isVisible="@{attemptsRemaining != null}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@{attemptsRemaining}"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceSubtitle2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.666"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pinView"
+            tools:text="@string/id_please_provide_your_1s" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

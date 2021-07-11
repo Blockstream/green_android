@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 ### Added
 ### Changed
+- Replace 2FA codes text entry with Pin Pad
 ### Fixed
 - Fix Migrator crashing with UnrecoverableKeyException when checking key names
 
