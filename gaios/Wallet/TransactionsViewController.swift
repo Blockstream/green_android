@@ -300,7 +300,12 @@ class TransactionsController: UITableViewController {
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
-        when(resolved: self.loadWallet(), self.loadTransactions()).done { _ in
+        self.loadWallet()
+        .compactMap {
+            self.showWallet()
+        }.then {
+            self.loadTransactions()
+        }.done { _ in
             self.showTransactions()
         }.catch { err in
             print(err.localizedDescription)
@@ -338,7 +343,6 @@ class TransactionsController: UITableViewController {
             UserDefaults.standard.set(Int(wallet.pointer), forKey: self.pointerKey)
             UserDefaults.standard.synchronize()
             self.presentingWallet = wallet
-            self.showWallet()
         }
     }
 
