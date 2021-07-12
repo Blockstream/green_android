@@ -1,4 +1,9 @@
+stages:
+    - build
+    - test
+
 build_release_iphone:
+  stage: build
   tags:
     - osx
   script:
@@ -6,6 +11,7 @@ build_release_iphone:
     - ./tools/build.sh --update-cocoapods --iphone static
 
 build_tag_release_export:
+  stage: build
   when: manual
   artifacts:
     name: "green-ios-release-$CI_COMMIT_REF_NAME"
@@ -20,3 +26,21 @@ build_tag_release_export:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --build-gdk --sign-and-export --update-cocoapods --iphone static
 
+ui_tests:
+  stage: test
+  tags:
+    - osx
+  when: manual
+  needs: ["build_release_iphone"]
+  before_script:
+    - xcrun simctl boot "iPhone 11"
+    - xcrun simctl privacy "iPhone 11" grant all io.blockstream.green
+  script:
+    - cd $CI_PROJECT_DIR
+    - export LC_ALL=en_US.UTF-8
+    - export LANG=en_US.UTF-8
+    - ./tools/fetch_gdk_binaries.sh --simulator
+    - pod install
+    - fastlane ui_tests
+  after_script:
+    - xcrun simctl shutdown "iPhone 11"

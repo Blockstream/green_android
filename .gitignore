@@ -3,3 +3,7 @@ gdk
 gdk-iphone
 Pods
 gaios.xcworkspace
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
