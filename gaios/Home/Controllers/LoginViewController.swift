@@ -339,7 +339,6 @@ extension LoginViewController: DialogWalletNameViewControllerDelegate, DialogWal
         }
     }
     func didCancel() {
-        print("Cancel")
     }
 }
 

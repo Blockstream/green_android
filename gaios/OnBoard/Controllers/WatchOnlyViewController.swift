@@ -61,7 +61,6 @@ class WatchOnlyViewController: KeyboardViewController {
     }
 
     @objc func testnetSwitchChange(_ sender: UISwitch) {
-        print(sender.isOn)
     }
 
     override func viewWillAppear(_ animated: Bool) {

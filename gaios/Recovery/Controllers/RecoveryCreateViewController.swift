@@ -70,8 +70,6 @@ class RecoveryCreateViewController: UIViewController {
             formattedString.setFont(font: UIFont.systemFont(ofSize: 18), stringValue: String(format: "%d", real))
             arrayLabels[index % Constants.wordsPerPage].attributedText = formattedString
         }
-
-        print(mnemonic)
     }
 
     @IBAction func btnNext(_ sender: Any) {

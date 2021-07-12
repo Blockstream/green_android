@@ -182,7 +182,6 @@ extension WatchOnlyLoginViewController: DialogWalletNameViewControllerDelegate, 
         }
     }
     func didCancel() {
-        print("Cancel")
     }
 }
 
