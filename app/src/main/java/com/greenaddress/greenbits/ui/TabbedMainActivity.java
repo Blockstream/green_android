@@ -32,7 +32,6 @@ import com.greenaddress.greenbits.ui.accounts.SwitchWalletFragment;
 import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 import com.greenaddress.greenbits.ui.notifications.NotificationsActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-import com.greenaddress.greenbits.ui.preferences.SettingsActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.ui.transactions.MainFragment;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
@@ -174,7 +173,7 @@ public class TabbedMainActivity extends LoggedActivity  {
         try {
             final int subaccount = getActiveAccount();
             final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, text, subaccount);
-            final ObjectNode transactionFromUri = call.resolve(null, new HardwareCodeResolver(this));
+            final ObjectNode transactionFromUri = call.resolve(null, new HardwareCodeResolver(this), null);
             final String error = transactionFromUri.get("error").asText();
             if ("id_invalid_address".equals(error)) {
                 UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);

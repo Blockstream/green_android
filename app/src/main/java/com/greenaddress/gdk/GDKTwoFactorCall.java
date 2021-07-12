@@ -2,6 +2,8 @@ package com.greenaddress.gdk;
 
 import android.util.Log;
 
+import com.blockstream.gdk.HardwareWalletResolver;
+import com.blockstream.gdk.TwoFactorResolver;
 import com.blockstream.libgreenaddress.GDK;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -35,7 +37,7 @@ public class GDKTwoFactorCall {
      * @param codeResolver callback to input the code
      * @throws Exception
      */
-    public ObjectNode resolve(final MethodResolver methodResolver, final CodeResolver codeResolver) throws Exception {
+    public ObjectNode resolve(final MethodResolver methodResolver, final HardwareWalletResolver hardwareResolver, final TwoFactorResolver codeResolver) throws Exception {
         while (true) {
             updateStatus();
             switch (mStatus.getStatus()) {
@@ -58,13 +60,13 @@ public class GDKTwoFactorCall {
                     final String value;
                     if (mStatus.getDevice() != null && mStatus.getRequiredData() != null) {
                         try {
-                            value = codeResolver.requestDataFromDeviceV3(mStatus.getRequiredData()).blockingGet();
+                            value = hardwareResolver.requestDataFromDeviceV3(mStatus.getRequiredData()).blockingGet();
                         } catch (final Exception e) {
                             Log.d("RSV", "error " + mStatus);
                             throw new Exception(e.getMessage());
                         }
                     } else {
-                        value = codeResolver.code(mStatus.getMethod(), mStatus.getAttemptsRemaining()).get();
+                        value = codeResolver.getCode(mStatus.getMethod(), mStatus.getAttemptsRemaining()).blockingGet();
                     }
                     Log.d("RSV", "resolve_code input " + value);
                     if (value == null) {

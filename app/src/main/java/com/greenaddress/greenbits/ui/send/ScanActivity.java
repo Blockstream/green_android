@@ -395,7 +395,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                      .map((session) -> {
             final ObjectNode jsonResp = session.getReceiveAddress(subaccount).resolve(null,
                                                                                       new HardwareCodeResolver(
-                                                                                          this));
+                                                                                          this), null);
             return jsonResp.get("address").asText();
         })
                      .map((address) -> {
@@ -413,7 +413,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         })
                      .map((sweepData) -> {
             final GDKTwoFactorCall call = getSession().createTransactionRaw(null, sweepData);
-            final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
+            final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this), null);
             final String error = transactionRaw.get("error").asText();
             if (!error.isEmpty())
                 throw new Exception(error);
@@ -442,7 +442,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
                      .observeOn(Schedulers.computation())
                      .map((session) -> {
             final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
-            final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this));
+            final ObjectNode transactionRaw = call.resolve(null, new HardwareCodeResolver(this), null);
             if (!transactionRaw.has("addressees"))
                 throw new Exception("Missing field addressees");
             final String error = transactionRaw.get("error").asText();

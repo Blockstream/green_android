@@ -1,10 +1,7 @@
 package com.greenaddress.greenbits.ui.notifications;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -12,19 +9,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.greenaddress.gdk.GDKTwoFactorCall;
-import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
-import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
 
 
 public class MessagesActivity extends LoggedActivity
@@ -80,7 +73,7 @@ public class MessagesActivity extends LoggedActivity
                               .subscribeOn(Schedulers.computation())
                               .map((session) -> {
                     final GDKTwoFactorCall call = getSession().ackSystemMessage(mCurrentMessage);
-                    call.resolve(null, new HardwareCodeResolver(this));
+                    call.resolve(null, new HardwareCodeResolver(this), null);
                     return session;
                 }).observeOn(AndroidSchedulers.mainThread())
                               .subscribe((session) -> {

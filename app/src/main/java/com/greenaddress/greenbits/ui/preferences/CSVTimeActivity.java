@@ -10,15 +10,12 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.greenaddress.greenapi.data.SettingsData;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.components.RadioBoxAdapter;
-import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
-
-import java.util.Arrays;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -30,7 +27,6 @@ import io.reactivex.schedulers.Schedulers;
 public class CSVTimeActivity extends GaActivity {
 
     private PopupMethodResolver popupMethodResolver;
-    private PopupCodeResolver popupCodeResolver;
     private Disposable disposable;
     private RecyclerView recyclerView;
 
@@ -60,11 +56,10 @@ public class CSVTimeActivity extends GaActivity {
         final int csvTime = getNetwork().getCsvBuckets().get(selected);
         startLoading();
         popupMethodResolver = new PopupMethodResolver(CSVTimeActivity.this);
-        popupCodeResolver = new PopupCodeResolver(CSVTimeActivity.this);
         disposable = Observable.just(getSession())
                 .observeOn(Schedulers.computation())
                 .map((session) -> session.setCsvTime(csvTime))
-                .map((res) -> res.resolve(popupMethodResolver, popupCodeResolver))
+                .map((res) -> res.resolve(popupMethodResolver, null, Bridge.INSTANCE.createTwoFactorResolver(this)))
                 .map((res) -> getSession().refreshSettings())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(x -> {
@@ -85,8 +80,6 @@ public class CSVTimeActivity extends GaActivity {
             disposable.dispose();
         if (popupMethodResolver != null)
             popupMethodResolver.dismiss();
-        if (popupCodeResolver != null)
-            popupCodeResolver.dismiss();
     }
 
     @Override

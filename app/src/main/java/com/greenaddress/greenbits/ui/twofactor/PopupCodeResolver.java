@@ -17,6 +17,7 @@ import com.greenaddress.greenbits.ui.UI;
 import javax.annotation.Nullable;
 import io.reactivex.rxjava3.core.Single;
 
+@Deprecated
 public class PopupCodeResolver implements CodeResolver {
     private Activity activity;
     private MaterialDialog dialog;

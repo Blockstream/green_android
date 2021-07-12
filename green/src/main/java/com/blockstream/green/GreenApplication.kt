@@ -1,6 +1,7 @@
 package com.blockstream.green
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
@@ -37,6 +38,8 @@ import com.greenaddress.Bridge.navigateToLogin
 import com.greenaddress.greenapi.Registry
 import com.greenaddress.greenapi.Session
 import dagger.hilt.android.HiltAndroidApp
+import hu.akarnokd.rxjava3.bridge.RxJavaBridge
+import io.reactivex.Single
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -340,6 +343,10 @@ class GreenApplication : Application(){
                     hardwareCodeResolver = hardwareDataResolver
                 )
             }
+        }
+
+        Bridge.createTwoFactorResolverFn = { context: Context ->
+            DialogTwoFactorResolver(context)
         }
 
         Bridge.getHWWalletFn = { gaSession ->

@@ -46,7 +46,11 @@
     <color name="scan_result_view">#b0000000</color>
     <color name="scan_result_dots">#c099cc00</color>
 
+    <color name="brand_green">#ff00b45a</color>
+    <color name="brand_green_dark">#ff00832e</color>
+
     <color name="brand_background">#12161f</color>
+    <color name="brand_surface">#19222c</color>
     <color name="brand_surface_light">#273545</color>
     <color name="color_on_surface_divider">#22ffffff</color>
     <color name="color_on_surface_emphasis_very_low">#41ffffff</color>

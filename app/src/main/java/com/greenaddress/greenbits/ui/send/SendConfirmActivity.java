@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.HWDeviceData;
 import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.GaActivity;
@@ -30,7 +31,6 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.assets.AssetsAdapter;
 import com.greenaddress.greenbits.ui.components.CharInputFilter;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
-import com.greenaddress.greenbits.ui.twofactor.PopupCodeResolver;
 import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
@@ -51,7 +51,6 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     private Disposable sendDisposable;
 
     private PopupMethodResolver popupMethodResolver;
-    private PopupCodeResolver popupCodeResolver;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -65,7 +64,6 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         final String hwwJson = getIntent().getStringExtra("hww");
 
         popupMethodResolver = new PopupMethodResolver(this);
-        popupCodeResolver = new PopupCodeResolver(this);
 
         setTitle(isSweep ? R.string.id_sweep : R.string.id_send);
 
@@ -83,7 +81,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             // then this call will go to the server. So, we should do it in
             // the background and display a wait icon until it returns
             return getSession().createTransactionRaw(this, tx)
-            .resolve(null, new HardwareCodeResolver(this));
+            .resolve(null, new HardwareCodeResolver(this), Bridge.INSTANCE.createTwoFactorResolver(this));
         })
                           .observeOn(AndroidSchedulers.mainThread())
                           .subscribe((tx) -> {
@@ -172,8 +170,6 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             sendDisposable.dispose();
         if (popupMethodResolver != null)
             popupMethodResolver.dismiss();
-        if (popupCodeResolver != null)
-            popupCodeResolver.dismiss();
     }
 
     @Override
@@ -189,14 +185,15 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         sendDisposable = Observable.just(getSession())
                          .observeOn(Schedulers.computation())
                          .map((session) -> {
-            return session.signTransactionRaw(mTxJson).resolve(null, new HardwareCodeResolver(activity));
+            return session.signTransactionRaw(mTxJson).resolve(null, new HardwareCodeResolver(activity), null);
         })
                          .map((tx) -> {
             final boolean isSweep = tx.get("is_sweep").asBoolean();
             if (isSweep) {
                 getSession().broadcastTransactionRaw(tx.get("transaction").asText());
             } else {
-                getSession().sendTransactionRaw(activity, tx).resolve(popupMethodResolver, popupCodeResolver);
+                Bridge.INSTANCE.createTwoFactorResolver(this);
+                getSession().sendTransactionRaw(activity, tx).resolve(popupMethodResolver, null, Bridge.INSTANCE.createTwoFactorResolver(this));
             }
             return tx;
         })
@@ -223,6 +220,11 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
                 mSwipeButton.setEnabled(true);
                 mSwipeButton.moveButtonBack();
             } else {
+
+                if(msg.equals("id_action_canceled")){
+                    return;
+                }
+
                 UI.toast(activity, msg, Toast.LENGTH_LONG);
                 if (msg.equals(res.getString(R.string.id_transaction_already_confirmed))) {
                     activity.setResult(Activity.RESULT_OK);

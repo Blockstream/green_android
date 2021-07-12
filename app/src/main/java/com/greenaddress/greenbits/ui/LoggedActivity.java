@@ -85,7 +85,7 @@ public abstract class LoggedActivity extends GaActivity {
             }).flatMap(c -> {
                 return Observable.just(c).map(call -> {
                     return call.resolve(null,
-                                        new HardwareCodeResolver(this, hwWallet));
+                                        new HardwareCodeResolver(this, hwWallet), null);
                 }).doOnError(throwable -> {
                     Log.e(TAG, "Throwable " + throwable.getMessage());
                 });

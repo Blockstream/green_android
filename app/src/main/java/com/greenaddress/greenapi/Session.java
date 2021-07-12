@@ -115,14 +115,14 @@ public class Session extends GDKSession implements HttpRequestProvider {
 
     public SubaccountData getSubAccount(final GaActivity activity, final long subaccount) throws Exception {
         final GDKTwoFactorCall call = getSubAccount(subaccount);
-        final ObjectNode account = call.resolve(null, new HardwareCodeResolver(activity, getHWWallet()));
+        final ObjectNode account = call.resolve(null, new HardwareCodeResolver(activity, getHWWallet()), null);
         final SubaccountData subAccount = mObjectMapper.readValue(account.toString(), SubaccountData.class);
         return subAccount;
     }
 
     public Map<String, Long> getBalance(final GaActivity activity, final Integer subaccount) throws Exception {
         final GDKTwoFactorCall call = getBalance(subaccount, 0);
-        final ObjectNode balanceData = call.resolve(null, new HardwareCodeResolver(activity, getHWWallet()));
+        final ObjectNode balanceData = call.resolve(null, new HardwareCodeResolver(activity, getHWWallet()), null);
         final Map<String, Long> map = new HashMap<>();
         final Iterator<String> iterator = balanceData.fieldNames();
         while (iterator.hasNext()) {
@@ -135,7 +135,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
     public List<TransactionData> getTransactions(final GaActivity activity, final int subaccount, final int first, final int size) throws Exception {
         final GDKTwoFactorCall call =
                 getTransactionsRaw(subaccount, first, size);
-        final ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(activity, getHWWallet()));
+        final ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(activity, getHWWallet()), null);
         final List<TransactionData> transactions =
                 parseTransactions((ArrayNode) txListObject.get("transactions"));
         return transactions;
@@ -143,7 +143,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
 
     public List<SubaccountData> getSubAccounts(final GaActivity activity) throws Exception {
         final GDKTwoFactorCall call = getSubAccounts();
-        final ObjectNode accounts = call.resolve(null, new HardwareCodeResolver(activity, getHWWallet()));
+        final ObjectNode accounts = call.resolve(null, new HardwareCodeResolver(activity, getHWWallet()), null);
         final List<SubaccountData> subAccounts =
                 mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts.get("subaccounts")),
                         new TypeReference<List<SubaccountData>>() {});

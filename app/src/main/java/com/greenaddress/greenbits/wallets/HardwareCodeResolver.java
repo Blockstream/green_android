@@ -6,15 +6,12 @@ import android.util.Pair;
 import com.blockstream.gdk.HardwareWalletResolver;
 import com.blockstream.gdk.data.DeviceRequiredData;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.util.concurrent.SettableFuture;
-import com.greenaddress.gdk.CodeResolver;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.Session;
 import com.greenaddress.greenapi.data.BlindedScriptsData;
 import com.greenaddress.greenapi.data.HWDeviceRequiredData;
 import com.greenaddress.greenapi.data.HardwareCodeResolverData;
-import com.greenaddress.greenbits.ui.GaActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.reactivex.rxjava3.core.Single;
 
 
-public class HardwareCodeResolver implements CodeResolver, HardwareWalletResolver {
+public class HardwareCodeResolver implements HardwareWalletResolver {
     private final static String TAG = "HWC";
     private HWWallet hwWallet;
     private HWWalletBridge parent;
@@ -174,13 +171,5 @@ public class HardwareCodeResolver implements CodeResolver, HardwareWalletResolve
             return null;
         }
         return data.toString();
-    }
-
-    @Override
-    public void dismiss() { }
-
-    @Override
-    public SettableFuture<String> code(String method, final Integer attemptsRemaining) {
-        return null;
     }
 }

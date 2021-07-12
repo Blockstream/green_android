@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Deprecated
 public class PopupMethodResolver implements MethodResolver {
     private Activity activity;
     private MaterialDialog dialog;

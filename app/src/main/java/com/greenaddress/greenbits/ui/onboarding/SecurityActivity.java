@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Set;
 
 
-
 public class SecurityActivity extends LoggedActivity implements View.OnClickListener {
     private static final int REQUEST_2FA = 100;
     private ViewAdapter mMethodsAdapter;

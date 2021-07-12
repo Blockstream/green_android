@@ -353,7 +353,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         bumpDisposable = Observable.just(getSession())
                          .observeOn(Schedulers.computation())
                          .map((session) -> {
-            return session.getTransactionsRaw(subaccount, 0, 30).resolve(null, new HardwareCodeResolver(this));
+            return session.getTransactionsRaw(subaccount, 0, 30).resolve(null, new HardwareCodeResolver(this), null);
         })
                          .map((txListObject) -> {
             return getSession().findTransactionRaw((ArrayNode) txListObject.get(
@@ -369,7 +369,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
             return bumpTxData;
         })
                          .map((bumpTxData) -> {
-            return getSession().createTransactionRaw(null, bumpTxData).resolve(null, new HardwareCodeResolver(this));
+            return getSession().createTransactionRaw(null, bumpTxData).resolve(null, new HardwareCodeResolver(this), null);
         })
                          .observeOn(AndroidSchedulers.mainThread())
                          .subscribe((tx) -> {

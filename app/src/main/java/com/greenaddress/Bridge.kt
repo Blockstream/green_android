@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity
 import com.blockstream.crypto.BuildConfig
 import com.blockstream.gdk.AssetsProvider
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.TwoFactorResolver
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.SubAccount
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -19,6 +20,7 @@ import com.greenaddress.greenbits.ui.UI
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.JadeAPI
+import io.reactivex.Single
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -54,6 +56,7 @@ object Bridge {
     var recoveryConfirmedProviderFn: ((gaSession: Any?) -> Boolean)? = null
     var connectFn: ((context: Context, gaSession: Any?, networkId: String, hwWallet: HWWallet?) -> Unit)? = null
     var loginWithDeviceFn: ((context: Context, gaSession: Any?, networkId: String, connectSession: Boolean, hwWallet: HWWallet, hardwareDataResolver: HardwareCodeResolver) -> Unit)? = null
+    var createTwoFactorResolverFn: ((context: Context) -> TwoFactorResolver)? = null
 
     private var initialized = false
 
@@ -240,6 +243,8 @@ object Bridge {
     fun getCurrentNetworkData(context: Context) = BridgeJava.getCurrentNetworkData(context)
 
     fun getCurrentNetwork(context: Context) = BridgeJava.getCurrentNetwork(context)
+
+    fun createTwoFactorResolver(context: Context): TwoFactorResolver? = createTwoFactorResolverFn?.invoke(context)
 
     fun startSpvServiceIfNeeded(context: Context){
         // check and start spv if enabled

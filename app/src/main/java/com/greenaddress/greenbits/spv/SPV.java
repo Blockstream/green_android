@@ -371,7 +371,7 @@ public class SPV {
     private List<SubaccountData> getSubAccounts() throws Exception {
         final ObjectMapper mObjectMapper = new ObjectMapper();
         final GDKTwoFactorCall call = getSession().getSubAccounts();
-        final ObjectNode accounts = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()));
+        final ObjectNode accounts = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()), null);
         final List<SubaccountData> subAccounts =
             mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts.get("subaccounts")),
                                     new TypeReference<List<SubaccountData>>() {});
@@ -380,7 +380,7 @@ public class SPV {
 
     private List<TransactionData> getTransactions(final int subaccount) throws Exception {
         final GDKTwoFactorCall call = getSession().getTransactionsRaw(subaccount, 0,100);
-        final ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()));
+        final ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()), null);
         final List<TransactionData> transactions =
             getSession().parseTransactions((ArrayNode) txListObject.get("transactions"));
         return transactions;
@@ -388,7 +388,7 @@ public class SPV {
 
     private List<TransactionData> getUtxos(final int subaccount) throws Exception {
         final GDKTwoFactorCall call = getSession().getUTXO(subaccount, 0);
-        final ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()));
+        final ObjectNode txListObject = call.resolve(null, new HardwareCodeResolver(null, getSession().getHWWallet()), null);
         final JsonNode unspentOutputs = txListObject.get("unspent_outputs");
         if (!unspentOutputs.has("btc"))
             return new ArrayList<>();
