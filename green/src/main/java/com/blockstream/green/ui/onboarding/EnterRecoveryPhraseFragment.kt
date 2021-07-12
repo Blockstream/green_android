@@ -137,13 +137,29 @@ class EnterRecoveryPhraseFragment :
             navigate(EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToHelpBottomSheetDialogFragment())
         }
 
+        binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, _ ->
+            viewModel.recoverySize = (when(checkedId){
+                R.id.button12 -> 12
+                R.id.button24 -> 24
+                else -> 27
+            })
+        }
+        
+        binding.toggleRecoverySize.check(when(viewModel.recoverySize){
+            0, 12 -> R.id.button12
+            24 -> R.id.button24
+            27 -> R.id.button27
+            else -> 0
+        })
+
         viewModel.recoveryPhraseState.value?.let {
             binding.recoveryPhraseKeyboardView.setRecoveryPhraseState(it)
         }
 
+
         viewModel.recoveryWords.observe(viewLifecycleOwner) {
             FastAdapterDiffUtil.set(itemAdapter.itemAdapter, it, false)
-            binding.recycler.scrollToPosition(binding.recycler.adapter!!.itemCount - 1)
+            binding.recycler.scrollToPosition(viewModel.recoveryPhraseState.value?.let { it -> if(it.activeIndex >= 0) it.activeIndex else it.phrase.size }?: 0)
         }
     }
 

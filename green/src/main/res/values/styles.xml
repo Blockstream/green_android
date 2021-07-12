@@ -10,6 +10,16 @@
         <item name="android:height">60dp</item>
     </style>
 
+    <style name="Widget.Green.Button.Small" parent="Widget.MaterialComponents.Button">
+        <item name="android:minHeight">48dip</item>
+        <item name="android:minWidth">56dip</item>
+    </style>
+
+    <style name="Widget.Green.Button.Small.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:minHeight">48dip</item>
+        <item name="android:minWidth">56dip</item>
+    </style>
+
     <style name="Widget.Green.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton" />
 
     <style name="Widget.Green.Button.Outlined.Red">

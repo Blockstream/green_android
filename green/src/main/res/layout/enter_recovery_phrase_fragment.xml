@@ -37,11 +37,47 @@
             android:paddingTop="24dp"
             android:paddingBottom="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintBottom_toTopOf="@+id/toggleRecoverySize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleRecoverySize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button12"
+                style="@style/Widget.Green.Button.Small.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12"
+                tools:ignore="HardcodedText" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button24"
+                style="@style/Widget.Green.Button.Small.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24"
+                tools:ignore="HardcodedText" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button27"
+                style="@style/Widget.Green.Button.Small.Outlined"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="0dp"
+                android:text="27"
+                tools:ignore="HardcodedText" />
+        </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
@@ -110,7 +146,8 @@
                 android:layout_marginBottom="6dp"
                 android:backgroundTint="@android:color/transparent"
                 android:src="@drawable/ic_baseline_content_paste_24"
-                android:tint="@color/brand_green"
+                app:tint="@color/brand_green"
+                tools:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/recoveryPhraseKeyboardView"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -127,7 +164,25 @@
                 app:iconGravity="start"
                 app:layout_constraintBottom_toBottomOf="@+id/recoveryPhraseKeyboardView"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:visibility="gone" />
+                 />
+
+            <TextView
+                isVisible="@{vm.showInvalidMnemonicError}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="8dp"
+                android:drawablePadding="4dp"
+                android:singleLine="true"
+                android:text="@string/id_invalid_mnemonic"
+                android:textColor="@color/error"
+                android:textSize="14sp"
+                app:drawableStartCompat="@drawable/ic_baseline_error_outline_18"
+                app:drawableTint="@color/error"
+                app:layout_constraintBottom_toBottomOf="@+id/buttonHelp"
+                app:layout_constraintEnd_toStartOf="@+id/buttonHelp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/buttonHelp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -10,6 +10,7 @@ import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlin.properties.Delegates
 
 class EnterRecoveryPhraseViewModel @AssistedInject constructor(
     private val appWallet: GreenWallet,
@@ -19,15 +20,23 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
 
     val showPasteButton = MutableLiveData(true)
     val showHelpButton = MutableLiveData(false)
+    val showInvalidMnemonicError = MutableLiveData(false)
     val isValid = MutableLiveData(false)
     val messageResource = MutableLiveData(0)
-    val recoveryPhraseState = MutableLiveData(RecoveryPhraseKeyboardView.RecoveryPhraseState.fromString(recoveryPhrase))
-    val recoveryWords = MutableLiveData<List<RecoveryPhraseWordListItem>>(listOf())
+    val recoveryPhraseState =
+        MutableLiveData(RecoveryPhraseKeyboardView.RecoveryPhraseState.fromString(recoveryPhrase))
+    val recoveryWords = MutableLiveData<List<RecoveryPhraseWordListItem>>()
     var isEncryptionPasswordRequired = false
 
+    var recoverySize: Int by Delegates.observable(recoveryPhraseState.value?.phrase?.size ?: 0) { property, oldValue, newValue ->
+        recoveryPhraseState.value?.let {
+            updateRecoveryPhrase(it)
+        }
+    }
+
     init {
-        recoveryPhraseState.value?.apply {
-            updateRecoveryPhrase(this)
+        recoveryPhraseState.value?.let {
+            updateRecoveryPhrase(it)
         }
     }
 
@@ -40,15 +49,8 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
             list += RecoveryPhraseWordListItem(list.size + 1, word, state.activeIndex == list.size)
         }
 
-        if (list.isEmpty()) {
-            list += RecoveryPhraseWordListItem(list.size + 1, "", true)
-        }
-
-        val mod = list.size % 3
-        if (mod > 0) {
-            for (i in 0 until 3 - mod) {
-                list += RecoveryPhraseWordListItem(list.size + 1, "", false)
-            }
+        while (list.size < recoverySize) {
+            list += RecoveryPhraseWordListItem(list.size + 1, "", list.isEmpty())
         }
 
         validate(state)
@@ -84,12 +86,14 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
             }
 
         } else {
-            msgRes = if (len < 24) {
+            msgRes = if (len < 12) {
+                R.string.id_enter_your_12_24_or_27_words
+            } else if (valid) {
+                R.string.id_well_done_you_can_continue
+            } else if (len < 24) {
                 R.string.id_enter_your_24_or_27_words
             } else if (valid && len == 27) {
                 R.string.id_well_done_you_can_continue_with
-            } else if (valid) {
-                R.string.id_well_done_you_can_continue
             } else if (!valid && len == 24) {
                 R.string.id_invalid_mnemonic_continue
             } else if (len < 27) {
@@ -107,6 +111,7 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
 
         isValid.value = valid
 
+        showInvalidMnemonicError.value = showHelp && !isEditMode && len == recoverySize
         showPasteButton.value = recoveryPhrase.size == 0
         showHelpButton.value = showHelp
     }

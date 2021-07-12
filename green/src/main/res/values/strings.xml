@@ -239,6 +239,7 @@
   <string name="id_enter_the_matching_words">Enter The Matching Words</string>
   <string name="id_enter_the_pin_for_your_hardware">Enter the PIN for your hardware wallet</string>
   <string name="id_enter_your_24_or_27_words">Enter your 24 or 27 words recovery phrase</string>
+  <string name="id_enter_your_12_24_or_27_words">Enter your 12, 24 or 27 words recovery phrase</string>
   <string name="id_enter_your_27_words_recovery">Enter your 27 words recovery phrase</string>
   <string name="id_enter_your_email_address">Enter your email address</string>
   <string name="id_enter_your_pin">Enter Your PIN</string>
