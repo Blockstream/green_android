@@ -58,7 +58,7 @@ object Bridge {
     private var initialized = false
 
     enum class NavigateType {
-        LOGOUT, CHANGE_PIN, SETTINGS, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET, ADD_ACCOUNT, RECEIVE, ACCOUNT_ID, TWO_FACTOR_CANCEL_RESET, TWO_FACTOR_DISPUTE, TWO_FACTOR_UNDO_DISPUTE
+        LOGOUT, CHANGE_PIN, SETTINGS, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET, ADD_ACCOUNT, RECEIVE, ACCOUNT_ID, TWO_FACTOR_CANCEL_RESET, TWO_FACTOR_DISPUTE, TWO_FACTOR_UNDO_DISPUTE, TWO_FACTOR_AUTHENTICATION
     }
 
     fun initializeBridge(
@@ -131,6 +131,10 @@ object Bridge {
 
     fun twoFactorResetDialog(activity: FragmentActivity){
         navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_RESET, Session.getSession().nativeSession, null)
+    }
+
+    fun twoFactorAuthentication(activity: FragmentActivity){
+        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_AUTHENTICATION, Session.getSession().nativeSession, null)
     }
 
     fun twoFactorCancelReset(activity: FragmentActivity){

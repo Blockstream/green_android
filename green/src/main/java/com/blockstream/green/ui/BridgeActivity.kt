@@ -46,6 +46,7 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         val isBackupRecovery = BACKUP_RECOVERY == intent.action
         val isAddAccount = ADD_ACCOUNT == intent.action
         val isTwoFactorReset = TWO_FACTOR_RESET == intent.action
+        val isTwoFactorAuthentication = TWO_FACTOR_AUTHENTICATION == intent.action
         val isReceive = RECEIVE == intent.action
 
         val graph = inflater.inflate(R.navigation.nav_graph)
@@ -64,7 +65,7 @@ class BridgeActivity : AppCompatActivity(), IActivity {
             isReceive -> {
                  R.id.receiveFragment
             }
-            isTwoFactorReset  -> {
+            isTwoFactorReset || isTwoFactorAuthentication -> {
                 R.id.settings_nav_graph
             }
             else -> graph.startDestination
@@ -125,6 +126,7 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         const val SETTINGS = "SETTINGS"
         const val ADD_ACCOUNT = "ADD_ACCOUNT"
         const val TWO_FACTOR_RESET = "TWO_FACTOR_RESET"
+        const val TWO_FACTOR_AUTHENTICATION = "TWO_FACTOR_AUTHENTICATION"
         const val BACKUP_RECOVERY = "BACKUP_RECOVERY"
         const val RECEIVE = "RECEIVE"
     }

@@ -168,6 +168,7 @@ class GreenApplication : Application(){
                     }
                 }
 
+                Bridge.NavigateType.TWO_FACTOR_AUTHENTICATION,
                 Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET,
                 Bridge.NavigateType.TWO_FACTOR_DISPUTE,
                 Bridge.NavigateType.TWO_FACTOR_UNDO_DISPUTE -> {
@@ -178,13 +179,28 @@ class GreenApplication : Application(){
                             val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
 
                             val intent = Intent(activity, BridgeActivity::class.java)
-                            intent.putExtras(WalletSettingsFragmentArgs(wallet = wallet, bridgeTwoFactorReset = true, bridgeTwoFactorSetupType = when(type){
-                                Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET -> TwoFactorSetupAction.CANCEL
-                                Bridge.NavigateType.TWO_FACTOR_DISPUTE -> TwoFactorSetupAction.DISPUTE
-                                else -> TwoFactorSetupAction.UNDO_DISPUTE
-                            }).toBundle())
-
-                            intent.action = BridgeActivity.TWO_FACTOR_RESET
+                            if(type == Bridge.NavigateType.TWO_FACTOR_AUTHENTICATION){
+                                intent.putExtras(
+                                    WalletSettingsFragmentArgs(
+                                        wallet = wallet,
+                                        bridgeTwoFactorAuthentication = true,
+                                    ).toBundle()
+                                )
+                                intent.action = BridgeActivity.TWO_FACTOR_AUTHENTICATION
+                            }else {
+                                intent.putExtras(
+                                    WalletSettingsFragmentArgs(
+                                        wallet = wallet,
+                                        bridgeTwoFactorReset = true,
+                                        bridgeTwoFactorSetupType = when (type) {
+                                            Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET -> TwoFactorSetupAction.CANCEL
+                                            Bridge.NavigateType.TWO_FACTOR_DISPUTE -> TwoFactorSetupAction.DISPUTE
+                                            else -> TwoFactorSetupAction.UNDO_DISPUTE
+                                        }
+                                    ).toBundle()
+                                )
+                                intent.action = BridgeActivity.TWO_FACTOR_RESET
+                            }
 
                             activity.startActivity(intent)
                         }

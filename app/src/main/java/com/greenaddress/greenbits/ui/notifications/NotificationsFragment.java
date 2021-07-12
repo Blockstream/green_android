@@ -23,6 +23,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.TwoFactorConfigData;
 import com.greenaddress.greenapi.model.Conversion;
@@ -103,8 +104,7 @@ public class NotificationsFragment extends GAPreferenceFragment {
             } else if (e.getTitle() == R.string.id_set_up_twofactor_authentication ||
                        e.getTitle() == R.string.id_you_only_have_one_twofactor) {
                 preference.setOnPreferenceClickListener(preference1 -> {
-                    final Intent intent = new Intent(getActivity(), SecurityActivity.class);
-                    startActivity(intent);
+                    Bridge.INSTANCE.twoFactorAuthentication(getActivity());
                     return false;
                 });
             }

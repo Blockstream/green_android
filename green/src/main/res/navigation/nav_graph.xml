@@ -55,6 +55,10 @@
                 android:name="bridgeTwoFactorSetupType"
                 app:argType="com.blockstream.green.ui.settings.TwoFactorSetupAction"
                 android:defaultValue="SETUP" />
+            <argument
+                android:name="bridgeTwoFactorAuthentication"
+                app:argType="boolean"
+                android:defaultValue="false" />
         </fragment>
 
         <fragment

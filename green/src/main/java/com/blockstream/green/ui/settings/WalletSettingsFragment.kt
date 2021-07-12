@@ -107,7 +107,15 @@ class WalletSettingsFragment :
             }
         }
 
-        if (args.bridgeTwoFactorReset) {
+        if(args.bridgeTwoFactorAuthentication) {
+            navigate(
+                directions = WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFractorAuthenticationFragment(
+                    wallet = wallet
+                ),
+                navOptionsBuilder = NavOptions.Builder()
+                    .setPopUpTo(findNavController().backStack.first.destination.id, true)
+            )
+        } else if (args.bridgeTwoFactorReset) {
             navigate(
                 directions = WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
                     wallet = wallet,

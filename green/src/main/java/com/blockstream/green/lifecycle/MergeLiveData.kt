@@ -23,7 +23,11 @@ class MergeLiveData<T, K, S>(source1: LiveData<T>, source2: LiveData<K>, private
 
     private fun combineWhenReady(){
         // combine when both values are non-null
-        value = data1?.let { data1 ->  data2?.let { data2 -> combine(data1, data2) } }
+        data1?.let { data1 ->
+            data2?.let { data2 ->
+                value = combine(data1, data2)
+            }
+        }
     }
 
     override fun <T : Any?> addSource(source: LiveData<T>, onChanged: Observer<in T>) {
