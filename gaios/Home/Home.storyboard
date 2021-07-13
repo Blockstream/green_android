@@ -24,12 +24,13 @@
                                     <constraint firstAttribute="height" constant="65" id="V5g-zJ-GDx"/>
                                 </constraints>
                             </imageView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aed-43-hVZ">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="aed-43-hVZ">
                                 <rect key="frame" x="0.0" y="293" width="414" height="541"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" name="customTitaniumDark"/>
+                                <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletCell" rowHeight="64" id="bc1-KI-er3" customClass="WalletCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="24.5" width="414" height="64"/>
+                                        <rect key="frame" x="0.0" y="49.5" width="414" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="bc1-KI-er3" id="gwe-Z1-KVs">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
@@ -75,7 +76,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletHDCell" rowHeight="64" id="nkE-RE-mkz" userLabel="WalletHDCell" customClass="WalletHDCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="88.5" width="414" height="64"/>
+                                        <rect key="frame" x="0.0" y="113.5" width="414" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="nkE-RE-mkz" id="gyN-xr-hK0">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
@@ -111,7 +112,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletEmptyCell" rowHeight="95" id="CeJ-x6-R4s" userLabel="WalletHDCell" customClass="WalletEmptyCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="152.5" width="414" height="95"/>
+                                        <rect key="frame" x="0.0" y="177.5" width="414" height="95"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="CeJ-x6-R4s" id="gwo-CL-L7x">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="95"/>
