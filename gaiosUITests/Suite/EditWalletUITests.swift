@@ -18,7 +18,6 @@ class EditWalletUITests: XCTestBase {
         }
 
         Home()
-            .swipeUp()
             .selectWallet(named: walletName)
 
         Login()
@@ -44,7 +43,6 @@ class EditWalletUITests: XCTestBase {
         XCTAssert(Home().existsWallet(named: walletNameRenamed))
 
         Home()
-            .swipeUp()
             .selectWallet(named: walletNameRenamed)
 
         Login()
