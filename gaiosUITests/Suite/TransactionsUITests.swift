@@ -3,7 +3,7 @@ import XCTest
 
 class TransactionstUITests: XCTestBase {
     
-    func testTransction() {
+    func testTransaction() {
 
         prepareWallet()
         
