@@ -221,7 +221,7 @@ class TwoFactorAuthenticationFragment :
         val list = mutableListOf<GenericItem>()
 
         list += HelpListItem(
-            StringHolder(R.string.id_enable_twofactor_authentication),
+            StringHolder(R.string.id_enable_2fa_authentication),
             StringHolder(R.string.id_tip_we_recommend_you_enable)
         )
 
@@ -258,7 +258,7 @@ class TwoFactorAuthenticationFragment :
         list += thresholdPreference.also {
             it.subtitle = StringHolder(twoFactorConfig.limits.let { limits ->
                 if (!limits.isFiat && limits.satoshi == 0L) {
-                    getString(R.string.id_set_twofactor_threshold)
+                    getString(R.string.id_set_2fa_threshold)
                 } else if (limits.isFiat) {
                     limits.fiat()
                 } else {
@@ -320,7 +320,7 @@ class TwoFactorAuthenticationFragment :
         AmountTextWatcher.watch(binding.amountEditText)
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.id_set_twofactor_threshold)
+            .setTitle(R.string.id_set_2fa_threshold)
             .setView(binding.root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 try {

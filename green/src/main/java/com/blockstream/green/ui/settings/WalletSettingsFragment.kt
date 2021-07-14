@@ -167,7 +167,7 @@ class WalletSettingsFragment :
             StringHolder(R.string.id_request_recovery_transactions)
         )
 
-        twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_authentication))
+        twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_2fa_authentication))
         pgpPreference = PreferenceListItem(StringHolder(R.string.id_pgp_key))
 
         versionPreference = PreferenceListItem(StringHolder(R.string.id_version), StringHolder(
@@ -419,8 +419,9 @@ class WalletSettingsFragment :
 
                 list += altTimeoutPreference
 
-                list += twoFactorAuthenticationPreference
-
+                if(!session.isElectrum) {
+                    list += twoFactorAuthenticationPreference
+                }
 
                 if(!session.isLiquid && !session.isElectrum || !session.hasDevice) {
                     list += TitleListItem(StringHolder(R.string.id_recovery))

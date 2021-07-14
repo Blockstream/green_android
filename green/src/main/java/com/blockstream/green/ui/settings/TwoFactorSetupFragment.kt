@@ -52,17 +52,22 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         val action = args.action
 
         binding.vm = viewModel
-
+        
         when(action){
-            TwoFactorSetupAction.SETUP, TwoFactorSetupAction.SETUP_EMAIL -> {
-                setToolbar(title = getString(R.string.id_1s_twofactor_set_up, methodLocalized))
-                binding.message = getString(R.string.id_please_provide_your_1s, args.method)
+            TwoFactorSetupAction.SETUP -> {
+                setToolbar(title = getString(R.string.id_1s_2fa_set_up, methodLocalized))
+                binding.message = getString(R.string.id_insert_your_email_to_receive_2fa)
+                binding.button = getString(R.string.id_continue)
+            }
+            TwoFactorSetupAction.SETUP_EMAIL -> {
+                setToolbar(title = getString(R.string.id_1s_2fa_set_up, methodLocalized))
+                binding.message = getString(R.string.id_insert_your_email_to_receive_recovery)
                 binding.button = getString(R.string.id_continue)
             }
             TwoFactorSetupAction.RESET -> {
-                setToolbar(title = getString(R.string.id_request_twofactor_reset))
-                binding.message = getString(R.string.id_resetting_your_twofactor_takes)
-                binding.button = getString(R.string.id_request_twofactor_reset)
+                setToolbar(title = getString(R.string.id_request_2fa_reset))
+                binding.message = getString(R.string.id_resetting_your_2fa_takes)
+                binding.button = getString(R.string.id_request_2fa_reset)
             }
             TwoFactorSetupAction.CANCEL -> {
                 setToolbar(title = getString(R.string.id_cancel_2fa_reset))
@@ -71,9 +76,9 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                 viewModel.cancel2FA(twoFactorResolver = DialogTwoFactorResolver(requireContext()))
             }
             TwoFactorSetupAction.DISPUTE -> {
-                setToolbar(title = getString(R.string.id_dispute_twofactor_reset))
+                setToolbar(title = getString(R.string.id_dispute_2fa_reset))
                 binding.message = getString(R.string.id_if_you_did_not_request_the)
-                binding.button = getString(R.string.id_dispute_twofactor_reset)
+                binding.button = getString(R.string.id_dispute_2fa_reset)
             }
             TwoFactorSetupAction.UNDO_DISPUTE -> {
                 setToolbar(title = getString(R.string.id_undo_2fa_dispute))

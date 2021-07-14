@@ -46,7 +46,6 @@
   <string name="id_address">Address</string>
   <string name="id_address_1s">Address: %1$s</string>
   <string name="id_address_copied_to_clipboard">Address copied to clipboard</string>
-  <string name="id_advanced">ADVANCED</string>
   <string name="id_advanced_network_settings">Advanced network settings</string>
   <string name="id_all">All</string>
   <string name="id_all_wallets">All wallets</string>
@@ -874,4 +873,15 @@
   <string name="id_if_you_have_some_coins_on_the_legacy">If you have some coins on the legacy address type, and you won\'t spend them shortly, you might need to setup an email and receive your recovery transactions to be sure you are always in control of your funds.</string>
   <string name="id_read_more">Read more</string>
   <string name="id_legacy_outputs">Legacy outputs</string>
+
+  <string name="id_insert_your_email_to_receive_recovery">Insert your email to receive recovery transactions and transactions notifications</string>
+  <string name="id_insert_your_email_to_receive_2fa">Insert your email to receive 2FA codes to authorize transfers and other operations.</string>
+  <string name="id_1s_2fa_set_up">%1$s 2FA set up</string>
+  <string name="id_dispute_2fa_reset">Dispute 2FA reset</string>
+  <string name="id_request_2fa_reset">Request 2FA reset</string>
+  <string name="id_resetting_your_2fa_takes">Resetting your 2FA takes 12 months minimum. If you are sure you have lost your 2FA, please provide a new email address below to receive the reset.</string>
+  <string name="id_2fa_authentication">2FA authentication</string>
+  <string name="id_enable_2fa_authentication">Enable 2FA to protect your wallet from unauthorized transactions or changes to critical security settings</string>
+  <string name="id_set_2fa_threshold">Set 2FA threshold</string>
+  <string name="id_advanced">Advanced</string>
 </resources>
