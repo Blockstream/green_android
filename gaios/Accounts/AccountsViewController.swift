@@ -35,6 +35,8 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
         collectionView.register(footerNib, forSupplementaryViewOfKind:
             UICollectionView.elementKindSectionFooter, withReuseIdentifier: footerId)
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.AccountsScreen.view
     }
 
     override func viewWillAppear(_ animated: Bool) {

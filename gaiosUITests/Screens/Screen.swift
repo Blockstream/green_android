@@ -85,6 +85,12 @@ class Screen {
         return tap(walletLabel)
     }
 
+    func localized(key: String, referenceClass:AnyClass) -> String
+    {
+        let bundle = Bundle(for: referenceClass)
+        return Foundation.NSLocalizedString(key, tableName:nil, bundle: bundle, comment: "")
+    }
+    
 //    @discardableResult
 //    func matchStaticText(identifier: String) -> Self {
 //        XCTAssert(exists(staticText: identifier, timeout: 10))

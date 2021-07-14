@@ -88,6 +88,7 @@ struct AccessibilityIdentifiers {
         static let settingsBtn = "settings_btn"
         static let sendView = "send_view"
         static let receiveView = "receive_view"
+        static let stackBtn = "stack_btn"
     }
     
     struct LoginScreen {
@@ -173,5 +174,9 @@ struct AccessibilityIdentifiers {
     struct ScreenLockScreen {
         static let view = "view_screen_lock"
         static let pinLbl = "pin_lbl"
+    }
+    
+    struct AccountsScreen {
+        static let view = "view_accounts"
     }
 }

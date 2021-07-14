@@ -23,4 +23,12 @@ class Transactions: Screen {
         tap(app.otherElements[AccessibilityIdentifiers.TransactionsScreen.sendView])
         return self
     }
+    
+    @discardableResult
+    func tapStack() -> Self {
+        tap(button: AccessibilityIdentifiers.TransactionsScreen.stackBtn)
+        return self
+    }
+    
+    
 }

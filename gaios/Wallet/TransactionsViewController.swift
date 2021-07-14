@@ -339,6 +339,7 @@ class TransactionsController: UITableViewController {
 
         view.sendView.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.sendView
         view.receiveView.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.receiveView
+        view.stackButton.accessibilityIdentifier = AccessibilityIdentifiers.TransactionsScreen.stackBtn
         return view
     }
 
