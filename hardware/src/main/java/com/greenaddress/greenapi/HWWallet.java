@@ -1,6 +1,7 @@
 package com.greenaddress.greenapi;
 
 import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.Network;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.greenapi.data.NetworkData;
@@ -12,7 +13,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public abstract class HWWallet {
-    protected NetworkData mNetwork;
+    protected Network mNetwork;
     protected Device mDevice;
     protected HardwareQATester mHardwareQATester;
 
@@ -122,7 +123,7 @@ public abstract class HWWallet {
 
     public abstract String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer, final long csvBlocks) throws Exception;
 
-    public NetworkData getNetwork() {
+    public Network getNetwork() {
         return mNetwork;
     }
 

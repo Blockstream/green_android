@@ -170,7 +170,8 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         }
     }
 
-    private fun popBackStack(){
+    // TODO Remove it when migrated to overview v4
+    override fun popBackStack(){
         hideKeyboard() // hide keyboard as is no longer required for the backstacked fragments
         if(Bridge.useGreenModule){
             findNavController().popBackStack()

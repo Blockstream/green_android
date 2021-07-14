@@ -17,11 +17,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.arch.core.util.Function;
 import androidx.preference.PreferenceManager;
 
+import com.blockstream.DeviceBrand;
+import com.blockstream.gdk.data.Network;
 import com.blockstream.libwally.Wally;
-import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
@@ -31,6 +31,9 @@ import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity;
 import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
+
+import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
 
 /**
  * Base class for activities within the application.
@@ -48,7 +51,7 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
     public static final String ACTION_BLE_SELECTED = "android.hardware.ble.action.ACTION_BLE_SELECTED";
 
     private ProgressBarHandler mProgressBarHandler;
-    private final SparseArray<SettableFuture<String>> mHwFunctions = new SparseArray<>();
+    private final SparseArray<SingleEmitter<String>> mHwEmitter = new SparseArray<>();
 
     public Bundle getMetadata() {
         Bundle metadata = null;
@@ -63,7 +66,7 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "onCreate -> " + this.getClass().getSimpleName());
-        setTheme(ThemeUtils.getThemeFromNetworkId(Bridge.INSTANCE.getCurrentNetwork(this), this,
+        setTheme(ThemeUtils.getThemeFromNetworkId(Bridge.INSTANCE.getCurrentNetworkId(this), this,
                                                   getMetadata()));
 
         super.onCreate(savedInstanceState);
@@ -188,27 +191,30 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
         return mProgressBarHandler != null && mProgressBarHandler.isLoading();
     }
 
-    private String hwRequest(final int requestType) {
+    private Single<String> hwRequest(final int requestType) {
         try {
-            mHwFunctions.put(requestType, SettableFuture.create());
-            startActivityForResult(new Intent(this,
-                                              requestType == HARDWARE_PIN_REQUEST ?
-                                              TrezorPinActivity.class :
-                                              TrezorPassphraseActivity.class),
-                                   requestType);
-            return mHwFunctions.get(requestType).get();
+            return Single.create(emitter -> {
+                mHwEmitter.put(HARDWARE_PIN_REQUEST, emitter);
+
+                startActivityForResult(new Intent(this,
+                                requestType == HARDWARE_PIN_REQUEST ?
+                                        TrezorPinActivity.class :
+                                        TrezorPassphraseActivity.class),
+                        requestType);
+            });
         } catch (final Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    // TOD: Handle BTCHip PIN stuff here too
-    public String pinMatrixRequest(final HWWallet hw) {
+
+    public Single<String> requestPinMatrix(DeviceBrand deviceBrand){
+
         return hwRequest(HARDWARE_PIN_REQUEST);
     }
 
-    public String passphraseRequest(final HWWallet hw) {
+    public Single<String> requestPassphrase(DeviceBrand deviceBrand){
         return hwRequest(HARDWARE_PASSPHRASE_REQUEST);
     }
 
@@ -233,9 +239,16 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
 
         if (requestCode == HARDWARE_PIN_REQUEST || requestCode == HARDWARE_PASSPHRASE_REQUEST) {
             Log.d(TAG,"onActivityResult " + requestCode);
-            mHwFunctions.get(requestCode).set(resultCode ==
-                                              RESULT_OK ? data.getStringExtra(String.valueOf(
-                                                                                  requestCode)) : null);
+            SingleEmitter<String> emitter = mHwEmitter.get(requestCode);
+            if(emitter != null){
+                if(resultCode == RESULT_OK){
+                    emitter.onSuccess(data.getStringExtra(String.valueOf(requestCode)));
+                }else{
+                    emitter.tryOnError(new Exception("id_action_canceled"));
+                }
+            }
+
+
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -262,6 +275,10 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
             cachedNetworkData = Bridge.INSTANCE.getCurrentNetworkData(this);
         }
         return cachedNetworkData;
+    }
+
+    protected Network getNetworkV4() {
+        return Bridge.INSTANCE.getCurrentNetwork(this);
     }
 
     public Session getSession() {

@@ -2,16 +2,18 @@ package com.blockstream.green.ui.wallet
 
 import android.util.Base64
 import androidx.lifecycle.*
+import com.blockstream.gdk.HardwareWalletResolver
 import com.blockstream.gdk.data.TORStatus
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.async
-import com.blockstream.green.gdk.isNotAuthorized
+import com.blockstream.green.devices.Device
+import com.blockstream.green.gdk.*
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
+import com.greenaddress.greenapi.HWWallet
+import com.greenaddress.greenapi.HWWalletBridge
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -27,7 +29,8 @@ class LoginViewModel @AssistedInject constructor(
     private var appKeystore: AppKeystore,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
-    @Assisted wallet: Wallet
+    @Assisted wallet: Wallet,
+    @Assisted val device: Device?
 ) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
 
     val onErrorMessage = MutableLiveData<ConsumableEvent<Throwable>>()
@@ -42,18 +45,16 @@ class LoginViewModel @AssistedInject constructor(
 
     val torStatus: MutableLiveData<TORStatus> = MutableLiveData()
 
-    var isInProgress = MutableLiveData(false)
-
     var actionLogin = MutableLiveData<Boolean>()
 
     val isWatchOnlyLoginEnabled: LiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
             val block = { _: Any? ->
                 val isInitial = (keystoreCredentials.value != null && initialAction.value == false)
-                value = !watchOnlyPassword.value.isNullOrBlank() && !isInProgress.value!! || isInitial
+                value = !watchOnlyPassword.value.isNullOrBlank() && !onProgress.value!! || isInitial
             }
             addSource(watchOnlyPassword, block)
-            addSource(isInProgress, block)
+            addSource(onProgress, block)
             addSource(keystoreCredentials, block)
             addSource(initialAction, block)
         }
@@ -204,18 +205,43 @@ class LoginViewModel @AssistedInject constructor(
             }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
-                isInProgress.postValue(true)
+                onProgress.postValue(true)
             }
             .subscribeBy(
                 onError = {
                     onError.postValue(ConsumableEvent(it))
                     // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
-                    isInProgress.postValue(false)
+                    onProgress.postValue(false)
                 },
                 onSuccess = {
                     actionLogin.postValue(true)
                 }
             )
+    }
+
+    fun loginWithDevice(device: Device) {
+        session.observable {
+            it.loginWithDevice(it.networks.getNetworkById(wallet.network),
+                registerUser = true,
+                connectSession = true,
+                hwWallet = device.hwWallet!!,
+                hardwareWalletResolver = HardwareCodeResolver(this, device.hwWallet)
+            )
+        }
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnSubscribe {
+            onProgress.postValue(true)
+        }
+        .subscribeBy(
+            onError = {
+                onErrorMessage.postValue(ConsumableEvent(it))
+                // change inProgress only on error to avoid glitching the UI cause on success we continue to next screen
+                onProgress.postValue(false)
+            },
+            onSuccess = {
+                actionLogin.postValue(true)
+            }
+        )
     }
 
     fun deleteLoginCredentials(loginCredentials: LoginCredentials){
@@ -228,17 +254,19 @@ class LoginViewModel @AssistedInject constructor(
     interface AssistedFactory {
         fun create(
             wallet: Wallet,
+            device: Device?
         ): LoginViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            wallet: Wallet
+            wallet: Wallet,
+            device: Device?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet) as T
+                return assistedFactory.create(wallet, device) as T
             }
         }
     }

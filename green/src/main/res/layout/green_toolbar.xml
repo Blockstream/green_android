@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        tools:layout_height="@dimen/toolbar_height"
         app:gap="4dp">
 
         <ImageView
@@ -28,6 +29,16 @@
             app:layout_constraintEnd_toStartOf="@+id/title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/bubbleIcon"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:visibility="gone"
+            tools:src="@drawable/blockstream_jade_device"
+            app:layout_constraintBottom_toBottomOf="@+id/icon"
+            app:layout_constraintEnd_toEndOf="@+id/icon"
             tools:visibility="visible" />
 
         <TextView

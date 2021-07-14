@@ -1,28 +1,27 @@
-package com.greenaddress.greenbits.ui.authentication;
+package com.blockstream.green.devices;
 
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.DeviceSupportsAntiExfilProtocol;
 import com.blockstream.gdk.data.DeviceSupportsLiquid;
+import com.blockstream.green.BuildConfig;
+import com.blockstream.green.R;
 import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
+import com.btchip.comm.android.BTChipTransportAndroid;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenbits.ui.BuildConfig;
-import com.greenaddress.greenbits.ui.R;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 import com.greenaddress.greenbits.wallets.JadeHWWallet;
+import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
+import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.JadeError;
 import com.satoshilabs.trezor.Trezor;
@@ -30,22 +29,87 @@ import com.satoshilabs.trezor.Trezor;
 import java.util.Collections;
 import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
+import hu.akarnokd.rxjava3.bridge.RxJavaBridge;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 
 public class HardwareConnect {
     private static final String TAG = HardwareConnect.class.getSimpleName();
 
     private final CompositeDisposable mDisposables = new CompositeDisposable();
     private HWWallet mHwWallet;
+    private com.blockstream.green.devices.Device device;
+
+
+    public void connectDevice(final HardwareConnectInteraction interaction, final HttpRequestProvider requestProvider, final com.blockstream.green.devices.Device device){
+        this.device = device;
+        if(device.isUsb()){
+            switch (device.getDeviceBrand()){
+                case Blockstream:
+                    final JadeAPI jadeAPI = JadeAPI.createSerial(requestProvider, device.getUsbManager(), device.getUsbDevice(), 115200);
+                    onJade(interaction, jadeAPI);
+                    break;
+                case Ledger:
+
+                    BTChipTransport transport = null;
+                    try {
+                        transport = BTChipTransportAndroid.open(device.getUsbManager(), device.getUsbDevice());
+                    } catch (final Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (transport == null) {
+                        interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
+                        return;
+                    }
+
+                    if (BTChipTransportAndroid.isLedgerWithScreen(device.getUsbDevice())) {
+                        // User entered PIN on-device
+                        onLedger(interaction, transport, true);
+                    } else {
+                        // Prompt for PIN to unlock device before setting it up
+                        // showLedgerPinDialog(transport);
+                        onLedger(interaction, transport, false);
+                    }
+                    break;
+                case Trezor:
+                    onTrezor(interaction, device.getUsbManager(), device.getUsbDevice());
+                    break;
+            }
+
+        }else{
+
+            switch (device.getDeviceBrand()){
+                case Blockstream:
+                    final JadeAPI jadeAPI = JadeAPI.createBle(requestProvider, device.getBleDevice());
+                    onJade(interaction, jadeAPI);
+                    break;
+                case Ledger:
+                    // Ledger (Nano X)
+
+                // Ledger BLE adapter will call the 'onLedger' function when the BLE connection is established
+                // LedgerBLEAdapter.connectLedgerBLE(this, btDevice, this::onLedger, this::onLedgerError);
+
+                LedgerBLEAdapter.connectLedgerBLE(interaction.context(), device.getBleDevice().getBluetoothDevice(), (final BTChipTransport transport, final boolean hasScreen) -> {
+                    onLedger(interaction, transport, hasScreen);
+                }, (final BTChipTransport transport) -> {
+                    interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
+                    closeLedger(interaction, transport);
+                });
+                    break;
+                case Trezor:
+                    break;
+            }
+        }
+    }
 
     void onJade(final HardwareConnectInteraction interaction, final JadeAPI jade) {
         // Connect to jade (using background thread)
         mDisposables.add(Observable.just(jade)
-                .subscribeOn(Schedulers.computation())
+                .subscribeOn(Schedulers.io())
                 .map(JadeAPI::connect)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -56,11 +120,13 @@ public class HardwareConnect {
                             } else {
                                 Log.e(TAG, "Failed to connect to Jade");
                                 interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
+                                closeJade(interaction, jade);
                             }
                         },
                         throwable -> {
                             Log.e(TAG, "Exception connecting to Jade");
                             interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
+                            closeJade(interaction, jade);
                         }
                 )
         );
@@ -68,26 +134,22 @@ public class HardwareConnect {
 
     private void reconnectSession(final HardwareConnectInteraction interaction) throws Exception {
         Log.d(TAG, "(re-)connecting gdk session)");
-        interaction.getSession().disconnect();
+        interaction.getGreenSession().disconnect();
         connect(interaction);
     }
 
-    public void connect(final HardwareConnectInteraction interaction) throws Exception {
-        final String network = PreferenceManager.getDefaultSharedPreferences(interaction.context()).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-        interaction.getSession().setNetwork(network);
-        Bridge.INSTANCE.connect(interaction.context(), interaction.getSession().getNativeSession(), network, mHwWallet);
+    private void connect(final HardwareConnectInteraction interaction) throws Exception {
+        interaction.getGreenSession().connect(interaction.getGreenSession().getNetworks().getBitcoinGreen(), mHwWallet);
     }
 
     private void onJadeConnected(final HardwareConnectInteraction interaction, final JadeAPI jade) {
-        mDisposables.add(Single.just(interaction.getSession())
+        mDisposables.add(Single.just(interaction.getGreenSession())
                 .subscribeOn(Schedulers.io())
 
                 // Connect GDKSession first (on a background thread), as we use httpRequest() as part of
                 // Jade login (to access firmware server and to interact with the pinserver).
                 // This also acts as a handy check that we have network connectivity before we start.
                 .map(session -> {
-                    final String pin = interaction.requestPin(DeviceBrand.Ledger).blockingGet();
-
                     reconnectSession(interaction);
                     return session;
                 })
@@ -102,17 +164,17 @@ public class HardwareConnect {
                     final JadeHWWallet jadeWallet = new JadeHWWallet(jade, interaction.getConnectionNetwork(), device, Bridge.INSTANCE.getHardwareQATester());
                     return jadeWallet;
                 })
-                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction.context(), interaction, interaction, interaction.getSession()))
+                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction.context(), interaction, interaction, interaction.getGreenSession()).as(RxJavaBridge.toV3Single()))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         jadeWallet -> {
-                            interaction.showInstructions(R.string.id_logging_in);
                             mHwWallet = jadeWallet;
                             doLogin(interaction, false);
                         },
                         throwable -> {
+                            throwable.printStackTrace();
                             Log.e(TAG, "Connecting to Jade HW wallet got error: " + throwable);
                             if (throwable instanceof JadeError) {
                                 final JadeError jaderr = (JadeError)throwable;
@@ -130,18 +192,27 @@ public class HardwareConnect {
                             } else {
                                 interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
                             }
-                            jade.disconnect();
+                            closeJade(interaction, jade);
                         }
                 )
         );
     }
 
+    private void closeJade(final HardwareConnectInteraction interaction, final JadeAPI jade) {
+        try {
+            jade.disconnect();
+        }catch (Exception e){
+            device.getProductId();
+        }
+        interaction.onDeviceFailed();
+    }
+
     void onTrezor(final HardwareConnectInteraction interaction, UsbManager usbManager, UsbDevice usb) {
-        final Trezor t;
-        t = Trezor.getDevice(usbManager, Collections.singletonList(usb));
+        final Trezor t = Trezor.getDevice(usbManager, Collections.singletonList(usb));
 
         if (interaction.getConnectionNetwork().isLiquid()) {
             interaction.showInstructions(R.string.id_hardware_wallet_support_for);
+            closeTrezor(interaction, t);
             return;
         }
         if (t == null)
@@ -160,6 +231,8 @@ public class HardwareConnect {
             interaction.askForFirmwareUpgrade(DeviceBrand.Trezor, null, !Bridge.INSTANCE.isDevelopmentFlavor(), isPositive -> {
                 if(isPositive) {
                     onTrezorConnected(interaction, t);
+                }else{
+                    closeTrezor(interaction, t);
                 }
                 return null;
             });
@@ -172,17 +245,17 @@ public class HardwareConnect {
 
     private void onTrezorConnected(final HardwareConnectInteraction interaction, final Trezor t) {
         Log.d(TAG, "Creating Trezor HW wallet");
-
         final Device device = new Device("Trezor", false , false, false, DeviceSupportsLiquid.None, DeviceSupportsAntiExfilProtocol.None);
         mHwWallet = new TrezorHWWallet(t, interaction.getConnectionNetwork(), device);
 
         doLogin(interaction, true);
     }
 
-    void onLedger(final HardwareConnectInteraction interaction, final BTChipTransport transport, final boolean hasScreen) {
-        interaction.showInstructions(R.string.id_logging_in);
-        final String pin = interaction.requestPin(DeviceBrand.Ledger).blockingGet();
+    private void closeTrezor(final HardwareConnectInteraction interaction, final Trezor t) {
+        interaction.onDeviceFailed();
+    }
 
+    void onLedger(final HardwareConnectInteraction interaction, final BTChipTransport transport, final boolean hasScreen) {
         transport.setDebug(BuildConfig.DEBUG);
         try {
             final BTChipDongle dongle = new BTChipDongle(transport, hasScreen);
@@ -193,7 +266,7 @@ public class HardwareConnect {
 
                 if (application.getName().contains("OLOS")) {
                     interaction.showInstructions(R.string.id_ledger_dashboard_detected);
-                    closeLedger(transport);
+                    closeLedger(interaction, transport);
                     return;
                 }
 
@@ -206,7 +279,7 @@ public class HardwareConnect {
                 if (netMainnet != hwMainnet || netLiquid != hwLiquid) {
                     // We using the wrong app, prompt the user to open the right app.
                     interaction.showInstructions(R.string.id_the_network_selected_on_the);
-                    closeLedger(transport);
+                    closeLedger(interaction, transport);
                     return;
                 }
             } catch (final Exception e) {
@@ -232,9 +305,9 @@ public class HardwareConnect {
             if (isFirmwareOutdated) {
                 interaction.askForFirmwareUpgrade(DeviceBrand.Ledger, null, !Bridge.INSTANCE.isDevelopmentFlavor(), isPositive -> {
                     if(isPositive) {
-                        onLedgerConnected(interaction, dongle, pin);
+                        onLedgerConnected(interaction, dongle);
                     }else{
-                        closeLedger(transport);
+                        closeLedger(interaction, transport);
                     }
                     return null;
                 });
@@ -243,7 +316,7 @@ public class HardwareConnect {
             }
 
             // All good
-            onLedgerConnected(interaction, dongle, pin);
+            onLedgerConnected(interaction, dongle);
         } catch (final BTChipException e) {
             if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
                 e.printStackTrace();
@@ -253,60 +326,75 @@ public class HardwareConnect {
             } else {
                 interaction.showInstructions(R.string.id_ledger_dashboard_detected);
             }
-            closeLedger(transport);
+            closeLedger(interaction, transport);
         }
     }
 
-    private void onLedgerConnected(final HardwareConnectInteraction interaction, final BTChipDongle dongle, final String pin) {
-        final boolean havePin = !TextUtils.isEmpty(pin);
-        Log.d(TAG, "Creating Ledger HW wallet" + (havePin ? " with PIN" : ""));
-        final Device device = new Device("Ledger", true,false, false, DeviceSupportsLiquid.Lite, DeviceSupportsAntiExfilProtocol.None);
-        mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, interaction.getConnectionNetwork(), device);
-        doLogin(interaction, true);
+    private void onLedgerConnected(final HardwareConnectInteraction interaction, final BTChipDongle dongle) {
+        mDisposables.add(Single
+                .just(interaction.getGreenSession())
+                .subscribeOn(Schedulers.io())
+                .map(session -> {
+                    String pin = null;
+                    if (this.device.isUsb() && !BTChipTransportAndroid.isLedgerWithScreen(this.device.getUsbDevice())) {
+                        pin = interaction.requestPin(DeviceBrand.Ledger).blockingGet();
+                    }
+
+                    Log.d(TAG, "Creating Ledger HW wallet" + (pin != null ? " with PIN" : ""));
+                    final Device device = new Device("Ledger", true,false, false, DeviceSupportsLiquid.Lite, DeviceSupportsAntiExfilProtocol.None);
+                    mHwWallet = new BTChipHWWallet(dongle, pin , interaction.getConnectionNetwork(), device);
+                    return mHwWallet;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        hwWallet -> {
+                            doLogin(interaction, true);
+                        },
+                        throwable -> {
+                            Log.e(TAG, "Connecting to Ledger HW wallet got error: " + throwable);
+                            interaction.showError(throwable.getMessage());
+                        }
+                )
+        );
     }
 
-    private void closeLedger(final BTChipTransport transport) {
+    private void closeLedger(final HardwareConnectInteraction interaction, final BTChipTransport transport) {
         try {
             transport.close();
         } catch (final BTChipException ignored) {}
-    }
-
-    void onLedgerError(final HardwareConnectInteraction interaction, final BTChipTransport transport) {
-        interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
-        closeLedger(transport);
+        interaction.onDeviceFailed();
     }
 
     private void doLogin(final HardwareConnectInteraction interaction, final boolean bReConnectSession) {
-        mDisposables.add(Observable.just(interaction.getSession())
-                .observeOn(Schedulers.computation())
-                .map((session) -> {
+        device.setHwWallet(mHwWallet);
+        interaction.onDeviceReady();
 
-                    final String network = PreferenceManager
-                            .getDefaultSharedPreferences(interaction.context())
-                            .getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
-
-                    Bridge.INSTANCE.loginWithDevice(interaction.context(), interaction.getSession().getNativeSession(), network, bReConnectSession, mHwWallet, new HardwareCodeResolver(interaction, mHwWallet));
-
-                    return session;
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((session) -> {
-                    interaction.onLoginSuccess();
-                }, (final Throwable e) -> {
-                    e.printStackTrace();
-                    interaction.getSession().disconnect();
-
-                    // If the error is the Anti-Exfil validation violation we show that prominently.
-                    // Otherwise show a generic error and reconnect/retry message.
-                    final String idValidationFailed = interaction.context().getResources().getResourceEntryName(R.string.id_signature_validation_failed_if);
-                    if (idValidationFailed.equals(e.getMessage())) {
-                        interaction.showInstructions(R.string.id_signature_validation_failed_if);
-                    } else {
-                        interaction.showError(interaction.context().getString(R.string.id_error_logging_in_with_hardware));
-                        interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
-                    }
-                })
-        );
+//        mDisposables.add(Observable.just(interaction.getGreenSession())
+//                .observeOn(Schedulers.computation())
+//                .map((session) -> {
+//
+//                    //Bridge.INSTANCE.loginWithDevice(interaction.context(), interaction.getSession().getNativeSession(), network, bReConnectSession, mHwWallet, new HardwareCodeResolver(interaction, mHwWallet));
+//
+//                    return session;
+//                })
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe((session) -> {
+//                    interaction.onLoginSuccess();
+//                }, (final Throwable e) -> {
+//                    e.printStackTrace();
+//                    interaction.getGreenSession().disconnect();
+//
+//                    // If the error is the Anti-Exfil validation violation we show that prominently.
+//                    // Otherwise show a generic error and reconnect/retry message.
+//                    final String idValidationFailed = interaction.context().getResources().getResourceEntryName(R.string.id_signature_validation_failed_if);
+//                    if (idValidationFailed.equals(e.getMessage())) {
+//                        interaction.showInstructions(R.string.id_signature_validation_failed_if);
+//                    } else {
+//                        interaction.showError(interaction.context().getString(R.string.id_error_logging_in_with_hardware));
+//                        interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
+//                    }
+//                })
+//        );
     }
 
     public void onDestroy() {

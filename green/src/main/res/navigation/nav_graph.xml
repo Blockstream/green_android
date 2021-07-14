@@ -115,7 +115,12 @@
         <argument
             android:name="deviceId"
             app:argType="integer"
-            android:defaultValue="-1" />
+            android:defaultValue="0" />
+        <argument
+            android:name="network"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/chooseNetworkFragment"
@@ -408,6 +413,10 @@
         <action
             android:id="@+id/action_loginFragment_to_chooseRecoveryPhraseFragment"
             app:destination="@id/chooseRecoveryPhraseFragment" />
+        <argument
+            android:name="deviceId"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/chooseAccountTypeFragment"
@@ -471,13 +480,12 @@
             app:destination="@id/deviceInfoFragment" />
         <argument
             android:name="deviceBrand"
-            app:argType="com.blockstream.green.devices.DeviceBrand" />
+            app:argType="com.blockstream.DeviceBrand" />
     </fragment>
     <fragment
         android:id="@+id/deviceInfoFragment"
         android:name="com.blockstream.green.ui.devices.DeviceInfoFragment"
-        tools:layout="@layout/device_info_fragment"
-        android:label="">
+        tools:layout="@layout/device_info_fragment">
         <argument
             android:name="deviceId"
             app:argType="integer" />

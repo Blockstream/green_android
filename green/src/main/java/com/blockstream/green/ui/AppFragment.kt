@@ -13,17 +13,24 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.blockstream.DeviceBrand
+import com.blockstream.gdk.data.Device
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.utils.*
+import com.google.android.material.snackbar.Snackbar
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.ui.TabbedMainActivity
+import io.reactivex.Single
+import mu.KLogging
 import javax.inject.Inject
 
 
@@ -43,7 +50,7 @@ import javax.inject.Inject
 abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
-) : Fragment(), HWWalletBridge {
+) : Fragment() {
     open val isAdjustResize = false
 
     internal lateinit var binding: T
@@ -110,34 +117,7 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     @SuppressLint("RestrictedApi")
     fun navigate(@IdRes resId: Int, args: Bundle?, isLogout: Boolean = false, optionsBuilder: NavOptions.Builder? = null) {
-
-        val navOptionsBuilder = optionsBuilder ?: NavOptions.Builder()
-        val animate = true
-
-        if (animate) {
-            navOptionsBuilder.setEnterAnim(R.anim.nav_enter_anim)
-                .setExitAnim(R.anim.nav_exit_anim)
-                .setPopEnterAnim(R.anim.nav_pop_enter_anim)
-                .setPopExitAnim(R.anim.nav_pop_exit_anim)
-        }
-
-        if (isLogout) {
-            navOptionsBuilder.setPopUpTo(findNavController().backStack.first.destination.id, true)
-            navOptionsBuilder.setLaunchSingleTop(true) // this is only needed on lateral movements
-        } else if (resId == R.id.action_global_loginFragment) {
-            // Allow only one Login screen
-            navOptionsBuilder.setLaunchSingleTop(true)
-        }else if (resId == R.id.action_global_addWalletFragment){
-            // Allow a single onboarding path
-            navOptionsBuilder.setPopUpTo(R.id.addWalletFragment, true)
-        }
-
-        try{
-            // Simple fix for https://issuetracker.google.com/issues/118975714
-            findNavController().navigate(resId, args, navOptionsBuilder.build())
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
+        navigate(findNavController(), resId, args, isLogout, optionsBuilder)
     }
 
     fun openOverview(){
@@ -146,19 +126,18 @@ abstract class AppFragment<T : ViewDataBinding>(
         startActivity(intent)
     }
 
-    private fun popBackStack(){
+    internal open fun popBackStack(){
         findNavController().popBackStack()
     }
 
-    override fun interactionRequest(hw: HWWallet?) {
-        throw Exception("Not yet implemented")
+    internal fun setupDeviceInteractionEvent(onDeviceInteractionEvent: MutableLiveData<ConsumableEvent<Device>>) {
+        onDeviceInteractionEvent.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandledOrReturnNull()?.let {
+                // KISS: It's not what v3 had done in the past, but it's simpler
+                snackbar(R.string.id_please_follow_the_instructions, Snackbar.LENGTH_LONG)
+            }
+        }
     }
 
-    override fun pinMatrixRequest(hw: HWWallet?): String {
-        throw Exception("Not yet implemented")
-    }
-
-    override fun passphraseRequest(hw: HWWallet?): String {
-        throw Exception("Not yet implemented")
-    }
+    companion object: KLogging()
 }

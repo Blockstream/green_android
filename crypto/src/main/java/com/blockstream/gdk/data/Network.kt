@@ -1,7 +1,9 @@
 package com.blockstream.gdk.data
 
 import android.os.Parcelable
+import com.blockstream.crypto.R
 import com.blockstream.gdk.GAJson
+import com.blockstream.libwally.Wally
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -54,6 +56,18 @@ data class Network(
         } else {
             "Multisig $canonicalName"
         }
+
+    fun getVerPublic(): Int {
+        return if (isMainnet) Wally.BIP32_VER_MAIN_PUBLIC else Wally.BIP32_VER_TEST_PUBLIC
+    }
+
+    fun getNetworkIcon(): Int{
+        if (isMainnet(id)) return R.drawable.ic_bitcoin_network_60
+        if (isLiquid(id)) return R.drawable.ic_liquid_network_60
+        if (isTestnet(id)) return R.drawable.ic_bitcoin_testnet_network_60
+        if (isTestnetLiquid(id)) return R.drawable.ic_liquid_testnet_network_60
+        return R.drawable.ic_unknown_network_60
+    }
 
     override fun kSerializer(): KSerializer<Network> = serializer()
 

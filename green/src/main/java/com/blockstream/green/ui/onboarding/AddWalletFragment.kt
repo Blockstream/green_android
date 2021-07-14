@@ -9,7 +9,9 @@ import com.blockstream.green.Urls
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.AddWalletFragmentBinding
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.ui.devices.DeviceInfoFragmentDirections
 import com.blockstream.green.utils.openBrowser
+import com.blockstream.green.utils.setNavigationResult
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,8 +38,9 @@ class AddWalletFragment :
         }
 
         binding.buttonContinueHardware.setOnClickListener {
-            val options = OnboardingOptions(isRestoreFlow = false, deviceId = args.deviceId)
-            navigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseNetworkFragment(options))
+            settingsManager.setDeviceTermsAccepted()
+            setNavigationResult(result = args.network)
+            popBackStack()
         }
 
         binding.buttonNewWallet.setOnClickListener {

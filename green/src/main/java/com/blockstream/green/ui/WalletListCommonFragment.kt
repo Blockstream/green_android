@@ -8,7 +8,7 @@ import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.WalletListCommonBinding
-import com.blockstream.green.devices.DeviceBrand
+import com.blockstream.DeviceBrand
 import com.blockstream.green.ui.items.DeviceBrandListItem
 import com.blockstream.green.ui.items.WalletListItem
 import com.blockstream.green.utils.observe

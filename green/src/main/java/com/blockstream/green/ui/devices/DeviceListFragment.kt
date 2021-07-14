@@ -2,10 +2,8 @@ package com.blockstream.green.ui.devices
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.content.DialogInterface
 import android.content.Intent
-import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -16,12 +14,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockstream.DeviceBrand
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.DeviceListFragmentBinding
 import com.blockstream.green.devices.Device
-import com.blockstream.green.devices.DeviceBrand
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppFragment
@@ -31,8 +29,6 @@ import com.blockstream.green.utils.observe
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.Bridge
-import com.greenaddress.greenbits.ui.GaActivity
-import com.greenaddress.greenbits.ui.authentication.RequestLoginActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
@@ -182,21 +178,22 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
         if(Bridge.useGreenModule){
             navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
         }else{
-//            navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
-            Bridge.bridgeSession(sessionManager.getHardwareSessionV3().gaSession, "mainnet",null)
+            // navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
+            navigate(DeviceListFragmentDirections.actionDeviceListFragmentToDeviceInfoFragment(deviceId = device.id))
+//            Bridge.bridgeSession(sessionManager.getHardwareSessionV3().gaSession, "mainnet",null)
+//
+//            val intent = Intent(requireContext(), RequestLoginActivity::class.java).also {
+//                if(device.isUsb){
+//                    it.action = GaActivity.ACTION_USB_ATTACHED
+//                    it.putExtra(UsbManager.EXTRA_DEVICE, device.usbDevice)
+//                }else{
+//                    it.action = RequestLoginActivity.ACTION_BLE_SELECTED
+//                    it.putExtra(BluetoothDevice.EXTRA_UUID, device.bleService)
+//                    it.putExtra(BluetoothDevice.EXTRA_DEVICE, device.bleDevice?.bluetoothDevice)
+//                }
+//            }
 
-            val intent = Intent(requireContext(), RequestLoginActivity::class.java).also {
-                if(device.isUsb){
-                    it.action = GaActivity.ACTION_USB_ATTACHED
-                    it.putExtra(UsbManager.EXTRA_DEVICE, device.usbDevice)
-                }else{
-                    it.action = RequestLoginActivity.ACTION_BLE_SELECTED
-                    it.putExtra(BluetoothDevice.EXTRA_UUID, device.bleService)
-                    it.putExtra(BluetoothDevice.EXTRA_DEVICE, device.bleDevice?.bluetoothDevice)
-                }
-            }
-
-            startActivity(intent)
+//            startActivity(intent)
         }
     }
 

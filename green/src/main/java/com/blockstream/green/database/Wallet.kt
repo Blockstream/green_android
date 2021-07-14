@@ -2,8 +2,11 @@ package com.blockstream.green.database
 
 import android.os.Parcelable
 import androidx.room.*
+import com.blockstream.gdk.data.Network
+import com.greenaddress.greenapi.Session
 
 import kotlinx.parcelize.Parcelize
+import mu.KLogging
 
 typealias WalletId = Long
 
@@ -51,4 +54,19 @@ data class Wallet(
 
     val isHardwareEmulated
         get() = id == -1L
+
+    companion object : KLogging() {
+
+        fun createEmulatedHardwareWallet(network: Network, activeAccount: Long = 0): Wallet {
+            return Wallet(
+                id = -1L,
+                walletHashId = network.id,
+                name = network.productName,
+                network = network.network,
+                isRecoveryPhraseConfirmed = true,
+                isHardware = true,
+                activeAccount = activeAccount
+            )
+        }
+    }
 }

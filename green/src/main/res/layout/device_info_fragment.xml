@@ -15,11 +15,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/deviceLogo"
+            greenDevice="@{vm.device}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="24dp"
@@ -28,7 +28,6 @@
             android:layout_marginBottom="24dp"
             android:cropToPadding="false"
             android:scaleType="fitCenter"
-            greenDevice="@{vm.device}"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,6 +41,7 @@
             app:layout_constraintGuide_percent="0.2" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutCompat2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -72,56 +72,41 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            isVisible="@{vm.onProgress}"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:text="@{vm.status}"
-            app:layout_constraintBottom_toBottomOf="@+id/recycler"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/recycler" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
+            isVisible="@{!vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="200dp"
+            android:layout_marginTop="40dp"
+            app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat2" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progress"
+            android:indeterminate="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            isVisible="@{vm.onProgress}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline3" />
+            app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat2" />
 
-        <Button
-            android:id="@+id/buttonConnect"
-            isVisible="@{vm.device.deviceState == DeviceState.DISCONNECTED}"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonConnectionSettings"
+            style="@style/Widget.Green.Button.Text"
+            isGone="@{vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:text="Connect"
-            app:layout_constraintBottom_toBottomOf="@+id/status"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/buttonOnBoarding"
-            isVisible="@{vm.device.deviceState == DeviceState.CONNECTED}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="OnBoarding"
-            app:layout_constraintBottom_toBottomOf="@+id/status"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/status" />
+            android:layout_marginEnd="24dp"
+            android:enabled="@{!vm.onProgress}"
+            android:text="@string/id_app_settings"
+            android:textColor="@color/color_on_surface_emphasis_low"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

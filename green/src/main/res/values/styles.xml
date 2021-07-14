@@ -78,14 +78,16 @@
         <item name="indicatorSize">120dp</item>
         <item name="trackThickness">2dp</item>
         <item name="trackCornerRadius">@dimen/progress_radius</item>
-        <item name="hideAnimationBehavior">inward</item>
-        <item name="showAnimationBehavior">outward</item>
+<!--        // Workaround for bug https://github.com/material-components/material-components-android/issues/1972-->
+<!--        <item name="hideAnimationBehavior">inward</item>-->
+<!--        <item name="showAnimationBehavior">outward</item>-->
     </style>
 
     <style name="Widget.Green.LinearProgressIndicator" parent="Widget.MaterialComponents.LinearProgressIndicator">
         <item name="trackThickness">1dp</item>
-        <item name="hideAnimationBehavior">inward</item>
-        <item name="showAnimationBehavior">outward</item>
+<!--        // Workaround for bug https://github.com/material-components/material-components-android/issues/1972-->
+<!--        <item name="hideAnimationBehavior">inward</item>-->
+<!--        <item name="showAnimationBehavior">outward</item>-->
     </style>
 
     <style name="Widget.Green.Snackbar" parent="Widget.MaterialComponents.Snackbar">

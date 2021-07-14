@@ -1,6 +1,7 @@
 package com.greenaddress.greenbits.wallets;
 
 import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.Network;
 import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.btchip.BTChipDongle;
@@ -28,6 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
+
+import io.reactivex.SingleEmitter;
+
 import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
 
 
@@ -41,7 +45,8 @@ public class BTChipHWWallet extends HWWallet {
     private final Map<String, String> mUserXPubs = new HashMap<>();
 
     public BTChipHWWallet(final BTChipDongle dongle, final String pin,
-                          final SettableFuture<Integer> remainingAttemptsFuture, final NetworkData network,
+//                          final SingleEmitter<Integer> remainingAttemptsFuture,
+                          final Network network,
                           final Device device) {
         mDongle = dongle;
         mPin = pin;
@@ -52,18 +57,18 @@ public class BTChipHWWallet extends HWWallet {
         mExecutor.submit(() -> {
             try {
                 mDongle.verifyPin(mPin.getBytes());
-                remainingAttemptsFuture.set(-1);  // -1 means success
+                // remainingAttemptsFuture.onSuccess(-1);  // -1 means success
             } catch (final BTChipException e) {
                 e.printStackTrace();
                 final String msg = e.toString();
                 final int index = msg.indexOf("63c");
-                if (index != -1)
-                    remainingAttemptsFuture.set(Integer.valueOf(String.valueOf(msg.charAt(index + 3))));
-                else if (msg.contains("6985"))
-                    // mDongle is not set up
-                    remainingAttemptsFuture.set(0);
-                else
-                    remainingAttemptsFuture.setException(e);
+//                if (index != -1)
+//                    remainingAttemptsFuture.onSuccess(Integer.valueOf(String.valueOf(msg.charAt(index + 3))));
+//                else if (msg.contains("6985"))
+//                    // mDongle is not set up
+//                    remainingAttemptsFuture.onSuccess(0);
+//                else
+//                    remainingAttemptsFuture.tryOnError(e);
             } catch (final Exception e) {
                 e.printStackTrace();
             }

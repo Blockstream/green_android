@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="com.blockstream.green.devices.Device" />
+        <import type="com.blockstream.green.devices.Device.DeviceState" />
         <variable
             name="vm"
             type="com.blockstream.green.ui.wallet.LoginViewModel" />
@@ -17,7 +18,7 @@
 
         <LinearLayout
             android:id="@+id/wrapRestoreWallet"
-            isVisible="@{!vm.wallet.watchOnly &amp;&amp; !vm.wallet.isHardware &amp;&amp; vm.pinCredentials == null &amp;&amp; vm.passwordCredentials == null &amp;&amp; !vm.isInProgress}"
+            isVisible="@{!vm.wallet.watchOnly &amp;&amp; !vm.wallet.isHardware &amp;&amp; vm.pinCredentials == null &amp;&amp; vm.passwordCredentials == null &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
@@ -48,13 +49,14 @@
 
         <LinearLayout
             android:id="@+id/wrapPassword"
-            isVisible="@{vm.passwordCredentials != null &amp;&amp; !vm.isInProgress}"
+            isVisible="@{vm.passwordCredentials != null &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="48dp"
             android:layout_marginEnd="48dp"
             android:gravity="center"
             android:orientation="vertical"
+            tools:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline">
@@ -91,24 +93,38 @@
 
         <TextView
             android:id="@+id/textView7"
-            isVisible="@{vm.isInProgress}"
+            isVisible="@{vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
             android:text="@{(vm.torStatus == null || vm.torStatus.progress == 100) ? @string/id_logging_in : @string/id_connecting_through_tor}"
+            tools:text="@string/id_logging_in"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintBottom_toTopOf="@+id/progress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/buttonLoginWithDevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:text="@string/id_log_in"
+            isVisible="@{!vm.onProgress &amp;&amp; vm.device != null}"
+            app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
 
         <TextView
             android:id="@+id/textView"
-            isVisible="@{(vm.pinCredentials != null || vm.passwordCredentials != null) &amp;&amp; !vm.isInProgress }"
+            isVisible="@{(vm.pinCredentials != null || vm.passwordCredentials != null) &amp;&amp; !vm.onProgress }"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/id_enter_your_pin"
             android:textAppearance="?attr/textAppearanceHeadline6"
+            tools:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -116,7 +132,7 @@
 
         <com.blockstream.green.views.GreenPinView
             android:id="@+id/pinView"
-            isVisible="@{vm.pinCredentials != null &amp;&amp; !vm.isInProgress}"
+            isVisible="@{vm.pinCredentials != null &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="24dp"
@@ -127,7 +143,7 @@
             tools:visibility="gone" />
 
         <com.blockstream.green.views.GappedLinearLayout
-            isVisible="@{vm.wallet.isWatchOnly &amp;&amp; !vm.isInProgress}"
+            isVisible="@{vm.wallet.isWatchOnly &amp;&amp; !vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -135,6 +151,7 @@
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:orientation="vertical"
+            tools:visibility="gone"
             app:gap="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
             app:layout_constraintEnd_toEndOf="parent"
@@ -197,7 +214,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonLoginWithBiometrics"
             style="@style/Widget.Green.Button.Text"
-            isVisible="@{vm.biometricsCredentials != null &amp;&amp; !vm.isInProgress}"
+            isVisible="@{vm.biometricsCredentials != null &amp;&amp; !vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -210,11 +227,11 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonConnectionSettings"
             style="@style/Widget.Green.Button.Text"
-            isGone="@{vm.isInProgress}"
+            isGone="@{vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
-            android:enabled="@{!vm.isInProgress}"
+            android:enabled="@{!vm.onProgress}"
             android:text="@string/id_app_settings"
             android:textColor="@color/color_on_surface_emphasis_low"
             android:textSize="12sp"
@@ -223,17 +240,64 @@
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress"
+            indeterminate="@{(vm.torStatus == null || vm.torStatus.progress == 100) ? true : false}"
+            isInvisible="@{!vm.onProgress}"
+            progress="@{vm.torStatus.progress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:max="100"
-            isVisible="@{vm.isInProgress}"
-            indeterminate="@{(vm.torStatus == null || vm.torStatus.progress == 100) ? true : false}"
-            progress="@{vm.torStatus.progress}"
+            tools:progress="75"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone"/>
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/deviceLogo"
+            greenDevice="@{vm.device}"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:cropToPadding="false"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ledger_device"
+            isVisible="@{vm.device != null}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="24dp"
+            android:orientation="vertical"
+            isVisible="@{!vm.onProgress &amp;&amp; vm.device != null}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/deviceLogo"
+            tools:text="Blockstream Jade">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{vm.device.name}"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textColor="@color/material_on_background_emphasis_medium"
+                tools:text="Jade" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{vm.device.manufacturer}"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/material_on_background_emphasis_medium"
+                tools:text="Blockstream" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"

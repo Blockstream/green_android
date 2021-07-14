@@ -110,7 +110,7 @@ class BridgeActivity : AppActivity() {
         button: CharSequence?,
         buttonListener: View.OnClickListener?
     ){
-        binding.toolbar.set(title, subtitle, drawable, button, buttonListener)
+        binding.toolbar.set(title, subtitle, drawable,null, button,  buttonListener)
     }
 
     override fun setTitle(title: CharSequence?) {

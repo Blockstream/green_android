@@ -275,7 +275,7 @@ class GreenSession constructor(
         registerUser: Boolean,
         connectSession: Boolean,
         hwWallet: HWWallet,
-        hardwareCodeResolver: HardwareCodeResolver
+        hardwareWalletResolver: HardwareWalletResolver
     ): LoginData {
         isWatchOnly = false
 
@@ -291,13 +291,13 @@ class GreenSession constructor(
             AuthHandler(
                 greenWallet,
                 greenWallet.registerUser(gaSession, DeviceParams(device), "")
-            ).resolve(hardwareWalletResolver = hardwareCodeResolver)
+            ).resolve(hardwareWalletResolver = hardwareWalletResolver)
         }
 
         return AuthHandler(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = DeviceParams(device))
-        ).result<LoginData>(hardwareWalletResolver = hardwareCodeResolver).also {
+        ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
             isConnected = true
             walletHashId = it.walletHashId
             initializeSessionData()

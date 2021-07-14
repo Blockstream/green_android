@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.blockstream.gdk.data.Network;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.NetworkData;
@@ -48,7 +49,7 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
             }
         });
 
-        final NetworkData networkData = Bridge.INSTANCE.getCurrentNetworkData(getContext());
+        final Network networkData = Bridge.INSTANCE.getCurrentNetwork(getContext());
         recyclerView.setAdapter(new SwitchNetworkAdapter(getContext(), ((GaActivity)getActivity()).getSession().getHardwareSupportedNetworks(),
                                                          networkData,
                                                          this));
@@ -58,7 +59,7 @@ public class SwitchNetworkFragment extends BottomSheetDialogFragment implements 
     }
 
     @Override
-    public void onNetworkClick(final NetworkData networkData) {
+    public void onNetworkClick(final Network networkData) {
         ((RequestLoginActivity) getActivity()).onNetworkClick(networkData);
         dismiss();
     }

@@ -8,6 +8,8 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.utils.isProductionFlavor
 import kotlinx.parcelize.Parcelize
 
+// TODO remove deviceId
+
 @Parcelize
 data class OnboardingOptions(
     val isRestoreFlow: Boolean,

@@ -334,13 +334,13 @@ class GreenApplication : Application(){
             }
         }
 
-        Bridge.loginWithDeviceFn = { _, gaSession, networkId, connectSession, hwWallet, hardwareDataResolver ->
+        Bridge.loginWithDeviceFn = { _, gaSession, networkId, connectSession, hwWallet, hardwareWalletResolver ->
             sessionManager.getWalletSession(gaSession)?.let {
                 it.loginWithDevice(it.networks.getNetworkById(networkId),
                     registerUser = true,
                     connectSession = connectSession,
                     hwWallet = hwWallet,
-                    hardwareCodeResolver = hardwareDataResolver
+                    hardwareWalletResolver = hardwareWalletResolver
                 )
             }
         }

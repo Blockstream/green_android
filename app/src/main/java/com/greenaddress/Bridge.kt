@@ -39,6 +39,7 @@ object Bridge {
         private set
 
     var hardwareQATester : HardwareQATester? = null
+    var greenWallet: GreenWallet? = null
 
     var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, extraData: Any?) -> Unit)? = null
     var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
@@ -73,6 +74,8 @@ object Bridge {
             initialized = true
 
             context = WeakReference(ctx.applicationContext)
+
+            this.greenWallet = greenWallet
 
             this.isDevelopmentFlavor = isDevelopmentFlavor
             this.versionName = versionName
@@ -239,7 +242,9 @@ object Bridge {
 
     fun getCurrentNetworkData(context: Context) = BridgeJava.getCurrentNetworkData(context)
 
-    fun getCurrentNetwork(context: Context) = BridgeJava.getCurrentNetwork(context)
+    fun getCurrentNetwork(context: Context) = greenWallet?.networks?.getNetworkById(BridgeJava.getCurrentNetwork(context))
+
+    fun getCurrentNetworkId(context: Context) = BridgeJava.getCurrentNetwork(context)
 
     fun createTwoFactorResolver(context: Context): TwoFactorResolver? = createTwoFactorResolverFn?.invoke(context)
 

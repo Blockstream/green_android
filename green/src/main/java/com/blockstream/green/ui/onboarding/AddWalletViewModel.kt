@@ -18,7 +18,7 @@ class AddWalletViewModel @AssistedInject constructor(
 ) : AppViewModel() {
     val termsChecked = MutableLiveData(false)
     val device = MutableLiveData(deviceManager.getDevice(deviceId))
-    val isHardware = MutableLiveData(device.value != null)
+    val isDeviceOnboarding = MutableLiveData(deviceId != 0)
 
     init {
         // If you have already agreed, check by default
@@ -26,7 +26,6 @@ class AddWalletViewModel @AssistedInject constructor(
             termsChecked.postValue(walletRepository.walletsExistsSuspend())
         }
     }
-
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {

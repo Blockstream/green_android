@@ -36,6 +36,7 @@
             android:layout_marginTop="8dp"
             android:text="@string/id_well_get_you_set_up_in_no_time"
             android:textAppearance="?attr/textAppearanceBody2"
+            isGone="@{vm.isDeviceOnboarding}"
             app:layout_constraintEnd_toEndOf="@+id/title"
             app:layout_constraintStart_toStartOf="@+id/title"
             app:layout_constraintTop_toBottomOf="@+id/title" />
@@ -100,19 +101,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.termsChecked}"
-                isVisible="@{vm.isHardware}"
-                tools:text="Continue with Hardware Wallet"
-                android:text="@{String.format(@string/id_continue_with_1s, vm.device.name)}"
-                app:icon="@drawable/ic_plus_18"
-                app:iconGravity="start"
-                app:iconPadding="-18dp" />
+                isVisible="@{vm.isDeviceOnboarding}"
+                android:text="@string/id_continue" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonNewWallet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.termsChecked}"
-                isVisible="@{!vm.isHardware}"
+                isVisible="@{!vm.isDeviceOnboarding}"
                 android:text="@string/id_new_wallet"
                 app:icon="@drawable/ic_plus_18"
                 app:iconGravity="start"
@@ -123,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.termsChecked}"
-                isVisible="@{!vm.isHardware}"
+                isVisible="@{!vm.isDeviceOnboarding}"
                 android:text="@string/id_restore_a_wallet"
                 app:icon="@drawable/ic_recycle_18"
                 app:iconGravity="start"
@@ -132,7 +129,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonWatchOnly"
                 style="@style/Widget.Green.Button.Outlined"
-                isVisible="@{!vm.isHardware}"
+                isVisible="@{!vm.isDeviceOnboarding}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.termsChecked}"

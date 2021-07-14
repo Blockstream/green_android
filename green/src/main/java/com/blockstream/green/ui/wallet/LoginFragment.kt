@@ -24,6 +24,7 @@ import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.LoginFragmentBinding
+import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.dialogs.showTorSinglesigWarningIfNeeded
@@ -31,6 +32,7 @@ import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenPinViewListener
 import com.greenaddress.Bridge
 import com.greenaddress.greenbits.ui.TabbedMainActivity
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.UnrecoverableKeyException
 import javax.inject.Inject
@@ -42,17 +44,23 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 ) {
     val args: LoginFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet }
+    val device by lazy { if(args.deviceId != 0 ) deviceManager.getDevice(args.deviceId) else null }
 
     private var menuHelp: MenuItem? = null
+    private var menuRename: MenuItem? = null
+    private var menuDelete: MenuItem? = null
 
     @Inject
     lateinit var viewModelFactory: LoginViewModel.AssistedFactory
     val viewModel: LoginViewModel by viewModels {
-        LoginViewModel.provideFactory(viewModelFactory, args.wallet)
+        LoginViewModel.provideFactory(viewModelFactory, args.wallet, device)
     }
 
     @Inject
     lateinit var appKeystore: AppKeystore
+
+    @Inject
+    lateinit var deviceManager: DeviceManager
 
     @Inject
     lateinit var walletRepository: WalletRepository
@@ -61,6 +69,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     lateinit var greenWallet: GreenWallet
 
     var biometricPrompt : BiometricPrompt? = null
+
 
     override fun isLoggedInRequired(): Boolean = false
 
@@ -123,7 +132,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             updateMenu()
         }
 
-
         viewModel.biometricsCredentials.observe(viewLifecycleOwner) {
             it?.let {
                 /**
@@ -144,7 +152,13 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
         viewModel.onErrorMessage.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { error ->
-                errorSnackbar(error)
+                if(device != null){
+                    errorDialog(error) {
+                        popBackStack()
+                    }
+                }else{
+                    errorSnackbar(error)
+                }
             }
         }
 
@@ -209,6 +223,19 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             hideKeyboard()
         }
 
+        binding.buttonLoginWithDevice.setOnClickListener {
+             device?.let { it1 ->
+                 viewModel.loginWithDevice(it1)
+             }
+        }
+
+        device?.let { device ->
+            if(viewModel.initialAction.value == false){
+                viewModel.initialAction.value = true
+                viewModel.loginWithDevice(device)
+            }
+        }
+
         // Show Singlesig Tor warning
         settingsManager.getApplicationSettingsLiveData().distinctUntilChanged().observe(viewLifecycleOwner) {
             it?.let { applicationSettings ->
@@ -220,12 +247,16 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     }
 
     private fun updateMenu(){
-        menuHelp?.isVisible = !viewModel.wallet.isWatchOnly && (viewModel.pinCredentials.value == null && viewModel.passwordCredentials.value == null)
+        menuHelp?.isVisible = !wallet.isHardware && !viewModel.wallet.isWatchOnly && (viewModel.pinCredentials.value == null && viewModel.passwordCredentials.value == null)
+        menuRename?.isVisible = !wallet.isHardware
+        menuDelete?.isVisible = !wallet.isHardware
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         menuHelp = menu.findItem(R.id.help)
+        menuRename = menu.findItem(R.id.rename)
+        menuDelete = menu.findItem(R.id.delete)
         updateMenu()
     }
 

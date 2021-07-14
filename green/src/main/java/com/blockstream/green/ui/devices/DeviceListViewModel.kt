@@ -3,8 +3,8 @@ package com.blockstream.green.ui.devices
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.blockstream.DeviceBrand
 import com.blockstream.green.devices.Device
-import com.blockstream.green.devices.DeviceBrand
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
@@ -31,20 +31,12 @@ class DeviceListViewModel @AssistedInject constructor(
             .addTo(disposables)
     }
 
-    fun askForPermissionOrBond(device: Device){
-        device.usbDevice?.let {
-            deviceManager.askForPermissions(it){
-                onEvent.postValue(ConsumableEvent(device))
-            }
-        }
-
-        device.bleDevice?.let {
-            deviceManager.bondDevice(device, {
-                onEvent.postValue(ConsumableEvent(device))
-            }, {
-                onError.postValue(ConsumableEvent(it))
-            })
-        }
+    fun askForPermissionOrBond(device: Device) {
+        device.askForPermissionOrBond({
+            onEvent.postValue(ConsumableEvent(device))
+        }, {
+            onError.postValue(ConsumableEvent(it))
+        })
     }
 
     @dagger.assisted.AssistedFactory

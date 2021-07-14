@@ -2,7 +2,9 @@ package com.greenaddress.greenbits.wallets;
 
 import android.util.Log;
 
+import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.Network;
 import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -35,7 +37,7 @@ public class TrezorHWWallet extends HWWallet {
     private final Map<String, TrezorType.HDNodeType> mRecoveryXPubs = new HashMap<>();
     private final Map<String, Object> mPrevTxs = new HashMap<>();
 
-    public TrezorHWWallet(final Trezor t, final NetworkData network, final Device device) {
+    public TrezorHWWallet(final Trezor t, final Network network, final Device device) {
         mTrezor = t;
         mNetwork = network;
         mDevice = device;
@@ -149,7 +151,7 @@ public class TrezorHWWallet extends HWWallet {
         Message m = mTrezor.io(TrezorMessage.SignTx.newBuilder()
                                .setInputsCount(inputs.size())
                                .setOutputsCount(outputs.size())
-                               .setCoinName(mNetwork.getMainnet() ? "Bitcoin" : "Testnet")
+                               .setCoinName(mNetwork.isMainnet() ? "Bitcoin" : "Testnet")
                                .setVersion(txVersion)
                                .setLockTime(txLocktime));
         while (true) {
@@ -341,7 +343,7 @@ public class TrezorHWWallet extends HWWallet {
             return handleCommon(parent, mTrezor.io(TrezorMessage.ButtonAck.newBuilder()));
 
         case "PinMatrixRequest":
-            final String pin = parent.pinMatrixRequest(this);
+            final String pin = parent.requestPinMatrix(DeviceBrand.Trezor).blockingGet();
             return handleCommon(parent, mTrezor.io(TrezorMessage.PinMatrixAck.newBuilder().setPin(pin)));
 
         case "PassphraseStateRequest":
@@ -355,7 +357,7 @@ public class TrezorHWWallet extends HWWallet {
             // on the Trezor T hasOnDevice is true, so we check what it is explicitly asking with getOnDevice
             if (!passphraseRequest.hasOnDevice() || !passphraseRequest.getOnDevice()) {
                 // Passphrase set to "HOST", ask the user here on the app
-                final String passphrase = parent.passphraseRequest(this);
+                final String passphrase = parent.requestPassphrase(DeviceBrand.Trezor).blockingGet();
                 ackBuilder.setPassphrase(passphrase);
             }
 

@@ -6,7 +6,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseNetworkFragmentBinding

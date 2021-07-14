@@ -9,9 +9,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.R
+import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceBottomSheetFragmentBinding
 import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.utils.navigate
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -47,20 +50,20 @@ class DeviceBottomSheetDialogFragment: BottomSheetDialogFragment() {
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         return dialog
     }
-//
-
-
 
     val args: DeviceBottomSheetDialogFragmentArgs by navArgs()
 
     @Inject
     lateinit var viewModelFactory: DeviceInfoViewModel.AssistedFactory
     val viewModel: DeviceInfoViewModel by viewModels {
-        DeviceInfoViewModel.provideFactory(viewModelFactory, deviceManager.getDevice(args.deviceId)!!)
+        DeviceInfoViewModel.provideFactory(viewModelFactory,requireContext().applicationContext,  deviceManager.getDevice(args.deviceId)!!)
     }
 
     @Inject
     lateinit var deviceManager: DeviceManager
+
+    @Inject
+    lateinit var greenWallet: GreenWallet
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,21 +78,25 @@ class DeviceBottomSheetDialogFragment: BottomSheetDialogFragment() {
         binding.vm = viewModel
 //
 //        // Device went offline
-        viewModel.onEvent.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandledOrReturnNull()?.let {
-                if (it is DeviceInfoViewModel.DeviceState){
-                    // IS DISCONNECT ? check
-                      dismiss()
-                }
-            }
-        }
+//        viewModel.onEvent.observe(viewLifecycleOwner) {
+//            it.getContentIfNotHandledOrReturnNull()?.let {
+//                if (it is DeviceInfoViewModel.DeviceState){
+//                    // IS DISCONNECT ? check
+//                      dismiss()
+//                }
+//            }
+//        }
+
 
         binding.buttonConnect.setOnClickListener {
-            viewModel.connect()
+            DeviceBottomSheetDialogFragmentDirections.actionGlobalLoginFragment(Wallet.createEmulatedHardwareWallet(greenWallet.networks.bitcoinGreen), deviceId = args.deviceId).also {
+                navigate(findNavController(), it.actionId, it.arguments, false, null)
+            }
+
         }
 
         binding.buttonAuthorize.setOnClickListener {
-            viewModel.device.askForPermissions()
+            // viewModel.device.askForPermissionOrBond()
         }
 
         binding.buttonOnBoarding.setOnClickListener {

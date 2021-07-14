@@ -5,6 +5,8 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.MutableLiveData
+import com.blockstream.gdk.data.Device
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
@@ -12,6 +14,7 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
 import com.greenaddress.Bridge
@@ -53,6 +56,8 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
         getWalletViewModel()?.let{
 
+            setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
+
             it.onNavigationEvent.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandledOrReturnNull()?.let {
                     if(Bridge.useGreenModule){
@@ -62,13 +67,6 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                     }else{
                         Bridge.navigateToLogin(requireActivity(), wallet.id)
                     }
-                }
-            }
-
-            it.onDeviceInteractionEvent.observe(viewLifecycleOwner) {  event ->
-                event.getContentIfNotHandledOrReturnNull()?.let {
-                    // KISS: It's not what v3 had done in the past, but it's simpler
-                    snackbar(R.string.id_please_follow_the_instructions, Snackbar.LENGTH_LONG)
                 }
             }
 

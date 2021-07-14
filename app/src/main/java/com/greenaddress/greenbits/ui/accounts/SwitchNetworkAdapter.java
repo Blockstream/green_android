@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.blockstream.gdk.data.Network;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -17,13 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 @Deprecated
 public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdapter.ViewHolder> {
 
-    private final List<NetworkData> mNetworkList;
+    private final List<Network> mNetworkList;
     private final Context mContext;
     private int mSelectedItem;
     private final NetworkSwitchListener mNetworkSwitchListener;
 
-    public SwitchNetworkAdapter(final Context context, final List<NetworkData> networkList,
-                                final NetworkData selectedItem,
+    public SwitchNetworkAdapter(final Context context, final List<Network> networkList,
+                                final Network selectedItem,
                                 final NetworkSwitchListener networkSwitchListener) {
         mNetworkList = networkList;
         mContext = context;
@@ -39,9 +40,9 @@ public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdap
 
     @Override
     public void onBindViewHolder(final SwitchNetworkAdapter.ViewHolder holder, final int position) {
-        final NetworkData networkData = mNetworkList.get(position);
+        final Network networkData = mNetworkList.get(position);
         holder.setText(networkData.getName());
-        holder.setIcon(networkData.getIcon());
+        holder.setIcon(networkData.getNetworkIcon());
         holder.setSelected(position == mSelectedItem);
         if(mNetworkSwitchListener != null) {
             holder.mButton.setOnClickListener(view -> {
@@ -57,7 +58,7 @@ public class SwitchNetworkAdapter extends RecyclerView.Adapter<SwitchNetworkAdap
         return mNetworkList == null ? 0 : mNetworkList.size();
     }
 
-    public NetworkData getSelected() {
+    public Network getSelected() {
         return mNetworkList.get( mSelectedItem );
     }
 

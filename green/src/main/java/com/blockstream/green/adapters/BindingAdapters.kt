@@ -15,6 +15,13 @@ import com.google.android.material.textfield.TextInputLayout
 @BindingAdapter("isVisible")
 fun bindIsVisible(view: View, isVisible: Boolean) {
     view.isVisible = isVisible
+
+    // Workaround for bug https://github.com/material-components/material-components-android/issues/1972
+    if(view is BaseProgressIndicator<*>){
+        view.showAnimationBehavior = BaseProgressIndicator.SHOW_INWARD
+        view.hideAnimationBehavior = BaseProgressIndicator.HIDE_OUTWARD
+        view.translationZ = 1.0f
+    }
 }
 
 @BindingAdapter("isGone")
@@ -76,6 +83,6 @@ fun setGdkDevice(view: ImageView, device: Device) {
 }
 
 @BindingAdapter("greenDevice")
-fun setGreenDevice(view: ImageView, device: com.blockstream.green.devices.Device) {
-    view.setImageResource(device.getIcon())
+fun setGreenDevice(view: ImageView, device: com.blockstream.green.devices.Device?) {
+    view.setImageResource(device?.getIcon() ?: 0)
 }

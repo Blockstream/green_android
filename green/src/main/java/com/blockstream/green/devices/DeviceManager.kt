@@ -324,8 +324,7 @@ class DeviceManager constructor(
             if(newUsbDevices.contains(it.usbDevice)){
                 true
             }else{
-                it.offline() // IS THiS NEEDED?
-                it.deviceState.postValue(Device.DeviceState.DISCONNECTED)
+                it.offline()
                 false
             }
         }
@@ -333,7 +332,9 @@ class DeviceManager constructor(
         val newDevices = mutableListOf<Device>()
         for (usbDevice in newUsbDevices){
             if(oldDevices.find { it.usbDevice == usbDevice } == null){
-                newDevices += Device.fromDevice(this, usbDevice)
+                Device.fromDevice(this, usbDevice)?.let{
+                    newDevices += it
+                }
             }
         }
 

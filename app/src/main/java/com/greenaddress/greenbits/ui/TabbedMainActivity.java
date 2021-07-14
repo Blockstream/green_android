@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,9 +22,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.AssetManager;
 import com.blockstream.gdk.CacheStatus;
+import com.blockstream.gdk.data.AccountType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.MoreObjects;
 import com.greenaddress.Bridge;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
@@ -37,10 +41,17 @@ import com.greenaddress.greenbits.ui.transactions.MainFragment;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
+import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.AUTHORIZED_ACCOUNT;
 
 
 @AndroidEntryPoint
@@ -66,6 +77,7 @@ public class TabbedMainActivity extends LoggedActivity  {
         final Uri uri = intent.getData();
         return uri != null && uri.getScheme() != null && uri.getScheme().equals("bitcoin");
     }
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

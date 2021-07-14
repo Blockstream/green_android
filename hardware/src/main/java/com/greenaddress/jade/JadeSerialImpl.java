@@ -38,7 +38,7 @@ public class JadeSerialImpl extends JadeConnectionImpl {
         final UsbDeviceConnection usbConnection = usbManager.openDevice(this.usbDevice);
         this.serial = UsbSerialDevice.createUsbSerialDevice(this.usbDevice, usbConnection);
 
-        if (!this.serial.open()) {
+        if (this.serial == null || !this.serial.open()) {
             throw new JadeError(1, "Failed to connect over usb/serial", null);
         }
 

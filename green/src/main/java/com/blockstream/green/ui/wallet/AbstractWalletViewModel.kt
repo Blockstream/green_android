@@ -2,6 +2,7 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.DeviceBrand
 import com.blockstream.gdk.data.Device
 import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.SubAccount
@@ -19,6 +20,7 @@ import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.Single
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -32,7 +34,7 @@ abstract class AbstractWalletViewModel constructor(
     val sessionManager: SessionManager,
     val walletRepository: WalletRepository,
     var wallet: Wallet,
-) : AppViewModel(), HWWalletBridge {
+) : AppViewModel() {
 
     enum class Event {
         RENAME_WALLET, DELETE_WALLET, RENAME_ACCOUNT
@@ -45,8 +47,6 @@ abstract class AbstractWalletViewModel constructor(
 
     private val subAccountLiveData: MutableLiveData<SubAccount> = MutableLiveData()
     fun getSubAccountLiveData(): LiveData<SubAccount> = subAccountLiveData
-
-    val onDeviceInteractionEvent = MutableLiveData<ConsumableEvent<Device>>()
 
     // Logout events, can be expanded in the future
     val onNavigationEvent = MutableLiveData<ConsumableEvent<Boolean>>()
@@ -96,9 +96,9 @@ abstract class AbstractWalletViewModel constructor(
                                     session.loginWithDevice(
                                         session.network,
                                         registerUser = false,
-                                        connectSession = false,
+                                        connectSession = true,
                                         hwWallet = session.hwWallet!!,
-                                        hardwareCodeResolver = HardwareCodeResolver(this)
+                                        hardwareWalletResolver = HardwareCodeResolver(this)
                                     )
                                 }.subscribeBy(
                                     onError = {
@@ -194,26 +194,9 @@ abstract class AbstractWalletViewModel constructor(
         )
     }
 
-    override fun interactionRequest(hw: HWWallet?) {
-        hw?.let {
-            onDeviceInteractionEvent.postValue(ConsumableEvent(it.device))
-        }
-    }
-
     fun logout() {
         session.disconnectAsync()
         onNavigationEvent.postValue(ConsumableEvent(true))
-    }
-
-    // The following two methods are not needed
-    // it will be remove in the next iteration on simplifying
-    // hardware wallet interfaces
-    override fun pinMatrixRequest(hw: HWWallet?): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun passphraseRequest(hw: HWWallet?): String {
-        TODO("Not yet implemented")
     }
 
     companion object : KLogging()

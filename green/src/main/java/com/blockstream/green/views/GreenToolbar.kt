@@ -42,6 +42,7 @@ class GreenToolbar @JvmOverloads constructor(
         title: CharSequence? = null,
         subtitle: CharSequence? = null,
         drawableLogo: Drawable? = null,
+        drawableBubbleIcon: Drawable? = null,
         button: CharSequence? = null,
         buttonListener: OnClickListener? = null
     ) {
@@ -52,6 +53,9 @@ class GreenToolbar @JvmOverloads constructor(
 
         binding.icon.isGone = drawableLogo == null
         binding.icon.setImageDrawable(drawableLogo)
+
+        binding.bubbleIcon.isGone = drawableBubbleIcon == null
+        binding.bubbleIcon.setImageDrawable(drawableBubbleIcon)
 
         binding.button.isGone = button == null
         binding.button.text = button

@@ -28,9 +28,13 @@ class SettingsManager(context: Context) {
 
     fun setTorSinglesigWarned() = sharedPreferences.edit().putBoolean(KEY_TOR_WARNING, true).apply()
 
+    fun isDeviceTermsAccepted() = sharedPreferences.getInt(KEY_DEVICE_TERMS_ACCEPTED, 0) == 1
+    fun setDeviceTermsAccepted() = sharedPreferences.edit().putInt(KEY_DEVICE_TERMS_ACCEPTED, 1).apply()
+
     companion object {
         const val APPLICATION_SETTINGS_NAME = "application_settings"
 
         const val KEY_TOR_WARNING = "tor_singlesig_warned"
+        const val KEY_DEVICE_TERMS_ACCEPTED = "device_terms_accepted"
     }
 }

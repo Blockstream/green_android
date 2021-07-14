@@ -342,19 +342,8 @@ public class GDKSession implements HttpRequestHandler {
         return cachedNetworks;
     }
 
-    public List<NetworkData> getHardwareSupportedNetworks() {
-        ArrayList<NetworkData> list = new ArrayList<>();
-
-        List<Network> networks = mGreenWallet.getNetworks().getHardwareSupportedNetworks();
-        for(Network network : networks) {
-            try {
-                list.add(mObjectMapper.treeToValue(mObjectMapper.readTree(network.toString()), NetworkData.class));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return list;
+    public List<Network> getHardwareSupportedNetworks() {
+        return mGreenWallet.getNetworks().getHardwareSupportedNetworks();
     }
 
     public GDKTwoFactorCall getReceiveAddress(final int subAccount) throws Exception {

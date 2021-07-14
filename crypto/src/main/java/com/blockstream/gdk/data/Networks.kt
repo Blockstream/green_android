@@ -10,13 +10,15 @@ data class Networks(
     @SerialName("networks") val networks: Map<String, Network>,
 ) {
 
-    val bitcoinGreen by lazy { getNetworkById("mainnet") }
-    val liquidGreen by lazy { getNetworkById("liquid") }
-    val testnetGreen by lazy { getNetworkById("testnet") }
+    val bitcoinGreen by lazy { getNetworkById(Network.GreenMainnet) }
+    val liquidGreen by lazy { getNetworkById(Network.GreenLiquid) }
+    val testnetGreen by lazy { getNetworkById(Network.GreenTestnet) }
+    val testnetLiquidGreen by lazy { getNetworkById(Network.GreenTestnetLiquid) }
 
-    val bitcoinElectrum by lazy { getNetworkById("electrum-mainnet") }
-    val liquidElectrum by lazy { getNetworkById("electrum-liquid") }
-    val testnetElectrum by lazy { getNetworkById("electrum-testnet") }
+    val bitcoinElectrum by lazy { getNetworkById(Network.ElectrumMainnet) }
+    val liquidElectrum by lazy { getNetworkById(Network.ElectrumLiquid) }
+    val testnetElectrum by lazy { getNetworkById(Network.ElectrumTestnet) }
+    val testnetLiquidElectrum by lazy { getNetworkById(Network.ElectrumTestnetLiquid) }
 
     val hardwareSupportedNetworks by lazy { listOf(bitcoinGreen, liquidGreen, testnetGreen) }
 

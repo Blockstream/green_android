@@ -5,38 +5,16 @@ import android.hardware.usb.UsbDevice
 import android.os.ParcelUuid
 import android.os.SystemClock
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.green.R
+import com.blockstream.DeviceBrand
 import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.jade.HttpRequestProvider
-import com.greenaddress.jade.JadeAPI
 import com.greenaddress.jade.JadeBleImpl
 import com.polidea.rxandroidble2.RxBleDevice
 import kotlinx.parcelize.IgnoredOnParcel
 import mu.KLogging
 
-enum class DeviceBrand {
-    Blockstream, Ledger, Trezor;
 
-    val brand
-        get() = when (this) {
-            Blockstream -> "Blockstream"
-            Ledger -> "Ledger"
-            Trezor -> "Trezor"
-        }
-
-    val icon
-        get() = when (this) {
-            Blockstream -> R.drawable.ic_blockstream
-            Ledger -> R.drawable.ic_ledger
-            Trezor -> R.drawable.ic_trezor
-        }
-
-    val hasBleConnectivity
-        get() = this != Trezor
-}
-
-open class Device constructor(
+class Device constructor(
     val type: ConnectionType,
     val deviceManager: DeviceManager,
     val usbDevice: UsbDevice? = null,
@@ -47,47 +25,36 @@ open class Device constructor(
         UNAUTHORIZED, CONNECTED, DISCONNECTED
     }
 
-    val deviceState = MutableLiveData(DeviceState.DISCONNECTED)
+    val deviceState = MutableLiveData(DeviceState.UNAUTHORIZED)
 
-    val hwWallet: HWWallet? = null
+    var hwWallet: HWWallet? = null
+
+    val usbManager
+        get() = deviceManager.usbManager
 
     init {
-        usbDevice?.let {
-            if (deviceManager.hasPermissions(it)) {
-                deviceState.value = DeviceState.CONNECTED
-            } else {
-                deviceState.value = DeviceState.UNAUTHORIZED
-            }
+        if(hasPermissionsOrIsBonded()){
+            deviceState.value = DeviceState.CONNECTED
+        }else{
+            deviceState.value = DeviceState.UNAUTHORIZED
         }
     }
 
-    fun createHwwallet(requestProvider: HttpRequestProvider): HWWallet {
-        if (hwWallet == null) {
-
-            when (deviceBrand) {
-                DeviceBrand.Blockstream -> {
-                    if (isUsb) {
-                        val jadeAPI = JadeAPI.createSerial(requestProvider, deviceManager.usbManager, usbDevice, 115200)
-                    } else {
-                        val jadeAPI = JadeAPI.createBle(requestProvider, bleDevice)
-                    }
-                    // Create JadeAPI on BLE device
-
-
-                }
-                DeviceBrand.Ledger -> TODO()
-                DeviceBrand.Trezor -> TODO()
-            }
-        }
-        return hwWallet!!
-    }
-
-    fun askForPermissions(onSuccess: (() -> Unit)? = null) {
+    fun askForPermissionOrBond(onSuccess: (() -> Unit), onError: ((throwable: Throwable) -> Unit)) {
         usbDevice?.let {
             deviceManager.askForPermissions(it) {
                 deviceState.postValue(DeviceState.CONNECTED)
-                onSuccess?.invoke()
+                onSuccess.invoke()
             }
+        }
+
+        bleDevice?.let {
+            deviceManager.bondDevice(this, {
+                deviceState.postValue(DeviceState.CONNECTED)
+                onSuccess.invoke()
+            }, {
+                onError.invoke(it)
+            })
         }
     }
 
@@ -115,7 +82,7 @@ open class Device constructor(
     val isUsb
         get() = type == ConnectionType.USB
 
-    val isBluethooth
+    val isBle
         get() = type == ConnectionType.BLUETOOTH
 
     @IgnoredOnParcel
@@ -142,14 +109,17 @@ open class Device constructor(
         bleService == ParcelUuid(LedgerDeviceBLE.SERVICE_UUID) || usbDevice?.vendorId == VENDOR_BTCHIP || usbDevice?.vendorId == VENDOR_LEDGER
     }
 
+    @IgnoredOnParcel
+    val supportsLiquid by lazy {
+        !isTrezor
+    }
+
+
     fun hasPermissions(): Boolean {
         return usbDevice?.let { deviceManager.hasPermissions(it) } ?: false
     }
 
-    fun isBonded(): Boolean {
-        return bleDevice?.let { it.bluetoothDevice.bondState == BluetoothDevice.BOND_BONDED }
-            ?: false
-    }
+    fun isBonded() = bleDevice?.bluetoothDevice?.bondState == BluetoothDevice.BOND_BONDED
 
     fun hasPermissionsOrIsBonded(): Boolean {
         return if (isUsb) {
@@ -175,12 +145,24 @@ open class Device constructor(
         const val VENDOR_TREZOR_V2 = 0x1209
         const val VENDOR_JADE = 0x10c4
 
-        fun fromDevice(deviceManager: DeviceManager, usbDevice: UsbDevice): Device {
-            return Device(
-                ConnectionType.USB,
-                deviceManager,
-                usbDevice = usbDevice
-            )
+        private fun hasSuportedVendorId(usbDevice: UsbDevice) : Boolean{
+            val vId = usbDevice.vendorId
+            return (vId == VENDOR_BTCHIP ||
+                    vId == VENDOR_LEDGER ||
+                    vId == VENDOR_TREZOR ||
+                    vId == VENDOR_TREZOR_V2 ||
+                    vId == VENDOR_JADE)
+        }
+
+        fun fromDevice(deviceManager: DeviceManager, usbDevice: UsbDevice): Device? {
+            if(hasSuportedVendorId(usbDevice)){
+                return Device(
+                    ConnectionType.USB,
+                    deviceManager,
+                    usbDevice = usbDevice
+                )
+            }
+            return null
         }
 
         fun fromScan(

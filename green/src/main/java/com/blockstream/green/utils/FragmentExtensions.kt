@@ -25,30 +25,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
-
-fun <T> Fragment.getNavigationResult(key: String = "result") =
-    findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<T>(
-        key
-    )
-
-fun Fragment.clearNavigationResult(key: String = "result") =
-    findNavController().currentBackStackEntry?.savedStateHandle?.set(
-        key,
-        null
-    )
-
-fun <T> Fragment.setNavigationResult(
-    result: T,
-    key: String = "result",
-    @IdRes destinationId: Int? = null
-) {
-    findNavController().apply {
-        (if (destinationId != null) getBackStackEntry(destinationId) else previousBackStackEntry)
-            ?.savedStateHandle
-            ?.set(key, result)
-    }
-}
-
 fun Fragment.hideKeyboard() {
     view?.let { context?.hideKeyboard(it) }
 }

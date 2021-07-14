@@ -19,7 +19,7 @@ public abstract class GAFragment extends Fragment {
         final GaActivity activity = (GaActivity) getActivity();
 
         try {
-            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(Bridge.INSTANCE.getCurrentNetwork(getContext()), context,
+            context.getTheme().applyStyle(ThemeUtils.getThemeFromNetworkId(Bridge.INSTANCE.getCurrentNetworkId(getContext()), context,
                                                                            activity.getMetadata()),
                                           true);
         } catch (final Exception e) {

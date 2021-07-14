@@ -34,11 +34,11 @@ class AddAccountViewModel @AssistedInject constructor(
 
     val accountCreated = MutableLiveData<SubAccount>()
 
-    fun createAccount(hwwBridge: HWWalletBridge, hwWallet: HWWallet?) {
+    fun createAccount(hwWallet: HWWallet?) {
         session.observable {
             accountName.value.nameCleanup()?.let { name ->
                 it.createSubAccount(SubAccountParams(name, accountType))
-                    .result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(hwwBridge, hwWallet))
+                    .result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(this, hwWallet))
             }
         }.doOnSubscribe {
             isEnabled.postValue(false)

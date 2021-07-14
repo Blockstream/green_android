@@ -21,13 +21,13 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.blockstream.DeviceBrand;
+import com.blockstream.gdk.data.Network;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.LedgerDeviceBLE;
 import com.btchip.comm.android.BTChipTransportAndroid;
 import com.greenaddress.Bridge;
-import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenbits.ui.BuildConfig;
 import com.greenaddress.greenbits.ui.LoginActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
@@ -48,6 +48,7 @@ import java.util.Objects;
 import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.schedulers.Schedulers;
 
 @AndroidEntryPoint
@@ -67,18 +68,17 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
     private TextView mInstructionsText;
     private Dialog mPinDialog;
-    private String mPin;
     private Integer mVendorId;
     private Boolean mInLedgerDashboard;
 
-    private HWWallet mHwWallet;
     private Button mActiveNetwork;
     private Button mButtonContinue;
     private Button mButtonConnectionSettings;
     private TextView mSinglesigWarning;
-    private NetworkData networkData;
+    private Network networkData;
     private CompositeDisposable mDisposables;
     private HardwareConnect mHardwareConnect;
+    private String mPin;
 
     @Override
     protected int getMainViewId() { return R.layout.activity_first_login_requested; }
@@ -121,7 +121,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
         UI.showIf(Bridge.INSTANCE.isDevelopmentFlavor(), mSinglesigWarning);
 
-        networkData = getNetwork();
+        networkData = getNetworkV4();
 
         mDisposables = new CompositeDisposable();
     }
@@ -234,21 +234,6 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         }
     }
 
-    public void jadeAskForFirmwareUpgrade(String version, boolean isUpgradeRequired, Function<Boolean, Void> callback){
-        runOnUiThread(() -> {
-            UI.popup(this, isUpgradeRequired ? R.string.id_new_jade_firmware_required : R.string.id_new_jade_firmware_available, R.string.id_continue, R.string.id_cancel)
-                    .content(getString(R.string.id_install_version_s, version))
-                    .onNegative((dialog, which) -> {
-                        callback.apply(false);
-                    })
-                    .onPositive((dialog, which) -> {
-                        callback.apply(true);
-                    })
-                    .build()
-                    .show();
-        });
-    }
-
     private void showLedgerPinDialog(final BTChipTransport transport) {
         mPinDialog = UI.dismiss(this, mPinDialog);
 
@@ -327,30 +312,8 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         });
     }
 
-    public void showFirmwareOutdated(final Runnable onContinue, final Runnable onClose) {
-        if (!BuildConfig.DEBUG) {
-            // Only allow the user to skip firmware checks in debug builds.
-            showInstructions(R.string.id_outdated_hardware_wallet);
-            if (onClose != null) {
-                onClose.run();
-            }
-            return;
-        }
-
-        runOnUiThread(() -> {
-            final MaterialDialog d;
-            d = UI.popup(RequestLoginActivity.this, R.string.id_warning, R.string.id_continue, R.string.id_cancel)
-                .content(R.string.id_outdated_hardware_wallet)
-                .onNegative((dialog, which) -> { if (onClose != null) { onClose.run(); } } )
-                .onPositive((dialog, which) -> { if (onContinue != null) { onContinue.run(); } } )
-                .build();
-            UI.setDialogCloseHandler(d, this::finishOnUiThread);
-            d.show();
-        });
-    }
-
     @Override
-    public void onNetworkClick(NetworkData nd) {
+    public void onNetworkClick(Network nd) {
         networkData = nd;
         mActiveNetwork.setText(getString(R.string.id_s_network, networkData.getName()));
         Bridge.INSTANCE.setCurrentNetwork(this, networkData.getNetwork());
@@ -358,14 +321,8 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
     @NotNull
     @Override
-    public Context getContext() {
+    public Context context() {
         return this;
-    }
-
-    @NotNull
-    @Override
-    public HWWallet getHwwallet() {
-        return mHwWallet;
     }
 
     @Override
@@ -373,14 +330,9 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         UI.toast(this, error, Toast.LENGTH_LONG);
     }
 
-    @Override
-    public void setHwwallet(@NotNull HWWallet hwWallet) {
-        mHwWallet = hwWallet;
-    }
-
     @NotNull
     @Override
-    public NetworkData getNetworkData() {
+    public Network getConnectionNetwork() {
         return networkData;
     }
 
@@ -389,11 +341,42 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
         super.onLoggedIn();
     }
 
-    @Nullable
     @Override
-    public String getPin() {
-        String tempPin = mPin;
-        mPin = null;
-        return tempPin;
+    public void askForFirmwareUpgrade(DeviceBrand deviceBrand, @Nullable String version, boolean isUpgradeRequired, @Nullable Function<Boolean, Void> callback) {
+        runOnUiThread(() -> {
+            if(deviceBrand == DeviceBrand.Blockstream){
+                UI.popup(this, isUpgradeRequired ? R.string.id_new_jade_firmware_required : R.string.id_new_jade_firmware_available, R.string.id_continue, R.string.id_cancel)
+                        .content(getString(R.string.id_install_version_s, version))
+                        .onNegative((dialog, which) -> {
+                            callback.apply(false);
+                        })
+                        .onPositive((dialog, which) -> {
+                            callback.apply(true);
+                        })
+                        .build()
+                        .show();
+            }else{
+                runOnUiThread(() -> {
+                    showInstructions(R.string.id_outdated_hardware_wallet);
+
+                    if(!isUpgradeRequired){
+                        final MaterialDialog d;
+                        d = UI.popup(RequestLoginActivity.this, R.string.id_warning, R.string.id_continue, R.string.id_cancel)
+                                .content(R.string.id_outdated_hardware_wallet)
+                                .onNegative((dialog, which) -> { if (callback != null) { callback.apply(false); } } )
+                                .onPositive((dialog, which) -> { if (callback != null) { callback.apply(true); } } )
+                                .build();
+                        UI.setDialogCloseHandler(d, this::finishOnUiThread);
+                        d.show();
+                    }
+                });
+            }
+        });
+    }
+
+    @NotNull
+    @Override
+    public Single<String> requestPin(@NotNull DeviceBrand deviceBrand) {
+        return Single.just(mPin);
     }
 }

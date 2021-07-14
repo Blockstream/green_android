@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.Network;
 import com.blockstream.hardware.R;
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
@@ -14,7 +15,6 @@ import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HardwareQATester;
 import com.greenaddress.greenapi.data.InputOutputData;
-import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
@@ -45,7 +45,7 @@ public class JadeHWWallet extends HWWallet {
 
     private final JadeAPI jade;
 
-    public JadeHWWallet(final JadeAPI jade, final NetworkData network, final Device device, final HardwareQATester hardwareQATester) {
+    public JadeHWWallet(final JadeAPI jade, final Network network, final Device device, final HardwareQATester hardwareQATester) {
         super.mNetwork = network;
         super.mDevice = device;
         this.jade = jade;
@@ -59,8 +59,7 @@ public class JadeHWWallet extends HWWallet {
 
     // Helper to push entropy into jade, and then call 'authUser()' in a loop
     // (until correctly setup and user authenticated etc).
-    private boolean authUser() throws IOException {
-
+    private boolean authUser(final HWWalletBridge hwWalletBridge) throws IOException {
         // Push some extra entropy into Jade
         jade.addEntropy(GDK.get_random_bytes(32));
 
@@ -73,7 +72,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     // Authenticate Jade with pinserver and check firmware version with fw-server
-    public Single<JadeHWWallet> authenticate(final Context context, final FirmwareInteraction firmwareInteraction, HttpRequestProvider httpRequestProvider) throws Exception {
+    public Single<JadeHWWallet> authenticate(final Context context, final HWWalletBridge hwWalletBridge,final FirmwareInteraction firmwareInteraction, HttpRequestProvider httpRequestProvider) throws Exception {
         /*
          * 1. check firmware (and maybe OTA) any completely uninitialised device (ie no keys/pin set - no unlocking needed)
          * 2. authenticate the user (see above)
@@ -83,11 +82,14 @@ public class JadeHWWallet extends HWWallet {
         final JadeFirmwareManager fwManager = new JadeFirmwareManager(context, firmwareInteraction, httpRequestProvider);
         return Single.just(this)
                 .flatMap(hww -> fwManager.checkFirmware(jade, false))
-                .map(fwValid -> authUser())
+                .map(fwValid -> {
+                            hwWalletBridge.interactionRequest(this);
+                            return authUser(hwWalletBridge);
+                 })
                 .flatMap(authed -> fwManager.checkFirmware(jade, true))
                 .flatMap(fwValid -> {
                     if (fwValid) {
-                        authUser();  // re-auth if required
+                        authUser(hwWalletBridge);  // re-auth if required
                         return Single.just(this);
                     } else {
                         return Single.error(new JadeError(JadeError.UNSUPPORTED_FIRMWARE_VERSION,

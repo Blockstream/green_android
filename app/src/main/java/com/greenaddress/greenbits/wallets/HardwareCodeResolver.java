@@ -71,7 +71,7 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
 
         case "sign_message":
             try {
-                final HWWallet.SignMsgResult result = hwWallet.signMessage(parent,requiredData.getPath(), requiredData.getMessage(),
+                final HWWallet.SignMsgResult result = hwWallet.signMessage(parent, requiredData.getPath(), requiredData.getMessage(),
                         requiredData.getUseAeProtocol(), requiredData.getAeHostCommitment(), requiredData.getAeHostEntropy());
                 data.setSignerCommitment(result.getSignerCommitment());
                 data.setSignature(result.getSignature());
@@ -85,13 +85,14 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
                     }
                 }
             } catch (final Exception e) {
+                e.printStackTrace();
                 return null;
             }
             break;
 
         case "sign_tx":
             final HWWallet.SignTxResult result;
-            if (hwWallet.getNetwork().getLiquid()) {
+            if (hwWallet.getNetwork().isLiquid()) {
                 result  = hwWallet.signLiquidTransaction(parent, requiredData.getTransaction(),
                                                                requiredData.getSigningInputs(),
                                                                requiredData.getTransactionOutputs(),

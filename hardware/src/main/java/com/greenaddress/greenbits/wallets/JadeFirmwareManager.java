@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import com.blockstream.DeviceBrand;
 import com.blockstream.hardware.R;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
@@ -247,7 +248,7 @@ public class JadeFirmwareManager {
                 // FIXME: show user full list and let them choose
                 final FwFileData fwFile = updates.get(0);
 
-                firmwareInteraction.jadeAskForFirmwareUpgrade(fwFile.version.toString(), !fwValid, isPositive -> {
+                firmwareInteraction.askForFirmwareUpgrade(DeviceBrand.Blockstream, fwFile.version.toString(), !fwValid, isPositive -> {
                     if(isPositive){
                         // Update firmware
                         final Disposable unused = Single.just(fwFile)
