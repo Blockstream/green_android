@@ -75,7 +75,8 @@ class ChangePinUITests: XCTestBase {
     }
     
     func prepareWallet() {
-        
+        let walletName = Constants.walletName
+        let words = Constants.mnemonic
         
         if Home().existsWallet(named: walletName) {
             
@@ -87,7 +88,7 @@ class ChangePinUITests: XCTestBase {
                 .digitPin()
             
         } else {
-            restoreWallet()
+            restoreWallet(walletName: walletName, words: words, isSingleSig: false)
         }
         
     }

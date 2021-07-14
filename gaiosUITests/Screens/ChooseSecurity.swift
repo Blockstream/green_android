@@ -11,4 +11,10 @@ class ChooseSecurity: Screen {
         tap(app.otherElements[AccessibilityIdentifiers.ChooseSecurityScreen.multiSigCard])
         return self
     }
+    
+    @discardableResult
+    func tapSingleSigCard() -> Self {
+        tap(app.otherElements[AccessibilityIdentifiers.ChooseSecurityScreen.singleSigCard])
+        return self
+    }
 }

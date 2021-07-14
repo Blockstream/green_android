@@ -45,8 +45,9 @@ class TransactionstUITests: XCTestBase {
     }
     
     func prepareWallet() {
-        
         let walletName = Constants.walletName
+        let words = Constants.mnemonic
+        
         if Home().existsWallet(named: walletName) {
             
             Home()
@@ -57,7 +58,7 @@ class TransactionstUITests: XCTestBase {
                 .digitPin()
             
         } else {
-            restoreWallet()
+            restoreWallet(walletName: walletName, words: words, isSingleSig: false)
         }
         
     }

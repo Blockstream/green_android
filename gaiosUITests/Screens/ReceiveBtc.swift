@@ -15,7 +15,6 @@ class ReceiveBtc: Screen {
     
     @discardableResult
     func tapBack() -> Self {
-        
         _ = app.navigationBars.buttons.element(boundBy: 0).waitForExistence(timeout: 3)
         app.navigationBars.buttons.element(boundBy: 0).tap()
         return self

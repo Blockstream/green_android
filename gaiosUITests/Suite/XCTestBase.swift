@@ -14,9 +14,7 @@ class XCTestBase: XCTestCase {
         super.tearDown()
     }
     
-    func restoreWallet() {
-        let walletName = Constants.walletName
-        let words = Constants.mnemonic
+    func restoreWallet(walletName: String, words: [String], isSingleSig: Bool) {
         
         Home()
             .tapAddWalletView()
@@ -32,8 +30,14 @@ class XCTestBase: XCTestCase {
         ChooseNetwork()
             .tapTestnetCard()
     
-        ChooseSecurity()
-            .tapMultiSigCard()
+        if isSingleSig {
+            ChooseSecurity()
+                .tapSingleSigCard()
+        } else {
+            ChooseSecurity()
+                .tapMultiSigCard()
+        }
+
         
         RecoveryPhrase()
             .tapPhraseCard()

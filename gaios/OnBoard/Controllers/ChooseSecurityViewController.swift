@@ -28,6 +28,7 @@ class ChooseSecurityViewController: UIViewController {
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.ChooseSecurityScreen.view
         cardAdvanced.accessibilityIdentifier = AccessibilityIdentifiers.ChooseSecurityScreen.multiSigCard
+        cardSimple.accessibilityIdentifier = AccessibilityIdentifiers.ChooseSecurityScreen.singleSigCard
     }
 
     func setContent() {

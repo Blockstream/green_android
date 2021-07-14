@@ -27,6 +27,7 @@ struct AccessibilityIdentifiers {
     
     struct ChooseSecurityScreen {
         static let view = "view_choose_security"
+        static let singleSigCard = "single_sig_card"
         static let multiSigCard = "multi_sig_card"
     }
     

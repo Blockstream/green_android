@@ -13,10 +13,10 @@ class Home: Screen {
 //    }
     
     @discardableResult
-    func tapAddWalletView(connectionTimeout: TimeInterval = 25) -> Self {
 
-        let lastCell = rootElement.tables.firstMatch.cells.allElementsBoundByIndex.last
+    func tapAddWalletView(connectionTimeout: TimeInterval = 25) -> Self {
         
+        let lastCell = rootElement.tables.firstMatch.cells.allElementsBoundByIndex.last
         let MAX_SCROLLS = 10
         var count = 0
         while lastCell!.isHittable == false && count < MAX_SCROLLS {

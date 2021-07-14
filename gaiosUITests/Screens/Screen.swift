@@ -50,7 +50,7 @@ class Screen {
 
     @discardableResult
     func existsWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Bool {
-        let walletExistance = NSPredicate(format: "label CONTAINS '\(name)'")
+        let walletExistance = NSPredicate(format: "label MATCHES '\(name)'")
         let walletLabel = app.otherElements[AccessibilityIdentifiers.HomeScreen.view].tables
             .children(matching: .cell).staticTexts.element(matching: walletExistance)
         var existsWallet = walletLabel.waitForExistence(timeout: 3)
@@ -69,7 +69,7 @@ class Screen {
     
     @discardableResult
     func selectWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Self {
-        let walletExistance = NSPredicate(format: "label CONTAINS '\(name)'")
+        let walletExistance = NSPredicate(format: "label MATCHES '\(name)'")
         let walletLabel = app.otherElements[AccessibilityIdentifiers.HomeScreen.view].tables
             .children(matching: .cell).staticTexts.element(matching: walletExistance)
         var existsWallet = walletLabel.waitForExistence(timeout: 3)
