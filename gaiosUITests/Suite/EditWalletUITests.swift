@@ -4,9 +4,11 @@ import XCTest
 class EditWalletUITests: XCTestBase {
     func testRenameWallet() {
         let walletName = Constants.walletName
+        let words = Constants.mnemonic
         let walletNameRenamed = Constants.walletNameRenamed
+        
         if !Home().existsWallet(named: walletName) {
-            restoreWallet()
+            restoreWallet(walletName: walletName, words: words, isSingleSig: false)
 
             Transactions()
                 .pause(1)
