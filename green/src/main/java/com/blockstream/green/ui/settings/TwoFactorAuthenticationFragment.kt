@@ -86,7 +86,7 @@ class TwoFactorAuthenticationFragment :
         toptPreference =
             PreferenceListItem(StringHolder(R.string.id_authenticator_app), withSwitch = true)
 
-        thresholdPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_threshold))
+        thresholdPreference = PreferenceListItem(StringHolder(R.string.id_2fa_threshold))
 
         val fastAdapter = FastAdapter.with(itemAdapter)
 

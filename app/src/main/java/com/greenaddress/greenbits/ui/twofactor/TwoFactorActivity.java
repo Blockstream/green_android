@@ -383,7 +383,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
     private void disableTwoFactor(final String method) {
         if (!twoFactorConfigData.getEnabledMethods().contains(method.toLowerCase(Locale.US))) {
-            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully, Toast.LENGTH_LONG);
+            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully_secured, Toast.LENGTH_LONG);
             finishOnUiThread();
             return;
         }
@@ -413,7 +413,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
     public void resetTwoFactor(final String email, final Boolean isDispute, final Boolean isUndo) {
         if (twoFactorConfigData.getEnabledMethods().isEmpty()) {
-            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully, Toast.LENGTH_LONG);
+            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully_secured, Toast.LENGTH_LONG);
             finishOnUiThread();
             return;
         }
@@ -448,7 +448,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
     public void cancelTwoFactor() {
         if (twoFactorConfigData.getEnabledMethods().isEmpty()) {
-            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully, Toast.LENGTH_LONG);
+            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully_secured, Toast.LENGTH_LONG);
             finishOnUiThread();
             return;
         }

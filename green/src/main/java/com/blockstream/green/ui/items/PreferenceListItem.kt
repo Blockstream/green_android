@@ -35,7 +35,6 @@ data class PreferenceListItem(
         binding.radionMaterial.isVisible = withRadio
         binding.radionMaterial.isChecked = radioChecked
         binding.button.isVisible = withButton
-
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemPreferenceBinding {

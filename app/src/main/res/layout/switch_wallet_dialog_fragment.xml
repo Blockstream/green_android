@@ -29,6 +29,7 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:textColor="@color/colorAccent"
             android:text="@string/id_logout"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

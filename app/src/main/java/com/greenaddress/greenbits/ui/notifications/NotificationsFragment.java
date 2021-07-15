@@ -64,11 +64,11 @@ public class NotificationsFragment extends GAPreferenceFragment {
             final boolean isReset = config.isTwoFactorResetActive();
             final int numMethods = config.getEnabledMethods().size();
             if (!isReset && numMethods == 0) {
-                events.add(0, new EventData(R.string.id_set_up_twofactor_authentication,
-                                            R.string.id_your_wallet_is_not_yet_fully));
+                events.add(0, new EventData(R.string.id_set_up_2fa_authentication,
+                                            R.string.id_your_wallet_is_not_yet_fully_secured));
             } else if (!isReset && numMethods == 1) {
-                events.add(0,new EventData(R.string.id_you_only_have_one_twofactor,
-                                           R.string.id_please_enable_another));
+                events.add(0,new EventData(R.string.id_you_only_have_one_2fa,
+                                           R.string.id_please_enable_another_2fa));
             }
         } catch (final Exception e) {
             e.printStackTrace();
@@ -101,8 +101,8 @@ public class NotificationsFragment extends GAPreferenceFragment {
                     startActivity(intent);
                     return false;
                 });
-            } else if (e.getTitle() == R.string.id_set_up_twofactor_authentication ||
-                       e.getTitle() == R.string.id_you_only_have_one_twofactor) {
+            } else if (e.getTitle() == R.string.id_set_up_2fa_authentication ||
+                       e.getTitle() == R.string.id_you_only_have_one_2fa) {
                 preference.setOnPreferenceClickListener(preference1 -> {
                     Bridge.INSTANCE.twoFactorAuthentication(getActivity());
                     return false;
@@ -139,7 +139,7 @@ public class NotificationsFragment extends GAPreferenceFragment {
                 return "";
             }
         } else if (d == R.string.notification_format_string ||
-                   d == R.string.id_your_wallet_is_locked_for_a ||
+                   d == R.string.id_your_wallet_is_locked_for_a_2fa ||
                    d == R.string.id_days_remaining_s ||
                    d == R.string.id_s_blocks_left) {
             try {

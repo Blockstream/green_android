@@ -847,7 +847,10 @@
 
   <string name="id_failed_to_load_asset_icons">Failed to Load Asset Icons</string>
   <string name="id_asset_icons_are_missing">Asset icons are missing, try reloading them.</string>
-
-
+  <string name="id_set_up_2fa_authentication">Set up 2FA authentication</string>
+  <string name="id_your_wallet_is_not_yet_fully_secured">Your wallet is not yet fully secured.\nPlease enable 2FA authentication.</string>
+  <string name="id_you_only_have_one_2fa">You only have one 2FA authentication method enabled</string>
+  <string name="id_please_enable_another_2fa">Please enable another 2FA method to avoid losing access to your funds.</string>
+  <string name="id_your_wallet_is_locked_for_a_2fa">Your wallet is locked for a 2FA reset. The reset will be completed in %d days.</string>
 
 </resources>

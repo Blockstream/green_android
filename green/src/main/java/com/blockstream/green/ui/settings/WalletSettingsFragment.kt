@@ -54,6 +54,7 @@ class WalletSettingsFragment :
 
     private val itemAdapter = ItemAdapter<GenericItem>()
 
+    private lateinit var logoutPreference: PreferenceListItem
     private lateinit var watchOnlyPreference: PreferenceListItem
     private lateinit var unitPreference: PreferenceListItem
     private lateinit var priceSourcePreference: PreferenceListItem
@@ -136,6 +137,7 @@ class WalletSettingsFragment :
         }
 
         watchOnlyPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
+        logoutPreference = PreferenceListItem(StringHolder(R.string.id_logout), StringHolder(wallet.name))
         unitPreference = PreferenceListItem(StringHolder(R.string.id_bitcoin_denomination))
         priceSourcePreference = PreferenceListItem(StringHolder(R.string.id_reference_exchange_rate))
         txPriorityPreference = PreferenceListItem(StringHolder(R.string.id_default_transaction_priority))
@@ -190,6 +192,9 @@ class WalletSettingsFragment :
         fastAdapter.onClickListener =
             { _: View?, _: IAdapter<GenericItem>, iItem: GenericItem, _: Int ->
                 when (iItem) {
+                    logoutPreference -> {
+                        viewModel.logout()
+                    }
                     watchOnlyPreference -> {
                         handleWatchOnly()
                     }
@@ -368,6 +373,8 @@ class WalletSettingsFragment :
         val anyTwoFactorEnabled = twoFactorConfig?.anyEnabled ?: false
 
         val list = mutableListOf<GenericItem>()
+
+        list += logoutPreference
 
         if(args.showRecoveryTransactions){
 
