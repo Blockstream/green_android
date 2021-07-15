@@ -66,7 +66,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     }
 
     fun updateTwoFactorConfig(){
-        if(!session.isElectrum){
+        if(!session.isElectrum && !session.isWatchOnly){
             session.observable {
                 it.getTwoFactorConfig()
             }.subscribeBy(
@@ -81,16 +81,18 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     }
 
     fun updateWatchOnlyUsername(){
-        session.observable {
-            it.getWatchOnlyUsername()
-        }.subscribeBy(
-            onError = {
-                onError.postValue(ConsumableEvent(it))
-            },
-            onSuccess = {
-                watchOnlyUsernameLiveData.value = it
-            }
-        )
+        if(!session.isWatchOnly) {
+            session.observable {
+                it.getWatchOnlyUsername()
+            }.subscribeBy(
+                onError = {
+                    onError.postValue(ConsumableEvent(it))
+                },
+                onSuccess = {
+                    watchOnlyUsernameLiveData.value = it
+                }
+            )
+        }
     }
 
     fun setWatchOnly(username: String, password: String){

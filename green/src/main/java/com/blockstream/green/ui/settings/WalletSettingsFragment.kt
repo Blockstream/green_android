@@ -366,11 +366,7 @@ class WalletSettingsFragment :
 
     private fun updateAdapter(){
         val isLiquid = wallet.isLiquid
-
-        val settings = viewModel.settingsLiveData.value
         val twoFactorConfig = viewModel.twoFactorConfigLiveData.value
-
-        val anyTwoFactorEnabled = twoFactorConfig?.anyEnabled ?: false
 
         val list = mutableListOf<GenericItem>()
 
@@ -394,57 +390,57 @@ class WalletSettingsFragment :
             list += changePinPreference
             list += biometricsPreference
         }else {
-            val is2faReset = session.getTwoFactorReset()?.isActive == true
+            if(!session.isWatchOnly) {
+                val is2faReset = session.getTwoFactorReset()?.isActive == true
 
-            if (is2faReset) {
-
-                list += TitleListItem(StringHolder(R.string.id_recovery))
-                list += recoveryPreference
-
-            } else {
-                list += TitleListItem(StringHolder(R.string.id_general))
-
-                if (!isLiquid) {
-                    list += watchOnlyPreference
-                }
-
-                list += unitPreference
-
-                if (!isLiquid) {
-                    list += priceSourcePreference
-                    list += txPriorityPreference
-                    list += customFeeRatePreference
-                }
-
-
-                list += TitleListItem(StringHolder(R.string.id_security))
-
-                if(!session.hasDevice) {
-                    list += changePinPreference
-                    list += biometricsPreference
-                }
-
-                list += altTimeoutPreference
-
-                if(!session.isElectrum) {
-                    list += twoFactorAuthenticationPreference
-                }
-
-                if(!session.isLiquid && !session.isElectrum || !session.hasDevice) {
+                if (is2faReset) {
                     list += TitleListItem(StringHolder(R.string.id_recovery))
-                }
-
-                if(!session.hasDevice) {
                     list += recoveryPreference
+                } else {
+                    list += TitleListItem(StringHolder(R.string.id_general))
+
+                    if (!isLiquid) {
+                        list += watchOnlyPreference
+                    }
+
+                    list += unitPreference
+
+                    if (!isLiquid) {
+                        list += priceSourcePreference
+                        list += txPriorityPreference
+                        list += customFeeRatePreference
+                    }
+
+
+                    list += TitleListItem(StringHolder(R.string.id_security))
+
+                    if (!session.hasDevice) {
+                        list += changePinPreference
+                        list += biometricsPreference
+                    }
+
+                    list += altTimeoutPreference
+
+                    if (!session.isElectrum) {
+                        list += twoFactorAuthenticationPreference
+                    }
+
+                    if (!session.isLiquid && !session.isElectrum || !session.hasDevice) {
+                        list += TitleListItem(StringHolder(R.string.id_recovery))
+                    }
+
+                    if (!session.hasDevice) {
+                        list += recoveryPreference
+                    }
+
+                    if (!session.isLiquid && !session.isElectrum) {
+                        list += recoveryTransactionsPreference
+                    }
+
+                    list += TitleListItem(StringHolder(R.string.id_advanced))
+
+                    list += pgpPreference
                 }
-
-                if(!session.isLiquid && !session.isElectrum) {
-                    list += recoveryTransactionsPreference
-                }
-
-                list += TitleListItem(StringHolder(R.string.id_advanced))
-
-                list += pgpPreference
             }
 
             list += TitleListItem(StringHolder(R.string.id_about))
