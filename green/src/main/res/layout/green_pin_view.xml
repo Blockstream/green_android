@@ -357,7 +357,8 @@
             app:layout_constraintStart_toEndOf="@+id/button8"
             app:layout_constraintTop_toTopOf="@+id/button8" />
 
-        <Button
+        <!--   When complete v4 transition remove iconTint as is no longer needed     -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonPaste"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -365,6 +366,7 @@
             android:onClick="@{clickListener}"
             isVisible="@{withPaste}"
             app:icon="@drawable/ic_baseline_content_paste_24"
+            app:iconTint="@color/material_on_surface_emphasis_medium"
             app:iconGravity="textStart"
             app:layout_constraintBottom_toBottomOf="@+id/button0"
             app:layout_constraintEnd_toEndOf="@+id/button7"
@@ -385,13 +387,15 @@
             app:layout_constraintStart_toStartOf="@+id/button8"
             app:layout_constraintTop_toBottomOf="@+id/button7" />
 
-        <Button
+        <!--   When complete v4 transition remove iconTint as is no longer needed     -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonDelete"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:enabled="@{deleteEnabled}"
             android:onClick="@{clickListener}"
+            app:iconTint="@color/material_on_surface_emphasis_medium"
             app:icon="@drawable/ic_outline_backspace_24"
             app:iconGravity="textStart"
             app:layout_constraintBottom_toBottomOf="@+id/button0"

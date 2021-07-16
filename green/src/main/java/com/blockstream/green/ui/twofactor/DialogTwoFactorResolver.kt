@@ -13,7 +13,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 
-class DialogTwoFactorResolver(val context: Context, val method: String? = null) :
+class DialogTwoFactorResolver(private val context: Context,private val method: String? = null) :
     TwoFactorResolver {
 
     override fun selectMethod(availableMethods: List<String>): Single<String> =
