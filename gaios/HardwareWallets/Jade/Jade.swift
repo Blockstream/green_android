@@ -271,12 +271,14 @@ final class Jade: JadeDevice, HWResolverProtocol {
 // Jade ota
 extension Jade {
 
-    static let MIN_ALLOWED_FW_VERSION = "0.1.23"
+    static let MIN_ALLOWED_FW_VERSION = "0.1.24"
     static let FW_VERSIONS_FILE = "LATEST"
     static let FW_SERVER_HTTPS = "https://jadefw.blockstream.com"
     static let FW_SERVER_ONION = "http://vgza7wu4h7osixmrx6e4op5r72okqpagr3w6oupgsvmim4cz3wzdgrad.onion"
     static let FW_JADE_PATH = "/bin/jade/"
     static let FW_JADEDEV_PATH = "/bin/jadedev/"
+    static let FW_JADE1_1_PATH = "/bin/jade1.1/"
+    static let FW_JADE1_1DEV_PATH = "/bin/jade1.1dev/"
     static let FW_SUFFIX = "fw.bin"
     static let BOARD_TYPE_JADE = "JADE"
     static let BOARD_TYPE_JADE_V1_1 = "JADE_V1.1"
@@ -292,13 +294,14 @@ extension Jade {
         if boardType != nil && ![Jade.BOARD_TYPE_JADE, Jade.BOARD_TYPE_JADE_V1_1].contains(boardType) {
             return nil
         }
+        let isV1BoardType = boardType == Jade.BOARD_TYPE_JADE
         // Alas the first version of the jade fw didn't have 'BoardType' - so we assume an early jade.
         if let jadeFeatures = info["JADE_FEATURES"] as? String, jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
             // Production Jade (Secure-Boot [and flash-encryption] enabled)
-            return Jade.FW_JADE_PATH
+            return isV1BoardType ? Jade.FW_JADE_PATH : Jade.FW_JADE1_1_PATH
         } else {
             // Unsigned/development/testing Jade
-            return Jade.FW_JADEDEV_PATH
+            return isV1BoardType ? Jade.FW_JADEDEV_PATH : Jade.FW_JADE1_1DEV_PATH
         }
     }
 
