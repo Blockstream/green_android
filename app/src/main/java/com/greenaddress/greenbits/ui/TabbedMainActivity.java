@@ -173,7 +173,7 @@ public class TabbedMainActivity extends LoggedActivity  {
         try {
             final int subaccount = getActiveAccount();
             final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, text, subaccount);
-            final ObjectNode transactionFromUri = call.resolve(null, new HardwareCodeResolver(this), null);
+            final ObjectNode transactionFromUri = call.resolve(new HardwareCodeResolver(this), null);
             final String error = transactionFromUri.get("error").asText();
             if ("id_invalid_address".equals(error)) {
                 UI.toast(this, R.string.id_invalid_address, Toast.LENGTH_SHORT);

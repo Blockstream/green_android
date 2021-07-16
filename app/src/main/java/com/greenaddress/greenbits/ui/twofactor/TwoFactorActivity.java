@@ -49,7 +49,6 @@ public class TwoFactorActivity extends LoggedActivity {
 
     private boolean settingEmail; // setting email without enabling 2FA
 
-    private PopupMethodResolver popupMethodResolver;
     private TwoFactorConfigData twoFactorConfigData;
     private Disposable disposable;
 
@@ -102,7 +101,6 @@ public class TwoFactorActivity extends LoggedActivity {
         }
         setTitle(getString(mEnable ? R.string.id_1s_twofactor_set_up : R.string.id_delete_s_twofactor,
                            mLocalizedMap.get(mMethod)));
-        popupMethodResolver = new PopupMethodResolver(this);
 
         switch (mMethod) {
         case "reset":
@@ -330,7 +328,7 @@ public class TwoFactorActivity extends LoggedActivity {
             twoFactorDetail.setData(data);
             twoFactorDetail.setEnabled(false);
             twoFactorDetail.setConfirmed(true);
-            session.changeSettingsTwoFactor("email", twoFactorDetail).resolve(popupMethodResolver, null, Bridge.INSTANCE.createTwoFactorResolver(this));
+            session.changeSettingsTwoFactor("email", twoFactorDetail).resolve(null, Bridge.INSTANCE.createTwoFactorResolver(this));
             return session;
         })
                      .observeOn(AndroidSchedulers.mainThread())
@@ -357,7 +355,7 @@ public class TwoFactorActivity extends LoggedActivity {
             twoFactorDetail.setEnabled(true);
             twoFactorDetail.setData(data);
             twoFactorDetail.setConfirmed(true);
-            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(popupMethodResolver, null, Bridge.INSTANCE.createTwoFactorResolver(this));
+            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(null, Bridge.INSTANCE.createTwoFactorResolver(this));
             return session;
         })
                      .observeOn(AndroidSchedulers.mainThread())
@@ -398,7 +396,7 @@ public class TwoFactorActivity extends LoggedActivity {
                 // it here
                 twoFactorDetail.setConfirmed(false);
             }
-            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(popupMethodResolver, null, Bridge.INSTANCE.createTwoFactorResolver(this));
+            session.changeSettingsTwoFactor(method, twoFactorDetail).resolve(null, Bridge.INSTANCE.createTwoFactorResolver(this));
             return session;
         }).observeOn(AndroidSchedulers.mainThread())
                      .subscribe((session) -> {
@@ -426,7 +424,7 @@ public class TwoFactorActivity extends LoggedActivity {
              }else{
                  twoFactorCall = getSession().twoFactorReset(email, isDispute);
              }
-             twoFactorCall.resolve(popupMethodResolver, null, Bridge.INSTANCE.createTwoFactorResolver(this));
+             twoFactorCall.resolve(null, Bridge.INSTANCE.createTwoFactorResolver(this));
              return session;
         }).observeOn(AndroidSchedulers.mainThread())
                      .subscribe((session) -> {
@@ -456,7 +454,7 @@ public class TwoFactorActivity extends LoggedActivity {
                      .subscribeOn(Schedulers.computation())
                      .map((session) -> {
             final GDKTwoFactorCall twoFactorCall = getSession().twofactorCancelReset();
-            twoFactorCall.resolve(popupMethodResolver, null, Bridge.INSTANCE.createTwoFactorResolver(this));
+            twoFactorCall.resolve(null, Bridge.INSTANCE.createTwoFactorResolver(this));
             return session;
         })
                      .observeOn(AndroidSchedulers.mainThread())
@@ -474,8 +472,6 @@ public class TwoFactorActivity extends LoggedActivity {
         super.onDestroy();
         if (disposable != null)
             disposable.dispose();
-        if (popupMethodResolver != null)
-            popupMethodResolver.dismiss();
     }
 
     @Override

@@ -179,7 +179,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             // the background and display a wait icon until it returns
             if (mTx != null)
                 return mTx;
-            return session.createTransactionRaw(null, txJson).resolve(null, new HardwareCodeResolver(this), null);
+            return session.createTransactionRaw(null, txJson).resolve(new HardwareCodeResolver(this), null);
         })
                           .map((tx) -> {
             final SubaccountData subAccount = getSession().getSubAccount(this, getActiveAccount());
@@ -508,7 +508,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         updateDisposable = Observable.just(mTx)
                            .observeOn(Schedulers.computation())
                            .map((tx) -> {
-            return getSession().createTransactionRaw(null, tx).resolve(null, new HardwareCodeResolver(this), null);
+            return getSession().createTransactionRaw(null, tx).resolve(new HardwareCodeResolver(this), null);
         })
                            .observeOn(AndroidSchedulers.mainThread())
                            .subscribe((tx) -> {

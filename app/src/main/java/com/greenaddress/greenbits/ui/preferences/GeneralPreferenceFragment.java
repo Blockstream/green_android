@@ -39,7 +39,6 @@ import com.greenaddress.greenbits.ui.UI;
 import com.greenaddress.greenbits.ui.accounts.SweepSelectActivity;
 import com.greenaddress.greenbits.ui.components.AmountTextWatcher;
 import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
-import com.greenaddress.greenbits.ui.twofactor.PopupMethodResolver;
 import com.greenaddress.greenbits.ui.twofactor.TwoFactorActivity;
 
 import java.util.ArrayList;
@@ -362,7 +361,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
         return Observable.just(getSession())
                .observeOn(Schedulers.computation())
                .map((session) -> {
-            session.changeSettings(settings.toObjectNode()).resolve(new PopupMethodResolver(activity),null,
+            session.changeSettings(settings.toObjectNode()).resolve(null,
                                                                     Bridge.INSTANCE.createTwoFactorResolver(activity));
             return session.refreshSettings();
         }).observeOn(AndroidSchedulers.mainThread())
@@ -796,7 +795,7 @@ public class GeneralPreferenceFragment extends GAPreferenceFragment {
                             .map((session) -> {
             final GDKTwoFactorCall call = getSession().twoFactorChangeLimits(limitsData);
             final ObjectNode newLimits =
-                call.resolve(new PopupMethodResolver(activity), null, Bridge.INSTANCE.createTwoFactorResolver(getActivity()));
+                call.resolve(null, Bridge.INSTANCE.createTwoFactorResolver(getActivity()));
             getSession().getTwoFactorConfig().setLimits(newLimits);
             return newLimits;
         })

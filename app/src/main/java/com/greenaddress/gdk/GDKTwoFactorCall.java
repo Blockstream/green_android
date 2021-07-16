@@ -13,6 +13,8 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.TwoFactorStatusData;
 
+import java.util.List;
+
 public class GDKTwoFactorCall {
     private Object mTwoFactorCall;
     private TwoFactorStatusData mStatus;
@@ -33,11 +35,10 @@ public class GDKTwoFactorCall {
 
     /**
      * This method must be called in a separate thread if requires GUI input, otherwise it blocks
-     * @param methodResolver callback to choose the method from the list of available ones
-     * @param codeResolver callback to input the code
+     * @param twoFactorResolver callback to choose the method from the list of available ones and to input the code
      * @throws Exception
      */
-    public ObjectNode resolve(final MethodResolver methodResolver, final HardwareWalletResolver hardwareResolver, final TwoFactorResolver codeResolver) throws Exception {
+    public ObjectNode resolve(final HardwareWalletResolver hardwareResolver, final TwoFactorResolver twoFactorResolver) throws Exception {
         while (true) {
             updateStatus();
             switch (mStatus.getStatus()) {
@@ -47,8 +48,13 @@ public class GDKTwoFactorCall {
                     break;
                 case "request_code":
                     Log.d("RSV", "request_code " + mStatus);
-                    final SettableFuture<String> method = methodResolver.method(mStatus.getMethods());
-                    final String chosenMethod = method.get();
+                    final String chosenMethod;
+                    List<String> methods = mStatus.getMethods();
+                    if(methods.size() == 1){
+                        chosenMethod = methods.get(0);
+                    }else{
+                        chosenMethod = twoFactorResolver.selectMethod(mStatus.getMethods()).blockingGet();
+                    }
                     Log.d("RSV", "request_code choosen method " + chosenMethod);
                     if (chosenMethod == null) {
                         throw new Exception("id_action_canceled");
@@ -66,7 +72,7 @@ public class GDKTwoFactorCall {
                             throw new Exception(e.getMessage());
                         }
                     } else {
-                        value = codeResolver.getCode(mStatus.getMethod(), mStatus.getAttemptsRemaining()).blockingGet();
+                        value = twoFactorResolver.getCode(mStatus.getMethod(), mStatus.getAttemptsRemaining()).blockingGet();
                     }
                     Log.d("RSV", "resolve_code input " + value);
                     if (value == null) {

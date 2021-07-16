@@ -30,7 +30,6 @@ import com.greenaddress.greenapi.model.Conversion;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.components.BottomOffsetDecoration;
 import com.greenaddress.greenbits.ui.components.DividerItem;
-import com.greenaddress.greenbits.ui.onboarding.SecurityActivity;
 import com.greenaddress.greenbits.ui.preferences.GAPreferenceFragment;
 
 import java.util.ArrayList;

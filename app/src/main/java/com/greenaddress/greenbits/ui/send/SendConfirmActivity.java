@@ -50,8 +50,6 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
     private Disposable setupDisposable;
     private Disposable sendDisposable;
 
-    private PopupMethodResolver popupMethodResolver;
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +60,6 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
         final String hwwJson = getIntent().getStringExtra("hww");
-
-        popupMethodResolver = new PopupMethodResolver(this);
 
         setTitle(isSweep ? R.string.id_sweep : R.string.id_send);
 
@@ -81,7 +77,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             // then this call will go to the server. So, we should do it in
             // the background and display a wait icon until it returns
             return getSession().createTransactionRaw(this, tx)
-            .resolve(null, new HardwareCodeResolver(this), Bridge.INSTANCE.createTwoFactorResolver(this));
+            .resolve(new HardwareCodeResolver(this), Bridge.INSTANCE.createTwoFactorResolver(this));
         })
                           .observeOn(AndroidSchedulers.mainThread())
                           .subscribe((tx) -> {
@@ -168,8 +164,6 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             setupDisposable.dispose();
         if (sendDisposable != null)
             sendDisposable.dispose();
-        if (popupMethodResolver != null)
-            popupMethodResolver.dismiss();
     }
 
     @Override
@@ -185,7 +179,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
         sendDisposable = Observable.just(getSession())
                          .observeOn(Schedulers.computation())
                          .map((session) -> {
-            return session.signTransactionRaw(mTxJson).resolve(null, new HardwareCodeResolver(activity), null);
+            return session.signTransactionRaw(mTxJson).resolve(new HardwareCodeResolver(activity), null);
         })
                          .map((tx) -> {
             final boolean isSweep = tx.get("is_sweep").asBoolean();
@@ -193,7 +187,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
                 getSession().broadcastTransactionRaw(tx.get("transaction").asText());
             } else {
                 Bridge.INSTANCE.createTwoFactorResolver(this);
-                getSession().sendTransactionRaw(activity, tx).resolve(popupMethodResolver, null, Bridge.INSTANCE.createTwoFactorResolver(this));
+                getSession().sendTransactionRaw(activity, tx).resolve(null, Bridge.INSTANCE.createTwoFactorResolver(this));
             }
             return tx;
         })

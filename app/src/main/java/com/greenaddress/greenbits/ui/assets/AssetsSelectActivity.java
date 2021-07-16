@@ -135,6 +135,6 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         final ObjectNode addressee = (ObjectNode) txJson.get("addressees").get(0);
         addressee.put("asset_id", assetId);
         final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
-        return call.resolve(null, new HardwareCodeResolver(this), null);
+        return call.resolve(new HardwareCodeResolver(this), null);
     }
 }

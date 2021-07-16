@@ -73,7 +73,7 @@ public class MessagesActivity extends LoggedActivity
                               .subscribeOn(Schedulers.computation())
                               .map((session) -> {
                     final GDKTwoFactorCall call = getSession().ackSystemMessage(mCurrentMessage);
-                    call.resolve(null, new HardwareCodeResolver(this), null);
+                    call.resolve(new HardwareCodeResolver(this), null);
                     return session;
                 }).observeOn(AndroidSchedulers.mainThread())
                               .subscribe((session) -> {

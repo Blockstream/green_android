@@ -105,8 +105,7 @@ public class SubaccountReviewFragment extends GAFragment {
         Observable.just(getSession())
         .subscribeOn(Schedulers.computation())
         .map((session) -> {
-            return getSession().createSubAccount(input.toString(), type).resolve(null,
-                                                                                 new HardwareCodeResolver(activity), null);
+            return getSession().createSubAccount(input.toString(), type).resolve(new HardwareCodeResolver(activity), null);
         })
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe((session) -> {

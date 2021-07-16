@@ -84,8 +84,7 @@ public abstract class LoggedActivity extends GaActivity {
                 return session.login(hwWallet.getHWDeviceData(), "", "");
             }).flatMap(c -> {
                 return Observable.just(c).map(call -> {
-                    return call.resolve(null,
-                                        new HardwareCodeResolver(this, hwWallet), null);
+                    return call.resolve(new HardwareCodeResolver(this, hwWallet), null);
                 }).doOnError(throwable -> {
                     Log.e(TAG, "Throwable " + throwable.getMessage());
                 });
