@@ -125,6 +125,7 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             footer.addGestureRecognizer(tapGestureRecognizer)
             footer.isUserInteractionEnabled = true
             footer.networkImage.image = UIImage(named: network?.icon ?? "")
+            footer.message.accessibilityIdentifier = AccessibilityIdentifiers.AccountsScreen.footerMessage
             return footer
         default:
             return UICollectionReusableView()

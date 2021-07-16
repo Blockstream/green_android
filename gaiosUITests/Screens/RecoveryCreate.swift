@@ -9,6 +9,13 @@ class RecoveryCreate: Screen {
     }
 
     @discardableResult
+    func cleanWords() -> Self {
+
+        RecoveryCreate.mnemonic = []
+        return self
+    }
+    
+    @discardableResult
     func readWords() -> Self {
 
         RecoveryCreate.mnemonic.append(Utils.sanitize(app.staticTexts[AccessibilityIdentifiers.RecoveryCreateScreen.word1Lbl].label))

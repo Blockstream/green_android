@@ -34,6 +34,13 @@ class AccountCreateSelectTypeViewController: UIViewController {
         setStyle()
         setActions()
         setVisibility()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.view
+        cardLegacy.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.cardLegacy
+        cardSegWit.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.cardSegWit
+        cardStandard.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.cardStandard
+        cardAmp.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.cardAmp
+        card2of3.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSelectTypeScreen.card2of3
     }
 
     func setContent() {

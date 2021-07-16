@@ -178,5 +178,21 @@ struct AccessibilityIdentifiers {
     
     struct AccountsScreen {
         static let view = "view_accounts"
+        static let footerMessage = "footer_message"
+    }
+    
+    struct AccountCreateSelectTypeScreen {
+        static let view = "view_account_create_select_type"
+        static let cardLegacy = "card_legacy"
+        static let cardSegWit = "card_segwit"
+        static let cardStandard = "card_standard"
+        static let cardAmp = "card_amp"
+        static let card2of3 = "card_2of3"
+    }
+    
+    struct AccountCreateSetNameScreen {
+        static let view = "view_account_create_set_name"
+        static let nameField = "name_field"
+        static let nextBtn = "next_btn"
     }
 }

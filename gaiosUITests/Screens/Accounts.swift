@@ -27,4 +27,21 @@ class Accounts: Screen {
         }
         return self
     }
+    
+    @discardableResult
+    func tapFooter() -> Self {
+        app.staticTexts[AccessibilityIdentifiers.AccountsScreen.footerMessage].tap()
+        return self
+    }
+    
+    @discardableResult
+    func checkSubAccountName(_ name: String) -> Self {
+        
+        let exists = app.staticTexts[name].waitForExistence(timeout: 10)
+                    
+        if exists != true {
+            XCTFail("sub account not found")
+        }
+        return self
+    }
 }

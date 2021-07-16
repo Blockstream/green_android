@@ -21,6 +21,10 @@ class AccountCreateSetNameViewController: UIViewController {
         updateUI()
         hideKeyboardWhenTappedAround()
         fieldName.becomeFirstResponder()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSetNameScreen.view
+        fieldName.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSetNameScreen.nameField
+        btnNext.accessibilityIdentifier = AccessibilityIdentifiers.AccountCreateSetNameScreen.nextBtn
     }
 
     func setContent() {

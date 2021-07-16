@@ -23,6 +23,7 @@ class AddWalletUITests: XCTestBase {
             .tapContinue()
         
         RecoveryCreate()
+            .cleanWords()
             .readWords()
             .pause(1)
             .tapNext()
@@ -173,6 +174,7 @@ class AddWalletUITests: XCTestBase {
             .tapContinue()
         
         RecoveryCreate()
+            .cleanWords()
             .readWords()
             .pause(1)
             .tapNext()
