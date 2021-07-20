@@ -96,8 +96,10 @@ struct AccessibilityIdentifiers {
         static let menuBtn = "menu_btn"
         static let btn1 = "btn_1_login"
         static let btn2 = "btn_2_login"
+        static let btn3 = "btn_3_login"
         static let nextBtn = "next_btn"
         static let backBtn = "back_btn"
+        static let attemptsLbl = "attempts_lbl"
     }
     
     struct PopoverMenuWalletScreen {

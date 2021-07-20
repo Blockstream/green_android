@@ -1,7 +1,7 @@
 import XCTest
 @testable import gaios
 
-class ChangePinUITests: XCTestBase {
+class PinUITests: XCTestBase {
     
     let walletName = Constants.walletName
     
@@ -72,6 +72,37 @@ class ChangePinUITests: XCTestBase {
         Login()
             .pause(1)
             .digitPin()
+        
+        Transactions()
+            .pause(1)
+    }
+    
+    func testWrongPin() {
+
+        prepareWallet()
+        
+        Transactions()
+            .pause(1)
+            .tapSettings()
+        
+        Settings()
+            .tapLogOut()
+
+        Home()
+            .selectWallet(named: walletName)
+        
+        Login()
+            .pause(1)
+            .digitWrongPin()
+            .checkErrorWithAttempts(2)
+            .pause(1)
+            .digitWrongPin()
+            .checkErrorLast()
+            .pause(1)
+            .digitPin()
+        
+        Transactions()
+            .pause(1)
     }
     
     func prepareWallet() {
