@@ -21,6 +21,9 @@ class HWWScanViewController: UIViewController {
         BLEManager.shared.scanDelegate = self
         setContent()
         setStyle()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.HWWScanScreen.view
+        lblTitle.accessibilityIdentifier = AccessibilityIdentifiers.HWWScanScreen.titleLbl
     }
 
     func setContent() {

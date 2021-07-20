@@ -198,6 +198,11 @@ struct AccessibilityIdentifiers {
     
     struct DrawerMenuScreen {
         static let view = "view_drawer_menu"
-
+        static let addWalletView = "add_wallet_view_drawer"
+    }
+    
+    struct HWWScanScreen {
+        static let view = "view_hww_scan"
+        static let titleLbl = "title_lbl"
     }
 }

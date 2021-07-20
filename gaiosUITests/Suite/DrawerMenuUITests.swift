@@ -46,6 +46,59 @@ class DrawerMenuUITests: XCTestBase {
         
     }
     
+    func testAddWalletBtnFromDrawerMenu() {
+        
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        
+        Transactions()
+            .pause(1)
+            .tapDrawerBtn(Constants.walletName)
+        
+        Drawer()
+            .pause(1)
+            .tapAddWalletView()
+        
+        Landing()
+            .tapAcceptTerms()
+            .pause(1)
+    }
+    
+    func testJadeBtnFromDrawerMenu() {
+        let name = "Blockstream Jade"
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        
+        Transactions()
+            .pause(1)
+            .tapDrawerBtn(Constants.walletName)
+        
+        Drawer()
+            .pause(1)
+            .tapHWWBtn(name)
+            .pause(1)
+        
+        HWWScan()
+            .pause(1)
+            .checkTitle(name)
+    }
+    
+    func testLedgerBtnFromDrawerMenu() {
+        let name = "Ledger Nano X"
+        prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
+        
+        Transactions()
+            .pause(1)
+            .tapDrawerBtn(Constants.walletName)
+        
+        Drawer()
+            .pause(1)
+            .tapHWWBtn(name)
+            .pause(1)
+        
+        HWWScan()
+            .pause(1)
+            .checkTitle(name)
+    }
+    
     func prepareWallet(walletName: String, words: [String], isSingleSig: Bool) {
         
         if Home().existsWallet(named: walletName) {

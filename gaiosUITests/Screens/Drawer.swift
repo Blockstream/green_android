@@ -41,4 +41,36 @@ class Drawer: Screen {
 
         return tap(walletLabel)
     }
+    
+    @discardableResult
+    func tapAddWalletView(connectionTimeout: TimeInterval = 25) -> Self {
+        
+        let lastCell = rootElement.tables.firstMatch.cells.allElementsBoundByIndex.last
+        let MAX_SCROLLS = 10
+        var count = 0
+        while lastCell!.isHittable == false && count < MAX_SCROLLS {
+            rootElement.tables.firstMatch.swipeUp()
+            count += 1
+        }
+        tap(app.otherElements[AccessibilityIdentifiers.DrawerMenuScreen.addWalletView])
+        return self
+    }
+    
+    @discardableResult
+    func tapHWWBtn(_ name: String, connectionTimeout: TimeInterval = 25) -> Self {
+        
+        //"Ledger Nano X"
+        
+        let lastCell = rootElement.tables.firstMatch.cells.allElementsBoundByIndex.last
+        let MAX_SCROLLS = 10
+        var count = 0
+        while lastCell!.isHittable == false && count < MAX_SCROLLS {
+            rootElement.tables.firstMatch.swipeUp()
+            count += 1
+        }
+        app.staticTexts[name].tap()
+
+        return self
+    }
+    
 }

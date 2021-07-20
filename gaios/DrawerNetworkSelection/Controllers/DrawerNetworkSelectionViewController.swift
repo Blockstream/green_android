@@ -199,7 +199,7 @@ extension DrawerNetworkSelectionViewController {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didPressAddWallet))
         section.addGestureRecognizer(tapGesture)
-
+        section.accessibilityIdentifier = AccessibilityIdentifiers.DrawerMenuScreen.addWalletView
         return section
     }
 }

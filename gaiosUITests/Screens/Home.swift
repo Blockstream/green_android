@@ -7,7 +7,6 @@ class Home: Screen {
     }
     
     @discardableResult
-
     func tapAddWalletView(connectionTimeout: TimeInterval = 25) -> Self {
         
         let lastCell = rootElement.tables.firstMatch.cells.allElementsBoundByIndex.last
