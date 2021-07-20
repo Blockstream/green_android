@@ -195,4 +195,9 @@ struct AccessibilityIdentifiers {
         static let nameField = "name_field"
         static let nextBtn = "next_btn"
     }
+    
+    struct DrawerMenuScreen {
+        static let view = "view_drawer_menu"
+
+    }
 }

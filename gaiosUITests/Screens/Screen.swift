@@ -48,43 +48,6 @@ class Screen {
         return self
     }
 
-    @discardableResult
-    func existsWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Bool {
-        let walletExistance = NSPredicate(format: "label MATCHES '\(name)'")
-        let walletLabel = app.otherElements[AccessibilityIdentifiers.HomeScreen.view].tables
-            .children(matching: .cell).staticTexts.element(matching: walletExistance)
-        var existsWallet = walletLabel.waitForExistence(timeout: 3)
-
-        var swipeUpTimes = 0
-        while !existsWallet && swipeUpTimes < maxSwipeUp {
-            rootElement.tables.cells.element(boundBy: 0).swipeUp()
-            swipeUpTimes += 1
-
-            existsWallet = walletLabel.exists
-        }
-
-        return existsWallet
-    }
-    
-    
-    @discardableResult
-    func selectWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Self {
-        let walletExistance = NSPredicate(format: "label MATCHES '\(name)'")
-        let walletLabel = app.otherElements[AccessibilityIdentifiers.HomeScreen.view].tables
-            .children(matching: .cell).staticTexts.element(matching: walletExistance)
-        var existsWallet = walletLabel.waitForExistence(timeout: 3)
-
-        var swipeUpTimes = 0
-        while !existsWallet && swipeUpTimes < maxSwipeUp {
-            rootElement.tables.cells.element(boundBy: 0).swipeUp()
-            swipeUpTimes += 1
-
-            existsWallet = walletLabel.exists
-        }
-
-        return tap(walletLabel)
-    }
-
     func localized(key: String, referenceClass:AnyClass) -> String
     {
         let bundle = Bundle(for: referenceClass)

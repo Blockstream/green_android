@@ -24,12 +24,12 @@
                                     <constraint firstAttribute="width" constant="200" id="fWf-El-5Gg"/>
                                 </constraints>
                             </imageView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="qcp-QV-GxT">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="qcp-QV-GxT">
                                 <rect key="frame" x="0.0" y="169" width="414" height="665"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <color key="backgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletDrawerCell" rowHeight="64" id="RjD-F7-Jtw" customClass="WalletDrawerCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="24.5" width="414" height="64"/>
+                                        <rect key="frame" x="0.0" y="49.5" width="414" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="RjD-F7-Jtw" id="QAo-qg-VqM">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>
@@ -84,7 +84,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WalletDrawerHDCell" rowHeight="64" id="9hn-T1-Isa" customClass="WalletDrawerHDCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="88.5" width="414" height="64"/>
+                                        <rect key="frame" x="0.0" y="113.5" width="414" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9hn-T1-Isa" id="mBc-kl-QMb">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="64"/>

@@ -1,30 +1,15 @@
 import XCTest
 
-class Home: Screen {
+class Drawer: Screen {
 
     override var rootElement: XCUIElement {
-        return app.otherElements[AccessibilityIdentifiers.HomeScreen.view]
+        return app.otherElements[AccessibilityIdentifiers.DrawerMenuScreen.view]
     }
-    
-    @discardableResult
-
-    func tapAddWalletView(connectionTimeout: TimeInterval = 25) -> Self {
-        
-        let lastCell = rootElement.tables.firstMatch.cells.allElementsBoundByIndex.last
-        let MAX_SCROLLS = 10
-        var count = 0
-        while lastCell!.isHittable == false && count < MAX_SCROLLS {
-            rootElement.tables.firstMatch.swipeUp()
-            count += 1
-        }
-        tap(app.otherElements[AccessibilityIdentifiers.HomeScreen.addWalletView])
-        return self
-    }
-    
+ 
     @discardableResult
     func existsWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Bool {
         let walletExistance = NSPredicate(format: "label MATCHES '\(name)'")
-        let walletLabel = app.otherElements[AccessibilityIdentifiers.HomeScreen.view].tables
+        let walletLabel = app.otherElements[AccessibilityIdentifiers.DrawerMenuScreen.view].tables
             .children(matching: .cell).staticTexts.element(matching: walletExistance)
         var existsWallet = walletLabel.waitForExistence(timeout: 3)
 
@@ -42,7 +27,7 @@ class Home: Screen {
     @discardableResult
     func selectWallet(named name: String, connectionTimeout: TimeInterval = 25) -> Self {
         let walletExistance = NSPredicate(format: "label MATCHES '\(name)'")
-        let walletLabel = app.otherElements[AccessibilityIdentifiers.HomeScreen.view].tables
+        let walletLabel = app.otherElements[AccessibilityIdentifiers.DrawerMenuScreen.view].tables
             .children(matching: .cell).staticTexts.element(matching: walletExistance)
         var existsWallet = walletLabel.waitForExistence(timeout: 3)
 

@@ -26,6 +26,8 @@ class DrawerNetworkSelectionViewController: UIViewController {
         super.viewDidLoad()
 
         setContent()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DrawerMenuScreen.view
     }
 
     func setContent() {
@@ -166,7 +168,7 @@ extension DrawerNetworkSelectionViewController {
 
     func footerView(_ txt: String) -> UIView {
         let section = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: footerH))
-        section.backgroundColor = UIColor.customTitaniumDark().withAlphaComponent(0.8)
+        section.backgroundColor = UIColor.customTitaniumDark()
 
         let icon = UIImageView(frame: .zero)
         icon.image = UIImage(named: "ic_plus")?.maskWithColor(color: .white)

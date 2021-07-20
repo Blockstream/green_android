@@ -30,5 +30,12 @@ class Transactions: Screen {
         return self
     }
     
-    
+    @discardableResult
+    func tapDrawerBtn(_ name: String) -> Self {
+
+        app.staticTexts[name].tap()
+        
+        return self
+    }
+
 }
