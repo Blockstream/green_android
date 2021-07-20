@@ -16,7 +16,7 @@ _EOF_
 }
 
 # ----- Vars
-SHA256="40cc3b8bb9b0276e655e93626eff47860a9d92c8"
+SHA256="e12744dab766dd643327187f69bb50c3c5be49ef"
 
 URL_ASSETS="https://raw.githubusercontent.com/Blockstream/asset_registry_db/${SHA256}/index.json"
 URL_ICONS="https://raw.githubusercontent.com/Blockstream/asset_registry_db/${SHA256}/icons.json"
