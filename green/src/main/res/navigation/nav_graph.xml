@@ -128,6 +128,9 @@
         <action
             android:id="@+id/action_chooseNetworkFragment_to_chooseSecurityFragment"
             app:destination="@id/chooseSecurityFragment" />
+        <action
+            android:id="@+id/action_chooseNetworkFragment_to_chooseRecoveryPhraseFragment"
+            app:destination="@id/chooseRecoveryPhraseFragment" />
     </fragment>
     <fragment
         android:id="@+id/chooseSecurityFragment"
@@ -137,9 +140,6 @@
         <argument
             android:name="onboardingOptions"
             app:argType="com.blockstream.green.data.OnboardingOptions" />
-        <action
-            android:id="@+id/action_chooseSecurityFragment_to_walletNameFragment"
-            app:destination="@id/walletNameFragment" />
         <action
             android:id="@+id/action_chooseSecurityFragment_to_chooseRecoveryPhraseFragment"
             app:destination="@id/chooseRecoveryPhraseFragment" />

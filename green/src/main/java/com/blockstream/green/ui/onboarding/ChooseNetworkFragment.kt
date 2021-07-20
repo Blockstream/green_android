@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseNetworkFragmentBinding
+import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.blockstream.green.utils.isDevelopmentFlavor
@@ -38,7 +40,19 @@ class ChooseNetworkFragment :
             when (item) {
                 is NetworkListItem -> {
                     options?.apply {
-                        chooseNetwork(copy(networkType = item.network))
+                        if(isRestoreFlow){
+                            val newOptions = createCopyForNetwork(greenWallet, item.network, isBIP39)
+
+                            if(newOptions.network?.isMultisig == true || newOptions.isSinglesigNetworkEnabledForBuildFlavor(requireContext())){
+                                navigate(newOptions)
+                            }else{
+                                ComingSoonBottomSheetDialogFragment().also {
+                                    it.show(childFragmentManager, it.toString())
+                                }
+                            }
+                        }else{
+                            navigate(copy(networkType = item.network))
+                        }
                     }
                     true
                 }
@@ -86,11 +100,19 @@ class ChooseNetworkFragment :
         }
     }
 
-    private fun chooseNetwork(options: OnboardingOptions) {
-        navigate(
-            ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToChooseSecurityFragment(
-                options
+    private fun navigate(options: OnboardingOptions) {
+        if(options.isRestoreFlow){
+            navigate(
+                ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToChooseRecoveryPhraseFragment(
+                    options
+                )
             )
-        )
+        }else {
+            navigate(
+                ChooseNetworkFragmentDirections.actionChooseNetworkFragmentToChooseSecurityFragment(
+                    options
+                )
+            )
+        }
     }
 }

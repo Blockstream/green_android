@@ -24,9 +24,28 @@ data class OnboardingOptions(
     // Singlesig testnet is available in production
     fun isSinglesigNetworkEnabledForBuildFlavor(context: Context): Boolean {
         if(context.isProductionFlavor()){
-            return networkType == "testnet"
+            return networkType == "testnet" || networkType == "mainnet"
         }
         return true
+    }
+
+    fun createCopyForNetwork(greenWallet: GreenWallet, networkType: String, isElectrum: Boolean): OnboardingOptions {
+        val id = when (networkType) {
+            Network.GreenMainnet -> {
+                if (isElectrum) Network.ElectrumMainnet else Network.GreenMainnet
+            }
+            Network.GreenLiquid -> {
+                if (isElectrum) Network.ElectrumLiquid else Network.GreenLiquid
+            }
+            Network.GreenTestnetLiquid -> {
+                if (isElectrum) Network.ElectrumTestnetLiquid else Network.GreenTestnetLiquid
+            }
+            else -> {
+                if (isElectrum) Network.ElectrumTestnet else Network.GreenTestnet
+            }
+        }
+
+        return copy(network = greenWallet.networks.getNetworkById(id), networkType = networkType)
     }
 
     companion object{

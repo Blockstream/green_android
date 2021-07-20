@@ -9,6 +9,8 @@ import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseSecurityFragmentBinding
+import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
+import com.blockstream.green.ui.HelpBottomSheetDialogFragment
 import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -36,28 +38,18 @@ class ChooseSecurityFragment :
         binding.singleSig.setOnClickListener {
             if (isSinglesigNetworkEnabledForBuildFlavor) {
                 options?.apply {
-                    navigate(copy(network = getNetwork(networkType!!, true)))
+                    navigate(createCopyForNetwork(greenWallet, networkType!!, true))
+                }
+            }else{
+                ComingSoonBottomSheetDialogFragment().also {
+                    it.show(childFragmentManager, it.toString())
                 }
             }
         }
 
         binding.multiSig.setOnClickListener {
             options?.apply {
-                navigate(copy(network = getNetwork(networkType!!, false)))
-            }
-        }
-
-
-        if (!isSinglesigNetworkEnabledForBuildFlavor) {
-            // Disable singlesig
-            binding.singleSig.disable()
-
-            // Or proceed immediately to next destination
-            options?.apply {
-                // Remove chooseSecurityFragment from backstack
-                val navOptionsBuilder =
-                    NavOptions.Builder().setPopUpTo(R.id.chooseSecurityFragment, true)
-                navigate(copy(network = getNetwork(networkType!!, false)), navOptionsBuilder)
+                navigate(createCopyForNetwork(greenWallet, networkType!!, false))
             }
         }
     }
@@ -93,23 +85,13 @@ class ChooseSecurityFragment :
                 navOptionsBuilder = navOptionsBuilder
             )
         } else {
-            if (Bridge.useGreenModule) {
-                navigate(
-                    ChooseSecurityFragmentDirections.actionChooseSecurityFragmentToWalletNameFragment(
-                        options,
-                        mnemonic = "",
-                        mnemonicPassword = ""
-                    ), navOptionsBuilder = navOptionsBuilder
-                )
-            } else {
-                navigate(
-                    ChooseSecurityFragmentDirections.actionGlobalRecoveryIntroFragment(
-                        wallet = null,
-                        onboardingOptions = options,
-                        mnemonic = greenWallet.generateMnemonic12()
-                    ), navOptionsBuilder = navOptionsBuilder
-                )
-            }
+            navigate(
+                ChooseSecurityFragmentDirections.actionGlobalRecoveryIntroFragment(
+                    wallet = null,
+                    onboardingOptions = options,
+                    mnemonic = greenWallet.generateMnemonic12()
+                ), navOptionsBuilder = navOptionsBuilder
+            )
         }
     }
 }

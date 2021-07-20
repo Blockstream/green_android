@@ -25,20 +25,14 @@ class RestoreWalletFragment :
             }
         }
 
-        // Disabled for now
-        binding.cardMigrate.disable()
-//        binding.cardMigrate.setOnClickListener {
-//            options?.apply {
-//                navigate(copy(isBIP39 = true))
-//            }
-//        }
+        binding.cardMigrate.setOnClickListener {
+            options?.apply {
+                navigate(copy(isBIP39 = true))
+            }
+        }
     }
 
     fun navigate(options: OnboardingOptions){
-        if(options.isBIP39){
-            navigate(RestoreWalletFragmentDirections.actionRestoreWalletFragmentToChooseRecoveryPhraseFragment(options))
-        }else{
-            navigate(RestoreWalletFragmentDirections.actionRestoreWalletFragmentToChooseNetworkFragment(options))
-        }
+        navigate(RestoreWalletFragmentDirections.actionRestoreWalletFragmentToChooseNetworkFragment(options))
     }
 }
