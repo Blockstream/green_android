@@ -399,7 +399,7 @@ class WalletSettingsFragment :
                 } else {
                     list += TitleListItem(StringHolder(R.string.id_general))
 
-                    if (!isLiquid) {
+                    if (!session.isLiquid && !session.isElectrum) {
                         list += watchOnlyPreference
                     }
 
@@ -410,7 +410,6 @@ class WalletSettingsFragment :
                         list += txPriorityPreference
                         list += customFeeRatePreference
                     }
-
 
                     list += TitleListItem(StringHolder(R.string.id_security))
 
@@ -437,9 +436,10 @@ class WalletSettingsFragment :
                         list += recoveryTransactionsPreference
                     }
 
-                    list += TitleListItem(StringHolder(R.string.id_advanced))
-
-                    list += pgpPreference
+                    if (!session.isElectrum) {
+                        list += TitleListItem(StringHolder(R.string.id_advanced))
+                        list += pgpPreference
+                    }
                 }
             }
 
