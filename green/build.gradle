@@ -18,6 +18,7 @@ android {
         targetSdkVersion 30
         versionCode 364
         versionName "3.6.4"
+        setProperty("archivesBaseName", "BlockstreamGreen" + "-v" + versionName)
 
         // Export schemas
         javaCompileOptions {
