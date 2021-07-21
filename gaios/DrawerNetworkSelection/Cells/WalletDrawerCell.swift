@@ -26,6 +26,8 @@ class WalletDrawerCell: UITableViewCell {
         self.selectedView.borderColor = UIColor.customMatrixGreen().withAlphaComponent(0.6)
         self.selectedView.layer.cornerRadius = 4.0
 
+        self.iconSecurityType.image = UIImage(named: "ic_keys_invert")!
+
         if item.isSingleSig ?? false {
             self.iconSecurityType.image = UIImage(named: "ic_key")!
         }

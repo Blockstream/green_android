@@ -21,6 +21,8 @@ class WalletCell: UITableViewCell {
         self.lblTitle.text = item.name
         self.icon.image = item.icon
 
+        self.iconSecurityType.image = UIImage(named: "ic_keys_invert")!
+
         if item.isSingleSig ?? false {
             self.iconSecurityType.image = UIImage(named: "ic_key")!
         }
