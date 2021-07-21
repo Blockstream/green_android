@@ -4,17 +4,27 @@ import RxBluetoothKit
 import CoreBluetooth
 
 final class Ledger: LedgerCommands, HWResolverProtocol {
+
     public static let shared = Ledger()
 
     var xPubsCached = [String: String]()
     let SIGHASH_ALL: UInt8 = 1
 
-    var info: [String: Any] { get { ["name": "Ledger", "supports_arbitrary_scripts": true, "supports_low_r": false] } }
+    var device: HWDevice {
+        get {
+            HWDevice(name: "Ledger", supportsArbitraryScripts: true,
+                 supportsLowR: false, supportsLiquid: 0, supportsAntiExfilProtocol: 0)
+        }
+    }
     var connected: Bool { get { !self.xPubsCached.isEmpty }}
 
+    // swiftlint:disable:next function_parameter_count
     func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],
-                         transactions: [String: String], addressTypes: [String]) -> Observable<[String]> {
+                         transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
         return signSW(tx: tx, inputs: inputs, outputs: outputs)
+            .compactMap { sigs in
+                return ["signatures": sigs, "signer_commitments": []]
+            }
     }
 
     func signSW(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]]) -> Observable<[String]> {
@@ -70,13 +80,18 @@ final class Ledger: LedgerCommands, HWResolverProtocol {
         }
     }
 
-    func signMessage(path: [Int], message: String) -> Observable<String> {
-        return signMessagePrepare(path: path, message: message.data(using: .utf8) ?? Data())
+    func signMessage(path: [Int]?,
+                     message: String?,
+                     useAeProtocol: Bool?,
+                     aeHostCommitment: String?,
+                     aeHostEntropy: String?)
+    -> Observable<(signature: String?, signerCommitment: String?)> {
+        return signMessagePrepare(path: path ?? [], message: message?.data(using: .utf8) ?? Data())
             .flatMap { _ in self.signMessageSign(pin: [0])}
-            .flatMap { res -> Observable<String> in
+            .compactMap { res in
                 let signature = res["signature"] as? [UInt8]
                 let hexSig = signature!.map { String(format: "%02hhx", $0) }.joined()
-                return Observable.just(hexSig)
+                return (signature: hexSig, signerCommitment: nil)
         }
     }
 
@@ -125,7 +140,8 @@ final class Ledger: LedgerCommands, HWResolverProtocol {
         return Observable.error(JadeError.Abort(""))
     }
 
-    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<[String: Any]> {
+    // swiftlint:disable:next function_parameter_count
+    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
         return Observable.error(JadeError.Abort(""))
     }
 

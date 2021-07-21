@@ -11,21 +11,18 @@ struct TxInputBtc: TxInputProtocol {
         case isWitness = "is_witness"
         case path = "path"
         case satoshi = "satoshi"
+        case aeHostEntropy = "ae_host_entropy"
+        case aeHostCommitment = "ae_host_commitment"
     }
     let isWitness: Bool
-    let inputTx: Data?
-    let script: Data?
+    let inputTx: [UInt8]?
+    let script: [UInt8]?
     let satoshi: UInt64?
     let path: [UInt32]?
+    let aeHostEntropy: [UInt8]?
+    let aeHostCommitment: [UInt8]?
 
     func encode() -> [String: Any] {
-        var inputParams = try! JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any] ?? [:]
-        if script != nil {
-            inputParams["script"] = script!
-        }
-        if inputTx != nil {
-            inputParams["input_tx"] = inputTx!
-        }
-        return inputParams
+        return try! JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any] ?? [:]
     }
 }

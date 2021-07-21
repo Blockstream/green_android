@@ -160,7 +160,12 @@ class GreenAddressService {
         let bgq = DispatchQueue.global(qos: .background)
         let session = getSession()
         Guarantee().map(on: bgq) {_ -> TwoFactorCall in
-            try session.loginUser(details: [:], hw_device: ["device": HWResolver.shared.hw?.info ?? [:]])
+            guard let info = HWResolver.shared.hw?.device,
+                let data = try? JSONEncoder().encode(info),
+                let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
+                throw JadeError.Abort("Invalid device configuration")
+            }
+            return try session.loginUser(details: [:], hw_device: ["device": device])
         }.then(on: bgq) { call in
             call.resolve()
         }.done { _ in

@@ -17,7 +17,12 @@ final class Jade: JadeDevice, HWResolverProtocol {
     var xPubsCached = [String: String]()
     let SIGHASH_ALL: UInt8 = 1
 
-    var info: [String: Any] { get { ["name": "Jade", "supports_arbitrary_scripts": true, "supports_liquid": 1, "supports_low_r": true] } }
+    var device: HWDevice {
+        get {
+            HWDevice(name: "Jade", supportsArbitraryScripts: true,
+                 supportsLowR: true, supportsLiquid: 1, supportsAntiExfilProtocol: 1)
+        }
+    }
     var connected: Bool { get { !self.xPubsCached.isEmpty }}
 
     func version() -> Observable<[String: Any]> {
@@ -73,18 +78,60 @@ final class Jade: JadeDevice, HWResolverProtocol {
         }
     }
 
-    func signMessage(path: [Int], message: String) -> Observable<String> {
-        let pathstr = path.map { UInt32($0) }
-        let params = ["path": pathstr, "message": message] as [String: Any]
-        return Jade.shared.exchange(method: "sign_message", params: params)
-            .do(onNext: { print($0) })
-            .flatMap { res -> Observable<String> in
-                let encoded = res["result"] as? String
-                let decoded = Data(base64Encoded: encoded!)
-                let der = try sigToDer(sigDecoded: Array(decoded!))
-                let hexSig = der.map { String(format: "%02hhx", $0) }.joined()
-                return Observable.just(hexSig)
+    func signMessage(path: [Int]?,
+                     message: String?,
+                     useAeProtocol: Bool?,
+                     aeHostCommitment: String?,
+                     aeHostEntropy: String?)
+    -> Observable<(signature: String?, signerCommitment: String?)> {
+        let pathstr = path?.map { UInt32($0) }
+        var signMessage: Observable<[String: Any]>?
+        var signerCommitment: String?
+        if useAeProtocol ?? false {
+            // Anti-exfil protocol:
+            // We send the signing request with the host-commitment and receive the signer-commitment
+            // in reply once the user confirms.
+            // We can then request the actual signature passing the host-entropy.
+            let aeHostCommitment = hexToData(aeHostCommitment ?? "")
+            let aeHostEntropy = hexToData(aeHostEntropy ?? "")
+            let params = ["path": pathstr ?? [],
+                          "message": message ?? "",
+                          "ae_host_commitment": aeHostCommitment
+            ] as [String: Any]
+            signMessage = Jade.shared.exchange(method: "sign_message", params: params)
+                .compactMap { res in
+                    let result = res["result"] as? [UInt8]
+                    signerCommitment = result?.map { String(format: "%02hhx", $0) }.joined()
+                }.flatMap { _ -> Observable<[String: Any]> in
+                    Jade.shared.exchange(method: "get_signature",
+                                         params: ["ae_host_entropy": aeHostEntropy])
+                }
+        } else {
+            // Standard EC signature, simple case
+            let params = ["path": pathstr ?? [],
+                          "message": message ?? ""] as [String: Any]
+            signMessage = Jade.shared.exchange(method: "sign_message", params: params)
+        }
+        return signMessage!.compactMap { res -> (String?, String?) in
+            let signature = res["result"] as? String
+            return (signature, signerCommitment)
+        }.compactMap { (sign, signerCom) -> (signature: String?, signerCommitment: String?) in
+            // Convert the signature from Base64 into DER hex for GDK
+            guard var sigDecoded = Data(base64Encoded: sign ?? "") else {
+                throw JadeError.Abort("Invalid signature")
             }
+
+            // Need to truncate lead byte if recoverable signature
+            if sigDecoded.count == EC_SIGNATURE_RECOVERABLE_LEN {
+                sigDecoded = sigDecoded[1...sigDecoded.count]
+            }
+
+            let sigDer = try sigToDer(sig: Array(sigDecoded))
+            let hexSig = sigDer.map { String(format: "%02hhx", $0) }.joined()
+
+            print("signMessage() returning: \(hexSig)")
+            return (signature: hexSig, signerCommitment: signerCom)
+        }
     }
 
     func xpubs(paths: [[Int]]) -> Observable<[String]> {
@@ -115,7 +162,8 @@ final class Jade: JadeDevice, HWResolverProtocol {
             }
     }
 
-    func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<[String]> {
+    // swiftlint:disable:next function_parameter_count
+    func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         if addressTypes.contains("p2pkh") {
             return Observable.error(JadeError.Abort("Hardware Wallet cannot sign sweep inputs"))
@@ -129,16 +177,18 @@ final class Jade: JadeDevice, HWResolverProtocol {
             let prevoutScript = input["prevout_script"] as? String
             let script = hexToData(prevoutScript!)
             let userPath = input["user_path"] as? [UInt32]
+            let aeHostCommitment = hexToData(input["ae_host_commitment"] as? String ?? "")
+            let aeHostEntropy = hexToData(input["ae_host_entropy"] as? String ?? "")
 
             if swInput && inputs.count == 1 {
                 let satoshi = input["satoshi"] as? UInt64
-                return TxInputBtc(isWitness: swInput, inputTx: nil, script: script, satoshi: satoshi, path: userPath)
+                return TxInputBtc(isWitness: swInput, inputTx: nil, script: Array(script), satoshi: satoshi, path: userPath, aeHostEntropy: Array(aeHostEntropy), aeHostCommitment: Array(aeHostCommitment))
             }
             let txhash = input["txhash"] as? String
             guard let txhex = transactions[txhash ?? ""] else {
                 return nil
             }
-            return TxInputBtc(isWitness: swInput, inputTx: hexToData(txhex), script: script, satoshi: nil, path: userPath)
+            return TxInputBtc(isWitness: swInput, inputTx: Array(hexToData(txhex)), script: Array(script), satoshi: nil, path: userPath, aeHostEntropy: Array(aeHostEntropy), aeHostCommitment: Array(aeHostCommitment))
         }
 
         if txInputs.contains(where: { $0 == nil }) {
@@ -152,16 +202,86 @@ final class Jade: JadeDevice, HWResolverProtocol {
         let txhex = tx["transaction"] as? String
         let txn = hexToData(txhex ?? "")
 
-        let params = [ "change": changeParams!, "network": network,
-                       "num_inputs": inputs.count, "txn": txn] as [String: Any]
+        let params = [ "change": changeParams!,
+                       "network": network,
+                       "num_inputs": inputs.count,
+                       "use_ae_signatures": useAeProtocol,
+                       "txn": txn] as [String: Any]
         return Jade.shared.exchange(method: "sign_tx", params: params)
-            .do(onNext: { print($0) })
-            .flatMap { _ in
-                self.signTxInputs(baseId: 0, inputs: txInputs)
+            .flatMap { _ -> Observable<(commitments: [String], signatures: [String])> in
+                if useAeProtocol {
+                    return self.signTxInputsAntiExfil(baseId: 0, inputs: txInputs)
+                } else {
+                    return self.signTxInputs(baseId: 0, inputs: txInputs)
+                }
+            }.compactMap { (commitments, signatures) in
+                return ["signatures": signatures, "signer_commitments": commitments]
             }
     }
 
-    func signTxInputs(baseId: Int, inputs: [TxInputProtocol?]) -> Observable<[String]> {
+    func signTxInputsAntiExfil(baseId: Int, inputs: [TxInputProtocol?]) -> Observable<(commitments: [String], signatures: [String])> {
+        /**
+         * Anti-exfil protocol:
+         * We send one message per input (which includes host-commitment *but
+         * not* the host entropy) and receive the signer-commitment in reply.
+         * Once all n input messages are sent, we can request the actual signatures
+         * (as the user has a chance to confirm/cancel at this point).
+         * We request the signatures passing the host-entropy for each one.
+         */
+        // Send inputs one at a time, receiving 'signer-commitment' in reply
+        let signerCommitments = inputs.map {
+            Observable.just($0!)
+                .flatMap {
+                    Jade.shared.exchange(method: "tx_input", params: $0.encode())
+                }.compactMap { res ->  String in
+                    let result = res["result"] as? [UInt8]
+                    return dataToHex(Data(result ?? []))
+                }
+        }
+        let signatures = inputs.map {
+            Observable.just($0!)
+                .compactMap { input -> [UInt8]? in
+                    if let inputBtc = input as? TxInputBtc {
+                        return inputBtc.aeHostEntropy
+                    } else if let inputLiquid = input as? TxInputLiquid {
+                        return inputLiquid.aeHostEntropy
+                    } else {
+                        return nil
+                    }
+                }.flatMap { aeHostEntropy in
+                    Jade.shared.exchange(method: "get_signature", params: ["ae_host_entropy": aeHostEntropy!])
+                }.compactMap { res -> String in
+                    let result = res["result"] as? [UInt8]
+                    return dataToHex(Data(result ?? []))
+                }
+        }
+
+        var commitments = [String]()
+        return Observable.concat(signerCommitments)
+            .reduce([], accumulator: { result, element in
+                result + [element]
+            }).compactMap { signerCommitments in
+                print("signerCommitments \(signerCommitments)")
+                commitments = signerCommitments
+            }.flatMap { _ in
+                Observable.concat(signatures)
+            }.reduce([], accumulator: { result, element in
+                result + [element]
+            }).compactMap { signatures in
+                print("signatures \(signatures)")
+                return (commitments: commitments, signatures: signatures)
+            }
+    }
+
+    func signTxInputs(baseId: Int, inputs: [TxInputProtocol?]) -> Observable<(commitments: [String], signatures: [String])> {
+        /**
+         * Legacy Protocol:
+         * Send one message per input - without expecting replies.
+         * Once all n input messages are sent, the hw then sends all n replies
+         * (as the user has a chance to confirm/cancel at this point).
+         * Then receive all n replies for the n signatures.
+         * NOTE: *NOT* a sequence of n blocking rpc calls.
+         */
         let allWrites = inputs.map {
                 Observable.just($0!)
                     .flatMap { self.signTxInput($0) }
@@ -198,15 +318,13 @@ final class Jade: JadeDevice, HWResolverProtocol {
             }.reduce([], accumulator: { result, element in
                 result + [element]
             }).compactMap { signatures in
-                print(signatures)
-                return signatures
+                return (commitments: [], signatures: signatures)
             }
     }
 
     func signTxInput(_ input: TxInputProtocol) -> Observable<Data> {
         return Observable.create { observer in
-            let inputParams = input.encode()
-            let package = Jade.shared.build(method: "tx_input", params: inputParams)
+            let package = Jade.shared.build(method: "tx_input", params: input.encode())
             #if DEBUG
             print("=> " + package.map { String(format: "%02hhx", $0) }.joined())
             #endif
@@ -449,7 +567,8 @@ extension Jade {
             }
     }
 
-    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String]) -> Observable<[String: Any]> {
+    // swiftlint:disable:next function_parameter_count
+    func signLiquidTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]], transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
 
         if addressTypes.contains("p2pkh") {
             return Observable.error(JadeError.Abort("Hardware Wallet cannot sign sweep inputs"))
@@ -459,7 +578,9 @@ extension Jade {
             let swInput = !(input["address_type"] as? String == "p2sh")
             let script = hexToData(input["prevout_script"] as? String ?? "")
             let commitment = hexToData(input["commitment"] as? String ?? "")
-            return TxInputLiquid(isWitness: swInput, script: script, valueCommitment: commitment, path: input["user_path"] as? [UInt32])
+            let aeHostCommitment = hexToData(input["ae_host_commitment"] as? String ?? "")
+            let aeHostEntropy = hexToData(input["ae_host_entropy"] as? String ?? "")
+            return TxInputLiquid(isWitness: swInput, script: Array(script), valueCommitment: Array(commitment), path: input["user_path"] as? [UInt32], aeHostEntropy: Array(aeHostEntropy), aeHostCommitment: Array(aeHostCommitment))
         }
 
         // Get values, abfs and vbfs from inputs (needed to compute the final output vbf)
@@ -515,7 +636,7 @@ extension Jade {
             vbfs.append(lastVbf)
             // Fetch the last commitment using that explicit vbf
             return self.getTrustedCommitment(index: lastBlindedIndex, output: lastBlindedOutput, hashPrevOuts: hashPrevOuts, customVbf: Data(lastVbf))
-        }.flatMap { lastCommitment -> Observable<[String]> in
+        }.flatMap { lastCommitment -> Observable<(commitments: [String], signatures: [String])> in
             trustedCommitments.append(lastCommitment)
             // Add a 'null' commitment for the final (fee) output
             trustedCommitments.append(nil)
@@ -525,13 +646,14 @@ extension Jade {
             let network = getNetwork()
             let txhex = tx["transaction"] as? String
             let txn = hexToData(txhex ?? "")
-            return Jade.shared.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, changes: change)
-        }.compactMap { signatures -> [String: Any] in
+            return Jade.shared.signLiquidTx(network: network, txn: txn, inputs: txInputs, trustedCommitments: trustedCommitments, changes: change, useAeProtocol: useAeProtocol)
+        }.compactMap { (commitments: [String], signatures: [String]) in
             let assetGenerators = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.assetGenerator)) : nil) }
             let valueCommitments = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.valueCommitment)) : nil) }
             let abfs = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.abf.reversed())) : nil) }
             let vbfs = trustedCommitments.map { (($0 != nil) ? dataToHex(Data($0!.vbf.reversed())) : nil) }
             return ["signatures": signatures,
+                    "signer_commitments": commitments,
                     "asset_commitments": assetGenerators,
                     "value_commitments": valueCommitments,
                     "assetblinders": abfs,
@@ -539,7 +661,8 @@ extension Jade {
         }
     }
 
-    func signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], changes: [TxChangeOutput?]) -> Observable<[String]> {
+    // swiftlint:disable:next function_parameter_count
+    func signLiquidTx(network: String, txn: Data, inputs: [TxInputLiquid?], trustedCommitments: [Commitment?], changes: [TxChangeOutput?], useAeProtocol: Bool) -> Observable<(commitments: [String], signatures: [String])> {
         let changeParams = changes.map { change -> [String: Any]? in
             let data = try? JSONEncoder().encode(change)
             var dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
@@ -548,21 +671,25 @@ extension Jade {
         }
         let commitmentsParams = trustedCommitments.map { comm -> [String: Any]? in
             let data = try? JSONEncoder().encode(comm)
-            let dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
-            return dict
+            return try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
         }
         let params = ["change": changeParams,
                       "network": network,
                       "num_inputs": inputs.count,
                       "trusted_commitments": commitmentsParams,
+                      "use_ae_signatures": useAeProtocol,
                       "txn": txn] as [String: Any]
 
         return Jade.shared.exchange(method: "sign_liquid_tx", params: params)
-            .flatMap { res -> Observable<[String]> in
+            .flatMap { res -> Observable<(commitments: [String], signatures: [String])> in
                 guard res["result"] as? Bool != nil else {
                     throw JadeError.Abort("Error response from initial sign_liquid_tx call: \(res.description)")
                 }
-                return self.signTxInputs(baseId: 0, inputs: inputs)
+                if useAeProtocol {
+                    return self.signTxInputsAntiExfil(baseId: 0, inputs: inputs)
+                } else {
+                    return self.signTxInputs(baseId: 0, inputs: inputs)
+                }
             }
     }
 

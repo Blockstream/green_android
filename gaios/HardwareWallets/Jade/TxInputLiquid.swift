@@ -6,20 +6,17 @@ struct TxInputLiquid: TxInputProtocol {
         case script = "script"
         case valueCommitment = "value_commitment"
         case path = "path"
+        case aeHostEntropy = "ae_host_entropy"
+        case aeHostCommitment = "ae_host_commitment"
     }
     let isWitness: Bool
-    let script: Data?
-    let valueCommitment: Data?
+    let script: [UInt8]?
+    let valueCommitment: [UInt8]?
     let path: [UInt32]?
+    let aeHostEntropy: [UInt8]?
+    let aeHostCommitment: [UInt8]?
 
     func encode() -> [String: Any] {
-        var inputParams = try! JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any] ?? [:]
-        if script != nil {
-            inputParams["script"] = script!
-        }
-        if valueCommitment != nil {
-            inputParams["value_commitment"] = valueCommitment!
-        }
-        return inputParams
+        return try! JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any] ?? [:]
     }
 }

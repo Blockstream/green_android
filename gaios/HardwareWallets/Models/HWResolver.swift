@@ -28,13 +28,18 @@ class HWResolver {
         return Promise { seal in
             let path = json["path"] as? [Int]
             let message = json["message"] as? String
+            let useAeProtocol = json["use_ae_protocol"] as? Bool
+            let aeHostCommitment = json["ae_host_commitment"] as? String
+            let aeHostEntropy = json["ae_host_entropy"] as? String
             _ = Observable.just(message)
                 .observeOn(SerialDispatchQueueScheduler(qos: .background))
-                .flatMap { _ in self.hw!.signMessage(path: path!, message: message!) }
+                .flatMap { _ in self.hw!.signMessage(path: path, message: message, useAeProtocol: useAeProtocol, aeHostCommitment: aeHostCommitment, aeHostEntropy: aeHostEntropy) }
                 .takeLast(1)
-                .subscribe(onNext: { data in
-                    let value = "{\"signature\":\"\(data.description)\"}"
-                    seal.fulfill(value)
+                .subscribe(onNext: { (signature, signatureCommitment) in
+                    let result = ["signature": signature ?? "",
+                     "signer_commitment": signatureCommitment ?? ""]
+                    let data = try? JSONSerialization.data(withJSONObject: result, options: .fragmentsAllowed)
+                    seal.fulfill(String(data: data ?? Data(), encoding: .utf8) ?? "")
                 }, onError: { err in
                     seal.reject(err)
                 })
@@ -48,18 +53,16 @@ class HWResolver {
             let txOutputs = json["transaction_outputs"] as? [[String: Any]]
             let signingAddressTypes = json["signing_address_types"] as? [String]
             let signingTxs = json["signing_transactions"] as? [String: String]
+            let useAeProtocol = json["use_ae_protocol"] as? Bool
             let isLiquid = getGdkNetwork(getNetwork()).liquid
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
             _ = Observable.just(self.hw!)
                 .flatMap { hw -> Observable<[String: Any]> in
                     if isLiquid {
-                        return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
+                        return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                     }
-                    return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
-                        .compactMap { res in
-                            return ["signatures": res]
-                        }
+                    return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                 }.subscribe(onNext: { res in
                     if let data = try?  JSONSerialization.data(withJSONObject: res, options: .fragmentsAllowed),
                        let text = String(data: data, encoding: String.Encoding.ascii) {

@@ -30,9 +30,8 @@ public func dataToHex(_ data: Data) -> String {
     return data.map { String(format: "%02hhx", $0) }.joined()
 }
 
-public func sigToDer(sigDecoded: [UInt8]) throws -> [UInt8] {
-    let sig = sigDecoded[1..<sigDecoded.count]
-    let sigPtr: UnsafePointer<UInt8> = UnsafePointer(Array(sig))
+public func sigToDer(sig: [UInt8]) throws -> [UInt8] {
+    let sigPtr = UnsafePointer(sig)
     let derPtr = UnsafeMutablePointer<UInt8>.allocate(capacity: Int(EC_SIGNATURE_DER_MAX_LEN))
     var written: Int = 0
     if wally_ec_sig_to_der(sigPtr, sig.count, derPtr, Int(EC_SIGNATURE_DER_MAX_LEN), &written) != WALLY_OK {
