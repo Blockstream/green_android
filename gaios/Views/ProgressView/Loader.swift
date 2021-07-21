@@ -76,7 +76,9 @@ extension UIViewController {
             }
             loader?.message = message
             loader?.activateConstraints(in: window)
-            loader?.start()
+            if !(loader?.loadingIndicator.isAnimating ?? false) {
+                loader?.start()
+            }
         }
     }
 
