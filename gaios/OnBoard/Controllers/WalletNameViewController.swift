@@ -30,6 +30,7 @@ class WalletNameViewController: UIViewController {
         view.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.view
         fieldName.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.nameField
         btnNext.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.nextBtn
+        btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.WalletNameScreen.settingsBtn
     }
 
     func setContent() {

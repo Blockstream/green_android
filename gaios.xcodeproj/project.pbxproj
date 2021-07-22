@@ -118,8 +118,11 @@
 		3497937125F8B18C0029ECB1 /* ProgressShapeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497936225F8B18C0029ECB1 /* ProgressShapeLayer.swift */; };
 		3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3497937E25F8B3F90029ECB1 /* Loader.xib */; };
 		3497939E25F9084B0029ECB1 /* RestoreWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */; };
+		3498806426A9692A00E11216 /* DialogTorSingleSig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498806326A9692A00E11216 /* DialogTorSingleSig.swift */; };
 		3498B9A5265D4026001B0290 /* DialogTorSingleSigViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */; };
 		349D7FED268D9470009E1815 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D7FEC268D9470009E1815 /* Constants.swift */; };
+		349DB75F26A84D17004FF265 /* TorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB75E26A84D17004FF265 /* TorUITests.swift */; };
+		349DB76126A84D20004FF265 /* WalletSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB76026A84D20004FF265 /* WalletSettings.swift */; };
 		349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B826C42608827F00579C0B /* Recovery.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B826C32608827F00579C0B /* Recovery.storyboard */; };
@@ -413,8 +416,11 @@
 		3497936225F8B18C0029ECB1 /* ProgressShapeLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressShapeLayer.swift; sourceTree = "<group>"; };
 		3497937E25F8B3F90029ECB1 /* Loader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Loader.xib; sourceTree = "<group>"; };
 		3497939D25F9084B0029ECB1 /* RestoreWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreWalletViewController.swift; sourceTree = "<group>"; };
+		3498806326A9692A00E11216 /* DialogTorSingleSig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSig.swift; sourceTree = "<group>"; };
 		3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogTorSingleSigViewController.swift; sourceTree = "<group>"; };
 		349D7FEC268D9470009E1815 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		349DB75E26A84D17004FF265 /* TorUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorUITests.swift; sourceTree = "<group>"; };
+		349DB76026A84D20004FF265 /* WalletSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettings.swift; sourceTree = "<group>"; };
 		349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRegistryFailViewController.swift; sourceTree = "<group>"; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
@@ -711,6 +717,8 @@
 				3412136926A0814300CC8112 /* AccountCreateSetName.swift */,
 				3453C73726A5A41A00451FB3 /* Drawer.swift */,
 				3453C74126A6BD7E00451FB3 /* HWWScan.swift */,
+				349DB76026A84D20004FF265 /* WalletSettings.swift */,
+				3498806326A9692A00E11216 /* DialogTorSingleSig.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -735,6 +743,7 @@
 				20516D052698A2C600BA1F4C /* EditWalletUITests.swift */,
 				346127D7269EB95E0074EA86 /* WalletAccountsUITests.swift */,
 				3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */,
+				349DB75E26A84D17004FF265 /* TorUITests.swift */,
 			);
 			path = Suite;
 			sourceTree = "<group>";
@@ -1840,9 +1849,11 @@
 				344FE34B2684C77900C087A5 /* WalletName.swift in Sources */,
 				3452E6002696E2F4003F3FAA /* ChangePinUITests.swift in Sources */,
 				3412136A26A0814300CC8112 /* AccountCreateSetName.swift in Sources */,
+				349DB76126A84D20004FF265 /* WalletSettings.swift in Sources */,
 				3434766E268233C000D7AD43 /* Landing.swift in Sources */,
 				342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */,
 				34347677268320C200D7AD43 /* Utils.swift in Sources */,
+				3498806426A9692A00E11216 /* DialogTorSingleSig.swift in Sources */,
 				20516D062698A2C600BA1F4C /* EditWalletUITests.swift in Sources */,
 				3451428726933C6E00E8BE1B /* SendBtc.swift in Sources */,
 				346127D8269EB95E0074EA86 /* WalletAccountsUITests.swift in Sources */,
@@ -1860,6 +1871,7 @@
 				34C978A8268DC14D0061264D /* Extensions.swift in Sources */,
 				345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */,
 				3451428526932B9300E8BE1B /* ReceiveBtc.swift in Sources */,
+				349DB75F26A84D17004FF265 /* TorUITests.swift in Sources */,
 				344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */,
 				3434767026823B1A00D7AD43 /* ChooseNetwork.swift in Sources */,
 				20516D042693969B00BA1F4C /* DialogWalletRename.swift in Sources */,

@@ -62,6 +62,11 @@ class WalletSettingsViewController: UIViewController {
         setActions()
         reload()
         hideKeyboardWhenTappedAround()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.view
+        switchTor.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.torSwitch
+        btnSave.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.saveBtn
+        btnCancel.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.cancelBtn
     }
 
     func setContent() {

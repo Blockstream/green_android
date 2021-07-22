@@ -74,5 +74,11 @@ class Login: Screen {
         return self
     }
     
+    @discardableResult
+    func tapAppSettings() -> Self {
+
+        tap(button: AccessibilityIdentifiers.LoginScreen.settingsBtn)
+        return self
+    }
     
 }

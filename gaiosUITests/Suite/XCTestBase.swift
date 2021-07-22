@@ -72,4 +72,70 @@ class XCTestBase: XCTestCase {
         Transactions()
             .pause(1)
     }
+    
+    func setTor(_ value: Bool) {
+        
+        Home()
+            .tapAddWalletView()
+        
+        Landing()
+            .tapAcceptTerms()
+            .pause(1)
+            .tapNewWallet()
+        
+        ChooseNetwork()
+            .tapTestnetCard()
+    
+        ChooseSecurity()
+            .tapMultiSigCard()
+            
+        RecoveryInstructions()
+            .tapContinue()
+        
+        RecoveryCreate()
+            .cleanWords()
+            .readWords()
+            .pause(1)
+            .tapNext()
+            .pause(1)
+            .readWords()
+            .pause(1)
+            .tapNext()
+            .pause(1)
+        
+        RecoveryVerify()
+            .pause(1)
+            .chooseWord()
+            .pause(1)
+            .chooseWord()
+            .pause(1)
+            .chooseWord()
+            .pause(1)
+        
+        RecoverySuccess()
+            .pause(1)
+            .tapNext()
+
+        WalletName()
+            .pause(1)
+            .tapSettings()
+
+        WalletSettings()
+            .pause(1)
+
+
+        if WalletSettings().isTorSetTo(value) {
+
+            WalletSettings()
+                .pause(1)
+                .tapCancel()
+        } else {
+
+            WalletSettings()
+                .tapTorSwitch()
+                .pause(1)
+                .tapSave()
+        }
+        
+    }
 }

@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-protocol DialogTorSingleSigViewControllerDelegate: class {
+protocol DialogTorSingleSigViewControllerDelegate: AnyObject {
     func didContinue()
 }
 
@@ -41,6 +41,8 @@ class DialogTorSingleSigViewController: UIViewController {
 
         view.alpha = 0.0
 
+        view.accessibilityIdentifier = AccessibilityIdentifiers.DialogTorSingleSigScreen.view
+        btnContinue.accessibilityIdentifier = AccessibilityIdentifiers.DialogTorSingleSigScreen.continueBtn
     }
 
     override func viewDidAppear(_ animated: Bool) {

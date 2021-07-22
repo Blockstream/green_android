@@ -29,4 +29,10 @@ class WalletName: Screen {
         tap(button: AccessibilityIdentifiers.WalletNameScreen.nextBtn)
         return self
     }
+    
+    @discardableResult
+    func tapSettings() -> Self {
+        tap(button: AccessibilityIdentifiers.WalletNameScreen.settingsBtn)
+        return self
+    }
 }

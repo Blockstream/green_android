@@ -65,6 +65,7 @@ struct AccessibilityIdentifiers {
         static let view = "view_wallet_name"
         static let nameField = "name_field"
         static let nextBtn = "next_btn"
+        static let settingsBtn = "settings_btn"
     }
     
     struct SetPinScreen {
@@ -100,6 +101,7 @@ struct AccessibilityIdentifiers {
         static let nextBtn = "next_btn"
         static let backBtn = "back_btn"
         static let attemptsLbl = "attempts_lbl"
+        static let settingsBtn = "settings_btn"
     }
     
     struct PopoverMenuWalletScreen {
@@ -206,5 +208,17 @@ struct AccessibilityIdentifiers {
     struct HWWScanScreen {
         static let view = "view_hww_scan"
         static let titleLbl = "title_lbl"
+    }
+    
+    struct WalletSettingsScreen {
+        static let view = "view_wallet_settings"
+        static let torSwitch = "view_tor_switch"
+        static let saveBtn = "save_btn"
+        static let cancelBtn = "cancel_btn"
+    }
+    
+    struct DialogTorSingleSigScreen {
+        static let view = "view_dialog_tor_singlesig"
+        static let continueBtn = "continue_btn"
     }
 }
