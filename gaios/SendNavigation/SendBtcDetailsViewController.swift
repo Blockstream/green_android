@@ -187,7 +187,7 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func reloadWalletBalance() {
-        let satoshi = wallet!.satoshi[assetId]!
+        let satoshi = wallet!.satoshi?[assetId] ?? 0
         let details = btc != assetId ? ["satoshi": satoshi, "asset_info": asset!.encode()!] : ["satoshi": satoshi]
         if let balance = Balance.convert(details: details) {
             let (amount, denom) = balance.get(tag: isFiat ? "fiat" : assetId)

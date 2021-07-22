@@ -133,7 +133,7 @@ class TransactionDetailViewController: KeyboardViewController {
                                        precision: 0,
                                        ticker: NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
             }
-            next.satoshi = wallet?.satoshi[next.tag]
+            next.satoshi = wallet?.satoshi?[next.tag] ?? 0
         } else if let next = segue.destination as? NotesViewController {
             next.transaction = sender as? Transaction
             next.updateTransaction = { transaction in

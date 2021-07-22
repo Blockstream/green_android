@@ -310,7 +310,7 @@ class WalletItem: Codable {
     var receiveAddress: String?
     let receivingId: String
     let type: String
-    var satoshi: [String: UInt64]
+    var satoshi: [String: UInt64]?
     var btc: UInt64 { get { return satoshi[getGdkNetwork(getNetwork()).getFeeAsset()] ?? 0 }}
     var recoveryChainCode: String?
     var recoveryPubKey: String?

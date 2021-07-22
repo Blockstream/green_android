@@ -57,6 +57,9 @@ class AccountsViewController: UICollectionViewController, UICollectionViewDelega
             return Guarantee()
         }.then(on: bgq) {
             getSubaccounts()
+        }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
+            let balances = wallets.map { $0.getBalance() }
+            return when(resolved: balances).compactMap { _ in wallets }
         }.ensure {
             self.stopAnimating()
         }.done { wallets in

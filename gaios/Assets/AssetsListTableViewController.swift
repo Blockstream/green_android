@@ -10,7 +10,7 @@ class AssetsListTableViewController: UITableViewController {
 
     private var assets: [(key: String, value: UInt64)] {
         get {
-            return Transaction.sort(wallet!.satoshi)
+            return Transaction.sort(wallet!.satoshi ?? [:])
         }
     }
 
@@ -73,7 +73,7 @@ class AssetsListTableViewController: UITableViewController {
         if let next = segue.destination as? AssetDetailTableViewController {
             next.tag = sender as? String
             next.asset = Registry.shared.infos[next.tag]
-            next.satoshi = wallet?.satoshi[next.tag]
+            next.satoshi = wallet?.satoshi?[next.tag]
         } else if let next = segue.destination as? SendBtcDetailsViewController {
             next.wallet = wallet
             next.assetId = sender as? String ?? "btc"

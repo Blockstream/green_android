@@ -79,7 +79,7 @@ class WalletFullCardView: UIView {
             balanceFiat.text = "≈ \(fiat ?? "N.A.") \(currency)"
         }
         walletName.text = wallet.localizedName()
-        assetsLabel.text = String(format: NSLocalizedString(wallet.satoshi.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.satoshi.count)
+        assetsLabel.text = String(format: NSLocalizedString(wallet.satoshi?.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.satoshi?.count ?? 0)
         if getGAService().getTwoFactorReset()?.isResetActive ?? false {
             actionsView.isHidden = true
         } else if account?.isWatchonly ?? false {
