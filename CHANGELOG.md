@@ -3,13 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.6.4] - 2021-07-23
 ### Added
-### Changed
-- Replace 2FA codes text entry with Pin Pad
-### Fixed
-- Fix Migrator crashing with UnrecoverableKeyException when checking key names
+- Adds a PIN pad for 2FA codes
 
+### Changed
+- Improves Wallet Settings UI
+- Drops support for bitcoinj and SPV on Multisig Shield wallets
+
+### Fixed
+- Fixes crashes with fingerprint login authentication
+- Shows PGP and Watch-Only settings only on Multisig Shield wallets
 
 ## [3.6.3] - 2021-07-12
 ### Added
@@ -18,8 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Improves address validation on hardware wallets
-- Improves settings UI
-- Preloads icons of Liquid assets
+- Preloads icons of Liquid Assets
 - Improves handling of disconnection and reconnection
 - Adds a warning when opening Help Center articles while using Tor
 - Updates GDK to 0.0.43
