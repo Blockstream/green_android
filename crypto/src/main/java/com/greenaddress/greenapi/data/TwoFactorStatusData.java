@@ -1,5 +1,6 @@
 package com.greenaddress.greenapi.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TwoFactorStatusData extends JSONData {
     private String status;
     private String action;
@@ -18,7 +20,6 @@ public class TwoFactorStatusData extends JSONData {
     private String debug;
     private String error;
     private ObjectNode result;
-    private HWDeviceDetailData device;
     private HWDeviceRequiredData required_data; // FIXME: Strongly type this
 
     public String getStatus() {
@@ -83,14 +84,6 @@ public class TwoFactorStatusData extends JSONData {
 
     public void setError(final String error) {
         this.error = error;
-    }
-
-    public HWDeviceDetailData getDevice() {
-        return device;
-    }
-
-    public void setDevice(final HWDeviceDetailData device) {
-        this.device = device;
     }
 
     public HWDeviceRequiredData getRequiredData() {
