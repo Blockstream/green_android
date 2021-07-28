@@ -14,7 +14,8 @@ public class VersionInfo {
     private String idfVersion;
     private String chipFeatures;
     private String efusemac;
-    private Integer jadeFreeHeap;
+    private String jadeState;
+    private String jadeNetworks;
     private Boolean jadeHasPin;
 
     @JsonGetter("JADE_VERSION")
@@ -97,14 +98,24 @@ public class VersionInfo {
         this.efusemac = efusemac;
     }
 
-    @JsonGetter("JADE_FREE_HEAP")
-    public Integer getJadeFreeHeap() {
-        return jadeFreeHeap;
+    @JsonGetter("JADE_STATE")
+    public String getJadeState() {
+        return jadeState;
     }
 
-    @JsonSetter("JADE_FREE_HEAP")
-    public void setJadeFreeHeap(Integer jadeFreeHeap) {
-        this.jadeFreeHeap = jadeFreeHeap;
+    @JsonSetter("JADE_STATE")
+    public void setJadeState(String jadeState) {
+        this.jadeState = jadeState;
+    }
+
+    @JsonGetter("JADE_NETWORKS")
+    public String getJadeNetworks() {
+        return jadeNetworks;
+    }
+
+    @JsonSetter("JADE_NETWORKS")
+    public void setJadeNetworks(String jadeNetworks) {
+        this.jadeNetworks = jadeNetworks;
     }
 
     @JsonGetter("JADE_HAS_PIN")
