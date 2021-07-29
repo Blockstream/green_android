@@ -50,7 +50,10 @@ class MnemonicAuthViewController: UIViewController {
     @IBAction func btnPressed(_ sender: Any) {
         self.authenticated {
             DispatchQueue.main.async { [unowned self] in
-                self.performSegue(withIdentifier: "recovery", sender: nil)
+
+                let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "ShowMnemonicsViewController")
+                navigationController?.pushViewController(vc, animated: true)
             }
         }
     }

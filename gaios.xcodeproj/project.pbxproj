@@ -93,6 +93,10 @@
 		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
 		345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */; };
 		346127D8269EB95E0074EA86 /* WalletAccountsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346127D7269EB95E0074EA86 /* WalletAccountsUITests.swift */; };
+		3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */; };
+		3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */; };
+		3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */; };
+		3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */; };
 		34641F1D25F915B9002E6442 /* RecoveryPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */; };
 		3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9EF2600A8D7009B5E33 /* Bundle.swift */; };
 		3470F9F52600D1A3009B5E33 /* WalletCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9F42600D1A3009B5E33 /* WalletCell.swift */; };
@@ -124,6 +128,7 @@
 		349DB75F26A84D17004FF265 /* TorUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB75E26A84D17004FF265 /* TorUITests.swift */; };
 		349DB76126A84D20004FF265 /* WalletSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349DB76026A84D20004FF265 /* WalletSettings.swift */; };
 		349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */; };
+		34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */; };
 		34AB8BA5260366A8009C930A /* WalletListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AB8BA4260366A8009C930A /* WalletListItem.swift */; };
 		34B826C42608827F00579C0B /* Recovery.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34B826C32608827F00579C0B /* Recovery.storyboard */; };
 		34B826C9260882D600579C0B /* RecoveryInstructionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B826C8260882D600579C0B /* RecoveryInstructionViewController.swift */; };
@@ -391,6 +396,10 @@
 		345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DrawerNetworkSelection.storyboard; sourceTree = "<group>"; };
 		345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerNetworkSelectionViewController.swift; sourceTree = "<group>"; };
 		346127D7269EB95E0074EA86 /* WalletAccountsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAccountsUITests.swift; sourceTree = "<group>"; };
+		3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UserSettings.storyboard; sourceTree = "<group>"; };
+		3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
+		3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCell.swift; sourceTree = "<group>"; };
+		3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		34641F1C25F915B9002E6442 /* RecoveryPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryPhraseViewController.swift; sourceTree = "<group>"; };
 		3470F9EF2600A8D7009B5E33 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		3470F9F42600D1A3009B5E33 /* WalletCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCell.swift; sourceTree = "<group>"; };
@@ -422,6 +431,7 @@
 		349DB75E26A84D17004FF265 /* TorUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TorUITests.swift; sourceTree = "<group>"; };
 		349DB76026A84D20004FF265 /* WalletSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletSettings.swift; sourceTree = "<group>"; };
 		349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogRegistryFailViewController.swift; sourceTree = "<group>"; };
+		34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorAuthenticationViewController.swift; sourceTree = "<group>"; };
 		34A6CE66E2FE0D119178C9AF /* Pods-gaiosUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gaiosUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-gaiosUITests/Pods-gaiosUITests.release.xcconfig"; sourceTree = "<group>"; };
 		34AB8BA4260366A8009C930A /* WalletListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListItem.swift; sourceTree = "<group>"; };
 		34B826C32608827F00579C0B /* Recovery.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Recovery.storyboard; sourceTree = "<group>"; };
@@ -776,6 +786,33 @@
 			path = TranstionAnimator;
 			sourceTree = "<group>";
 		};
+		3463EBB626AEB7B200F3F2D9 /* UserSettings */ = {
+			isa = PBXGroup;
+			children = (
+				3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */,
+				3463EBC226AEE60E00F3F2D9 /* Cells */,
+				3463EBBD26AEBAEA00F3F2D9 /* Controllers */,
+			);
+			path = UserSettings;
+			sourceTree = "<group>";
+		};
+		3463EBBD26AEBAEA00F3F2D9 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */,
+				34A31EAE26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		3463EBC226AEE60E00F3F2D9 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		347FD0AB25FFA8E600BB3FAB /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -1014,6 +1051,7 @@
 				6D8099D022FA23620069A69F /* TransactionDetail */,
 				6DD813B022BC585C002DCC8B /* Assets */,
 				818201B0226A1A8100BE12C3 /* SendNavigation */,
+				3463EBB626AEB7B200F3F2D9 /* UserSettings */,
 				811EE25A219EBB1500684AD8 /* Settings */,
 				6DF2DEE523F38292005F16E9 /* Help */,
 				81A3B5412244B11F0091B6BC /* AuthenticationFactors */,
@@ -1255,6 +1293,7 @@
 				81205D6821C3B7EB005180CF /* Events.swift */,
 				811ED52821BF59C30033A4A1 /* TwoFactorConfig.swift */,
 				81D94CF021B93905003B03F9 /* Settings.swift */,
+				3463EBC526AFF25F00F3F2D9 /* UserSettings.swift */,
 				81F74BA42278857800A397C9 /* Network.swift */,
 				81C602A422A553D3004E26E1 /* Assets.swift */,
 				8124524125D6B0DD00537238 /* Address.swift */,
@@ -1490,6 +1529,7 @@
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */,
 				81E6E21F24E00E1C00853C06 /* fwserver.pem in Resources */,
+				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,
 				81ACC4AF22733533004B1E92 /* Settings.storyboard in Resources */,
@@ -1677,6 +1717,7 @@
 				81F74BA52278857800A397C9 /* Network.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,
 				342E0C8B265274ED0004D75B /* FooterView.swift in Sources */,
+				3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */,
 				811EE25D219EC17800684AD8 /* TransactionsViewController.swift in Sources */,
 				09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */,
 				0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */,
@@ -1719,6 +1760,7 @@
 				816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */,
 				6D50841C239970530063804F /* AccountCreateViewController.swift in Sources */,
 				6DD813B722BDA4F2002DCC8B /* AssetDetailTableCell.swift in Sources */,
+				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
 				81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
@@ -1744,6 +1786,7 @@
 				09DA612620E73A2300C3EA03 /* String.swift in Sources */,
 				3403BDAC2630282600118C64 /* Learn2faViewController.swift in Sources */,
 				0926C14821178FEE0008F94A /* UITextField.swift in Sources */,
+				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				347FD0BC25FFC0E100BB3FAB /* WalletHDCell.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				811B963E21F72B5200DE02CB /* AccountsFooterCollection.swift in Sources */,
@@ -1776,6 +1819,7 @@
 				34C2464B26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift in Sources */,
 				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
 				3470F9F52600D1A3009B5E33 /* WalletCell.swift in Sources */,
+				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
 				81BF4E3122E9E9EA005A04C6 /* LedgerCommands.swift in Sources */,
 				0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */,
 				092C7BD520D599D700F90DF2 /* UIView.swift in Sources */,
