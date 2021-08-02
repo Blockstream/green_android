@@ -89,13 +89,14 @@ class UserSettingsViewController: UIViewController {
     }
 
     func getGeneralItems() -> [UserSettingsItem] {
+        var items = [UserSettingsItem]()
         let watchOnly = UserSettingsItem(
             title: NSLocalizedString("id_watchonly_login", comment: ""),
             subtitle: String(format: NSLocalizedString((username == nil || username!.isEmpty) ? "id_disabled" : "id_enabled_1s", comment: ""), username ?? ""),
             section: .general,
             type: .WatchOnly)
         if isLiquid || isSingleSig || isWatchOnly || isResetActive || isHW {} else {
-            return [watchOnly]
+            items += [watchOnly]
         }
         if let settings = Settings.shared {
             let bitcoinDenomination = UserSettingsItem(
@@ -109,11 +110,11 @@ class UserSettingsViewController: UIViewController {
                 section: .general,
                 type: .ReferenceExchangeRate)
             if isWatchOnly && isResetActive {} else {
-                return [bitcoinDenomination, referenceExchangeRate]
+                items += [bitcoinDenomination, referenceExchangeRate]
             }
 
         }
-        return []
+        return items
     }
 
     func getSecurityItems() -> [UserSettingsItem] {

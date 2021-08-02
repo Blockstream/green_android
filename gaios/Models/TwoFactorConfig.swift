@@ -79,3 +79,9 @@ struct TwoFactorConfig: Codable {
         return URL(string: gauth.data)!.queryItems["secret"]
     }
 }
+
+struct FactorItem {
+    var name: String
+    var enabled: Bool
+    var type: TwoFactorType
+}

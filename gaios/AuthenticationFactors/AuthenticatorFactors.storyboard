@@ -12,7 +12,7 @@
         <!--Google Authenticator code-->
         <scene sceneID="w4y-uX-HUE">
             <objects>
-                <viewController title="Google Authenticator code" hidesBottomBarWhenPushed="YES" id="t7u-zO-1Bz" customClass="SetGauthViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SetGauthViewController" title="Google Authenticator code" hidesBottomBarWhenPushed="YES" id="t7u-zO-1Bz" customClass="SetGauthViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="yh0-N9-MNt" customClass="SetGauthView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -31,7 +31,7 @@
         <!--Enter Phone Number-->
         <scene sceneID="7vC-v1-K6z">
             <objects>
-                <viewController storyboardIdentifier="phone" title="Enter Phone Number" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="POU-hm-HW6" customClass="SetPhoneViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SetPhoneViewController" title="Enter Phone Number" hidesBottomBarWhenPushed="YES" useStoryboardIdentifierAsRestorationIdentifier="YES" id="POU-hm-HW6" customClass="SetPhoneViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="BYC-ce-u1j" customClass="SetPhoneView" customModule="gaios" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

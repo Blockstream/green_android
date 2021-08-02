@@ -85,7 +85,7 @@ extension TwoFactorCall {
             }
             // User interface resolver
             let method = json["method"] as? String ?? ""
-            let sender = UIApplication.shared.keyWindow?.rootViewController
+            let sender = UIApplication.topViewController()
             let popup = PopupCodeResolver(sender!)
             return Promise()
                 .map { sender?.stopAnimating() }
