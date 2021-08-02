@@ -92,7 +92,7 @@ fun Throwable.getGDKErrorCode(): Int {
 }
 
 fun Throwable.isNotAuthorized() =
-    getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || message?.contains(":login failed:") == true
+    getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || message == "id_invalid_pin"
 
 fun Throwable.isConnectionError() =
     message?.contains("failed to connect") == true

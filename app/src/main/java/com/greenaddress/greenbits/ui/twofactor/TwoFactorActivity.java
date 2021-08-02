@@ -37,7 +37,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
-
+@Deprecated
 public class TwoFactorActivity extends LoggedActivity {
 
     private String mMethodName; // Current 2FA Method Name

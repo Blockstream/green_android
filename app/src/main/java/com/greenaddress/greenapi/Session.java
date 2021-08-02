@@ -117,6 +117,10 @@ public class Session extends GDKSession implements HttpRequestProvider {
         final GDKTwoFactorCall call = getSubAccount(subaccount);
         final ObjectNode account = call.resolve( new HardwareCodeResolver(activity, getHWWallet()), null);
         final SubaccountData subAccount = mObjectMapper.readValue(account.toString(), SubaccountData.class);
+
+        // GDK 0.44 removed balance info from SubAccount json. v4 should request balance only when needed
+        subAccount.setSatoshi(getBalance(activity, (int) subaccount));
+
         return subAccount;
     }
 
@@ -147,6 +151,11 @@ public class Session extends GDKSession implements HttpRequestProvider {
         final List<SubaccountData> subAccounts =
                 mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts.get("subaccounts")),
                         new TypeReference<List<SubaccountData>>() {});
+
+        // GDK 0.44 removed balance info from SubAccount json. v4 should request balance only when needed
+        for(SubaccountData subAccount: subAccounts){
+            subAccount.setSatoshi(getBalance(activity, subAccount.getPointer()));
+        }
         return subAccounts;
     }
 

@@ -41,6 +41,5 @@ data class InputOutput(
     @SerialName("commitment") val commitment: String? = null,
     @SerialName("assetblinder") val assetblinder: String? = null,
     @SerialName("amountblinder") val amountblinder: String? = null,
-    @SerialName("asset_id") val assetId: String? = null,
     @SerialName("public_key") val publicKey: String? = null,
 )

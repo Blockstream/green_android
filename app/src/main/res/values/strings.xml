@@ -98,6 +98,7 @@
   <string name="id_by_proceeding_to_the_next_steps">By proceeding to the next steps you agree to the %s</string>
   <string name="id_cable">Cable</string>
   <string name="id_call">Call</string>
+  <string name="id_telegram">Telegram</string>
   <string name="id_camera_problem">Camera problem</string>
   <string name="id_cancel">Cancel</string>
   <string name="id_cancel_2fa_reset">Cancel 2FA reset</string>

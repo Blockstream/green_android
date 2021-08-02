@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+import java.util.Collections;
 import java.util.Map;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
@@ -15,12 +16,13 @@ import java.util.Map;
 public class SubaccountData extends JSONData {
     private String name;
     private Integer pointer;
-    private Boolean hasTransactions;
     private String receivingId;
     private String recoveryChainCode;
     private String recoveryPubKey;
     private String type;  // 2of3 2of2
-    private Map<String,Long> satoshi;
+
+    @JsonIgnore
+    private Map<String,Long> satoshi = Collections.emptyMap();
 
     @JsonIgnore
     public byte[] getRecoveryPubKeyAsBytes() {
@@ -51,14 +53,6 @@ public class SubaccountData extends JSONData {
 
     public void setPointer(final Integer pointer) {
         this.pointer = pointer;
-    }
-
-    public Boolean getHasTransactions() {
-        return hasTransactions;
-    }
-
-    public void setHasTransactions(final Boolean hasTransactions) {
-        this.hasTransactions = hasTransactions;
     }
 
     public String getReceivingId() {
@@ -102,7 +96,7 @@ public class SubaccountData extends JSONData {
     }
 
     public SubAccount toSubAccount(){
-        return new SubAccount(getName(), getPointer(), getHasTransactions(), getReceivingId(), getRecoveryChainCode(), AccountType.Companion.byGDKType(getType()), getSatoshi());
+        return new SubAccount(getName(), getPointer(), getReceivingId(), getRecoveryChainCode(), AccountType.Companion.byGDKType(getType()));
     }
 
 }

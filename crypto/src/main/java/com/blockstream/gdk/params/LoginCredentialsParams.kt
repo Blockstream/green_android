@@ -1,7 +1,6 @@
 package com.blockstream.gdk.params
 
 import com.blockstream.gdk.GAJson
-import com.blockstream.gdk.data.Device
 import com.blockstream.gdk.data.PinData
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName

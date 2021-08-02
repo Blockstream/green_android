@@ -1,6 +1,5 @@
 package com.blockstream.libgreenaddress
 
-import com.blockstream.gdk.data.PinData
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.*
@@ -58,6 +57,9 @@ class KotlinGDK {
 
     fun getBalance(session: GASession, details: BalanceParams): GAAuthHandler =
         GDK.get_balance(session, details)
+
+    fun getUnspentOutputs(session: GASession, details: BalanceParams): GAAuthHandler =
+        GDK.get_unspent_outputs(session, details)
 
     fun getTransactions(session: GASession, details: TransactionParams): GAAuthHandler =
         GDK.get_transactions(session, details)

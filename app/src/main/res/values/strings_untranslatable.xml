@@ -24,6 +24,7 @@
         <item>email</item>
         <item>sms</item>
         <item>phone</item>
+        <item>telegram</item>
         <item>gauth</item>
     </string-array>
     <string-array name="fee_target_values" translatable="false">
@@ -57,6 +58,7 @@
         <item>@string/id_email</item>
         <item>@string/id_sms</item>
         <item>@string/id_call</item>
+        <item>@string/id_telegram</item>
         <item>@string/id_authenticator_app</item>
     </string-array>
 

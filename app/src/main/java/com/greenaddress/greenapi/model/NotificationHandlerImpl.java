@@ -178,6 +178,9 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 // server-side subaccount setting is ignored because we use the locally-saved one
                 break;
             }
+            case "ticker": {
+                break;
+            }
             case "twofactor_reset": {
                 //{"event":"twofactor_reset","twofactor_reset":{"days_remaining":90,"is_active":true,"is_disputed":false}}
                 final JsonNode resetData = objectNode.get("twofactor_reset");

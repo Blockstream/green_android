@@ -70,6 +70,7 @@
                         android:layout_height="wrap_content"
                         android:editable="false"
                         android:inputType="none"
+                        android:imeOptions="actionNext"
                         android:text="@={vm.country}"
                         tools:ignore="Deprecated" />
 
@@ -90,6 +91,7 @@
                         android:id="@+id/phoneNumberEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:imeOptions="actionDone"
                         android:text="@={vm.phoneNumber}"
                         android:inputType="phone" />
 
@@ -111,6 +113,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textWebEmailAddress"
                     android:text="@={vm.email}"
+                    android:imeOptions="actionDone"
                     app:placeholder="jane@example.com" />
 
             </com.google.android.material.textfield.TextInputLayout>

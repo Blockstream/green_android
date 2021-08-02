@@ -524,6 +524,9 @@ class GreenSession constructor(
                     networkSubject.onNext(it)
                 }
             }
+            "ticker" -> {
+                // UPDATE UI
+            }
         }
     }
 

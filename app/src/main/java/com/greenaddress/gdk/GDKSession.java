@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.blockstream.gdk.GreenWallet;
 import com.blockstream.gdk.data.Network;
+import com.blockstream.gdk.params.DeviceParams;
 import com.blockstream.libgreenaddress.GDK;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -98,9 +99,8 @@ public class GDKSession implements HttpRequestHandler {
         return GDK.get_watch_only_username(mNativeSession);
     }
 
-    public GDKTwoFactorCall login(final HWDeviceData hwDevice, final String mnemonic, final String mnemonicPassword) throws Exception {
-        final ObjectNode hw = hwDevice == null ? mObjectMapper.createObjectNode() : mObjectMapper.valueToTree(hwDevice);
-        return new GDKTwoFactorCall(GDK.login(mNativeSession, hw, mnemonic, mnemonicPassword));
+    public GDKTwoFactorCall login(final HWDeviceData hwDevice) throws Exception {
+        return new GDKTwoFactorCall(GDK.login_user(mNativeSession, new DeviceParams(hwDevice.toDevice()), null));
     }
 
     // Pass ready-assembled json parameters
@@ -309,10 +309,13 @@ public class GDKSession implements HttpRequestHandler {
         return mObjectMapper.treeToValue(feeEstimates, EstimatesData.class).getFees();
     }
 
-    public GDKTwoFactorCall getUTXO(final long subAccount, final long confirmations) throws Exception {
+    public GDKTwoFactorCall getUTXO(final long subAccount, final long confirmations, final Long expiredΑt) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
+        if(expiredΑt != null) {
+            details.put("expired_at", confirmations);
+        }
         return new GDKTwoFactorCall(GDK.get_unspent_outputs(mNativeSession, details));
     }
 
