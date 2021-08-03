@@ -1,5 +1,9 @@
 package com.greenaddress.greenapi.data;
 
+import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.DeviceSupportsAntiExfilProtocol;
+import com.blockstream.gdk.data.DeviceSupportsLiquid;
+import com.blockstream.gdk.data.TwoFactorStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -7,6 +11,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.List;
+
+import kotlinx.serialization.json.Json;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -92,5 +98,9 @@ public class TwoFactorStatusData extends JSONData {
 
     public void setRequiredData(final HWDeviceRequiredData required_data) {
         this.required_data = required_data;
+    }
+
+    public TwoFactorStatus toTwoFactorStatus() {
+        return TwoFactorStatus.Companion.from(toString());
     }
 }

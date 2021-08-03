@@ -73,7 +73,11 @@ fun Context.hideKeyboard(view: View) {
     }
 }
 
-fun Fragment.localized2faMethod(method: String): String = resources.getStringArray(R.array.twoFactorChoices)[resources.getStringArray(R.array.twoFactorMethods).indexOf(method)]
+fun Context.localized2faMethod(method: String): String = resources.getStringArray(R.array.twoFactorChoices)[resources.getStringArray(R.array.twoFactorMethods).indexOf(method)]
+
+fun Context.localized2faMethods(methods: List<String>): List<String> = methods.map {
+    localized2faMethod(it)
+}
 
 fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String {
     throwable.message?.let {

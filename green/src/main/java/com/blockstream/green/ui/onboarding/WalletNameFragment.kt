@@ -25,9 +25,6 @@ class WalletNameFragment :
     ) {
 
     @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Inject
     lateinit var viewModelFactory: WalletNameViewModel.AssistedFactory
     val viewModel: WalletNameViewModel by viewModels {
         WalletNameViewModel.provideFactory(viewModelFactory, args.onboardingOptions, args.restoreWallet)

@@ -889,4 +889,5 @@
   <string name="id_invalid_clipboard_contents">Invalid clipboard contents</string>
 
   <string name="id_the_recovery_phrase_youve_entered_doesnt_match">The recovery phrase you\'ve entered doesn\'t match the previously existing wallet, please retry with a different recovery phrase.</string>
+  <string name="id_telegram">Telegram</string>
 </resources>

@@ -60,9 +60,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
     @Inject
     lateinit var greenWallet: GreenWallet
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
-
     var biometricPrompt : BiometricPrompt? = null
 
     override fun isLoggedInRequired(): Boolean = false

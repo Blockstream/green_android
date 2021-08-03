@@ -20,9 +20,6 @@ class AddWalletFragment :
     val args: AddWalletFragmentArgs by navArgs()
 
     @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Inject
     lateinit var assistedFactory: AddWalletViewModel.AssistedFactory
 
     private val viewModel: AddWalletViewModel by viewModels {

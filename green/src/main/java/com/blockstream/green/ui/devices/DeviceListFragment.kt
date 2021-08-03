@@ -61,9 +61,6 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     @Inject
     lateinit var deviceManager: DeviceManager
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
-
     private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         // Nothing to do here, it's already handled by DeviceManager
     }

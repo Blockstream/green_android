@@ -42,9 +42,6 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
     override val wallet by lazy { args.wallet }
 
     @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Inject
     lateinit var viewModelFactory: ReceiveViewModel.AssistedFactory
     val viewModel: ReceiveViewModel by viewModels {
         ReceiveViewModel.provideFactory(

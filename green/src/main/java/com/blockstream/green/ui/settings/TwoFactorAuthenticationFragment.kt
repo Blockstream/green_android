@@ -44,6 +44,7 @@ class TwoFactorAuthenticationFragment :
     private lateinit var smsPreference: PreferenceListItem
     private lateinit var callPreference: PreferenceListItem
     private lateinit var toptPreference: PreferenceListItem
+    private lateinit var telegramPreference: PreferenceListItem
     private lateinit var thresholdPreference: PreferenceListItem
 
     private val csvBucketPreferences by lazy {
@@ -58,9 +59,6 @@ class TwoFactorAuthenticationFragment :
             )
         }
     }
-
-    @Inject
-    lateinit var settingsManager: SettingsManager
 
     @Inject
     lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
@@ -83,8 +81,8 @@ class TwoFactorAuthenticationFragment :
         emailPreference = PreferenceListItem(StringHolder(R.string.id_email), withSwitch = true)
         smsPreference = PreferenceListItem(StringHolder(R.string.id_sms), withSwitch = true)
         callPreference = PreferenceListItem(StringHolder(R.string.id_call), withSwitch = true)
-        toptPreference =
-            PreferenceListItem(StringHolder(R.string.id_authenticator_app), withSwitch = true)
+        toptPreference = PreferenceListItem(StringHolder(R.string.id_authenticator_app), withSwitch = true)
+        telegramPreference = PreferenceListItem(StringHolder(R.string.id_telegram), withSwitch = true)
 
         thresholdPreference = PreferenceListItem(StringHolder(R.string.id_2fa_threshold))
 
@@ -115,6 +113,14 @@ class TwoFactorAuthenticationFragment :
                                 disable2FA(TwoFactorMethod.PHONE)
                             } else {
                                 enable2FA(TwoFactorMethod.PHONE)
+                            }
+                        }
+
+                        telegramPreference -> {
+                            if (it.telegram.enabled) {
+                                disable2FA(TwoFactorMethod.TELEGRAM)
+                            } else {
+                                enable2FA(TwoFactorMethod.TELEGRAM)
                             }
                         }
 
@@ -151,35 +157,6 @@ class TwoFactorAuthenticationFragment :
                 }
                 true
             }
-
-        fastAdapter.addClickListener<ListItemPreferenceBinding, GenericItem>({ binding -> binding.button }) { _, _, _, item ->
-            viewModel.twoFactorConfigLiveData.value?.let {
-
-                when (item) {
-                    emailPreference -> {
-
-                        if (it.email.enabled) {
-
-                        } else {
-
-                        }
-
-                    }
-
-                    smsPreference -> {
-                        enable2FA(TwoFactorMethod.SMS)
-                    }
-
-                    callPreference -> {
-                        enable2FA(TwoFactorMethod.PHONE)
-                    }
-
-                    else -> {
-
-                    }
-                }
-            }
-        }
 
         fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.button }) { _, _, _, item ->
             openBrowser(settingsManager.getApplicationSettings(), Urls.RECOVERY_TOOL)
@@ -227,28 +204,41 @@ class TwoFactorAuthenticationFragment :
 
         list += TitleListItem(StringHolder(R.string.id_2fa_methods))
 
-        list += emailPreference.also {
-            it.switchChecked = twoFactorConfig.email.enabled
-            // email has the old value even if disabled
-            it.subtitle = StringHolder(if(twoFactorConfig.email.enabled) twoFactorConfig.email.data.ifBlank { null } else null)
-            // it.withButton = twoFactorConfig.email.enabled
-
-        }
-        list += smsPreference.also {
-            it.switchChecked = twoFactorConfig.sms.enabled
-            it.subtitle = StringHolder(twoFactorConfig.sms.data.ifBlank { null })
-            // it.withButton = twoFactorConfig.sms.enabled
-        }
-        list += callPreference.also {
-            it.switchChecked = twoFactorConfig.phone.enabled
-            it.subtitle = StringHolder(twoFactorConfig.phone.data.ifBlank { null })
-            // it.withButton = twoFactorConfig.phone.enabled
-        }
-        list += toptPreference.also {
-            it.switchChecked = twoFactorConfig.gauth.enabled
-            it.subtitle =
-                StringHolder(if (twoFactorConfig.gauth.enabled) getString(R.string.id_enabled) else null)
-            // it.withButton = twoFactorConfig.gauth.enabled
+        viewModel.twoFactorConfigLiveData.value?.allMethods?.let { methods ->
+            if(methods.contains(TwoFactorMethod.EMAIL.gdkType)){
+                list += emailPreference.also {
+                    it.switchChecked = twoFactorConfig.email.enabled
+                    // email has the old value even if disabled
+                    it.subtitle = StringHolder(if(twoFactorConfig.email.enabled) twoFactorConfig.email.data.ifBlank { null } else null)
+                }
+            }
+            if(methods.contains(TwoFactorMethod.SMS.gdkType)) {
+                list += smsPreference.also {
+                    it.switchChecked = twoFactorConfig.sms.enabled
+                    it.subtitle = StringHolder(twoFactorConfig.sms.data.ifBlank { null })
+                    // it.withButton = twoFactorConfig.sms.enabled
+                }
+            }
+            if(methods.contains(TwoFactorMethod.PHONE.gdkType)) {
+                list += callPreference.also {
+                    it.switchChecked = twoFactorConfig.phone.enabled
+                    it.subtitle = StringHolder(twoFactorConfig.phone.data.ifBlank { null })
+                }
+            }
+            if(methods.contains(TwoFactorMethod.AUTHENTICATOR.gdkType)) {
+                list += toptPreference.also {
+                    it.switchChecked = twoFactorConfig.gauth.enabled
+                    it.subtitle =
+                        StringHolder(if (twoFactorConfig.gauth.enabled) getString(R.string.id_enabled) else null)
+                }
+            }
+            if(methods.contains(TwoFactorMethod.TELEGRAM.gdkType)) {
+                list += telegramPreference.also {
+                    it.switchChecked = twoFactorConfig.telegram.enabled
+                    it.subtitle =
+                        StringHolder(if (twoFactorConfig.telegram.enabled) getString(R.string.id_enabled) else null)
+                }
+            }
         }
 
         list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
@@ -358,10 +348,10 @@ class TwoFactorAuthenticationFragment :
 
             MaterialAlertDialogBuilder(requireContext())
                 .setCustomTitle(binding.root)
-                .setSingleChoiceItems(methods.toTypedArray(), -1) { dialog, i: Int ->
+                .setSingleChoiceItems(requireContext().localized2faMethods(methods).toTypedArray(), -1) { dialog, i: Int ->
                     viewModel.disable2FA(
                         method,
-                        DialogTwoFactorResolver(requireContext(), method = methods[i])
+                        DialogTwoFactorResolver(requireContext(), selectedMethod = methods[i])
                     )
                     dialog.dismiss()
                 }

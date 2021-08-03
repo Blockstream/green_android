@@ -20,6 +20,7 @@ import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
+import com.blockstream.green.settings.SettingsManager
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.ui.TabbedMainActivity
@@ -49,6 +50,9 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     @Inject
     internal lateinit var sessionManager: SessionManager
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     override fun onCreateView(
         inflater: LayoutInflater,

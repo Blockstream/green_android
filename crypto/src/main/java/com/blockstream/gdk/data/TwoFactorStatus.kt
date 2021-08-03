@@ -3,10 +3,7 @@ package com.blockstream.gdk.data
 import com.blockstream.gdk.GAJson
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.greenaddress.greenapi.data.TwoFactorStatusData
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
@@ -40,5 +37,9 @@ data class TwoFactorStatus(
             objectMapper.readTree(Json.encodeToString(rawJsonElement)),
             TwoFactorStatusData::class.java
         )
+    }
+
+    companion object {
+        fun from(jsonString: String): TwoFactorStatus = Json.decodeFromString(jsonString)
     }
 }

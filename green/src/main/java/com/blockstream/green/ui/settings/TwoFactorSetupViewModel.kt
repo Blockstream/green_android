@@ -38,7 +38,7 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
             val block = { _: Any? ->
                 value = if(method == TwoFactorMethod.EMAIL){
                     Patterns.EMAIL_ADDRESS.matcher(email.value ?: "").matches()
-                }else if(method == TwoFactorMethod.SMS || method == TwoFactorMethod.PHONE){
+                }else if(method == TwoFactorMethod.SMS || method == TwoFactorMethod.PHONE || method == TwoFactorMethod.TELEGRAM){
                     !country.value.isNullOrBlank() && (phoneNumber.value?.trim()?.length ?: 0) > 7
                 }else{
                     true

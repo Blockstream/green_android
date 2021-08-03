@@ -47,7 +47,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val methodLocalized = localized2faMethod(args.method.gdkType)
+        val methodLocalized = requireContext().localized2faMethod(args.method.gdkType)
 
         val action = args.action
 
@@ -91,7 +91,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
             if(action == TwoFactorSetupAction.SETUP || action == TwoFactorSetupAction.SETUP_EMAIL){
                 var data = ""
                 when(viewModel.method){
-                    TwoFactorMethod.SMS, TwoFactorMethod.PHONE -> {
+                    TwoFactorMethod.SMS, TwoFactorMethod.PHONE, TwoFactorMethod.TELEGRAM -> {
                         data = viewModel.getPhoneNumberValue()
                     }
                     TwoFactorMethod.EMAIL -> {
@@ -100,9 +100,12 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
                     TwoFactorMethod.AUTHENTICATOR -> {
                         data = viewModel.authenticatorUrl ?: ""
                     }
+                    TwoFactorMethod.AUTHENTICATOR -> {
+                        data = viewModel.authenticatorUrl ?: ""
+                    }
                 }
                 // setupEmail is used only to setup the email address for recovery transactions legacy option
-                viewModel.enable2FA(args.method, data = data, enabled = args.action != TwoFactorSetupAction.SETUP_EMAIL, twoFactorResolver = DialogTwoFactorResolver(requireContext()))
+                viewModel.enable2FA(args.method, data = data, enabled = args.action != TwoFactorSetupAction.SETUP_EMAIL, twoFactorResolver = DialogTwoFactorResolver(this))
             }else{
                 val email = binding.emailEditText.text.toString()
                 when(action){

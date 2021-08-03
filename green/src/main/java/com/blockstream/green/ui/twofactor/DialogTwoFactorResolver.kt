@@ -6,34 +6,47 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import com.blockstream.gdk.TwoFactorResolver
+import com.blockstream.gdk.data.TwoFactorStatus
 import com.blockstream.green.R
+import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorCodeDialogBinding
+import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.utils.localized2faMethod
+import com.blockstream.green.utils.localized2faMethods
+import com.blockstream.green.utils.openBrowser
 import com.blockstream.green.views.GreenPinViewListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
-class DialogTwoFactorResolver(private val context: Context,private val method: String? = null) :
-    TwoFactorResolver {
+class DialogTwoFactorResolver : TwoFactorResolver {
+    private val context: Context
+    private var appFragment: AppFragment<*>? = null
+    private var selectedMethod: String?
+
+    constructor (context: Context, selectedMethod: String? = null) {
+        this.context = context
+        this.selectedMethod = selectedMethod
+    }
+
+    constructor (appFragment: AppFragment<*>, selectedMethod: String? = null) {
+        this.context = appFragment.requireContext()
+        this.appFragment = appFragment
+        this.selectedMethod = selectedMethod
+    }
 
     override fun selectMethod(availableMethods: List<String>): Single<String> =
         Single.create<String> { emitter ->
 
             // Method is already selected in the constructor
-            if (method != null) {
-                emitter.onSuccess(method)
+            if (selectedMethod != null) {
+                emitter.onSuccess(selectedMethod)
                 return@create
             }
 
-            val availableMethodsChoices = availableMethods.map {
-                when (it) {
-                    "email" -> context.getString(R.string.id_email)
-                    "sms" -> context.getString(R.string.id_sms)
-                    "gauth" -> context.getString(R.string.id_authenticator_app)
-                    "phone" -> context.getString(R.string.id_phone_call)
-                    else -> it
-                }
-            }
+            val availableMethodsChoices = context.localized2faMethods(availableMethods)
 
             MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.id_choose_method_to_authorize_the)
@@ -57,17 +70,17 @@ class DialogTwoFactorResolver(private val context: Context,private val method: S
 
         }.subscribeOn(AndroidSchedulers.mainThread())
 
-    override fun getCode(method: String, attemptsRemaining: Int?): Single<String> =
+    override fun getCode(twoFactorStatus: TwoFactorStatus): Single<String> =
         Single.create<String> { emitter ->
-
             val dialogBinding = TwofactorCodeDialogBinding.inflate(LayoutInflater.from(context))
 
-            dialogBinding.icon.setImageResource(getIconForMethod(method))
-            dialogBinding.title = context.getString(R.string.id_please_provide_your_1s_code, method)
+            dialogBinding.icon.setImageResource(TwoFactorMethod.from(twoFactorStatus.method).getIcon())
+            dialogBinding.title = context.getString(R.string.id_please_provide_your_1s_code, context.localized2faMethod(twoFactorStatus.method))
             dialogBinding.hint = context.getString(R.string.id_code)
 
-            attemptsRemaining?.let {
-                dialogBinding.attemptsRemaining = context.getString(R.string.id_attempts_remaining_d, it)
+            twoFactorStatus.attemptsRemaining?.let {
+                dialogBinding.attemptsRemaining =
+                    context.getString(R.string.id_attempts_remaining_d, it)
             }
 
             val dialog = MaterialAlertDialogBuilder(context)
@@ -92,14 +105,17 @@ class DialogTwoFactorResolver(private val context: Context,private val method: S
                 override fun onChangeMode(isVerify: Boolean) {}
             }
 
-        }.subscribeOn(AndroidSchedulers.mainThread())
+            appFragment?.let {
+                try {
 
-    private fun getIconForMethod(method: String): Int {
-        return when (method) {
-            "email" -> R.drawable.ic_2fa_email
-            "call" -> R.drawable.ic_2fa_call
-            "gauth" -> R.drawable.ic_2fa_authenticator
-            else -> R.drawable.ic_2fa_sms
-        }
-    }
+                    twoFactorStatus.authData?.jsonObject?.get("telegram_url")?.jsonPrimitive?.content?.let { url ->
+                        println(url)
+                        it.openBrowser(url)
+                    }
+                } catch (e: Exception) {
+                    // e.printStackTrace()
+                }
+            }
+
+        }.subscribeOn(AndroidSchedulers.mainThread())
 }

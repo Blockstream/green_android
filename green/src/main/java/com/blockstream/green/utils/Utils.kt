@@ -15,10 +15,14 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.blockstream.green.R
 import com.blockstream.green.settings.ApplicationSettings
+import com.blockstream.green.ui.AppFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
 
+fun AppFragment<*>.openBrowser(url: String) {
+    openBrowser(settingsManager.getApplicationSettings(), url)
+}
 
 fun Fragment.openBrowser(appSettings: ApplicationSettings, url: String) {
 

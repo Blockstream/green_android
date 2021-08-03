@@ -72,7 +72,7 @@ public class GDKTwoFactorCall {
                             throw new Exception(e.getMessage());
                         }
                     } else {
-                        value = twoFactorResolver.getCode(mStatus.getMethod(), mStatus.getAttemptsRemaining()).blockingGet();
+                        value = twoFactorResolver.getCode(mStatus.toTwoFactorStatus()).blockingGet();
                     }
                     Log.d("RSV", "resolve_code input " + value);
                     if (value == null) {

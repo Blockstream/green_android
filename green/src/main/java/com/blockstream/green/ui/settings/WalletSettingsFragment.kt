@@ -85,9 +85,6 @@ class WalletSettingsFragment :
     lateinit var appKeystore: AppKeystore
 
     @Inject
-    lateinit var settingsManager: SettingsManager
-
-    @Inject
     lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
     val viewModel: WalletSettingsViewModel by navGraphViewModels(R.id.settings_nav_graph) {
         WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
@@ -279,7 +276,7 @@ class WalletSettingsFragment :
             }
 
         fastAdapter.addClickListener<ListItemHelpBinding, GenericItem>({ binding -> binding.buttonOutline }) { _, _, _, item ->
-            openBrowser(settingsManager.getApplicationSettings(), Urls.HELP_NLOCKTIMES)
+            openBrowser(Urls.HELP_NLOCKTIMES)
         }
 
         binding.recycler.apply {

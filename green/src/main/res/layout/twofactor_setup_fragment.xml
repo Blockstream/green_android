@@ -49,7 +49,7 @@
                 tools:text="Please provide your phone." />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                isVisible="@{vm.method == TwoFactorMethod.SMS || vm.method == TwoFactorMethod.PHONE}"
+                isVisible="@{vm.method == TwoFactorMethod.SMS || vm.method == TwoFactorMethod.PHONE || vm.method == TwoFactorMethod.TELEGRAM}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
