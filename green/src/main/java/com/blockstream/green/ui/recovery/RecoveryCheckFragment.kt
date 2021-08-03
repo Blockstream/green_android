@@ -46,6 +46,8 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isFinishingGuard) return
+
         binding.vm = viewModel
         binding.isDevelopmentFlavor = requireContext().isDevelopmentFlavor()
 

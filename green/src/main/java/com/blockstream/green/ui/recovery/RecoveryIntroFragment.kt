@@ -8,6 +8,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
@@ -43,6 +44,8 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if(isFinishingGuard) return
 
         binding.buttonNext.setOnClickListener {
 
@@ -83,9 +86,9 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
                 )
             )
         }else{
-            val intent = Intent(requireActivity(), DisplayMnemonicActivity::class.java)
-            startActivity(intent)
-            requireActivity().finish()
+            navigate(RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryPhraseFragment(wallet = args.wallet), navOptionsBuilder = NavOptions.Builder().also {
+                it.setPopUpTo(R.id.recoveryIntroFragment, true)
+            })
         }
     }
 

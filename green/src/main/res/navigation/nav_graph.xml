@@ -30,10 +30,6 @@
             <action
                 android:id="@+id/action_walletSettingsFragment_to_changePinFragment"
                 app:destination="@id/changePinFragment" />
-            <argument
-                android:name="bridgeShowPIN"
-                app:argType="boolean"
-                android:defaultValue="false" />
             <action
                 android:id="@+id/action_walletSettingsFragment_to_twoFractorAuthenticationFragment"
                 app:destination="@id/twoFractorAuthenticationFragment" />
@@ -276,6 +272,17 @@
     </fragment>
 
     <fragment
+        android:id="@+id/recoveryPhraseFragment"
+        android:name="com.blockstream.green.ui.recovery.RecoveryPhraseFragment"
+        android:label=""
+        tools:layout="@layout/recovery_phrase_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet"
+            app:nullable="true" />
+    </fragment>
+
+    <fragment
         android:id="@+id/recoveryIntroFragment"
         android:name="com.blockstream.green.ui.recovery.RecoveryIntroFragment"
         android:label=""
@@ -297,6 +304,9 @@
             app:argType="string"
             android:defaultValue="@null"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_recoveryIntroFragment_to_recoveryPhraseFragment"
+            app:destination="@id/recoveryPhraseFragment" />
     </fragment>
     <fragment
         android:id="@+id/recoveryWordsFragment"

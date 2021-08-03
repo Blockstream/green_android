@@ -174,12 +174,6 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             />
         <activity
-            android:name=".preferences.DisplayMnemonicActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            android:label="@string/id_mnemonic"
-            />
-        <activity
             android:name=".accounts.SubaccountAddActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"

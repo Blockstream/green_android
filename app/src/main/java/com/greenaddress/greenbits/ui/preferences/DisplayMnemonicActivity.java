@@ -12,6 +12,7 @@ import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
+@Deprecated
 public class DisplayMnemonicActivity extends LoggedActivity {
 
     public static final int MNEMONIC_LENGTH = 24;

@@ -132,8 +132,6 @@ class WalletSettingsFragment :
 
         if(args.showRecoveryTransactions) {
             setToolbar(getString(R.string.id_recovery_transactions))
-        }else if(args.bridgeShowPIN){
-            setToolbar(getString(R.string.id_setup_pin))
         }
 
         watchOnlyPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
@@ -370,10 +368,7 @@ class WalletSettingsFragment :
 
         val list = mutableListOf<GenericItem>()
 
-        list += logoutPreference
-
         if(args.showRecoveryTransactions){
-
             list += HelpListItem(
                 message = StringHolder(R.string.id_if_you_have_some_coins_on_the_legacy),
                 buttonOutline = StringHolder(R.string.id_read_more)
@@ -386,10 +381,10 @@ class WalletSettingsFragment :
                 list += requestRecoveryTransactionsPreference
             }
 
-        }else if(args.bridgeShowPIN){
-            list += changePinPreference
-            list += biometricsPreference
         }else {
+
+            list += logoutPreference
+
             if(!session.isWatchOnly) {
                 val is2faReset = session.getTwoFactorReset()?.isActive == true
 
