@@ -146,8 +146,13 @@ class GreenAddressService {
             }
             if hw.connected {
                 // Restore connection with hw through hidden login
-                post(event: EventType.Network, data: data)
-                reconnect()
+                reconnect().done { _ in
+                    self.post(event: EventType.Network, data: data)
+                }.catch { err in
+                    print("Error on reconnected with hw: \(err.localizedDescription)")
+                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                    appDelegate?.logout(with: false)
+                }
             }
         case .Tor:
             post(event: .Tor, data: data)
@@ -156,10 +161,10 @@ class GreenAddressService {
         }
     }
 
-    func reconnect() {
+    func reconnect() -> Promise<[String: Any]> {
         let bgq = DispatchQueue.global(qos: .background)
         let session = getSession()
-        Guarantee().map(on: bgq) {_ -> TwoFactorCall in
+        return Guarantee().map(on: bgq) {_ -> TwoFactorCall in
             guard let info = HWResolver.shared.hw?.device,
                 let data = try? JSONEncoder().encode(info),
                 let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
@@ -168,11 +173,6 @@ class GreenAddressService {
             return try session.loginUser(details: [:], hw_device: ["device": device])
         }.then(on: bgq) { call in
             call.resolve()
-        }.done { _ in
-        }.catch { err in
-            print("Error on reconnected with hw: \(err.localizedDescription)")
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.logout(with: false)
         }
     }
 
