@@ -55,24 +55,11 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
             it.getContentIfNotHandledOrReturnNull()?.let { success ->
                 if(success){
                     if(viewModel.isLastPage){
-
-                        if(args.wallet != null) {
-
-                            if (Bridge.useGreenModule) {
-                                // Back to Overview
-                                findNavController().popBackStack(R.id.recoveryIntroFragment, true)
-                                setSecureScreen(false)
-                            } else {
-                                requireActivity().finish()
-                            }
-
-                        }else{
-                            navigate(RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentToWalletNameFragment(
-                                onboardingOptions = args.onboardingOptions!!,
-                                mnemonic = args.mnemonic!!,
-                                mnemonicPassword = "")
-                            )
-                        }
+                        navigate(RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentToWalletNameFragment(
+                            onboardingOptions = args.onboardingOptions!!,
+                            mnemonic = args.mnemonic!!,
+                            mnemonicPassword = "")
+                        )
                     }else{
                         navigate(
                             RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentSelf(
@@ -95,11 +82,5 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
             viewModel.selectWord((button as Button).text.toString())
         }
     }
-
-    override fun onResume() {
-        super.onResume()
-        setSecureScreen(true)
-    }
-
     override fun getWalletViewModel(): AbstractWalletViewModel? = null
 }

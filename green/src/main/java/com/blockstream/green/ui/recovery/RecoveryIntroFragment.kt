@@ -32,10 +32,6 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
 
     override val wallet by lazy { args.wallet!! }
 
-    private var navListener = NavController.OnDestinationChangedListener { _, _, _ ->
-        setSecureScreen(false)
-    }
-
     // Recovery screens are reused in onboarding
     // where we don't have a session yet.
     override fun isSessionRequired(): Boolean {
@@ -62,17 +58,6 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
                 navigateToWords()
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        setSecureScreen(true)
-        findNavController().addOnDestinationChangedListener(navListener)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        findNavController().removeOnDestinationChangedListener(navListener)
     }
 
     private fun navigateToWords(){

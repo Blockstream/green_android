@@ -65,10 +65,5 @@ class RecoveryWordsFragment : WalletFragment<RecoverySetupWordsFragmentBinding>(
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        setSecureScreen(true)
-    }
-
     override fun getWalletViewModel(): AbstractWalletViewModel? = null
 }

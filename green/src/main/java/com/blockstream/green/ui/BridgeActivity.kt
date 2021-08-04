@@ -4,22 +4,17 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.get
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.blockstream.green.R
 import com.blockstream.green.databinding.BridgeActivityBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BridgeActivity : AppCompatActivity(), IActivity {
+class BridgeActivity : AppActivity() {
 
-    private lateinit var navController: NavController
     private lateinit var binding: BridgeActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +29,6 @@ class BridgeActivity : AppCompatActivity(), IActivity {
             // Prevent replacing title from NavController
             it.setDisplayShowTitleEnabled(false)
         }
-
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
@@ -82,6 +76,8 @@ class BridgeActivity : AppCompatActivity(), IActivity {
         binding.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
+
+        setupSecureScreenListener()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

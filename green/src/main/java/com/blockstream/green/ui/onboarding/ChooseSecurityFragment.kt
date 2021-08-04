@@ -3,15 +3,12 @@ package com.blockstream.green.ui.onboarding
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.NavOptions
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseSecurityFragmentBinding
-import com.blockstream.green.utils.isProductionFlavor
-import com.blockstream.green.utils.notifyDevelopmentFeature
 import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

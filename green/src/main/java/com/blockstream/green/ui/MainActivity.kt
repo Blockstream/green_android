@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -21,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), IActivity {
+class MainActivity : AppActivity() {
 
     @Inject
     lateinit var deviceManager: DeviceManager
@@ -43,8 +42,9 @@ class MainActivity : AppCompatActivity(), IActivity {
         }
 
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration(
             setOf(R.id.loginFragment, R.id.introFragment),
@@ -54,9 +54,8 @@ class MainActivity : AppCompatActivity(), IActivity {
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            binding.appBarLayout.isInvisible = (destination.id == R.id.introFragment || destination.id == R.id.onBoardingCompleteFragment)
-
-            // TODO Drawer locking when needed
+            binding.appBarLayout.isInvisible =
+                (destination.id == R.id.introFragment || destination.id == R.id.onBoardingCompleteFragment)
         }
 
         deviceManager.handleIntent(intent)
@@ -64,6 +63,8 @@ class MainActivity : AppCompatActivity(), IActivity {
         // Set version into the main VM
         viewModel.buildVersion.value =
             getString(R.string.id_version_1s_2s).format(getVersionName(this), "")
+
+        setupSecureScreenListener()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -84,11 +85,11 @@ class MainActivity : AppCompatActivity(), IActivity {
     override fun setToolbar(
         title: String?, subtitle: String?, drawable: Drawable?, button: CharSequence?,
         buttonListener: View.OnClickListener?
-    ){
+    ) {
         binding.toolbar.set(title, subtitle, drawable, button, buttonListener)
     }
 
-    override fun setToolbarVisibility(isVisible: Boolean){
+    override fun setToolbarVisibility(isVisible: Boolean) {
         binding.appBarLayout.isVisible = isVisible
     }
 
@@ -100,18 +101,3 @@ class MainActivity : AppCompatActivity(), IActivity {
         }
     }
 }
-
-interface IActivity{
-    fun isDrawerOpen(): Boolean
-    fun closeDrawer()
-    fun lockDrawer(isLocked: Boolean)
-    fun setToolbar(
-        title: String?,
-        subtitle: String? = null,
-        drawable: Drawable? = null,
-        button: CharSequence? = null,
-        buttonListener: View.OnClickListener? = null
-    )
-    fun setToolbarVisibility(isVisible: Boolean)
-}
-

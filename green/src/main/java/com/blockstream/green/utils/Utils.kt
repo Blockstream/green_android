@@ -22,16 +22,22 @@ import com.google.zxing.qrcode.encoder.Encoder
 
 fun Fragment.openBrowser(appSettings: ApplicationSettings, url: String) {
 
-    val openBrowserBlock =  { context : Context ->
+    val openBrowserBlock = { context: Context ->
         try {
             val builder = CustomTabsIntent.Builder()
             builder.setShowTitle(true)
             builder.setUrlBarHidingEnabled(false)
-            builder.setDefaultColorSchemeParams(CustomTabColorSchemeParams.Builder()
-                .setToolbarColor(ContextCompat.getColor(context, R.color.brand_surface))
-                .setNavigationBarColor(ContextCompat.getColor(context, R.color.brand_surface))
-                .setNavigationBarDividerColor(ContextCompat.getColor(context, R.color.brand_green))
-                .build()
+            builder.setDefaultColorSchemeParams(
+                CustomTabColorSchemeParams.Builder()
+                    .setToolbarColor(ContextCompat.getColor(context, R.color.brand_surface))
+                    .setNavigationBarColor(ContextCompat.getColor(context, R.color.brand_surface))
+                    .setNavigationBarDividerColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.brand_green
+                        )
+                    )
+                    .build()
             )
             builder.setStartAnimations(context, R.anim.enter_slide_up, R.anim.fade_out)
             builder.setExitAnimations(context, R.anim.fade_in, R.anim.exit_slide_down)
@@ -43,7 +49,7 @@ fun Fragment.openBrowser(appSettings: ApplicationSettings, url: String) {
         }
     }
 
-    if(appSettings.tor){
+    if (appSettings.tor) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.id_tor)
             .setMessage(R.string.id_you_have_tor_enabled)
@@ -57,7 +63,7 @@ fun Fragment.openBrowser(appSettings: ApplicationSettings, url: String) {
 
             }
             .show()
-    }else{
+    } else {
         openBrowserBlock.invoke(requireContext())
     }
 }
@@ -81,7 +87,7 @@ fun getVersionName(context: Context): String {
 }
 
 fun notImpementedYet(context: Context) {
-    if(context.isDevelopmentFlavor()) {
+    if (context.isDevelopmentFlavor()) {
         Toast.makeText(context, "Feature not Implemented", Toast.LENGTH_SHORT).show()
     }
 }
@@ -113,7 +119,9 @@ fun createQrBitmap(content: String): Bitmap? {
 fun Fragment.toPixels(size: Float) =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, resources.displayMetrics).toInt()
 
-fun Fragment.toPixels(size: Int) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size.toFloat(), resources.displayMetrics).toInt()
+fun Fragment.toPixels(size: Int) =
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size.toFloat(), resources.displayMetrics)
+        .toInt()
 
 fun String?.nameCleanup(): String? = if (isNullOrBlank()) null else trim().replace("\n", "")
 
@@ -123,8 +131,12 @@ fun Context.isProductionFlavor() = !this.isDevelopmentFlavor()
 fun Fragment.isDevelopmentFlavor() = requireContext().isDevelopmentFlavor()
 fun Fragment.isProductionFlavor() = !this.isDevelopmentFlavor()
 
-fun Fragment.notifyDevelopmentFeature(message: String){
-    if(isDevelopmentFlavor()) {
-        toast("Development Flavor: $message")
+fun Fragment.notifyDevelopmentFeature(message: String) {
+    requireContext().notifyDevelopmentFeature(message)
+}
+
+fun Context.notifyDevelopmentFeature(message: String) {
+    if (isDevelopmentFlavor()) {
+        Toast.makeText(this, "Development Flavor: $message", Toast.LENGTH_SHORT).show()
     }
 }

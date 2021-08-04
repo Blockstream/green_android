@@ -20,9 +20,6 @@ import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
-import com.blockstream.green.utils.isDevelopmentFlavor
-import com.blockstream.green.utils.isProductionFlavor
-import com.blockstream.green.utils.notifyDevelopmentFeature
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.ui.TabbedMainActivity
@@ -80,25 +77,10 @@ abstract class AppFragment<T : ViewDataBinding>(
     }
 
     protected fun closeDrawer() {
-        (requireActivity() as IActivity).closeDrawer()
+        (requireActivity() as AppActivity).closeDrawer()
     }
 
-    protected fun isDrawerOpen() = (requireActivity() as IActivity).isDrawerOpen()
-
-
-    protected fun setSecureScreen(isSecure : Boolean){
-        // In development flavor allow screen capturing
-        if(isSecure && requireContext().isDevelopmentFlavor()){
-            notifyDevelopmentFeature("FLAG_SECURE is disabled!")
-            return
-        }
-
-        if(isSecure){
-            activity?.window?.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
-        }else{
-            activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        }
-    }
+    protected fun isDrawerOpen() = (requireActivity() as AppActivity).isDrawerOpen()
 
     fun setToolbar(wallet: Wallet) {
         val icon = ContextCompat.getDrawable(requireContext(), wallet.getIcon())
@@ -107,11 +89,11 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     fun setToolbar(title: String? = null, subtitle: String? = null, drawable: Drawable? = null, button: CharSequence? = null,
                    buttonListener: View.OnClickListener? = null){
-        (requireActivity() as IActivity).setToolbar(title, subtitle, drawable, button, buttonListener)
+        (requireActivity() as AppActivity).setToolbar(title, subtitle, drawable, button, buttonListener)
     }
 
     fun setToolbarVisibility(isVisible: Boolean){
-        (requireActivity() as IActivity).setToolbarVisibility(isVisible)
+        (requireActivity() as AppActivity).setToolbarVisibility(isVisible)
     }
 
     fun navigate(directions: NavDirections, navOptionsBuilder: NavOptions.Builder? = null) {

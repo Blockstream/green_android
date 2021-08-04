@@ -24,11 +24,11 @@ class IntroFragment : WalletListCommonFragment<IntroFragmentBinding>(R.layout.in
 
     override fun onResume() {
         super.onResume()
-        (requireActivity() as IActivity).lockDrawer(true)
+        (requireActivity() as AppActivity).lockDrawer(true)
     }
 
     override fun onPause() {
         super.onPause()
-        (requireActivity() as IActivity).lockDrawer(false)
+        (requireActivity() as AppActivity).lockDrawer(false)
     }
 }
