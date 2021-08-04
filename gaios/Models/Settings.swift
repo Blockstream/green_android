@@ -35,7 +35,7 @@ enum SettingsType: String, Codable {
 }
 
 // Type of priority of a fee for transaction
-public enum TransactionPriority: Int {
+public enum TransactionPriority: Int, CaseIterable {
     case Low = 24
     case Medium = 12
     case High = 3
@@ -65,6 +65,24 @@ public enum TransactionPriority: Int {
     var description: String {
         let confirmationInBlocks = String(format: NSLocalizedString("id_confirmation_in_d_blocks", comment: ""), self.rawValue)
         return confirmationInBlocks + ", " + time + " " + NSLocalizedString("id_on_average", comment: "")
+    }
+
+    static func getPreference() -> TransactionPriority? {
+
+        let value = UserDefaults.standard.integer(forKey: AppStorage.defaultTransactionPriority)
+
+        for item in TransactionPriority.allCases where (item.rawValue == value && value > 0) {
+            return item
+        }
+        return nil
+    }
+
+    static func setPreference(_ pref: TransactionPriority) {
+        UserDefaults.standard.set(pref.rawValue, forKey: AppStorage.defaultTransactionPriority)
+    }
+
+    static func unsetPreference() {
+        UserDefaults.standard.removeObject(forKey: AppStorage.defaultTransactionPriority)
     }
 }
 

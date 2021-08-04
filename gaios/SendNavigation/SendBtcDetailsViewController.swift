@@ -51,6 +51,9 @@ class SendBtcDetailsViewController: UIViewController {
 
     private var selectedFee: Int = {
         guard let settings = Settings.shared else { return 0 }
+        if let pref = TransactionPriority.getPreference() {
+            settings.transactionPriority = pref
+        }
         switch settings.transactionPriority {
         case .High:
             return 0

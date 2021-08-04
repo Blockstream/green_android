@@ -138,20 +138,18 @@ class TransactionsController: UITableViewController {
         }
     }
 
-    func openUserSettings() {
-        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
+    @IBAction func notifications(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "NotificationsNavigationController")
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }
 
-    @IBAction func notifications(_ sender: Any) {
-        self.performSegue(withIdentifier: "notifications", sender: nil)
-    }
-
     @IBAction func settings(_ sender: Any) {
-//        self.performSegue(withIdentifier: "settings", sender: nil)
-        openUserSettings()
+        let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
     }
 
     func checkFiatRate() {

@@ -25,11 +25,11 @@
             <objects>
                 <viewController storyboardIdentifier="notifications" useStoryboardIdentifierAsRestorationIdentifier="YES" id="vNx-TR-xnv" customClass="NotificationsViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mCE-9M-o95">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="wlu-fe-63L">
-                                <rect key="frame" x="0.0" y="44" width="320" height="455"/>
+                                <rect key="frame" x="0.0" y="44" width="320" height="524"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <color key="separatorColor" name="customGreyDark"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -82,7 +82,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ScE-9X-6rP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5393" y="1705"/>
+            <point key="canvasLocation" x="6390" y="1704.9295774647887"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="vFQ-1x-YV2">
@@ -174,7 +174,6 @@
                         <segue destination="h6g-rr-LAM" kind="show" identifier="send" id="U7f-MS-5Z1"/>
                         <segue destination="fuN-54-EEf" kind="show" identifier="assets" id="Azw-5Y-ZWP"/>
                         <segue destination="JMx-ld-n78" kind="show" identifier="wallets" id="sRf-Gc-KhT"/>
-                        <segue destination="vNx-TR-xnv" kind="show" identifier="notifications" id="xpz-uZ-oyS"/>
                         <segue destination="30w-Nv-yEI" kind="show" identifier="settings" id="9x3-I7-Dy2"/>
                         <segue destination="Tml-O4-tHP" kind="show" identifier="leaarnMore2fa" id="Cai-01-qcB"/>
                         <segue destination="Izl-XR-ebQ" kind="show" identifier="reactivate2fa" id="n67-yi-7Dw"/>
@@ -234,7 +233,7 @@
             <objects>
                 <viewController hidesBottomBarWhenPushed="YES" id="Toc-gk-72n" customClass="SystemMessageViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8yK-ot-Ile" customClass="SystemMessageView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="yMu-2w-bwU"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
@@ -246,7 +245,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nBZ-Ly-lYG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6604" y="1705"/>
+            <point key="canvasLocation" x="7601.25" y="1704.9295774647887"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="IaK-fn-phY">
@@ -704,6 +703,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qEj-tS-A0R" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="7017" y="-411"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="fLI-mz-vSE">
+            <objects>
+                <navigationController storyboardIdentifier="NotificationsNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="qSG-fc-BGr" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="5bh-lK-0F0">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="vNx-TR-xnv" kind="relationship" relationship="rootViewController" id="xhe-s6-yZr"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FOt-p6-0I2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5392.5" y="1704.9295774647887"/>
         </scene>
     </scenes>
     <resources>

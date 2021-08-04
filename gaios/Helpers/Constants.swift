@@ -7,4 +7,5 @@ enum Constants {
 
 enum AppStorage {
     static let dontShowTorAlert = "dont_show_tor_alert"
+    static let defaultTransactionPriority = "default_transaction_priority"
 }

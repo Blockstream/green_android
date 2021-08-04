@@ -26,6 +26,10 @@ class UserSettingsCell: UITableViewCell {
         self.lblTitle.text = item.title
         self.lblHint.text = item.subtitle
         self.onActionSwitch = onActionSwitch
+
+        if item.type == .Logout {
+            lblHint.textColor = UIColor.errorRed()
+        }
     }
 
     @IBAction func actionSwitchChanged(_ sender: UISwitch) {

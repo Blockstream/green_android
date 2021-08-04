@@ -70,7 +70,7 @@ class UserSettingsViewController: UIViewController {
 
     func getSections() -> [UserSettingsSections] {
         if isWatchOnly {
-            return [.logout, .security, .about]
+            return [.logout, .about]
         } else if isResetActive {
             return [.logout, .general, .security, .about]
         } else if isSingleSig {
@@ -114,6 +114,13 @@ class UserSettingsViewController: UIViewController {
             }
 
         }
+        let defaultTransactionPriority = UserSettingsItem(
+            title: "Default transaction priority",
+            subtitle: TransactionPriority.getPreference()?.text ?? "",
+            section: .general,
+            type: .DefaultTransactionPriority)
+        items += [defaultTransactionPriority]
+
         return items
     }
 
@@ -156,7 +163,7 @@ class UserSettingsViewController: UIViewController {
         }
 
         let twoFactorAuthentication = UserSettingsItem(
-            title: NSLocalizedString("id_twofactor_authentication", comment: ""),
+            title: "2FA authentication",
             subtitle: "",
             section: .security,
             type: .TwoFactorAuthentication)
@@ -210,7 +217,7 @@ class UserSettingsViewController: UIViewController {
         var items = [UserSettingsItem]()
 
         let backUpRecoveryPhrase = UserSettingsItem(
-            title: NSLocalizedString("id_recovery_phrase", comment: ""),
+            title: "Back Up Recovery Phrase",
             subtitle: "",
             section: .recovery,
             type: .BackUpRecoveryPhrase)
@@ -229,7 +236,7 @@ class UserSettingsViewController: UIViewController {
                 locktimeRecoveryEnable = notifications.emailOutgoing == true
             }
             let locktimeRecovery = UserSettingsItem(
-                title: NSLocalizedString("id_recovery_transaction_emails", comment: ""),
+                title: "Recovery Transactions",
                 subtitle: locktimeRecoveryEnable ? NSLocalizedString("id_enabled", comment: "") : NSLocalizedString("id_disabled", comment: ""),
                 section: .recovery,
                 type: .RecoveryTransactions)
@@ -372,6 +379,8 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "CurrencySelectorViewController")
             navigationController?.pushViewController(vc, animated: true)
+        case .DefaultTransactionPriority:
+            showDefaultTransactionPriority()
         case .BackUpRecoveryPhrase:
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "MnemonicAuthViewController")
@@ -569,6 +578,20 @@ extension UserSettingsViewController {
             settings.notifications = try! JSONDecoder().decode(SettingsNotifications.self, from: json)
             self.changeSettings(settings)
         })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func showDefaultTransactionPriority() {
+        let list = [TransactionPriority.High, TransactionPriority.Medium, TransactionPriority.Low]
+        let selected: TransactionPriority? = TransactionPriority.getPreference()
+        let alert = UIAlertController(title: "Default Transaction Priority", message: "", preferredStyle: .actionSheet)
+        list.forEach { (item: TransactionPriority) in
+            alert.addAction(UIAlertAction(title: item.text, style: item == selected ? .destructive : .default) { [weak self] _ in
+                TransactionPriority.setPreference(item)
+                self?.reloadData()
+            })
+        }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }

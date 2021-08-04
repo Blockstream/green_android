@@ -18,6 +18,7 @@ class PgpViewController: KeyboardViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         content.button.setGradient(true)
+        content.textarea.becomeFirstResponder()
     }
 
     @objc func save(_ sender: UIButton) {
