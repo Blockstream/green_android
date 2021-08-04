@@ -11,8 +11,6 @@ android {
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
 
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -54,7 +52,7 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- RxJava ----------------------------------------------------------------------------- */
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.17'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     implementation 'com.jakewharton.rx2:replaying-share:2.2.0'
     /** ----------------------------------------------------------------------------------------- */
