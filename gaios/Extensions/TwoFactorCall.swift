@@ -42,7 +42,7 @@ extension TwoFactorCall {
         case "request_code":
             let methods = json["methods"] as? [String] ?? []
             if methods.count > 1 {
-                let sender = UIApplication.shared.keyWindow?.rootViewController
+                let sender = UIApplication.topViewController()
                 let popup = PopupMethodResolver(sender!)
                 return Promise()
                     .map { sender?.stopAnimating() }
