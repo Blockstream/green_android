@@ -54,15 +54,24 @@
                                                                 <action selector="actionSwitchChanged:" destination="kwp-L5-r46" eventType="valueChanged" id="ROc-IU-7nQ"/>
                                                             </connections>
                                                         </switch>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_right" translatesAutoresizingMaskIntoConstraints="NO" id="V3E-BS-FyU">
+                                                            <rect key="frame" x="342" y="40" width="20" height="20"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="20" id="1Mh-O7-IKl"/>
+                                                                <constraint firstAttribute="width" constant="20" id="Xfb-1g-wsR"/>
+                                                            </constraints>
+                                                        </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" name="customModalBlueDark"/>
                                                     <constraints>
+                                                        <constraint firstItem="V3E-BS-FyU" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="EHy-Lh-UOc"/>
                                                         <constraint firstItem="MUx-YI-eK2" firstAttribute="centerY" secondItem="mC4-DN-WsT" secondAttribute="centerY" id="NcF-NV-VOH"/>
                                                         <constraint firstItem="hdc-vI-Hov" firstAttribute="top" secondItem="mC4-DN-WsT" secondAttribute="top" constant="20" id="Ovw-4j-bk5"/>
                                                         <constraint firstAttribute="bottom" secondItem="hdc-vI-Hov" secondAttribute="bottom" constant="20" id="Ru3-pk-qIC"/>
                                                         <constraint firstItem="MUx-YI-eK2" firstAttribute="leading" secondItem="hdc-vI-Hov" secondAttribute="trailing" constant="20" id="Uc7-eJ-FA6"/>
                                                         <constraint firstAttribute="trailing" secondItem="MUx-YI-eK2" secondAttribute="trailing" constant="20" id="cmY-08-HiC"/>
                                                         <constraint firstItem="hdc-vI-Hov" firstAttribute="leading" secondItem="mC4-DN-WsT" secondAttribute="leading" constant="20" id="gss-Qu-gUe"/>
+                                                        <constraint firstAttribute="trailing" secondItem="V3E-BS-FyU" secondAttribute="trailing" constant="20" id="kbZ-cF-dGm"/>
                                                     </constraints>
                                                 </view>
                                             </subviews>
@@ -77,6 +86,7 @@
                                         <connections>
                                             <outlet property="actionSwitch" destination="MUx-YI-eK2" id="ExM-GH-tRB"/>
                                             <outlet property="bg" destination="mC4-DN-WsT" id="90N-zK-Rez"/>
+                                            <outlet property="disclosure" destination="V3E-BS-FyU" id="KoR-Wj-E9G"/>
                                             <outlet property="lblHint" destination="2hz-Nh-bF9" id="4D9-K7-lE9"/>
                                             <outlet property="lblTitle" destination="1l4-lG-s5s" id="ibv-fd-prF"/>
                                         </connections>
@@ -875,6 +885,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow_right" width="25" height="25"/>
         <image name="onboarding_noonline" width="25" height="25"/>
         <image name="onboarding_noscrshot" width="25" height="25"/>
         <image name="onboarding_write" width="25" height="25"/>

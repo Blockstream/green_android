@@ -314,10 +314,6 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
 
         if let cell = tableView.dequeueReusableCell(withIdentifier: "UserSettingsCell") as? UserSettingsCell {
             cell.configure(item)
-            cell.actionSwitch.isHidden = true
-            let selectedView = UIView()
-            selectedView.backgroundColor = UIColor.customModalDark()
-            cell.selectedBackgroundView = selectedView
 
             //customize single cells
             if item.type == .LoginWithBiometrics {
@@ -328,6 +324,11 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 cell.onActionSwitch = { [weak self] in
                     self?.onBiometricSwitch(cell.actionSwitch.isOn)
                 }
+            } else {
+                cell.actionSwitch.isHidden = true
+                let selectedView = UIView()
+                selectedView.backgroundColor = UIColor.customModalDark()
+                cell.selectedBackgroundView = selectedView
             }
             return cell
         }

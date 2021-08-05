@@ -33,7 +33,7 @@ enum UserSettingsSections: String, Codable, CaseIterable {
 }
 
 // Setting type in all sections
-enum UserSettingsType: String, Codable {
+enum UserSettingsType: String, Codable, CaseIterable {
 
     case Logout
 
