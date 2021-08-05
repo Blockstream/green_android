@@ -74,7 +74,7 @@ class UserSettingsViewController: UIViewController {
         } else if isResetActive {
             return [.logout, .general, .security, .about]
         } else if isSingleSig {
-            return [.logout, .general, .security, .about]
+          return [.logout, .general, .security, .recovery, .about]
         }
         return UserSettingsSections.allCases
     }
@@ -168,7 +168,7 @@ class UserSettingsViewController: UIViewController {
             section: .security,
             type: .TwoFactorAuthentication)
 
-        if isWatchOnly || isLiquid || isSingleSig {
+        if isWatchOnly || isSingleSig {
         } else {
             items += [twoFactorAuthentication]
         }
@@ -246,8 +246,7 @@ class UserSettingsViewController: UIViewController {
                 section: .recovery,
                 type: .RecoveryTransactions)
 
-            if isWatchOnly {
-            } else if isLiquid {
+            if isWatchOnly || isLiquid || isSingleSig {
             } else {
                 items += [locktimeRecovery]
             }
