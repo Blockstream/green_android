@@ -219,6 +219,7 @@
 		81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81640CDF21FB2B4200E7F79C /* FeeButton.xib */; };
 		81683F9026BC022C0058982E /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F8F26BC022C0058982E /* Transaction.swift */; };
 		81683F9226BC02960058982E /* Transactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9126BC02960058982E /* Transactions.swift */; };
+		81683F9426BC088E0058982E /* WalletItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81683F9326BC088E0058982E /* WalletItem.swift */; };
 		8169EBBD2445F16F0053BC73 /* Jade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8169EBBC2445F16F0053BC73 /* Jade.swift */; };
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
 		816F0AF623E47E1E00569A5D /* Wally.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF523E47E1E00569A5D /* Wally.swift */; };
@@ -530,6 +531,7 @@
 		81640CDF21FB2B4200E7F79C /* FeeButton.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FeeButton.xib; sourceTree = "<group>"; };
 		81683F8F26BC022C0058982E /* Transaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		81683F9126BC02960058982E /* Transactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transactions.swift; sourceTree = "<group>"; };
+		81683F9326BC088E0058982E /* WalletItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletItem.swift; sourceTree = "<group>"; };
 		8169EBBC2445F16F0053BC73 /* Jade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jade.swift; sourceTree = "<group>"; };
 		816F0AF323E4713600569A5D /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
@@ -1291,6 +1293,7 @@
 				816282B0260BB201003E5FA6 /* OnBoardParams.swift */,
 				81683F8F26BC022C0058982E /* Transaction.swift */,
 				81683F9126BC02960058982E /* Transactions.swift */,
+				81683F9326BC088E0058982E /* WalletItem.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1699,6 +1702,7 @@
 				6D0983F323FF033900289ACA /* DropAlert.swift in Sources */,
 				8124524225D6B0DD00537238 /* Address.swift in Sources */,
 				81683F9026BC022C0058982E /* Transaction.swift in Sources */,
+				81683F9426BC088E0058982E /* WalletItem.swift in Sources */,
 				34C2464D2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				6D8099D222FA24200069A69F /* NotesViewController.swift in Sources */,
