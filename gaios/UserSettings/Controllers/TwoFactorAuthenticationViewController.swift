@@ -188,7 +188,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             self.newCsv = nil
             self.currentCsv = csv.value()
             DropAlert().success(message: String(format: "%@: %@", NSLocalizedString("id_twofactor_authentication_expiry", comment: ""), csv.label()))
-            self.navigationController?.popViewController(animated: true)
+            self.reloadData()
         }.catch { _ in
             DropAlert().error(message: "Error changing csv time")
         }

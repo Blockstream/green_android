@@ -177,6 +177,8 @@ class UserSettingsViewController: UIViewController {
     }
 
     func getAdvancedItems() -> [UserSettingsItem] {
+
+        var items = [UserSettingsItem]()
         let pgp = UserSettingsItem(
             title: NSLocalizedString("id_pgp_key", comment: ""),
             subtitle: "",
@@ -187,10 +189,13 @@ class UserSettingsViewController: UIViewController {
             subtitle: NSLocalizedString("id_sweep_from_paper_wallet", comment: ""),
             section: .advanced,
             type: .Sweep)
-        if !isWatchOnly && !isLiquid {
-            return [pgp, sweep]
+        if !isWatchOnly {
+            items += [pgp]
         }
-        return []
+        if !isLiquid {
+            items += [sweep]
+        }
+        return items
     }
 
     func getAboutItems() -> [UserSettingsItem] {
@@ -324,6 +329,8 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                 cell.onActionSwitch = { [weak self] in
                     self?.onBiometricSwitch(cell.actionSwitch.isOn)
                 }
+            } else if item.type == .Version {
+              cell.selectionStyle = .none
             } else {
                 cell.actionSwitch.isHidden = true
                 let selectedView = UIView()

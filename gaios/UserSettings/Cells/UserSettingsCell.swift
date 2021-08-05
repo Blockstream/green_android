@@ -35,6 +35,9 @@ class UserSettingsCell: UITableViewCell {
         case .LoginWithBiometrics:
             lblHint.textColor = UIColor.customGrayLight()
             disclosure.isHidden = true
+        case .Version:
+            lblHint.textColor = UIColor.customGrayLight()
+            disclosure.isHidden = true
         case .TermsOfUse, .PrivacyPolicy:
             lblHint.textColor = UIColor.customGrayLight()
             disclosure.isHidden = false
