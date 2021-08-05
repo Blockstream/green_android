@@ -329,7 +329,8 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
                     self?.onBiometricSwitch(cell.actionSwitch.isOn)
                 }
             } else if item.type == .Version {
-              cell.selectionStyle = .none
+                cell.selectionStyle = .none
+                cell.actionSwitch.isHidden = true
             } else {
                 cell.actionSwitch.isHidden = true
                 let selectedView = UIView()
