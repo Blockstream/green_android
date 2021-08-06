@@ -632,22 +632,29 @@
                                                                 <rect key="frame" x="0.0" y="73" width="342" height="76"/>
                                                                 <subviews>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="oNM-OK-9Ml">
-                                                                        <rect key="frame" x="16" y="16" width="310" height="44"/>
+                                                                        <rect key="frame" x="16" y="16" width="280" height="44"/>
                                                                         <subviews>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2fa_threshold_card_title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="txY-II-6ph">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="310" height="19.5"/>
+                                                                                <rect key="frame" x="0.0" y="0.0" width="280" height="19.5"/>
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2fa_threshold_card_hint" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XTY-XK-Acz">
-                                                                                <rect key="frame" x="0.0" y="24.5" width="310" height="19.5"/>
+                                                                                <rect key="frame" x="0.0" y="24.5" width="280" height="19.5"/>
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <nil key="highlightedColor"/>
                                                                             </label>
                                                                         </subviews>
                                                                     </stackView>
+                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow_right" translatesAutoresizingMaskIntoConstraints="NO" id="ytN-WU-WU2">
+                                                                        <rect key="frame" x="306" y="28" width="20" height="20"/>
+                                                                        <constraints>
+                                                                            <constraint firstAttribute="width" constant="20" id="E1f-y7-hDe"/>
+                                                                            <constraint firstAttribute="height" constant="20" id="oX0-ou-u0r"/>
+                                                                        </constraints>
+                                                                    </imageView>
                                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oCp-Xo-Q3W">
                                                                         <rect key="frame" x="0.0" y="0.0" width="342" height="76"/>
                                                                         <connections>
@@ -659,12 +666,14 @@
                                                                 <constraints>
                                                                     <constraint firstItem="oNM-OK-9Ml" firstAttribute="top" secondItem="evc-DX-DkP" secondAttribute="top" constant="16" id="0cu-iB-GLJ"/>
                                                                     <constraint firstItem="oCp-Xo-Q3W" firstAttribute="centerY" secondItem="evc-DX-DkP" secondAttribute="centerY" id="2AX-Rr-nqi"/>
+                                                                    <constraint firstItem="ytN-WU-WU2" firstAttribute="centerY" secondItem="evc-DX-DkP" secondAttribute="centerY" id="BQF-cy-3dU"/>
                                                                     <constraint firstItem="oCp-Xo-Q3W" firstAttribute="centerX" secondItem="evc-DX-DkP" secondAttribute="centerX" id="Fu5-vt-e3T"/>
+                                                                    <constraint firstItem="ytN-WU-WU2" firstAttribute="leading" secondItem="oNM-OK-9Ml" secondAttribute="trailing" constant="10" id="RoB-qA-BW3"/>
                                                                     <constraint firstItem="oCp-Xo-Q3W" firstAttribute="width" secondItem="evc-DX-DkP" secondAttribute="width" id="TU9-mY-acL"/>
                                                                     <constraint firstAttribute="bottom" secondItem="oNM-OK-9Ml" secondAttribute="bottom" constant="16" id="eub-NV-8aw"/>
                                                                     <constraint firstItem="oNM-OK-9Ml" firstAttribute="leading" secondItem="evc-DX-DkP" secondAttribute="leading" constant="16" id="kXe-gD-C8f"/>
+                                                                    <constraint firstAttribute="trailing" secondItem="ytN-WU-WU2" secondAttribute="trailing" constant="16" id="laB-3n-zdo"/>
                                                                     <constraint firstItem="oCp-Xo-Q3W" firstAttribute="height" secondItem="evc-DX-DkP" secondAttribute="height" id="sc8-fK-BTC"/>
-                                                                    <constraint firstAttribute="trailing" secondItem="oNM-OK-9Ml" secondAttribute="trailing" constant="16" id="xVa-Vm-xhQ"/>
                                                                 </constraints>
                                                             </view>
                                                         </subviews>
@@ -856,6 +865,7 @@
                         <outlet property="lblRecoveryTool" destination="Wdn-Nz-e6U" id="cmt-nQ-5PQ"/>
                         <outlet property="tableView2faMethods" destination="MVK-vm-HQk" id="7Af-Yw-gND"/>
                         <outlet property="tableViewCsvTime" destination="Yjh-9Q-ouZ" id="BAY-ex-X4P"/>
+                        <outlet property="thresholdCardDisclosure" destination="ytN-WU-WU2" id="I1p-gU-quG"/>
                         <outlet property="thresholdView" destination="Dfd-4A-KMA" id="eBZ-dU-VsC"/>
                         <segue destination="cJe-TF-f2G" kind="show" id="Vj6-lm-0Jw"/>
                     </connections>

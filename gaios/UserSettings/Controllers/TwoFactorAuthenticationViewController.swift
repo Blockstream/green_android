@@ -11,6 +11,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var lbl2faThresholdHint: UILabel!
     @IBOutlet weak var lbl2faThresholdCardTitle: UILabel!
     @IBOutlet weak var lbl2faThresholdCardHint: UILabel!
+    @IBOutlet weak var thresholdCardDisclosure: UIImageView!
     @IBOutlet weak var btn2faThreshold: UIButton!
     @IBOutlet weak var bg2faThreshold: UIView!
     @IBOutlet weak var thresholdView: UIStackView!
@@ -79,6 +80,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         lblRecoveryTool.font = UIFont.systemFont(ofSize: 16.0, weight: .regular)
         lblRecoveryTool.textColor = UIColor.customGrayLight()
         btnRecoveryTool.setStyle(.primary)
+        thresholdCardDisclosure.image = UIImage(named: "rightArrow")?.maskWithColor(color: .white)
     }
 
     override func viewWillAppear(_ animated: Bool) {
