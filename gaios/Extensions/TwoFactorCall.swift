@@ -65,17 +65,23 @@ extension TwoFactorCall {
                         return HWResolver.shared.signMessage(requiredData)
                     case "sign_tx":
                         return HWResolver.shared.signTransaction(requiredData)
-                    case "get_balance", "get_transactions", "get_unspent_outputs", "get_subaccounts", "get_subaccount", "get_expired_deposits":
-                        return HWResolver.shared.getBlindingNonces(requiredData)
-                    case "create_transaction":
-                        return HWResolver.shared.getBlindingKeys(requiredData)
-                    case "get_receive_address":
-                        let address = requiredData["address"] as? [String: Any]
-                        let script = address?["blinding_script_hash"] as? String
-                        return HWResolver.shared.getBlindingKey(script: script!)
-                            .compactMap { bkey in
-                                return "{\"blinding_key\":\"\(bkey)\"}"
-                            }
+                    case "get_blinding_nonces":
+                        guard let scripts = requiredData["script"] as? [String],
+                              let publicKeys = requiredData["public_keys"] as? [String] else {
+                            throw GaError.GenericError
+                        }
+                        return HWResolver.shared.getBlindingNonces(scripts: scripts, publicKeys: publicKeys).compactMap {
+                            let data = try JSONSerialization.data(withJSONObject: ["nonces": $0], options: .fragmentsAllowed)
+                            return String(data: data, encoding: .utf8)
+                        }
+                    case "get_blinding_public_keys":
+                        guard let scripts = requiredData["scripts"] as? [String] else {
+                            throw GaError.GenericError
+                        }
+                        return HWResolver.shared.getBlindingPublicKeys(scripts).compactMap {
+                            let data = try JSONSerialization.data(withJSONObject: ["public_keys": $0], options: .fragmentsAllowed)
+                            return String(data: data, encoding: .utf8)
+                        }
                     default:
                         throw GaError.GenericError
                     }

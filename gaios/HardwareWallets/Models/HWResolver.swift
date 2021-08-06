@@ -86,20 +86,13 @@ class HWResolver {
         }
     }
 
-    func getBlindingNonces(_ json: [String: Any]) -> Promise<String> {
-        guard let blindedScripts = json["blinded_scripts"] as? [[String: Any]] else {
-            return Promise<String> { seal in seal.fulfill("{\"nonces\":[]}") }
-        }
-        let promises: [()->Promise<String>] = blindedScripts.map { bscript in
-            return {
-                let pubkey = bscript["pubkey"] as? String
-                let script = bscript["script"] as? String
-                return self.getBlindingNonce(pubkey: pubkey!, script: script!)
+    func getBlindingNonces(scripts: [String], publicKeys: [String]) -> Promise<[String]> {
+        let promises = zip(scripts, publicKeys).map {
+            (script, publicKey) in {
+                self.getBlindingNonce(pubkey: publicKey, script: script)
             }
         }
-        return Promise.chain(promises).compactMap { res in
-            return "{\"nonces\":\(res.description)}"
-        }
+        return Promise.chain(promises)
     }
 
     func getBlindingKey(script: String) -> Promise<String> {
@@ -113,27 +106,13 @@ class HWResolver {
         }
     }
 
-    func getBlindingKeys(_ json: [String: Any]) -> Promise<String> {
-        let tx = json["transaction"] as? [String: Any]
-        guard let change = tx?["change_address"] as? [String: Any] else {
-            return Promise<String> { seal in seal.fulfill("{\"blinding_keys\":[]}") }
-        }
-        let promises: [()->Promise<(String, String)>] = change.map { change in
-            return {
-                let value = change.value as? [String: Any]
-                let script = value?["blinding_script_hash"] as? String
-                return self.getBlindingKey(script: script!).compactMap { res in
-                    return (change.key, res)
-                }
+    func getBlindingPublicKeys(_ scripts: [String]) -> Promise<[String]> {
+        let promises = scripts.map { script in
+            {
+                self.getBlindingKey(script: script)
             }
         }
-        return Promise.chain(promises).compactMap { list in
-            var dict = [String: String]()
-            list.forEach { dict[$0.0] = $0.1 }
-            let data = try JSONSerialization.data(withJSONObject: dict, options: .fragmentsAllowed)
-            let text = String(data: data, encoding: .utf8) ?? ""
-            return "{\"blinding_keys\":\(text)}"
-        }
+        return Promise.chain(promises)
     }
 
 }
