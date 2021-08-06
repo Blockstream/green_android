@@ -8,6 +8,36 @@ class HWResolver {
     var hw: HWResolverProtocol?
     var noncesCache = [String: Any]()
 
+    func resolveCode(action: String, device: [String: Any], requiredData: [String: Any]) -> Promise<String> {
+        switch action {
+        case "get_xpubs":
+            return HWResolver.shared.getXpubs(requiredData)
+        case "sign_message":
+            return HWResolver.shared.signMessage(requiredData)
+        case "sign_tx":
+            return HWResolver.shared.signTransaction(requiredData)
+        case "get_blinding_nonces":
+            guard let scripts = requiredData["script"] as? [String],
+                  let publicKeys = requiredData["public_keys"] as? [String] else {
+                return Promise { $0.reject(GaError.GenericError) }
+            }
+            return HWResolver.shared.getBlindingNonces(scripts: scripts, publicKeys: publicKeys).compactMap {
+                let data = try JSONSerialization.data(withJSONObject: ["nonces": $0], options: .fragmentsAllowed)
+                return String(data: data, encoding: .utf8)
+            }
+        case "get_blinding_public_keys":
+            guard let scripts = requiredData["scripts"] as? [String] else {
+                return Promise { $0.reject(GaError.GenericError) }
+            }
+            return HWResolver.shared.getBlindingPublicKeys(scripts).compactMap {
+                let data = try JSONSerialization.data(withJSONObject: ["public_keys": $0], options: .fragmentsAllowed)
+                return String(data: data, encoding: .utf8)
+            }
+        default:
+            return Promise { $0.reject(GaError.GenericError) }
+        }
+    }
+
     func getXpubs(_ json: [String: Any]) -> Promise<String> {
         return Promise { seal in
             let paths = json["paths"] as? [[Int]]
@@ -87,11 +117,8 @@ class HWResolver {
     }
 
     func getBlindingNonces(scripts: [String], publicKeys: [String]) -> Promise<[String]> {
-        let promises = zip(scripts, publicKeys).map {
-            (script, publicKey) in {
-                self.getBlindingNonce(pubkey: publicKey, script: script)
-            }
-        }
+        let promises = zip(scripts, publicKeys)
+            .map { (script, publicKey) in { self.getBlindingNonce(pubkey: publicKey, script: script) }        }
         return Promise.chain(promises)
     }
 
@@ -107,11 +134,7 @@ class HWResolver {
     }
 
     func getBlindingPublicKeys(_ scripts: [String]) -> Promise<[String]> {
-        let promises = scripts.map { script in
-            {
-                self.getBlindingKey(script: script)
-            }
-        }
+        let promises = scripts.map { script in { self.getBlindingKey(script: script) } }
         return Promise.chain(promises)
     }
 

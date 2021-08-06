@@ -54,42 +54,15 @@ extension TwoFactorCall {
                 return Promise().map(on: bgq) { try self.requestCode(method: methods[0]) }
             }
         case "resolve_code":
-            // Ledger interface resolver
-            if let requiredData = json["required_data"] as? [String: Any] {
-                let action = requiredData["action"] as? String
-                return Promise().then(on: bgq) {_ -> Promise<String> in
-                    switch action {
-                    case "get_xpubs":
-                        return HWResolver.shared.getXpubs(requiredData)
-                    case "sign_message":
-                        return HWResolver.shared.signMessage(requiredData)
-                    case "sign_tx":
-                        return HWResolver.shared.signTransaction(requiredData)
-                    case "get_blinding_nonces":
-                        guard let scripts = requiredData["script"] as? [String],
-                              let publicKeys = requiredData["public_keys"] as? [String] else {
-                            throw GaError.GenericError
-                        }
-                        return HWResolver.shared.getBlindingNonces(scripts: scripts, publicKeys: publicKeys).compactMap {
-                            let data = try JSONSerialization.data(withJSONObject: ["nonces": $0], options: .fragmentsAllowed)
-                            return String(data: data, encoding: .utf8)
-                        }
-                    case "get_blinding_public_keys":
-                        guard let scripts = requiredData["scripts"] as? [String] else {
-                            throw GaError.GenericError
-                        }
-                        return HWResolver.shared.getBlindingPublicKeys(scripts).compactMap {
-                            let data = try JSONSerialization.data(withJSONObject: ["public_keys": $0], options: .fragmentsAllowed)
-                            return String(data: data, encoding: .utf8)
-                        }
-                    default:
-                        throw GaError.GenericError
-                    }
-                }.then { code in
-                    return Promise().map(on: bgq) { try self.resolveCode(code: code) }
+            // Hardware wallet interface resolver
+            if let requiredData = json["required_data"] as? [String: Any],
+                let action = requiredData["action"] as? String,
+                let device = requiredData["device"] as? [String: Any] {
+                return HWResolver.shared.resolveCode(action: action, device: device, requiredData: requiredData).compactMap { code in
+                        try self.resolveCode(code: code)
                 }
             }
-            // User interface resolver
+            // Software wallet interface resolver
             let method = json["method"] as? String ?? ""
             let sender = UIApplication.topViewController()
             let popup = PopupCodeResolver(sender!)
@@ -98,8 +71,8 @@ extension TwoFactorCall {
                 .then { popup.code(method) }
                 .map { code in sender?.startAnimating(); return code }
                 .then(on: bgq) { code in self.waitConnection(connected).map { return code} }
-                .then(on: bgq) { code in
-                    return Promise().map(on: bgq) { try self.resolveCode(code: code) }
+                .compactMap { code in
+                    try self.resolveCode(code: code)
                 }
         default:
             return Guarantee().asVoid()
