@@ -152,8 +152,6 @@ class WalletNameViewController: UIViewController {
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-            case TwoFactorCallError.failure(_):
-                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             default:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             }

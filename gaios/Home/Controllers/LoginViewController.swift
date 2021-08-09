@@ -168,8 +168,7 @@ class LoginViewController: UIViewController {
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-            let resolver = try getSession().loginUser(details: ["pin": pin!, "pin_data": pinData!])
-            return resolver.resolve()
+            return try getSession().loginUser(details: ["pin": pin!, "pin_data": pinData!]).resolve()
         }.then { _ -> Promise<Void> in
             if self.account?.network == "liquid" {
                 return Registry.shared.load()
@@ -208,10 +207,8 @@ class LoginViewController: UIViewController {
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             case is AuthenticationTypeHandler.AuthError:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
-            case TwoFactorCallError.failure(let desc):
-                if desc.contains(":login failed:") && withPIN != nil {
-                    self.wrongPin(usingAuth)
-                }
+            case GaError.NotAuthorizedError:
+                self.wrongPin(usingAuth)
             default:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             }
