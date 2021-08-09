@@ -92,7 +92,16 @@ class HWResolver {
                     if isLiquid {
                         return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                     }
-                    return hw.signTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
+                    var txinfo = tx
+                    if let name = hw.info["name"] as? String,
+                       let txhash = tx?["txhash"] as? String,
+                       name == "Ledger" {
+                        txinfo = try getSession().getTransactionDetails(txhash: txhash)
+                    }
+                    return hw.signTransaction(tx: txinfo!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
+                        .compactMap { res in
+                            return ["signatures": res]
+                        }
                 }.subscribe(onNext: { res in
                     if let data = try?  JSONSerialization.data(withJSONObject: res, options: .fragmentsAllowed),
                        let text = String(data: data, encoding: String.Encoding.ascii) {
