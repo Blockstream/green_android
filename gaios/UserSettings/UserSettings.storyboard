@@ -562,10 +562,10 @@
                                                                     <rect key="frame" x="0.0" y="10" width="342" height="60"/>
                                                                     <subviews>
                                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="I8u-Av-Dp0">
-                                                                            <rect key="frame" x="16" y="20" width="241" height="20"/>
+                                                                            <rect key="frame" x="16" y="20" width="32.5" height="21.5"/>
                                                                             <subviews>
                                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A1p-J4-2dh">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="241" height="20"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="32.5" height="21.5"/>
                                                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
                                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                     <nil key="highlightedColor"/>
@@ -578,15 +578,22 @@
                                                                                 <action selector="actionSwitchChanged:" destination="Jfk-sX-1v3" eventType="valueChanged" id="h2M-0L-rdq"/>
                                                                             </connections>
                                                                         </switch>
+                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="si***@gm***" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YWY-lr-piO" userLabel="masked2FA">
+                                                                            <rect key="frame" x="68.5" y="24" width="67" height="13.5"/>
+                                                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                            <nil key="highlightedColor"/>
+                                                                        </label>
                                                                     </subviews>
                                                                     <color key="backgroundColor" name="customModalBlueDark"/>
                                                                     <constraints>
                                                                         <constraint firstItem="I8u-Av-Dp0" firstAttribute="leading" secondItem="H3t-J2-Qkn" secondAttribute="leading" constant="16" id="3d4-jx-3B0"/>
+                                                                        <constraint firstItem="YWY-lr-piO" firstAttribute="centerY" secondItem="A1p-J4-2dh" secondAttribute="centerY" id="Hes-9n-tKd"/>
                                                                         <constraint firstItem="iFa-Yw-jRH" firstAttribute="centerY" secondItem="H3t-J2-Qkn" secondAttribute="centerY" id="J0K-QX-AE6"/>
                                                                         <constraint firstAttribute="trailing" secondItem="iFa-Yw-jRH" secondAttribute="trailing" constant="16" id="U6j-Os-a1I"/>
+                                                                        <constraint firstItem="YWY-lr-piO" firstAttribute="leading" secondItem="A1p-J4-2dh" secondAttribute="trailing" constant="20" id="aSc-It-mag"/>
                                                                         <constraint firstItem="I8u-Av-Dp0" firstAttribute="top" secondItem="H3t-J2-Qkn" secondAttribute="top" constant="20" id="fFw-hL-Hqh"/>
-                                                                        <constraint firstItem="iFa-Yw-jRH" firstAttribute="leading" secondItem="I8u-Av-Dp0" secondAttribute="trailing" constant="20" id="h0k-MR-hD2"/>
-                                                                        <constraint firstAttribute="bottom" secondItem="I8u-Av-Dp0" secondAttribute="bottom" constant="20" id="x8D-gK-Hoc"/>
+                                                                        <constraint firstItem="iFa-Yw-jRH" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="YWY-lr-piO" secondAttribute="trailing" constant="20" id="sqF-iQ-S42"/>
                                                                     </constraints>
                                                                 </view>
                                                             </subviews>
@@ -602,6 +609,7 @@
                                                             <outlet property="actionSwitch" destination="iFa-Yw-jRH" id="rDL-yg-7d8"/>
                                                             <outlet property="bg" destination="H3t-J2-Qkn" id="9en-Pc-Os6"/>
                                                             <outlet property="lblTitle" destination="A1p-J4-2dh" id="xY1-br-Y8o"/>
+                                                            <outlet property="maskedData" destination="YWY-lr-piO" id="Fpa-Kb-aIa"/>
                                                         </connections>
                                                     </tableViewCell>
                                                 </prototypes>

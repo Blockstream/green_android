@@ -80,8 +80,9 @@ struct TwoFactorConfig: Codable {
     }
 }
 
-struct FactorItem {
+struct TwoFactorItem {
     var name: String
     var enabled: Bool
+    var maskedData: String?
     var type: TwoFactorType
 }

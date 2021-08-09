@@ -26,7 +26,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     var newCsv: Int?
     var currentCsv: Int?
 
-    fileprivate var factors = [FactorItem]()
+    fileprivate var factors = [TwoFactorItem]()
     private var connected = true
     private var updateToken: NSObjectProtocol?
     var twoFactorConfig: TwoFactorConfig?
@@ -102,10 +102,10 @@ class TwoFactorAuthenticationViewController: UIViewController {
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         self.twoFactorConfig = twoFactorConfig
         factors.removeAll()
-        factors.append(FactorItem(name: NSLocalizedString("id_email", comment: ""), enabled: twoFactorConfig.email.enabled && twoFactorConfig.email.confirmed, type: .email))
-        factors.append(FactorItem(name: NSLocalizedString("id_sms", comment: ""), enabled: twoFactorConfig.sms.enabled && twoFactorConfig.sms.confirmed, type: .sms))
-        factors.append(FactorItem(name: NSLocalizedString("id_call", comment: ""), enabled: twoFactorConfig.phone.enabled && twoFactorConfig.phone.confirmed, type: .phone))
-        factors.append(FactorItem(name: NSLocalizedString("id_authenticator_app", comment: ""), enabled: twoFactorConfig.gauth.enabled && twoFactorConfig.gauth.confirmed, type: .gauth))
+        factors.append(TwoFactorItem(name: NSLocalizedString("id_email", comment: ""), enabled: twoFactorConfig.email.enabled && twoFactorConfig.email.confirmed, maskedData: twoFactorConfig.email.data ,type: .email))
+        factors.append(TwoFactorItem(name: NSLocalizedString("id_sms", comment: ""), enabled: twoFactorConfig.sms.enabled && twoFactorConfig.sms.confirmed, maskedData: twoFactorConfig.sms.data, type: .sms))
+        factors.append(TwoFactorItem(name: NSLocalizedString("id_call", comment: ""), enabled: twoFactorConfig.phone.enabled && twoFactorConfig.phone.confirmed, maskedData: twoFactorConfig.phone.data,  type: .phone))
+        factors.append(TwoFactorItem(name: NSLocalizedString("id_authenticator_app", comment: ""), enabled: twoFactorConfig.gauth.enabled && twoFactorConfig.gauth.confirmed, type: .gauth))
         tableView2faMethods.reloadData()
         tableViewCsvTime.reloadData()
 
@@ -227,7 +227,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == tableView2faMethods {
-            let item: FactorItem = factors[indexPath.row]
+            let item: TwoFactorItem = factors[indexPath.row]
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TwoFaMethodsCell") as? TwoFaMethodsCell {
                 cell.configure(item)
                 cell.selectionStyle = .none
@@ -257,7 +257,7 @@ extension TwoFactorAuthenticationViewController: UITableViewDataSource, UITableV
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
         if tableView == tableView2faMethods {
-            let selectedFactor: FactorItem = self.factors[indexPath.row]
+            let selectedFactor: TwoFactorItem = self.factors[indexPath.row]
             if selectedFactor.enabled {
                 disable(selectedFactor.type)
                 return

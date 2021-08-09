@@ -5,6 +5,7 @@ class TwoFaMethodsCell: UITableViewCell {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var bg: UIView!
     @IBOutlet weak var actionSwitch: UISwitch!
+    @IBOutlet weak var maskedData: UILabel!
 
     var onActionSwitch: (() -> Void)?
 
@@ -21,11 +22,16 @@ class TwoFaMethodsCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    func configure(_ item: FactorItem, onActionSwitch: (() -> Void)? = nil) {
+    func configure(_ item: TwoFactorItem, onActionSwitch: (() -> Void)? = nil) {
         self.lblTitle.text = item.name
         self.actionSwitch.isOn = item.enabled
         self.actionSwitch.isUserInteractionEnabled = false
         self.onActionSwitch = onActionSwitch
+        if let data = item.maskedData {
+            self.maskedData.text = data
+        } else {
+            self.maskedData.text = ""
+        }
     }
 
     @IBAction func actionSwitchChanged(_ sender: Any) {
