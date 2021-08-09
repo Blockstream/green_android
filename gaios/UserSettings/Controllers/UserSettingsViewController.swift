@@ -115,7 +115,7 @@ class UserSettingsViewController: UIViewController {
 
         }
         let defaultTransactionPriority = UserSettingsItem(
-            title: "Default transaction priority",
+            title: NSLocalizedString("id_default_transaction_priority", comment: ""),
             subtitle: TransactionPriority.getPreference()?.text ?? "",
             section: .general,
             type: .DefaultTransactionPriority)
@@ -129,12 +129,12 @@ class UserSettingsViewController: UIViewController {
         var items = [UserSettingsItem]()
 
         let changePin = UserSettingsItem(
-            title: "Change PIN",
+            title: NSLocalizedString("id_change_pin", comment: ""),
             subtitle: "",
             section: .security,
             type: .ChangePin)
 
-        let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? "Login With \(NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: ""))" : NSLocalizedString("id_touchface_id_not_available", comment: "")
+        let bioTitle = AuthenticationTypeHandler.supportsBiometricAuthentication() ? NSLocalizedString(AuthenticationTypeHandler.biometryType == .faceID ? "id_face_id" : "id_touch_id", comment: "") : NSLocalizedString("id_touchface_id_not_available", comment: "")
         let loginWithBiometrics = UserSettingsItem(
             title: bioTitle,
             subtitle: "",
@@ -163,7 +163,7 @@ class UserSettingsViewController: UIViewController {
         }
 
         let twoFactorAuthentication = UserSettingsItem(
-            title: "2FA authentication",
+            title: NSLocalizedString("id_twofactor_authentication", comment: ""),
             subtitle: "",
             section: .security,
             type: .TwoFactorAuthentication)
@@ -222,7 +222,7 @@ class UserSettingsViewController: UIViewController {
         var items = [UserSettingsItem]()
 
         let backUpRecoveryPhrase = UserSettingsItem(
-            title: "Back Up Recovery Phrase",
+            title: NSLocalizedString("id_back_up_recovery_phrase", comment: ""),
             subtitle: "",
             section: .recovery,
             type: .BackUpRecoveryPhrase)
@@ -241,7 +241,7 @@ class UserSettingsViewController: UIViewController {
                 locktimeRecoveryEnable = notifications.emailOutgoing == true
             }
             let locktimeRecovery = UserSettingsItem(
-                title: "Recovery Transactions",
+                title: NSLocalizedString("id_recovery_transactions", comment: ""),
                 subtitle: locktimeRecoveryEnable ? NSLocalizedString("id_enabled", comment: "") : NSLocalizedString("id_disabled", comment: ""),
                 section: .recovery,
                 type: .RecoveryTransactions)
@@ -593,7 +593,7 @@ extension UserSettingsViewController {
     func showDefaultTransactionPriority() {
         let list = [TransactionPriority.High, TransactionPriority.Medium, TransactionPriority.Low]
         let selected: TransactionPriority? = TransactionPriority.getPreference()
-        let alert = UIAlertController(title: "Default Transaction Priority", message: "", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: NSLocalizedString("id_default_transaction_priority", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: TransactionPriority) in
             alert.addAction(UIAlertAction(title: item.text, style: item == selected ? .destructive : .default) { [weak self] _ in
                 TransactionPriority.setPreference(item)

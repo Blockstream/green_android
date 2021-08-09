@@ -58,7 +58,7 @@ class HWWConnectViewController: UIViewController {
         lblTitle.text = account.name
         btnTryAgain.setTitle("Try Again", for: .normal)
         btnLogin.setTitle(NSLocalizedString("id_login", comment: ""), for: .normal)
-        lblSingleSigWarn.text = "Singlesig wallets are not supported for use with hardware devices yet. By continuing you'll access a Multisig Shield wallet."
+        lblSingleSigWarn.text = "Singlesig wallets are not yet supported for use with hardware devices. By continuing you'll access a Multisig Shield wallet."
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -115,16 +115,16 @@ class HWWConnectViewController: UIViewController {
             lblStateHint.text = "Connecting to your device"
         case .connected:
             showLoader()
-            lblStateHint.text = "Logging in..."
+            lblStateHint.text = NSLocalizedString("id_logging_in", comment: "")
         case .connectFailed:
             hideLoader()
             navigationItem.setHidesBackButton(false, animated: true)
-            lblStateHint.text = "Connection failed."
+            lblStateHint.text = NSLocalizedString("id_connection_failed", comment: "")
             failureCircle.isHidden = false
             btnTryAgain.isHidden = false
         case .selectNetwork:
             hideLoader()
-            lblStateHint.text = "Select a network."
+            lblStateHint.text = NSLocalizedString("id_select_network", comment: "")
             deviceImage.isHidden = true
             tableView.isHidden = false
             singleSigWarnCard.isHidden = false

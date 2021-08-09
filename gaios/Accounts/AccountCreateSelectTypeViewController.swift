@@ -44,18 +44,17 @@ class AccountCreateSelectTypeViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Che tipo di account vuoi aggiungere?"
-
-        lblLegacyTitle.text = "Legacy Account"
-        lblLegacyHint.text = "BIP49 accounts allow you to segregate founds, and to receive on wrapped segwit addresses, thus ensuring the highest backwards compatibility when receiving funds from anyone in the network."
-        lblSegWitTitle.text = "SegWit Account"
-        lblSegWitHint.text = "BIP84 accounts allow you to segregate your founds, and to receive on bech32 native segwit addresses. This account type ensures cheaper transactions when sending funds, but not all services support bech32 addresses yet."
-        lblStandardTitle.text = "Account Standard"
-        lblStandardHint.text = "Gli account standard ti permettono di separare i fondi. Ogni account avrà indirizzi di ricezione separati e muovere fondi fra account richiederà una transazione."
-        lblAmpTitle.text = "AMP Account"
-        lblAmpHint.text = "AMP account are only available on Liquid wallets. You may be required to provide your account ID to issuers to receive an AMP Asset."
-        lbl2of3Title.text = "Account 2of3"
-        lbl2of3Hint.text = "A 2of3 account requires two out of three signatures to spend coins. The third signature is from a backup key known only to you. This gives you the security benefits of a standard account, while still allowing you to move your coins independently at any point in time."
+        lblTitle.text = NSLocalizedString("id_what_type_of_account_would_you", comment: "")
+        lblLegacyTitle.text = NSLocalizedString("id_legacy_account", comment: "")
+        lblLegacyHint.text = NSLocalizedString("id_bip49_accounts_allow_you_to", comment: "")
+        lblSegWitTitle.text = NSLocalizedString("id_segwit_account", comment: "")
+        lblSegWitHint.text = NSLocalizedString("id_bip84_accounts_allow_you_to", comment: "")
+        lblStandardTitle.text = NSLocalizedString("id_standard_account", comment: "")
+        lblStandardHint.text = NSLocalizedString("id_standard_accounts_allow_you_to", comment: "")
+        lblAmpTitle.text = NSLocalizedString("id_amp_account", comment: "")
+        lblAmpHint.text = NSLocalizedString("id_amp_accounts_are_only_available", comment: "")
+        lbl2of3Title.text = NSLocalizedString("id_2of3_account", comment: "")
+        lbl2of3Hint.text = NSLocalizedString("id_a_2of3_account_requires_two_out", comment: "")
     }
 
     func setStyle() {

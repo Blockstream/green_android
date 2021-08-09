@@ -44,17 +44,17 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func setContent() {
-        lblEnable2faTitle.text = "Enable 2FA to protect your wallet from unauthorized transactions or changes to critical security settings"
-        lblEnable2faHint.text = "TIP: We reccomend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you'll have to wait at least one year until 2FA expires"
-        lbl2faMethods.text = "2FA Methods"
-        lbl2faThresholdTitle.text = "2FA Threshold"
-        lbl2faThresholdHint.text = "Spend your bitcoin without 2FA up to a certain threshold. After spending bitcoin up to this amount, you will need to reset your threshold to continue spending without 2FA."
-        lbl2faThresholdCardTitle.text = "2FA Threshold"
-        lbl2faThresholdCardHint.text = "Set 2FA threshold"
-        lbl2faExpiryTitle.text = "2FA Expiry"
-        lbl2faExpiryHint.text = "Customize 2FA expiration of your coins"
-        lblRecoveryTool.text = "Your 2FA expires, so that if you lose access to your 2FA method, or the Blockstream Green service becomes unavailable, you can always recover your bitcoin using this open source tool"
-        btnRecoveryTool.setTitle("Recovery Tool", for: .normal)
+        lblEnable2faTitle.text = NSLocalizedString("id_enable_twofactor_authentication", comment: "")
+        lblEnable2faHint.text = NSLocalizedString("id_tip_we_recommend_you_enable", comment: "")
+        lbl2faMethods.text = NSLocalizedString("id_2fa_methods", comment: "")
+        lbl2faThresholdTitle.text = NSLocalizedString("id_2fa_threshold", comment: "")
+        lbl2faThresholdHint.text = NSLocalizedString("id_spend_your_bitcoin_without_2fa", comment: "")
+        lbl2faThresholdCardTitle.text = NSLocalizedString("id_2fa_threshold", comment: "")
+        lbl2faThresholdCardHint.text = NSLocalizedString("id_set_twofactor_threshold", comment: "")
+        lbl2faExpiryTitle.text = NSLocalizedString("id_2fa_expiry", comment: "")
+        lbl2faExpiryHint.text = NSLocalizedString("id_customize_2fa_expiration_of", comment: "")
+        lblRecoveryTool.text = NSLocalizedString("id_your_2fa_expires_so_that_if_you", comment: "")
+        btnRecoveryTool.setTitle(NSLocalizedString("id_recovery_tool", comment: ""), for: .normal)
     }
 
     func setStyle() {
@@ -102,9 +102,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         self.twoFactorConfig = twoFactorConfig
         factors.removeAll()
-        factors.append(TwoFactorItem(name: NSLocalizedString("id_email", comment: ""), enabled: twoFactorConfig.email.enabled && twoFactorConfig.email.confirmed, maskedData: twoFactorConfig.email.data ,type: .email))
+        factors.append(TwoFactorItem(name: NSLocalizedString("id_email", comment: ""), enabled: twoFactorConfig.email.enabled && twoFactorConfig.email.confirmed, maskedData: twoFactorConfig.email.data, type: .email))
         factors.append(TwoFactorItem(name: NSLocalizedString("id_sms", comment: ""), enabled: twoFactorConfig.sms.enabled && twoFactorConfig.sms.confirmed, maskedData: twoFactorConfig.sms.data, type: .sms))
-        factors.append(TwoFactorItem(name: NSLocalizedString("id_call", comment: ""), enabled: twoFactorConfig.phone.enabled && twoFactorConfig.phone.confirmed, maskedData: twoFactorConfig.phone.data,  type: .phone))
+        factors.append(TwoFactorItem(name: NSLocalizedString("id_call", comment: ""), enabled: twoFactorConfig.phone.enabled && twoFactorConfig.phone.confirmed, maskedData: twoFactorConfig.phone.data, type: .phone))
         factors.append(TwoFactorItem(name: NSLocalizedString("id_authenticator_app", comment: ""), enabled: twoFactorConfig.gauth.enabled && twoFactorConfig.gauth.confirmed, type: .gauth))
         tableView2faMethods.reloadData()
         tableViewCsvTime.reloadData()

@@ -26,11 +26,11 @@ class DialogTorSingleSigViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = "Tor"
-        lblHint.text = "Tor is not available yet for singlesig wallets."
-        lblDontShow.text = "Don't show this again"
+        lblTitle.text = NSLocalizedString("id_tor", comment: "")
+        lblHint.text = NSLocalizedString("id_tor_is_not_yet_available_for", comment: "")
+        lblDontShow.text = NSLocalizedString("id_dont_show_this_again", comment: "")
 
-        btnContinue.setTitle("Continue", for: .normal)
+        btnContinue.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
         btnContinue.cornerRadius = 4.0
         btnContinue.borderWidth = 2.0
         btnContinue.setTitleColor(UIColor.customMatrixGreen(), for: .normal)

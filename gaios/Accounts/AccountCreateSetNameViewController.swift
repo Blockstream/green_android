@@ -28,11 +28,11 @@ class AccountCreateSetNameViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Rivedi le informazioni account"
-        lblHint.text = "Nome account"
-        lblAccountTypeTitle.text = "TIPO DI ACCOUNT"
+        lblTitle.text = NSLocalizedString("id_review_account_information", comment: "")
+        lblHint.text = NSLocalizedString("id_account_name", comment: "")
+        lblAccountTypeTitle.text = NSLocalizedString("id_account_type", comment: "").uppercased()
         lblAccountTypeHint.text = accountType.name
-        btnNext.setTitle("Aggiungi Nuovo Account", for: .normal)
+        btnNext.setTitle(NSLocalizedString("id_add_new_account", comment: ""), for: .normal)
     }
 
     func setStyle() {
