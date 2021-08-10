@@ -1,20 +1,16 @@
 package com.blockstream.green.settings;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.blockstream.green.Preferences;
-import com.blockstream.green.R;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Map;
 import java.util.Set;
-
-import kotlin.io.ConstantsKt;
-
-import static android.content.Context.MODE_PRIVATE;
-import static com.greenaddress.BridgeJava.failHard;
 
 public class MigratorJava {
 

@@ -143,6 +143,7 @@ public class ScanForResultActivity extends AppCompatActivity implements TextureV
     @Override
     public void onRequestPermissionsResult(final int requestCode, final String[] permissions,
                                            final int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             maybeOpenCamera();
         else

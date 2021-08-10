@@ -58,8 +58,6 @@ import static android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_ASSET;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_SUBACCOUNT;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_TX_DETAILS;
-import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
-import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.AUTHORIZED_ACCOUNT;
 
 @AndroidEntryPoint
 public class MainFragment extends GAFragment implements View.OnClickListener, ListTransactionsAdapter.OnTxSelected {
@@ -329,7 +327,7 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
 
             UI.showIf(mSubaccount != null
                     && mSubaccount.getType() != null
-                    && mSubaccount.getType().equals(ACCOUNT_TYPES[AUTHORIZED_ACCOUNT]),
+                    && mSubaccount.getType().equals(AccountType.AMP_ACCOUNT.getGdkType()),
                     mAccountIdCard);
 
         }, (final Throwable e) -> {

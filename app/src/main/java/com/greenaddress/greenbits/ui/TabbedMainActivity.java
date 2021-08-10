@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,18 +21,13 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.AssetManager;
-import com.blockstream.gdk.CacheStatus;
-import com.blockstream.gdk.data.AccountType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.MoreObjects;
 import com.greenaddress.Bridge;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenbits.ui.accounts.SwitchWalletFragment;
-import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 import com.greenaddress.greenbits.ui.notifications.NotificationsActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
@@ -41,17 +35,10 @@ import com.greenaddress.greenbits.ui.transactions.MainFragment;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
-import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.ACCOUNT_TYPES;
-import static com.greenaddress.greenbits.ui.accounts.SubaccountAddFragment.AUTHORIZED_ACCOUNT;
 
 
 @AndroidEntryPoint
@@ -102,14 +89,6 @@ public class TabbedMainActivity extends LoggedActivity  {
 
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.container, new MainFragment()).commit();
-        }
-
-        // Show error if Asset registry is not updated
-        if(getNetwork().getLiquid() && mAssetManager.getStatusLiveData().getValue().getMetadataStatus() == CacheStatus.Empty){
-            final Intent intentError = new Intent();
-            intentError.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intentError.setClass(this, RegistryErrorActivity.class);
-            startActivity(intentError);
         }
     }
 

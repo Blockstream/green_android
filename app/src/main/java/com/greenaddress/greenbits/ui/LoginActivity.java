@@ -1,30 +1,19 @@
 package com.greenaddress.greenbits.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
-import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.data.SettingsData;
-import com.greenaddress.greenbits.ui.assets.RegistryErrorActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import java.util.Locale;
-import java.util.UUID;
-
 import javax.annotation.Nullable;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 
 public abstract class LoginActivity extends GaActivity {

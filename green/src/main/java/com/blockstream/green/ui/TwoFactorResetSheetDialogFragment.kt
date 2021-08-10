@@ -1,21 +1,15 @@
 package com.blockstream.green.ui
 
-import android.content.Intent
 import android.os.Bundle
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemHelpBinding
-import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.items.HelpListItem
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.StringHolder
 import com.greenaddress.Bridge
-import com.greenaddress.greenbits.ui.preferences.ResetActivePreferenceFragment
-import com.greenaddress.greenbits.ui.preferences.SettingsActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
-import io.reactivex.rxjava3.kotlin.subscribeBy
 
 // TODO this could be a WalletBottomSheetDialogFragment in v4
 class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment() {

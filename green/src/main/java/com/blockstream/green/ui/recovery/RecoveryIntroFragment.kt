@@ -1,15 +1,12 @@
 package com.blockstream.green.ui.recovery
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
 import androidx.navigation.NavOptions
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
@@ -18,7 +15,6 @@ import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.handleBiometricsError
 import com.greenaddress.Bridge
-import com.greenaddress.greenbits.ui.preferences.DisplayMnemonicActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

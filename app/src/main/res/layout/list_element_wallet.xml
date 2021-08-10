@@ -70,7 +70,7 @@
                     android:layout_gravity="center_vertical"
                     android:padding="@dimen/button_margin"
                     android:background="@color/hide"
-                    android:tint="@color/white"
+                    app:tint="@color/white"
                     />
 
             </LinearLayout>

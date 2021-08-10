@@ -59,12 +59,6 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <meta-data android:name="useNoActionBar" android:value="true"/>
         </activity>
-
-        <service
-            android:name="com.greenaddress.greenbits.spv.GaService"
-            android:enabled="true"
-            android:exported="false"
-            />
         <activity
             android:name=".assets.AssetsSelectActivity"
             android:screenOrientation="portrait"
@@ -87,47 +81,15 @@
             android:label="@string/id_qr_scanner"
             />
         <activity
-            android:name=".authentication.RequestLoginActivity"
-            android:theme="@style/BitcoinTheme"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
             android:name=".transactions.TransactionActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"
             android:label="@string/id_transaction_details"
             />
-        <activity
-            android:name=".twofactor.TwoFactorActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            android:label="@string/id_1s_twofactor_setup"
-            />
-        <activity
-            android:name=".preferences.SettingsActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/id_settings"
-            android:theme="@style/BitcoinTheme"
-            />
-        <activity
-            android:name=".FailHardActivity"
-            android:theme="@style/BitcoinTheme"
-            />
-        <activity
-            android:name=".receive.ReceiveActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/id_receive"
-            android:theme="@style/BitcoinTheme"
-            android:windowSoftInputMode="stateHidden|adjustPan"/>
         <activity android:name=".send.ScanActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"
             android:label="@string/id_send_to" />
-        <activity
-            android:name=".onboarding.SecurityActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            />
         <activity
             android:name=".send.SendAmountActivity"
             android:label="@string/id_send"
@@ -169,32 +131,12 @@
             android:theme="@style/BitcoinTheme"
             android:label="@string/id_asset"
             />
-        <activity
-            android:name=".assets.RegistryErrorActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            />
-        <activity
-            android:name=".accounts.SubaccountAddActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            android:noHistory="true">
-        </activity>
 
         <activity
             android:name=".accounts.SweepSelectActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"
             android:label="@string/id_sweep"
-            />
-        <activity
-            android:name=".hardwarewallets.DeviceSelectorActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            />
-        <activity
-            android:name=".preferences.CSVTimeActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
             />
 
     </application>
