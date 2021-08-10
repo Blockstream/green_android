@@ -1,4 +1,5 @@
 stages:
+    - format
     - build
     - test
 
@@ -25,6 +26,14 @@ build_tag_release_export:
   script:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --build-gdk --sign-and-export --update-cocoapods --iphone static
+
+test_format:
+  stage: format
+  tags:
+    - fastosx
+    - osx
+  script:
+    - fastlane run swiftlint
 
 build_debug:
   stage: build
