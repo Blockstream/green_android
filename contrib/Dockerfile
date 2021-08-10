@@ -1,7 +1,7 @@
-FROM debian:buster@sha256:2f04d3d33b6027bb74ecc81397abe780649ec89f1a2af18d7022737d0482cefe
+FROM debian:buster@sha256:125ab9ab9718f4dba6c3342407bb1923afce4f6b2a12b3a502d818274db9faf9
 COPY buster_deps.sh /deps.sh
 RUN /deps.sh && rm /deps.sh
 VOLUME /ga
-ENV JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
 ENV ANDROID_HOME=/opt
 CMD cd /ga/app && ./prepare_fdroid.sh && cd /ga && ./gradlew assembleRelease
