@@ -2,7 +2,7 @@
 # Build
 
 build_development:
-  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  image: greenaddress/android@sha256:3dd3e673d8045e9af17bc5bf72585768da12d44b05e2e51aff00ae17229a595d
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
@@ -20,7 +20,7 @@ build_development:
     - ./gradlew assembleDevelopmentRelease
 
 build_production:
-  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  image: greenaddress/android@sha256:3dd3e673d8045e9af17bc5bf72585768da12d44b05e2e51aff00ae17229a595d
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
@@ -47,7 +47,7 @@ build_tag_osx_release:
     - ./gradlew assembleProductionRelease
 
 build_debug:
-  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  image: greenaddress/android@sha256:3dd3e673d8045e9af17bc5bf72585768da12d44b05e2e51aff00ae17229a595d
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
@@ -68,7 +68,7 @@ build_debug:
 # Test
 
 unit_tests:
-  image: greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964
+  image: greenaddress/android@sha256:3dd3e673d8045e9af17bc5bf72585768da12d44b05e2e51aff00ae17229a595d
   stage: test
   needs: []
   tags:

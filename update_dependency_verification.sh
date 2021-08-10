@@ -66,5 +66,5 @@ fi
 if [[ $GRADLE == "local" ]]; then
     ./gradlew --write-verification-metadata sha256 "${TASK}"
 else
-  docker run --rm --name green_dependency_verification -v $PWD:/ga greenaddress/android@sha256:c00c98afd6682d9a8e18917e75d1cfca24fa3b9575a783a9abaec826d8b23964 /bin/sh -c "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
+  docker run --rm --name green_dependency_verification -v $PWD:/ga greenaddress/android@sha256:3dd3e673d8045e9af17bc5bf72585768da12d44b05e2e51aff00ae17229a595d /bin/sh -c "cd /ga && ./gradlew --write-verification-metadata sha256 ${TASK}"
 fi
