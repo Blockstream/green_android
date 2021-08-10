@@ -34,6 +34,7 @@
 "id_add_a_pgp_public_key_to_receive" = "Přidejte veřejný klíč PGP pro přijímání šifrovaných e-mailů a zachování soukromí";
 "id_add_amount" = "Přidat účet";
 "id_add_amount_optional" = "Přidat částku (volitelné)";
+"id_add_an_amp_wallet" = "Přidání AMP peněženky";
 "id_add_another_wallet" = "Přidat další peněženku";
 "id_add_custom_network_by_qr_code" = "Přidat vlastní síť pomocí QR kódu";
 "id_add_custom_network_by_url" = "Přidat vlastní síť pomocí URL adresy";
@@ -44,8 +45,9 @@
 "id_address" = "Adresa";
 "id_address_1s" = "Adresa: %1$@";
 "id_address_copied_to_clipboard" = "Adresa byla zkopírována do schránky";
+"id_address_verified" = "Address verified!";
 "id_addresses" = "Adresy";
-"id_advanced" = "POKROČILÉ";
+"id_advanced" = "Pokročilé";
 "id_advanced_network_settings" = "Pokročilé nastavení sítě";
 "id_all" = "Vše";
 "id_all_of_the_accounts_in_your" = "Před odstraněním musí být všechny účty v peněžence prázdné.";
@@ -81,6 +83,8 @@
 "id_be_sure_your_recovery_phrase_is" = "Před odstraněním této peněženky se ujistěte, že je vaše fráze pro obnovení zálohovaná.";
 "id_biometric_login_is_disabled" = "Biometrické přihlášení je zakázáno";
 "id_biometric_login_is_enabled" = "Biometrické přihlášení je povoleno";
+"id_bip49_accounts_allow_you_to" = "Účty BIP49 umožňují oddělit prostředky a přijímat na zabalených adresách segwit, čímž je zajištěna nejvyšší zpětná kompatibilita při přijímání prostředků od kohokoli v síti.";
+"id_bip84_accounts_allow_you_to" = "Účty BIP84 umožňují oddělit finanční prostředky a přijímat je na nativních adresách bech32 segwit. Tento typ účtu zajišťuje levnější transakce při odesílání prostředků, ale ne všechny služby zatím podporují adresy bech32.";
 "id_bitcoin_denomination" = "Bitcoin denominace";
 "id_bitcoin_electrum_backend" = "Bitcoin Electrum backend";
 "id_bitcoin_is_the_worlds_leading" = "Bitcoin je přední světová P2P kryptoměnová síť. Vyberte pro odesílání a přijímání bitcoinů.";
@@ -110,11 +114,13 @@
 "id_change_address" = "Změnit adresu";
 "id_change_pin" = "Změnit PIN";
 "id_changing_reference_exchange" = "Změnou referenčního směnného kurzu se nastaví prahová hodnota 2FA na 0. Po utrácení nezapomeňte upravit prahovou hodnotu 2FA.";
+"id_check_for_updates_on_startup" = "Kontrola aktualizací při spuštění";
 "id_check_your_backup" = "Zkontrolujte svou zálohu";
 "id_choose" = "Zvolit";
 "id_choose_a_name_for_your_new" = "Zvolte název své nové Blockstream Green peněženky.";
 "id_choose_a_name_for_your_wallet" = "Zvolte název své peněženky";
 "id_choose_method_to_authorize_the" = "Vyberte metodu k autorizaci akce";
+"id_choose_recovery_phrase_length" = "Zvolte délku fráze pro obnovení";
 "id_choose_security_policy" = "Zvolte bezpečnostní politiku";
 "id_choose_the_electrum_servers_you" = "Vyberte servery Electrum, kterým důvěřujete";
 "id_choose_this_version_to_connect" = "Vyberte si tuto verzi pro připojení k vašemu Blockstream Jade pomocí kabelu USB i bezdrátového připojení";
@@ -126,12 +132,14 @@
 "id_click_to_copy" = "Kliknutím zkopírujte";
 "id_click_to_receive_an_email_with" = "Klepnutím sem obdržíte e-mail s šifrovanými daty pro obnovení.";
 "id_code" = "Kód";
+"id_coins" = "Mince";
 "id_coins_locked" = "Mince uzamčeny";
 "id_coins_protected_by_the_legacy" = "Mince chráněné starším skriptem, které lze obnovit pomocí souboru nlocktimes.zip";
 "id_coins_protected_by_the_new" = "Mince chráněné novým skriptem s vloženým vypršením platnosti 2FA prostřednictvím CheckSequenceVerify";
 "id_coins_unlocked" = "Mince jsou odemčené";
 "id_coins_whose_asset_and_amount" = "Mince, jejichž aktivum a částka jsou veřejně viditelné";
 "id_coins_with_a_value_lower_than" = "Mince s hodnotou nižší než 1092 satoshi, které jsou neekonomické utratit; tyto mince může generovat vaše peněženka jako drobné nebo vám je mohou poslat třetí strany, které se pokoušejí spamovat nebo deanonymizovat vaši peněženku.";
+"id_collapse_side_bar" = "Sbalit boční panel";
 "id_communication_timed_out_make" = "Vypršel časový limit komunikace. Ujistěte se, že je zařízení zapnuto a zkuste to znovu.";
 "id_completed" = "Dokončeno";
 "id_confidential" = "Důvěrné";
@@ -155,6 +163,7 @@
 "id_connecting_to_a_trusted_node" = "Připojení k důvěryhodnému uzlu přes Tor vyžaduje povolení monžosti přihlášení přes proxy v aplikaci před přihlášením a v proxy serveru Socks5 (aplikace Orbot pro Android)";
 "id_connecting_to_peers" = "Připojování k uzlům...";
 "id_connecting_to_tor_onion_nodes" = "Připojení k uzlům Tor (.onion) umožňuje maximální soukromí a zabezpečení. Pokračujte stisknutím tlačítka „OK“.";
+"id_connecting_to_your_device" = "Connecting to your device";
 "id_connection" = "Připojení";
 "id_connection_amp_validation" = "Nastavení připojení &amp; ověření";
 "id_connection_failed" = "Připojení se nezdařilo";
@@ -169,6 +178,7 @@
 "id_copy_raw_transaction" = "Kopírovat raw transakci";
 "id_copy_to_clipboard" = "Kopírovat do schránky";
 "id_copy_transaction_id" = "Kopírovat ID transakce";
+"id_copy_unblinded_link" = "Zkopírovat nezaslepený odkaz";
 "id_copy_unblinding_data" = "Kopírovat nezaslepená data";
 "id_copy_uri" = "Kopírovat URI";
 "id_copy_xpub" = "Kopírovat xpub";
@@ -191,6 +201,7 @@
 "id_d_asset_in_this_account" = "%d aktivum v tomto účtu";
 "id_d_assets" = "%d aktiva";
 "id_d_assets_in_this_account" = "%d aktiva v tomto účtu";
+"id_data_directory" = "Datový adresář";
 "id_date" = "Datum";
 "id_day" = "den";
 "id_days" = "dny";
@@ -218,6 +229,7 @@
 "id_domain" = "Doména";
 "id_done" = "Hotovo";
 "id_dont_ask_me_again" = "Znovu se mě neptejte";
+"id_dont_show_this_again" = "Don't show this again";
 "id_dont_store_your_recovery_phrase" = "Neukládejte frázi pro obnovení do telefonu, počítače ani do žádné online služby.";
 "id_dont_take_screenshots_of_your" = "Nedělejte snímky obrazovky s frází pro obnovení!";
 "id_double_check_spv_with_other" = "Znovu zkontrolujte SPV u jiných serverů";
@@ -225,6 +237,7 @@
 "id_double_spend_by" = "Dvojitá útrata od";
 "id_download_finished" = "Stahování bylo dokončeno";
 "id_dust" = "Prach";
+"id_edit" = "Edit";
 "id_email" = "E-mail";
 "id_email_address" = "e-mailová adresa";
 "id_enable" = "Povolit";
@@ -276,6 +289,7 @@
 "id_explore_your_wallet" = "Prozkoumejte svou peněženku";
 "id_export_transactions_to_csv_file" = "Exportovat transakce do souboru CSV";
 "id_face_id" = "Face ID";
+"id_failed_to_load_asset_registry" = "Failed to Load Asset Registry";
 "id_fast" = "Rychle";
 "id_faster_more_confidential" = "Rychlejší a důvěrnější bitcoinové transakce";
 "id_fee" = "Poplatek";
@@ -288,10 +302,12 @@
 "id_fee_s__s" = "Poplatek: %@ / %@";
 "id_fees_are_too_low" = "Poplatky jsou příliš nízké";
 "id_fetching_new_firmware" = "Načítání nového firmwaru";
+"id_filters" = "Filtry";
 "id_finishing_up" = "Dokončování";
 "id_firmware" = "Firmware";
 "id_firmware_update" = "Aktualizace firmware";
 "id_firmware_update_completed" = "Aktualizace firmwaru byla dokončena";
+"id_follow_the_instructions_on_your" = "Follow the instructions on your device.";
 "id_for_investors" = "Pro investory";
 "id_for_long_term_storage" = "Pro dlouhodobou úschovu";
 "id_for_most_users" = "Pro většinu uživatelů";
@@ -333,10 +349,12 @@
 "id_i_lost_my_2fa" = "Ztratil jsem 2FA";
 "id_i_secured_the_mnemonic_and_i" = "Zabezpečil jsem mnemotechnickou frázi a přečetl jsem si Smluvní podmínky";
 "id_i_typed_all_my_recovery_phrase" = "Napsal jsem celou svou frázi pro obnovení, proč nemohu pokračovat?";
+"id_i_understand_amounts_could_be" = "I understand amounts could be incorrect";
 "id_id" = "ID";
 "id_if_you_are_the_rightful_owner" = "Pokud jste oprávněným vlastníkem této peněženky a stále máte jednu z jejích aktivních 2FA, metod zrušte reset, abyste mohli odeslat prostředky a vyprázdnit peněženku.";
-"id_if_you_did_not_request_the" = "Pokud jste o reset nepožádali, ale nemůžete proces resetování zrušit, protože nemáte přístup k žádným existujícím metodám dvoufaktorové autorizace, kontaktujte naši podporu.";
+"id_if_you_did_not_request_the" = "Pokud jste o resetování nepožádali, ale nemůžete proces resetování zrušit, protože nemáte přístup k žádným stávajícím metodám dvoufaktorové autorizace, zpochybněte toto resetování 2FA. Tím dojde k trvalému zablokování vaší peněženky, ale tuto akci můžete vzít zpět.";
 "id_if_you_have_access_to_a" = "Pokud pro tuto peněženku máte přístup k dvoufaktorové metodě, zrušte reset, abyste mohli okamžitě utrácet a přijímat nebo čekat %d dny.";
+"id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to setup an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "Pokud jste spor o resetování 2FA zahájili omylem, můžete jej vrátit zpět a nastavit peněženku zpět do stavu resetování 2FA.";
 "id_import_a_wallet_created_on" = "Importujte peněženku vytvořenou na Blockstream Green.";
 "id_import_a_wallet_created_with" = "Importujte peněženku vytvořenou pomocí jiných aplikací. Tato možnost funguje pouze s peněženkami s jedním podpisem používajícími mnemonické fráze BIP39 s následujícími derivacemi BIP44, BIP49 nebo BIP84.";
@@ -346,6 +364,7 @@
 "id_information_not_available" = "Informace nejsou k dispozici.";
 "id_initialized" = "Inicializováno";
 "id_initializing_tor" = "Inicializace Toru…";
+"id_insert_your_email_to_receive" = "Insert your email to receive 2FA codes to authorize transfers and other operations.";
 "id_install_version_s" = "Instalovat verzi: %@?";
 "id_insufficient_funds" = "Nedostatek finančních prostředků";
 "id_insufficient_lbtc_for_fees" = "Nedostatečný L-BTC pro poplatky";
@@ -364,6 +383,7 @@
 "id_invalid_pin_you_dont_have_any" = "Neplatný kód PIN, nemáte už žádné další pokusy. Přihlaste se prosím pomocí mnemotechnické fráze.";
 "id_invalid_pin_you_have_1d" = "Neplatný PIN, zbývá vám pokusů: %1$d";
 "id_invalid_private_key" = "Neplatný soukromý klíč";
+"id_invalid_recovery_phrase" = "Neplatná fráze pro obnovení";
 "id_invalid_replacement_fee_rate" = "Neplatná sazba náhradního poplatku (RBF)";
 "id_invalid_status_check_that_your" = "Neplatný stav. Zkontrolujte, zda je zařízení odemčeno, a zkuste to znovu.";
 "id_invalid_twofactor_code" = "Neplatný 2-Faktorový kód";
@@ -385,6 +405,7 @@
 "id_ledger_dashboard_detected" = "Ledger Dashboard detekován, otevřete správnou aplikaci pro přístup.";
 "id_ledger_devices" = "Zařízení Ledger";
 "id_ledger_supports_a_limited_set" = "Ledger podporuje omezenou sadu aktiv: klepnutím sem zkontrolujete seznam.";
+"id_legacy_account" = "Starší účet";
 "id_lets_get_you_set_up" = "Pojďme se připravit.";
 "id_liquid_electrum_backend" = "Liquid Electrum backend";
 "id_liquid_is_a_sidechainbased" = "Liquid je síť pro vypořádání založená na postranním řetězci pro obchodníky a burzy, která umožňuje rychlejší a důvěrnější bitcoinové transakce a vydávání digitálních aktiv.";
@@ -400,6 +421,7 @@
 "id_locked_coins_will_not_be_spent" = "Uzamčené mince nebudou utraceny ani zahrnuty do vašeho zůstatku.";
 "id_locking_coins" = "Zamykání mincí";
 "id_locking_coins_can_help_protect" = "Zamykání mincí může pomoci chránit vaše soukromí a ušetřit na transakčních poplatcích. Zamčené mince se odečítají z vašeho zůstatku a nepoužívají se při odesílání transakcí. Mince označené jako prachové můžete uzamknout a odemknout je můžete kdykoli později.";
+"id_log_file" = "Soubor logů";
 "id_log_in" = "Přihlásit se";
 "id_log_in_into_your_s_wallet" = "Přihlaste se do své %@ peněženky";
 "id_log_in_to_your_multisig_shield" = "Přihlaste se do své Multisig Shield pouze-pro-sledování peněženky pomocí uživatelského jména a hesla. Po přihlášení do Multisig Shield peněženky si můžete vytvořit přihlašovací údaje pro peněženku pouze-pro-sledování.";
@@ -447,6 +469,7 @@
 "id_network_configuration" = "Konfigurace sítě";
 "id_network_fee" = "SÍŤOVÉ POPLATKY";
 "id_network_monitor" = "Sledování sítě";
+"id_new_account_created" = "Vytvořen nový účet";
 "id_new_accounts_functionality" = "Nová funkce účtů již brzy!";
 "id_new_fee" = "Nový poplatek";
 "id_new_incoming_transaction_in" = "Nová příchozí transakce na účtu %@ (%@).";
@@ -491,6 +514,7 @@
 "id_onion_addresses_require_tor" = "Onion adresy vyžadují připojení Tor. Povolte jej v nastavení sítě.";
 "id_only_connect_to_trusted_nodes" = "Připojte se pouze k důvěryhodným uzlům pro SPV";
 "id_only_this_time" = "Pouze tentokrát";
+"id_open" = "Otevřít";
 "id_operation_failure" = "Operace selhala";
 "id_optimal_if_you_rarely_spend" = "Optimální, pokud zřídka utratíte mince. Mince peněženky budou vyžadovat dvoufaktorovou reaktivaci každých 455 dní, aby zůstaly chráněny dvoufaktorovou autentizací.";
 "id_optimal_if_you_spend_coins" = "Optimální, pokud utrácíte mince každých 6 měsíců. Mince peněženky budou vyžadovat dvoufaktorovou reaktivaci každých 6 měsíců, aby zůstaly chráněny dvoufaktorovou autentizací.";
@@ -548,6 +572,7 @@
 "id_qr_scanner" = "QR čtečka";
 "id_radio_firmware" = "Rádiový firmware";
 "id_read_more_at_our_s" = "Přečtěte si více na našem %@";
+"id_ready_to_start" = "Ready to start";
 "id_receive" = "Příjmout";
 "id_receive_email_notifications_for" = "Dostávat e-mailová oznámení pro odeslané a přijaté transakce";
 "id_received" = "Přijaté";
@@ -616,6 +641,7 @@
 "id_security_change" = "Změna zabezpečení";
 "id_see_our_privacy_policy_s" = "Přečtěte si naše zásady ochrany osobních údajů %@";
 "id_see_our_terms_of_service_s" = "Přečtěte si naše smluvní podmínky %@";
+"id_segwit_account" = "SegWit účet";
 "id_select_a_fiat_currency_and" = "Vyberte fiat měnu a bitcoinovou denominaci, aby se v peněžence zobrazovaly správné částky";
 "id_select_account" = "Vybrat účet";
 "id_select_an_app_on_s" = "Vyberte aplikaci na %@";
@@ -676,6 +702,7 @@
 "id_signup_in_progress" = "Probíhá registrace";
 "id_simplified_payment_verification" = "Zjednodušené ověření plateb (SPV) ověřuje vaše transakce a zůstatek pomocí bitcoinové sítě mimo servery Green. Povolení přidá požadavky na šířku pásma a zpracování";
 "id_singlesig" = "Singlesig";
+"id_singlesig_wallets_are_not_yet" = "Singlesig wallets are not yet supported for use with hardware devices. By continuing you'll access a Multisig Shield wallet.";
 "id_skip" = "PŘESKOČIT";
 "id_skip_not_recommended" = "Přeskočit (nedoporučuje se)";
 "id_slide_to_send" = "Posuňte k odeslání";
@@ -737,6 +764,7 @@
 "id_the_source_code_is_available_at" = "Zdrojový kód je k dispozici na %@";
 "id_the_transaction_contains" = "Transakce obsahuje nedůvěrné prostředky.";
 "id_the_waiting_period_is_necessary" = "Čekací doba je nezbytná k zajištění bezpečnosti vaší peněženky, aby se zabránilo tomu, že by zloději obcházeli vaši ochranu dvou faktorů.";
+"id_there_are_no_results_for_the" = "Pro použitý filtr nejsou k dispozici žádné výsledky";
 "id_there_is_already_a_pin_set_for" = "Pro %@ peněženku je již nastaven PIN. Pokračování neumožňuje nastavení PIN a přihlášení bude vyžadovat 24 slov mnemotechnické fráze. PIN můžete deaktivovat z nastavení nebo po 3 neúspěšných pokusech.";
 "id_these_are_some_compatible" = "Zde jsou některé kompatibilní peněženky:";
 "id_these_settings_apply_for_every" = "Tato nastavení platí pro každou peněženku, kterou používáte na Blockstream Green.";
@@ -748,8 +776,10 @@
 "id_tip_we_recommend_you_enable" = "Tip: Doporučujeme povolit více než jednu metodu 2FA. Pokud nastavíte pouze jednu metodu 2FA a poté ji ztratíte, budete muset počkat alespoň jeden rok, než platnost 2FA vyprší.";
 "id_to" = "KOMU";
 "id_to_keep_you_in_control_of_your" = "Abyste si udrželi kontrolu nad svými prostředky, vyprší ochrana 2-Faktorové autentizace zhruba po %d dnech od vaší poslední platby. Pokud nepřesunete prostředky dostatečně často, budete vyzváni k provedení transakce dvoufaktorové reaktivace.";
+"id_tor" = "Tor";
 "id_tor_connectivity_disabled" = "Tor připojení zakázáno!";
 "id_tor_is_connected" = "Tor je připojen";
+"id_tor_is_not_yet_available_for" = "Tor is not yet available for singlesig wallets";
 "id_tor_status" = "Stav Toru";
 "id_tor_will_use_1s_and_only_work" = "Tor bude používat %1$@ a funguje, pouze pokud váš proxy server je Orbot nebo Tor povolen";
 "id_total_assets" = "Celková aktiva";
@@ -765,6 +795,7 @@
 "id_transaction_sent" = "Transakce byla odeslána";
 "id_transaction_status" = "Stav transakce";
 "id_transactions" = "Transakce";
+"id_try_again" = "Try Again";
 "id_try_now" = "Vyzkoušet";
 "id_turn_on_bluetooth_to_connect" = "Zapněte bluetooth a připojte hardwarovou peněženku.";
 "id_two_factor_authentication" = "2-FAKTOROVÉ POTVRZENÍ";
@@ -790,12 +821,14 @@
 "id_unlocking_coins" = "Odemykání mincí";
 "id_update" = "Aktualizace";
 "id_updated" = "aktualizováno";
+"id_updating_firmware" = "Updating firmware…";
 "id_uploading_firmware" = "Nahrávání firmwaru";
 "id_use_android_screen_lock_to_log" = "Přihlaste se pomocí zámku obrazovky Android";
 "id_user_not_found_or_invalid" = "Uživatel nebyl nalezen nebo neplatné heslo";
 "id_username" = "Uživatelské jméno";
 "id_username_not_available" = "Uživatelské jméno není dostupné";
 "id_value_must_be_between_144_and" = "Hodnota musí být mezi 144 a 200000";
+"id_verify_on_device" = "Ověřit na zařízení";
 "id_verify_your_pin" = "Ověřte svůj PIN";
 "id_verify_your_transactions_are" = "Ověřte, zda jsou vaše transakce zahrnuty do blockchainu";
 "id_version" = "Verze";
@@ -856,6 +889,7 @@
 "id_you_will_need_to_reenter_your" = "Pokud nenastavíte PIN, budete muset znovu zadat svou mnemotechnickkou frázi a znovu se přihlásit. Pokračujte stisknutím tlačítka „OK“.";
 "id_youll_need_to_back_up_your" = "Než budete moci odesílat nebo přijímat prostředky, budete muset zálohovat frázi pro obnovení, ale zatím si můžete peněženku prohlédnout.";
 "id_youll_need_your_pin_to_log_in" = "K přihlášení do peněženky budete potřebovat PIN. Tento PIN zajišťuje peněženku pouze na tomto zařízení.";
+"id_youll_see_your_coins_here_when" = "Zde uvidíte své mince, jakmile obdržíte finanční prostředky.";
 "id_your_2fa_expires_so_that_if_you" = "Platnost vašeho 2FA vyprší, takže pokud ztratíte přístup ke své metodě 2FA nebo služba Blockstream Green nebude k dispozici, můžete své bitcoiny kdykoli obnovit pomocí tohoto nástroje s otevřeným zdrojovým kódem";
 "id_your_favourite_exchange_rate_is" = "Váš oblíbený směnný kurz není v tuto chvíli k dispozici. Můžete jej změnit z nastavení.";
 "id_your_funds_are_secured_by" = "Vaše prostředky jsou zabezpečeny několika klíči, přičemž jeden klíč je na vašem zařízení a druhý na našich serverech chráněn vaším 2FA. Tuto možnost vyberte pro lepší zabezpečení.";
@@ -869,7 +903,7 @@
 "id_your_twofactor_threshold_is_s" = "Váš 2-Faktorový limit je %@.";
 "id_your_wallet_backup_is_made_of" = "Záloha vaší peněženky se skládá z 24 slov, známých také jako mnemotechnická fráze. Ujistěte se, že máte zálohu a udržujte ji v bezpečí. Každý, kdo ji najde, může ukrást vaše peníze. Můžete ji také použít k obnovení vaší peněženky Blockstream Green na jiném zařízení v případě ztráty, poškození nebo odcizení.";
 "id_your_wallet_is_locked_for_a" = "Vaše peněženka je uzamčena pro resetování dvoufaktorového ověření. Reset bude dokončen za %d dní.";
+"id_your_wallet_is_locked_under_2fa" = "Vaše peněženka je uzamčena v rámci sporu 2FA.";
 "id_your_wallet_is_not_yet_fully" = "Vaše peněženka ještě není zcela zabezpečená.\nAktivujte prosím 2-Faktorové ověřování.";
-"id_your_wallet_locked_under_2fa" = "Vaše peněženka uzamčena v rámci sporu 2FA.";
 "id_your_watchonly_username_and" = "Vaše uživatelské jméno a heslo pro Pouze-pro-sledování bude na tomto zařízení uloženo nešifrované. Pokud je zařízení ohroženo, mohou třetí strany získat přístup k vaší historii transakcí. Pokračujte stisknutím tlačítka „OK“.";
 "id_youve_entered_an_invalid_pin" = "Příliš mnohokrát jste zadali neplatný PIN.\n\nK obnovení této peněženky budete potřebovat frázi pro obnovení.";
