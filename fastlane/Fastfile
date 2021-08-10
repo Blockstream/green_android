@@ -4,6 +4,26 @@
 default_platform(:ios)
 
 platform :ios do
+  desc "Run build debug app"
+  lane :build_debug do
+    cocoapods()
+    fetch_gdk()
+    build_ios_app(
+      configuration: "Debug",
+      scheme: "gaios",
+      workspace: "gaios.xcworkspace",
+      #silent: true,
+      clean: true,
+      output_directory: "./",
+      output_name: "Green-debug.ipa",
+      sdk: "iOS 14.5",
+      skip_build_archive: true,
+      skip_archive: true, 
+      include_bitcode: false,
+      skip_codesigning: true
+    )
+  end
+
   desc "Run UI tests"
   lane :ui_tests do
     run_tests(workspace: "gaios.xcworkspace",

@@ -26,6 +26,14 @@ build_tag_release_export:
     - cd $CI_PROJECT_DIR
     - ./tools/build.sh --build-gdk --sign-and-export --update-cocoapods --iphone static
 
+build_debug:
+  stage: build
+  tags:
+    - fastosx
+    - osx
+  script:
+    - fastlane build_debug
+
 ui_tests:
   stage: test
   tags:
