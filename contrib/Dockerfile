@@ -4,4 +4,4 @@ RUN /deps.sh && rm /deps.sh
 VOLUME /ga
 ENV JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
 ENV ANDROID_HOME=/opt
-CMD cd /ga/app && ./prepare_fdroid.sh && cd /ga && ./gradlew assembleRelease
+CMD cd /ga && ./prepare_fdroid.sh && ./gradlew assembleRelease
