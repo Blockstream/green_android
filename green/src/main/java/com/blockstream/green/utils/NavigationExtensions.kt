@@ -56,7 +56,9 @@ fun <T> Fragment.setNavigationResult(
 @SuppressLint("RestrictedApi")
 fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isLogout: Boolean = false, optionsBuilder: NavOptions.Builder? = null) {
     val navOptionsBuilder = optionsBuilder ?: NavOptions.Builder()
-    val animate = true
+
+    // Don't animate on overview change
+    val animate = !(navController.currentDestination?.id == R.id.overviewFragment && resId == R.id.action_global_overviewFragment)
 
     if (animate) {
         navOptionsBuilder.setEnterAnim(R.anim.nav_enter_anim)
@@ -65,7 +67,7 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
             .setPopExitAnim(R.anim.nav_pop_exit_anim)
     }
 
-    if (isLogout) {
+    if (isLogout || resId == R.id.action_global_overviewFragment) {
         navOptionsBuilder.setPopUpTo(navController.backStack.first.destination.id, true)
         navOptionsBuilder.setLaunchSingleTop(true) // this is only needed on lateral movements
     } else if (resId == R.id.action_global_loginFragment) {

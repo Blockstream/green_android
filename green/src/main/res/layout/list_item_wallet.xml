@@ -17,24 +17,34 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginStart="16dp"
             android:src="@{ExtensionsKt.getIcon(wallet)}"
-            tools:src="@drawable/ic_bitcoin_network_60"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/ic_bitcoin_network_60" />
 
         <ImageView
             android:id="@+id/innerIcon"
-            android:layout_width="13dp"
-            android:layout_height="13dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:src="@drawable/ic_multisig"
-            android:translationX="3dp"
-            android:translationY="3dp"
+            android:translationX="2dp"
+            android:translationY="2dp"
             app:layout_constraintBottom_toBottomOf="@+id/icon"
             app:layout_constraintEnd_toEndOf="@+id/icon" />
+
+        <ImageView
+            android:id="@+id/connectionIcon"
+            android:layout_width="6dp"
+            android:layout_height="6dp"
+            android:alpha="0.75"
+            android:src="@drawable/indicator_dot_filled"
+            app:layout_constraintBottom_toBottomOf="@+id/icon"
+            app:layout_constraintEnd_toStartOf="@+id/icon"
+            app:layout_constraintTop_toTopOf="@+id/icon" />
 
         <TextView
             android:id="@+id/title"

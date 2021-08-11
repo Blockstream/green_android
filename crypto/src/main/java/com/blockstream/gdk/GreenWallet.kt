@@ -10,8 +10,11 @@ import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
 import kotlinx.serialization.json.*
 import java.security.SecureRandom
+import java.util.*
+import kotlin.collections.LinkedHashMap
 import kotlin.random.asKotlinRandom
 
+typealias Balances = LinkedHashMap<String, Long>
 typealias BalanceMap = Map<String, Long>
 typealias BalancePair = Pair<String, Long>
 

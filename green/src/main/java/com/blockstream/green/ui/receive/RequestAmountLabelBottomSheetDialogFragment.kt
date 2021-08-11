@@ -39,7 +39,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
                 try {
                     // Amount is always in BTC value, convert it to user's settings
                     session
-                        .convertAmount(Convert.forUnit("btc", amount))
+                        .convertAmount(Convert.forUnit(session.network.policyAsset, amount))
                         .btc(session, withUnit = false)
                 }catch (e: Exception){
                     e.printStackTrace()

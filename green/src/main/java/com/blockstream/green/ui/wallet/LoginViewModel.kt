@@ -71,6 +71,8 @@ class LoginViewModel @AssistedInject constructor(
      */
     var initialAction = MutableLiveData(false)
 
+    var loginCredentialsInitialized = false
+
     init {
         if (session.isConnected) {
             actionLogin.value = true
@@ -85,6 +87,7 @@ class LoginViewModel @AssistedInject constructor(
                     it.printStackTrace()
                 },
                 onNext = {
+                    loginCredentialsInitialized = true
                     biometricsCredentials.postValue(it.biometrics)
                     keystoreCredentials.postValue(it.keystore)
                     pinCredentials.postValue(it.pin)

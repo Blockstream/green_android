@@ -24,8 +24,10 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.ui.wallet.LoginFragmentDirections
 import com.blockstream.green.utils.*
 import com.google.android.material.snackbar.Snackbar
+import com.greenaddress.Bridge
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.ui.TabbedMainActivity
@@ -118,12 +120,6 @@ abstract class AppFragment<T : ViewDataBinding>(
     @SuppressLint("RestrictedApi")
     fun navigate(@IdRes resId: Int, args: Bundle?, isLogout: Boolean = false, optionsBuilder: NavOptions.Builder? = null) {
         navigate(findNavController(), resId, args, isLogout, optionsBuilder)
-    }
-
-    fun openOverview(){
-        val intent = Intent(requireContext(), TabbedMainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
     }
 
     internal open fun popBackStack(){

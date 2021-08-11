@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.overview.OverviewFragment">
+
+    <data>
+
+        <import type="com.blockstream.green.gdk.ExtensionsKt" />
+
+        <import type="com.blockstream.green.ui.overview.OverviewViewModel.State" />
+
+        <variable
+            name="vm"
+            type="com.blockstream.green.ui.overview.OverviewViewModel" />
+    </data>
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nestedScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        isVisible="@{vm.subAccountLiveData != null}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/fakeAccountCard"
+                            isInvisible="@{vm.subAccounts.size() == 0}"
+                            isGone="@{vm.state == State.Account}"
+                            android:layout_width="match_parent"
+                            android:layout_height="16dp"
+                            android:layout_gravity="bottom|center"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:alpha="0.6"
+                            android:translationY="-8dp"
+                            app:cardBackgroundColor="@{vm.isLiquid ? @color/liquid : vm.isMainnet ? @color/bitcoin : @color/testnet }"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/account">
+
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/account"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:cardBackgroundColor="@{vm.isLiquid ? @color/liquid : vm.isMainnet ? @color/bitcoin : @color/testnet }"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:id="@+id/accountName"
+                                    style="@style/TextShadow"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="8dp"
+                                    android:includeFontPadding="false"
+                                    android:singleLine="true"
+                                    android:ellipsize="end"
+                                    android:text="@{vm.subAccountLiveData.nameOrDefault(@string/id_main_account)}"
+                                    android:textAppearance="?attr/textAppearanceHeadline5"
+                                    app:layout_constraintBottom_toTopOf="@+id/type"
+                                    app:layout_constraintEnd_toStartOf="@+id/buttonAccountMenu"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    tools:text="AccountName" />
+
+                                <ImageButton
+                                    android:id="@+id/buttonAccountMenu"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@android:color/transparent"
+                                    android:src="@drawable/ic_baseline_more_vert_24"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <TextView
+                                    android:id="@+id/type"
+                                    style="@style/TextShadow"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:background="@drawable/transparent_darker_round"
+                                    android:padding="4dp"
+                                    android:text="@{ExtensionsKt.titleRes(vm.subAccountLiveData.type)}"
+                                    android:textAllCaps="true"
+                                    android:textColor="@color/color_on_surface_emphasis_medium"
+                                    android:textSize="10sp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="@+id/accountName"
+                                    app:layout_constraintTop_toBottomOf="@+id/accountName"
+                                    tools:text="2of2" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:paddingBottom="56dp" />
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/brand_black_gradient_top"
+            app:layout_behavior="com.blockstream.green.views.behaviors.ScrollAwareBehavior">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSend"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/brand_surface"
+                android:enabled="@{!vm.isWatchOnly() &amp;&amp; vm.wallet.recoveryPhraseConfirmed}"
+                android:paddingLeft="-12dp"
+                android:text="@string/id_send"
+                app:icon="@drawable/ic_send"
+                app:iconGravity="textStart"
+                app:iconTint="@color/brand_green"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/buttonReceive"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Green.Button.Left" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonReceive"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/brand_surface"
+                android:paddingLeft="-12dp"
+                android:text="@string/id_receive"
+                app:icon="@drawable/ic_receive"
+                app:iconGravity="textStart"
+                app:iconTint="@color/brand_green"
+                app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/buttonSend"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Green.Button.Right" />
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="1dp"
+                android:layout_height="30dp"
+                android:background="@color/color_on_surface_divider"
+                android:translationZ="10dp"
+                app:layout_constraintBottom_toBottomOf="@+id/buttonSend"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/buttonSend" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

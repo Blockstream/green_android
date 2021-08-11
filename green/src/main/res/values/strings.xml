@@ -931,4 +931,16 @@
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.\n\nYou\'ll need your recovery phrase to restore this wallet.</string>
 
   <string name="id_the_recovery_phrase_youve_entered_doesnt_match">The recovery phrase you\'ve entered doesn\'t match the previously existing wallet, please retry with a different recovery phrase.</string>
+
+
+  <string name="id_backend_and_validation">Backend and Validation</string>
+  <string name="id_personal_node">Personal Node</string>
+  <string name="id_spv_validation_is_currently_available">SPV Validation is currently available for singlesig wallets only.</string>
+  <string name="id_double_check_SPV">Double check SPV with other servers</string>
+  <string name="id_multi_server_validation">Multi Server Validation</string>
+  <string name="id_choose_the_electrum_servers_you_trust">Choose the Electrum servers you trust for chain data and SPV</string>
+  <string name="id_verify_your_transactions_are_included">Verify your transactions are included in a block</string>
+
+  <string name="id_issuer_domain">Issuer Domain: %s</string>
+  <string name="id_all_assets">All Assets</string>
 </resources>

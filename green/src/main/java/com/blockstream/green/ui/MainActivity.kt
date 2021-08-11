@@ -47,7 +47,7 @@ class MainActivity : AppActivity() {
         navController = navHostFragment.navController
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.loginFragment, R.id.introFragment),
+            setOf(R.id.overviewFragment, R.id.loginFragment, R.id.introFragment),
             binding.drawerLayout
         )
 

@@ -11,7 +11,8 @@ import com.blockstream.green.databinding.WalletListCommonBinding
 import com.blockstream.DeviceBrand
 import com.blockstream.green.ui.items.DeviceBrandListItem
 import com.blockstream.green.ui.items.WalletListItem
-import com.blockstream.green.utils.observe
+import com.blockstream.green.ui.wallet.LoginFragmentDirections
+import com.blockstream.green.utils.observeList
 import com.greenaddress.Bridge
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -34,8 +35,8 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         binding.vm = viewModel
 
         val softwareWalletsAdapter = FastAdapter.with(ModelAdapter { model: Wallet ->
-            WalletListItem(model)
-        }.observe(viewLifecycleOwner, viewModel.wallets))
+            WalletListItem(model, sessionManager.getWalletSession(model))
+        }.observeList(viewLifecycleOwner, viewModel.wallets))
 
         softwareWalletsAdapter.onClickListener = { _, _, item, _ ->
             navigate(item.wallet)
@@ -75,13 +76,23 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
             navigate(IntroFragmentDirections.actionGlobalAddWalletFragment())
             closeDrawer()
         }
+
+        sessionManager.connectionChangeEvent.observe(viewLifecycleOwner){
+            println("connectionChangeEvent")
+            softwareWalletsAdapter.notifyAdapterDataSetChanged()
+        }
     }
 
     private fun navigate(wallet: Wallet) {
 
         if(Bridge.useGreenModule){
-            if(sessionManager.getWalletSession(wallet).isConnected){
-                // TODO open v4 Overview
+            val walletSession = sessionManager.getWalletSession(wallet)
+
+            // Prevent multiple open sessions
+            sessionManager.disconectSessions(walletSession)
+
+            if(walletSession.isConnected){
+                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(wallet))
             }else{
                 navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
             }

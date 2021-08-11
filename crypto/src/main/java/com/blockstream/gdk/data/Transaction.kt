@@ -1,8 +1,13 @@
 package com.blockstream.gdk.data
 
 import com.blockstream.gdk.serializers.DateSerializer
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.greenaddress.greenapi.data.TransactionData
+import com.greenaddress.greenapi.data.TwoFactorStatusData
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.*
 
 @Serializable
@@ -55,5 +60,15 @@ data class Transaction(
 
     val isIn
         get() = txType == Type.IN
+
+
+    private val objectMapper by lazy { ObjectMapper() }
+
+    fun getTransactionDataV3() : TransactionData {
+        return objectMapper.treeToValue(
+            objectMapper.readTree(Json.encodeToString(this)),
+            TransactionData::class.java
+        )
+    }
 
 }

@@ -29,11 +29,11 @@ data class InputOutput(
     @SerialName("script") val script: String? = null,
     @SerialName("script_type") val scriptType: Int,
 
-    @SerialName("sequence") val sequence: Long,
+    @SerialName("sequence") val sequence: Long? = null,
     @SerialName("subaccount") val subaccount: Int,
     @SerialName("subtype") val subtype: Int,
 
-    @SerialName("txhash") val txhash: String,
+    @SerialName("txhash") val txhash: String? = null,
     @SerialName("service_spub") val serviceXpub: String? = null,
 
     @SerialName("user_path") val userPath: List<Long>? = null,

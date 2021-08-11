@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/rename"
-        android:title="@string/id_rename_wallet" />
+    <group android:id="@+id/group_operations">
 
-    <item
-        android:id="@+id/delete"
-        android:title="@string/id_remove_wallet" />
+        <item
+            android:id="@+id/rename"
+            android:title="@string/id_rename_wallet" />
 
-    <item
-        android:id="@+id/logout"
-        android:title="@string/id_log_out"
-        android:icon="@drawable/ic_close" />
+        <item
+            android:id="@+id/delete"
+            android:title="@string/id_remove_wallet" />
 
-    <item
-        android:id="@+id/settings"
-        android:title="@string/id_settings"
-        android:icon="@drawable/ic_settings" />
+    </group>
+
+    <group android:id="@+id/group_settings">
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/id_settings" />
+    </group>
+
+    <group android:id="@+id/group_logout">
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/ic_close"
+            android:title="@string/id_log_out" />
+    </group>
+
 </menu>

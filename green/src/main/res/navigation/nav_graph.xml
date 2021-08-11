@@ -380,6 +380,34 @@
         app:destination="@id/addWalletFragment"
         />
     <fragment
+        android:id="@+id/overviewFragment"
+        android:name="com.blockstream.green.ui.overview.OverviewFragment"
+        tools:layout="@layout/overview_fragment">
+        <action
+            android:id="@+id/action_overviewFragment_to_assetBottomSheetFragment"
+            app:destination="@id/assetBottomSheetFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_chooseAccountTypeFragment"
+            app:destination="@id/chooseAccountTypeFragment" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <action
+            android:id="@+id/action_overviewFragment_to_settingsNavGraph"
+            app:destination="@id/settings_nav_graph" >
+            <argument
+                android:name="wallet"
+                app:argType="com.blockstream.green.database.Wallet" />
+        </action>
+        <action
+            android:id="@+id/action_overviewFragment_to_receiveFragment"
+            app:destination="@id/receiveFragment" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_overviewFragment"
+        app:destination="@id/overviewFragment" />
+
+    <fragment
         android:id="@+id/chooseWatchOnlyFragment"
         android:name="com.blockstream.green.ui.onboarding.ChooseWatchOnlyFragment"
         android:label=""
@@ -398,6 +426,18 @@
         android:name="com.blockstream.green.ui.settings.AppSettingsDialogFragment"
         android:label=""
         tools:layout="@layout/dialog_app_settings_bottom_sheet" />
+    <dialog
+        android:id="@+id/assetBottomSheetFragment"
+        android:name="com.blockstream.green.ui.overview.AssetBottomSheetFragment"
+        android:label=""
+        tools:layout="@layout/asset_details_bottom_sheet">
+        <argument
+            android:name="assetId"
+            app:argType="string" />
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+    </dialog>
     <dialog
         android:id="@+id/helpBottomSheetDialogFragment"
         android:name="com.blockstream.green.ui.HelpBottomSheetDialogFragment"

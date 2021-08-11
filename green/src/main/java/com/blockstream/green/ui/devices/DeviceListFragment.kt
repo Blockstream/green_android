@@ -25,7 +25,7 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.DeviceListItem
 import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.observe
+import com.blockstream.green.utils.observeList
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.Bridge
@@ -68,7 +68,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 
         val devicesAdapter = ModelAdapter<Device, DeviceListItem>() {
             DeviceListItem(it)
-        }.observe(viewLifecycleOwner, viewModel.devices)
+        }.observeList(viewLifecycleOwner, viewModel.devices)
 
         val fastAdapter = FastAdapter.with(devicesAdapter)
 

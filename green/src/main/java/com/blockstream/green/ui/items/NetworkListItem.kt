@@ -21,7 +21,6 @@ class NetworkListItem(val network: String, val networkName: String, val caption 
         return ViewHolder(v)
     }
 
-
     class ViewHolder(view: View) : FastAdapter.ViewHolder<NetworkListItem>(view) {
         var card: GreenContentCardView = view.findViewById(R.id.card)
 

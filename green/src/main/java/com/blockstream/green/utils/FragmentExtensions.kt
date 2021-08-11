@@ -105,7 +105,7 @@ fun Fragment.dialog(title: Int, message: Int, listener: (() -> Unit)? = null) {
 }
 
 fun Fragment.dialog(title: String, message: String, listener: (() -> Unit)? = null) {
-    MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Green_MaterialAlertDialog)
+    MaterialAlertDialogBuilder(requireContext())
         .setTitle(title)
         .setMessage(message)
         .setPositiveButton(android.R.string.ok, null)

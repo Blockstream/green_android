@@ -37,16 +37,18 @@ fun AccountType?.descriptionRes(): Int = when (this) {
     else -> R.string.id_unknown
 }
 
-fun Asset?.getIcon(context: Context, id: String, session: GreenSession): Drawable? {
-    if (id == session.network.policyAsset) {
+fun String.getAssetIcon(context: Context, session: GreenSession): Drawable {
+    if (this == session.network.policyAsset) {
         return ContextCompat.getDrawable(
             context,
             R.drawable.ic_liquid_bitcoin_60
         )!!
     }
 
-    return session.getAssetDrawableOrDefault(id)
+    return session.getAssetDrawableOrDefault(this)
 }
+
+fun Asset.getIcon(context: Context, session: GreenSession): Drawable = assetId.getAssetIcon(context, session)
 
 fun Network.getIcon(): Int {
     return network.getNetworkIcon()

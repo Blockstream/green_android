@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.Bridge
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.Session
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.HttpRequestHandler
 import com.greenaddress.jade.HttpRequestProvider
 import io.reactivex.rxjava3.core.Observable
@@ -31,6 +30,7 @@ import java.net.URL
 
 
 class GreenSession constructor(
+    private val sessionManager: SessionManager,
     private val settingsManager: SettingsManager,
     private val assetsManager: AssetManager,
     private val greenWallet: GreenWallet
@@ -40,7 +40,8 @@ class GreenSession constructor(
     // Only needed for v3 codebase
     var watchOnlyUsernameBridge: String? = null
 
-    private val balancesSubject = BehaviorSubject.createDefault<List<BalancePair>>(listOf())
+    private val balancesSubject = BehaviorSubject.createDefault<Balances>(linkedMapOf())
+    private val assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
 
     private val subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
     private val blockSubject = BehaviorSubject.create<Block>()
@@ -84,12 +85,13 @@ class GreenSession constructor(
         String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
     }
 
+    fun getAssetsObservable(): Observable<Assets> = assetsSubject.hide()
     fun getSubAccountsObservable(): Observable<List<SubAccount>> = subAccountsSubject.hide()
     fun getTorStatusObservable(): Observable<TORStatus> = torStatusSubject.hide()
     fun getSettingsObservable(): Observable<Settings> = settingsSubject.hide()
     fun getNetworkEventObservable(): Observable<NetworkEvent> = networkSubject.hide()
     fun getTwoFactorResetObservable(): Observable<TwoFactorReset> = twoFactorResetSubject.hide()
-    fun getBalancesObservable(): Observable<List<BalancePair>> = balancesSubject.hide()
+    fun getBalancesObservable(): Observable<Balances> = balancesSubject.hide()
 
     fun getTwoFactorReset(): TwoFactorReset? = twoFactorResetSubject.value
 
@@ -108,14 +110,12 @@ class GreenSession constructor(
         this.network = network
         this.hwWallet = hwWallet
 
-        if(!Bridge.useGreenModule) {
-            // Bridge Session to GDKSession
-            Bridge.bridgeSession(
-                gaSession,
-                network.network,
-                if (isWatchOnly) watchOnlyUsernameBridge else null
-            )
-        }
+        // Bridge Session to GDKSession
+        Bridge.bridgeSession(
+            gaSession,
+            network.network,
+            if (isWatchOnly) watchOnlyUsernameBridge else null
+        )
 
         val applicationSettings = settingsManager.getApplicationSettings()
 
@@ -151,6 +151,10 @@ class GreenSession constructor(
     fun reconnectHint() = greenWallet.reconnectHint(gaSession)
 
     fun disconnect() {
+        if(isConnected){
+            sessionManager.fireConnectionChangeEvent()
+        }
+
         isConnected = false
         hwWallet?.disconnect()
         hwWallet = null
@@ -246,8 +250,7 @@ class GreenSession constructor(
                 ).resolve()
             }
 
-            isConnected = true
-            walletHashId = it.walletHashId
+            onLoginSuccess(it)
         }
     }
 
@@ -264,9 +267,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(username = username, password = password))
         ).result<LoginData>().also {
-            isConnected = true
-            walletHashId = it.walletHashId
-            initializeSessionData()
+            onLoginSuccess(it)
         }
     }
 
@@ -298,9 +299,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = DeviceParams(device))
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
-            isConnected = true
-            walletHashId = it.walletHashId
-            initializeSessionData()
+            onLoginSuccess(it)
         }
     }
 
@@ -316,11 +315,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(mnemonic = mnemonic, password = password))
         ).result<LoginData>().also {
-           isConnected = true
-           walletHashId = it.walletHashId
-
            if(network.isElectrum){
-
                // On Singlesig, check if there is a SegWit account already restored or create one
                val subAccounts = AuthHandler(
                    greenWallet,
@@ -336,7 +331,7 @@ class GreenSession constructor(
                }
            }
 
-           initializeSessionData()
+            onLoginSuccess(it)
         }
     }
 
@@ -348,11 +343,16 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(pin = pin, pinData = pinData))
         ).result<LoginData>().also {
-            isConnected = true
-            walletHashId = it.walletHashId
-
-            initializeSessionData()
+            onLoginSuccess(it)
         }
+    }
+
+    private fun onLoginSuccess(loginData: LoginData){
+        isConnected = true
+        walletHashId = loginData.walletHashId
+        initializeSessionData()
+
+        sessionManager.fireConnectionChangeEvent()
     }
 
     private fun initializeSessionData() {
@@ -451,8 +451,7 @@ class GreenSession constructor(
 
     fun updateSubAccounts() {
         // Electrum Network support only a single account, no need to continue
-        if(network.isElectrum) return
-
+        // if(network.isElectrum) return
 
         observable {
             AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession)).result<SubAccounts>()
@@ -478,13 +477,23 @@ class GreenSession constructor(
         }).addTo(disposables)
     }
 
-    private fun getBalance(params: BalanceParams): List<BalancePair> {
+//    private fun getBalance(params: BalanceParams): List<BalancePair> {
+//        AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve()
+//            .result<BalanceMap>().let { balanceMap ->
+//                return balanceMap.toSortedMap { o1, o2 ->
+//                    if (o1 == network.policyAsset) -1 else o1.compareTo(o2)
+//                }.map { it.toPair() }
+//            }
+//    }
+
+    private fun getBalance(params: BalanceParams): Balances {
         AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve()
             .result<BalanceMap>().let { balanceMap ->
-
-                return balanceMap.toSortedMap { o1, o2 ->
-                    if (o1 == network.policyAsset) -1 else o1.compareTo(o2)
-                }.map { it.toPair() }
+                return LinkedHashMap(
+                    balanceMap.toSortedMap { o1, o2 ->
+                        if (o1 == network.policyAsset) -1 else o1.compareTo(o2)
+                    }
+                )
             }
     }
 
@@ -530,8 +539,13 @@ class GreenSession constructor(
         }
     }
 
+    // TODO implement
+    private fun updateAssets(assets: Assets) {
+        assetsSubject.onNext(assets)
+    }
+
     fun getAsset(assetId : String): Asset? = assetsManager.getAsset(assetId)
-    fun getAssetDrawableOrDefault(assetId : String): Drawable? = assetsManager.getAssetDrawableOrDefault(assetId)
+    fun getAssetDrawableOrDefault(assetId : String): Drawable = assetsManager.getAssetDrawableOrDefault(assetId)
 
     internal fun destroy() {
         disconnect()

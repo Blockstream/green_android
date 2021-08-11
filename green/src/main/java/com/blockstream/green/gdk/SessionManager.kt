@@ -1,9 +1,6 @@
 package com.blockstream.green.gdk
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.*
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
@@ -27,7 +24,6 @@ class SessionManager(
     private val greenWallet: GreenWallet,
     qaTester: QATester
 ) : LifecycleObserver {
-
     private val sessions = mutableMapOf<GASession, GreenSession>()
     private val walletSessions = mutableMapOf<WalletId, GreenSession>()
     private var onBoardingSession: GreenSession? = null
@@ -35,6 +31,10 @@ class SessionManager(
     private var hardwareSessionV3: GreenSession? = null
 
     private var timeoutTimers = mutableListOf<Timer>()
+
+    var connectionChangeEvent = MutableLiveData<Boolean>()
+
+    private val AllowMultipleConnectedSessions = false
 
     init {
 
@@ -69,7 +69,6 @@ class SessionManager(
     }
 
     fun getWalletSession(wallet: Wallet): GreenSession {
-
         // If id == -1 is a hardware wallet connection, we emulate it as currently we don't save the Wallet
         if(wallet.isHardwareEmulated){
             return getHardwareSessionV3()
@@ -154,7 +153,7 @@ class SessionManager(
 
     // Always use this method to create a Session as it keeps track of gaSession & GreenSession
     private fun createSession(): GreenSession {
-        val session = GreenSession(settingsManager, assetManager, greenWallet)
+        val session = GreenSession(this, settingsManager, assetManager, greenWallet)
 
         sessions[session.gaSession] = session
 
@@ -177,6 +176,22 @@ class SessionManager(
                 it.schedule(sessionTimeout) {
                     logger.debug { "Session timeout, disconnecting..." }
                     session.disconnectAsync()
+                }
+            }
+        }
+    }
+
+    fun fireConnectionChangeEvent(){
+        connectionChangeEvent.postValue(true)
+    }
+
+    fun disconectSessions(exception: GreenSession){
+        if(!AllowMultipleConnectedSessions) {
+            for (session in sessions.values) {
+                if (session != exception) {
+                    if (session.isConnected) {
+                        session.disconnectAsync()
+                    }
                 }
             }
         }

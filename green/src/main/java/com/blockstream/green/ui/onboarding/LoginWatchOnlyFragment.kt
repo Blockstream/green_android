@@ -1,5 +1,6 @@
 package com.blockstream.green.ui.onboarding
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -8,8 +9,11 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.LoginWatchOnlyFragmentBinding
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.gdk.getGDKErrorCode
+import com.blockstream.green.ui.wallet.LoginFragmentDirections
 import com.blockstream.green.utils.hideKeyboard
 import com.blockstream.libgreenaddress.KotlinGDK
+import com.greenaddress.Bridge
+import com.greenaddress.greenbits.ui.TabbedMainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,7 +43,14 @@ class LoginWatchOnlyFragment :
         viewModel.newWallet.observe(viewLifecycleOwner) {
             if (it != null) {
                 hideKeyboard()
-                openOverview()
+
+                if(Bridge.useGreenModule) {
+                    navigate(LoginFragmentDirections.actionGlobalOverviewFragment(it))
+                }else{
+                    val intent = Intent(requireContext(), TabbedMainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
             }
         }
     }

@@ -83,14 +83,12 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         viewModel.actionLogin.observe(viewLifecycleOwner) {
             if (it) {
                 if(Bridge.useGreenModule) {
-                    // TODO implement v4
+                    navigate(LoginFragmentDirections.actionGlobalOverviewFragment(viewModel.wallet))
                 }else{
                     val intent = Intent(requireContext(), TabbedMainActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                 }
-            } else {
-                // maybe show the ui?
             }
         }
 
