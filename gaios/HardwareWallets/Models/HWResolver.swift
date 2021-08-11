@@ -33,6 +33,11 @@ class HWResolver {
                 let data = try JSONSerialization.data(withJSONObject: ["public_keys": $0], options: .fragmentsAllowed)
                 return String(data: data, encoding: .utf8)
             }
+        case "get_master_blinding_key":
+            return HWResolver.shared.getMasterBlindingKey().compactMap {
+                let data = try JSONSerialization.data(withJSONObject: ["master_blinding_key": $0], options: .fragmentsAllowed)
+                return String(data: data, encoding: .utf8)
+            }
         default:
             return Promise { $0.reject(GaError.GenericError) }
         }
@@ -146,4 +151,14 @@ class HWResolver {
         return Promise.chain(promises)
     }
 
+    func getMasterBlindingKey() -> Promise<String> {
+        return Promise { seal in
+            _ = self.hw!.getMasterBlindingKey()
+                .subscribe(onNext: { data in
+                    seal.fulfill(data.description)
+                }, onError: { err in
+                    seal.reject(err)
+                })
+        }
+    }
 }

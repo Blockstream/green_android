@@ -163,4 +163,8 @@ final class Ledger: LedgerCommands, HWResolverProtocol {
     func clear() {
         xPubsCached = [String: String]()
     }
+
+    func getMasterBlindingKey() -> Observable<String> {
+        return Observable.error(JadeError.Abort(""))
+    }
 }

@@ -24,7 +24,7 @@ final class Jade: JadeDevice, HWResolverProtocol {
                      supportsLowR: true,
                      supportsLiquid: 1,
                      supportsAntiExfilProtocol: 1,
-                     supportsHostUnblinding: true)
+                     supportsHostUnblinding: false)
         }
     }
     var connected: Bool { get { !self.xPubsCached.isEmpty }}
@@ -720,6 +720,14 @@ extension Jade {
                 var comm = res
                 comm.blindingKey = [UInt8](hexToData(output["public_key"] as? String ?? ""))
                 return comm
+            }
+    }
+
+    func getMasterBlindingKey() -> Observable<String> {
+        return Jade.shared.exchange(method: "get_master_blinding_key", params: [:])
+            .compactMap { res in
+                let result = res["result"] as? String
+                return result ?? ""
             }
     }
 }
