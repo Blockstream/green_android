@@ -671,7 +671,9 @@ extension Jade {
         }
         let commitmentsParams = trustedCommitments.map { comm -> [String: Any]? in
             let data = try? JSONEncoder().encode(comm)
-            return try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
+            var dict = try? JSONSerialization.jsonObject(with: data!) as? [String: Any]
+            dict?["value"] = comm?.value ?? 0
+            return dict
         }
         let params = ["change": changeParams,
                       "network": network,
