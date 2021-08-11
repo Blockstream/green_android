@@ -19,8 +19,12 @@ final class Jade: JadeDevice, HWResolverProtocol {
 
     var device: HWDevice {
         get {
-            HWDevice(name: "Jade", supportsArbitraryScripts: true,
-                 supportsLowR: true, supportsLiquid: 1, supportsAntiExfilProtocol: 1)
+            HWDevice(name: "Jade",
+                     supportsArbitraryScripts: true,
+                     supportsLowR: true,
+                     supportsLiquid: 1,
+                     supportsAntiExfilProtocol: 1,
+                     supportsHostUnblinding: true)
         }
     }
     var connected: Bool { get { !self.xPubsCached.isEmpty }}

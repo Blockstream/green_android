@@ -93,12 +93,11 @@ class HWResolver {
                         return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                     }
                     var txinfo = tx
-                    if let name = hw.info["name"] as? String,
-                       let txhash = tx?["txhash"] as? String,
-                       name == "Ledger" {
+                    if let txhash = tx?["txhash"] as? String,
+                       hw.device.name == "Ledger" {
                         txinfo = try getSession().getTransactionDetails(txhash: txhash)
                     }
-                    return hw.signTransaction(tx: txinfo!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!)
+                    return hw.signTransaction(tx: txinfo!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                         .compactMap { res in
                             return ["signatures": res]
                         }

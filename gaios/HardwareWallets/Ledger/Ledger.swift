@@ -12,8 +12,12 @@ final class Ledger: LedgerCommands, HWResolverProtocol {
 
     var device: HWDevice {
         get {
-            HWDevice(name: "Ledger", supportsArbitraryScripts: true,
-                 supportsLowR: false, supportsLiquid: 0, supportsAntiExfilProtocol: 0)
+            HWDevice(name: "Ledger",
+                     supportsArbitraryScripts: true,
+                     supportsLowR: false,
+                     supportsLiquid: 0,
+                     supportsAntiExfilProtocol: 0,
+                     supportsHostUnblinding: false)
         }
     }
     var connected: Bool { get { !self.xPubsCached.isEmpty }}
