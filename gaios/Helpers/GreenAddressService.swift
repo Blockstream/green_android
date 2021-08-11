@@ -136,7 +136,8 @@ class GreenAddressService {
                 post(event: EventType.Network, data: data)
                 return
             }
-            guard let hw = HWResolver.shared.hw else {
+            let hw: HWProtocol = account?.isLedger ?? false ? Ledger.shared : Jade.shared
+            if !(AccountsManager.shared.current?.isHW ?? false) {
                 // Login required without hw
                 DispatchQueue.main.async {
                     let appDelegate = UIApplication.shared.delegate as? AppDelegate
@@ -165,8 +166,8 @@ class GreenAddressService {
         let bgq = DispatchQueue.global(qos: .background)
         let session = getSession()
         return Guarantee().map(on: bgq) {_ -> TwoFactorCall in
-            guard let info = HWResolver.shared.hw?.device,
-                let data = try? JSONEncoder().encode(info),
+            let info = AccountsManager.shared.current?.isLedger ?? false ? Ledger.shared.device : Jade.shared.device
+            guard let data = try? JSONEncoder().encode(info),
                 let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
                 throw JadeError.Abort("Invalid device configuration")
             }

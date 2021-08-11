@@ -11,7 +11,7 @@ enum JadeError: Error {
     case Declined(_ localizedDescription: String)
 }
 
-final class Jade: JadeDevice, HWResolverProtocol {
+final class Jade: JadeChannel, HWProtocol {
 
     public static let shared = Jade()
     var xPubsCached = [String: String]()
@@ -132,8 +132,6 @@ final class Jade: JadeDevice, HWResolverProtocol {
 
             let sigDer = try sigToDer(sig: Array(sigDecoded))
             let hexSig = sigDer.map { String(format: "%02hhx", $0) }.joined()
-
-            print("signMessage() returning: \(hexSig)")
             return (signature: hexSig, signerCommitment: signerCom)
         }
     }
@@ -158,7 +156,6 @@ final class Jade: JadeDevice, HWResolverProtocol {
         let pathstr: [UInt32] = path.map { UInt32($0) }
         let params = [ "path": pathstr, "network": getNetwork()] as [String: Any]
         return Jade.shared.exchange(method: "get_xpub", params: params)
-            .do(onNext: { print($0) })
             .flatMap { res -> Observable<String> in
                 let xpub = res["result"] as? String
                 self.xPubsCached[key] = xpub
@@ -265,14 +262,12 @@ final class Jade: JadeDevice, HWResolverProtocol {
             .reduce([], accumulator: { result, element in
                 result + [element]
             }).compactMap { signerCommitments in
-                print("signerCommitments \(signerCommitments)")
                 commitments = signerCommitments
             }.flatMap { _ in
                 Observable.concat(signatures)
             }.reduce([], accumulator: { result, element in
                 result + [element]
             }).compactMap { signatures in
-                print("signatures \(signatures)")
                 return (commitments: commitments, signatures: signatures)
             }
     }

@@ -19,7 +19,7 @@ class Address: Codable {
         }
     }
 
-    static func validate(with wallet: WalletItem, hw: HWResolverProtocol, addr: Address, network: String) -> Promise<String> {
+    static func validate(with wallet: WalletItem, hw: HWProtocol, addr: Address, network: String) -> Promise<String> {
         let csv = wallet.type == "2of2"
         let csvBlocks = csv ? addr.subtype ?? 0 : 0
         return Promise { seal in

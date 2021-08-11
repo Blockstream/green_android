@@ -90,7 +90,7 @@ class BLEManager {
     }
 
     func scan() -> Disposable {
-        return manager.scanForPeripherals(withServices: [JadeDevice.SERVICE_UUID, LedgerDeviceBLE.SERVICE_UUID])
+        return manager.scanForPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID])
             .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
             .subscribe(onNext: { p in
                 self.peripherals.removeAll { $0.advertisementData.localName == p.advertisementData.localName }
@@ -125,7 +125,6 @@ class BLEManager {
     }
 
     func connectLedger(_ p: Peripheral, network: String) {
-        HWResolver.shared.hw = Ledger.shared
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         enstablishDispose = p.establishConnection()
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
@@ -155,7 +154,6 @@ class BLEManager {
     }
 
     func connectJade(_ p: Peripheral, network: String) {
-        HWResolver.shared.hw = Jade.shared
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         var hasPin = false
         enstablishDispose = p.establishConnection()
@@ -248,8 +246,8 @@ class BLEManager {
             }
             .flatMap { _ in
                 return Observable<[String: Any]>.create { observer in
-                    guard let info = HWResolver.shared.hw?.device,
-                        let data = try? JSONEncoder().encode(info),
+                    let info = AccountsManager.shared.current?.isLedger ?? false ? Ledger.shared.device : Jade.shared.device
+                    guard let data = try? JSONEncoder().encode(info),
                         let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
                         observer.onError(JadeError.Abort("Invalid device configuration"))
                         return Disposables.create { }

@@ -57,8 +57,10 @@ extension TwoFactorCall {
             // Hardware wallet interface resolver
             if let requiredData = json["required_data"] as? [String: Any],
                 let action = requiredData["action"] as? String,
-                let device = requiredData["device"] as? [String: Any] {
-                return HWResolver.shared.resolveCode(action: action, device: device, requiredData: requiredData).compactMap { code in
+                let device = requiredData["device"] as? [String: Any],
+                let json = try? JSONSerialization.data(withJSONObject: device, options: []),
+                let hwdevice = try? JSONDecoder().decode(HWDevice.self, from: json) {
+                return HWResolver.shared.resolveCode(action: action, device: hwdevice, requiredData: requiredData).compactMap { code in
                         try self.resolveCode(code: code)
                 }
             }

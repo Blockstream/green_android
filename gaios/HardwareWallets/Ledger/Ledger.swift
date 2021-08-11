@@ -3,7 +3,7 @@ import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
 
-final class Ledger: LedgerCommands, HWResolverProtocol {
+final class Ledger: LedgerCommands, HWProtocol {
 
     public static let shared = Ledger()
 

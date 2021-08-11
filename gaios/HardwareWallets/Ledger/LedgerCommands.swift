@@ -3,7 +3,7 @@ import RxSwift
 import RxBluetoothKit
 import CoreBluetooth
 
-class LedgerCommands: LedgerDeviceBLE {
+class LedgerCommands: LedgerChannel {
 
     let CLA_BOLOS: UInt8 = 0xE0
     let INS_GET_VERSION: UInt8 = 0x01

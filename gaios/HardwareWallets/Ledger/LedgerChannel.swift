@@ -5,7 +5,7 @@ import CoreBluetooth
 
 // Communication class with a Ledger device connected using Bluetooth Low Energy (Nano X)
 
-class LedgerDeviceBLE: HWDeviceProtocol {
+class LedgerChannel: HWChannelProtocol {
 
     var peripheral: Peripheral!
     var characteristicWrite: Characteristic?
@@ -131,9 +131,9 @@ class LedgerDeviceBLE: HWDeviceProtocol {
 
     private func setupWrite() -> Observable<Characteristic> {
         return Observable.from(optional: peripheral)
-            .flatMap { $0.discoverServices([LedgerDeviceBLE.SERVICE_UUID]) }.asObservable()
+            .flatMap { $0.discoverServices([LedgerChannel.SERVICE_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
-            .flatMap { $0.discoverCharacteristics([LedgerDeviceBLE.WRITE_CHARACTERISTIC_UUID]) }.asObservable()
+            .flatMap { $0.discoverCharacteristics([LedgerChannel.WRITE_CHARACTERISTIC_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { characteristic -> Observable<Characteristic> in
                 self.characteristicWrite = characteristic
@@ -143,16 +143,16 @@ class LedgerDeviceBLE: HWDeviceProtocol {
 
     private func setupNotify() -> Observable<Characteristic> {
         return Observable.from(optional: peripheral)
-            .flatMap { $0.discoverServices([LedgerDeviceBLE.SERVICE_UUID]) }.asObservable()
+            .flatMap { $0.discoverServices([LedgerChannel.SERVICE_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
-            .flatMap { $0.discoverCharacteristics([LedgerDeviceBLE.NOTIFY_CHARACTERISTIC_UUID]) }.asObservable()
+            .flatMap { $0.discoverCharacteristics([LedgerChannel.NOTIFY_CHARACTERISTIC_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { self.peripheral.discoverDescriptors(for: $0) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { descriptor -> Observable<Characteristic> in
                 // Descriptor
                 print(descriptor.uuid)
-                if descriptor.uuid == LedgerDeviceBLE.CLIENT_CHARACTERISTIC_CONFIG {
+                if descriptor.uuid == LedgerChannel.CLIENT_CHARACTERISTIC_CONFIG {
                     print("descriptor CLIENT_CHARACTERISTIC_CONFIG")
                 }
                 self.characteristicNotify = descriptor.characteristic

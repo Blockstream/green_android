@@ -12,6 +12,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     var gestureTapAccountId: UITapGestureRecognizer?
 
     private var newAddressToken: NSObjectProtocol?
+    private var account = AccountsManager.shared.current
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +34,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
         content.shareButton.setGradient(true)
 
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
+        let isLiquid = account?.gdkNetwork?.liquid ?? false
         content.amountView.isHidden = isLiquid
         content.accountView.isHidden = !(isLiquid && "2of2_no_recovery" == wallet?.type)
         if isLiquid && "2of2_no_recovery" == wallet?.type {
@@ -83,8 +84,8 @@ class ReceiveBtcViewController: KeyboardViewController {
             .done { addr in
                 self.wallet?.receiveAddress = addr.address
                 self.reload()
-                if HWResolver.shared.hw != nil {
-                    if (HWResolver.shared.hw as? Ledger) != nil {
+                if self.account?.isHW ?? false {
+                    if self.account?.isLedger ?? false {
                         //Ledger does not suport address validation
                     } else {
                         self.validate(addr: addr)
@@ -96,9 +97,7 @@ class ReceiveBtcViewController: KeyboardViewController {
     }
 
     func validate(addr: Address) {
-        guard let hw = HWResolver.shared.hw else {
-            return
-        }
+        let hw: HWProtocol = account?.isLedger ?? false ? Ledger.shared : Jade.shared
         firstly {
             DropAlert().info(message: NSLocalizedString("id_please_verify_that_the_address", comment: ""))
             return Guarantee()

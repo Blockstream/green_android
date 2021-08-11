@@ -4,7 +4,7 @@ import RxBluetoothKit
 import CoreBluetooth
 import SwiftCBOR
 
-class JadeDevice: HWDeviceProtocol {
+class JadeChannel: HWChannelProtocol {
 
     var peripheral: Peripheral!
     var characteristicWrite: Characteristic?
@@ -44,19 +44,6 @@ class JadeDevice: HWDeviceProtocol {
             packet["params"] = p
         }
         let encoded: [UInt8] = try! CBOR.encodeAny(packet)
-
-        // manually fix for path array https://github.com/myfreeweb/SwiftCBOR/issues/58
-        /*if let dict = params as? [String: Any], let path = dict["path"] as? [UInt8] {
-            let encodedPath = CBOR.encodeArray(path)
-            let wrongPath = CBOR.encodeByteString(path)
-            let pathName: [UInt8] = [0x70, 0x61, 0x74, 0x68] // path is always an array
-            if let pos = (0..<encoded.count - pathName.count).firstIndex(where: { ind in
-                return [UInt8](encoded[ind..<ind + pathName.count]) == pathName
-            }) {
-                // replace wrong path field with encodedPath
-                encoded = encoded[0..<pos+4] + encodedPath + encoded[pos+4+wrongPath.count..<encoded.count]
-            }
-        }*/
         return Data(encoded)
     }
 
@@ -134,9 +121,9 @@ class JadeDevice: HWDeviceProtocol {
 
     private func setupWrite() -> Observable<Characteristic> {
         return Observable.from(optional: peripheral)
-            .flatMap { $0.discoverServices([JadeDevice.SERVICE_UUID]) }.asObservable()
+            .flatMap { $0.discoverServices([JadeChannel.SERVICE_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
-            .flatMap { $0.discoverCharacteristics([JadeDevice.WRITE_CHARACTERISTIC_UUID]) }.asObservable()
+            .flatMap { $0.discoverCharacteristics([JadeChannel.WRITE_CHARACTERISTIC_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { characteristic -> Observable<Characteristic> in
                 self.characteristicWrite = characteristic
@@ -146,15 +133,15 @@ class JadeDevice: HWDeviceProtocol {
 
     private func setupNotify() -> Observable<Characteristic> {
         return Observable.from(optional: peripheral)
-            .flatMap { $0.discoverServices([JadeDevice.SERVICE_UUID]) }.asObservable()
+            .flatMap { $0.discoverServices([JadeChannel.SERVICE_UUID]) }.asObservable()
             .flatMap { Observable.from($0) }
-            .flatMap { $0.discoverCharacteristics([JadeDevice.CLIENT_CHARACTERISTIC_CONFIG]) }.asObservable()
+            .flatMap { $0.discoverCharacteristics([JadeChannel.CLIENT_CHARACTERISTIC_CONFIG]) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { self.peripheral.discoverDescriptors(for: $0) }.asObservable()
             .flatMap { Observable.from($0) }
             .flatMap { descriptor -> Observable<Characteristic> in
                 // Descriptor
-                if descriptor.uuid == JadeDevice.CLIENT_CHARACTERISTIC_CONFIG {
+                if descriptor.uuid == JadeChannel.CLIENT_CHARACTERISTIC_CONFIG {
                     print("descriptor CLIENT_CHARACTERISTIC_CONFIG")
                 }
                 self.characteristicNotify = descriptor.characteristic

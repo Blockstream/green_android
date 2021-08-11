@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 import RxSwift
 
-protocol HWResolverProtocol {
+protocol HWProtocol {
 
     var device: HWDevice { get }
     var connected: Bool { get }

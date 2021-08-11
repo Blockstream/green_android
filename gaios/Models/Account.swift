@@ -53,6 +53,12 @@ struct Account: Codable, Equatable {
         self.isSingleSig = isSingleSig
     }
 
+    var isHW: Bool {
+        get {
+            return isJade || isLedger
+        }
+    }
+
     var isWatchonly: Bool {
         get {
             return !(username?.isEmpty ?? true)
