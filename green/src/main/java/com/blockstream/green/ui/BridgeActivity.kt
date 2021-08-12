@@ -47,9 +47,6 @@ class BridgeActivity : AppActivity() {
         var extras = intent.extras
 
         graph.startDestination = when {
-            isSettings || isPin -> {
-                R.id.settings_nav_graph
-            }
             isBackupRecovery -> {
                  R.id.recoveryIntroFragment
             }
@@ -58,9 +55,6 @@ class BridgeActivity : AppActivity() {
             }
             isReceive -> {
                  R.id.receiveFragment
-            }
-            isTwoFactorReset || isTwoFactorAuthentication -> {
-                R.id.settings_nav_graph
             }
             else -> graph.startDestination
         }

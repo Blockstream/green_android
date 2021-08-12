@@ -24,6 +24,7 @@ import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.databinding.OverviewFragmentBinding
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
+import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.ui.*
 import com.blockstream.green.ui.items.*
@@ -122,15 +123,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         binding.buttonSend.setOnClickListener {
-
-            val b = viewModel.getBalancesLiveData().value!!
-            val policyAsset = session.network.policyAsset
-            println(policyAsset)
-            println(b)
-            println(b[policyAsset])
-
-            val df = b[policyAsset]
-
             if (viewModel.isLiquid().value == true &&
                 (viewModel.getBalancesLiveData().value?.get(session.network.policyAsset) ?: 0) == 0L
             ){
@@ -269,7 +261,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
             R.id.settings -> {
                 navigate(
-                    OverviewFragmentDirections.actionOverviewFragmentToSettingsNavGraph(wallet)
+                    OverviewFragmentDirections.actionOverviewFragmentToWalletSettingsFragment(wallet)
                 )
                 return true
             }
@@ -385,11 +377,14 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     private fun createOverviewAdapter(): GenericFastAdapter {
         val adapters = mutableListOf<IAdapter<*>>()
 
-        adapters += ModelAdapter<AlertType, AlertListItem>() {
+        adapters += ModelAdapter<AlertType, AlertListItem> {
             AlertListItem(it) { _ ->
-                if (it == AlertType.SETUP_RECOVERY) {
-                    navigate(OverviewFragmentDirections.actionGlobalRecoveryIntroFragment(wallet = wallet))
+                session.getTwoFactorReset()?.let { twoFactorReset ->
+                    TwoFactorResetSheetDialogFragment.newInstance(twoFactorReset).also { dialog ->
+                        dialog.show(childFragmentManager, dialog.toString())
+                    }
                 }
+
             }
         }.observeList(viewLifecycleOwner, viewModel.getNotifications())
 

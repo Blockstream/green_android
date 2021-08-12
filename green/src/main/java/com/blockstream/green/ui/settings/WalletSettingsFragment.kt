@@ -8,6 +8,7 @@ import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -86,7 +87,7 @@ class WalletSettingsFragment :
 
     @Inject
     lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
-    val viewModel: WalletSettingsViewModel by navGraphViewModels(R.id.settings_nav_graph) {
+    val viewModel: WalletSettingsViewModel by viewModels {
         WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
     }
 
@@ -103,26 +104,6 @@ class WalletSettingsFragment :
                 viewModel.updateTwoFactorConfig()
                 clearNavigationResult()
             }
-        }
-
-        if(args.bridgeTwoFactorAuthentication) {
-            navigate(
-                directions = WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFractorAuthenticationFragment(
-                    wallet = wallet
-                ),
-                navOptionsBuilder = NavOptions.Builder()
-                    .setPopUpTo(findNavController().backStack.first.destination.id, true)
-            )
-        } else if (args.bridgeTwoFactorReset) {
-            navigate(
-                directions = WalletSettingsFragmentDirections.actionWalletSettingsFragmentToTwoFactorSetupFragment(
-                    wallet = wallet,
-                    method = TwoFactorMethod.EMAIL,
-                    action = args.bridgeTwoFactorSetupType
-                ),
-                navOptionsBuilder = NavOptions.Builder()
-                    .setPopUpTo(findNavController().backStack.first.destination.id, true)
-            )
         }
 
         binding.vm = viewModel

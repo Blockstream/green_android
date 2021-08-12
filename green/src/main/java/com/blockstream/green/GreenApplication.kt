@@ -177,7 +177,7 @@ class GreenApplication : Application(){
                 Bridge.NavigateType.TWO_FACTOR_UNDO_DISPUTE -> {
                     sessionManager.getWalletSession(gaSession)?.let { session ->
 
-                        GlobalScope.launch {
+                        /*GlobalScope.launch {
 
                             val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
 
@@ -186,7 +186,7 @@ class GreenApplication : Application(){
                                 intent.putExtras(
                                     WalletSettingsFragmentArgs(
                                         wallet = wallet,
-                                        bridgeTwoFactorAuthentication = true,
+                                        twoFactorAuthentication = true,
                                     ).toBundle()
                                 )
                                 intent.action = BridgeActivity.TWO_FACTOR_AUTHENTICATION
@@ -194,8 +194,8 @@ class GreenApplication : Application(){
                                 intent.putExtras(
                                     WalletSettingsFragmentArgs(
                                         wallet = wallet,
-                                        bridgeTwoFactorReset = true,
-                                        bridgeTwoFactorSetupType = when (type) {
+                                        twoFactorReset = true,
+                                        twoFactorSetupType = when (type) {
                                             Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET -> TwoFactorSetupAction.CANCEL
                                             Bridge.NavigateType.TWO_FACTOR_DISPUTE -> TwoFactorSetupAction.DISPUTE
                                             else -> TwoFactorSetupAction.UNDO_DISPUTE
@@ -206,7 +206,7 @@ class GreenApplication : Application(){
                             }
 
                             activity.startActivity(intent)
-                        }
+                        }*/
                     }
                 }
 

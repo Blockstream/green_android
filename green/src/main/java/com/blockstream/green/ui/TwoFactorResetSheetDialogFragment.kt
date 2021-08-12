@@ -1,19 +1,30 @@
 package com.blockstream.green.ui
 
 import android.os.Bundle
+import android.view.View
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
+import com.blockstream.green.data.TwoFactorMethod
+import com.blockstream.green.databinding.HelpBottomSheetBinding
 import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.ui.items.HelpListItem
+import com.blockstream.green.ui.overview.OverviewFragmentDirections
+import com.blockstream.green.ui.settings.TwoFactorSetupAction
 import com.blockstream.green.utils.StringHolder
+import com.blockstream.green.utils.navigate
+import com.blockstream.green.utils.toPixels
+import com.blockstream.green.views.SpaceItemDecoration
 import com.greenaddress.Bridge
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
+import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 
-// TODO this could be a WalletBottomSheetDialogFragment in v4
-class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment() {
-
+class TwoFactorResetSheetDialogFragment : WalletBottomSheetDialogFragment<HelpBottomSheetBinding>(
+    layout = R.layout.help_bottom_sheet
+) {
     private lateinit var twoFactorReset: TwoFactorReset
 
     var cancelItem : HelpListItem? = null
@@ -46,9 +57,25 @@ class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment(
         }
     }
 
-    override fun getTitle() = if(twoFactorReset.isDisputed) getString(R.string.id_2fa_dispute_in_progress) else getString(R.string.id_2fa_reset_in_progress)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun createFastAdapter(): FastAdapter<HelpListItem> {
+        binding.title = if(twoFactorReset.isDisputed) getString(R.string.id_2fa_dispute_in_progress) else getString(R.string.id_2fa_reset_in_progress)
+
+        binding.recycler.apply {
+            layoutManager = LinearLayoutManager(context)
+            itemAnimator = SlideDownAlphaAnimator()
+            adapter = createFastAdapter()
+            addItemDecoration(SpaceItemDecoration(toPixels(24)))
+        }
+
+        binding.buttonClose.setOnClickListener {
+            dismiss()
+        }
+    }
+
+
+    private fun createFastAdapter(): FastAdapter<HelpListItem> {
         val itemAdapter = ItemAdapter<HelpListItem>()
 
         val list = mutableListOf<HelpListItem>()
@@ -103,10 +130,26 @@ class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment(
 
         fastAdapter.addClickListener<ListItemHelpBinding, HelpListItem>({ binding -> binding.button }) { _, _, _, item ->
             if(Bridge.useGreenModule){
-                // TODO implement v4
-                // navigate
-            } else {
+                val twoFactorSetupAction = if(item == cancelItem){
+                    TwoFactorSetupAction.CANCEL
+                }else{
+                    if(twoFactorReset.isDisputed) {
+                        TwoFactorSetupAction.DISPUTE
+                    }else{
+                        TwoFactorSetupAction.UNDO_DISPUTE
+                    }
+                }
 
+                val directions = OverviewFragmentDirections.actionGlobalTwoFactorSetupFragment(
+                    wallet = viewModel.wallet,
+                    method = TwoFactorMethod.EMAIL,
+                    action = twoFactorSetupAction
+                )
+
+                navigate(findNavController(), directions.actionId, directions.arguments, false)
+
+                dismiss()
+            } else {
                 if(item == cancelItem){
                     Bridge.twoFactorCancelReset(requireActivity())
                 }else{

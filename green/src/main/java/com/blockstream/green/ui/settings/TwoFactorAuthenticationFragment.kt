@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.blockstream.gdk.data.Settings
@@ -62,7 +63,7 @@ class TwoFactorAuthenticationFragment :
 
     @Inject
     lateinit var viewModelFactory: WalletSettingsViewModel.AssistedFactory
-    val viewModel: WalletSettingsViewModel by navGraphViewModels(R.id.settings_nav_graph) {
+    val viewModel: WalletSettingsViewModel by viewModels {
         WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
     }
 

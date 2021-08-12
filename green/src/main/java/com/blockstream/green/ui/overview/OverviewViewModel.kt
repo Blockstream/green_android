@@ -7,6 +7,7 @@ import com.blockstream.gdk.*
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.data.Transactions
+import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -69,11 +70,7 @@ class OverviewViewModel @AssistedInject constructor(
         subAccounts.postValue(filterSubAccounts(newValue))
     }
 
-    var balanceDisposable : Disposable? = null
-
     init {
-        updateNotifications()
-
         updateBalance()
         updateTransactions()
 
@@ -107,24 +104,24 @@ class OverviewViewModel @AssistedInject constructor(
                 }
             }?.addTo(disposables)
 
-    }
-
-    override fun walletUpdated() {
-        updateNotifications()
+        session
+            .getTwoFactorResetObservable()
+            .subscribe {
+                if (it.isActive){
+                    val list = mutableListOf<AlertType>()
+                    if(it.isDisputed){
+                        list += AlertType.Dispute2FA()
+                    }else{
+                        list += AlertType.Reset2FA(4)
+                    }
+                    notifications.postValue(list)
+                }
+            }.addTo(disposables)
     }
 
     fun refresh(){
         session.updateSubAccounts()
         updateBalance()
-    }
-
-    private fun updateNotifications(){
-        val list = mutableListOf<AlertType>()
-        if(!wallet.isRecoveryPhraseConfirmed){
-            list += AlertType.SETUP_RECOVERY
-        }
-
-        notifications.postValue(list)
     }
 
     private fun updateTransactions(){

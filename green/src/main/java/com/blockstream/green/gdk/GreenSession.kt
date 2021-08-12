@@ -63,6 +63,9 @@ class GreenSession constructor(
     val networks
         get() = greenWallet.networks
 
+    val policyAsset
+        get() = network.policyAsset
+
     val isLiquid
         get() = network.isLiquid
 
@@ -475,21 +478,12 @@ class GreenSession constructor(
         }).addTo(disposables)
     }
 
-//    private fun getBalance(params: BalanceParams): List<BalancePair> {
-//        AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve()
-//            .result<BalanceMap>().let { balanceMap ->
-//                return balanceMap.toSortedMap { o1, o2 ->
-//                    if (o1 == network.policyAsset) -1 else o1.compareTo(o2)
-//                }.map { it.toPair() }
-//            }
-//    }
-
     private fun getBalance(params: BalanceParams): Balances {
         AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve()
             .result<BalanceMap>().let { balanceMap ->
                 return LinkedHashMap(
                     balanceMap.toSortedMap { o1, o2 ->
-                        if (o1 == network.policyAsset) -1 else o1.compareTo(o2)
+                        if (o1 == policyAsset) -1 else o1.compareTo(o2)
                     }
                 )
             }
