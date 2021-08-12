@@ -175,9 +175,9 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 
     private fun navigateToDevice(device: Device){
 
-        if(Bridge.useGreenModule){
-            navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
-        }else{
+
+        //    navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
+
             // navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
             navigate(DeviceListFragmentDirections.actionDeviceListFragmentToDeviceInfoFragment(deviceId = device.id))
 //            Bridge.bridgeSession(sessionManager.getHardwareSessionV3().gaSession, "mainnet",null)
@@ -194,7 +194,6 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 //            }
 
 //            startActivity(intent)
-        }
     }
 
     companion object : KLogging(){

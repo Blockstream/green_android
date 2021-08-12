@@ -148,6 +148,9 @@
         <action
             android:id="@+id/action_chooseSecurityFragment_to_chooseRecoveryPhraseFragment"
             app:destination="@id/chooseRecoveryPhraseFragment" />
+        <action
+            android:id="@+id/action_chooseSecurityFragment_to_recoveryIntroFragment"
+            app:destination="@id/recoveryIntroFragment" />
     </fragment>
     <fragment
         android:id="@+id/restoreWalletFragment"

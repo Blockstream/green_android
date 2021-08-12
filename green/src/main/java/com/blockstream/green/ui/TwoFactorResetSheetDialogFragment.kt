@@ -32,7 +32,7 @@ class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(!Bridge.useGreenModule) {
+        if(Bridge.appModuleInUse) {
             setStyle(
                 STYLE_NORMAL,
                 R.style.Green_BottomSheetDialogTheme

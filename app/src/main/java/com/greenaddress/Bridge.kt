@@ -30,6 +30,7 @@ import java.util.*
 object Bridge {
     private lateinit var context: WeakReference<Context>
 
+    const val appModuleInUse = true
     const val useGreenModule = true
     
     var isDevelopmentFlavor = false

@@ -42,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
 
             // Only allow this if we use v3 codebase
             // In v4 we use proper async code
-            if (!Bridge.useGreenModule) {
+            if (Bridge.appModuleInUse) {
                 builder.allowMainThreadQueries()
             }
 

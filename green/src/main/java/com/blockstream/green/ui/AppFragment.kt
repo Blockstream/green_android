@@ -2,7 +2,6 @@ package com.blockstream.green.ui
 
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
@@ -17,21 +16,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.blockstream.DeviceBrand
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.wallet.LoginFragmentDirections
-import com.blockstream.green.utils.*
+import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.navigate
+import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
-import com.greenaddress.Bridge
-import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.greenapi.HWWalletBridge
-import com.greenaddress.greenbits.ui.TabbedMainActivity
-import io.reactivex.Single
 import mu.KLogging
 import javax.inject.Inject
 

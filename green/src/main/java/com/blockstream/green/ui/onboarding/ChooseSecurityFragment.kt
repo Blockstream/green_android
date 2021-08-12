@@ -67,7 +67,7 @@ class ChooseSecurityFragment :
             )
         } else {
             navigate(
-                ChooseSecurityFragmentDirections.actionGlobalRecoveryIntroFragment(
+                ChooseSecurityFragmentDirections.actionChooseSecurityFragmentToRecoveryIntroFragment(
                     wallet = null,
                     onboardingOptions = options,
                     mnemonic = greenWallet.generateMnemonic12()

@@ -57,8 +57,8 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
     }
 
     private fun navigateToWords(){
-        // prototype or onboarding
-        if (Bridge.useGreenModule || args.wallet == null){
+        // Onboarding
+        if (args.wallet == null){
             navigate(
                 RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
                     wallet = args.wallet,
