@@ -31,8 +31,6 @@ class SettingsViewController: UIViewController {
         tableView.dataSource = self
         tableView.estimatedRowHeight = 75
         tableView.rowHeight = 75
-
-        view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -437,11 +435,9 @@ extension SettingsViewController {
         let alert = UIAlertController(title: NSLocalizedString("id_set_up_watchonly", comment: ""), message: NSLocalizedString("id_allows_you_to_quickly_check", comment: ""), preferredStyle: .alert)
         alert.addTextField { (textField) in
             textField.placeholder = NSLocalizedString("id_username", comment: "")
-            textField.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.usernameField
         }
         alert.addTextField { (textField) in
             textField.placeholder = NSLocalizedString("id_password", comment: "")
-            textField.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.passwordField
         }
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in

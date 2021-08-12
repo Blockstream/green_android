@@ -30,6 +30,7 @@ class UserSettingsViewController: UIViewController {
         title = NSLocalizedString("id_settings", comment: "")
         let btn = UIBarButtonItem(image: UIImage(named: "cancel")?.maskWithColor(color: .white), style: .plain, target: self, action: #selector(self.close))
         self.navigationItem.rightBarButtonItem  = btn
+        view.accessibilityIdentifier = AccessibilityIdentifiers.SettingsScreen.view
     }
 
     @objc func close() {
