@@ -16,12 +16,7 @@ class PinUITests: XCTestBase {
         Settings()
             .pause(1)
             .tapSetupPin()
-        
-        ScreenLock()
-            .pause(1)
-            .tapPinLbl()
-            .pause(1)
-        
+
         SetPin()
             .pause(1)
             .setPin2()
@@ -48,12 +43,7 @@ class PinUITests: XCTestBase {
         Settings()
             .pause(1)
             .tapSetupPin()
-        
-        ScreenLock()
-            .pause(1)
-            .tapPinLbl()
-            .pause(1)
-        
+
         SetPin()
             .pause(1)
             .setPin()

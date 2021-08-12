@@ -22,7 +22,6 @@
 		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
 		09377B7221794A4B00C4E347 /* TwoFactorLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */; };
 		09546B332165EB3A009BABFE /* SetGauthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B322165EB3A009BABFE /* SetGauthViewController.swift */; };
-		09546B3721686053009BABFE /* ScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B3621686053009BABFE /* ScreenLockViewController.swift */; };
 		09546B39216D79B4009BABFE /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */; };
 		095967A6215DFC100087FC02 /* EnableTwoFactorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */; };
 		098192832176D05500D8434F /* EventWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098192822176D05500D8434F /* EventWindow.swift */; };
@@ -86,7 +85,6 @@
 		3451428726933C6E00E8BE1B /* SendBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428626933C6E00E8BE1B /* SendBtc.swift */; };
 		345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142882693445000E8BE1B /* SendBtcDetails.swift */; };
 		3452E6002696E2F4003F3FAA /* ChangePinUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */; };
-		3452E6022696E756003F3FAA /* ScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452E6012696E756003F3FAA /* ScreenLock.swift */; };
 		3453C73626A5A1A100451FB3 /* DrawerMenuUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */; };
 		3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C73726A5A41A00451FB3 /* Drawer.swift */; };
 		3453C74226A6BD7E00451FB3 /* HWWScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3453C74126A6BD7E00451FB3 /* HWWScan.swift */; };
@@ -217,7 +215,6 @@
 		81286117222212C7005598D3 /* SetPhoneView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286116222212C7005598D3 /* SetPhoneView.xib */; };
 		81286119222212DB005598D3 /* SetGauthView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286118222212DB005598D3 /* SetGauthView.xib */; };
 		8128611F22221326005598D3 /* TwoFactorLimitView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8128611E22221326005598D3 /* TwoFactorLimitView.xib */; };
-		8128612122221347005598D3 /* ScreenLockView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8128612022221347005598D3 /* ScreenLockView.xib */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		815431962445C0EE00EE34DB /* JadeDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeDevice.swift */; };
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
@@ -325,7 +322,6 @@
 		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
 		09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoFactorLimitViewController.swift; sourceTree = "<group>"; };
 		09546B322165EB3A009BABFE /* SetGauthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetGauthViewController.swift; sourceTree = "<group>"; };
-		09546B3621686053009BABFE /* ScreenLockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockViewController.swift; sourceTree = "<group>"; };
 		09546B38216D79B4009BABFE /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
 		095967A5215DFC100087FC02 /* EnableTwoFactorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnableTwoFactorViewController.swift; sourceTree = "<group>"; };
 		098192822176D05500D8434F /* EventWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventWindow.swift; sourceTree = "<group>"; };
@@ -393,7 +389,6 @@
 		3451428626933C6E00E8BE1B /* SendBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtc.swift; sourceTree = "<group>"; };
 		345142882693445000E8BE1B /* SendBtcDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetails.swift; sourceTree = "<group>"; };
 		3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePinUITests.swift; sourceTree = "<group>"; };
-		3452E6012696E756003F3FAA /* ScreenLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLock.swift; sourceTree = "<group>"; };
 		3453C73526A5A1A100451FB3 /* DrawerMenuUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerMenuUITests.swift; sourceTree = "<group>"; };
 		3453C73726A5A41A00451FB3 /* Drawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Drawer.swift; sourceTree = "<group>"; };
 		3453C74126A6BD7E00451FB3 /* HWWScan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWWScan.swift; sourceTree = "<group>"; };
@@ -535,7 +530,6 @@
 		81286116222212C7005598D3 /* SetPhoneView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetPhoneView.xib; sourceTree = "<group>"; };
 		81286118222212DB005598D3 /* SetGauthView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetGauthView.xib; sourceTree = "<group>"; };
 		8128611E22221326005598D3 /* TwoFactorLimitView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TwoFactorLimitView.xib; sourceTree = "<group>"; };
-		8128612022221347005598D3 /* ScreenLockView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ScreenLockView.xib; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDevice.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
@@ -729,7 +723,6 @@
 				3451428626933C6E00E8BE1B /* SendBtc.swift */,
 				345142882693445000E8BE1B /* SendBtcDetails.swift */,
 				34767E0D269439F4005F938B /* SendBtcConfirmation.swift */,
-				3452E6012696E756003F3FAA /* ScreenLock.swift */,
 				20516D032693969B00BA1F4C /* DialogWalletRename.swift */,
 				3412133D269EFC2D00CC8112 /* Accounts.swift */,
 				3412136726A07A6A00CC8112 /* AccountCreateSelectType.swift */,
@@ -1217,8 +1210,6 @@
 				09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */,
 				8128611E22221326005598D3 /* TwoFactorLimitView.xib */,
 				09377B7121794A4B00C4E347 /* TwoFactorLimitViewController.swift */,
-				8128612022221347005598D3 /* ScreenLockView.xib */,
-				09546B3621686053009BABFE /* ScreenLockViewController.swift */,
 				093544D5212E844400134235 /* CurrencySelectorViewController.swift */,
 				093544D7212E86DF00134235 /* CurrencyCell.swift */,
 				81837787224E6C8D00DC0FB1 /* PgpView.xib */,
@@ -1589,7 +1580,6 @@
 				3403BDA82630281600118C64 /* AlertCardCell.xib in Resources */,
 				3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */,
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
-				8128612122221347005598D3 /* ScreenLockView.xib in Resources */,
 				092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */,
 				8128611F22221326005598D3 /* TwoFactorLimitView.xib in Resources */,
 				81A8EBC82224524A00F5C577 /* SystemMessageView.xib in Resources */,
@@ -1778,7 +1768,6 @@
 				345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */,
 				09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */,
 				6D565ED122C2E50900C20786 /* TransactionStatusTableCell.swift in Sources */,
-				09546B3721686053009BABFE /* ScreenLockViewController.swift in Sources */,
 				6D0B3DBE23A0611200C0E1C2 /* AccountTypeCell.swift in Sources */,
 				81E0B4D1255316AC001C8544 /* LiquidHWResult.swift in Sources */,
 				345E1A82261EE6CD00A1D934 /* DrawerAnimator.swift in Sources */,
@@ -1942,7 +1931,6 @@
 				34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */,
 				34767E0E269439F4005F938B /* SendBtcConfirmation.swift in Sources */,
 				344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */,
-				3452E6022696E756003F3FAA /* ScreenLock.swift in Sources */,
 				3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */,
 				34C978A8268DC14D0061264D /* Extensions.swift in Sources */,
 				345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */,

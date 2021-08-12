@@ -175,11 +175,6 @@ struct AccessibilityIdentifiers {
         static let slidingBtn = "sliding_btn"
     }
     
-    struct ScreenLockScreen {
-        static let view = "view_screen_lock"
-        static let pinLbl = "pin_lbl"
-    }
-    
     struct AccountsScreen {
         static let view = "view_accounts"
         static let footerMessage = "footer_message"

@@ -87,7 +87,6 @@
                     <connections>
                         <outlet property="tableView" destination="RgQ-We-fCV" id="ELF-Mo-vJZ"/>
                         <segue destination="icX-EB-pPg" kind="show" identifier="currency" id="ykL-1Y-ylN"/>
-                        <segue destination="Mdg-Pq-8TV" kind="show" identifier="screenLock" id="CQp-9A-bFE"/>
                         <segue destination="Iqe-bb-Dln" kind="show" identifier="twoFactorLimit" id="cKq-4n-8Je"/>
                         <segue destination="Lpg-sH-ks3" kind="show" identifier="pgp" id="8fb-Zo-jH0"/>
                         <segue destination="XeE-HA-893" kind="show" identifier="setupTwoFactor" id="PwA-VM-nme"/>
@@ -285,36 +284,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Zcr-cU-j7Y" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10918" y="-2344"/>
-        </scene>
-        <!--SetPinViewController-->
-        <scene sceneID="qkd-mw-akg">
-            <objects>
-                <viewControllerPlaceholder storyboardName="OnBoard" referencedIdentifier="SetPinViewController" id="UGe-RO-53v" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="DXG-2w-Wzo"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="2TX-6y-NOW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6628" y="-2853"/>
-        </scene>
-        <!--Screen Lock-->
-        <scene sceneID="bVO-H3-bkn">
-            <objects>
-                <viewController title="Screen Lock" hidesBottomBarWhenPushed="YES" id="Mdg-Pq-8TV" customClass="ScreenLockViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="uWN-wv-UEr" customClass="ScreenLockView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="0Pk-Nw-Hkm"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="65b-Vb-Mcx"/>
-                    <connections>
-                        <outlet property="content" destination="uWN-wv-UEr" id="Q6u-uk-ZOf"/>
-                        <segue destination="UGe-RO-53v" kind="show" identifier="restorePin" id="LnU-iF-lX4"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cKn-KM-QAN" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6604" y="-2343"/>
         </scene>
         <!--Two-Factor treshold-->
         <scene sceneID="IbR-hm-WK3">

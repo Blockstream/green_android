@@ -43,7 +43,7 @@ class Settings: Screen {
     
     @discardableResult
     func tapSetupPin(connectionTimeout: TimeInterval = 25) -> Self {
-        app.otherElements[AccessibilityIdentifiers.SettingsScreen.view].tables.element(boundBy: 0).cells.element(boundBy: 0).tap()
+        app.otherElements[AccessibilityIdentifiers.SettingsScreen.view].tables.element(boundBy: 0).cells.element(boundBy: 5).tap()
         return self
     }
 }
