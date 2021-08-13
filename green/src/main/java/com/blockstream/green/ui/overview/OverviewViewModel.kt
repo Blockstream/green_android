@@ -7,7 +7,6 @@ import com.blockstream.gdk.*
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.data.Transactions
-import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -15,12 +14,10 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.kotlin.addTo
 import kotlin.properties.Delegates
 
@@ -44,12 +41,12 @@ class OverviewViewModel @AssistedInject constructor(
     private val subAccounts: MutableLiveData<List<SubAccount>> = MutableLiveData()
     fun getSubAccounts(): LiveData<List<SubAccount>> = subAccounts
 
-    private var allBalances: Balances = linkedMapOf()
-    private val balances: MutableLiveData<Balances> = MutableLiveData(linkedMapOf())
+    private var allBalances: Balances = linkedMapOf(BalanceLoading)
+    private val balances: MutableLiveData<Balances> = MutableLiveData(allBalances)
     fun getBalancesLiveData(): LiveData<Balances> = balances
 
-    private val notifications = MutableLiveData<List<AlertType>>(listOf())
-    fun getNotifications(): LiveData<List<AlertType>> = notifications
+    private val alerts = MutableLiveData<List<AlertType>>(listOf())
+    fun getAlerts(): LiveData<List<AlertType>> = alerts
 
     val balancesLoading = MutableLiveData(false)
 
@@ -114,14 +111,13 @@ class OverviewViewModel @AssistedInject constructor(
                     }else{
                         list += AlertType.Reset2FA(4)
                     }
-                    notifications.postValue(list)
+                    alerts.postValue(list)
                 }
             }.addTo(disposables)
     }
 
     fun refresh(){
         session.updateSubAccounts()
-        updateBalance()
     }
 
     private fun updateTransactions(){
@@ -135,6 +131,8 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     private fun updateBalance() {
+        allBalances = linkedMapOf(BalanceLoading)
+        balances.postValue(allBalances)
         session.updateBalance(wallet.activeAccount)
 
 //        session.observable {

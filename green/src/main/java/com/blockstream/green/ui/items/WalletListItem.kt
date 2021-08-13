@@ -13,6 +13,10 @@ class WalletListItem(val wallet: Wallet, val greenSession: GreenSession) : Abstr
     override val type: Int
         get() = R.id.fastadapter_wallet_item_id
 
+    init {
+        identifier = wallet.id
+    }
+
     override fun bindView(binding: ListItemWalletBinding, payloads: List<Any>) {
         binding.wallet = wallet
         binding.innerIcon.setImageResource(if (wallet.isWatchOnly) R.drawable.ic_baseline_visibility_24 else if (wallet.isElectrum) R.drawable.ic_singlesig else R.drawable.ic_multisig)

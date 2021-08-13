@@ -451,9 +451,6 @@ class GreenSession constructor(
     }
 
     fun updateSubAccounts() {
-        // Electrum Network support only a single account, no need to continue
-        // if(network.isElectrum) return
-
         observable {
             AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession)).result<SubAccounts>()
         }.retry(1)

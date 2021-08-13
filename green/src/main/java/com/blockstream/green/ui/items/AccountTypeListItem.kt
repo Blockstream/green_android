@@ -17,6 +17,10 @@ class AccountTypeListItem(
     override val type: Int
         get() = R.id.fastadapter_account_type_item_id
 
+    init {
+        identifier = accountType.ordinal.toLong()
+    }
+
     override fun bindView(binding: ListItemAccountTypeBinding, payloads: List<Any>) {
         StringHolder(accountType.titleRes())
             .applyToOrHide(binding.card.title)

@@ -18,6 +18,8 @@ typealias Balances = LinkedHashMap<String, Long>
 typealias BalanceMap = Map<String, Long>
 typealias BalancePair = Pair<String, Long>
 
+val BalanceLoading = BalancePair("", -1)
+
 class GreenWallet(
     val gdk: KotlinGDK,
     private val wally: KotlinWally,

@@ -5,6 +5,14 @@
 
     <data>
 
+        <variable
+            name="isLoading"
+            type="Boolean" />
+
+        <variable
+            name="secondPart"
+            type="Boolean" />
+
     </data>
 
     <LinearLayout
@@ -15,9 +23,16 @@
         android:layout_marginBottom="16dp"
         android:orientation="vertical">
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:indeterminate="true"
+            isVisible="@{isLoading}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            isVisible="@{!isLoading}">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -105,11 +120,10 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/secondPart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="16dp"
-            android:visibility="gone"
+            isVisible="@{!isLoading &amp;&amp; secondPart}"
             app:cardBackgroundColor="@color/brand_background"
             app:strokeColor="@color/color_on_surface_divider"
             app:strokeWidth="1dp"

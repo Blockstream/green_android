@@ -12,11 +12,11 @@ import com.blockstream.green.ui.looks.AssetListLook
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
-data class AssetListItem(
+class AssetListItem(
     val session: GreenSession,
     val balancePair: BalancePair,
     private val showInfo: Boolean,
-    private val isLiquid: Boolean
+    private val isLoading: Boolean
 ) : AbstractBindingItem<ListItemAssetBinding>() {
     override val type: Int
         get() = R.id.fastadapter_asset_item_id
@@ -26,11 +26,17 @@ data class AssetListItem(
     }
 
     override fun bindView(binding: ListItemAssetBinding, payloads: List<Any>) {
+        if(isLoading){
+            binding.isLoading = true
+            return
+        }
+
         val asset: Asset? = session.getAsset(balancePair.first)
 
         val look = AssetListLook(balancePair.first, balancePair.second, asset, session)
         val res = binding.root.resources
 
+        binding.isLoading = isLoading
         binding.name.text = look.name
         binding.ticker.text = look.ticker
 
@@ -45,7 +51,7 @@ data class AssetListItem(
 
         binding.icon.setImageDrawable(look.icon(binding.root.context))
 
-        binding.secondPart.isVisible = showInfo
+        binding.secondPart = showInfo
 
         if(showInfo) {
             binding.domain.text = res.getString(R.string.id_issuer_domain)

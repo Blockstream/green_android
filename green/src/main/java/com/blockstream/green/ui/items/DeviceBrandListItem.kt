@@ -11,6 +11,10 @@ class DeviceBrandListItem(val deviceBrand: DeviceBrand) : AbstractBindingItem<Li
     override val type: Int
         get() = R.id.fastadapter_device_brand_item_id
 
+    init {
+        identifier = deviceBrand.ordinal.toLong()
+    }
+
     override fun bindView(binding: ListItemDeviceBrandBinding, payloads: List<Any>) {
         binding.name = deviceBrand.brand
         binding.icon.setImageResource(deviceBrand.icon)

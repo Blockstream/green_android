@@ -15,6 +15,10 @@ class AccountListItem(val subAccount: SubAccount, private val network: Network) 
     override val type: Int
         get() = R.id.fastadapter_account_item_id
 
+    init {
+        identifier = subAccount.pointer
+    }
+
     override fun bindView(binding: ListItemAccountBinding, payloads: List<Any>) {
         binding.card.setCardBackgroundColor(ContextCompat.getColor(binding.card.context, if(network.isLiquid) R.color.liquid else if(network.isMainnet) R.color.bitcoin else R.color.testnet))
         binding.title.text = subAccount.nameOrDefault(binding.root.resources.getString(R.string.id_main_account))

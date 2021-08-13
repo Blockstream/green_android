@@ -7,7 +7,7 @@ import com.blockstream.green.databinding.ListItemRecoveryPhraseWordBinding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
- data class RecoveryPhraseWordListItem(
+data class RecoveryPhraseWordListItem(
     private val index: Int,
     internal var word: CharSequence,
     private val isActive: Boolean
@@ -16,7 +16,7 @@ import com.mikepenz.fastadapter.binding.AbstractBindingItem
         get() = R.id.fastadapter_recovery_phrase_word_item_id
 
     init {
-        identifier = index.hashCode().toLong()
+        identifier = index.toLong()
     }
 
     override fun bindView(binding: ListItemRecoveryPhraseWordBinding, payloads: List<Any>) {

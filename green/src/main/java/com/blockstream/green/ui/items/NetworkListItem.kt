@@ -17,6 +17,10 @@ class NetworkListItem(val network: String, val networkName: String, val caption 
     override val layoutRes: Int
         get() = R.layout.list_item_network
 
+    init {
+        identifier = network.hashCode().toLong()
+    }
+
     override fun getViewHolder(v: View): ViewHolder {
         return ViewHolder(v)
     }

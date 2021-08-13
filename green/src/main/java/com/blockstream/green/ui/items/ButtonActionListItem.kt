@@ -5,13 +5,17 @@ import android.view.ViewGroup
 import androidx.core.view.updatePadding
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemButtonActionBinding
+import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 
 
 class ButtonActionListItem(private val title: StringHolder, private val extraPadding: Boolean) : AbstractBindingItem<ListItemButtonActionBinding>() {
     override val type: Int
         get() = R.id.fastadapter_button_action_item_id
+
+    init {
+        identifier = title.hashCode().toLong()
+    }
 
     override fun bindView(binding: ListItemButtonActionBinding, payloads: List<Any>) {
 

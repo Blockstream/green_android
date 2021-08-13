@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTextBinding
+import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 
 data class TextListItem(
     val title: StringHolder,
@@ -14,7 +14,7 @@ data class TextListItem(
         get() = R.id.fastadapter_text_item_id
 
     init {
-        identifier = title.textString?.hashCode()?.toLong() ?: title.textRes.toLong()
+        identifier = title.hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemTextBinding, payloads: List<Any>) {

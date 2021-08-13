@@ -19,7 +19,7 @@ data class TitleListItem(
         get() = R.id.fastadapter_title_item_id
 
     init {
-        identifier = title.textString?.hashCode()?.toLong() ?: title.textRes.toLong()
+        identifier = title.hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemTitleBinding, payloads: List<Any>) {

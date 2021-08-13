@@ -24,7 +24,6 @@ import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.databinding.OverviewFragmentBinding
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
-import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.ui.*
 import com.blockstream.green.ui.items.*
@@ -44,7 +43,6 @@ import com.mikepenz.fastadapter.IAdapter
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.HashMap
@@ -384,9 +382,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                         dialog.show(childFragmentManager, dialog.toString())
                     }
                 }
-
             }
-        }.observeList(viewLifecycleOwner, viewModel.getNotifications())
+        }.observeList(viewLifecycleOwner, viewModel.getAlerts())
 
 
         if(viewModel.wallet.isLiquid) {
@@ -395,7 +392,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         adapters += ModelAdapter<BalancePair, AssetListItem>() {
-            AssetListItem(session, it, isAssetState && viewModel.wallet.isLiquid, viewModel.wallet.isLiquid)
+            AssetListItem(session, it, isAssetState && viewModel.wallet.isLiquid, (it.first.isEmpty() && it.second == -1L))
         }.observeMap(viewLifecycleOwner, viewModel.getBalancesLiveData() as LiveData<Map<*, *>>) {
             BalancePair(it.key as String, it.value as Long)
         }
@@ -412,7 +409,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 titleAdapter.add(TextListItem(StringHolder(R.string.id_your_transactions_will_be_shown)))
             }
         }
-
 
 
         adapters += titleAdapter
