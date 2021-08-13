@@ -355,7 +355,7 @@ class TransactionsController: UITableViewController {
             getSubaccount(0)
         }.then { wallet in
             wallet.getBalance().compactMap { _ in wallet }
-        }.done { wallet in
+        }.map { wallet in
             UserDefaults.standard.set(Int(wallet.pointer), forKey: self.pointerKey)
             UserDefaults.standard.synchronize()
             self.presentingWallet = wallet
