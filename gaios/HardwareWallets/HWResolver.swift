@@ -104,7 +104,7 @@ class HWResolver {
                     var txinfo = tx
                     if let txhash = tx?["txhash"] as? String,
                        hw.device.name == "Ledger" {
-                        txinfo = try getSession().getTransactionDetails(txhash: txhash)
+                        txinfo = try SessionManager.shared.getTransactionDetails(txhash: txhash)
                     }
                     return hw.signTransaction(tx: txinfo!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                         .compactMap { res in

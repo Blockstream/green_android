@@ -14,7 +14,7 @@ class UserSettingsViewController: UIViewController {
     var twoFactorConfig: TwoFactorConfig?
     var isResetActive: Bool {
         get {
-            guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return false }
+            guard let twoFactorConfig = SessionManager.shared.twoFactorReset else { return false }
             return twoFactorConfig.isResetActive
         }
     }
@@ -58,7 +58,7 @@ class UserSettingsViewController: UIViewController {
     }
 
     func load() throws {
-        let session = getGAService().getSession()
+        let session = SessionManager.shared
         if let settings = try session.getSettings() {
             Settings.shared = Settings.from(settings)
         }
@@ -527,7 +527,7 @@ extension UserSettingsViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try getGAService().getSession().setWatchOnly(username: username, password: password)
+            try SessionManager.shared.setWatchOnly(username: username, password: password)
             try self.load()
         }.ensure {
             self.stopAnimating()
@@ -555,7 +555,7 @@ extension UserSettingsViewController {
 
     func changeSettings(_ settings: Settings) {
         let details = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
-        let session = getGAService().getSession()
+        let session = SessionManager.shared
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map {_ in
             self.startAnimating()
@@ -623,7 +623,7 @@ extension UserSettingsViewController {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try self.account?.addBioPin(session: getSession())
+            try self.account?.addBioPin(session: SessionManager.shared)
         }.ensure {
             self.stopAnimating()
         }.catch { error in

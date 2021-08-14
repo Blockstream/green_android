@@ -176,8 +176,8 @@ class SetPinViewController: UIViewController {
             }
             return Guarantee()
         }.compactMap(on: bgq) {
-            let mnemonic = try getSession().getMnemonicPassphrase(password: "")
-            try account?.addPin(session: getSession(), pin: pin, mnemonic: mnemonic)
+            let mnemonic = try SessionManager.shared.getMnemonicPassphrase(password: "")
+            try account?.addPin(session: SessionManager.shared, pin: pin, mnemonic: mnemonic)
 
             account?.attempts = 0
             AccountsManager.shared.current = account

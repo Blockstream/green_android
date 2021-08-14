@@ -48,7 +48,7 @@ class TransactionDetailViewController: KeyboardViewController {
     private var blockToken: NSObjectProtocol?
     private var cantBumpFees: Bool {
         get {
-            guard let resetStatus = getGAService().getTwoFactorReset() else { return false }
+            guard let resetStatus = SessionManager.shared.twoFactorReset else { return false }
             return resetStatus.isResetActive || !transaction.canRBF || account?.isWatchonly ?? false
         }
     }
@@ -283,7 +283,7 @@ extension TransactionDetailViewController: UITableViewDelegate, UITableViewDataS
         let cellType = cellTypes[indexPath.row]
         switch cellType {
         case .status:
-            if !transaction.canRBF || account?.isWatchonly ?? false || getGAService().getTwoFactorReset()!.isResetActive { return }
+            if !transaction.canRBF || account?.isWatchonly ?? false || SessionManager.shared.twoFactorReset!.isResetActive { return }
             let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate, "subaccount": wallet.pointer]
             gaios.createTransaction(details: details).done { tx in
                 self.performSegue(withIdentifier: "rbf", sender: tx)

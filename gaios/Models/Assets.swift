@@ -76,7 +76,7 @@ class Registry: Codable {
 
     @discardableResult
     func fetchIcons(refresh: Bool) -> Bool {
-        guard let data = try? getSession().refreshAssets(params: ["icons": true, "assets": false, "refresh": refresh]) else {
+        guard let data = try? SessionManager.shared.refreshAssets(params: ["icons": true, "assets": false, "refresh": refresh]) else {
             return false
         }
         var iconsData = data["icons"] as? [String: String]
@@ -89,7 +89,7 @@ class Registry: Codable {
 
     @discardableResult
     func fetchAssets(refresh: Bool) -> Bool {
-        guard let data = try? getSession().refreshAssets(params: ["icons": false, "assets": true, "refresh": refresh]) else {
+        guard let data = try? SessionManager.shared.refreshAssets(params: ["icons": false, "assets": true, "refresh": refresh]) else {
             return false
         }
         var infosData = data["assets"] as? [String: Any]

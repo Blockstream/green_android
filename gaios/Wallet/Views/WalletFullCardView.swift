@@ -80,7 +80,7 @@ class WalletFullCardView: UIView {
         }
         walletName.text = wallet.localizedName()
         assetsLabel.text = String(format: NSLocalizedString(wallet.satoshi?.count == 1 ? "id_d_asset_in_this_account" : "id_d_assets_in_this_account", comment: ""), wallet.satoshi?.count ?? 0)
-        if getGAService().getTwoFactorReset()?.isResetActive ?? false {
+        if SessionManager.shared.twoFactorReset?.isResetActive ?? false {
             actionsView.isHidden = true
         } else if account?.isWatchonly ?? false {
             sendView.isHidden = true

@@ -41,7 +41,7 @@ struct Event: EventProtocol, Equatable {
         if kindOf(TransactionEvent.self) {
             return NSLocalizedString("id_new_transaction", comment: "")
         } else if kindOf(TwoFactorReset.self) {
-            guard let twoFactorReset = getGAService().getTwoFactorReset() else { return "" }
+            guard let twoFactorReset = SessionManager.shared.twoFactorReset else { return "" }
             if !twoFactorReset.isResetActive { return "" }
             return String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), twoFactorReset.daysRemaining)
         } else if kindOf(Settings.self) {

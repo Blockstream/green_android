@@ -5,7 +5,7 @@ import PromiseKit
 class NotificationsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
-    private var items: [Event] { get { return getGAService().getEvents() } }
+    private var items: [Event] { get { return SessionManager.shared.events } }
     private var twoFactorConfig: TwoFactorConfig?
     private var wallets = [WalletItem]()
 
@@ -47,7 +47,7 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         let bgq = DispatchQueue.global(qos: .background)
         getSubaccounts().map(on: bgq) { wallets in
             self.wallets = wallets
-            let dataTwoFactorConfig = try getSession().getTwoFactorConfig()
+            let dataTwoFactorConfig = try SessionManager.shared.getTwoFactorConfig()
             if dataTwoFactorConfig != nil {
                 self.twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
             }

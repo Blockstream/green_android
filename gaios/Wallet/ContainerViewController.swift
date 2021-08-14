@@ -39,7 +39,7 @@ class ContainerViewController: UIViewController {
     func updateTor(_ notification: Notification) {
         Guarantee().map { () -> UInt32 in
             let json = try JSONSerialization.data(withJSONObject: notification.userInfo!, options: [])
-            let tor = try JSONDecoder().decode(Tor.self, from: json)
+            let tor = try JSONDecoder().decode(TorNotification.self, from: json)
             return tor.progress
         }.done { progress in
             self.networkText.text = NSLocalizedString("id_tor_status", comment: "") + " \(progress)%"

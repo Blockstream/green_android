@@ -91,7 +91,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
         }.compactMap(on: bgq) {
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try getGAService().getSession().changeSettings(details: details)
+            try SessionManager.shared.changeSettings(details: details)
         }.then(on: bgq) { call in
             call.resolve()
         }.done { _ in
@@ -105,7 +105,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     func getExchangeRate() {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap(on: bgq) {
-            try getSession().getAvailableCurrencies()
+            try SessionManager.shared.getAvailableCurrencies()
         }.done { (data: [String: Any]?) in
             guard let json = data else { return }
             guard let perExchange = json["per_exchange"] as? [String: [String]] else { throw GaError.GenericError }

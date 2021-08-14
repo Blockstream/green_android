@@ -141,7 +141,7 @@ class LoginViewController: UIViewController {
 
     @objc func progress(_ notification: NSNotification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
-           let tor = try? JSONDecoder().decode(Tor.self, from: json) {
+           let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
             var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
             if tor.progress == 100 {
                 text = NSLocalizedString("id_logging_in", comment: "")
@@ -154,8 +154,6 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let appDelegate = getAppDelegate()!
-
         firstly {
             return Guarantee()
         }.compactMap {
@@ -163,12 +161,11 @@ class LoginViewController: UIViewController {
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         }.then(on: bgq) { data -> Promise<[String: Any]> in
-            appDelegate.disconnect()
-            try appDelegate.connect(self.account?.networkName ?? "mainnet")
+            try SessionManager.shared.connect(self.account!)
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-            return try getSession().loginUser(details: ["pin": pin!, "pin_data": pinData!]).resolve()
+            return try SessionManager.shared.loginUser(details: ["pin": pin!, "pin_data": pinData!]).resolve()
         }.then { _ -> Promise<Void> in
             if self.account?.network == "liquid" {
                 return Registry.shared.load()

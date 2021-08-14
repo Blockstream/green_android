@@ -142,8 +142,7 @@ class BLEManager {
                     throw DeviceError.outdated_app
                 }
             }.compactMap { _ in
-                appDelegate?.disconnect()
-                try appDelegate?.connect(network)
+                try SessionManager.shared.connect(network: network)
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
@@ -175,8 +174,7 @@ class BLEManager {
                 // check genuine firmware
                 return Jade.shared.addEntropy()
             }.compactMap { _ in
-                appDelegate?.disconnect()
-                try appDelegate?.connect(network)
+                try SessionManager.shared.connect(network: network)
             }.flatMap { _ in
                 Jade.shared.auth(network: network)
                     .retry(3)
@@ -233,8 +231,6 @@ class BLEManager {
     }
 
     func login(_ p: Peripheral, checkFirmware: Bool = true) {
-        let session = getGAService().getSession()
-
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p -> Observable<Peripheral> in
@@ -252,14 +248,14 @@ class BLEManager {
                         observer.onError(JadeError.Abort("Invalid device configuration"))
                         return Disposables.create { }
                     }
-                    _ = try? session.registerUser(mnemonic: "", hw_device: ["device": device]).resolve()
+                    _ = try? SessionManager.shared.registerUser(mnemonic: "", hw_device: ["device": device]).resolve()
                         .then { _ -> Promise<Void> in
                             if AccountsManager.shared.current?.network == "liquid" {
                                 return Registry.shared.load()
                             }
                             return Promise<Void>()
                         }.then { _ in
-                            try session.loginUser(details: [:], hw_device: ["device": device]).resolve()
+                            try SessionManager.shared.loginUser(details: [:], hw_device: ["device": device]).resolve()
                         }.done { res in
                             observer.onNext(res)
                             observer.onCompleted()
@@ -276,8 +272,7 @@ class BLEManager {
                 case BLEManagerError.firmwareErr(_): // nothing to do
                     return
                 default:
-                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                    appDelegate?.disconnect()
+                    SessionManager.shared.disconnect()
                     self.onError(err, network: nil)
                 }
             })

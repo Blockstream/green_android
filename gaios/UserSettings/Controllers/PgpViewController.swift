@@ -30,7 +30,7 @@ class PgpViewController: KeyboardViewController {
     @objc func save(_ sender: UIButton) {
         guard let settings = Settings.shared else { return }
         let bgq = DispatchQueue.global(qos: .background)
-        let session = getGAService().getSession()
+        let session = SessionManager.shared
         let value = settings.pgp
         settings.pgp = textarea.text
         firstly {

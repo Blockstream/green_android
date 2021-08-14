@@ -106,7 +106,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     }
 
     func reloadData() {
-        let dataTwoFactorConfig = try? getSession().getTwoFactorConfig()
+        let dataTwoFactorConfig = try? SessionManager.shared.getTwoFactorConfig()
         guard dataTwoFactorConfig != nil else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         self.twoFactorConfig = twoFactorConfig
@@ -156,15 +156,13 @@ class TwoFactorAuthenticationViewController: UIViewController {
             TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
-        }.compactMap(on: bgq) { details in
-            try getGAService().getSession().changeSettingsTwoFactor(method: type.rawValue, details: details)
-        }.then(on: bgq) { call in
-            call.resolve(connected: { self.connected })
+        }.then(on: bgq) { details in
+            try SessionManager.shared.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
         }.ensure {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            getGAService().reloadTwoFactor()
+            SessionManager.shared.reloadTwoFactor()
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
@@ -184,12 +182,10 @@ class TwoFactorAuthenticationViewController: UIViewController {
         firstly {
             self.startAnimating()
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try getGAService().getSession().setCSVTime(details: details)
-        }.then(on: bgq) { call in
-            call.resolve()
+        }.then(on: bgq) {
+            try SessionManager.shared.setCSVTime(details: details).resolve()
         }.map(on: bgq) { _ in
-            if let data = try? getSession().getSettings() {
+            if let data = try? SessionManager.shared.getSettings() {
                 Settings.shared = Settings.from(data)
             }
         }.ensure {

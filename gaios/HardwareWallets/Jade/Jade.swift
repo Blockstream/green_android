@@ -40,7 +40,7 @@ final class Jade: JadeChannel, HWProtocol {
 
     func httpRequest(_ httpRequest: [String: Any]) -> [String: Any]? {
         let httpParams = httpRequest["params"] as? [String: Any]
-        let httpResponse = try? getSession().httpRequest(params: httpParams ?? [:])
+        let httpResponse = try? SessionManager.shared.httpRequest(params: httpParams ?? [:])
         let httpResponseBody = httpResponse?["body"] as? [String: Any]
         return httpResponseBody
     }
@@ -431,7 +431,7 @@ extension Jade {
             "accept": base64 ? "base64": "text",
             "urls": ["\(Jade.FW_SERVER_HTTPS)\(fwpath)",
                      "\(Jade.FW_SERVER_ONION)\(fwpath)"] ]
-        return try? getSession().httpRequest(params: params)
+        return try? SessionManager.shared.httpRequest(params: params)
     }
 
     func checkFirmware(_ verInfo: [String: Any]) throws -> [String: String]? {

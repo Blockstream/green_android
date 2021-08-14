@@ -39,11 +39,11 @@ class SystemMessageViewController: UIViewController {
         } else if sender == content.confirmButton {
             let bgq = DispatchQueue.global(qos: .background)
             Guarantee().map(on: bgq) {
-                try getSession().ackSystemMessage(message: self.text)
+                try SessionManager.shared.ackSystemMessage(message: self.text)
             }.then(on: bgq) { twoFactorCall in
                 twoFactorCall.resolve()
             }.done { _ in
-                getGAService().reloadSystemMessage()
+                SessionManager.shared.reloadSystemMessage()
                 self.navigationController?.popViewController(animated: true)
             }.catch { _ in
                 print("Error on remove system message")

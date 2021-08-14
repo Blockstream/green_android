@@ -125,7 +125,7 @@ class SendBtcViewController: KeyboardViewController {
                 return ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount]
             }
         }.compactMap(on: bgq) { data in
-            try getSession().createTransaction(details: data)
+            try SessionManager.shared.createTransaction(details: data)
         }.then(on: bgq) { call in
             call.resolve()
         }.compactMap(on: bgq) { data -> Transaction in

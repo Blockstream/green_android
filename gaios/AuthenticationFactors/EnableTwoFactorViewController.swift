@@ -92,7 +92,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
     }
 
     func reloadData() {
-        let dataTwoFactorConfig = try? getSession().getTwoFactorConfig()
+        let dataTwoFactorConfig = try? SessionManager.shared.getTwoFactorConfig()
         guard dataTwoFactorConfig != nil else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         factors.removeAll()
@@ -126,15 +126,13 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
             TwoFactorConfigItem(enabled: false, confirmed: false, data: "")
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
-        }.compactMap(on: bgq) { details in
-            try getGAService().getSession().changeSettingsTwoFactor(method: type.rawValue, details: details)
-        }.then(on: bgq) { call in
-            call.resolve(connected: { self.connected })
+        }.then(on: bgq) { details in
+            try SessionManager.shared.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
         }.ensure {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            getGAService().reloadTwoFactor()
+            SessionManager.shared.reloadTwoFactor()
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {

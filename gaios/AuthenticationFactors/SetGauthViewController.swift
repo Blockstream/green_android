@@ -13,7 +13,7 @@ class SetGauthViewController: UIViewController {
         super.viewDidLoad()
         title = NSLocalizedString("id_authenticator_qr_code", comment: "")
 
-        let dataTwoFactorConfig = try? getSession().getTwoFactorConfig()
+        let dataTwoFactorConfig = try? SessionManager.shared.getTwoFactorConfig()
         guard dataTwoFactorConfig != nil else { return }
         guard let twoFactorConfig = try? JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: [])) else { return }
         gauthData = twoFactorConfig.gauth.data
@@ -67,13 +67,13 @@ class SetGauthViewController: UIViewController {
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try getGAService().getSession().changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
+            try SessionManager.shared.changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(connected: { self.connected })
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            getGAService().reloadTwoFactor()
+            SessionManager.shared.reloadTwoFactor()
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {

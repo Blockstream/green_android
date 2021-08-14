@@ -80,7 +80,7 @@ class WatchOnlyLoginViewController: KeyboardViewController {
 
     @objc func progress(_ notification: Notification) {
         if let json = try? JSONSerialization.data(withJSONObject: notification.userInfo!, options: []),
-           let tor = try? JSONDecoder().decode(Tor.self, from: json) {
+           let tor = try? JSONDecoder().decode(TorNotification.self, from: json) {
             var text = NSLocalizedString("id_tor_status", comment: "") + " \(tor.progress)%"
             if tor.progress == 100 {
                 text = NSLocalizedString("id_logging_in", comment: "")
@@ -132,22 +132,21 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         let username = self.account?.username ?? ""
         let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
-        let appDelegate = getAppDelegate()!
 
         firstly {
             view.endEditing(true)
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            appDelegate.disconnect()
-            try appDelegate.connect(self.account?.network ?? "mainnet")
+            try SessionManager.shared.connect(self.account!)
         }.then(on: bgq) { _ in
-            try getSession().loginUser(details: ["username": username, "password": password]).resolve()
+            try SessionManager.shared.loginUser(details: ["username": username, "password": password]).resolve()
         }.ensure {
             self.stopLoader()
         }.done { _ in
             AccountsManager.shared.current = self.account
-            appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate!.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:

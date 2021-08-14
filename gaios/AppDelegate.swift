@@ -6,14 +6,6 @@ func getAppDelegate() -> AppDelegate? {
     return UIApplication.shared.delegate as? AppDelegate
 }
 
-func getGAService() -> GreenAddressService {
-    return AppDelegate.getService()
-}
-
-func getSession() -> Session {
-    return getGAService().getSession()
-}
-
 func getNetwork() -> String {
     AccountsManager.shared.current?.network ?? "mainnet"
 }
@@ -22,11 +14,6 @@ func getNetwork() -> String {
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: EventWindow?
-    static let service = GreenAddressService()
-
-    static func getService() -> GreenAddressService {
-        return service
-    }
 
     func instantiateViewControllerAsRoot(storyboard: String, identifier: String) {
         let storyboard = UIStoryboard(name: storyboard, bundle: nil)
@@ -35,28 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController?.dismiss(animated: false, completion: nil)
         window?.rootViewController = firstVC
         window?.makeKeyAndVisible()
-    }
-
-    func connect(_ network: String) throws {
-        let networkSettings = getUserNetworkSettings()
-        let useProxy = networkSettings["proxy"] as? Bool ?? false
-        let socks5Hostname = useProxy ? networkSettings["socks5_hostname"] as? String ?? "" : ""
-        let socks5Port = useProxy ? networkSettings["socks5_port"] as? String ?? "" : ""
-        let useTor = getGdkNetwork(network).serverType == "green" ? networkSettings["tor"] as? Bool ?? false : false
-        let proxyURI = useProxy ? String(format: "socks5://%@:%@/", socks5Hostname, socks5Port) : ""
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? CVarArg ?? ""
-        let userAgent = String(format: "green_ios_%@", version)
-        let netParams: [String: Any] = ["name": network, "use_tor": useTor, "proxy": proxyURI, "user_agent": userAgent]
-        do {
-            try getSession().connect(netParams: netParams)
-        } catch {
-            throw AuthenticationTypeHandler.AuthError.ConnectionFailed
-        }
-    }
-
-    func disconnect() {
-        try! getSession().disconnect()
-        getGAService().reset()
     }
 
     func lock(with pin: Bool) {
@@ -76,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController?.startAnimating()
             return Guarantee()
         }.map(on: bgq) {
-            self.disconnect()
+            SessionManager.shared.disconnect()
         }.ensure {
             self.window?.rootViewController?.stopAnimating()
         }.done {
@@ -111,7 +76,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Initialize network settings
         AccountsManager.shared.onFirstInitialization()
-        AppDelegate.getService().reset()
 
         // Set screen lock
         lock(with: false)
@@ -132,7 +96,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-        try? AppDelegate.service.getSession().reconnectHint(hint: ["tor_sleep_hint": "sleep", "hint": "disable"])
+        try? SessionManager.shared.reconnectHint(hint: ["tor_sleep_hint": "sleep", "hint": "disable"])
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -143,7 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
         DispatchQueue.global(qos: .background).async {
-            try? AppDelegate.service.getSession().reconnectHint(hint: ["tor_sleep_hint": "wakeup", "hint": "now"])
+            try? SessionManager.shared.reconnectHint(hint: ["tor_sleep_hint": "wakeup", "hint": "now"])
         }
     }
 

@@ -402,7 +402,7 @@ class TransactionTask {
     init(tx: Transaction) {
         self.tx = tx
         task = DispatchWorkItem {
-            let call = try? getSession().createTransaction(details: self.tx.details)
+            let call = try? SessionManager.shared.createTransaction(details: self.tx.details)
             let data = try? call?.resolve().wait()
             let result = data?["result"] as? [String: Any]
             self.tx = Transaction(result ?? [:])

@@ -14,7 +14,7 @@ class TransactionStatusTableCell: UITableViewCell {
     @IBOutlet weak var increaseFeeStackView: UIStackView!
 
     func configure(for transaction: Transaction, isLiquid: Bool) {
-        let blockHeight = getGAService().getBlockheight()
+        let blockHeight = SessionManager.shared.blockHeight
         var status: TransactionStatus = .unconfirmed
         if transaction.blockHeight == 0 {
             statusLabel.text = NSLocalizedString("id_unconfirmed", comment: "")
@@ -36,7 +36,7 @@ class TransactionStatusTableCell: UITableViewCell {
             statusLabel.text = NSLocalizedString("id_completed", comment: "")
         }
         let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false
-        let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(getGAService().getTwoFactorReset()?.isResetActive ?? false)
+        let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(SessionManager.shared.twoFactorReset?.isResetActive ?? false)
         statusImageView.isHidden = !(status == .confirmed)
         increaseFeeStackView.isHidden = !showBumpFee
     }

@@ -30,7 +30,7 @@ struct Balance: Codable {
     var asset: [String: String]?
 
     static func convert(details: [String: Any]) -> Balance? {
-        guard var res = try? getSession().convertAmount(input: details) else { return nil}
+        guard var res = try? SessionManager.shared.convertAmount(input: details) else { return nil}
         res["asset_info"] = details["asset_info"]
         var balance = try? JSONDecoder().decode(Balance.self, from: JSONSerialization.data(withJSONObject: res, options: []))
         if let assetInfo = balance?.assetInfo {
@@ -61,7 +61,7 @@ struct Balance: Codable {
 func getTransactions(_ pointer: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {_ in
-        try getSession().getTransactions(details: ["subaccount": pointer, "first": first, "count": 15])
+        try SessionManager.shared.getTransactions(details: ["subaccount": pointer, "first": first, "count": 15])
     }.then(on: bgq) { call in
         call.resolve()
     }.compactMap(on: bgq) { data in
@@ -75,14 +75,14 @@ func getTransactions(_ pointer: UInt32, first: UInt32 = 0) -> Promise<Transactio
 func getTransactionDetails(txhash: String) -> Promise<[String: Any]> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
-        try getSession().getTransactionDetails(txhash: txhash)
+        try SessionManager.shared.getTransactionDetails(txhash: txhash)
     }
 }
 
 func createTransaction(details: [String: Any]) -> Promise<Transaction> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
-        try getSession().createTransaction(details: details)
+        try SessionManager.shared.createTransaction(details: details)
     }.then(on: bgq) { call in
         call.resolve()
     }.map(on: bgq) { data in
@@ -94,7 +94,7 @@ func createTransaction(details: [String: Any]) -> Promise<Transaction> {
 func signTransaction(details: [String: Any]) -> Promise<TwoFactorCall> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
-        try getSession().signTransaction(details: details)
+        try SessionManager.shared.signTransaction(details: details)
     }
 }
 
@@ -107,11 +107,11 @@ func signTransaction(transaction: Transaction) -> Promise<TwoFactorCall> {
 }
 
 func convertAmount(details: [String: Any]) -> [String: Any]? {
-    return try? getSession().convertAmount(input: details)
+    return try? SessionManager.shared.convertAmount(input: details)
 }
 
 func getFeeEstimates() -> [UInt64]? {
-    let estimates = try? getSession().getFeeEstimates()
+    let estimates = try? SessionManager.shared.getFeeEstimates()
     return estimates == nil ? nil : estimates!["fees"] as? [UInt64]
 }
 
@@ -156,7 +156,7 @@ func onFirstInitialization(network: String) {
 func getSubaccount(_ pointer: UInt32) -> Promise<WalletItem> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
-        try getSession().getSubaccount(subaccount: pointer)
+        try SessionManager.shared.getSubaccount(subaccount: pointer)
     }.then(on: bgq) { call in
         call.resolve()
     }.compactMap(on: bgq) { data in
@@ -169,7 +169,7 @@ func getSubaccount(_ pointer: UInt32) -> Promise<WalletItem> {
 func getSubaccounts() -> Promise<[WalletItem]> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
-        try getSession().getSubaccounts()
+        try SessionManager.shared.getSubaccounts()
     }.then(on: bgq) { call in
         call.resolve()
     }.compactMap(on: bgq) { data in

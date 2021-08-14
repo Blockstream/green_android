@@ -62,12 +62,11 @@ class AccountCreateSetNameViewController: UIViewController {
 
     func createAccount(name: String, type: AccountType) {
         let bgq = DispatchQueue.global(qos: .background)
-        let session = getGAService().getSession()
         firstly {
             self.startAnimating()
             return Guarantee()
         }.compactMap(on: bgq) {
-            try session.createSubaccount(details: ["name": name, "type": type.rawValue])
+            try SessionManager.shared.createSubaccount(details: ["name": name, "type": type.rawValue])
         }.then(on: bgq) { call in
             call.resolve()
         }.ensure {

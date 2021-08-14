@@ -174,10 +174,10 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             let result = resultDict["result"] as? [String: Any]
             if self.transaction.isSweep {
                 let tx = result!["transaction"] as? String
-                _ = try getSession().broadcastTransaction(tx_hex: tx!)
+                _ = try SessionManager.shared.broadcastTransaction(tx_hex: tx!)
                 return nil
             } else {
-                return try getSession().sendTransaction(details: result!)
+                return try SessionManager.shared.sendTransaction(details: result!)
             }
         }.then(on: bgq) { (call: TwoFactorCall?) -> Promise<[String: Any]> in
             call?.resolve(connected: {

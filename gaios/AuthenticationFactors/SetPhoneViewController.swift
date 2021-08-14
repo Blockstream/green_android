@@ -66,13 +66,13 @@ class SetPhoneViewController: KeyboardViewController {
         }.compactMap(on: bgq) { config in
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.compactMap(on: bgq) { details in
-            try getGAService().getSession().changeSettingsTwoFactor(method: method.rawValue, details: details)
+            try SessionManager.shared.changeSettingsTwoFactor(method: method.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(connected: { self.connected })
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            getGAService().reloadTwoFactor()
+            SessionManager.shared.reloadTwoFactor()
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {

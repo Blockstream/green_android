@@ -37,7 +37,7 @@ class NotesViewController: UIViewController {
         saveButton.isEnabled = false
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) { _ in
-            try gaios.getSession().setTransactionMemo(txhash_hex: self.transaction.hash, memo: memo, memo_type: 0)
+            try gaios.SessionManager.shared.setTransactionMemo(txhash_hex: self.transaction.hash, memo: memo, memo_type: 0)
             self.transaction.memo = memo
             }.ensure {
                 self.saveButton.isEnabled = true

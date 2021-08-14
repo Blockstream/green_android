@@ -105,19 +105,18 @@ class WalletNameViewController: UIViewController {
     }
 
     fileprivate func register() {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let bgq = DispatchQueue.global(qos: .background)
         let params = OnBoardManager.shared.params
+        let account = OnBoardManager.shared.account()
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            appDelegate?.disconnect()
-            return try appDelegate?.connect(OnBoardManager.shared.networkName)
+            try SessionManager.shared.connect(account)
         }.then(on: bgq) {
-            try getSession().registerUser(mnemonic: params?.mnemonic ?? "").resolve()
+            try SessionManager.shared.registerUser(mnemonic: params?.mnemonic ?? "").resolve()
         }.then(on: bgq) { _ in
-            try getSession().loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
+            try SessionManager.shared.loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
         }.ensure {
             self.stopLoader()
         }.done { _ in
@@ -134,16 +133,14 @@ class WalletNameViewController: UIViewController {
 
     func checkCredential() {
         let params = OnBoardManager.shared.params
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            appDelegate?.disconnect()
-            return try appDelegate?.connect(OnBoardManager.shared.networkName)
+            return try SessionManager.shared.connect(network: OnBoardManager.shared.networkName)
         }.then(on: bgq) {
-            return try getSession().loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
+            return try SessionManager.shared.loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
         }.ensure {
             self.stopLoader()
         }.done { _ in
@@ -166,7 +163,7 @@ class WalletNameViewController: UIViewController {
             firstly {
                 return Guarantee()
             }.compactMap(on: bgq) {
-                try getSession().createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue]).resolve()
+                try SessionManager.shared.createSubaccount(details: ["name": "Segwit Account", "type": AccountType.segWit.rawValue]).resolve()
             }.ensure {
                 self.stopLoader()
             }.done { _ in

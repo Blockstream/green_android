@@ -16,13 +16,13 @@ class Learn2faViewController: UIViewController {
 
     var resetDaysRemaining: Int? {
         get {
-            guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return nil }
+            guard let twoFactorConfig = SessionManager.shared.twoFactorReset else { return nil }
             return twoFactorConfig.daysRemaining
         }
     }
     var isDisputeActive: Bool {
         get {
-            guard let twoFactorConfig = getGAService().getTwoFactorReset() else { return false }
+            guard let twoFactorConfig = SessionManager.shared.twoFactorReset else { return false }
             return twoFactorConfig.isDisputeActive
         }
     }
@@ -60,13 +60,13 @@ class Learn2faViewController: UIViewController {
         btnUndoReset.setTitle(NSLocalizedString("id_dispute_twofactor_reset", comment: ""), for: .normal)
     }
 
-    func cancelTwoFactorReset() {
+    func canceltwoFactorReset() {
         let bgq = DispatchQueue.global(qos: .background)
         firstly {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try getGAService().getSession().cancelTwoFactorReset().resolve()
+            try SessionManager.shared.cancelTwoFactorReset().resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -82,7 +82,7 @@ class Learn2faViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try getGAService().getSession().resetTwoFactor(email: email, isDispute: true).resolve()
+            try SessionManager.shared.resetTwoFactor(email: email, isDispute: true).resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -98,7 +98,7 @@ class Learn2faViewController: UIViewController {
             self.startAnimating()
             return Guarantee()
         }.then(on: bgq) {
-            try getGAService().getSession().undoTwoFactorReset(email: email).resolve()
+            try SessionManager.shared.undoTwoFactorReset(email: email).resolve()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
@@ -109,7 +109,7 @@ class Learn2faViewController: UIViewController {
     }
 
     @IBAction func BtnCancelReset(_ sender: Any) {
-        cancelTwoFactorReset()
+        canceltwoFactorReset()
     }
 
     @IBAction func BtnUndoReset(_ sender: Any) {
