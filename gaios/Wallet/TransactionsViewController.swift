@@ -19,19 +19,19 @@ class TransactionsController: UITableViewController {
 
     var isResetActive: Bool {
         get {
-            guard let twoFactorConfig = SessionManager.shared.twoFactorReset else { return false }
+            guard let twoFactorConfig = NotificationManager.shared.twoFactorReset else { return false }
             return twoFactorConfig.isResetActive
         }
     }
     var isDisputeActive: Bool {
         get {
-            guard let twoFactorConfig = SessionManager.shared.twoFactorReset else { return false }
+            guard let twoFactorConfig = NotificationManager.shared.twoFactorReset else { return false }
             return twoFactorConfig.isDisputeActive
         }
     }
     var resetDaysRemaining: Int? {
         get {
-            guard let twoFactorConfig = SessionManager.shared.twoFactorReset else { return nil }
+            guard let twoFactorConfig = NotificationManager.shared.twoFactorReset else { return nil }
             return twoFactorConfig.daysRemaining
         }
     }
@@ -259,7 +259,7 @@ class TransactionsController: UITableViewController {
         guard let cell = cell as? TransactionTableCell else { return }
         let transactions = txs[indexPath.section - 1]
         let tx = transactions.list[indexPath.row]
-        cell.checkBlockHeight(transaction: tx, blockHeight: SessionManager.shared.blockHeight)
+        cell.checkBlockHeight(transaction: tx, blockHeight: NotificationManager.shared.blockHeight)
         cell.checkTransactionType(transaction: tx)
     }
 

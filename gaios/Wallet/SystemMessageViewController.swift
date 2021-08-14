@@ -43,7 +43,7 @@ class SystemMessageViewController: UIViewController {
             }.then(on: bgq) { twoFactorCall in
                 twoFactorCall.resolve()
             }.done { _ in
-                SessionManager.shared.reloadSystemMessage()
+                NotificationManager.shared.reloadSystemMessage()
                 self.navigationController?.popViewController(animated: true)
             }.catch { _ in
                 print("Error on remove system message")

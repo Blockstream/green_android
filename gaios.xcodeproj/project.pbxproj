@@ -255,6 +255,7 @@
 		81D671EF26C80D3400682508 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671EE26C80D3400682508 /* EventType.swift */; };
 		81D671F126C80D4E00682508 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F026C80D4E00682508 /* Connection.swift */; };
 		81D671F326C80D6B00682508 /* TorNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F226C80D6B00682508 /* TorNotification.swift */; };
+		81D671F726C81B0800682508 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D671F626C81B0800682508 /* NotificationManager.swift */; };
 		81D94CF121B93905003B03F9 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D94CF021B93905003B03F9 /* Settings.swift */; };
 		81DA3D932541F0D1001159D6 /* TxInputBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D922541F0D1001159D6 /* TxInputBtc.swift */; };
 		81DA3D972541F110001159D6 /* TxChangeOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DA3D962541F110001159D6 /* TxChangeOutput.swift */; };
@@ -592,6 +593,7 @@
 		81D671EE26C80D3400682508 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		81D671F026C80D4E00682508 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
 		81D671F226C80D6B00682508 /* TorNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorNotification.swift; sourceTree = "<group>"; };
+		81D671F626C81B0800682508 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		81D94CF021B93905003B03F9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		81DA3D922541F0D1001159D6 /* TxInputBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputBtc.swift; sourceTree = "<group>"; };
 		81DA3D962541F110001159D6 /* TxChangeOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxChangeOutput.swift; sourceTree = "<group>"; };
@@ -880,6 +882,7 @@
 			isa = PBXGroup;
 			children = (
 				81D671EA26C8007600682508 /* SessionManager.swift */,
+				81D671F626C81B0800682508 /* NotificationManager.swift */,
 				344562EA25D297CF00A5EC18 /* BLEManager.swift */,
 				819DFBA726038E800022BD85 /* AccountsManager.swift */,
 				816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */,
@@ -1788,6 +1791,7 @@
 				3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */,
 				347FD0BC25FFC0E100BB3FAB /* WalletHDCell.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
+				81D671F726C81B0800682508 /* NotificationManager.swift in Sources */,
 				811B963E21F72B5200DE02CB /* AccountsFooterCollection.swift in Sources */,
 				3403BDA72630281600118C64 /* AlertCardCell.swift in Sources */,
 				34C9E10726B91F2500200D2F /* TwoFaCsvTimeCell.swift in Sources */,

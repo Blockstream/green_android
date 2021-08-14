@@ -132,7 +132,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            SessionManager.shared.reloadTwoFactor()
+            NotificationManager.shared.reloadTwoFactor()
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
