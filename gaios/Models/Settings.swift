@@ -98,7 +98,7 @@ public enum DenominationType: String, CodingKey {
     static let denominationsLBTC: [DenominationType: String] = [ .BTC: "L-BTC", .MilliBTC: "L-mBTC", .MicroBTC: "L-µBTC", .Bits: "L-bits", .Sats: "L-sats"]
 
     static var denominations: [DenominationType: String] {
-        let isLiquid = getGdkNetwork(getNetwork()).liquid
+        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
         return isLiquid ? DenominationType.denominationsLBTC : DenominationType.denominationsBTC
     }
 
@@ -267,19 +267,18 @@ class Settings: Codable {
         static let all = [Short, Medium, Long]
 
         static func values() -> [Int]? {
-            guard let csvBuckets = getGdkNetwork(getNetwork()).csvBuckets else { return nil }
-            return csvBuckets
+            return AccountsManager.shared.current?.gdkNetwork?.csvBuckets
         }
 
         func value() -> Int? {
-            guard let csvBuckets = getGdkNetwork(getNetwork()).csvBuckets else { return nil }
+            let csvBuckets = CsvTime.values()
             switch self {
             case .Short:
-                return csvBuckets[0]
+                return csvBuckets?[0]
             case .Medium:
-                return csvBuckets[1]
+                return csvBuckets?[1]
             case .Long:
-                return csvBuckets[2]
+                return csvBuckets?[2]
             }
         }
 

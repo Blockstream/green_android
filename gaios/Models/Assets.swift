@@ -55,12 +55,11 @@ class Registry: Codable {
     }
 
     func image(for key: String?) -> UIImage? {
-        let network = getGdkNetwork(getNetwork())
-        let id = "btc" == key ? network.policyAsset : key
-        if let path = Bundle.main.path(forResource: "asset_\(id ?? "")", ofType: "png") {
+        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        if let path = Bundle.main.path(forResource: "asset_\(feeAsset)", ofType: "png") {
             // read icon from file
             return UIImage(contentsOfFile: path)
-        } else if let icon = icons.filter({ $0.key == id }).first {
+        } else if let icon = icons.filter({ $0.key == feeAsset }).first {
             // read icon from memory
             return UIImage(base64: icon.value)
         }

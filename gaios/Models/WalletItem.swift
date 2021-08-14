@@ -20,7 +20,6 @@ class WalletItem: Codable {
     let receivingId: String
     let type: String
     var satoshi: [String: UInt64]?
-    var btc: UInt64 { get { return satoshi?[getGdkNetwork(getNetwork()).getFeeAsset()]! ?? 0}}
     var recoveryChainCode: String?
     var recoveryPubKey: String?
 
@@ -68,6 +67,15 @@ class WalletItem: Codable {
             let satoshi = data["result"] as? [String: UInt64]
             self.satoshi = satoshi ?? [:]
             return satoshi
+        }
+    }
+
+    var btc: UInt64 {
+        get {
+            if let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() {
+                return satoshi?[feeAsset] ?? 0
+            }
+            return 0
         }
     }
 }

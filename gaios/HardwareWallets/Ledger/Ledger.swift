@@ -118,7 +118,7 @@ final class Ledger: LedgerCommands, HWProtocol {
         if let base58 = xPubsCached[key] {
             return Observable.just(base58)
         }
-        let isMainnet = getGdkNetwork(getNetwork()).mainnet
+        let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
         return self.pubKey(path: path)
             .flatMap { data -> Observable<String> in
                 let chainCode = Array((data["chainCode"] as? Data)!)
