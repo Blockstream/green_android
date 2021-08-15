@@ -11,4 +11,5 @@ enum EventType: String {
     case Tor = "tor"
     case AssetsUpdated = "assets_updated"
     case Session = "session"
+    case Ticker = "ticker"
 }

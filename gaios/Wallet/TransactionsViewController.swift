@@ -13,6 +13,8 @@ class TransactionsController: UITableViewController {
     private var transactionToken: NSObjectProtocol?
     private var assetsUpdatedToken: NSObjectProtocol?
     private var settingsUpdatedToken: NSObjectProtocol?
+    private var tickerUpdatedToken: NSObjectProtocol?
+
     @IBOutlet weak var btnSettings: UIBarButtonItem!
 
     var isResetActive: Bool {
@@ -91,7 +93,8 @@ class TransactionsController: UITableViewController {
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
         assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
-        settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: onSettingsTransaction)
+        settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
+        tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
         if presentingWallet != nil {
             showWallet()
         }
@@ -117,6 +120,10 @@ class TransactionsController: UITableViewController {
         if let token = settingsUpdatedToken {
             NotificationCenter.default.removeObserver(token)
             settingsUpdatedToken = nil
+        }
+        if let token = tickerUpdatedToken {
+            NotificationCenter.default.removeObserver(token)
+            tickerUpdatedToken = nil
         }
     }
 
@@ -211,7 +218,7 @@ class TransactionsController: UITableViewController {
         }
     }
 
-    func onSettingsTransaction(_ notification: Notification) {
+    func refresh(_ notification: Notification) {
         self.showWallet()
         self.showTransactions()
     }

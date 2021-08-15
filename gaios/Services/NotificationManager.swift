@@ -83,6 +83,8 @@ class NotificationManager {
             }
         case .Tor:
             post(event: .Tor, data: data)
+        case .Ticker:
+            post(event: .Ticker, data: data)
         default:
             break
         }
