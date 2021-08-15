@@ -8,6 +8,19 @@ class SessionManager: Session {
     var account: Account?
     var connected = false
 
+    var activeWallet: UInt32 {
+        get {
+            let pointerKey = String(format: "%@_wallet_pointer", self.account?.id ?? "")
+            let pointer = UserDefaults.standard.integer(forKey: pointerKey)
+            return UInt32(pointer)
+        }
+        set {
+            let pointerKey = String(format: "%@_wallet_pointer", self.account?.id ?? "")
+            UserDefaults.standard.set(Int(newValue), forKey: pointerKey)
+            UserDefaults.standard.synchronize()
+        }
+    }
+
     public init() {
         let url = try! FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true)
         try? FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
@@ -48,5 +61,49 @@ class SessionManager: Session {
         NotificationManager.shared.blockHeight = 0
         NotificationManager.shared.events = []
         NotificationManager.shared.twoFactorReset = nil
+    }
+
+    func transactions(first: UInt32 = 0) -> Promise<Transactions> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let pointer = activeWallet
+        return Guarantee().then(on: bgq) {_ in
+            try SessionManager.shared.getTransactions(details: ["subaccount": pointer, "first": first, "count": 15]).resolve()
+        }.compactMap(on: bgq) { data in
+            let result = data["result"] as? [String: Any]
+            let dict = result?["transactions"] as? [[String: Any]]
+            let list = dict?.map { Transaction($0) }
+            return Transactions(list: list ?? [])
+        }
+    }
+
+    func subaccount() -> Promise<WalletItem> {
+        let bgq = DispatchQueue.global(qos: .background)
+        let pointer = activeWallet
+        return Guarantee().then(on: bgq) {
+            try self.getSubaccount(subaccount: pointer).resolve()
+        }.recover {_ in
+            return Guarantee().compactMap { [self] in
+                activeWallet = 0
+            }.then(on: bgq) {
+                try self.getSubaccount(subaccount: 0).resolve()
+            }
+        }.compactMap(on: bgq) { data in
+            let result = data["result"] as? [String: Any]
+            let jsonData = try JSONSerialization.data(withJSONObject: result ?? [:])
+            return try JSONDecoder().decode(WalletItem.self, from: jsonData)
+        }
+    }
+
+    func subaccounts() -> Promise<[WalletItem]> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().then(on: bgq) {
+            try self.getSubaccounts().resolve()
+        }.compactMap(on: bgq) { data in
+            let result = data["result"] as? [String: Any]
+            let subaccounts = result?["subaccounts"] as? [[String: Any]]
+            let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
+            let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
+            return wallets
+        }
     }
 }

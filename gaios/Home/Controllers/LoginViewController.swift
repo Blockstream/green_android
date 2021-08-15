@@ -173,13 +173,8 @@ class LoginViewController: UIViewController {
             return Promise<Void>()
         }.compactMap { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
-        }.then(on: bgq) { _ -> Promise<WalletItem> in
-            let pointerKey = String(format: "%@_wallet_pointer", self.account?.id ?? "")
-            let pointer = UserDefaults.standard.integer(forKey: pointerKey)
-            return getSubaccount(UInt32(pointer))
-                .recover {_ in
-                    getSubaccount(0)
-                }
+        }.then(on: bgq) { _ in
+            SessionManager.shared.subaccount()
         }.get { _ in
             if withPIN != nil {
                 self.account?.attempts = 0

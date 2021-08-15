@@ -45,7 +45,7 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
 
     func reloadData(_ notification: Notification?) {
         let bgq = DispatchQueue.global(qos: .background)
-        getSubaccounts().map(on: bgq) { wallets in
+        SessionManager.shared.subaccounts().map(on: bgq) { wallets in
             self.wallets = wallets
             let dataTwoFactorConfig = try SessionManager.shared.getTwoFactorConfig()
             if dataTwoFactorConfig != nil {

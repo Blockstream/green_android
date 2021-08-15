@@ -58,20 +58,6 @@ struct Balance: Codable {
     }
 }
 
-func getTransactions(_ pointer: UInt32, first: UInt32 = 0) -> Promise<Transactions> {
-    let bgq = DispatchQueue.global(qos: .background)
-    return Guarantee().compactMap(on: bgq) {_ in
-        try SessionManager.shared.getTransactions(details: ["subaccount": pointer, "first": first, "count": 15])
-    }.then(on: bgq) { call in
-        call.resolve()
-    }.compactMap(on: bgq) { data in
-        let result = data["result"] as? [String: Any]
-        let dict = result?["transactions"] as? [[String: Any]]
-        let list = dict?.map { Transaction($0) }
-        return Transactions(list: list ?? [])
-    }
-}
-
 func getTransactionDetails(txhash: String) -> Promise<[String: Any]> {
     let bgq = DispatchQueue.global(qos: .background)
     return Guarantee().compactMap(on: bgq) {
@@ -150,33 +136,5 @@ func onFirstInitialization(network: String) {
     if !UserDefaults.standard.bool(forKey: initKey) {
         removeKeychainData()
         UserDefaults.standard.set(true, forKey: initKey)
-    }
-}
-
-func getSubaccount(_ pointer: UInt32) -> Promise<WalletItem> {
-    let bgq = DispatchQueue.global(qos: .background)
-    return Guarantee().compactMap(on: bgq) {
-        try SessionManager.shared.getSubaccount(subaccount: pointer)
-    }.then(on: bgq) { call in
-        call.resolve()
-    }.compactMap(on: bgq) { data in
-        let result = data["result"] as? [String: Any]
-        let jsonData = try JSONSerialization.data(withJSONObject: result ?? [:])
-        return try JSONDecoder().decode(WalletItem.self, from: jsonData)
-    }
-}
-
-func getSubaccounts() -> Promise<[WalletItem]> {
-    let bgq = DispatchQueue.global(qos: .background)
-    return Guarantee().compactMap(on: bgq) {
-        try SessionManager.shared.getSubaccounts()
-    }.then(on: bgq) { call in
-        call.resolve()
-    }.compactMap(on: bgq) { data in
-        let result = data["result"] as? [String: Any]
-        let subaccounts = result?["subaccounts"] as? [[String: Any]]
-        let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
-        let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
-        return wallets
     }
 }

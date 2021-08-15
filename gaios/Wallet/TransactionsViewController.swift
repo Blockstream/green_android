@@ -8,8 +8,6 @@ class TransactionsController: UITableViewController {
     private var txs: [Transactions] = []
     private var fetchTxs: Promise<Void>?
     private var isSweep: Bool = false
-    private let pointerKey = String(format: "%@_wallet_pointer", AccountsManager.shared.current?.id ?? "")
-    private var pointerWallet: UInt32 { UInt32(UserDefaults.standard.integer(forKey: pointerKey)) }
 
     private var blockToken: NSObjectProtocol?
     private var transactionToken: NSObjectProtocol?
@@ -208,7 +206,7 @@ class TransactionsController: UITableViewController {
     func onNewTransaction(_ notification: Notification) {
         guard let dict = notification.userInfo as NSDictionary? else { return }
         guard let subaccounts = dict["subaccounts"] as? [UInt32] else { return }
-        if subaccounts.contains(pointerWallet) {
+        if subaccounts.contains(SessionManager.shared.activeWallet) {
             handleRefresh()
         }
     }
@@ -323,7 +321,7 @@ class TransactionsController: UITableViewController {
     }
 
     func loadTransactions(_ pageId: Int = 0) -> Promise<Void> {
-        return getTransactions(self.pointerWallet, first: 0)
+        return SessionManager.shared.transactions(first: 0)
         .map { txs in
             self.txs.removeAll()
             self.txs.append(txs)
@@ -350,14 +348,9 @@ class TransactionsController: UITableViewController {
     }
 
     func loadWallet() -> Promise<Void> {
-        return getSubaccount(self.pointerWallet)
-        .recover { _ in
-            getSubaccount(0)
-        }.then { wallet in
+        return SessionManager.shared.subaccount().then { wallet in
             wallet.getBalance().compactMap { _ in wallet }
         }.map { wallet in
-            UserDefaults.standard.set(Int(wallet.pointer), forKey: self.pointerKey)
-            UserDefaults.standard.synchronize()
             self.presentingWallet = wallet
         }
     }
@@ -441,7 +434,7 @@ extension TransactionsController: UITableViewDataSourcePrefetching {
         if self.txs.last?.list.count == 0 { return }
         if fetchTxs != nil && fetchTxs!.isPending { return }
         let count = txs.map { $0.list.count }.reduce(0, +)
-        fetchTxs = getTransactions(self.pointerWallet, first: UInt32(count)).map { txs in
+        fetchTxs = SessionManager.shared.transactions(first: UInt32(count)).map { txs in
             self.txs.append(txs)
             self.showTransactions()
         }
@@ -451,8 +444,7 @@ extension TransactionsController: UITableViewDataSourcePrefetching {
 extension TransactionsController: SubaccountDelegate {
     func onChange(_ wallet: WalletItem) {
         // Replace wallet and balance
-        UserDefaults.standard.set(Int(wallet.pointer), forKey: pointerKey)
-        UserDefaults.standard.synchronize()
+        SessionManager.shared.activeWallet = wallet.pointer
         presentingWallet = wallet
         showWallet()
         // Empty and reload transactions list
