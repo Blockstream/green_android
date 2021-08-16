@@ -7,7 +7,8 @@ import com.blockstream.gdk.data.Device
 import com.blockstream.green.utils.ConsumableEvent
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.HWWalletBridge
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
+
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 open class AppViewModel : ViewModel(), HWWalletBridge {

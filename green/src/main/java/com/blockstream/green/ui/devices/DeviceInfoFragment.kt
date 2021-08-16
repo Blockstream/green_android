@@ -1,8 +1,13 @@
 package com.blockstream.green.ui.devices
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -28,12 +33,17 @@ import com.blockstream.green.utils.getNavigationResult
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.greenaddress.greenbits.ui.GaActivity
+import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity
+import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.Single
+import io.reactivex.SingleEmitter
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -57,6 +67,24 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
     @Inject
     lateinit var greenWallet: GreenWallet
+
+    private val startForResultPinMatrix = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            viewModel.requestPinMatrixEmitter?.onSuccess(intent?.getStringExtra(GaActivity.HARDWARE_PIN_REQUEST.toString()))
+        }else{
+            viewModel.requestPinMatrixEmitter?.onError(Exception("id_action_canceled"))
+        }
+    }
+
+    private val startForResultPassphrase = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            viewModel.requestPinPassphraseEmitter?.onSuccess(intent?.getStringExtra(GaActivity.HARDWARE_PASSPHRASE_REQUEST.toString()))
+        }else{
+            viewModel.requestPinPassphraseEmitter?.onError(Exception("id_action_canceled"))
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -101,6 +129,12 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                         }
                         is DeviceInfoViewModel.Event.AskForFirmwareUpgrade -> {
                             askForFirmwareUpgrade(it.deviceBrand, it.version, it.upgradeRequired, it.callback)
+                        }
+                        is DeviceInfoViewModel.Event.RequestPinMatrix -> {
+                            requestPinMatrix()
+                        }
+                        is DeviceInfoViewModel.Event.RequestPassphrase -> {
+                            requestPassphrase()
                         }
                     }
                 }
@@ -269,5 +303,13 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
             // Send error?
         }
+    }
+
+    private fun requestPinMatrix() {
+        startForResultPinMatrix.launch(Intent(requireContext(), TrezorPinActivity::class.java))
+    }
+
+    private fun requestPassphrase() {
+        startForResultPassphrase.launch(Intent(requireContext(), TrezorPassphraseActivity::class.java))
     }
 }

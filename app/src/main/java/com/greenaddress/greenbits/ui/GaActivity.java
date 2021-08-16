@@ -32,8 +32,9 @@ import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity;
 import com.greenaddress.greenbits.ui.components.ProgressBarHandler;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
-import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleEmitter;
+
 
 /**
  * Base class for activities within the application.
@@ -210,7 +211,6 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
 
 
     public Single<String> requestPinMatrix(DeviceBrand deviceBrand){
-
         return hwRequest(HARDWARE_PIN_REQUEST);
     }
 

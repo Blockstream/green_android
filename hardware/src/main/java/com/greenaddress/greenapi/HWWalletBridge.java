@@ -2,7 +2,7 @@ package com.greenaddress.greenapi;
 
 import com.blockstream.DeviceBrand;
 
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 
 public interface HWWalletBridge {
     void interactionRequest(final HWWallet hw);

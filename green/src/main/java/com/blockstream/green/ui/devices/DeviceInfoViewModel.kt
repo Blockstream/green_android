@@ -35,7 +35,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
 ) : AppViewModel(), HardwareConnectInteraction {
 
     sealed class Event{
-        class DeviceReady : Event()
+        object DeviceReady : Event()
         data class RequestPin(val deviceBrand: DeviceBrand) : Event()
         data class AskForFirmwareUpgrade(
             val deviceBrand: DeviceBrand,
@@ -43,9 +43,13 @@ class DeviceInfoViewModel @AssistedInject constructor(
             val upgradeRequired: Boolean,
             val callback: Function<Boolean?, Void?>?
         ) : Event()
+        object RequestPinMatrix: Event()
+        object RequestPassphrase: Event()
     }
 
     var requestPinEmitter: SingleEmitter<String>? = null
+    var requestPinMatrixEmitter: SingleEmitter<String>? = null
+    var requestPinPassphraseEmitter: SingleEmitter<String>? = null
     private val hardwareConnect = HardwareConnect()
 
     @Inject
@@ -89,7 +93,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         logger.info { "onDeviceReady" }
         onProgress.postValue(false)
 
-        onEvent.postValue(ConsumableEvent(Event.DeviceReady()))
+        onEvent.postValue(ConsumableEvent(Event.DeviceReady))
     }
 
     override fun onDeviceFailed() {
@@ -111,6 +115,22 @@ class DeviceInfoViewModel @AssistedInject constructor(
         callback: Function<Boolean?, Void?>?
     ) {
         onEvent.postValue(ConsumableEvent(Event.AskForFirmwareUpgrade(deviceBrand, version, isUpgradeRequired, callback)))
+    }
+
+    override fun requestPinMatrix(deviceBrand: DeviceBrand?): Single<String> {
+        onEvent.postValue(ConsumableEvent(Event.RequestPinMatrix))
+
+        return Single.create<String> { emitter ->
+            requestPinMatrixEmitter = emitter
+        }.subscribeOn(AndroidSchedulers.mainThread())
+    }
+
+    override fun requestPassphrase(deviceBrand: DeviceBrand?): Single<String> {
+        onEvent.postValue(ConsumableEvent(Event.RequestPassphrase))
+
+        return Single.create<String> { emitter ->
+            requestPinPassphraseEmitter = emitter
+        }.subscribeOn(AndroidSchedulers.mainThread())
     }
 
     @dagger.assisted.AssistedFactory
