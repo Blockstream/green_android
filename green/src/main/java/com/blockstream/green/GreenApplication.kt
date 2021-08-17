@@ -17,6 +17,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.settings.Migrator
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.QATesterActivity
 import com.blockstream.green.ui.settings.*
@@ -49,6 +50,9 @@ class GreenApplication : Application(){
 
     @Inject
     lateinit var assetManager: AssetManager
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     @Inject
     lateinit var qaTester: QATester

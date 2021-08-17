@@ -43,6 +43,7 @@ public class TransactionData extends JSONData implements Serializable {
     private Integer transactionVsize;
     private Integer transactionWeight;
     private Boolean serverSigned;
+    private String spvVerified;
     private Boolean userSigned;
     private String data;
     // FIXME: I don't think these belong here
@@ -186,6 +187,14 @@ public class TransactionData extends JSONData implements Serializable {
 
     public void setServerSigned(Boolean serverSigned) {
         this.serverSigned = serverSigned;
+    }
+
+    public String getSpvVerified() {
+        return spvVerified;
+    }
+
+    public void setSpvVerified(String spvVerified) {
+        this.spvVerified = spvVerified;
     }
 
     public Boolean getUserSigned() {

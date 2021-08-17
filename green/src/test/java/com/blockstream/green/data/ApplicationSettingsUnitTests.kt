@@ -20,7 +20,7 @@ class ApplicationSettingsUnitTests {
         val appSettings = ApplicationSettings.fromSharedPreferences(prefs)
 
         Assert.assertFalse(appSettings.tor)
-        Assert.assertNull(appSettings.proxyURL)
+        Assert.assertNull(appSettings.proxyUrl)
     }
 
     @Test
@@ -33,7 +33,7 @@ class ApplicationSettingsUnitTests {
 
         val appSettings = ApplicationSettings.fromSharedPreferences(prefs)
 
-        Assert.assertEquals("proxyURL", appSettings.proxyURL)
+        Assert.assertEquals("proxyURL", appSettings.proxyUrl)
         Assert.assertTrue(appSettings.tor)
     }
 }

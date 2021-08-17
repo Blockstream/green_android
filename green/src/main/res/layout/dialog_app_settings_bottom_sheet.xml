@@ -8,6 +8,10 @@
         <variable
             name="vm"
             type="com.blockstream.green.ui.settings.AppSettingsViewModel" />
+
+        <variable
+            name="isDevelopment"
+            type="Boolean" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -74,9 +78,170 @@
                     android:id="@+id/proxy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:text="@={vm.proxyURL}" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:layout_marginTop="16dp"
+                android:text="@string/id_backend_and_validation" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:text="@string/id_spv_validation_is_currently_available" />
+
+            <com.blockstream.green.views.GreenSwitch
+                android:id="@+id/switchPersonalNode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="@={vm.enableElectrumNode}"
+                android:layout_marginBottom="4dp"
+                app:captionText="@string/id_choose_the_electrum_servers_you_trust"
+                app:icon="@drawable/ic_spv_60"
+                app:titleText="@string/id_personal_node" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_marginBottom="4dp"
+                android:hint="Bitcoin Electrum Server"
+                tools:ignore="HardcodedText"
+                app:endIconMode="clear_text"
+                app:isVisible="@{vm.enableElectrumNode}">
+
+                <com.blockstream.green.views.PlaceholderTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@={vm.personalBitcoinElectrumServer}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_marginBottom="4dp"
+                android:hint="Liquid Electrum Server"
+                app:isVisible="@{vm.enableElectrumNode &amp;&amp; isDevelopment}"
+                app:endIconMode="clear_text"
+                tools:ignore="HardcodedText">
+
+                <com.blockstream.green.views.PlaceholderTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@={vm.personalLiquidElectrumServer}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_marginBottom="4dp"
+                android:hint="Testnet Electrum Server"
+                tools:ignore="HardcodedText"
+                app:endIconMode="clear_text"
+                app:isVisible="@{vm.enableElectrumNode}">
+
+                <com.blockstream.green.views.PlaceholderTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@={vm.personalTestnetElectrumServer}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.blockstream.green.views.GreenSwitch
+                android:id="@+id/switchSpv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="@={vm.enableSPV}"
+                android:layout_marginBottom="4dp"
+                app:captionText="@string/id_choose_the_electrum_servers_you_trust"
+                app:icon="@drawable/ic_spv_60"
+                app:titleText="@string/id_spv_verification" />
+
+            <com.blockstream.green.views.GreenSwitch
+                android:id="@+id/switchMultiserverValidation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:checked="@={vm.enableMultiServerValidation}"
+                app:captionText="@string/id_double_check_SPV"
+                app:icon="@drawable/ic_multiserver_60"
+                app:titleText="@string/id_multi_server_validation" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_marginBottom="4dp"
+                android:hint="Bitcoin Electrum Server"
+                tools:ignore="HardcodedText"
+                app:endIconMode="clear_text"
+                app:isVisible="@{vm.enableMultiServerValidation}">
+
+                <com.blockstream.green.views.PlaceholderTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@={vm.spvBitcoinElectrumServer}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_marginBottom="4dp"
+                android:hint="Liquid Electrum Server"
+                app:isVisible="@{vm.enableMultiServerValidation}"
+                app:endIconMode="clear_text"
+                tools:ignore="HardcodedText">
+
+                <com.blockstream.green.views.PlaceholderTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@={vm.spvLiquidElectrumServer}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_marginBottom="4dp"
+                android:hint="Testnet Electrum Server"
+                tools:ignore="HardcodedText"
+                app:endIconMode="clear_text"
+                app:isVisible="@{vm.enableMultiServerValidation}">
+
+                <com.blockstream.green.views.PlaceholderTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@={vm.spvTestnetElectrumServer}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"

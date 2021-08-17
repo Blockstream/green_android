@@ -27,7 +27,7 @@ class AppSettingsViewModelUnitTests : TestViewModel<AppSettingsViewModel>() {
     fun test_initial_values() {
         val s = viewModel.getSettings()
 
-        assertNull(s.proxyURL)
+        assertNull(s.proxyUrl)
         assertFalse(s.tor)
     }
 
@@ -40,20 +40,20 @@ class AppSettingsViewModelUnitTests : TestViewModel<AppSettingsViewModel>() {
     @Test
     fun proxy_shouldBe_empty() {
         viewModel.enableProxy.value = true
-        assertTrue(viewModel.getSettings().proxyURL.isNullOrEmpty())
+        assertTrue(viewModel.getSettings().proxyUrl.isNullOrEmpty())
     }
 
     @Test
     fun proxy_shouldBeEmpty_ifIsNotEnabled() {
         viewModel.proxyURL.value = "proxyURL"
-        assertTrue(viewModel.getSettings().proxyURL.isNullOrEmpty())
+        assertTrue(viewModel.getSettings().proxyUrl.isNullOrEmpty())
     }
 
     @Test
     fun proxy_should_haveValue() {
         viewModel.proxyURL.value = "proxyURL"
         viewModel.enableProxy.value = true
-        assertTrue(viewModel.getSettings().proxyURL!!.isNotEmpty())
+        assertTrue(viewModel.getSettings().proxyUrl!!.isNotEmpty())
     }
 
     @Test

@@ -11,7 +11,6 @@ import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.EncryptedData
 import com.blockstream.libwally.Wally
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
@@ -129,7 +128,7 @@ class Migrator(
         settingsManager.saveApplicationSettings(
             appSettings.copy(
                 tor = enableTOR,
-                proxyURL = proxyURL
+                proxyUrl = proxyURL
             )
         )
 

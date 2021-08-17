@@ -92,7 +92,7 @@ class GreenSession constructor(
     val hasDevice
         get() = device != null
 
-    val userAgent by lazy {
+    private val userAgent by lazy {
         String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
     }
 
@@ -126,9 +126,70 @@ class GreenSession constructor(
         updateTransactionsAndBalance(isReset = true, isLoadMore = false)
     }
 
+    /*
+    Electrum:
+        electrum_url: main electrum server provinding data
+        spv_enabled: if true, wallet verifies tx inclusion in block header chain using merkle proofs, using electrum_url
+        spv_multi: if true (and spv_enabled is true) performs block header chain cross validation using multiple electrum servers
+        spv_servers: list of electrum servers to use for cross validation, if empty (default) uses the ones listed in electrum official client
+
+    Green:
+        electrum_url: electrum server, used for (eventual) spv validation
+        spv_enabled: if true, wallet verifies tx inclusion in block header chain using merkle proofs fetching info from electrum_url
+        spv_multi: unused
+        spv_servers: unused
+     */
+    private fun createConnectionParams(network: Network): ConnectionParams {
+        val applicationSettings = settingsManager.getApplicationSettings()
+
+        var electrumUrl: String? = null
+        var spvServers: List<String>? = null
+
+        var spvEnabled = false
+        var spvMulti = false
+
+        if(network.isElectrum){
+            var url = applicationSettings.getPersonalElectrumServer(network)
+
+            if(!url.isNullOrBlank()){
+                electrumUrl = url
+            }
+
+            spvEnabled = applicationSettings.spv
+            spvMulti = applicationSettings.multiServerValidation
+
+            url = applicationSettings.getSpvElectrumServer(network)
+
+            if(spvMulti && !url.isNullOrBlank()){
+                spvServers = url.split(",")
+            }
+
+        }
+        // Disabled for Green
+//        else{
+//            spvEnabled = applicationSettings.spv
+//            val url = applicationSettings.getPersonalElectrumServer(network)
+//
+//            if(spvEnabled && !url.isNullOrBlank()){
+//                electrumUrl = url
+//            }
+//        }
+
+        return ConnectionParams(
+            networkName = network.id,
+            useTor = applicationSettings.tor && network.supportTorConnection, // Exclude Singlesig from Tor connection
+            logLevel = if (BuildConfig.DEBUG) "debug" else "none",
+            userAgent = userAgent,
+            proxy = applicationSettings.proxyUrl ?: "",
+            spvEnabled = spvEnabled,
+            spvMulti = spvMulti,
+            electrumUrl = electrumUrl,
+            spvServers = spvServers
+        )
+    }
+
     fun connect(network: Network) {
         disconnect(disconnectDevice = false)
-
         this.network = network
 
         // Prevent multiple open sessions
@@ -140,17 +201,9 @@ class GreenSession constructor(
             network.network
         )
 
-        val applicationSettings = settingsManager.getApplicationSettings()
-
         greenWallet.connect(
             gaSession,
-            ConnectionParams(
-                networkName = network.id,
-                useTor = applicationSettings.tor && network.supportTorConnection, // Exclude Singlesig from Tor connection
-                logLevel = if (BuildConfig.DEBUG) "debug" else "none",
-                userAgent = userAgent,
-                proxy = applicationSettings.proxyURL ?: ""
-            )
+            createConnectionParams(network)
         )
     }
 

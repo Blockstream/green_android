@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
+import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -20,18 +21,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AppSettingsDialogFragment : BottomSheetDialogFragment() {
 
-    companion object{
-        const val DEFAULT_CUSTOM_ELECTRUM_URL = "blockstream.info:700"
-    }
-
-    @Inject
-    lateinit var vmAssistedFactory: AppSettingsViewModel.AssistedFactory
-
-    private val viewModel: AppSettingsViewModel by viewModels {
-        AppSettingsViewModel.provideFactory(
-            vmAssistedFactory, DEFAULT_CUSTOM_ELECTRUM_URL
-        )
-    }
+    private val viewModel: AppSettingsViewModel by viewModels()
 
     private lateinit var binding: DialogAppSettingsBottomSheetBinding
 
@@ -62,6 +52,8 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+
+        binding.isDevelopment = isDevelopmentFlavor()
 
         binding.buttonSave.setOnClickListener {
             viewModel.saveSettings()
