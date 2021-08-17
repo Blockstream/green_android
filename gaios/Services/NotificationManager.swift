@@ -62,24 +62,13 @@ class NotificationManager {
                 post(event: EventType.Network, data: data)
                 return
             }
-            let hw: HWProtocol = AccountsManager.shared.current?.isLedger ?? false ? Ledger.shared : Jade.shared
-            if !(AccountsManager.shared.current?.isHW ?? false) {
-                // Login required without hw
-                DispatchQueue.main.async {
-                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                    appDelegate?.logout(with: false)
-                }
-                return
-            }
-            if hw.connected {
-                // Restore connection with hw through hidden login
-                reconnect().done { _ in
-                    self.post(event: EventType.Network, data: data)
-                }.catch { err in
-                    print("Error on reconnected with hw: \(err.localizedDescription)")
-                    let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                    appDelegate?.logout(with: false)
-                }
+            // Restore connection through hidden login
+            reconnect().done { _ in
+                self.post(event: EventType.Network, data: data)
+            }.catch { err in
+                print("Error on reconnected with hw: \(err.localizedDescription)")
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.logout(with: false)
             }
         case .Tor:
             post(event: .Tor, data: data)
@@ -130,15 +119,21 @@ class NotificationManager {
     func reconnect() -> Promise<[String: Any]> {
         let bgq = DispatchQueue.global(qos: .background)
         let session = SessionManager.shared
-        return Guarantee().map(on: bgq) {_ -> TwoFactorCall in
-            let info = AccountsManager.shared.current?.isLedger ?? false ? Ledger.shared.device : Jade.shared.device
-            guard let data = try? JSONEncoder().encode(info),
-                let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
-                throw JadeError.Abort("Invalid device configuration")
+        let account = AccountsManager.shared.current
+        let isHwLogin = account?.isJade ?? false || account?.isLedger ?? false
+        return Guarantee().compactMap(on: bgq) { _ in
+            if isHwLogin {
+                let info = account?.isLedger ?? false ? Ledger.shared.device : Jade.shared.device
+                guard let data = try? JSONEncoder().encode(info),
+                    let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
+                    throw JadeError.Abort("Invalid device configuration")
+                }
+                return ([:], ["device": device])
             }
-            return try session.loginUser(details: [:], hw_device: ["device": device])
-        }.then(on: bgq) { call in
-            call.resolve()
+            let mnemonic = try? session.getMnemonicPassphrase(password: "")
+            return (["mnemonic": mnemonic ?? "", "password": ""], [:])
+        }.then(on: bgq) { (details, device) in
+            return try session.loginUser(details: details, hw_device: device).resolve()
         }
     }
 }
