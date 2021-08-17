@@ -78,14 +78,14 @@ fun Balance.fiat(withUnit: Boolean = true): String {
     } + if (withUnit) " $fiatCurrency" else ""
 }
 
-fun Balance.btc(session: GreenSession, withUnit: Boolean = true): String {
-    return this.btc(session.getSettings()?.unit ?: "BTC", withUnit)
+fun Balance.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false): String {
+    return this.btc(unit = session.getSettings()?.unit ?: "BTC", withUnit = withUnit, withGrouping = withGrouping)
 }
 
-private fun Balance.btc(unit: String, withUnit: Boolean = true): String {
+private fun Balance.btc(unit: String, withUnit: Boolean = true, withGrouping: Boolean = false): String {
     return try {
         val value = getValue(unit).toDouble()
-        userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = false).format(value)
+        userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping).format(value)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " ${unit}" else ""
@@ -99,16 +99,16 @@ fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
     } + if (withUnit) " ${settings.unit}" else ""
 }
 
-fun Balance.asset(withUnit: Boolean = true): String {
+fun Balance.asset(withUnit: Boolean = true, withGrouping: Boolean = false): String {
     return try {
-        userNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = false).format(assetValue?.toDouble() ?: satoshi)
+        userNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = withGrouping).format(assetValue?.toDouble() ?: satoshi)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""
 }
 
-fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null): String {
-    val look = session.convertAmount(Convert(this)).btc(session, withUnit = withUnit)
+fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null, withGrouping: Boolean = false): String {
+    val look = session.convertAmount(Convert(this)).btc(session, withUnit = withUnit, withGrouping = withGrouping)
 
     withDirection?.let {
         if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){
@@ -119,8 +119,8 @@ fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirectio
     return look
 }
 
-fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean = true, withDirection: Transaction.Type? = null): String {
-    val look = session.convertAmount(Convert(this, session.getAsset(assetId))).asset(withUnit = withUnit)
+fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean = true, withGrouping: Boolean = false, withDirection: Transaction.Type? = null): String {
+    val look = session.convertAmount(Convert(this, session.getAsset(assetId))).asset(withUnit = withUnit, withGrouping = withGrouping)
 
     withDirection?.let {
         if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){

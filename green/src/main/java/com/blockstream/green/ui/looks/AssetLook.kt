@@ -28,9 +28,9 @@ class AssetListLook(
     val balance : String
         get() {
             return if(isBTCValue){
-                session.convertAmount(Convert(amount)).btc(session, withUnit = false)
+                session.convertAmount(Convert(amount)).btc(session, withUnit = false, withGrouping = true)
             }else{
-                session.convertAmount(Convert(amount, asset)).asset(false)
+                session.convertAmount(Convert(amount, asset)).asset(withUnit = false, withGrouping = true)
             }
         }
 

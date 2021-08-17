@@ -64,7 +64,7 @@ class OverviewViewModel @AssistedInject constructor(
     private var pendingSubAccountSwitch: Long = -1
 
     private var allSubAccounts: List<SubAccount> by Delegates.observable(listOf()) { _, _, newValue ->
-        subAccounts.postValue(filterSubAccounts(newValue))
+        subAccounts.value = filterSubAccounts(newValue)
     }
 
     init {
