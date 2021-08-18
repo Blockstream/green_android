@@ -134,9 +134,9 @@ class TwoFactorResetSheetDialogFragment : WalletBottomSheetDialogFragment<HelpBo
                     TwoFactorSetupAction.CANCEL
                 }else{
                     if(twoFactorReset.isDisputed) {
-                        TwoFactorSetupAction.DISPUTE
-                    }else{
                         TwoFactorSetupAction.UNDO_DISPUTE
+                    }else{
+                        TwoFactorSetupAction.DISPUTE
                     }
                 }
 

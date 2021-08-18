@@ -107,9 +107,9 @@ class OverviewViewModel @AssistedInject constructor(
                 if (it.isActive){
                     val list = mutableListOf<AlertType>()
                     if(it.isDisputed){
-                        list += AlertType.Dispute2FA()
+                        list += AlertType.Dispute2FA(it)
                     }else{
-                        list += AlertType.Reset2FA(4)
+                        list += AlertType.Reset2FA(it)
                     }
                     alerts.postValue(list)
                 }

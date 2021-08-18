@@ -27,7 +27,7 @@ class AlertListItem(private val alertType: AlertType, val listener : View.OnClic
             }
             is AlertType.Reset2FA -> {
                 binding.alertView.title = res.getString(R.string.id_2fa_reset_in_progress)
-                binding.alertView.message = res.getString(R.string.id_your_wallet_is_locked_for_a, alertType.daysRemaining)
+                binding.alertView.message = res.getString(R.string.id_your_wallet_is_locked_for_a, alertType.twoFactorReset.daysRemaining)
             }
         }
         binding.alertView.primaryButton(res.getString(R.string.id_learn_more), listener)
@@ -38,7 +38,7 @@ class AlertListItem(private val alertType: AlertType, val listener : View.OnClic
     }
 }
 
-sealed class AlertType{
-    class Dispute2FA: AlertType()
-    class Reset2FA(val daysRemaining: Int): AlertType()
+sealed class AlertType(val twoFactorReset: TwoFactorReset){
+    class Dispute2FA(twoFactorReset: TwoFactorReset) : AlertType(twoFactorReset)
+    class Reset2FA(twoFactorReset: TwoFactorReset): AlertType(twoFactorReset)
 }

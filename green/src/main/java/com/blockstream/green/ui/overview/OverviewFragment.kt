@@ -377,10 +377,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         adapters += ModelAdapter<AlertType, AlertListItem> {
             AlertListItem(it) { _ ->
-                session.getTwoFactorReset()?.let { twoFactorReset ->
-                    TwoFactorResetSheetDialogFragment.newInstance(twoFactorReset).also { dialog ->
-                        dialog.show(childFragmentManager, dialog.toString())
-                    }
+                TwoFactorResetSheetDialogFragment.newInstance(it.twoFactorReset).also { dialog ->
+                    dialog.show(childFragmentManager, dialog.toString())
                 }
             }
         }.observeList(viewLifecycleOwner, viewModel.getAlerts())
