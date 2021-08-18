@@ -13,6 +13,9 @@ class NotificationManager {
                 let data = notification?[event.rawValue] as? [String: Any] else {
             return
         }
+        #if DEBUG
+        print("notification \(event): \(data)")
+        #endif
         switch event {
         case .Block:
             guard let height = data["block_height"] as? UInt32 else { break }
