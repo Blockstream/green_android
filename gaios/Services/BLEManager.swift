@@ -125,7 +125,7 @@ class BLEManager {
     }
 
     func connectLedger(_ p: Peripheral, network: String) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let session = SessionManager.shared
         enstablishDispose = p.establishConnection()
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p in Ledger.shared.open(p) }
@@ -142,18 +142,19 @@ class BLEManager {
                     throw DeviceError.outdated_app
                 }
             }.compactMap { _ in
-                try SessionManager.shared.connect(network: network)
+                try session.connect(network: network)
             }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.delegate?.onAuthenticate(p, network: network, firstInitialization: false)
             }, onError: { err in
+                _ = SessionManager.newSession()
                 self.onError(err, network: network)
             })
     }
 
     func connectJade(_ p: Peripheral, network: String) {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let session = SessionManager.newSession()
         var hasPin = false
         enstablishDispose = p.establishConnection()
             .flatMap { p in Jade.shared.open(p) }
@@ -174,7 +175,7 @@ class BLEManager {
                 // check genuine firmware
                 return Jade.shared.addEntropy()
             }.compactMap { _ in
-                try SessionManager.shared.connect(network: network)
+                try session.connect(network: network)
             }.flatMap { _ in
                 Jade.shared.auth(network: network)
                     .retry(3)
@@ -183,6 +184,7 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onAuthenticate(p, network: network, firstInitialization: !hasPin)
             }, onError: { err in
+                _ = SessionManager.newSession()
                 self.onError(err, network: network)
             })
     }
@@ -231,6 +233,7 @@ class BLEManager {
     }
 
     func login(_ p: Peripheral, checkFirmware: Bool = true) {
+        let session = SessionManager.shared
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p -> Observable<Peripheral> in
@@ -248,14 +251,14 @@ class BLEManager {
                         observer.onError(JadeError.Abort("Invalid device configuration"))
                         return Disposables.create { }
                     }
-                    _ = try? SessionManager.shared.registerUser(mnemonic: "", hw_device: ["device": device]).resolve()
+                    _ = try? session.registerUser(mnemonic: "", hw_device: ["device": device]).resolve()
                         .then { _ -> Promise<Void> in
                             if AccountsManager.shared.current?.network == "liquid" {
                                 return Registry.shared.load()
                             }
                             return Promise<Void>()
                         }.then { _ in
-                            try SessionManager.shared.loginUser(details: [:], hw_device: ["device": device]).resolve()
+                            try session.loginUser(details: [:], hw_device: ["device": device]).resolve()
                         }.done { res in
                             observer.onNext(res)
                             observer.onCompleted()
@@ -272,7 +275,7 @@ class BLEManager {
                 case BLEManagerError.firmwareErr(_): // nothing to do
                     return
                 default:
-                    SessionManager.shared.disconnect()
+                    _ = SessionManager.newSession()
                     self.onError(err, network: nil)
                 }
             })

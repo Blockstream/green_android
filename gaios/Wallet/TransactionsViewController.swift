@@ -497,7 +497,7 @@ extension TransactionsController: DrawerNetworkSelectionDelegate {
             self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
             return Guarantee()
         }.map(on: bgq) {
-            SessionManager.shared.disconnect()
+            _ = SessionManager.newSession()
             if let account = AccountsManager.shared.current {
                 if account.isJade || account.isLedger {
                     BLEManager.shared.dispose()

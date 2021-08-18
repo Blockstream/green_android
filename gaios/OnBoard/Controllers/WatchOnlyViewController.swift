@@ -123,15 +123,16 @@ class WatchOnlyViewController: KeyboardViewController {
         let password = self.passwordTextField.text ?? ""
         let bgq = DispatchQueue.global(qos: .background)
         let appDelegate = getAppDelegate()!
+        let session = SessionManager.newSession()
 
         firstly {
             dismissKeyboard()
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionManager.shared.connect(network: network)
+            try session.connect(network: network)
         }.then(on: bgq) { _ in
-            try SessionManager.shared.loginUser(details: ["username": username, "password": password]).resolve()
+            try session.loginUser(details: ["username": username, "password": password]).resolve()
         }.ensure {
             self.stopLoader()
         }.done { _ in
@@ -143,6 +144,7 @@ class WatchOnlyViewController: KeyboardViewController {
             AccountsManager.shared.current = account
             appDelegate.instantiateViewControllerAsRoot(storyboard: "Wallet", identifier: "TabViewController")
         }.catch { error in
+            _ = SessionManager.newSession()
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))

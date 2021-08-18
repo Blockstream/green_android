@@ -154,6 +154,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
+        let session = SessionManager.newSession()
         firstly {
             return Guarantee()
         }.compactMap {
@@ -161,11 +162,11 @@ class LoginViewController: UIViewController {
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         }.then(on: bgq) { data -> Promise<[String: Any]> in
-            try SessionManager.shared.connect(self.account!)
+            try session.connect(self.account!)
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-            return try SessionManager.shared.loginUser(details: ["pin": pin!, "pin_data": pinData!]).resolve()
+            return try session.loginUser(details: ["pin": pin!, "pin_data": pinData!]).resolve()
         }.then { _ -> Promise<Void> in
             if self.account?.network == "liquid" {
                 return Registry.shared.load()
@@ -174,7 +175,7 @@ class LoginViewController: UIViewController {
         }.compactMap { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
         }.then(on: bgq) { _ in
-            SessionManager.shared.subaccount()
+            session.subaccount()
         }.get { _ in
             if withPIN != nil {
                 self.account?.attempts = 0
@@ -189,6 +190,7 @@ class LoginViewController: UIViewController {
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
+            _ = SessionManager.newSession()
             self.stopLoader()
             switch error {
             case AuthenticationTypeHandler.AuthError.CanceledByUser:

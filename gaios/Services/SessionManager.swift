@@ -27,6 +27,11 @@ class SessionManager: Session {
         try! super.init(notificationCompletionHandler: notificationManager.newNotification)
     }
 
+    public static func newSession() -> SessionManager {
+        SessionManager.shared = SessionManager()
+        return SessionManager.shared
+    }
+
     public func connect(_ account: Account) throws {
         self.account = account
         try connect(network: account.networkName)
@@ -51,12 +56,6 @@ class SessionManager: Session {
         } catch {
             throw AuthenticationTypeHandler.AuthError.ConnectionFailed
         }
-    }
-
-    override func disconnect() {
-        Jade.shared.xPubsCached.removeAll()
-        Ledger.shared.xPubsCached.removeAll()
-        SessionManager.shared = SessionManager()
     }
 
     func transactions(first: UInt32 = 0) -> Promise<Transactions> {

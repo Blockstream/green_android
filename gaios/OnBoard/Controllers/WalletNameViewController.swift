@@ -108,15 +108,16 @@ class WalletNameViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let params = OnBoardManager.shared.params
         let account = OnBoardManager.shared.account()
+        let session = SessionManager.newSession()
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            try SessionManager.shared.connect(account)
+            try session.connect(account)
         }.then(on: bgq) {
-            try SessionManager.shared.registerUser(mnemonic: params?.mnemonic ?? "").resolve()
+            try session.registerUser(mnemonic: params?.mnemonic ?? "").resolve()
         }.then(on: bgq) { _ in
-            try SessionManager.shared.loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
+            try session.loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
         }.ensure {
             self.stopLoader()
         }.done { _ in
@@ -134,18 +135,20 @@ class WalletNameViewController: UIViewController {
     func checkCredential() {
         let params = OnBoardManager.shared.params
         let bgq = DispatchQueue.global(qos: .background)
+        let session = SessionManager.newSession()
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
         }.compactMap(on: bgq) {
-            return try SessionManager.shared.connect(network: OnBoardManager.shared.networkName)
+            return try session.connect(network: OnBoardManager.shared.networkName)
         }.then(on: bgq) {
-            return try SessionManager.shared.loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
+            return try session.loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
         }.ensure {
             self.stopLoader()
         }.done { _ in
             self.next()
         }.catch { error in
+            _ = SessionManager.newSession()
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
