@@ -264,7 +264,15 @@ class Settings: Codable {
         case Short
         case Medium
         case Long
-        static let all = [Short, Medium, Long]
+
+        static func all() -> [CsvTime] {
+            if let network = AccountsManager.shared.current?.gdkNetwork,
+               network.liquid {
+                return [Long]
+            } else {
+                return [Short, Medium, Long]
+            }
+        }
 
         static func values() -> [Int]? {
             return AccountsManager.shared.current?.gdkNetwork?.csvBuckets
@@ -272,6 +280,10 @@ class Settings: Codable {
 
         func value() -> Int? {
             let csvBuckets = CsvTime.values()
+            if let network = AccountsManager.shared.current?.gdkNetwork,
+               network.liquid {
+                return csvBuckets?[0]
+            }
             switch self {
             case .Short:
                 return csvBuckets?[0]

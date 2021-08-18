@@ -21,7 +21,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var lblRecoveryTool: UILabel!
     @IBOutlet weak var btnRecoveryTool: UIButton!
 
-    var csvTypes = Settings.CsvTime.all
+    var csvTypes = Settings.CsvTime.all()
     var csvValues = Settings.CsvTime.values()
     var newCsv: Int?
     var currentCsv: Int?
