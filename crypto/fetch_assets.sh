@@ -1,6 +1,9 @@
 #!/bin/bash
 #set -e
 
+# DISABLED
+exit 0
+
 # ----- Help
 help_message() {
   cat <<- _EOF_

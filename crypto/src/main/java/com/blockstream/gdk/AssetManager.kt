@@ -163,10 +163,6 @@ class AssetManager(
                         )
                     )
 
-                    /*
-
-                    Updating icon is disabled as the assets are integrated in the build.
-
                     // Allow forceUpdate to override QATester settings
                     if (QATester.isAssetIconsFetchDisabled() && !forceUpdate) {
                         return
@@ -186,8 +182,6 @@ class AssetManager(
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-
-                    */
 
                 } catch (e: Exception) {
                     e.printStackTrace()
