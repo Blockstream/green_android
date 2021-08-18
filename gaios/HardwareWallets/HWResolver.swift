@@ -107,9 +107,6 @@ class HWResolver {
                         txinfo = try SessionManager.shared.getTransactionDetails(txhash: txhash)
                     }
                     return hw.signTransaction(tx: txinfo!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
-                        .compactMap { res in
-                            return ["signatures": res]
-                        }
                 }.subscribe(onNext: { res in
                     seal.fulfill(res)
                     Ledger.shared.TIMEOUT = 30
