@@ -40,24 +40,13 @@ data class Network(
         get() = !isMainnet
 
     val canonicalName: String
-        get() = if (isElectrum) {
-            when {
-                isMainnet -> {
-                    "Bitcoin"
-                }
-                isLiquid && !isTestnet-> {
-                    "Liquid"
-                }
-                isLiquid && isTestnet-> {
-                    "Testnet Liquid"
-                }
-                else -> {
-                    "Testnet"
-                }
+        get() = when(network){
+                GreenMainnet, ElectrumMainnet -> "Bitcoin"
+                GreenTestnet, ElectrumTestnet -> "Testnet"
+                GreenLiquid, ElectrumLiquid -> "Liquid"
+                GreenTestnetLiquid, ElectrumTestnetLiquid -> "Testnet Liquid"
+                else -> name
             }
-        } else {
-            name
-        }
 
     val productName: String
         get() = if (isElectrum) {

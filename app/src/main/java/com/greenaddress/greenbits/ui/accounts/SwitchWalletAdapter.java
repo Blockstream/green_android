@@ -42,9 +42,7 @@ public class SwitchWalletAdapter extends RecyclerView.Adapter<SwitchWalletAdapte
             return com.blockstream.crypto.R.drawable.ic_btc;
         if (network.equals("testnet") || network.equals("electrum-testnet"))
             return com.blockstream.crypto.R.drawable.ic_testnet_btc;
-        if (network.equals("localtest-liquid"))
-            return com.blockstream.crypto.R.drawable.ic_liquid;
-        if (network.equals("liquid"))
+        if (network.equals("liquid") || network.equals("electrum-liquid") || network.equals("localtest-liquid"))
             return com.blockstream.crypto.R.drawable.ic_liquid;
         return com.blockstream.crypto.R.drawable.ic_testnet_btc;
     }
