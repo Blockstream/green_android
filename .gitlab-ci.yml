@@ -8,8 +8,6 @@ build_release_iphone:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/fetch_assets.sh
-    - ruby ./tools/add_assets_to_pbxproj.rb
     - ./tools/build.sh --update-cocoapods --iphone static
 
 build_tag_release_export:
@@ -26,8 +24,6 @@ build_tag_release_export:
     - osx
   script:
     - cd $CI_PROJECT_DIR
-    - ./tools/fetch_assets.sh
-    - ruby ./tools/add_assets_to_pbxproj.rb
     - ./tools/build.sh --build-gdk --sign-and-export --update-cocoapods --iphone static
 
 ui_tests:

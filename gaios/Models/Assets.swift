@@ -55,11 +55,7 @@ class Registry: Codable {
     }
 
     func image(for key: String?) -> UIImage? {
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
-        if let path = Bundle.main.path(forResource: "asset_\(feeAsset)", ofType: "png") {
-            // read icon from file
-            return UIImage(contentsOfFile: path)
-        } else if let icon = icons.filter({ $0.key == feeAsset }).first {
+        if let icon = icons.filter({ $0.key == key }).first {
             // read icon from memory
             return UIImage(base64: icon.value)
         }
