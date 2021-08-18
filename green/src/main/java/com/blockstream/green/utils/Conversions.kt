@@ -111,8 +111,10 @@ fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirectio
     val look = session.convertAmount(Convert(this)).btc(session, withUnit = withUnit, withGrouping = withGrouping)
 
     withDirection?.let {
-        if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){
-            return "-$look"
+        return if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){
+            "-$look"
+        }else{
+            "+$look"
         }
     }
 

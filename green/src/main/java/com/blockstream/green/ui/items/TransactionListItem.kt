@@ -3,6 +3,7 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.size
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
@@ -33,6 +34,10 @@ class TransactionListItem(val session: GreenSession, val tx: Transaction) : Abst
     override fun bindView(binding: ListItemTransactionBinding, payloads: List<Any>) {
         binding.date.text = look.date
         binding.note.text = look.memo
+
+        val confirmations = tx.getConfirmations(session.blockHeight)
+        binding.unconfirmed.isVisible = confirmations == 0L
+        binding.date.isVisible = confirmations > 0L
 
         setAsset(0, binding.firstValue)
 

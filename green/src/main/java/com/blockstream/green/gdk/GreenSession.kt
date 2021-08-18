@@ -88,6 +88,9 @@ class GreenSession constructor(
         String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
     }
 
+    val blockHeight
+        get() = blockSubject.value?.height ?: 0
+
     fun getAssetsObservable(): Observable<Assets> = assetsSubject.hide()
     fun getSubAccountsObservable(): Observable<List<SubAccount>> = subAccountsSubject.hide()
     fun getTorStatusObservable(): Observable<TORStatus> = torStatusSubject.hide()

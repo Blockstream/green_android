@@ -61,6 +61,10 @@ data class Transaction(
     val isIn
         get() = txType == Type.IN
 
+    fun getConfirmations(currentBlock: Long): Long{
+        if (blockHeight == 0L || currentBlock == 0L) return 0
+        return currentBlock - blockHeight + 1
+    }
 
     private val objectMapper by lazy { ObjectMapper() }
 

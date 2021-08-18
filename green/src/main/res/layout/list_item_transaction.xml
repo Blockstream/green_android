@@ -17,59 +17,86 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp">
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Jul 29, 2020"
-            android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="@color/color_on_surface_emphasis_medium"
-            android:textSize="10sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
 
-        <TextView
-            android:id="@+id/note"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textAlignment="textEnd"
-            android:textAppearance="?attr/textAppearanceCaption"
-            android:textColor="@color/color_on_surface_emphasis_low"
-            app:layout_constraintBottom_toTopOf="@+id/assetWrapper"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/date"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Body gif to Mom" />
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                android:textSize="10sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:ignore="SmallSp"
+                tools:text="Jul 29, 2020" />
 
-        <com.blockstream.green.views.GappedLinearLayout
-            android:id="@+id/assetWrapper"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:orientation="vertical"
-            app:gap="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/note">
+            <TextView
+                android:id="@+id/unconfirmed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/color_surface_light_round"
+                android:paddingStart="4dp"
+                android:paddingTop="1dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="1dp"
+                android:textAllCaps="true"
+                android:text="@string/id_unconfirmed"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                android:textSize="10sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:ignore="SmallSp" />
 
-            <include
-                android:id="@+id/firstValue"
-                layout="@layout/list_item_transaction_asset"/>
+            <TextView
+                android:id="@+id/note"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAlignment="textEnd"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_on_surface_emphasis_low"
+                app:layout_constraintBottom_toTopOf="@+id/assetWrapper"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/barrierTopLeft"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Body gif to Mom" />
 
-        </com.blockstream.green.views.GappedLinearLayout>
+            <com.blockstream.green.views.GappedLinearLayout
+                android:id="@+id/assetWrapper"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:orientation="vertical"
+                app:gap="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/note">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <include
+                    android:id="@+id/firstValue"
+                    layout="@layout/list_item_transaction_asset" />
+
+            </com.blockstream.green.views.GappedLinearLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierTopLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="right"
+                app:constraint_referenced_ids="date,unconfirmed" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </layout>
