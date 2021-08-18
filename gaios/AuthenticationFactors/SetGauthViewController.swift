@@ -73,7 +73,7 @@ class SetGauthViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            NotificationManager.shared.reloadTwoFactor()
+            SessionManager.shared.notificationManager.reloadTwoFactor()
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {

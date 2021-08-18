@@ -16,13 +16,13 @@ class Learn2faViewController: UIViewController {
 
     var resetDaysRemaining: Int? {
         get {
-            guard let twoFactorConfig = NotificationManager.shared.twoFactorReset else { return nil }
+            guard let twoFactorConfig = SessionManager.shared.notificationManager.twoFactorReset else { return nil }
             return twoFactorConfig.daysRemaining
         }
     }
     var isDisputeActive: Bool {
         get {
-            guard let twoFactorConfig = NotificationManager.shared.twoFactorReset else { return false }
+            guard let twoFactorConfig = SessionManager.shared.notificationManager.twoFactorReset else { return false }
             return twoFactorConfig.isDisputeActive
         }
     }

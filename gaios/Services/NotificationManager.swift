@@ -2,7 +2,6 @@ import Foundation
 import PromiseKit
 
 class NotificationManager {
-    static let shared = NotificationManager()
 
     var twoFactorReset: TwoFactorReset?
     var events = [Event]()

@@ -5,7 +5,7 @@ import PromiseKit
 class NotificationsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
-    private var items: [Event] { get { return NotificationManager.shared.events } }
+    private var items: [Event] { get { return SessionManager.shared.notificationManager.events } }
     private var twoFactorConfig: TwoFactorConfig?
     private var wallets = [WalletItem]()
 

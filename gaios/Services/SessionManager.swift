@@ -3,10 +3,11 @@ import PromiseKit
 
 class SessionManager: Session {
 
-    static let shared = SessionManager()
+    static var shared = SessionManager()
 
     var account: Account?
     var connected = false
+    var notificationManager: NotificationManager
 
     var activeWallet: UInt32 {
         get {
@@ -22,15 +23,12 @@ class SessionManager: Session {
     }
 
     public init() {
-        let url = try! FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true)
-        try? FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
-        try! gdkInit(config: ["datadir": url.path])
-        try! super.init(notificationCompletionHandler: NotificationManager.shared.newNotification)
+        notificationManager = NotificationManager()
+        try! super.init(notificationCompletionHandler: notificationManager.newNotification)
     }
 
     public func connect(_ account: Account) throws {
         self.account = account
-        disconnect()
         try connect(network: account.network)
     }
 
@@ -53,14 +51,9 @@ class SessionManager: Session {
     }
 
     override func disconnect() {
-        try? super.disconnect()
-        account = nil
-        connected = false
         Jade.shared.xPubsCached.removeAll()
         Ledger.shared.xPubsCached.removeAll()
-        NotificationManager.shared.blockHeight = 0
-        NotificationManager.shared.events = []
-        NotificationManager.shared.twoFactorReset = nil
+        SessionManager.shared = SessionManager()
     }
 
     func transactions(first: UInt32 = 0) -> Promise<Transactions> {
