@@ -9,31 +9,17 @@ import kotlinx.serialization.encoding.Encoder
 import java.text.SimpleDateFormat
 import java.util.*
 
-object DateOrNullSerializer : KSerializer<Date?> {
-    override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor("Date", PrimitiveKind.STRING)
-
-    override fun serialize(encoder: Encoder, value: Date?) = encoder.encodeString(value?.let {
-        SimpleDateFormat(
-            "yyyy-MM-dd HH:mm:ss",
-            Locale.getDefault()
-        ).format(value)
-    } ?: "")
-
-    override fun deserialize(decoder: Decoder): Date? =
-        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(decoder.decodeString())
-}
-
 object DateSerializer : KSerializer<Date> {
+
+    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss",  Locale.getDefault()).also {
+        it.timeZone = TimeZone.getTimeZone("GMT")
+    }
+
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("Date", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: Date) = encoder.encodeString(
-        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(value)
-    )
+    override fun serialize(encoder: Encoder, value: Date) = encoder.encodeString(formatter.format(value))
 
-    override fun deserialize(decoder: Decoder): Date =
-        SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(decoder.decodeString())
-            ?: Date(0)
+    override fun deserialize(decoder: Decoder): Date = formatter.parse(decoder.decodeString()) ?: Date(0)
 }
 

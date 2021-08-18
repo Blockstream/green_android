@@ -9,10 +9,7 @@ import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.gdk.getIcon
-import com.blockstream.green.utils.format
-import com.blockstream.green.utils.getBitcoinOrLiquidUnit
-import com.blockstream.green.utils.toAssetLook
-import com.blockstream.green.utils.toBTCLook
+import com.blockstream.green.utils.*
 
 class TransactionListLook(val session: GreenSession, private val tx: Transaction) {
 
@@ -27,9 +24,8 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
         }
     }
 
-
     val date
-        get() = tx.createdAt.format()
+        get() = tx.createdAt.formatAuto()
 
     val memo
         get() = tx.memo

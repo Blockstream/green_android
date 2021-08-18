@@ -131,4 +131,13 @@ fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean =
     return look
 }
 
-fun Date.format(): String = DateFormat.getDateInstance(DateFormat.MEDIUM).format(this)
+fun Date.formatOnlyDate(): String = DateFormat.getDateInstance(DateFormat.LONG).format(this)
+
+fun Date.formatWithTime(): String = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.SHORT).format(this)
+
+fun Date.formatAuto(): String =
+    if ((this.time + 24 * 60 * 60 * 1000) > (System.currentTimeMillis())) {
+        formatWithTime()
+    } else {
+        formatOnlyDate()
+    }
