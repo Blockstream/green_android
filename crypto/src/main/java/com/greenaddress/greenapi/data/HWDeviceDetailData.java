@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class HWDeviceDetailData extends JSONData {
     private String name;
+    private String deviceType;
     private boolean supportsLowR;
     private boolean supportsArbitraryScripts;
+    private boolean supportsHostUnblinding;
     private HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid;
     private HWDeviceData.HWDeviceAntiExfilSupport supportsAeProtocol;
 
@@ -17,16 +19,21 @@ public class HWDeviceDetailData extends JSONData {
         this.name = null;
         this.supportsLowR = false;
         this.supportsArbitraryScripts = false;
+        this.supportsHostUnblinding = false;
         this.supportsLiquid = HWDeviceData.HWDeviceDataLiquidSupport.None;
         this.supportsAeProtocol = HWDeviceData.HWDeviceAntiExfilSupport.None;
     }
 
-    public HWDeviceDetailData(final String name, final boolean supportsLowR, final boolean supportsArbitraryScripts,
+    public HWDeviceDetailData(final String name,
+                              final boolean supportsLowR,
+                              final boolean supportsArbitraryScripts,
+                              final boolean supportsHostUnblinding,
                               final HWDeviceData.HWDeviceDataLiquidSupport supportsLiquid,
                               final HWDeviceData.HWDeviceAntiExfilSupport aeProtocolSupportLevel) {
         this.name = name;
         this.supportsLowR = supportsLowR;
         this.supportsArbitraryScripts = supportsArbitraryScripts;
+        this.supportsHostUnblinding = supportsHostUnblinding;
         this.supportsLiquid = supportsLiquid;
         this.supportsAeProtocol = aeProtocolSupportLevel;
     }
@@ -39,12 +46,28 @@ public class HWDeviceDetailData extends JSONData {
         this.name = name;
     }
 
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(final String deviceType) {
+        this.deviceType = deviceType;
+    }
+
     public boolean isSupportsArbitraryScripts() {
         return supportsArbitraryScripts;
     }
 
     public void setSupportsArbitraryScripts(final boolean supportsArbitraryScripts) {
         this.supportsArbitraryScripts = supportsArbitraryScripts;
+    }
+
+    public boolean isSupportsHostUnblinding() {
+        return supportsHostUnblinding;
+    }
+
+    public void setSupportsHostUnblinding(final boolean supportsHostUnblinding) {
+        this.supportsHostUnblinding = supportsHostUnblinding;
     }
 
     public boolean isSupportsLowR() {

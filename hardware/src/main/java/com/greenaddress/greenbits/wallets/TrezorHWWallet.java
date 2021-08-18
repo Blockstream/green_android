@@ -247,6 +247,11 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
+    public String getMasterBlindingKey(HWWalletBridge parent) {
+        return null;
+    }
+
+    @Override
     public String getBlindingKey(HWWalletBridge parent, String scriptHex) {
         return null;
     }

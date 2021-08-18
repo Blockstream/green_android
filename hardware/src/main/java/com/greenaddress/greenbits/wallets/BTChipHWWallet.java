@@ -99,6 +99,12 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     @Override
+    public String getMasterBlindingKey(HWWalletBridge parent) {
+        // FIXME: when ledger implement
+        return null;
+    }
+
+    @Override
     public String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
         try {
             final BTChipDongle.BTChipPublicKey blindingKey = mDongle.getBlindingKey(Wally.hex_to_bytes(scriptHex));

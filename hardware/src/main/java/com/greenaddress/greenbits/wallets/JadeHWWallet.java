@@ -452,6 +452,26 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
+    public String getMasterBlindingKey(HWWalletBridge parent) {
+        Log.d(TAG, "getMasterBlindingKey() called");
+
+        try {
+            final byte[] masterkey = this.jade.getMasterBlindingKey();
+            final String keyHex = hexFromBytes(masterkey);
+            Log.d(TAG, "getMasterBlindingKey() returning " + keyHex);
+            return keyHex;
+        } catch (final JadeError e) {
+            if (e.getCode() == JadeError.CBOR_RPC_USER_CANCELLED) {
+                // User cancelled on the device - return as empty string (rather than error)
+                return "";
+            }
+            throw new RuntimeException(e.getMessage());
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
     public String getBlindingKey(final HWWalletBridge parent, final String scriptHex) {
         Log.d(TAG, "getBlindingKey() for script of length " + scriptHex.length());
 

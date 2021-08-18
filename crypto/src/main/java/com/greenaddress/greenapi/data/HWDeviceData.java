@@ -36,9 +36,13 @@ public class HWDeviceData extends JSONData {
 
     public HWDeviceData() {}
 
-    public HWDeviceData(final String name, final boolean supportsLowR, final boolean supportsArbitraryScripts,
-                        final HWDeviceDataLiquidSupport supportsLiquid, final HWDeviceAntiExfilSupport aeProtocolSupportLevel) {
-        device = new HWDeviceDetailData(name, supportsLowR, supportsArbitraryScripts, supportsLiquid, aeProtocolSupportLevel);
+    public HWDeviceData(final String name,
+                        final boolean supportsLowR,
+                        final boolean supportsArbitraryScripts,
+                        final boolean supportsHostUnblinding,
+                        final HWDeviceDataLiquidSupport supportsLiquid,
+                        final HWDeviceAntiExfilSupport aeProtocolSupportLevel) {
+        device = new HWDeviceDetailData(name, supportsLowR, supportsArbitraryScripts, supportsHostUnblinding, supportsLiquid, aeProtocolSupportLevel);
     }
 
     public HWDeviceDetailData getDevice() {
@@ -50,6 +54,6 @@ public class HWDeviceData extends JSONData {
     }
 
     public Device toDevice(){
-        return new Device(device.getName(), device.isSupportsArbitraryScripts(), device.isSupportsLowR(), DeviceSupportsLiquid.values()[device.getSupportsLiquid().ordinal()], DeviceSupportsAntiExfilProtocol.values()[device.getSupportsAeProtocol().ordinal()]);
+        return new Device(device.getName(), device.isSupportsArbitraryScripts(), device.isSupportsLowR(), device.isSupportsHostUnblinding(), DeviceSupportsLiquid.values()[device.getSupportsLiquid().ordinal()], DeviceSupportsAntiExfilProtocol.values()[device.getSupportsAeProtocol().ordinal()]);
     }
 }

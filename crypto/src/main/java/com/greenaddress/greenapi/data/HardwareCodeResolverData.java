@@ -15,7 +15,7 @@ public class HardwareCodeResolverData extends JSONData {
     private String signerCommitment;
     private List<String> signatures;
     private List<String> signerCommitments;
-    private String blindingKey;
+    private String masterBlindingKey;
     private List<String> nonces;
     private Map<String, String> blindingKeys;
     private List<String> assetCommitments;
@@ -63,12 +63,12 @@ public class HardwareCodeResolverData extends JSONData {
         this.signerCommitments = signerCommitments;
     }
 
-    public String getBlindingKey() {
-        return blindingKey;
+    public String getMasterBlindingKey() {
+        return masterBlindingKey;
     }
 
-    public void setBlindingKey(String blindingKey) {
-        this.blindingKey = blindingKey;
+    public void setMasterBlindingKey(String masterBlindingKey) {
+        this.masterBlindingKey = masterBlindingKey;
     }
 
     public List<String> getNonces() {

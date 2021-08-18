@@ -114,6 +114,8 @@ public abstract class HWWallet {
                                                        final List<String> addressTypes,
                                                        final boolean useAeProtocol);
 
+    public abstract String getMasterBlindingKey(final HWWalletBridge parent);
+
     public abstract String getBlindingKey(final HWWalletBridge parent, final String scriptHex);
 
     public abstract String getBlindingNonce(final HWWalletBridge parent, final String pubkey, final String scriptHex);

@@ -430,6 +430,12 @@ public class JadeAPI {
 
     // Liquid calls
 
+    // Get master [un-]blinding key for wallet
+    public byte[] getMasterBlindingKey() throws IOException {
+        final JsonNode result = this.jadeRpc("get_master_blinding_key", TIMEOUT_USER_INTERACTION);
+        return result.binaryValue();
+    }
+
     // Get blinding key for script
     public byte[] getBlindingKey(final byte[] script) throws IOException {
         final JsonNode params = makeParams("script", script);

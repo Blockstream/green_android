@@ -123,18 +123,12 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
 
             break;
 
-        case "get_receive_address":
-            final String script = requiredData.getAddress().get("blinding_script_hash");
-            final String blindingKey = hwWallet.getBlindingKey(parent, script);
-            data.setBlindingKey(blindingKey);
+        case "get_master_blinding_key":
+            final String masterBlindingKey = hwWallet.getMasterBlindingKey(parent);
+            data.setMasterBlindingKey(masterBlindingKey);
             break;
 
-        case "get_balance":
-        case "get_transactions":
-        case "get_unspent_outputs":
-        case "get_subaccounts":
-        case "get_subaccount":
-        case "get_expired_deposits":
+        case "get_blinding_nonces":
             for (BlindedScriptsData elem : requiredData.getBlindedScripts()) {
                 if (!mNoncesCache.containsKey(Pair.create(elem.getPubkey(), elem.getScript()))) {
                     final String nonce = hwWallet.getBlindingNonce(parent, elem.getPubkey(), elem.getScript());
@@ -148,7 +142,7 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
             data.setNonces(nonces);
             break;
 
-        case "create_transaction":
+        case "get_blinding_public_keys":
             final Map<String, String> blindingKeys = new HashMap<>();
 
             if (requiredData.getTransaction() != null && requiredData.getTransaction().get("change_address") != null) {

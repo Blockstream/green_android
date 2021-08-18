@@ -292,7 +292,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
                 // Then create JadeHWWallet instance and authenticate (with pinserver) still on background thread
                 .doOnSuccess(session -> Log.d(TAG, "Creating Jade HW Wallet)"))
-                .map(session -> new HWDeviceData("Jade", true, true,
+                .map(session -> new HWDeviceData("Jade", true, true, false,
                                                  HWDeviceData.HWDeviceDataLiquidSupport.Lite,
                                                  HWDeviceData.HWDeviceAntiExfilSupport.Optional))
                 .map(hwDeviceData -> {
@@ -365,7 +365,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
     private void onTrezorConnected(final Trezor t) {
 
         Log.d(TAG, "Creating Trezor HW wallet");
-        final HWDeviceData hwDeviceData = new HWDeviceData("Trezor", false, false,
+        final HWDeviceData hwDeviceData = new HWDeviceData("Trezor", false, false, false,
                                                            HWDeviceData.HWDeviceDataLiquidSupport.None,
                                                            HWDeviceData.HWDeviceAntiExfilSupport.None);
         mHwWallet = new TrezorHWWallet(t, networkData, hwDeviceData);
@@ -489,7 +489,7 @@ public class RequestLoginActivity extends LoginActivity implements NetworkSwitch
 
         final boolean havePin = !TextUtils.isEmpty(pin);
         Log.d(TAG, "Creating Ledger HW wallet" + (havePin ? " with PIN" : ""));
-        final HWDeviceData hwDeviceData = new HWDeviceData("Ledger", false, true,
+        final HWDeviceData hwDeviceData = new HWDeviceData("Ledger", false, true, false,
                                                            HWDeviceData.HWDeviceDataLiquidSupport.Lite,
                                                            HWDeviceData.HWDeviceAntiExfilSupport.None);
         mHwWallet = new BTChipHWWallet(dongle, havePin ? pin : null, pinCB, networkData, hwDeviceData);
