@@ -29,7 +29,7 @@ class SessionManager: Session {
 
     public func connect(_ account: Account) throws {
         self.account = account
-        try connect(network: account.network)
+        try connect(network: account.networkName)
     }
 
     public func connect(network: String, params: [String: Any]? = nil) throws {
