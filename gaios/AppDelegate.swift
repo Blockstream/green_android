@@ -74,7 +74,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = EventWindow.init(frame: UIScreen.main.bounds)
         window?.startObserving()
 
-        // Initialize network settings
+        // Initialize gdk and accounts
+        try? gdkinitialize()
         AccountsManager.shared.onFirstInitialization()
 
         // Set screen lock
@@ -91,6 +92,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #endif
 
         return true
+    }
+
+    func gdkinitialize() throws {
+        if let url = try? FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent(Bundle.main.bundleIdentifier!, isDirectory: true) {
+            try FileManager.default.createDirectory(atPath: url.path, withIntermediateDirectories: true, attributes: nil)
+            try gdkInit(config: ["datadir": url.path])
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
