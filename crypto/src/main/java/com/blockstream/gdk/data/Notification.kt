@@ -12,4 +12,5 @@ data class Notification(
     @SerialName("settings") val settings: Settings? = null,
     @SerialName("tor") val torStatus: TORStatus? = null,
     @SerialName("network") val network: NetworkEvent? = null,
+    @SerialName("transaction") val transaction: TransactionEvent? = null,
 )

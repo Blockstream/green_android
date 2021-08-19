@@ -20,7 +20,7 @@ class TransactionListItem(val session: GreenSession, val tx: Transaction) : Abst
     private val look : TransactionListLook
 
     init{
-        identifier = tx.hashCode().toLong()
+        identifier = tx.txHash.hashCode().toLong()
         look = TransactionListLook(session, tx)
     }
 

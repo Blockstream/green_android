@@ -40,9 +40,11 @@ class GreenSession constructor(
     // Only needed for v3 codebase
     var watchOnlyUsernameBridge: String? = null
 
-    private val balancesSubject = BehaviorSubject.createDefault<Balances>(linkedMapOf())
-    private val assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
+    private var activeAccount = 0L
 
+    private val balancesSubject = BehaviorSubject.createDefault<Balances>(linkedMapOf())
+    private val transactionsSubject = BehaviorSubject.createDefault<List<Transaction>>(listOf())
+    private val assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
     private val subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
     private val blockSubject = BehaviorSubject.create<Block>()
     private val feesSubject = BehaviorSubject.createDefault<List<Long>>(listOf())
@@ -92,6 +94,8 @@ class GreenSession constructor(
         get() = blockSubject.value?.height ?: 0
 
     fun getAssetsObservable(): Observable<Assets> = assetsSubject.hide()
+    fun getBlockObservable(): Observable<Block> = blockSubject.hide()
+    fun getTransationsObservable(): Observable<List<Transaction>> = transactionsSubject.hide()
     fun getSubAccountsObservable(): Observable<List<SubAccount>> = subAccountsSubject.hide()
     fun getTorStatusObservable(): Observable<TORStatus> = torStatusSubject.hide()
     fun getSettingsObservable(): Observable<Settings> = settingsSubject.hide()
@@ -110,6 +114,12 @@ class GreenSession constructor(
     }
 
     fun networkFromWallet(wallet: Wallet) = greenWallet.networks.getNetworkById(wallet.network)
+
+    fun setActiveAccount(account: Long){
+        activeAccount = account
+        updateBalance()
+        updateTransactions()
+    }
 
     fun connect(network: Network, hwWallet: HWWallet? = null) {
         disconnect()
@@ -466,15 +476,26 @@ class GreenSession constructor(
                 }).addTo(disposables)
     }
 
-    fun updateBalance(account: Long){
+    fun updateBalance(){
         observable {
-            it.getBalance(BalanceParams(account))
+            it.getBalance(BalanceParams(activeAccount))
         }
         .retry(1)
         .subscribeBy(onError = {
             it.printStackTrace()
         }, onSuccess = {
             balancesSubject.onNext(it)
+        }).addTo(disposables)
+    }
+
+    fun updateTransactions() {
+        observable {
+            it.getTransactions(TransactionParams(activeAccount)).result<Transactions>()
+        }
+        .subscribeBy(onError = {
+            it.printStackTrace()
+        }, onSuccess = {
+            transactionsSubject.onNext(it.transactions)
         }).addTo(disposables)
     }
 
@@ -498,6 +519,7 @@ class GreenSession constructor(
             "block" -> {
                 notification.block?.let {
                     blockSubject.onNext(it)
+                    updateTransactions()
                 }
             }
             "fees" -> {
@@ -527,6 +549,13 @@ class GreenSession constructor(
             }
             "ticker" -> {
                 // UPDATE UI
+            }
+            "transaction" -> {
+                notification.transaction?.let {
+                    if(it.subaccounts.contains(activeAccount)){
+                        updateTransactions()
+                    }
+                }
             }
         }
     }

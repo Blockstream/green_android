@@ -145,6 +145,8 @@ abstract class AbstractWalletViewModel constructor(
         wallet.observable {
             walletRepository.updateWalletSync(wallet)
         }.subscribeBy()
+
+        session.setActiveAccount(account.pointer)
     }
 
     fun deleteWallet() {

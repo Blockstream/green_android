@@ -56,6 +56,9 @@ class OverviewViewModel @AssistedInject constructor(
     private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData()
     fun getTransactions(): LiveData<List<Transaction>> = transactions
 
+    private val block: MutableLiveData<com.blockstream.gdk.data.Block> = MutableLiveData()
+    fun getBlock(): LiveData<com.blockstream.gdk.data.Block> = block
+
     val assetsUpdated: MutableLiveData<ConsumableEvent<Boolean>> = MutableLiveData()
 
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
@@ -68,8 +71,7 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     init {
-        updateBalance()
-        updateTransactions()
+        session.setActiveAccount(wallet.activeAccount)
 
         session
             .getBalancesObservable()
@@ -78,10 +80,22 @@ class OverviewViewModel @AssistedInject constructor(
                 balances.postValue(it)
             }.addTo(disposables)
 
+        session
+            .getTransationsObservable()
+            .subscribe {
+                transactions.postValue(it)
+            }.addTo(disposables)
+
         session.getAssetsObservable()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 assetsUpdated.postValue(ConsumableEvent(true))
+            }.addTo(disposables)
+
+        session.getBlockObservable()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                block.postValue(it)
             }.addTo(disposables)
 
         session
@@ -120,20 +134,8 @@ class OverviewViewModel @AssistedInject constructor(
         session.updateSubAccounts()
     }
 
-    private fun updateTransactions(){
-        session.observable {
-            it.getTransactions(TransactionParams(wallet.activeAccount)).result<Transactions>()
-        }.subscribe({
-            transactions.value = it.transactions
-        }, {
-            it.printStackTrace()
-        })
-    }
-
     private fun updateBalance() {
-        allBalances = linkedMapOf(BalanceLoading)
-        balances.postValue(allBalances)
-        session.updateBalance(wallet.activeAccount)
+
 
 //        session.observable {
 //            it.getBalance(BalanceParams(wallet.activeAccount))
@@ -171,8 +173,8 @@ class OverviewViewModel @AssistedInject constructor(
     override fun selectSubAccount(account: SubAccount) {
         super.selectSubAccount(account)
 
-        updateBalance()
-        updateTransactions()
+        allBalances = linkedMapOf(BalanceLoading)
+        balances.postValue(allBalances)
 
         allSubAccounts.let {
             subAccounts.value = filterSubAccounts(it)
