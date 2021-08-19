@@ -13,7 +13,7 @@ import com.blockstream.green.databinding.ListItemTransactionBinding
 import com.blockstream.green.ui.looks.TransactionListLook
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-class TransactionListItem(val session: GreenSession, val tx: Transaction) : AbstractBindingItem<ListItemTransactionBinding>() {
+data class TransactionListItem(val session: GreenSession, val tx: Transaction) : AbstractBindingItem<ListItemTransactionBinding>() {
     override val type: Int
         get() = R.id.fastadapter_transaction_item_id
 

@@ -419,14 +419,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 //        viewMoreAdapter.add(ButtonActionListItem(StringHolder(R.string.id_view_more), false))
 //        adapters += viewMoreAdapter
 
-
         val adapter = FastAdapter.with(adapters)
-
-
-        // Notify the adapter when we have new balances
-//        viewModel.getBalances().observe(viewLifecycleOwner){
-//            adapter.notifyAdapterDataSetChanged()
-//        }
 
         // Notify adapter when we have new assets
         viewModel.assetsUpdated.observe(viewLifecycleOwner) {
