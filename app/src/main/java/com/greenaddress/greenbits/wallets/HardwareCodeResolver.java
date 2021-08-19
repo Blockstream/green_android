@@ -58,7 +58,9 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
     public synchronized String requestDataFromHardware(final HWDeviceRequiredData requiredData) {
         final HardwareCodeResolverData data = new HardwareCodeResolverData();
 
-        final List<String> nonces = new ArrayList<>();
+        final List<String> scripts;
+        final List<String> publicKeys;
+        final List<String> nonces;
 
         switch (requiredData.getAction()) {
 
@@ -124,18 +126,25 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
             break;
 
         case "get_master_blinding_key":
-            final String masterBlindingKey = hwWallet.getMasterBlindingKey(parent);
-            data.setMasterBlindingKey(masterBlindingKey);
+            data.setMasterBlindingKey(hwWallet.getMasterBlindingKey(parent));
             break;
 
         case "get_blinding_nonces":
-            for (BlindedScriptsData elem : requiredData.getBlindedScripts()) {
-                if (!mNoncesCache.containsKey(Pair.create(elem.getPubkey(), elem.getScript()))) {
-                    final String nonce = hwWallet.getBlindingNonce(parent, elem.getPubkey(), elem.getScript());
-                    mNoncesCache.put(Pair.create(elem.getPubkey(), elem.getScript()), nonce);
-                    nonces.add(nonce);
-                } else {
-                    nonces.add(mNoncesCache.get(Pair.create(elem.getPubkey(), elem.getScript())));
+            nonces = new ArrayList<>();
+            scripts = requiredData.getScripts();
+            publicKeys = requiredData.getPublicKeys();
+
+            if(scripts != null && publicKeys != null && scripts.size() == publicKeys.size()){
+                for(int i = 0; i < scripts.size(); i++){
+
+                    if (!mNoncesCache.containsKey(Pair.create(publicKeys.get(i), scripts.get(i)))) {
+                        final String nonce = hwWallet.getBlindingNonce(parent, publicKeys.get(i), scripts.get(i));
+                        mNoncesCache.put(Pair.create(publicKeys.get(i), scripts.get(i)), nonce);
+                        nonces.add(nonce);
+                    } else {
+                        nonces.add(mNoncesCache.get(Pair.create(publicKeys.get(i), scripts.get(i))));
+                    }
+
                 }
             }
 
@@ -143,21 +152,16 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
             break;
 
         case "get_blinding_public_keys":
-            final Map<String, String> blindingKeys = new HashMap<>();
+            publicKeys = new ArrayList<>();
+            scripts = requiredData.getScripts();
 
-            if (requiredData.getTransaction() != null && requiredData.getTransaction().get("change_address") != null) {
-                for (Iterator<Map.Entry<String, JsonNode>> it =
-                         requiredData.getTransaction().get("change_address").fields();
-                     it.hasNext(); ) {
-                    Map.Entry<String, JsonNode> changeAddr = it.next();
-
-                    final String key = hwWallet.getBlindingKey(parent, changeAddr.getValue().get(
-                                                                   "blinding_script_hash").asText());
-                    blindingKeys.put(changeAddr.getKey(), key);
+            if(scripts != null){
+                for(String script : scripts){
+                    publicKeys.add(hwWallet.getBlindingKey(parent, script));
                 }
             }
 
-            data.setBlindingKeys(blindingKeys);
+            data.setPublicKeys(publicKeys);
             break;
 
         default:

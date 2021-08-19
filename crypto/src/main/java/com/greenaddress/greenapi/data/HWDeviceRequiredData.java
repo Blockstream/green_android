@@ -29,6 +29,8 @@ public class HWDeviceRequiredData extends JSONData {
     private Map<String, String> address;
 
     private List<BlindedScriptsData> blindedScripts;
+    private List<String> scripts;
+    private List<String> publicKeys;
 
 
     HWDeviceRequiredData() { }
@@ -147,5 +149,21 @@ public class HWDeviceRequiredData extends JSONData {
 
     public void setBlindedScripts(List<BlindedScriptsData> blindedScripts) {
         this.blindedScripts = blindedScripts;
+    }
+
+    public List<String> getScripts() {
+        return scripts;
+    }
+
+    public void setScripts(List<String> scripts) {
+        this.scripts = scripts;
+    }
+
+    public List<String> getPublicKeys() {
+        return publicKeys;
+    }
+
+    public void setPublicKeys(List<String> publicKeys) {
+        this.publicKeys = publicKeys;
     }
 }
