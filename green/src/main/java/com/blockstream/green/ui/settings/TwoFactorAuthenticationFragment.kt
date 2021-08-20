@@ -241,20 +241,23 @@ class TwoFactorAuthenticationFragment :
             }
         }
 
-        list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
 
-        list += HelpListItem(message = StringHolder(R.string.id_spend_your_bitcoin_without_2fa))
+        if(!session.isLiquid){
+            list += TitleListItem(StringHolder(R.string.id_2fa_threshold))
 
-        list += thresholdPreference.also {
-            it.subtitle = StringHolder(twoFactorConfig.limits.let { limits ->
-                if (!limits.isFiat && limits.satoshi == 0L) {
-                    getString(R.string.id_set_2fa_threshold)
-                } else if (limits.isFiat) {
-                    limits.fiat()
-                } else {
-                    limits.btc(session)
-                }
-            })
+            list += HelpListItem(message = StringHolder(R.string.id_spend_your_bitcoin_without_2fa))
+
+            list += thresholdPreference.also {
+                it.subtitle = StringHolder(twoFactorConfig.limits.let { limits ->
+                    if (!limits.isFiat && limits.satoshi == 0L) {
+                        getString(R.string.id_set_2fa_threshold)
+                    } else if (limits.isFiat) {
+                        limits.fiat()
+                    } else {
+                        limits.btc(session)
+                    }
+                })
+            }
         }
 
         list += TitleListItem(StringHolder(R.string.id_2fa_expiry))
