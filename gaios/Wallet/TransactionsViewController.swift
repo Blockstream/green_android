@@ -457,9 +457,6 @@ extension TransactionsController: SubaccountDelegate {
         // Empty and reload transactions list
         txs.removeAll()
         tableView.reloadData()
-        loadTransactions().done {
-            self.showTransactions()
-        }.catch { _ in }
     }
 }
 
@@ -491,7 +488,6 @@ extension TransactionsController: UIViewControllerTransitioningDelegate {
 extension TransactionsController: DrawerNetworkSelectionDelegate {
 
     func logout() -> Promise<Void> {
-        let appDelegate = UIApplication.shared.delegate as? AppDelegate
         let bgq = DispatchQueue.global(qos: .background)
         return firstly {
             self.startLoader(message: NSLocalizedString("id_logout", comment: ""))

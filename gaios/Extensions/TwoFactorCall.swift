@@ -60,7 +60,8 @@ extension TwoFactorCall {
                 let device = requiredData["device"] as? [String: Any],
                 let json = try? JSONSerialization.data(withJSONObject: device, options: []),
                 let hwdevice = try? JSONDecoder().decode(HWDevice.self, from: json) {
-                return HWResolver.shared.resolveCode(action: action, device: hwdevice, requiredData: requiredData).compactMap { code in
+                return HWResolver.shared.resolveCode(action: action, device: hwdevice, requiredData: requiredData)
+                    .compactMap(on: bgq) { code in
                         try self.resolveCode(code: code)
                 }
             }
@@ -73,7 +74,7 @@ extension TwoFactorCall {
                 .then { popup.code(method) }
                 .map { code in sender?.startAnimating(); return code }
                 .then(on: bgq) { code in self.waitConnection(connected).map { return code} }
-                .compactMap { code in
+                .compactMap(on: bgq) { code in
                     try self.resolveCode(code: code)
                 }
         default:
