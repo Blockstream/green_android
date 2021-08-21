@@ -47,31 +47,15 @@ class GreenPinView @JvmOverloads constructor(
 
         binding.shuffleListener = OnClickListener { view ->
             var digitsValues: Array<String> = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
-            var parentRoot = view.rootView
-            // get all PIN buttons
-            var button0 = parentRoot.findViewById<Button>(R.id.button0);
-            var button1 = parentRoot.findViewById<Button>(R.id.button1);
-            var button2 = parentRoot.findViewById<Button>(R.id.button2);
-            var button3 = parentRoot.findViewById<Button>(R.id.button3);
-            var button4 = parentRoot.findViewById<Button>(R.id.button4);
-            var button5 = parentRoot.findViewById<Button>(R.id.button5);
-            var button6 = parentRoot.findViewById<Button>(R.id.button6);
-            var button7 = parentRoot.findViewById<Button>(R.id.button7);
-            var button8 = parentRoot.findViewById<Button>(R.id.button8);
-            var button9 = parentRoot.findViewById<Button>(R.id.button9);
             // shuffle digits values array
             digitsValues.shuffle()
-            // set new buttons values
-            button0.text = digitsValues[0];
-            button1.text = digitsValues[1];
-            button2.text = digitsValues[2];
-            button3.text = digitsValues[3];
-            button4.text = digitsValues[4];
-            button5.text = digitsValues[5];
-            button6.text = digitsValues[6];
-            button7.text = digitsValues[7];
-            button8.text = digitsValues[8];
-            button9.text = digitsValues[9];
+            // get all PIN buttons
+            for(i in 0..9) {
+                // set new buttons values
+                val resID = resources.getIdentifier("button${i}", "id", this.context.packageName)
+                val button = findViewById<Button>(resID)
+                button.text = digitsValues[i]
+            }
         }
     }
 
