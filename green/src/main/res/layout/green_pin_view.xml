@@ -260,7 +260,6 @@
             app:layout_constraintTop_toTopOf="@+id/button8" />
 
         <Button
-            android:id="@+id/buttonDelete2"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
