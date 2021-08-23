@@ -10,16 +10,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--SettingsViewController-->
-        <scene sceneID="Saq-nT-2yY">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Settings" referencedIdentifier="SettingsViewController" id="30w-Nv-yEI" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="4jw-el-6cE"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rWK-Lr-MHc" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5304" y="-164"/>
-        </scene>
         <!--Notifications-->
         <scene sceneID="FUo-4m-wOJ">
             <objects>
@@ -174,7 +164,6 @@
                         <segue destination="h6g-rr-LAM" kind="show" identifier="send" id="U7f-MS-5Z1"/>
                         <segue destination="fuN-54-EEf" kind="show" identifier="assets" id="Azw-5Y-ZWP"/>
                         <segue destination="JMx-ld-n78" kind="show" identifier="wallets" id="sRf-Gc-KhT"/>
-                        <segue destination="30w-Nv-yEI" kind="show" identifier="settings" id="9x3-I7-Dy2"/>
                         <segue destination="Tml-O4-tHP" kind="show" identifier="leaarnMore2fa" id="Cai-01-qcB"/>
                         <segue destination="Izl-XR-ebQ" kind="show" identifier="reactivate2fa" id="n67-yi-7Dw"/>
                     </connections>
