@@ -520,6 +520,7 @@ class GreenSession constructor(
                 notification.block?.let {
                     blockSubject.onNext(it)
                     updateTransactions()
+                    updateBalance()
                 }
             }
             "fees" -> {
@@ -554,6 +555,7 @@ class GreenSession constructor(
                 notification.transaction?.let {
                     if(it.subaccounts.contains(activeAccount)){
                         updateTransactions()
+                        updateBalance()
                     }
                 }
             }
