@@ -14,13 +14,30 @@ platform :ios do
       workspace: "gaios.xcworkspace",
       #silent: true,
       clean: true,
-      output_directory: "./",
+      output_directory: "./debug",
       output_name: "Green-debug.ipa",
-      sdk: "iOS 14.5",
       skip_build_archive: true,
       skip_archive: true,
       include_bitcode: false,
       skip_codesigning: true
+    )
+  end
+
+  desc "Run build dev app"
+  lane :build_dev do
+    cocoapods()
+    sh "cd .. && ./tools/fetch_gdk_binaries.sh"
+    build_ios_app(
+      configuration: "Release",
+      scheme: "gaios",
+      workspace: "gaios.xcworkspace",
+      #silent: true,
+      clean: true,
+      output_directory: "./dev",
+      output_name: "Green-dev.ipa",
+      include_bitcode: false,
+      export_method: "ad-hoc",
+      xcargs: "-allowProvisioningUpdates"
     )
   end
 
