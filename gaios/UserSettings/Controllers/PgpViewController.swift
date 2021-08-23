@@ -4,21 +4,27 @@ import PromiseKit
 
 class PgpViewController: KeyboardViewController {
 
-    @IBOutlet var content: PgpView!
+    @IBOutlet weak var subtitle: UILabel!
+    @IBOutlet weak var textarea: UITextView!
+    @IBOutlet weak var btnSave: UIButton!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = NSLocalizedString("id_pgp_key", comment: "")
-        content.subtitle.text = NSLocalizedString("id_enter_a_pgp_public_key_to_have", comment: "")
-        content.textarea.text = Settings.shared?.pgp ?? ""
-        content.button.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
-        content.button.addTarget(self, action: #selector(save), for: .touchUpInside)
+        subtitle.text = NSLocalizedString("id_enter_a_pgp_public_key_to_have", comment: "")
+        textarea.text = Settings.shared?.pgp ?? ""
+        btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
+        btnSave.addTarget(self, action: #selector(save), for: .touchUpInside)
+        setStyle()
+    }
+
+    func setStyle() {
+        btnSave.setStyle(.primary)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        content.button.setGradient(true)
-        content.textarea.becomeFirstResponder()
+        textarea.becomeFirstResponder()
     }
 
     @objc func save(_ sender: UIButton) {
@@ -26,7 +32,7 @@ class PgpViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let session = getGAService().getSession()
         let value = settings.pgp
-        settings.pgp = content.textarea.text
+        settings.pgp = textarea.text
         firstly {
             self.startAnimating()
             return Guarantee()
@@ -47,23 +53,5 @@ class PgpViewController: KeyboardViewController {
             })
             self.present(alert, animated: true, completion: nil)
         }
-    }
-}
-
-@IBDesignable
-class PgpView: UIView {
-
-    @IBOutlet weak var subtitle: UILabel!
-    @IBOutlet weak var textarea: UITextView!
-    @IBOutlet weak var button: UIButton!
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        setup()
     }
 }

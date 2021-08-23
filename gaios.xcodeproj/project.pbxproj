@@ -16,7 +16,6 @@
 		092E1EB020CF993700362253 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092E1EAF20CF993700362253 /* UIColor.swift */; };
 		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
 		09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */; };
-		09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09342FD721001A5E009DCDEA /* SettingsViewController.swift */; };
 		093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D5212E844400134235 /* CurrencySelectorViewController.swift */; };
 		093544D8212E86DF00134235 /* CurrencyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093544D7212E86DF00134235 /* CurrencyCell.swift */; };
 		0935C00F2141CA7F00C3A8E9 /* SlidingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */; };
@@ -229,7 +228,6 @@
 		818201B2226A1AD200BE12C3 /* Send.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B1226A1AD200BE12C3 /* Send.storyboard */; };
 		818201B4226A279000BE12C3 /* AuthenticatorFactors.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */; };
 		8183384B263C583200BCECE6 /* HWAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8183384A263C583200BCECE6 /* HWAccount.swift */; };
-		81837788224E6C8D00DC0FB1 /* PgpView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81837787224E6C8D00DC0FB1 /* PgpView.xib */; };
 		8183778A224E6D4700DC0FB1 /* PgpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81837789224E6D4700DC0FB1 /* PgpViewController.swift */; };
 		8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8187B47E21E9026900235A35 /* InfoPlist.strings */; };
 		8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8189BEFF2236F2270091B466 /* ScreenLocker.swift */; };
@@ -313,7 +311,6 @@
 		092E1EAF20CF993700362253 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		09309F19212F8D8700DE093B /* SearchTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicsViewController.swift; sourceTree = "<group>"; };
-		09342FD721001A5E009DCDEA /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		093544D5212E844400134235 /* CurrencySelectorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectorViewController.swift; sourceTree = "<group>"; };
 		093544D7212E86DF00134235 /* CurrencyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyCell.swift; sourceTree = "<group>"; };
 		0935C00E2141CA7F00C3A8E9 /* SlidingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlidingButton.swift; sourceTree = "<group>"; };
@@ -541,7 +538,6 @@
 		818201B1226A1AD200BE12C3 /* Send.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Send.storyboard; sourceTree = "<group>"; };
 		818201B3226A279000BE12C3 /* AuthenticatorFactors.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AuthenticatorFactors.storyboard; sourceTree = "<group>"; };
 		8183384A263C583200BCECE6 /* HWAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HWAccount.swift; sourceTree = "<group>"; };
-		81837787224E6C8D00DC0FB1 /* PgpView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PgpView.xib; sourceTree = "<group>"; };
 		81837789224E6D4700DC0FB1 /* PgpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpViewController.swift; sourceTree = "<group>"; };
 		8187B47D21E9026900235A35 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8187B47F21E9027100235A35 /* it */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1197,9 +1193,7 @@
 		811EE25A219EBB1500684AD8 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				09342FD721001A5E009DCDEA /* SettingsViewController.swift */,
 				8128611E22221326005598D3 /* TwoFactorLimitView.xib */,
-				81837787224E6C8D00DC0FB1 /* PgpView.xib */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1550,7 +1544,6 @@
 				817A6309222461510054FC60 /* SendBTCConfirmationView.xib in Resources */,
 				818201B2226A1AD200BE12C3 /* Send.storyboard in Resources */,
 				81923A38228194950097BEA8 /* AssetTableCell.xib in Resources */,
-				81837788224E6C8D00DC0FB1 /* PgpView.xib in Resources */,
 				81073D7821E8B27700E08F86 /* Localizable.strings in Resources */,
 				811B963C21F72A5B00DE02CB /* AccountsFooterCollection.xib in Resources */,
 				81E9B80421C94525004D87B6 /* WalletFullCardView.xib in Resources */,
@@ -1799,7 +1792,6 @@
 				8122D7292554848C003F2785 /* Promise.swift in Sources */,
 				098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */,
 				34CEFD382600F2D60098536C /* WalletEmptyCell.swift in Sources */,
-				09342FD821001A5E009DCDEA /* SettingsViewController.swift in Sources */,
 				34BAD9D92636A12700FB8011 /* HWWCell.swift in Sources */,
 				671FC43021DBABCD0047AF8E /* MnemonicWordCell.swift in Sources */,
 				347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */,
