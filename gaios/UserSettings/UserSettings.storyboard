@@ -561,12 +561,18 @@
                                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H3t-J2-Qkn">
                                                                     <rect key="frame" x="0.0" y="10" width="342" height="60"/>
                                                                     <subviews>
-                                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="I8u-Av-Dp0">
-                                                                            <rect key="frame" x="16" y="20" width="32.5" height="21.5"/>
+                                                                        <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="I8u-Av-Dp0">
+                                                                            <rect key="frame" x="16" y="20" width="241" height="21.5"/>
                                                                             <subviews>
-                                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A1p-J4-2dh">
+                                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="A1p-J4-2dh">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="32.5" height="21.5"/>
                                                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                    <nil key="highlightedColor"/>
+                                                                                </label>
+                                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="si***@gm***" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YWY-lr-piO" userLabel="masked2FA">
+                                                                                    <rect key="frame" x="52.5" y="0.0" width="188.5" height="21.5"/>
+                                                                                    <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                     <nil key="highlightedColor"/>
                                                                                 </label>
@@ -578,22 +584,14 @@
                                                                                 <action selector="actionSwitchChanged:" destination="Jfk-sX-1v3" eventType="valueChanged" id="h2M-0L-rdq"/>
                                                                             </connections>
                                                                         </switch>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="si***@gm***" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YWY-lr-piO" userLabel="masked2FA">
-                                                                            <rect key="frame" x="68.5" y="24" width="67" height="13.5"/>
-                                                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                            <nil key="highlightedColor"/>
-                                                                        </label>
                                                                     </subviews>
                                                                     <color key="backgroundColor" name="customModalBlueDark"/>
                                                                     <constraints>
                                                                         <constraint firstItem="I8u-Av-Dp0" firstAttribute="leading" secondItem="H3t-J2-Qkn" secondAttribute="leading" constant="16" id="3d4-jx-3B0"/>
-                                                                        <constraint firstItem="YWY-lr-piO" firstAttribute="centerY" secondItem="A1p-J4-2dh" secondAttribute="centerY" id="Hes-9n-tKd"/>
+                                                                        <constraint firstItem="iFa-Yw-jRH" firstAttribute="leading" secondItem="I8u-Av-Dp0" secondAttribute="trailing" constant="20" id="A3P-qG-jMk"/>
                                                                         <constraint firstItem="iFa-Yw-jRH" firstAttribute="centerY" secondItem="H3t-J2-Qkn" secondAttribute="centerY" id="J0K-QX-AE6"/>
                                                                         <constraint firstAttribute="trailing" secondItem="iFa-Yw-jRH" secondAttribute="trailing" constant="16" id="U6j-Os-a1I"/>
-                                                                        <constraint firstItem="YWY-lr-piO" firstAttribute="leading" secondItem="A1p-J4-2dh" secondAttribute="trailing" constant="20" id="aSc-It-mag"/>
                                                                         <constraint firstItem="I8u-Av-Dp0" firstAttribute="top" secondItem="H3t-J2-Qkn" secondAttribute="top" constant="20" id="fFw-hL-Hqh"/>
-                                                                        <constraint firstItem="iFa-Yw-jRH" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="YWY-lr-piO" secondAttribute="trailing" constant="20" id="sqF-iQ-S42"/>
                                                                     </constraints>
                                                                 </view>
                                                             </subviews>
