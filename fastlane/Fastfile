@@ -37,6 +37,9 @@ platform :ios do
       output_name: "Green-dev.ipa",
       include_bitcode: false,
       export_method: "ad-hoc",
+      build_path: "./dev",
+      archive_path: "./dev/Green.xcarchive",
+      export_options: "./ExportOptions.plist",
       xcargs: "-allowProvisioningUpdates"
     )
   end

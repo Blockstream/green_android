@@ -41,6 +41,20 @@ build_debug:
     - fastosx
     - osx
   script:
+    - fastlane build_dev
+
+build_dev:
+  stage: build
+  tags:
+    - fastosx
+    - osx
+  artifacts:
+    name: "green-ios-dev-$CI_COMMIT_REF_NAME"
+    expire_in: 1 day
+    when: on_success
+    paths:
+      - dev/Green-dev.ipa
+  script:
     - fastlane build_debug
 
 ui_tests:
