@@ -30,6 +30,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
     private var connected = true
     private var updateToken: NSObjectProtocol?
     var twoFactorConfig: TwoFactorConfig?
+    var account = { AccountsManager.shared.current }()
+    var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +43,13 @@ class TwoFactorAuthenticationViewController: UIViewController {
         currentCsv = Settings.shared?.csvtime
         tableViewCsvTime.estimatedRowHeight = 80
         tableViewCsvTime.rowHeight = UITableView.automaticDimension
+
+        if isLiquid {
+            lbl2faExpiryTitle.isHidden = true
+            lbl2faExpiryHint.isHidden = true
+            tableViewCsvTime.isHidden = true
+            lblRecoveryTool.isHidden = true
+        }
     }
 
     func setContent() {
