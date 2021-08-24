@@ -75,7 +75,9 @@ class UserSettingsViewController: UIViewController {
         } else if isResetActive {
             return [.logout, .general, .security, .about]
         } else if isSingleSig {
-          return [.logout, .general, .security, .recovery, .about]
+            return [.logout, .general, .security, .recovery, .about]
+        } else if isHW && isLiquid {
+            return [.logout, .general, .security, .advanced, .about]
         }
         return UserSettingsSections.allCases
     }
@@ -142,11 +144,14 @@ class UserSettingsViewController: UIViewController {
             section: .security,
             type: .LoginWithBiometrics)
 
-        if isLiquid || isSingleSig {
-            items += [changePin, loginWithBiometrics]
+        if isHW {
         } else {
-            if !isWatchOnly && !isResetActive && !isHW {
+            if isLiquid || isSingleSig {
                 items += [changePin, loginWithBiometrics]
+            } else {
+                if !isWatchOnly && !isResetActive && !isHW {
+                    items += [changePin, loginWithBiometrics]
+                }
             }
         }
 
