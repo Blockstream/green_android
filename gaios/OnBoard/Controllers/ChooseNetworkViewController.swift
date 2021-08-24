@@ -17,8 +17,16 @@ class ChooseNetworkViewController: UIViewController {
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
 
+    @IBOutlet weak var cardLiquidTestnet: UIView!
+
+    var isDebug = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        #if DEBUG
+        isDebug = true
+        #endif
 
         setContent()
         setStyle()
@@ -53,6 +61,12 @@ class ChooseNetworkViewController: UIViewController {
         cardLiquid.addGestureRecognizer(tapGesture2)
         let tapGesture3 = UITapGestureRecognizer(target: self, action: #selector(didPressCardTestnet))
         cardTestnet.addGestureRecognizer(tapGesture3)
+        if isDebug {
+            let tapGesture4 = UITapGestureRecognizer(target: self, action: #selector(didPressCardLiquidTestnet))
+            cardLiquidTestnet.addGestureRecognizer(tapGesture4)
+        } else {
+            cardLiquidTestnet.isHidden = true
+        }
     }
 
     @objc func didPressCardBitcoin() {
@@ -67,6 +81,11 @@ class ChooseNetworkViewController: UIViewController {
 
     @objc func didPressCardTestnet() {
         OnBoardManager.shared.params = OnBoardParams(network: "testnet")
+        next()
+    }
+
+    @objc func didPressCardLiquidTestnet() {
+        OnBoardManager.shared.params = OnBoardParams(network: "testnet-liquid")
         next()
     }
 
