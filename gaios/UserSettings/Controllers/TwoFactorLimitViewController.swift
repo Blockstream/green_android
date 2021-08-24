@@ -45,11 +45,9 @@ class TwoFactorLimitViewController: KeyboardViewController {
         nextButton.addTarget(self, action: #selector(nextClick), for: .touchUpInside)
         fiatButton.addTarget(self, action: #selector(currencySwitchClick), for: .touchUpInside)
         limitTextField.becomeFirstResponder()
-        limitTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.customTitaniumLight()])
         limitTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         setStyle()
         reload()
-        refresh()
     }
 
     func setStyle() {
@@ -72,7 +70,6 @@ class TwoFactorLimitViewController: KeyboardViewController {
             balance = Balance.convert(details: [denom: limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)!])
         }
         if let (amount, denom) = balance?.get(tag: limits.isFiat ? "fiat" : "btc") {
-            limitTextField.text = amount
             descriptionLabel.text = String(format: NSLocalizedString("id_your_twofactor_threshold_is_s", comment: ""), "\(amount ?? "N.A.") \(denom)")
         }
         refresh()
