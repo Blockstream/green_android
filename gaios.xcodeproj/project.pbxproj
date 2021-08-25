@@ -211,7 +211,6 @@
 		81286115222212B5005598D3 /* SetEmailView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286114222212B5005598D3 /* SetEmailView.xib */; };
 		81286117222212C7005598D3 /* SetPhoneView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286116222212C7005598D3 /* SetPhoneView.xib */; };
 		81286119222212DB005598D3 /* SetGauthView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286118222212DB005598D3 /* SetGauthView.xib */; };
-		8128611F22221326005598D3 /* TwoFactorLimitView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8128611E22221326005598D3 /* TwoFactorLimitView.xib */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		815431962445C0EE00EE34DB /* JadeDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeDevice.swift */; };
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
@@ -521,7 +520,6 @@
 		81286114222212B5005598D3 /* SetEmailView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetEmailView.xib; sourceTree = "<group>"; };
 		81286116222212C7005598D3 /* SetPhoneView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetPhoneView.xib; sourceTree = "<group>"; };
 		81286118222212DB005598D3 /* SetGauthView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetGauthView.xib; sourceTree = "<group>"; };
-		8128611E22221326005598D3 /* TwoFactorLimitView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TwoFactorLimitView.xib; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeDevice.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
@@ -1043,7 +1041,6 @@
 				6DD813B022BC585C002DCC8B /* Assets */,
 				818201B0226A1A8100BE12C3 /* SendNavigation */,
 				3463EBB626AEB7B200F3F2D9 /* UserSettings */,
-				811EE25A219EBB1500684AD8 /* Settings */,
 				6DF2DEE523F38292005F16E9 /* Help */,
 				81A3B5412244B11F0091B6BC /* AuthenticationFactors */,
 				FF29CA7022374D670035F95A /* Extensions */,
@@ -1188,14 +1185,6 @@
 				6D0983C523FC848C00289ACA /* HelpCell.swift */,
 			);
 			path = TableViewCells;
-			sourceTree = "<group>";
-		};
-		811EE25A219EBB1500684AD8 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				8128611E22221326005598D3 /* TwoFactorLimitView.xib */,
-			);
-			path = Settings;
 			sourceTree = "<group>";
 		};
 		81387E5D2452066500A63C1D /* Ledger */ = {
@@ -1556,7 +1545,6 @@
 				3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */,
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				092D47F720EA28ED005720F3 /* TransactionTableCell.xib in Resources */,
-				8128611F22221326005598D3 /* TwoFactorLimitView.xib in Resources */,
 				81A8EBC82224524A00F5C577 /* SystemMessageView.xib in Resources */,
 				8187B47C21E9026900235A35 /* InfoPlist.strings in Resources */,
 				817A6307222461280054FC60 /* SendBtcDetailsView.xib in Resources */,

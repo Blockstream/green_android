@@ -127,28 +127,3 @@ class TwoFactorLimitViewController: KeyboardViewController {
         refresh()
     }
 }
-
-//@IBDesignable
-//class TwoFactorLimitView: UIView {
-//    @IBOutlet weak var limitTextField: UITextField!
-//    @IBOutlet weak var nextButton: UIButton!
-//    @IBOutlet weak var fiatButton: UIButton!
-//    @IBOutlet weak var descriptionLabel: UILabel!
-//    @IBOutlet weak var convertedLabel: UILabel!
-//    @IBOutlet weak var limitButtonConstraint: NSLayoutConstraint!
-//
-//    override init(frame: CGRect) {
-//        super.init(frame: frame)
-//        setup()
-//    }
-//
-//    required init?(coder aDecoder: NSCoder) {
-//        super.init(coder: aDecoder)
-//        setup()
-//    }
-//
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        nextButton.updateGradientLayerFrame()
-//    }
-//}
