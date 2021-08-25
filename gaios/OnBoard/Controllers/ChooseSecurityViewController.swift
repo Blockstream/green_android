@@ -40,11 +40,22 @@ class ChooseSecurityViewController: UIViewController {
         lblAdvancedHint.text = NSLocalizedString("id_your_funds_are_secured_by", comment: "")
     }
 
+    func isSingleSigEnabled() -> Bool {
+        let ntw = OnBoardManager.shared.params?.network ?? ""
+        if isDebug {
+            return true
+        }
+        if ntw == "testnet" || ntw == "mainnet" {
+            return true
+        }
+        return false
+    }
+
     func setStyle() {
         cardSimple.layer.cornerRadius = 5.0
         cardAdvanced.layer.cornerRadius = 5.0
 
-        if !isDebug && OnBoardManager.shared.params?.network != "testnet" {
+        if !isSingleSigEnabled() {
             cardSimple.alpha = 0.5
         }
     }
@@ -57,7 +68,9 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     @objc func didPressCardSimple() {
-        if !isDebug && OnBoardManager.shared.params?.network != "testnet" { return }
+        if !isSingleSigEnabled() {
+            return
+        }
         OnBoardManager.shared.params?.singleSig = true
         next()
     }
