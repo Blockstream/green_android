@@ -9,7 +9,7 @@ import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
-class ButtonActionListItem(private val title: StringHolder, private val extraPadding: Boolean) : AbstractBindingItem<ListItemButtonActionBinding>() {
+data class ButtonActionListItem(private val title: StringHolder, private val extraPadding: Boolean) : AbstractBindingItem<ListItemButtonActionBinding>() {
     override val type: Int
         get() = R.id.fastadapter_button_action_item_id
 

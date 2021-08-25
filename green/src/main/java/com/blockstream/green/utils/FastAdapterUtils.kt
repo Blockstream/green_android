@@ -10,9 +10,11 @@ import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 Helper function to set data from LiveData
  */
 fun <Model, Item : GenericItem> ModelAdapter<Model, Item>.observeList(
-    lifecycleOwner: LifecycleOwner, liveData: LiveData<List<Model>>
+    lifecycleOwner: LifecycleOwner, liveData: LiveData<List<Model>>,
+    onEvent: ((List<Model>) -> Unit)? = null
 ): ModelAdapter<Model, Item> {
     liveData.observe(lifecycleOwner) {
+        onEvent?.invoke(it)
         FastAdapterDiffUtil.set(this, intercept(it), true)
     }
     return this

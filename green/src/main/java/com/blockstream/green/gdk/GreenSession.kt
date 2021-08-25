@@ -117,8 +117,7 @@ class GreenSession constructor(
 
     fun setActiveAccount(account: Long){
         activeAccount = account
-        updateBalance()
-        updateTransactions()
+        updateTransactionsAndBalance(true)
     }
 
     fun connect(network: Network, hwWallet: HWWallet? = null) {
@@ -449,6 +448,8 @@ class GreenSession constructor(
         AuthHandler(greenWallet, greenWallet.setCsvTime(gaSession, value))
 
     fun updateSettings(){
+        logger.info { "updateSettings" }
+
         observable {
             greenWallet.getSettings(gaSession)
         }.retry(1)
@@ -464,6 +465,8 @@ class GreenSession constructor(
     }
 
     fun updateSubAccounts() {
+        logger.info { "updateSubAccounts" }
+
         observable {
             AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession)).result<SubAccounts>()
         }.retry(1)
@@ -476,26 +479,48 @@ class GreenSession constructor(
                 }).addTo(disposables)
     }
 
-    fun updateBalance(){
+    private var txOffset = 0
+    private val txLimit = 12
+    var hasMoreTransactions = false
+    fun updateTransactionsAndBalance(isReset: Boolean) {
         observable {
-            it.getBalance(BalanceParams(activeAccount))
+            if(isReset){
+                txOffset = 0
+            }
+
+            val limit = if(isReset) txLimit else (txOffset + txLimit)
+
+            Pair(
+                it.getTransactions(TransactionParams(activeAccount, 0, limit)).result<Transactions>(),
+                it.getBalance(BalanceParams(activeAccount))
+            )
         }
-        .retry(1)
+        .retry(2)
         .subscribeBy(onError = {
             it.printStackTrace()
         }, onSuccess = {
-            balancesSubject.onNext(it)
+            if(isReset) {
+                hasMoreTransactions = it.first.transactions.size == txLimit
+            }
+            transactionsSubject.onNext(it.first.transactions)
+            balancesSubject.onNext(it.second)
+
         }).addTo(disposables)
     }
 
-    fun updateTransactions() {
+    fun loadMoreTransactions(){
         observable {
-            it.getTransactions(TransactionParams(activeAccount)).result<Transactions>()
+            it.getTransactions(TransactionParams(activeAccount, txOffset + txLimit, txLimit)).result<Transactions>()
         }
         .subscribeBy(onError = {
             it.printStackTrace()
         }, onSuccess = {
-            transactionsSubject.onNext(it.transactions)
+            txOffset += txLimit
+
+            hasMoreTransactions = it.transactions.size == txLimit
+
+            transactionsSubject.onNext(transactionsSubject.value + it.transactions)
+
         }).addTo(disposables)
     }
 
@@ -512,6 +537,9 @@ class GreenSession constructor(
 
     fun convertAmount(convert: Convert) = greenWallet.convertAmount(gaSession, convert)
 
+    // skip updating on the first block event
+    private var updateTransactionsAndBalance = false
+
     fun onNewNotification(notification: Notification) {
         logger.info { "onNewNotification $notification" }
 
@@ -519,8 +547,10 @@ class GreenSession constructor(
             "block" -> {
                 notification.block?.let {
                     blockSubject.onNext(it)
-                    updateTransactions()
-                    updateBalance()
+                    if(updateTransactionsAndBalance) {
+                        updateTransactionsAndBalance(false)
+                    }
+                    updateTransactionsAndBalance = true
                 }
             }
             "fees" -> {
@@ -554,8 +584,7 @@ class GreenSession constructor(
             "transaction" -> {
                 notification.transaction?.let {
                     if(it.subaccounts.contains(activeAccount)){
-                        updateTransactions()
-                        updateBalance()
+                        updateTransactionsAndBalance(false)
                     }
                 }
             }

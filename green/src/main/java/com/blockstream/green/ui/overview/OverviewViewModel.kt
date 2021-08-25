@@ -6,12 +6,9 @@ import androidx.lifecycle.*
 import com.blockstream.gdk.*
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
-import com.blockstream.gdk.data.Transactions
-import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.items.AlertType
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
@@ -35,20 +32,15 @@ class OverviewViewModel @AssistedInject constructor(
     private val state: MutableLiveData<State> = MutableLiveData(State.Overview)
     fun getState(): LiveData<State> = state
 
-//    private val subAccount: MutableLiveData<SubAccount> = MutableLiveData()
-//    fun getSubAccount(): LiveData<SubAccount> = subAccount
-
     private val subAccounts: MutableLiveData<List<SubAccount>> = MutableLiveData()
     fun getSubAccounts(): LiveData<List<SubAccount>> = subAccounts
 
     private var allBalances: Balances = linkedMapOf(BalanceLoading)
-    private val balances: MutableLiveData<Balances> = MutableLiveData(allBalances)
-    fun getBalancesLiveData(): LiveData<Balances> = balances
+    private val shownBalances: MutableLiveData<Balances> = MutableLiveData(allBalances)
+    fun getBalancesLiveData(): LiveData<Balances> = shownBalances
 
     private val alerts = MutableLiveData<List<AlertType>>(listOf())
     fun getAlerts(): LiveData<List<AlertType>> = alerts
-
-    val balancesLoading = MutableLiveData(false)
 
     fun isMainnet(): LiveData<Boolean> = MutableLiveData(session.isMainnet)
     fun isLiquid(): LiveData<Boolean> = MutableLiveData(wallet.isLiquid)
@@ -63,7 +55,6 @@ class OverviewViewModel @AssistedInject constructor(
 
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
-//    private var accountIndex: Long = wallet.activeAccount
     private var pendingSubAccountSwitch: Long = -1
 
     private var allSubAccounts: List<SubAccount> by Delegates.observable(listOf()) { _, _, newValue ->
@@ -77,7 +68,7 @@ class OverviewViewModel @AssistedInject constructor(
             .getBalancesObservable()
             .subscribe {
                 allBalances = it
-                balances.postValue(it)
+                shownBalances.postValue(it)
             }.addTo(disposables)
 
         session
@@ -113,7 +104,7 @@ class OverviewViewModel @AssistedInject constructor(
 
                     pendingSubAccountSwitch = -1
                 }
-            }?.addTo(disposables)
+            }.addTo(disposables)
 
         session
             .getTwoFactorResetObservable()
@@ -132,25 +123,6 @@ class OverviewViewModel @AssistedInject constructor(
 
     fun refresh(){
         session.updateSubAccounts()
-    }
-
-    private fun updateBalance() {
-
-
-//        session.observable {
-//            it.getBalance(BalanceParams(wallet.activeAccount))
-//        }.doOnSubscribe {
-//            balancesLoading.value = true
-//        }.doOnTerminate {
-//            balancesLoading.value = false
-//        }.subscribeBy(onError = {
-//            // TODO find a way to show the error
-//            // maybe have an error livedata to show an action like reconnect
-//            it.printStackTrace()
-//        }, onSuccess = {
-//            allBalances = it
-//            balances.postValue(allBalances)
-//        }).addTo(disposables)
     }
 
     private fun filterSubAccounts(subAccounts: List<SubAccount>): List<SubAccount> {
@@ -174,7 +146,7 @@ class OverviewViewModel @AssistedInject constructor(
         super.selectSubAccount(account)
 
         allBalances = linkedMapOf(BalanceLoading)
-        balances.postValue(allBalances)
+        shownBalances.postValue(allBalances)
 
         allSubAccounts.let {
             subAccounts.value = filterSubAccounts(it)
@@ -182,17 +154,9 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     fun setAsset(balancePair: BalancePair) {
-//        this.balance.value = balancePair
-
         // the ordering is important
         setState(State.Asset)
-
-        balances.value = linkedMapOf(balancePair)
-
-//        transactions.postValue(subAccount.value!!.transactions.filter {
-////            it.ticker == asset.ticker
-//            it.txType == Transaction.Type.IN
-//        })
+        shownBalances.value = linkedMapOf(balancePair)
     }
 
     fun setState(newState: State) {
@@ -201,11 +165,18 @@ class OverviewViewModel @AssistedInject constructor(
         state.value = newState
 
         if (newState == State.Overview && oldState == State.Asset) {
-            balances.value = allBalances
-//            transactions.value = subAccount.value!!.transactions.subList(0, 30)
+            shownBalances.value = allBalances
         }
     }
 
+    fun refreshTransactions(){
+        session.updateTransactionsAndBalance(false)
+    }
+
+    fun loadMoreTransactions(){
+        logger.info { "loadMoreTransactions" }
+        session.loadMoreTransactions()
+    }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {

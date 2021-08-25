@@ -13,7 +13,7 @@ class AlertListItem(private val alertType: AlertType, val listener : View.OnClic
         get() = R.id.fastadapter_alert_item_id
 
     init {
-        identifier = alertType.hashCode().toLong()
+        identifier = javaClass.hashCode().toLong() + alertType.hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemAlertBinding, payloads: List<Any>) {

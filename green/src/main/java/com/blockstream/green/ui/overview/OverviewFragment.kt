@@ -1,52 +1,60 @@
 package com.blockstream.green.ui.overview
 
 import android.animation.ObjectAnimator
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.gdk.BalancePair
-import com.blockstream.green.*
 import com.blockstream.gdk.data.AccountType
-import com.blockstream.green.databinding.OverviewFragmentBinding
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
+import com.blockstream.green.R
+import com.blockstream.green.databinding.ListItemAccountBinding
+import com.blockstream.green.databinding.OverviewFragmentBinding
 import com.blockstream.green.gdk.getIcon
-import com.blockstream.green.ui.*
+import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
+import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.looks.AssetListLook
 import com.blockstream.green.ui.wallet.*
 import com.blockstream.green.utils.*
-import com.blockstream.green.views.behaviors.ScrollAwareBehavior
+import com.blockstream.green.views.EndlessRecyclerOnScrollListener
+import com.blockstream.green.views.NpaLinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.greenaddress.greenbits.ui.TabbedMainActivity
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import com.greenaddress.greenbits.ui.send.ScanActivity
 import com.greenaddress.greenbits.ui.transactions.TransactionActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericFastAdapter
 import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.IAdapter
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
+import com.mikepenz.fastadapter.binding.listeners.addClickListener
+import com.mikepenz.fastadapter.ui.items.ProgressItem
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.HashMap
+import kotlinx.coroutines.delay
+import java.util.*
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 
 @AndroidEntryPoint
@@ -64,13 +72,11 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         OverviewViewModel.provideFactory(viewModelFactory, args.wallet)
     }
 
-    private lateinit var overviewAdapter: GenericFastAdapter
-    private lateinit var accountsAdapter: GenericFastAdapter
-    private var assetsTitleAdapter: GenericFastItemAdapter = FastItemAdapter()
-    private var managedAssetsAccountIdAdapter: GenericFastItemAdapter = FastItemAdapter()
-
     private val isOverviewState: Boolean
         get() = viewModel.getState().value == OverviewViewModel.State.Overview
+
+    private val isAccountState: Boolean
+        get() = viewModel.getState().value == OverviewViewModel.State.Account
 
     private val isAssetState: Boolean
         get() = viewModel.getState().value == OverviewViewModel.State.Asset
@@ -81,18 +87,30 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
     }
 
-    private val movableAnimation by lazy {
-        ObjectAnimator.ofFloat(
-            binding.bottomBar,
-            "translationY",
-            binding.bottomBar.height.toFloat()
+    private fun createBottomBarAnimation(isHide : Boolean): ObjectAnimator {
+        return ObjectAnimator.ofFloat(
+                binding.bottomBar,
+                "translationY",
+                if(isHide) binding.bottomBar.height.toFloat() else 0f
         ).apply {
-            duration = 150
+            duration = 200
         }
     }
 
-    private val movingBehavior by lazy {
-        (binding.bottomBar.layoutParams as CoordinatorLayout.LayoutParams).behavior as ScrollAwareBehavior to binding.bottomBar
+//    private val movingBehavior by lazy {
+//        (binding.bottomBar.layoutParams as CoordinatorLayout.LayoutParams).behavior as ScrollAwareBehavior to binding.bottomBar
+//    }
+
+    var showAccountInToolbar: Boolean by Delegates.observable(false) { _, oldValue, newValue ->
+        if(oldValue != newValue) {
+            updateToolbar(newValue)
+        }
+    }
+
+    private val startForResultTransactionDetails = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            viewModel.refreshTransactions()
+        }
     }
 
     companion object {
@@ -113,8 +131,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         binding.vm = viewModel
 
-        overviewAdapter = createOverviewAdapter()
-        initAccountsAdapter()
+        val fastAdapter = setupAdapters(binding.recycler)
 
         binding.buttonReceive.setOnClickListener {
             navigate(OverviewFragmentDirections.actionOverviewFragmentToReceiveFragment(viewModel.wallet))
@@ -142,35 +159,14 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         binding.recycler.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = NpaLinearLayoutManager(context)
             itemAnimator = SlideDownAlphaAnimator()
-            adapter = overviewAdapter
-        }
-
-        binding.account.setOnClickListener {
-            if (viewModel.getState().value == OverviewViewModel.State.Account) {
-                viewModel.setState(OverviewViewModel.State.Overview)
-            } else {
-                viewModel.setState(OverviewViewModel.State.Account)
-            }
+            adapter = fastAdapter
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.swipeRefreshLayout.isRefreshing = false
             viewModel.refresh()
-        }
-
-        binding.buttonAccountMenu.setOnClickListener { view ->
-            showPopupMenu(view, R.menu.menu_account) { item ->
-                when(item.itemId){
-                    R.id.rename -> {
-                        RenameAccountBottomSheetDialogFragment().also {
-                            it.show(childFragmentManager, it.toString())
-                        }
-                    }
-                }
-                true
-            }
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) {
@@ -185,55 +181,18 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             setToolbar(it.name, drawable = ContextCompat.getDrawable(requireContext(), it.getIcon()))
         }
 
-
-        // TODO MOVE ALL CODE HERE
         viewModel.getState().distinctUntilChanged().observe(viewLifecycleOwner) {
-
-            val newAdapter: GenericFastAdapter = if (it == OverviewViewModel.State.Account) {
-                accountsAdapter
-            } else {
-                overviewAdapter
-            }
-
-            if (binding.recycler.adapter != newAdapter) {
-                binding.recycler.adapter = newAdapter
-
-                if (it == OverviewViewModel.State.Account) {
-                    movingBehavior.first.disable(movingBehavior.second, false)
-                    movableAnimation.start()
-                } else {
-                    movingBehavior.first.enable()
-                    movableAnimation.reverse()
-                }
-            }
-
-            assetsTitleAdapter.set(
-                listOf(
-                    TitleListItem(
-                        StringHolder(if (isOverviewState) R.string.id_assets else R.string.id_all_assets),
-                        isAssetState,
-                        withTopPadding = false
-                    )
-                )
-            )
-
             // TODO fix it, its not working
             updateToolbar(false)
 
             onBackCallback.isEnabled = !isOverviewState
         }
 
-        // TODO REFACTOR
-        var isAccountTitleShown = false
-        binding.nestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            val shouldShowAccountTitle = scrollY > TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 54f, resources.displayMetrics).toInt()
-
-            if (isAccountTitleShown != shouldShowAccountTitle) {
-                isAccountTitleShown = shouldShowAccountTitle
-
-                updateToolbar(shouldShowAccountTitle)
+        binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                showAccountInToolbar = (recyclerView.layoutManager as NpaLinearLayoutManager).findFirstVisibleItemPosition() > 0
             }
-        }
+        })
 
         updateRecyclerPadding(topPadding = true, bottomPadding = true)
 
@@ -270,10 +229,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     override fun onResume() {
         super.onResume()
 
-        // TODO fix
-        updateToolbar(false)
-
-
         requireActivity().window.navigationBarColor =
             ContextCompat.getColor(requireContext(), R.color.brand_surface_variant)
     }
@@ -285,59 +240,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             ContextCompat.getColor(requireContext(), R.color.brand_background)
     }
 
-    private fun initAccountsAdapter() {
-        val accountsModelAdapter = ModelAdapter { model: SubAccount ->
-            AccountListItem(model, session.network)
-        }.observeList(viewLifecycleOwner, viewModel.getSubAccounts())
-
-        viewModel.getSubAccountLiveData().observe(viewLifecycleOwner) { subAccount ->
-            if(viewModel.wallet.isLiquid){
-                managedAssetsAccountIdAdapter.clear()
-
-                if(subAccount.type == AccountType.AMP_ACCOUNT) {
-                    managedAssetsAccountIdAdapter.set(
-                        listOf(
-                            AccountIdListItem { _ ->
-                                AccountIdBottomSheetDialogFragment(subAccount).also {
-                                    it.show(childFragmentManager, it.toString())
-                                }
-                            }
-                        )
-                    )
-                }
-            }
-        }
-
-        val addAccountAdapter = FastItemAdapter<GenericItem>()
-
-        if(!wallet.isWatchOnly){
-            addAccountAdapter.add(ButtonActionListItem(StringHolder(R.string.id_add_new_account), true))
-        }
-
-        accountsAdapter = FastAdapter.with(listOf(accountsModelAdapter, addAccountAdapter))
-        accountsAdapter.onClickListener = { _, _, item, _ ->
-            when (item) {
-                is AccountListItem -> {
-                    viewModel.selectSubAccount(item.subAccount)
-                    closeInnerAdapter()
-                }
-
-                is ButtonActionListItem -> {
-                    navigate(
-                        OverviewFragmentDirections.actionOverviewFragmentToChooseAccountTypeFragment(
-                            wallet = args.wallet
-                        )
-                    )
-                    closeInnerAdapter()
-                }
-            }
-
-            true
-        }
-    }
-
     private fun updateRecyclerPadding(topPadding: Boolean, bottomPadding: Boolean) {
-
         binding.recycler.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -372,10 +275,68 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         return !isOverviewState
     }
 
-    private fun createOverviewAdapter(): GenericFastAdapter {
-        val adapters = mutableListOf<IAdapter<*>>()
+    private fun setupAdapters(recycler: RecyclerView): GenericFastAdapter {
+        val managedAssetsAccountIdAdapter: GenericFastItemAdapter = FastItemAdapter()
+        val assetsTitleAdapter: GenericFastItemAdapter = FastItemAdapter()
 
-        adapters += ModelAdapter<AlertType, AlertListItem> {
+        // Top Account Card
+        var topAccountAdapter = FastItemAdapter<AccountListItem>()
+        var topAccount : AccountListItem? = null
+
+        viewModel.getSubAccountLiveData().observe(viewLifecycleOwner){ subAccount ->
+
+            // Use that if you don't want animations
+//            topAccount?.let {
+//                it.subAccount = subAccount
+//            } ?: run {
+//                topAccount = AccountListItem(subAccount, session.network, true, false)
+//                topAccountAdapter.set(listOf(topAccount!!))
+//            }
+
+            // and this if you want
+            topAccount = AccountListItem(subAccount, session.network, true).also {
+                updateTopAccountCard(it)
+            }
+            topAccountAdapter.set(listOf(topAccount!!))
+
+            // Account Id
+            if(viewModel.wallet.isLiquid){
+                managedAssetsAccountIdAdapter.clear()
+
+                if(subAccount.type == AccountType.AMP_ACCOUNT) {
+                    managedAssetsAccountIdAdapter.set(
+                        listOf(
+                            AccountIdListItem { _ ->
+                                AccountIdBottomSheetDialogFragment(subAccount).also {
+                                    it.show(childFragmentManager, it.toString())
+                                }
+                            }
+                        )
+                    )
+                }
+            }
+        }
+
+        // Account Cards
+        val accountsModelAdapter = ModelAdapter { model: SubAccount ->
+            AccountListItem(model, session.network)
+        }.observeList(viewLifecycleOwner, viewModel.getSubAccounts(),{
+            topAccount?.let { updateTopAccountCard(it) }
+        }).also {
+            it.active = false
+        }
+
+        // Add new account button
+        val addAccountAdapter = FastItemAdapter<GenericItem>().also {
+                it.itemAdapter.active = false
+            }
+
+        if(!wallet.isWatchOnly){
+            addAccountAdapter.add(ButtonActionListItem(StringHolder(R.string.id_add_new_account), true))
+        }
+
+        // Alert cards
+        val alertCardsAdapter =  ModelAdapter<AlertType, AlertListItem> {
             AlertListItem(it) { _ ->
                 TwoFactorResetSheetDialogFragment.newInstance(it.twoFactorReset).also { dialog ->
                     dialog.show(childFragmentManager, dialog.toString())
@@ -383,53 +344,111 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         }.observeList(viewLifecycleOwner, viewModel.getAlerts())
 
-
-        if(viewModel.wallet.isLiquid) {
-            adapters += managedAssetsAccountIdAdapter
-            adapters += assetsTitleAdapter
-        }
-
-        adapters += ModelAdapter<BalancePair, AssetListItem>() {
+        // Assets Balance
+        val assetsBalanceAdapter =  ModelAdapter<BalancePair, AssetListItem>() {
             AssetListItem(session, it, isAssetState && viewModel.wallet.isLiquid, (it.first.isEmpty() && it.second == -1L))
         }.observeMap(viewLifecycleOwner, viewModel.getBalancesLiveData() as LiveData<Map<*, *>>) {
             BalancePair(it.key as String, it.value as Long)
         }
 
-
         var titleAdapter = FastItemAdapter<GenericItem>()
 
         viewModel.getTransactions().distinctUntilChanged().observe(viewLifecycleOwner){
-            titleAdapter.clear()
-
             if(it.isNotEmpty()){
-                titleAdapter.add(TitleListItem(StringHolder(R.string.id_transactions)))
+                titleAdapter.set(listOf(TitleListItem(StringHolder(R.string.id_transactions))))
             }else{
-                titleAdapter.add(TextListItem(StringHolder(R.string.id_your_transactions_will_be_shown)))
+                titleAdapter.set(listOf(TextListItem(StringHolder(R.string.id_your_transactions_will_be_shown))))
             }
         }
 
+        val transactionsFooterAdapter = ItemAdapter<ProgressItem>()
 
-        adapters += titleAdapter
+        val endlessRecyclerOnScrollListener = object : EndlessRecyclerOnScrollListener() {
+            override fun onLoadMore() {
+                transactionsFooterAdapter.set(listOf(ProgressItem()))
+                disable()
+                viewModel.loadMoreTransactions()
+            }
+        }.also {
+            it.disable()
+        }
 
-        adapters += ModelAdapter<Transaction, TransactionListItem>() {
+        val transactionAdapter = ModelAdapter<Transaction, TransactionListItem>() {
             TransactionListItem(session, it)
-        }.observeList(viewLifecycleOwner, viewModel.getTransactions())
+        }.observeList(viewLifecycleOwner, viewModel.getTransactions()) {
+            transactionsFooterAdapter.clear()
 
-//        val viewMoreAdapter = FastItemAdapter<GenericItem>()
-//        viewMoreAdapter.add(ButtonActionListItem(StringHolder(R.string.id_view_more), false))
-//        adapters += viewMoreAdapter
+            if(session.hasMoreTransactions){
+                // enable after a short period of time to avoid being immediately called
+                lifecycleScope.launchWhenResumed {
+                    delay(200L)
+                    endlessRecyclerOnScrollListener.enable()
+                }
+            }else{
+                endlessRecyclerOnScrollListener.disable()
+            }
+        }
 
-        val adapter = FastAdapter.with(adapters)
+        recycler.addOnScrollListener(endlessRecyclerOnScrollListener)
+
+        val adapters = listOf(
+            topAccountAdapter,
+            accountsModelAdapter,
+            addAccountAdapter,
+            alertCardsAdapter,
+            managedAssetsAccountIdAdapter,
+            assetsTitleAdapter,
+            assetsBalanceAdapter,
+            titleAdapter,
+            transactionAdapter,
+            transactionsFooterAdapter
+        )
+
+        val fastAdapter = FastAdapter.with(adapters)
 
         // Notify adapter when we have new assets
         viewModel.assetsUpdated.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
-                adapter.notifyAdapterDataSetChanged()
+                fastAdapter.notifyAdapterDataSetChanged()
             }
         }
 
-        adapter.onClickListener = { _, _, item, _ ->
+        fastAdapter.addClickListener<ListItemAccountBinding, GenericItem>({ binding -> binding.buttonAccountMenu }) { view, _, _, _ ->
+            showPopupMenu(view, R.menu.menu_account) { item ->
+                when (item.itemId) {
+                    R.id.rename -> {
+                        RenameAccountBottomSheetDialogFragment().also {
+                            it.show(childFragmentManager, it.toString())
+                        }
+                    }
+                }
+                true
+            }
+        }
+
+        fastAdapter.onClickListener = { _, _, item, _ ->
             when (item) {
+                is AccountListItem -> {
+                    if(item.isTopAccount){
+                        if(isOverviewState){
+                            viewModel.setState(OverviewViewModel.State.Account)
+                        }else{
+                            closeInnerAdapter()
+                        }
+                    }else{
+                        viewModel.selectSubAccount(item.subAccount)
+                        closeInnerAdapter()
+                    }
+                }
+
+                is ButtonActionListItem -> {
+                    navigate(
+                        OverviewFragmentDirections.actionOverviewFragmentToChooseAccountTypeFragment(
+                            wallet = args.wallet
+                        )
+                    )
+                    closeInnerAdapter()
+                }
                 is AssetListItem -> {
                     if(viewModel.wallet.isLiquid) {
                         if (isOverviewState && viewModel.wallet.isLiquid) {
@@ -453,7 +472,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     viewModel.getBalancesLiveData().value?.let {
                         txIntent.putExtra("TRANSACTION", item.tx.getTransactionDataV3())
                         txIntent.putExtra("BALANCE", HashMap(it))
-                        startActivityForResult(txIntent, TabbedMainActivity.REQUEST_TX_DETAILS)
+                        startForResultTransactionDetails.launch(txIntent)
                     }
                 }
                 is TitleListItem -> {
@@ -461,15 +480,57 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                         closeOpenElements()
                     }
                 }
-                is ButtonActionListItem -> {
-                    // navigate(OverviewFragmentDirections.actionOverviewFragmentToTransactionListFragment())
-                }
             }
 
             true
         }
 
-        return adapter
+        viewModel.getState().distinctUntilChanged().observe(viewLifecycleOwner) {
+            if(wallet.isLiquid) {
+                assetsTitleAdapter.set(
+                    listOf(
+                        TitleListItem(
+                            StringHolder(if (isOverviewState) R.string.id_assets else R.string.id_all_assets),
+                            isAssetState,
+                            withTopPadding = false
+                        )
+                    )
+                )
+            }
+
+            val isOverviewOrAssets = isOverviewState || isAssetState
+            val isAccount = isAccountState
+
+            if (isAccount) {
+//                movingBehavior.first.disable(movingBehavior.second, false)
+                createBottomBarAnimation(true).start()
+            } else {
+//                movingBehavior.first.enable()
+                createBottomBarAnimation(false).start()
+            }
+
+            topAccount?.let {
+                updateTopAccountCard(it)
+            }
+
+            accountsModelAdapter.active = isAccount
+            addAccountAdapter.itemAdapter.active = isAccount
+
+            alertCardsAdapter.active = isOverviewOrAssets
+            managedAssetsAccountIdAdapter.itemAdapter.active = isOverviewState
+            assetsTitleAdapter.itemAdapter.active = isOverviewOrAssets && wallet.isLiquid
+            assetsBalanceAdapter.active = isOverviewOrAssets
+            titleAdapter.itemAdapter.active = isOverviewOrAssets
+            transactionAdapter.active = isOverviewOrAssets
+            transactionsFooterAdapter.active = isOverviewOrAssets
+        }
+
+        return fastAdapter
+    }
+
+    private fun updateTopAccountCard(topCard: AccountListItem) {
+        topCard.showFakeCard = viewModel.getSubAccounts().value?.size ?: 0 > 1
+        topCard.isAccountListOpen = isAccountState
     }
 
     private fun updateToolbar(showSecondary: Boolean) {

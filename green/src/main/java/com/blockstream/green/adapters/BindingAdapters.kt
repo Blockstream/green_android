@@ -1,6 +1,7 @@
 package com.blockstream.green.adapters
 
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.StringRes
@@ -85,4 +86,25 @@ fun setGdkDevice(view: ImageView, device: Device) {
 @BindingAdapter("greenDevice")
 fun setGreenDevice(view: ImageView, device: com.blockstream.green.devices.Device?) {
     view.setImageResource(device?.getIcon() ?: 0)
+}
+
+@BindingAdapter("layoutMarginLeft")
+fun setLayoutMarginLeft(view: View, dimen: Float) {
+    val layoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
+    layoutParams.leftMargin = dimen.toInt()
+    view.layoutParams = layoutParams
+}
+
+@BindingAdapter("layoutMarginRight")
+fun setLayoutMarginRight(view: View, dimen: Float) {
+    val layoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
+    layoutParams.rightMargin = dimen.toInt()
+    view.layoutParams = layoutParams
+}
+
+@BindingAdapter("layoutMarginBottom")
+fun setLayoutMarginBottom(view: View, dimen: Float) {
+    val layoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
+    layoutParams.bottomMargin = dimen.toInt()
+    view.layoutParams = layoutParams
 }

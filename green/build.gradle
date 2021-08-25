@@ -132,6 +132,7 @@ dependencies {
     implementation "androidx.biometric:biometric:1.2.0-alpha03"
     implementation "androidx.preference:preference-ktx:1.1.1"
     implementation "androidx.browser:browser:1.3.0"
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Lifecycle -------------------------------------------------------------------------- */
@@ -183,6 +184,7 @@ dependencies {
     implementation "com.mikepenz:fastadapter-extensions-binding:5.4.1" // view binding helpers
     implementation "com.mikepenz:fastadapter-extensions-expandable:5.4.1"
     implementation "com.mikepenz:fastadapter-extensions-ui:5.4.1" // pre-defined ui components
+    implementation "com.mikepenz:fastadapter-extensions-scroll:5.4.1"
     implementation "com.mikepenz:fastadapter-extensions-utils:5.4.1"
     implementation "com.mikepenz:itemanimators:1.1.0"
     /** ----------------------------------------------------------------------------------------- */

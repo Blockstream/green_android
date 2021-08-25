@@ -83,7 +83,7 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         }
     }
 
-    private fun navigate(wallet: Wallet) {
+    internal fun navigate(wallet: Wallet) {
 
         if(Bridge.useGreenModule){
             val walletSession = sessionManager.getWalletSession(wallet)
