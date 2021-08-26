@@ -61,7 +61,6 @@ class AccountCreateSelectTypeViewController: UIViewController {
         cards.forEach { card in
             card.layer.cornerRadius = 5.0
         }
-        card2of3.alpha = 0.5
     }
 
     func setActions() {
@@ -101,10 +100,12 @@ class AccountCreateSelectTypeViewController: UIViewController {
     }
 
     @objc func didPressCardAmp() {
-            next(.amp)
+        next(.amp)
     }
 
-    @objc func didPressCard2of3() { /* for future usage: next(.threeSig) */ }
+    @objc func didPressCard2of3() {
+        DropAlert().warning(message: "Coming Soon!\nThis feature is coming soon, stay tuned!", delay: 3)
+    }
 
     func next(_ accountType: AccountType) {
         performSegue(withIdentifier: "set-name", sender: accountType)

@@ -16,6 +16,7 @@ class ChooseNetworkViewController: UIViewController {
     @IBOutlet weak var cardTestnet: UIView!
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
+    var isMigratingOtherWallet = false
 
     @IBOutlet weak var cardLiquidTestnet: UIView!
 
@@ -75,6 +76,12 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     @objc func didPressCardLiquid() {
+        // migrating other wallet is implicitly SingleSig which is not
+        // available yet for liqud network
+        if isMigratingOtherWallet == true {
+            DropAlert().warning(message: "Coming Soon!\nThis feature is coming soon, stay tuned!", delay: 3)
+            return
+        }
         OnBoardManager.shared.params = OnBoardParams(network: "liquid")
         next()
     }
@@ -90,6 +97,14 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     func next() {
+        if isMigratingOtherWallet == true {
+            //security is implicit
+            OnBoardManager.shared.params?.singleSig = true
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
+            navigationController?.pushViewController(vc, animated: true)
+            return
+        }
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
         navigationController?.pushViewController(vc, animated: true)

@@ -54,10 +54,6 @@ class ChooseSecurityViewController: UIViewController {
     func setStyle() {
         cardSimple.layer.cornerRadius = 5.0
         cardAdvanced.layer.cornerRadius = 5.0
-
-        if !isSingleSigEnabled() {
-            cardSimple.alpha = 0.5
-        }
     }
 
     func setActions() {
@@ -69,6 +65,7 @@ class ChooseSecurityViewController: UIViewController {
 
     @objc func didPressCardSimple() {
         if !isSingleSigEnabled() {
+            DropAlert().warning(message: "Coming Soon!\nThis feature is coming soon, stay tuned!", delay: 3)
             return
         }
         OnBoardManager.shared.params?.singleSig = true

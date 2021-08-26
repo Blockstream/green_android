@@ -37,8 +37,6 @@ class RestoreWalletViewController: UIViewController {
     func setStyle() {
         cardRestore.layer.cornerRadius = 5.0
         cardMigrate.layer.cornerRadius = 5.0
-
-        cardMigrate.alpha = 0.5
     }
 
     func setActions() {
@@ -49,16 +47,19 @@ class RestoreWalletViewController: UIViewController {
     }
 
     @objc func didPressCardRestore() {
-        next()
+        next(isMigratingOtherWallet: false)
     }
 
     @objc func didPressCardMigrate() {
-//        next()
+        next(isMigratingOtherWallet: true)
     }
 
-    func next() {
+    func next(isMigratingOtherWallet: Bool) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
-        navigationController?.pushViewController(vc, animated: true)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController") as? ChooseNetworkViewController {
+            vc.isMigratingOtherWallet = isMigratingOtherWallet
+            navigationController?.pushViewController(vc, animated: true)
+        }
+
     }
 }
