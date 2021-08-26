@@ -5,6 +5,18 @@
 
     <data>
 
+        <variable
+            name="confirmations"
+            type="Long" />
+
+        <variable
+            name="date"
+            type="String" />
+
+        <variable
+            name="memo"
+            type="String" />
+
     </data>
 
     <FrameLayout
@@ -12,10 +24,10 @@
         android:layout_height="wrap_content">
 
         <com.blockstream.green.views.DividerView
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -26,39 +38,65 @@
             android:paddingBottom="16dp">
 
             <TextView
-                android:id="@+id/date"
+                android:id="@+id/dateView"
+                isVisible="@{confirmations > 6}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="@color/color_on_surface_emphasis_medium"
-                android:textSize="10sp"
+                android:textSize="10dp"
+                android:text="@{date}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
-                tools:ignore="SmallSp"
+                tools:ignore="SpUsage"
                 tools:text="Jul 29, 2020" />
 
             <TextView
-                android:id="@+id/unconfirmed"
+                android:id="@+id/unconfirmedView"
+                isVisible="@{confirmations == 0}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/color_surface_light_round"
-                android:paddingStart="4dp"
-                android:paddingTop="1dp"
-                android:paddingEnd="4dp"
-                android:paddingBottom="1dp"
-                android:textAllCaps="true"
+                android:background="@drawable/color_warning_round"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
                 android:text="@string/id_unconfirmed"
+                android:textAllCaps="true"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="@color/color_on_surface_emphasis_medium"
-                android:textSize="10sp"
+                android:textSize="10dp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="packed"
-                tools:ignore="SmallSp" />
+                tools:ignore="SpUsage" />
 
             <TextView
-                android:id="@+id/note"
+                android:id="@+id/confirmationsView"
+                isVisible="@{confirmations > 0 &amp;&amp; confirmations &lt;= 6}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/color_surface_light_round"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@{String.format(@string/id_d6_confirmations, confirmations)}"
+                android:textAllCaps="true"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                android:textSize="10dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="@string/id_d6_confirmations"
+                tools:ignore="SpUsage" />
+
+            <TextView
+                android:id="@+id/memoView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -67,6 +105,7 @@
                 android:textAlignment="textEnd"
                 android:textAppearance="?attr/textAppearanceCaption"
                 android:textColor="@color/color_on_surface_emphasis_low"
+                android:text="@{memo}"
                 app:layout_constraintBottom_toTopOf="@+id/assetWrapper"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/barrierTopLeft"
@@ -82,7 +121,7 @@
                 app:gap="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/note">
+                app:layout_constraintTop_toBottomOf="@+id/memoView">
 
                 <include
                     android:id="@+id/firstValue"
@@ -95,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="right"
-                app:constraint_referenced_ids="date,unconfirmed" />
+                app:constraint_referenced_ids="dateView,unconfirmedView,confirmationsView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

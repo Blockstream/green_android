@@ -32,12 +32,9 @@ data class TransactionListItem(val session: GreenSession, val tx: Transaction) :
     }
 
     override fun bindView(binding: ListItemTransactionBinding, payloads: List<Any>) {
-        binding.date.text = look.date
-        binding.note.text = look.memo
-
-        val confirmations = tx.getConfirmations(session.blockHeight)
-        binding.unconfirmed.isVisible = confirmations == 0L
-        binding.date.isVisible = confirmations > 0L
+        binding.confirmations = tx.getConfirmations(session.blockHeight)
+        binding.date = look.date
+        binding.memo = look.memo
 
         setAsset(0, binding.firstValue)
 
