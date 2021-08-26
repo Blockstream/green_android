@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.Bridge
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.Session
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.HttpRequestHandler
 import com.greenaddress.jade.HttpRequestProvider
 import io.reactivex.rxjava3.core.Observable
@@ -335,14 +336,14 @@ class GreenSession constructor(
                val subAccounts = AuthHandler(
                    greenWallet,
                    greenWallet.getSubAccounts(gaSession)
-               ).result<SubAccounts>().subaccounts
+               ).result<SubAccounts>(hardwareWalletResolver = HardwareCodeResolver(hwWallet)).subaccounts
 
                if(subAccounts.firstOrNull { it.type == AccountType.BIP84_SEGWIT } == null){
                    // Create SegWit Account
                    AuthHandler(greenWallet,
                        greenWallet
                            .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
-                   ).resolve()
+                   ).resolve(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
                }
            }
 
@@ -468,7 +469,7 @@ class GreenSession constructor(
         logger.info { "updateSubAccounts" }
 
         observable {
-            AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession)).result<SubAccounts>()
+            AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession)).result<SubAccounts>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
         }.retry(1)
             .subscribeBy(
                 onSuccess = {
@@ -492,7 +493,9 @@ class GreenSession constructor(
             val limit = if(isReset) txLimit else (txOffset + txLimit)
 
             Pair(
-                it.getTransactions(TransactionParams(activeAccount, 0, limit)).result<Transactions>(),
+                it.getTransactions(TransactionParams(activeAccount, 0, limit)).result<Transactions>(
+                    hardwareWalletResolver = HardwareCodeResolver(hwWallet)
+                ),
                 it.getBalance(BalanceParams(activeAccount))
             )
         }
@@ -511,7 +514,7 @@ class GreenSession constructor(
 
     fun loadMoreTransactions(){
         observable {
-            it.getTransactions(TransactionParams(activeAccount, txOffset + txLimit, txLimit)).result<Transactions>()
+            it.getTransactions(TransactionParams(activeAccount, txOffset + txLimit, txLimit)).result<Transactions>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
         }
         .subscribeBy(onError = {
             it.printStackTrace()
@@ -526,7 +529,7 @@ class GreenSession constructor(
     }
 
     private fun getBalance(params: BalanceParams): Balances {
-        AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve()
+        AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
             .result<BalanceMap>().let { balanceMap ->
                 return LinkedHashMap(
                     balanceMap.toSortedMap { o1, o2 ->

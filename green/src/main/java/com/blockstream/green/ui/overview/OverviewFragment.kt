@@ -203,21 +203,21 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.delete -> {
-                DeleteWalletBottomSheetDialogFragment().also {
-                    it.show(childFragmentManager, it.toString())
-                }
-            }
-
-            R.id.rename -> {
-                RenameWalletBottomSheetDialogFragment().also {
-                    it.show(childFragmentManager, it.toString())
-                }
-            }
-            R.id.logout -> {
-                viewModel.logout()
-                return true
-            }
+//            R.id.delete -> {
+//                DeleteWalletBottomSheetDialogFragment().also {
+//                    it.show(childFragmentManager, it.toString())
+//                }
+//            }
+//
+//            R.id.rename -> {
+//                RenameWalletBottomSheetDialogFragment().also {
+//                    it.show(childFragmentManager, it.toString())
+//                }
+//            }
+//            R.id.logout -> {
+//                viewModel.logout()
+//                return true
+//            }
             R.id.settings -> {
                 navigate(
                     OverviewFragmentDirections.actionOverviewFragmentToWalletSettingsFragment(wallet)
@@ -324,7 +324,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         // Account Cards
         val accountsModelAdapter = ModelAdapter { model: SubAccount ->
             AccountListItem(model, session.network)
-        }.observeList(viewLifecycleOwner, viewModel.getSubAccounts(),{
+        }.observeList(viewLifecycleOwner, viewModel.getFilteredSubAccounts(),{
             topAccount?.let { updateTopAccountCard(it) }
         }).also {
             it.active = false
@@ -455,7 +455,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 }
                 is AssetListItem -> {
                     if(viewModel.wallet.isLiquid) {
-
                         if (AssetFilteringIsEnabled && isOverviewState && viewModel.wallet.isLiquid) {
                             viewModel.setAsset(item.balancePair)
                         } else {
@@ -549,7 +548,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     }
 
     private fun updateTopAccountCard(topCard: AccountListItem) {
-        topCard.showFakeCard = viewModel.getSubAccounts().value?.size ?: 0 > 1
+        // getSubAccounts returns the accounts except the selected one
+        topCard.showFakeCard = viewModel.getFilteredSubAccounts().value?.size ?: 0 > 0
         topCard.isAccountListOpen = isAccountState
     }
 

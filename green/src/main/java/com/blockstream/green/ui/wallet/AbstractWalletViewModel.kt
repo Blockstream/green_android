@@ -69,7 +69,7 @@ abstract class AbstractWalletViewModel constructor(
         if (session.isConnected) {
 
             session.observable {
-                it.getSubAccount(wallet.activeAccount).result<SubAccount>()
+                it.getSubAccount(wallet.activeAccount).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(session.hwWallet))
             }.subscribe({
                 subAccountLiveData.value = it
             }, {
@@ -98,7 +98,7 @@ abstract class AbstractWalletViewModel constructor(
                                         registerUser = false,
                                         connectSession = true,
                                         hwWallet = session.hwWallet!!,
-                                        hardwareWalletResolver = HardwareCodeResolver(this)
+                                        hardwareWalletResolver = HardwareCodeResolver(session.hwWallet)
                                     )
                                 }.subscribeBy(
                                     onError = {
@@ -168,7 +168,7 @@ abstract class AbstractWalletViewModel constructor(
 
         session.observable {
             it.renameSubAccount(index, name)
-            it.getSubAccount(index).result<SubAccount>()
+            it.getSubAccount(index).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(session.hwWallet))
         }.subscribeBy(
             onError = {
                 onError.postValue(ConsumableEvent(it))

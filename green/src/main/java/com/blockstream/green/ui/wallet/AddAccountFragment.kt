@@ -40,7 +40,7 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
 
         binding.buttonContinue.setOnClickListener {
             hideKeyboard()
-            viewModel.createAccount(session.hwWallet)
+            viewModel.createAccount()
         }
 
         viewModel.accountCreated.observe(viewLifecycleOwner) {

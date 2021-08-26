@@ -2,30 +2,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group android:id="@+id/group_operations">
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/id_settings"
+        app:showAsAction="always" />
 
-        <item
-            android:id="@+id/rename"
-            android:title="@string/id_rename_wallet" />
+<!--    <item-->
+<!--        android:id="@+id/rename"-->
+<!--        android:title="@string/id_rename_wallet" />-->
 
-        <item
-            android:id="@+id/delete"
-            android:title="@string/id_remove_wallet" />
+<!--    <item-->
+<!--        android:id="@+id/delete"-->
+<!--        android:title="@string/id_remove_wallet" />-->
 
-    </group>
-
-    <group android:id="@+id/group_settings">
-        <item
-            android:id="@+id/settings"
-            android:icon="@drawable/ic_settings"
-            android:title="@string/id_settings" />
-    </group>
-
-    <group android:id="@+id/group_logout">
-        <item
-            android:id="@+id/logout"
-            android:icon="@drawable/ic_close"
-            android:title="@string/id_log_out" />
-    </group>
+<!--    <item-->
+<!--        android:id="@+id/logout"-->
+<!--        android:icon="@drawable/ic_close"-->
+<!--        android:title="@string/id_log_out" />-->
 
 </menu>

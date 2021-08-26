@@ -3,6 +3,8 @@ package com.greenaddress.greenbits.wallets;
 import android.util.Log;
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
+
 import com.blockstream.gdk.HardwareWalletResolver;
 import com.blockstream.gdk.data.DeviceRequiredData;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,9 +30,12 @@ import io.reactivex.rxjava3.core.Single;
 public class HardwareCodeResolver implements HardwareWalletResolver {
     private final static String TAG = "HWC";
     private HWWallet hwWallet;
+
+    @Nullable
     private HWWalletBridge parent;
     private final Map<Pair<String, String>, String> mNoncesCache = new ConcurrentHashMap<>();
 
+    @Deprecated
     public HardwareCodeResolver(final HWWalletBridge hwWalletBridge) {
         this.parent = hwWalletBridge;
         this.hwWallet = Session.getSession().getHWWallet();
@@ -38,6 +43,10 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
 
     public HardwareCodeResolver(final HWWalletBridge hwWalletBridge, final HWWallet hwWallet) {
         this.parent = hwWalletBridge;
+        this.hwWallet = hwWallet;
+    }
+
+    public HardwareCodeResolver(final HWWallet hwWallet) {
         this.hwWallet = hwWallet;
     }
 

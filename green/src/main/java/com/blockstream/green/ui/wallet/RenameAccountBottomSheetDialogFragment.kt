@@ -9,6 +9,7 @@ import com.blockstream.green.utils.errorDialog
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.nameCleanup
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.kotlin.subscribeBy
 
@@ -20,7 +21,7 @@ class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<R
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.session.observable {
-             it.getSubAccount(viewModel.wallet.activeAccount).result<SubAccount>()
+             it.getSubAccount(viewModel.wallet.activeAccount).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(viewModel.session.hwWallet))
         }.subscribeBy(
             onError = {
                 errorDialog(it)

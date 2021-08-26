@@ -361,8 +361,7 @@ class WalletSettingsFragment :
 
         }else {
 
-            // TODO remove it as now is on the menu
-            // list += logoutPreference
+            list += logoutPreference
 
             if(!session.isWatchOnly) {
                 val is2faReset = session.getTwoFactorReset()?.isActive == true

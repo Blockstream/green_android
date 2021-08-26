@@ -32,8 +32,8 @@ class OverviewViewModel @AssistedInject constructor(
     private val state: MutableLiveData<State> = MutableLiveData(State.Overview)
     fun getState(): LiveData<State> = state
 
-    private val subAccounts: MutableLiveData<List<SubAccount>> = MutableLiveData()
-    fun getSubAccounts(): LiveData<List<SubAccount>> = subAccounts
+    private val filteredSubAccounts: MutableLiveData<List<SubAccount>> = MutableLiveData()
+    fun getFilteredSubAccounts(): LiveData<List<SubAccount>> = filteredSubAccounts
 
     private var allBalances: Balances = linkedMapOf(BalanceLoading)
     private val shownBalances: MutableLiveData<Balances> = MutableLiveData(allBalances)
@@ -60,7 +60,7 @@ class OverviewViewModel @AssistedInject constructor(
     private var pendingSubAccountSwitch: Long = -1
 
     private var allSubAccounts: List<SubAccount> by Delegates.observable(listOf()) { _, _, newValue ->
-        subAccounts.value = filterSubAccounts(newValue)
+        filteredSubAccounts.value = filterSubAccounts(newValue)
     }
 
     init {
@@ -151,7 +151,7 @@ class OverviewViewModel @AssistedInject constructor(
         shownBalances.postValue(allBalances)
 
         allSubAccounts.let {
-            subAccounts.value = filterSubAccounts(it)
+            filteredSubAccounts.value = filterSubAccounts(it)
         }
     }
 
