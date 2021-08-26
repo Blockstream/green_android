@@ -72,6 +72,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         OverviewViewModel.provideFactory(viewModelFactory, args.wallet)
     }
 
+    val AssetFilteringIsEnabled = false
+
     private val isOverviewState: Boolean
         get() = viewModel.getState().value == OverviewViewModel.State.Overview
 
@@ -284,6 +286,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         var topAccount : AccountListItem? = null
 
         viewModel.getSubAccountLiveData().observe(viewLifecycleOwner){ subAccount ->
+            // Move to top
+            recycler.scrollToPosition(0)
 
             // Use that if you don't want animations
 //            topAccount?.let {
@@ -451,15 +455,16 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 }
                 is AssetListItem -> {
                     if(viewModel.wallet.isLiquid) {
-                        if (isOverviewState && viewModel.wallet.isLiquid) {
+
+                        if (AssetFilteringIsEnabled && isOverviewState && viewModel.wallet.isLiquid) {
                             viewModel.setAsset(item.balancePair)
                         } else {
                             if(item.balancePair.first != session.network.policyAsset){
                                 navigate(
-                                    OverviewFragmentDirections.actionOverviewFragmentToAssetBottomSheetFragment(
-                                        item.balancePair.first,
-                                        wallet
-                                    )
+                                        OverviewFragmentDirections.actionOverviewFragmentToAssetBottomSheetFragment(
+                                                item.balancePair.first,
+                                                wallet
+                                        )
                                 )
                             }
                         }
@@ -485,17 +490,32 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             true
         }
 
-        viewModel.getState().distinctUntilChanged().observe(viewLifecycleOwner) {
-            if(wallet.isLiquid) {
-                assetsTitleAdapter.set(
+        if(!AssetFilteringIsEnabled){
+            assetsTitleAdapter.set(
                     listOf(
-                        TitleListItem(
-                            StringHolder(if (isOverviewState) R.string.id_assets else R.string.id_all_assets),
-                            isAssetState,
-                            withTopPadding = false
-                        )
+                            TitleListItem(
+                                    StringHolder(R.string.id_assets),
+                                    isAssetState,
+                                    withTopPadding = false
+                            )
                     )
-                )
+            )
+        }
+
+
+        viewModel.getState().distinctUntilChanged().observe(viewLifecycleOwner) {
+            if(AssetFilteringIsEnabled) {
+                if (wallet.isLiquid) {
+                    assetsTitleAdapter.set(
+                            listOf(
+                                    TitleListItem(
+                                            StringHolder(if (isOverviewState) R.string.id_assets else R.string.id_all_assets),
+                                            isAssetState,
+                                            withTopPadding = false
+                                    )
+                            )
+                    )
+                }
             }
 
             val isOverviewOrAssets = isOverviewState || isAssetState

@@ -12,7 +12,7 @@ import com.blockstream.green.ui.looks.AssetListLook
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
-data class AssetListItem(
+data class AssetListItem constructor(
     val session: GreenSession,
     val balancePair: BalancePair,
     private val showInfo: Boolean,

@@ -42,7 +42,7 @@ class GreenSession constructor(
 
     private var activeAccount = 0L
 
-    private val balancesSubject = BehaviorSubject.createDefault<Balances>(linkedMapOf())
+    private val balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
     private val transactionsSubject = BehaviorSubject.createDefault<List<Transaction>>(listOf())
     private val assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
     private val subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
@@ -485,6 +485,7 @@ class GreenSession constructor(
     fun updateTransactionsAndBalance(isReset: Boolean) {
         observable {
             if(isReset){
+                balancesSubject.onNext(linkedMapOf(BalanceLoading))
                 txOffset = 0
             }
 

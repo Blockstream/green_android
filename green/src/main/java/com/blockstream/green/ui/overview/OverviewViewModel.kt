@@ -55,6 +55,8 @@ class OverviewViewModel @AssistedInject constructor(
 
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
 
+    val selectedAsset = MutableLiveData<String?>()
+
     private var pendingSubAccountSwitch: Long = -1
 
     private var allSubAccounts: List<SubAccount> by Delegates.observable(listOf()) { _, _, newValue ->
@@ -156,17 +158,18 @@ class OverviewViewModel @AssistedInject constructor(
     fun setAsset(balancePair: BalancePair) {
         // the ordering is important
         setState(State.Asset)
-        shownBalances.value = linkedMapOf(balancePair)
+        selectedAsset.value = balancePair.first
+        // shownBalances.value = linkedMapOf(balancePair)
     }
 
     fun setState(newState: State) {
-        val oldState = state.value!!
+//        val oldState = state.value!!
 
         state.value = newState
 
-        if (newState == State.Overview && oldState == State.Asset) {
-            shownBalances.value = allBalances
-        }
+//        if (newState == State.Overview && oldState == State.Asset) {
+//            shownBalances.value = allBalances
+//        }
     }
 
     fun refreshTransactions(){
