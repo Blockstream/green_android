@@ -2,6 +2,7 @@ stages:
     - format
     - build
     - test
+    - deploy
 
 test_format:
   stage: format
@@ -35,7 +36,7 @@ build_dev:
     - fastlane build_dev
 
 build_release:
-  stage: build
+  stage: deploy
   when: manual
   tags:
     - fastosx
@@ -54,7 +55,7 @@ ui_tests:
   tags:
     - osx
   when: manual
-  needs: ["build_release_iphone"]
+  needs: ["build_debug"]
   before_script:
     - xcrun simctl boot "iPhone 11"
     - xcrun simctl privacy "iPhone 11" grant all io.blockstream.green
