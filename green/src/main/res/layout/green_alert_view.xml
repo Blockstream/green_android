@@ -47,6 +47,7 @@
             android:layout_marginEnd="24dp"
             android:textAppearance="?attr/textAppearanceBody2"
             android:textColor="@color/black"
+            android:ellipsize="end"
             app:layout_constraintBottom_toTopOf="@+id/buttonPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

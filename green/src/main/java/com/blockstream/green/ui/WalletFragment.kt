@@ -58,14 +58,22 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
             setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
 
-            it.onNavigationEvent.observe(viewLifecycleOwner) { event ->
-                event.getContentIfNotHandledOrReturnNull()?.let {
+            it.onNavigationEvent.observe(viewLifecycleOwner) { consumableEvent ->
+                consumableEvent.getContentIfNotHandledOrReturnNull()?.let {
                     if(Bridge.useGreenModule){
-                        NavGraphDirections.actionGlobalLoginFragment(wallet).let {
-                            navigate(it.actionId, it.arguments, isLogout = true)
+                        NavGraphDirections.actionGlobalLoginFragment(wallet).let { directions ->
+                            navigate(directions.actionId, directions.arguments, isLogout = true)
                         }
                     }else{
                         Bridge.navigateToLogin(requireActivity(), wallet.id)
+                    }
+                }
+            }
+
+            it.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
+                consumableEvent?.getContentIfNotHandledOrReturnNull()?.let { event ->
+                    if (event == AbstractWalletViewModel.Event.DELETE_WALLET) {
+                        popBackStack()
                     }
                 }
             }

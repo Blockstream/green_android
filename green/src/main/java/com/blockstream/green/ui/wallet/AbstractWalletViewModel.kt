@@ -196,6 +196,25 @@ abstract class AbstractWalletViewModel constructor(
         )
     }
 
+    fun ackSystemMessage(message : String){
+        session.observable {
+            session.ackSystemMessage(message)
+                .resolve(hardwareWalletResolver = HardwareCodeResolver(session.hwWallet))
+            session.updateSystemMessage()
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onSuccess = {
+                onEvent.postValue(ConsumableEvent(true))
+            },
+            onError = {
+                it.printStackTrace()
+            }
+        )
+    }
+
     fun logout() {
         session.disconnectAsync()
         onNavigationEvent.postValue(ConsumableEvent(true))

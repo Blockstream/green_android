@@ -2,6 +2,8 @@ package com.greenaddress.greenbits.wallets;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.Network;
@@ -49,7 +51,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public List<String> getXpubs(final HWWalletBridge parent, final List<List<Integer>> paths) {
+    public List<String> getXpubs(@Nullable final HWWalletBridge parent, final List<List<Integer>> paths) {
         final List<String> xpubs = new ArrayList<>(paths.size());
 
         for (List<Integer> path : paths) {
@@ -212,7 +214,7 @@ public class TrezorHWWallet extends HWWallet {
         return mPrevTxs.get(key);
     }
 
-    private TrezorType.HDNodeType getUserXpub(final HWWalletBridge parent, final List<Integer> path) {
+    private TrezorType.HDNodeType getUserXpub(@Nullable final HWWalletBridge parent, final List<Integer> path) {
         final String key = Joiner.on("/").join(path);
 
         if (!mUserXPubs.containsKey(key)) {
@@ -339,7 +341,9 @@ public class TrezorHWWallet extends HWWallet {
     private Message handleCommon(final HWWalletBridge parent, final Message m) {
         switch (m.getClass().getSimpleName()) {
         case "ButtonRequest":
-            parent.interactionRequest(this);
+            if(parent != null) {
+                parent.interactionRequest(this);
+            }
             return handleCommon(parent, mTrezor.io(TrezorMessage.ButtonAck.newBuilder()));
 
         case "PinMatrixRequest":

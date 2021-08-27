@@ -35,8 +35,8 @@
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">@null</item><!-- Remove the divider   -->
 
-        <!--        <item name="android:windowTranslucentStatus">true</item>-->
-        <!--        <item name="android:windowTranslucentNavigation">true</item>-->
+        <!-- <item name="android:windowTranslucentStatus">true</item>-->
+        <!-- <item name="android:windowTranslucentNavigation">true</item>-->
 
         <!--    Disable Elevation Overlay    -->
         <item name="elevationOverlayEnabled">false</item>

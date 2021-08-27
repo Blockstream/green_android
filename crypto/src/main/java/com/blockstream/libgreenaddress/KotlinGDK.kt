@@ -110,6 +110,10 @@ class KotlinGDK {
 
     fun getNetworks() = GDK.get_networks()
 
+    fun getSystemMessage(session: GASession) = GDK.get_system_message(session)
+    fun ackSystemMessage(session: GASession, message: String) = GDK.ack_system_message(session, message)
+
+
     fun generateMnemonic12(): String = GDK.generate_mnemonic_12()
     fun generateMnemonic24(): String = GDK.generate_mnemonic()
 

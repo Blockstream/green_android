@@ -120,6 +120,13 @@ fun createQrBitmap(content: String): Bitmap? {
     }
 }
 
+fun Context.toPixels(size: Float) =
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, resources.displayMetrics).toInt()
+
+fun Context.toPixels(size: Int) =
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size.toFloat(), resources.displayMetrics)
+        .toInt()
+
 fun Fragment.toPixels(size: Float) =
     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size, resources.displayMetrics).toInt()
 

@@ -160,14 +160,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             }
         }
 
-        viewModel.onEvent.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { event ->
-                if (event == AbstractWalletViewModel.Event.DELETE_WALLET) {
-                    findNavController().popBackStack()
-                }
-            }
-        }
-
         binding.buttonConnectionSettings.setOnClickListener {
             navigate(NavGraphDirections.actionGlobalConnectionSettingsDialogFragment())
         }

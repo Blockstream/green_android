@@ -88,9 +88,6 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         if(Bridge.useGreenModule){
             val walletSession = sessionManager.getWalletSession(wallet)
 
-            // Prevent multiple open sessions
-            sessionManager.disconectSessions(walletSession)
-
             if(walletSession.isConnected){
                 navigate(LoginFragmentDirections.actionGlobalOverviewFragment(wallet))
             }else{

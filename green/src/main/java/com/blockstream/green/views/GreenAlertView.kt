@@ -33,15 +33,19 @@ class GreenAlertView @JvmOverloads constructor(
             binding.message.text = value
         }
 
+    fun setMaxLines(maxLines: Int){
+        binding.message.maxLines = if(maxLines > 0) maxLines else Int.MAX_VALUE
+    }
+
     fun primaryButton(text: String, listener: OnClickListener) {
         binding.buttonPrimary.text = text
         binding.buttonPrimary.setOnClickListener(listener)
         binding.buttonPrimary.visibility = VISIBLE
     }
 
-    fun closeButton(listener: OnClickListener) {
+    fun closeButton(listener: OnClickListener?) {
         binding.closeButton.setOnClickListener(listener)
-        binding.closeButton.visibility = VISIBLE
+        binding.closeButton.visibility = if(listener != null) VISIBLE else GONE
     }
 
 }

@@ -68,7 +68,9 @@ fun navigate(navController: NavController, @IdRes resId: Int, args: Bundle?, isL
     }
 
     if (isLogout || resId == R.id.action_global_overviewFragment) {
-        navOptionsBuilder.setPopUpTo(navController.backStack.first.destination.id, true)
+        if(navController.backStack.isNotEmpty()) {
+            navOptionsBuilder.setPopUpTo(navController.backStack.first.destination.id, true)
+        }
         navOptionsBuilder.setLaunchSingleTop(true) // this is only needed on lateral movements
     } else if (resId == R.id.action_global_loginFragment) {
         // Allow only one Login screen

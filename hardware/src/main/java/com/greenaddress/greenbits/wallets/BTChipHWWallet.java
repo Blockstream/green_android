@@ -301,7 +301,7 @@ public class BTChipHWWallet extends HWWallet {
         final byte script0[] = Wally.hex_to_bytes(inputs.get(0).getPrevoutScript());
         mDongle.startUntrustedLiquidTransaction(version, true, 0, hwInputs, script0);
 
-        if (mDongle.supportScreen()) {
+        if (mDongle.supportScreen() && parent != null) {
             parent.interactionRequest(this);
         }
 
@@ -403,7 +403,7 @@ public class BTChipHWWallet extends HWWallet {
         final byte[] script0 = Wally.hex_to_bytes(inputs.get(0).getPrevoutScript());
         mDongle.startUntrustedTransaction(version, true, 0, hwInputs, script0, true);
 
-        if (mDongle.supportScreen()) {
+        if (mDongle.supportScreen() && parent != null) {
             parent.interactionRequest(this);
         }
         mDongle.finalizeInputFull(outputBytes(outputs));
@@ -443,7 +443,7 @@ public class BTChipHWWallet extends HWWallet {
             final byte[] script = Wally.hex_to_bytes(in.getPrevoutScript());
 
             mDongle.startUntrustedTransaction(version, i == 0, i, hwInputs, script, false);
-            if (mDongle.supportScreen()) {
+            if (mDongle.supportScreen() && parent != null) {
                 parent.interactionRequest(this);
             }
             mDongle.finalizeInputFull(outputData);

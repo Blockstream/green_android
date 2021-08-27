@@ -124,6 +124,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(isFinishingGuard) return
+
         getNavigationResult<Long>(ADD_NEW_ACCOUNT)?.observe(viewLifecycleOwner) {
             it?.let {
                 viewModel.setSubAccount(it)
@@ -169,14 +171,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.swipeRefreshLayout.isRefreshing = false
             viewModel.refresh()
-        }
-
-        viewModel.onEvent.observe(viewLifecycleOwner) {
-            it?.getContentIfNotHandledOrReturnNull()?.let { event ->
-                if (event == AbstractWalletViewModel.Event.DELETE_WALLET) {
-                    findNavController().popBackStack()
-                }
-            }
         }
 
         viewModel.getWalletLiveData().observe(viewLifecycleOwner) {
@@ -342,11 +336,34 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         // Alert cards
         val alertCardsAdapter =  ModelAdapter<AlertType, AlertListItem> {
             AlertListItem(it) { _ ->
-                TwoFactorResetSheetDialogFragment.newInstance(it.twoFactorReset).also { dialog ->
-                    dialog.show(childFragmentManager, dialog.toString())
+                when(it){
+                    is AlertType.Abstract2FA -> {
+                        TwoFactorResetSheetDialogFragment.newInstance(it.twoFactorReset).also { dialog ->
+                            dialog.show(childFragmentManager, dialog.toString())
+                        }
+                    }
                 }
             }
         }.observeList(viewLifecycleOwner, viewModel.getAlerts())
+
+        // System message card
+        val systemMessageAdapter = FastItemAdapter<AlertListItem>()
+
+        viewModel.getSystemMessage().observe(viewLifecycleOwner){ message ->
+            if(message.isNullOrBlank()){
+                systemMessageAdapter.clear()
+            }else {
+                systemMessageAdapter.set(listOf(AlertListItem(AlertType.SystemMessage(message)) {
+                    if (it) {
+                        systemMessageAdapter.clear()
+                    } else {
+                        SystemMessageBottomSheetDialogFragment.newInstance(message).also { dialog ->
+                            dialog.show(childFragmentManager, dialog.toString())
+                        }
+                    }
+                }))
+            }
+        }
 
         // Assets Balance
         val assetsBalanceAdapter =  ModelAdapter<BalancePair, AssetListItem>() {
@@ -400,6 +417,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             accountsModelAdapter,
             addAccountAdapter,
             alertCardsAdapter,
+            systemMessageAdapter,
             managedAssetsAccountIdAdapter,
             assetsTitleAdapter,
             assetsBalanceAdapter,
@@ -536,6 +554,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             addAccountAdapter.itemAdapter.active = isAccount
 
             alertCardsAdapter.active = isOverviewOrAssets
+            systemMessageAdapter.itemAdapter.active = isOverviewOrAssets
             managedAssetsAccountIdAdapter.itemAdapter.active = isOverviewState
             assetsTitleAdapter.itemAdapter.active = isOverviewOrAssets && wallet.isLiquid
             assetsBalanceAdapter.active = isOverviewOrAssets

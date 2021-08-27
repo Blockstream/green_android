@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
-import com.blockstream.green.databinding.HelpBottomSheetBinding
 import com.blockstream.green.databinding.ListItemHelpBinding
+import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.overview.OverviewFragmentDirections
 import com.blockstream.green.ui.settings.TwoFactorSetupAction
@@ -22,8 +22,8 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 
-class TwoFactorResetSheetDialogFragment : WalletBottomSheetDialogFragment<HelpBottomSheetBinding>(
-    layout = R.layout.help_bottom_sheet
+class TwoFactorResetSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding>(
+    layout = R.layout.recycler_bottom_sheet
 ) {
     private lateinit var twoFactorReset: TwoFactorReset
 

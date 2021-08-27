@@ -36,9 +36,8 @@ class AddAccountViewModel @AssistedInject constructor(
 
     fun createAccount() {
         session.observable {
-            accountName.value.nameCleanup()?.let { name ->
-                it.createSubAccount(SubAccountParams(name, accountType))
-                    .result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(this, session.hwWallet))
+            accountName.value.nameCleanup()!!.let { name ->
+                it.createSubAccount(SubAccountParams(name, accountType)).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(this, session.hwWallet))
             }
         }.doOnSubscribe {
             isEnabled.postValue(false)

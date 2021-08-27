@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-
 public abstract class LoginActivity extends GaActivity {
 
     protected void onLoggedIn() {

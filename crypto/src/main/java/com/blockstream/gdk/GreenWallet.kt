@@ -187,6 +187,10 @@ class GreenWallet(
 
     fun sendNlocktimes(session: GASession) = gdk.sendNlocktimes(session)
 
+    fun getSystemMessage(session: GASession) = gdk.getSystemMessage(session)
+
+    fun ackSystemMessage(session: GASession, message: String) = gdk.ackSystemMessage(session, message)
+
     fun convertAmount(session: GASession, amount: Convert): Balance = Balance.fromJsonElement(
         JsonDeserializer,
         gdk.convertAmount(session, amount) as JsonElement,

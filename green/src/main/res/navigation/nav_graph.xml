@@ -421,7 +421,7 @@
         android:id="@+id/helpBottomSheetDialogFragment"
         android:name="com.blockstream.green.ui.HelpBottomSheetDialogFragment"
         android:label=""
-        tools:layout="@layout/help_bottom_sheet" />
+        tools:layout="@layout/recycler_bottom_sheet" />
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.blockstream.green.ui.wallet.LoginFragment"

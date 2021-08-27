@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.green.R
-import com.blockstream.green.databinding.HelpBottomSheetBinding
+import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.utils.toPixels
 import com.blockstream.green.views.SpaceItemDecoration
@@ -15,9 +15,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 
-abstract class AbstractHelpBottomSheetDialogFragment : BottomSheetDialogFragment() {
+abstract class AbstractBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
-    private lateinit var binding: HelpBottomSheetBinding
+    private lateinit var binding: RecyclerBottomSheetBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,7 +26,7 @@ abstract class AbstractHelpBottomSheetDialogFragment : BottomSheetDialogFragment
     ): View? {
         binding = DataBindingUtil.inflate(
             layoutInflater,
-            R.layout.help_bottom_sheet,
+            R.layout.recycler_bottom_sheet,
             container,
             false
         )

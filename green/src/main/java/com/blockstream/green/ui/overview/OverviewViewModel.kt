@@ -29,6 +29,9 @@ class OverviewViewModel @AssistedInject constructor(
         Overview, Account, Asset
     }
 
+    private val systemMessage: MutableLiveData<String?> = MutableLiveData()
+    fun getSystemMessage(): LiveData<String?> = systemMessage
+
     private val state: MutableLiveData<State> = MutableLiveData(State.Overview)
     fun getState(): LiveData<State> = state
 
@@ -106,6 +109,13 @@ class OverviewViewModel @AssistedInject constructor(
 
                     pendingSubAccountSwitch = -1
                 }
+            }.addTo(disposables)
+
+        session
+            .getSystemMessageObservable()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                systemMessage.postValue(it)
             }.addTo(disposables)
 
         session

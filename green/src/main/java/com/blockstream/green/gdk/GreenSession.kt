@@ -47,6 +47,7 @@ class GreenSession constructor(
     private val transactionsSubject = BehaviorSubject.createDefault<List<Transaction>>(listOf())
     private val assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
     private val subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
+    private val systemMessageSubject = BehaviorSubject.create<String>()
     private val blockSubject = BehaviorSubject.create<Block>()
     private val feesSubject = BehaviorSubject.createDefault<List<Long>>(listOf())
     private val settingsSubject = BehaviorSubject.create<Settings>()
@@ -98,6 +99,7 @@ class GreenSession constructor(
     fun getBlockObservable(): Observable<Block> = blockSubject.hide()
     fun getTransationsObservable(): Observable<List<Transaction>> = transactionsSubject.hide()
     fun getSubAccountsObservable(): Observable<List<SubAccount>> = subAccountsSubject.hide()
+    fun getSystemMessageObservable(): Observable<String> = systemMessageSubject.hide()
     fun getTorStatusObservable(): Observable<TORStatus> = torStatusSubject.hide()
     fun getSettingsObservable(): Observable<Settings> = settingsSubject.hide()
     fun getNetworkEventObservable(): Observable<NetworkEvent> = networkSubject.hide()
@@ -125,6 +127,9 @@ class GreenSession constructor(
         disconnect()
         this.network = network
         this.hwWallet = hwWallet
+
+        // Prevent multiple open sessions
+        sessionManager.disconnectSessions(this)
 
         // Bridge Session to GDKSession
         Bridge.bridgeSession(
@@ -373,11 +378,30 @@ class GreenSession constructor(
 
     private fun initializeSessionData() {
         updateSubAccounts()
+        updateSystemMessage()
 
         if (network.isLiquid) {
             assetsManager.updateAssetsIfNeeded(this)
         }
     }
+
+    fun updateSystemMessage(){
+        observable {
+            greenWallet.getSystemMessage(gaSession)
+        }
+        .subscribeBy(
+            onSuccess = {
+                systemMessageSubject.onNext(it ?: "")
+            },
+            onError = {
+                it.printStackTrace()
+            }).addTo(disposables)
+    }
+
+    fun ackSystemMessage(message: String) = AuthHandler(
+            greenWallet,
+            greenWallet.ackSystemMessage(gaSession, message))
+
 
     fun setPin(pin: String) =
         greenWallet.setPin(gaSession, greenWallet.getMnemonicPassphrase(gaSession), pin)

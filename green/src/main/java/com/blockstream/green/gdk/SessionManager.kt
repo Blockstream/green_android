@@ -185,7 +185,7 @@ class SessionManager(
         connectionChangeEvent.postValue(true)
     }
 
-    fun disconectSessions(exception: GreenSession){
+    fun disconnectSessions(exception: GreenSession){
         if(!AllowMultipleConnectedSessions) {
             for (session in sessions.values) {
                 if (session != exception) {

@@ -83,8 +83,10 @@ public class JadeHWWallet extends HWWallet {
         return Single.just(this)
                 .flatMap(hww -> fwManager.checkFirmware(jade, false))
                 .map(fwValid -> {
-                            hwWalletBridge.interactionRequest(this);
-                            return authUser(hwWalletBridge);
+                    if(hwWalletBridge != null) {
+                        hwWalletBridge.interactionRequest(this);
+                    }
+                    return authUser(hwWalletBridge);
                  })
                 .flatMap(authed -> fwManager.checkFirmware(jade, true))
                 .flatMap(fwValid -> {
