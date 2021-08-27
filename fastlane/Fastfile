@@ -44,6 +44,30 @@ platform :ios do
     )
   end
 
+  desc "Run build release app"
+  lane :build_release do
+    cocoapods()
+    sh "cd .. && ./tools/fetch_gdk_binaries.sh"
+    build_ios_app(
+      configuration: "Release",
+      scheme: "gaios",
+      workspace: "gaios.xcworkspace",
+      #silent: true,
+      clean: true,
+      output_directory: "./release",
+      output_name: "Green.ipa",
+      include_bitcode: false,
+      build_path: "./release",
+      archive_path: "./release/Green.xcarchive",
+      export_options: "./ExportOptions.plist",
+      xcargs: "-allowProvisioningUpdates"
+    )
+    upload_to_testflight(
+      apple_id: '1402243590',
+      skip_waiting_for_build_processing: true
+    )
+  end
+
   desc "Run UI tests"
   lane :ui_tests do
     run_tests(workspace: "gaios.xcworkspace",
