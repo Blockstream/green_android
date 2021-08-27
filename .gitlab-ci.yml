@@ -3,14 +3,6 @@ stages:
     - build
     - test
 
-build_release_iphone:
-  stage: build
-  tags:
-    - osx
-  script:
-    - cd $CI_PROJECT_DIR
-    - ./tools/build.sh --update-cocoapods --iphone static
-
 test_format:
   stage: format
   tags:
