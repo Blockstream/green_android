@@ -2,25 +2,15 @@ package com.blockstream.green.ui.wallet
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.blockstream.DeviceBrand
-import com.blockstream.gdk.data.Device
-import com.blockstream.gdk.data.NetworkEvent
 import com.blockstream.gdk.data.SubAccount
-import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.async
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.Bridge
-import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
-import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.Single
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -40,6 +30,10 @@ abstract class AbstractWalletViewModel constructor(
         RENAME_WALLET, DELETE_WALLET, RENAME_ACCOUNT
     }
 
+    enum class NavigationEvent {
+        USER_ACTION, DISCONNECTED, TIMEOUT, DEVICE_DISCONNECTED
+    }
+
     val session = sessionManager.getWalletSession(wallet)
 
     private val walletLiveData: MutableLiveData<Wallet> = MutableLiveData(wallet)
@@ -49,7 +43,7 @@ abstract class AbstractWalletViewModel constructor(
     fun getSubAccountLiveData(): LiveData<SubAccount> = subAccountLiveData
 
     // Logout events, can be expanded in the future
-    val onNavigationEvent = MutableLiveData<ConsumableEvent<Boolean>>()
+    val onNavigationEvent = MutableLiveData<ConsumableEvent<NavigationEvent>>()
     val onReconnectEvent = MutableLiveData<ConsumableEvent<Long>>()
 
     private var reconnectTimer: Disposable? = null
@@ -64,6 +58,14 @@ abstract class AbstractWalletViewModel constructor(
                 walletLiveData.value = wallet
                 walletUpdated()
             }.addTo(disposables)
+
+
+        session.device?.deviceState?.observe(viewLifecycleOwner){
+            // Device went offline
+            if(it == com.blockstream.green.devices.Device.DeviceState.DISCONNECTED){
+                logout(NavigationEvent.DEVICE_DISCONNECTED)
+            }
+        }
 
         // Only on Login Screen
         if (session.isConnected) {
@@ -97,14 +99,14 @@ abstract class AbstractWalletViewModel constructor(
                                         session.network,
                                         registerUser = false,
                                         connectSession = true,
-                                        hwWallet = session.hwWallet!!,
+                                        device = session.device!!,
                                         hardwareWalletResolver = HardwareCodeResolver(session.hwWallet)
                                     )
                                 }.subscribeBy(
                                     onError = {
                                         it.printStackTrace()
                                         logger.info { "Logout from Device reconnection failure" }
-                                        logout()
+                                        logout(NavigationEvent.DISCONNECTED)
                                     },
                                     onSuccess = {
                                         logger.info { "Device login was successful" }
@@ -113,7 +115,7 @@ abstract class AbstractWalletViewModel constructor(
 
                             } else {
                                 logger.info { "Logout from network event" }
-                                logout()
+                                logout(NavigationEvent.DISCONNECTED)
                             }
                         } else {
                             reconnectTimer = Observable.interval(1, TimeUnit.SECONDS)
@@ -210,14 +212,14 @@ abstract class AbstractWalletViewModel constructor(
                 onEvent.postValue(ConsumableEvent(true))
             },
             onError = {
-                it.printStackTrace()
+                onError.postValue(ConsumableEvent(it))
             }
         )
     }
 
-    fun logout() {
+    fun logout(navigationEvent: NavigationEvent) {
         session.disconnectAsync()
-        onNavigationEvent.postValue(ConsumableEvent(true))
+        onNavigationEvent.postValue(ConsumableEvent(navigationEvent))
     }
 
     companion object : KLogging()

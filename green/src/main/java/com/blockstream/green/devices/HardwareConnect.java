@@ -139,7 +139,7 @@ public class HardwareConnect {
     }
 
     private void connect(final HardwareConnectInteraction interaction) throws Exception {
-        interaction.getGreenSession().connect(interaction.getGreenSession().getNetworks().getBitcoinGreen(), mHwWallet);
+        interaction.getGreenSession().connect(interaction.getGreenSession().getNetworks().getBitcoinGreen(), device);
     }
 
     private void onJadeConnected(final HardwareConnectInteraction interaction, final JadeAPI jade) {

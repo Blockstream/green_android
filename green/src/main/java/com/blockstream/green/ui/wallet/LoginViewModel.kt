@@ -227,7 +227,7 @@ class LoginViewModel @AssistedInject constructor(
             it.loginWithDevice(it.networks.getNetworkById(wallet.network),
                 registerUser = true,
                 connectSession = true,
-                hwWallet = device.hwWallet!!,
+                device = device,
                 hardwareWalletResolver = HardwareCodeResolver(this, device.hwWallet)
             )
         }

@@ -197,7 +197,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {
-                logout()
+                logout(NavigationEvent.USER_ACTION)
             }
         )
     }
@@ -216,7 +216,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {
-                logout()
+                logout(NavigationEvent.USER_ACTION)
             }
         )
     }
@@ -235,7 +235,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {
-                logout()
+                logout(NavigationEvent.USER_ACTION)
             }
         )
     }

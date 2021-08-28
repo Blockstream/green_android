@@ -362,7 +362,7 @@ class DeviceManager constructor(
         }
     }
 
-    fun getDevice(deviceId: Int): Device? {
+    fun getDevice(deviceId: String?): Device? {
         return usbDevicesSubject.value.find { it.id == deviceId } ?: bluetoothDevicesSubject.value.find { it.id == deviceId }
     }
 

@@ -98,8 +98,14 @@ class AuthHandler(
                                     // Needs v4 implementation
                                     // resolveCode(it.requestDataFromDevice(twoFactorStatus.requiredData!!).blockingGet())
                                 }catch (e: Exception){
-                                    e.printStackTrace()
-                                    throw Exception("id_action_canceled")
+
+                                    // TODO Handle all cancel exceptions so that we can catch the exceptions from the hardware wallet.
+                                    // eg. signing a message in Trezor on testnet network
+                                    if(e is IllegalStateException) {
+                                        throw e
+                                    }else{
+                                        throw Exception("id_action_canceled")
+                                    }
                                 }
                             } ?: run {
                                 throw RuntimeException("TwoFactorCodeResolver was not provided")

@@ -332,23 +332,6 @@ class GreenApplication : Application(){
             sessionManager.getWalletSession(gaSession)
         }
 
-        Bridge.connectFn = { _, gaSession, networkId, hwWallet->
-            sessionManager.getWalletSession(gaSession)?.let {
-                it.connect(it.networks.getNetworkById(networkId), hwWallet)
-            }
-        }
-
-        Bridge.loginWithDeviceFn = { _, gaSession, networkId, connectSession, hwWallet, hardwareWalletResolver ->
-            sessionManager.getWalletSession(gaSession)?.let {
-                it.loginWithDevice(it.networks.getNetworkById(networkId),
-                    registerUser = true,
-                    connectSession = connectSession,
-                    hwWallet = hwWallet,
-                    hardwareWalletResolver = hardwareWalletResolver
-                )
-            }
-        }
-
         Bridge.createTwoFactorResolverFn = { context: Context ->
             DialogTwoFactorResolver(context)
         }

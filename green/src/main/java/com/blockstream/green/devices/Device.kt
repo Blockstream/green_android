@@ -60,8 +60,8 @@ class Device constructor(
 
     var timeout: Long = 0
 
-    open val id: Int by lazy {
-        usbDevice?.deviceId ?: bleDevice?.bluetoothDevice?.address?.hashCode() ?: hashCode()
+    open val id: String by lazy {
+        usbDevice?.deviceId?.toString(10) ?: bleDevice?.bluetoothDevice?.address ?: hashCode().toString(10)
     }
 
     open val name
@@ -132,6 +132,10 @@ class Device constructor(
     fun offline() {
         logger.info { "Device went offline" }
         deviceState.postValue(DeviceState.DISCONNECTED)
+    }
+
+    fun disconect() {
+        hwWallet?.disconnect()
     }
 
     enum class ConnectionType {

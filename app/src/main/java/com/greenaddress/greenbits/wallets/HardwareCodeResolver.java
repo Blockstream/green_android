@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.rxjava3.core.Single;
+import kotlin.jvm.Throws;
 
 
 public class HardwareCodeResolver implements HardwareWalletResolver {
@@ -54,7 +55,17 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
     @Override
     public Single<String> requestDataFromDeviceV3(@NotNull HWDeviceRequiredData requiredData) {
         return Single.create(emitter -> {
-            emitter.onSuccess(requestDataFromHardware(requiredData));
+            try {
+                String data = requestDataFromHardware(requiredData);
+                if(data != null){
+                    emitter.onSuccess(data);
+                }else{
+                    emitter.tryOnError(new Exception("Unknown error"));
+                }
+
+            }catch (Exception e){
+                emitter.tryOnError(e);
+            }
         });
     }
 
@@ -63,7 +74,7 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
     public Single<String> requestDataFromDevice(@NotNull DeviceRequiredData requiredData) {
         return null;
     }
-
+    
     public synchronized String requestDataFromHardware(final HWDeviceRequiredData requiredData) {
         final HardwareCodeResolverData data = new HardwareCodeResolverData();
 
@@ -79,23 +90,18 @@ public class HardwareCodeResolver implements HardwareWalletResolver {
             break;
 
         case "sign_message":
-            try {
-                final HWWallet.SignMsgResult result = hwWallet.signMessage(parent, requiredData.getPath(), requiredData.getMessage(),
-                        requiredData.getUseAeProtocol(), requiredData.getAeHostCommitment(), requiredData.getAeHostEntropy());
-                data.setSignerCommitment(result.getSignerCommitment());
-                data.setSignature(result.getSignature());
+            final HWWallet.SignMsgResult signResult = hwWallet.signMessage(parent, requiredData.getPath(), requiredData.getMessage(),
+                    requiredData.getUseAeProtocol(), requiredData.getAeHostCommitment(), requiredData.getAeHostEntropy());
+            data.setSignerCommitment(signResult.getSignerCommitment());
+            data.setSignature(signResult.getSignature());
 
-                // Corrupt the commitments to emulate a corrupted wallet
-                if(hwWallet.getHardwareEmulator() != null && hwWallet.getHardwareEmulator().getAntiExfilCorruptionForMessageSign()){
-                    // Make it random to allow proceeding to a logged in state
-                    if(result.getSignerCommitment() != null) {
-                        // Corrupt the commitment
-                        data.setSignerCommitment(result.getSignerCommitment().replace("0", "1"));
-                    }
+            // Corrupt the commitments to emulate a corrupted wallet
+            if(hwWallet.getHardwareEmulator() != null && hwWallet.getHardwareEmulator().getAntiExfilCorruptionForMessageSign()){
+                // Make it random to allow proceeding to a logged in state
+                if(signResult.getSignerCommitment() != null) {
+                    // Corrupt the commitment
+                    data.setSignerCommitment(signResult.getSignerCommitment().replace("0", "1"));
                 }
-            } catch (final Exception e) {
-                e.printStackTrace();
-                return null;
             }
             break;
 

@@ -169,7 +169,7 @@ class WalletSettingsFragment :
             { _: View?, _: IAdapter<GenericItem>, iItem: GenericItem, _: Int ->
                 when (iItem) {
                     logoutPreference -> {
-                        viewModel.logout()
+                        viewModel.logout(AbstractWalletViewModel.NavigationEvent.USER_ACTION)
                     }
                     watchOnlyPreference -> {
                         handleWatchOnly()

@@ -51,9 +51,6 @@ class OverviewViewModel @AssistedInject constructor(
     private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData()
     fun getTransactions(): LiveData<List<Transaction>> = transactions
 
-    private val block: MutableLiveData<com.blockstream.gdk.data.Block> = MutableLiveData()
-    fun getBlock(): LiveData<com.blockstream.gdk.data.Block> = block
-
     val assetsUpdated: MutableLiveData<ConsumableEvent<Boolean>> = MutableLiveData()
 
     val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
@@ -86,12 +83,6 @@ class OverviewViewModel @AssistedInject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 assetsUpdated.postValue(ConsumableEvent(true))
-            }.addTo(disposables)
-
-        session.getBlockObservable()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                block.postValue(it)
             }.addTo(disposables)
 
         session

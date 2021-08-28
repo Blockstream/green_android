@@ -1,5 +1,7 @@
 package com.blockstream.green.ui
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.blockstream.DeviceBrand
@@ -10,9 +12,12 @@ import com.greenaddress.greenapi.HWWalletBridge
 import io.reactivex.rxjava3.core.Single
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import androidx.lifecycle.LifecycleRegistry
 
-open class AppViewModel : ViewModel(), HWWalletBridge {
+
+open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
     internal val disposables = CompositeDisposable()
+    private var lifecycleRegistry: LifecycleRegistry? = null
 
     val onEvent = MutableLiveData<ConsumableEvent<Any>>()
     val onProgress = MutableLiveData(false)
@@ -40,5 +45,18 @@ open class AppViewModel : ViewModel(), HWWalletBridge {
     override fun onCleared() {
         super.onCleared()
         disposables.clear()
+        lifecycleRegistry?.currentState = Lifecycle.State.DESTROYED
     }
+
+    override fun getLifecycle(): Lifecycle {
+        if(lifecycleRegistry == null) {
+            lifecycleRegistry = LifecycleRegistry(this)
+            lifecycleRegistry?.currentState = Lifecycle.State.STARTED
+        }
+
+        return lifecycleRegistry!!
+    }
+
+    val viewLifecycleOwner: LifecycleOwner
+        get() = this
 }

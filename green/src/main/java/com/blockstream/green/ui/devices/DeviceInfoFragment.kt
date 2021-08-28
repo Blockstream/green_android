@@ -162,7 +162,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                     if (settingsManager.isDeviceTermsAccepted()){
                         connect(item.network)
                     } else {
-                        navigate(DeviceInfoFragmentDirections.actionGlobalAddWalletFragment(network = item.network, deviceId = device?.id ?: 0))
+                        navigate(DeviceInfoFragmentDirections.actionGlobalAddWalletFragment(network = item.network, deviceId = device?.id))
                     }
 
                     true

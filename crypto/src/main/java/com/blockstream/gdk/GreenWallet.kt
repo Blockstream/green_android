@@ -35,7 +35,7 @@ class GreenWallet constructor(
         wally.init(0, randomBytes(KotlinWally.WALLY_SECP_RANDOMIZE_LEN))
     }
 
-    fun randomBytes(len: Int): ByteArray {
+    private fun randomBytes(len: Int): ByteArray {
         return ByteArray(len).also {
             SecureRandom().nextBytes(it)
         }
@@ -47,9 +47,7 @@ class GreenWallet constructor(
         return (1..len)
             .map { random.nextInt(0, charPool.size) }
             .map(charPool::get)
-            .joinToString("");
-
-
+            .joinToString("")
     }
 
     fun setNotificationHandler(notificationHandler: GDK.NotificationHandler) =

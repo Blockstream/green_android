@@ -95,8 +95,9 @@
             app:destination="@id/chooseWatchOnlyFragment" />
         <argument
             android:name="deviceId"
-            android:defaultValue="0"
-            app:argType="integer" />
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <argument
             android:name="network"
             android:defaultValue="@null"
@@ -434,8 +435,9 @@
             app:destination="@id/chooseRecoveryPhraseFragment" />
         <argument
             android:name="deviceId"
-            android:defaultValue="0"
-            app:argType="integer" />
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
     </fragment>
     <fragment
         android:id="@+id/chooseAccountTypeFragment"
@@ -507,7 +509,7 @@
         tools:layout="@layout/device_info_fragment">
         <argument
             android:name="deviceId"
-            app:argType="integer" />
+            app:argType="string" />
     </fragment>
 
     <action
@@ -520,13 +522,13 @@
         tools:layout="@layout/device_bottom_sheet_fragment">
         <argument
             android:name="deviceId"
-            app:argType="integer" />
+            app:argType="string" />
     </dialog>
 
     <action
         android:id="@+id/action_global_deviceBottomSheetDialogFragment"
         app:destination="@id/deviceBottomSheetDialogFragment" />
     <action android:id="@+id/action_global_twoFractorAuthenticationFragment" app:destination="@id/twoFractorAuthenticationFragment" />
-    <action android:id="@+id/action_global_twoFactorSetupFragment" app:destination="@id/twoFactorSetupFragment" />
+    <action android:id="@+id/action_global_twoFactorSetupFragment" app:destination="@id/twoFactorSetupFragment" /><action android:id="@+id/action_global_introFragment" app:destination="@id/introFragment"/>
 
 </navigation>

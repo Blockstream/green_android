@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 class AddWalletViewModel @AssistedInject constructor(
     val deviceManager: DeviceManager,
     val walletRepository: WalletRepository,
-    @Assisted deviceId: Int
+    @Assisted deviceId: String?
 ) : AppViewModel() {
     val termsChecked = MutableLiveData(false)
     val device = MutableLiveData(deviceManager.getDevice(deviceId))
-    val isDeviceOnboarding = MutableLiveData(deviceId != 0)
+    val isDeviceOnboarding = MutableLiveData(deviceId != null)
 
     init {
         // If you have already agreed, check by default
@@ -29,13 +29,13 @@ class AddWalletViewModel @AssistedInject constructor(
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
-        fun create(deviceId: Int): AddWalletViewModel
+        fun create(deviceId: String?): AddWalletViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            deviceId: Int
+            deviceId: String?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {

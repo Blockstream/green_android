@@ -9,6 +9,7 @@ import com.blockstream.green.databinding.SystemMessageBottomSheetBinding
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
+import com.blockstream.green.utils.errorDialog
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -55,6 +56,12 @@ class SystemMessageBottomSheetDialogFragment :
 
             viewModel.onEvent.observe(viewLifecycleOwner) {
                 dismiss()
+            }
+
+            viewModel.onError.observe(viewLifecycleOwner) {
+                it?.getContentIfNotHandledOrReturnNull()?.let {
+                    errorDialog(it)
+                }
             }
         }
     }

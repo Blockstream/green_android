@@ -6,6 +6,7 @@ import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.database.Wallet
+import com.blockstream.green.devices.Device
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.KotlinGDK
@@ -58,7 +59,10 @@ class GreenSession constructor(
     val gaSession: GASession = greenWallet.createSession()
     private val disposables = CompositeDisposable()
 
-    var hwWallet: HWWallet? = null
+    val hwWallet: HWWallet?
+        get() = device?.hwWallet
+
+    var device: Device? = null
         private set
 
     lateinit var network: Network
@@ -123,10 +127,10 @@ class GreenSession constructor(
         updateTransactionsAndBalance(true)
     }
 
-    fun connect(network: Network, hwWallet: HWWallet? = null) {
+    fun connect(network: Network, device: Device? = null) {
         disconnect()
         this.network = network
-        this.hwWallet = hwWallet
+        this.device = device
 
         // Prevent multiple open sessions
         sessionManager.disconnectSessions(this)
@@ -177,8 +181,8 @@ class GreenSession constructor(
         }
 
         isConnected = false
-        hwWallet?.disconnect()
-        hwWallet = null
+        device?.disconect()
+        device = null
         greenWallet.disconnect(gaSession)
     }
 
@@ -251,7 +255,7 @@ class GreenSession constructor(
     fun createNewWallet(network: Network, providedMnemonic: String?): LoginData {
         isWatchOnly = false
 
-        connect(network, hwWallet)
+        connect(network, null)
         val mnemonic = providedMnemonic ?: generateMnemonic12()
 
         AuthHandler(
@@ -296,29 +300,29 @@ class GreenSession constructor(
         network: Network,
         registerUser: Boolean,
         connectSession: Boolean,
-        hwWallet: HWWallet,
+        device: Device,
         hardwareWalletResolver: HardwareWalletResolver
     ): LoginData {
         isWatchOnly = false
 
         if(connectSession) {
-            connect(network, hwWallet)
+            connect(network, device)
         }
 
-        this.hwWallet = hwWallet
+        this.device = device
 
-        val device = hwWallet.device
+        val gdkDevice = device.hwWallet?.device
 
         if(registerUser) {
             AuthHandler(
                 greenWallet,
-                greenWallet.registerUser(gaSession, DeviceParams(device), "")
+                greenWallet.registerUser(gaSession, DeviceParams(gdkDevice), "")
             ).resolve(hardwareWalletResolver = hardwareWalletResolver)
         }
 
         return AuthHandler(
             greenWallet,
-            greenWallet.loginUser(gaSession, deviceParams = DeviceParams(device))
+            greenWallet.loginUser(gaSession, deviceParams = DeviceParams(gdkDevice))
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
             onLoginSuccess(it)
         }
