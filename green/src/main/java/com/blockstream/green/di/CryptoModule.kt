@@ -1,11 +1,16 @@
 package com.blockstream.green.di
 
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.JsonConverter
+import com.blockstream.gdk.Logger
 import com.blockstream.green.BuildConfig
+import com.blockstream.green.GreenApplication
+import com.blockstream.green.R
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.lifecycle.AppLifecycleObserver
@@ -16,6 +21,11 @@ import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
+import com.pandulapeter.beagle.Beagle
+import com.pandulapeter.beagle.common.configuration.Behavior
+import com.pandulapeter.beagle.common.contracts.BeagleCrashLoggerContract
+import com.pandulapeter.beagle.logCrash.BeagleCrashLogger
+import com.pandulapeter.beagle.modules.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,9 +53,19 @@ class CryptoModule {
     fun provideGreenWallet(
         @ApplicationContext context: Context,
         gdk: KotlinGDK,
-        wally: KotlinWally
+        wally: KotlinWally,
+        beagle: Beagle
     ): GreenWallet {
-        return GreenWallet(gdk, wally, context.filesDir.absolutePath, context.isDevelopmentFlavor())
+        var logger : Logger? = null
+
+        if(BuildConfig.DEBUG){
+            logger = object : Logger{
+                override fun log(message: String) {
+                    beagle.log(message)
+                }
+            }
+        }
+        return GreenWallet(gdk, wally, context.filesDir.absolutePath, context.isDevelopmentFlavor(), logger)
     }
 
     @Singleton
@@ -100,4 +120,50 @@ class CryptoModule {
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return PreferenceManager.getDefaultSharedPreferences(context)
     }
+
+    @Singleton
+    @Provides
+    fun provideBeagle(@ApplicationContext context: Context): Beagle {
+
+        if (BuildConfig.DEBUG) {
+
+            Beagle.initialize(
+                context as GreenApplication,
+                behavior = Behavior(
+                    bugReportingBehavior = Behavior.BugReportingBehavior(
+                        crashLoggers = listOf(
+                            BeagleCrashLogger
+                        )
+                    )
+                )
+            )
+
+
+            Beagle.set(
+                HeaderModule(
+                    title = context.getString(R.string.app_name),
+                    subtitle = BuildConfig.APPLICATION_ID,
+                    text = "${BuildConfig.BUILD_TYPE} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+                ),
+                AppInfoButtonModule(),
+                DeveloperOptionsButtonModule(),
+                PaddingModule(),
+                TextModule("General", TextModule.Type.SECTION_HEADER),
+                KeylineOverlaySwitchModule(),
+                AnimationDurationSwitchModule(),
+                ScreenCaptureToolboxModule(),
+                DividerModule(),
+                TextModule("Logs", TextModule.Type.SECTION_HEADER),
+                LogListModule(), // Might require additional setup, see below
+                LifecycleLogListModule(),
+                DividerModule(),
+                TextModule("Other", TextModule.Type.SECTION_HEADER),
+                DeviceInfoModule(),
+                BugReportButtonModule()
+            )
+        }
+
+        return Beagle
+    }
+
 }

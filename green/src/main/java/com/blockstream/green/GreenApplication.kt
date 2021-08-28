@@ -37,6 +37,7 @@ import com.greenaddress.Bridge.getActiveWalletId
 import com.greenaddress.Bridge.navigateToLogin
 import com.greenaddress.greenapi.Registry
 import com.greenaddress.greenapi.Session
+import com.pandulapeter.beagle.Beagle
 import dagger.hilt.android.HiltAndroidApp
 import hu.akarnokd.rxjava3.bridge.RxJavaBridge
 import io.reactivex.Single
@@ -68,6 +69,9 @@ class GreenApplication : Application(){
 
     @Inject
     lateinit var greenWallet: GreenWallet
+
+    @Inject
+    lateinit var beagle: Beagle
 
     override fun onCreate() {
         super.onCreate()

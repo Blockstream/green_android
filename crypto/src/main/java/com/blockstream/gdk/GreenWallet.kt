@@ -20,17 +20,18 @@ typealias BalancePair = Pair<String, Long>
 
 val BalanceLoading = BalancePair("", -1)
 
-class GreenWallet(
+class GreenWallet constructor(
     val gdk: KotlinGDK,
     private val wally: KotlinWally,
     dataDir: String,
-    developmentFlavor: Boolean
+    developmentFlavor: Boolean,
+    extraLogger: Logger? = null
 ) {
 
     private val bip39WordList by lazy { wally.bip39Wordlist(BIP39_WORD_LIST_LANG) }
 
     init {
-        gdk.init(JsonConverter(developmentFlavor, !BuildConfig.DEBUG), InitConfig(dataDir))
+        gdk.init(JsonConverter(developmentFlavor, !BuildConfig.DEBUG, extraLogger), InitConfig(dataDir))
         wally.init(0, randomBytes(KotlinWally.WALLY_SECP_RANDOMIZE_LEN))
     }
 

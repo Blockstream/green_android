@@ -3,13 +3,19 @@ package com.blockstream.gdk
 import com.blockstream.libgreenaddress.GDK
 import mu.KLogging
 
+interface Logger{
+    fun log(message: String)
+}
 
-class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean) : GDK.JSONConverter {
-    val maskFields = listOf("pin", "mnemonic", "password", "recovery_mnemonic")
+class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean, private val extraLogger: Logger? = null) : GDK.JSONConverter {
+    private val maskFields = listOf("pin", "mnemonic", "password", "recovery_mnemonic")
 
     override fun toJSONObject(jsonString: String?): Any? {
         if (log) {
-            logger.info { "-> ${mask(jsonString)}" }
+            "-> ${mask(jsonString)}".let{
+                logger.info { it }
+                extraLogger?.log(it)
+            }
         }
 
         if (jsonString != null && jsonString != "null") {
@@ -20,7 +26,11 @@ class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean) : GDK.JS
 
     override fun toJSONString(gaJson: Any?): String = gaJson.toString().also {
         if (log) {
-            logger.info { "<- ${mask(it)}" }
+            "<- ${mask(it)}".let {
+                logger.info { it }
+                extraLogger?.log(it)
+            }
+
         }
     }
 
