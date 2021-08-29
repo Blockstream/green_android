@@ -113,12 +113,12 @@ class WalletSettingsFragment :
         }
 
         watchOnlyPreference = PreferenceListItem(StringHolder(R.string.id_watchonly_login))
-        logoutPreference = PreferenceListItem(StringHolder(R.string.id_logout), StringHolder(wallet.name))
+        logoutPreference = PreferenceListItem(StringHolder(wallet.name), StringHolder(R.string.id_logout), withSubtitleRed = true)
         unitPreference = PreferenceListItem(StringHolder(R.string.id_bitcoin_denomination))
         priceSourcePreference = PreferenceListItem(StringHolder(R.string.id_reference_exchange_rate))
         txPriorityPreference = PreferenceListItem(StringHolder(R.string.id_default_transaction_priority))
         customFeeRatePreference = PreferenceListItem(StringHolder(R.string.id_default_custom_fee_rate))
-        changePinPreference = PreferenceListItem(StringHolder(R.string.id_change_pin))
+        changePinPreference = PreferenceListItem(StringHolder(R.string.id_change_pin), isInnerMenu = true)
         biometricsPreference = PreferenceListItem(
             StringHolder(R.string.id_login_with_biometrics),
             withSwitch = true
@@ -127,12 +127,13 @@ class WalletSettingsFragment :
         recoveryPreference = PreferenceListItem(
             StringHolder(R.string.id_back_up_recovery_phrase), StringHolder(
                 R.string.id_touch_to_display
-            )
+            ), isInnerMenu = true
         )
         // Recovery Transactions
         recoveryTransactionsPreference = PreferenceListItem(
             StringHolder(R.string.id_recovery_transactions),
-            StringHolder(R.string.id_legacy_script_coins)
+            StringHolder(R.string.id_legacy_script_coins),
+            isInnerMenu = true
         )
         setupEmailRecoveryTransactionsPreference = PreferenceListItem(
             StringHolder(R.string.id_set_an_email_for_recovery)
@@ -145,7 +146,7 @@ class WalletSettingsFragment :
             StringHolder(R.string.id_request_recovery_transactions)
         )
 
-        twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_authentication))
+        twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_authentication), isInnerMenu = true)
         pgpPreference = PreferenceListItem(StringHolder(R.string.id_pgp_key))
 
         versionPreference = PreferenceListItem(StringHolder(R.string.id_version), StringHolder(
@@ -158,8 +159,8 @@ class WalletSettingsFragment :
                     BuildConfig.BUILD_TYPE
                 )
             )))
-        termsOfServicePreference = PreferenceListItem(StringHolder(R.string.id_terms_of_service))
-        privacyPolicyPreference = PreferenceListItem(StringHolder(R.string.id_privacy_policy))
+        termsOfServicePreference = PreferenceListItem(StringHolder(R.string.id_terms_of_service), iconRes = R.drawable.ic_baseline_link_24)
+        privacyPolicyPreference = PreferenceListItem(StringHolder(R.string.id_privacy_policy), iconRes = R.drawable.ic_baseline_link_24)
 
         updateAdapter()
 

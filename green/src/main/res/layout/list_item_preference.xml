@@ -33,7 +33,7 @@
                     android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Transactions"
+                    tools:text="Transactions"
                     android:textAppearance="@style/TextAppearance.Green.Body1"
                     android:textStyle="bold"
                     />
@@ -42,11 +42,20 @@
                     android:id="@+id/subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Subtitle"
+                    tools:text="Subtitle"
                     />
+
 
             </LinearLayout>
 
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_arrow_right_60"
+                app:tint="@color/color_on_surface_emphasis_low" />
 
             <LinearLayout
                 android:id="@+id/linearLayout"
@@ -64,6 +73,7 @@
                     android:layout_marginEnd="12dp"
                     android:enabled="false"
                     android:clickable="false"
+                    tools:visibility="gone"
                     app:thumbTint="@color/switch_thumb"
                     app:useMaterialThemeColors="false" />
 
@@ -74,6 +84,7 @@
                     android:layout_marginEnd="12dp"
                     android:enabled="false"
                     android:clickable="false"
+                    tools:visibility="gone"
                     app:buttonTint="@color/radio_tint"/>
 
                 <com.google.android.material.button.MaterialButton
@@ -83,6 +94,7 @@
                     android:layout_height="40dp"
                     android:text="@string/id_change"
                     android:textSize="12sp"
+                    tools:visibility="gone"
                     app:textAllCaps="true" />
 
 

@@ -41,7 +41,7 @@ class AddWalletViewModelUnitTests : TestViewModel<AddWalletViewModel>(){
         val walletRepository : WalletRepository = mock()
         whenever(walletRepository.walletsExistsSuspend()).thenReturn(walletExists)
 
-        viewModel = AddWalletViewModel(mock(), walletRepository, 0)
+        viewModel = AddWalletViewModel(mock(), walletRepository, null)
         viewModel.termsChecked.observeForever(termsObserver)
     }
 

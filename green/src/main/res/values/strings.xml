@@ -944,4 +944,5 @@
   <string name="id_issuer_domain">Issuer Domain: %s</string>
   <string name="id_all_assets">All Assets</string>
   <string name="id_view_more">View More</string>
+  <string name="id_managed_assets_account_id">Managed Assets Account ID</string>
 </resources>
