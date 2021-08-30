@@ -58,7 +58,6 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
 
     private fun setWord(word: CharSequence) {
         state.setWord(word)
-
         updateKeyboard(false)
     }
 
@@ -84,8 +83,15 @@ class RecoveryPhraseKeyboardView @JvmOverloads constructor(
             }
         }
 
-        for (key in letterKeys) {
-            key.isEnabled = enabledKeys.contains(key.text)
+        // Disable keys for words greater than 27
+        if(state.phrase.size >= 27 ){
+            for (key in letterKeys) {
+                key.isEnabled = false
+            }
+        }else{
+            for (key in letterKeys) {
+                key.isEnabled = enabledKeys.contains(key.text)
+            }
         }
 
         for (x in wordsKeys.indices) {

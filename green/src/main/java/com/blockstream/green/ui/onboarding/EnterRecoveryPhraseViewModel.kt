@@ -111,7 +111,7 @@ class EnterRecoveryPhraseViewModel @AssistedInject constructor(
 
         isValid.value = valid
 
-        showInvalidMnemonicError.value = showHelp && !isEditMode && len == recoverySize
+        showInvalidMnemonicError.value = showHelp && !isEditMode && len >= recoverySize
         showPasteButton.value = recoveryPhrase.size == 0
         showHelpButton.value = showHelp
     }

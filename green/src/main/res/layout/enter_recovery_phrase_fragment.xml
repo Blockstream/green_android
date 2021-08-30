@@ -5,7 +5,6 @@
     tools:context=".ui.onboarding.EnterRecoveryPhraseFragment">
 
     <data>
-
         <variable
             name="vm"
             type="com.blockstream.green.ui.onboarding.EnterRecoveryPhraseViewModel" />
