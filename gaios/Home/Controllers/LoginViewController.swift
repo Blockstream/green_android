@@ -199,10 +199,14 @@ class LoginViewController: UIViewController {
                 return self.onBioAuthError(error.localizedDescription)
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
-            case is AuthenticationTypeHandler.AuthError:
-                DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             case GaError.NotAuthorizedError:
                 self.wrongPin(usingAuth)
+            case TwoFactorCallError.failure(let localizedDescription):
+                if localizedDescription.contains("login failed") || localizedDescription.contains("id_invalid_pin") {
+                    self.wrongPin(usingAuth)
+                } else {
+                    DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
+                }
             default:
                 DropAlert().error(message: NSLocalizedString("id_login_failed", comment: ""))
             }

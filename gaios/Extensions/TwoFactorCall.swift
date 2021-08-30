@@ -36,7 +36,7 @@ extension TwoFactorCall {
             return Guarantee().asVoid()
         case "error":
             let error = json["error"] as? String ?? ""
-            throw TwoFactorCallError.failure(localizedDescription: NSLocalizedString(error, comment: ""))
+            throw TwoFactorCallError.failure(localizedDescription: error)
         case "call":
             return Promise().map(on: bgq) { try self.call() }
         case "request_code":
