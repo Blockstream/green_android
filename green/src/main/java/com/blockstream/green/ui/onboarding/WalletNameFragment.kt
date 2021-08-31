@@ -24,6 +24,8 @@ class WalletNameFragment :
         menuRes = 0
     ) {
 
+    override val isAdjustResize: Boolean = true
+
     @Inject
     lateinit var viewModelFactory: WalletNameViewModel.AssistedFactory
     val viewModel: WalletNameViewModel by viewModels {

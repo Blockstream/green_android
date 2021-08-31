@@ -25,6 +25,8 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
 
     override val wallet by lazy { args.wallet }
 
+    override val isAdjustResize: Boolean = true
+
     @Inject
     lateinit var viewModelFactory: AddAccountViewModel.AssistedFactory
     val viewModel: AddAccountViewModel by viewModels {

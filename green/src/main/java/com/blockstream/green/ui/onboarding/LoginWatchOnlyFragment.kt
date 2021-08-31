@@ -23,6 +23,8 @@ class LoginWatchOnlyFragment :
         menuRes = 0
     ) {
 
+    override val isAdjustResize: Boolean = true
+
     val viewModel: LoginWatchOnlyViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

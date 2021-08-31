@@ -22,11 +22,15 @@
             android:layout_marginEnd="24dp"
             android:text="@string/id_log_in_via_watchonly_to_receive"
             android:textAppearance="?attr/textAppearanceHeadline1"
+            app:layout_constraintBottom_toTopOf="@+id/gappedLinearLayout5"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread_inside" />
 
         <com.blockstream.green.views.GappedLinearLayout
+            android:id="@+id/gappedLinearLayout5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -36,7 +40,9 @@
             app:gap="0dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3">
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
@@ -77,7 +83,6 @@
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:checked="@={vm.isRememberMe}"
                 android:text="@string/id_remember_me"
                 app:useMaterialThemeColors="false" />
@@ -85,7 +90,6 @@
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:checked="@={vm.isTestnet}"
                 android:text="Testnet"
                 app:useMaterialThemeColors="false"

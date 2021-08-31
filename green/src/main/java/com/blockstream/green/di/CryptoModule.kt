@@ -154,7 +154,7 @@ class CryptoModule {
                 ScreenCaptureToolboxModule(),
                 DividerModule(),
                 TextModule("Logs", TextModule.Type.SECTION_HEADER),
-                LogListModule(), // Might require additional setup, see below
+                LogListModule(maxItemCount = 60), // Might require additional setup, see below
                 LifecycleLogListModule(),
                 DividerModule(),
                 TextModule("Other", TextModule.Type.SECTION_HEADER),
