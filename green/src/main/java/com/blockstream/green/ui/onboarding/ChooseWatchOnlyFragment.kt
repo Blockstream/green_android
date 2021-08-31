@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseWatchOnlyFragmentBinding
+import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,12 +23,10 @@ class ChooseWatchOnlyFragment :
             )
         }
 
-//        binding.buttonWatchOnly.setOnClickListener {
-//            options?.apply {
-//                chooseSecurity(copy(network = "L-BTC"))
-//            }
-//        }
-
-        binding.buttonWatchOnly.disable()
+        binding.buttonWatchOnly.setOnClickListener {
+            ComingSoonBottomSheetDialogFragment().also {
+                it.show(childFragmentManager, it.toString())
+            }
+        }
     }
 }

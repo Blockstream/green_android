@@ -19,6 +19,7 @@ import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChooseNetworkFragment :
@@ -26,6 +27,9 @@ class ChooseNetworkFragment :
         R.layout.choose_network_fragment,
         menuRes = 0
     ) {
+
+    @Inject
+    lateinit var greenWallet: GreenWallet
 
     private val args: ChooseNetworkFragmentArgs by navArgs()
 

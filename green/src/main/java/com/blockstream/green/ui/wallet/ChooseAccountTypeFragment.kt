@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.AccountType
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ChooseAccountTypeFragmentBinding
+import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.AccountTypeListItem
 import com.mikepenz.fastadapter.GenericItem
@@ -38,7 +39,11 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->
             if(item is AccountTypeListItem){
-                if(item.isEnabled){
+                if(item.accountType == AccountType.TWO_OF_THREE){
+                    ComingSoonBottomSheetDialogFragment().also {
+                        it.show(childFragmentManager, it.toString())
+                    }
+                }else{
                     navigate(ChooseAccountTypeFragmentDirections.actionChooseAccountTypeFragmentToAddAccountFragment(item.accountType, args.wallet))
                 }
             }
@@ -65,9 +70,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
                 adapter.add(AccountTypeListItem(AccountType.AMP_ACCOUNT))
             }
 
-            adapter.add(AccountTypeListItem(AccountType.TWO_OF_THREE).also {
-                it.isEnabled = false
-            })
+            adapter.add(AccountTypeListItem(AccountType.TWO_OF_THREE))
         }
 
         return adapter

@@ -2,6 +2,7 @@ package com.blockstream.green.data
 
 import android.content.Context
 import android.os.Parcelable
+import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.utils.isProductionFlavor

@@ -23,11 +23,6 @@ class AccountTypeListItem(
 
         StringHolder(accountType.descriptionRes())
             .applyToOrHide(binding.card.caption)
-
-        // Warning this setting should be reverted
-        if(!isEnabled) {
-            binding.card.disable()
-        }
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemAccountTypeBinding {
