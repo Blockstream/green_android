@@ -20,7 +20,7 @@ class AppSettingsViewModelUnitTests : TestViewModel<AppSettingsViewModel>() {
     @Before
     fun setup() {
         whenever(settingsManager.getApplicationSettings()).thenReturn(ApplicationSettings())
-        viewModel = AppSettingsViewModel(settingsManager, "DEFAULT")
+        viewModel = AppSettingsViewModel(settingsManager)
     }
 
     @Test

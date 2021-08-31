@@ -171,6 +171,7 @@
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableSPV}"
                 android:layout_marginBottom="4dp"
+                android:visibility="gone"
                 app:captionText="@string/id_choose_the_electrum_servers_you_trust"
                 app:icon="@drawable/ic_spv_60"
                 app:titleText="@string/id_spv_verification" />
@@ -180,6 +181,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
+                android:visibility="gone"
                 android:checked="@={vm.enableMultiServerValidation}"
                 app:captionText="@string/id_double_check_SPV"
                 app:icon="@drawable/ic_multiserver_60"

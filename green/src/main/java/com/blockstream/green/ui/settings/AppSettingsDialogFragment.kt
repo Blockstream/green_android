@@ -58,25 +58,6 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
         binding.buttonSave.setOnClickListener {
             viewModel.saveSettings()
             dismiss()
-
-            // TODO check if active connections exists and apply immediately
-//            MaterialAlertDialogBuilder(
-//                requireContext(),
-//                R.style.ThemeOverlay_Green_MaterialImportantAlertDialog
-//            )
-//                .setTitle(R.string.id_important)
-//                .setMessage(R.string.id_youll_need_to_back_up_your)
-//                .setNegativeButton(R.string.id_back_up_recovery_phrase) { _, _ ->
-//
-//                }
-//                .setPositiveButton(R.string.id_continue) { _, _ ->
-//
-//                }
-//                .setOnDismissListener {
-//                    dismiss()
-//                }
-//                .show()
-
         }
 
         binding.buttonCancel.setOnClickListener {
