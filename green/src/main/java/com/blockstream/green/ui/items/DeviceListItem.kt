@@ -12,12 +12,11 @@ class DeviceListItem(val device: Device) : AbstractBindingItem<ListItemDeviceBin
         get() = R.id.fastadapter_device_item_id
 
     init {
-        identifier = device.id.toLong()
+        identifier = device.id.hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemDeviceBinding, payloads: List<Any>) {
         binding.device = device
-//        binding.innerIcon.setImageResource(if (wallet.isWatchOnly) R.drawable.ic_baseline_visibility_24 else if (wallet.isElectrum) R.drawable.ic_singlesig else R.drawable.ic_multisig)
     }
 
     override fun createBinding(

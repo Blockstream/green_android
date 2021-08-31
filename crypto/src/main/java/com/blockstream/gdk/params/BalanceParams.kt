@@ -9,15 +9,16 @@ import kotlinx.serialization.Serializable
 // Params used also in getUnspentOutputs
 
 @Serializable
-data class BalanceParams(
+data class BalanceParams constructor(
     @SerialName("subaccount") val subaccount: Long,
     // Only 0 or 1 is allowed for num_confs.
     // These correspond to including unconfirmed UTXOs and including only confirmed UTXOS respectively.
-    @SerialName("num_confs") val confirmations: Int = 0,
+    @SerialName("num_confs") val confirmations: Int,
     @SerialName("dust_limit") val dustLimit: Int? = null,
     @SerialName("expired_at") val expiredAt: Long? = null,
     @SerialName("confidential") val confidential: Boolean? = null,
 ) : GAJson<BalanceParams>() {
+    override val encodeDefaultsValues = false
 
     override fun kSerializer(): KSerializer<BalanceParams> {
         return serializer()

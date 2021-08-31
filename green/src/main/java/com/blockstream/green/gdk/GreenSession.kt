@@ -29,6 +29,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import mu.KLogging
 import java.net.URL
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class GreenSession constructor(
@@ -124,7 +125,7 @@ class GreenSession constructor(
 
     fun setActiveAccount(account: Long){
         activeAccount = account
-        updateTransactionsAndBalance(true)
+        updateTransactionsAndBalance(isReset = true, isLoadMore = false)
     }
 
     fun connect(network: Network, device: Device? = null) {
@@ -434,8 +435,71 @@ class GreenSession constructor(
         name
     )
 
-    fun getTransactions(params: TransactionParams) =
+    private fun getTransactions(params: TransactionParams) =
         AuthHandler(greenWallet, greenWallet.getTransactions(gaSession, params))
+
+    private var txOffset = 0
+    var hasMoreTransactions = false
+    var isLoadingTransactions = AtomicBoolean(false)
+    fun updateTransactionsAndBalance(isReset: Boolean, isLoadMore: Boolean) {
+        // Prevent race condition
+        if (!isLoadingTransactions.compareAndSet(false, true)) return
+
+        observable {
+            var offset = 0
+
+            if (isReset) {
+                balancesSubject.onNext(linkedMapOf(BalanceLoading))
+                txOffset = 0
+            } else if (isLoadMore) {
+                offset = txOffset + TRANSACTIONS_PER_PAGE
+            }
+
+            val limit = if (isReset || isLoadMore) TRANSACTIONS_PER_PAGE else (txOffset + TRANSACTIONS_PER_PAGE)
+
+            Pair(
+                it.getTransactions(TransactionParams(activeAccount, offset, limit))
+                    .result<Transactions>(
+                        hardwareWalletResolver = HardwareCodeResolver(hwWallet)
+                    ),
+                it.getBalance(
+                    BalanceParams(
+                        subaccount = activeAccount,
+                        confirmations = 0
+                    )
+                )
+            )
+        }
+        .retry(1)
+        .doOnTerminate {
+            isLoadingTransactions.set(false)
+        }
+        .subscribeBy(onError = {
+            it.printStackTrace()
+        }, onSuccess = {
+            if (isReset || isLoadMore) {
+                hasMoreTransactions = it.first.transactions.size == TRANSACTIONS_PER_PAGE
+            }
+            if (isLoadMore) {
+                transactionsSubject.onNext((transactionsSubject.value ?: listOf()) + it.first.transactions)
+                txOffset += TRANSACTIONS_PER_PAGE
+            }else{
+                transactionsSubject.onNext(it.first.transactions)
+            }
+            balancesSubject.onNext(it.second)
+        }).addTo(disposables)
+    }
+
+    private fun getBalance(params: BalanceParams): Balances {
+        AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+            .result<BalanceMap>().let { balanceMap ->
+                return LinkedHashMap(
+                    balanceMap.toSortedMap { o1, o2 ->
+                        if (o1 == policyAsset) -1 else o1.compareTo(o2)
+                    }
+                )
+            }
+    }
 
     fun changeSettingsTwoFactor(method: String, methodConfig: TwoFactorMethodConfig) =
         AuthHandler(
@@ -508,65 +572,6 @@ class GreenSession constructor(
                 }).addTo(disposables)
     }
 
-    private var txOffset = 0
-    private val txLimit = 12
-    var hasMoreTransactions = false
-    fun updateTransactionsAndBalance(isReset: Boolean) {
-        observable {
-            if(isReset){
-                balancesSubject.onNext(linkedMapOf(BalanceLoading))
-                txOffset = 0
-            }
-
-            val limit = if(isReset) txLimit else (txOffset + txLimit)
-
-            Pair(
-                it.getTransactions(TransactionParams(activeAccount, 0, limit)).result<Transactions>(
-                    hardwareWalletResolver = HardwareCodeResolver(hwWallet)
-                ),
-                it.getBalance(BalanceParams(activeAccount))
-            )
-        }
-        .retry(2)
-        .subscribeBy(onError = {
-            it.printStackTrace()
-        }, onSuccess = {
-            if(isReset) {
-                hasMoreTransactions = it.first.transactions.size == txLimit
-            }
-            transactionsSubject.onNext(it.first.transactions)
-            balancesSubject.onNext(it.second)
-
-        }).addTo(disposables)
-    }
-
-    fun loadMoreTransactions(){
-        observable {
-            it.getTransactions(TransactionParams(activeAccount, txOffset + txLimit, txLimit)).result<Transactions>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
-        }
-        .subscribeBy(onError = {
-            it.printStackTrace()
-        }, onSuccess = {
-            txOffset += txLimit
-
-            hasMoreTransactions = it.transactions.size == txLimit
-
-            transactionsSubject.onNext(transactionsSubject.value + it.transactions)
-
-        }).addTo(disposables)
-    }
-
-    private fun getBalance(params: BalanceParams): Balances {
-        AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
-            .result<BalanceMap>().let { balanceMap ->
-                return LinkedHashMap(
-                    balanceMap.toSortedMap { o1, o2 ->
-                        if (o1 == policyAsset) -1 else o1.compareTo(o2)
-                    }
-                )
-            }
-    }
-
     fun convertAmount(convert: Convert) = greenWallet.convertAmount(gaSession, convert)
 
     // skip updating on the first block event
@@ -580,7 +585,7 @@ class GreenSession constructor(
                 notification.block?.let {
                     blockSubject.onNext(it)
                     if(updateTransactionsAndBalance) {
-                        updateTransactionsAndBalance(false)
+                        updateTransactionsAndBalance(isReset = false, isLoadMore = false)
                     }
                     updateTransactionsAndBalance = true
                 }
@@ -616,7 +621,7 @@ class GreenSession constructor(
             "transaction" -> {
                 notification.transaction?.let {
                     if(it.subaccounts.contains(activeAccount)){
-                        updateTransactionsAndBalance(false)
+                        updateTransactionsAndBalance(isReset = false, isLoadMore = false)
                     }
                 }
             }
@@ -636,5 +641,7 @@ class GreenSession constructor(
         disposables.clear()
     }
 
-    companion object: KLogging()
+    companion object: KLogging(){
+        const val TRANSACTIONS_PER_PAGE: Int = 30
+    }
 }

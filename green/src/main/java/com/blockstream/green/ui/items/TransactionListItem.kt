@@ -12,6 +12,7 @@ import com.blockstream.green.databinding.ListItemTransactionAssetBinding
 import com.blockstream.green.databinding.ListItemTransactionBinding
 import com.blockstream.green.ui.looks.TransactionListLook
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import mu.KLogging
 
 data class TransactionListItem(val session: GreenSession, val tx: Transaction) : AbstractBindingItem<ListItemTransactionBinding>() {
     override val type: Int
@@ -32,7 +33,7 @@ data class TransactionListItem(val session: GreenSession, val tx: Transaction) :
     }
 
     override fun bindView(binding: ListItemTransactionBinding, payloads: List<Any>) {
-        binding.confirmations = tx.getConfirmations(session.blockHeight)
+        binding.confirmations = tx.getConfirmations(session.blockHeight).also { logger.info { "Confs: $it" } }
         binding.date = look.date
         binding.memo = look.memo
 
@@ -53,4 +54,6 @@ data class TransactionListItem(val session: GreenSession, val tx: Transaction) :
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemTransactionBinding {
         return ListItemTransactionBinding.inflate(inflater, parent, false)
     }
+
+    companion object: KLogging()
 }

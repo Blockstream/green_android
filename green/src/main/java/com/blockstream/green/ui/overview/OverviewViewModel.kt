@@ -126,6 +126,7 @@ class OverviewViewModel @AssistedInject constructor(
 
     fun refresh(){
         session.updateSubAccounts()
+        session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
     }
 
     private fun filterSubAccounts(subAccounts: List<SubAccount>): List<SubAccount> {
@@ -174,12 +175,13 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     fun refreshTransactions(){
-        session.updateTransactionsAndBalance(false)
+        session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
     }
 
     fun loadMoreTransactions(){
         logger.info { "loadMoreTransactions" }
-        session.loadMoreTransactions()
+        // session.loadMoreTransactions()
+        session.updateTransactionsAndBalance(isReset = false, isLoadMore = true)
     }
 
     @dagger.assisted.AssistedFactory
