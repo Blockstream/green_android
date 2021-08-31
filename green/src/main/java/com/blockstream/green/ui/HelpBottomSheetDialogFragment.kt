@@ -14,7 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HelpBottomSheetDialogFragment : AbstractBottomSheetDialogFragment() {
+class HelpBottomSheetDialogFragment : RecyclerBottomSheetDialogFragment() {
 
     @Inject
     lateinit var settingsManager: SettingsManager

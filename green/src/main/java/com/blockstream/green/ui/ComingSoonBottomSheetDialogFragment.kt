@@ -10,7 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ComingSoonBottomSheetDialogFragment : AbstractHelpBottomSheetDialogFragment() {
+class ComingSoonBottomSheetDialogFragment : RecyclerBottomSheetDialogFragment() {
 
     @Inject
     lateinit var settingsManager: SettingsManager

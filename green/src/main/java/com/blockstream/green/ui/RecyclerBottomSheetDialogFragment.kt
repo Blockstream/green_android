@@ -15,7 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 
-abstract class AbstractBottomSheetDialogFragment : BottomSheetDialogFragment() {
+abstract class RecyclerBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: RecyclerBottomSheetBinding
 
