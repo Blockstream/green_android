@@ -4,8 +4,8 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Run build debug app"
-  lane :build_debug do
+  desc "Build unsigned debug"
+  lane :build_unsigned_debug do
     cocoapods()
     sh "cd .. && ./tools/fetch_gdk_binaries.sh"
     build_ios_app(
@@ -23,8 +23,8 @@ platform :ios do
     )
   end
 
-  desc "Run build dev app"
-  lane :build_dev do
+  desc "Build signed adhoc release"
+  lane :build_signed_adhoc_release do
     cocoapods()
     sh "cd .. && ./tools/fetch_gdk_binaries.sh"
     build_ios_app(
@@ -44,8 +44,8 @@ platform :ios do
     )
   end
 
-  desc "Run build release app"
-  lane :build_release do
+  desc "Build signed prod release"
+  lane :build_signed_prod_release do
     cocoapods()
     sh "cd .. && ./tools/fetch_gdk_binaries.sh"
     build_ios_app(

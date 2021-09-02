@@ -12,15 +12,15 @@ test_format:
   script:
     - fastlane run swiftlint
 
-build_debug:
+build_unsigned_debug:
   stage: build
   tags:
     - fastosx
     - osx
   script:
-    - fastlane build_debug
+    - fastlane build_unsigned_debug
 
-build_dev:
+build_signed_adhoc_release:
   stage: build
   when: manual
   tags:
@@ -33,9 +33,9 @@ build_dev:
     paths:
       - dev/Green-dev.ipa
   script:
-    - fastlane build_dev
+    - fastlane build_signed_adhoc_release
 
-build_release:
+build_signed_prod_release:
   stage: deploy
   when: manual
   tags:
@@ -48,14 +48,14 @@ build_release:
     paths:
       - release/Green.ipa
   script:
-    - fastlane build_release
+    - fastlane build_signed_prod_release
 
 ui_tests:
   stage: test
   tags:
     - osx
   when: manual
-  needs: ["build_debug"]
+  needs: ["build_unsigned_debug"]
   before_script:
     - xcrun simctl boot "iPhone 11"
     - xcrun simctl privacy "iPhone 11" grant all io.blockstream.green
