@@ -171,11 +171,13 @@ class WalletSettingsViewController: KeyboardViewController {
             socks5 += ":\(port)"
         }
         fieldProxyIp.text = socks5
-<<<<<<< HEAD
         switchTestnet.setOn(UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true, animated: true)
-=======
 
+        switchPSPVPersonalNode.setOn(networkSettings[Constants.personalNodeEnabled] as? Bool ?? false, animated: true)
         cardSPVPersonalNodeDetails.isHidden = !switchPSPVPersonalNode.isOn
+        fieldSPVbtcServer.text = networkSettings[Constants.btcElectrumSrv] as? String ?? ""
+        fieldSPVliquidServer.text = networkSettings[Constants.liquidElectrumSrv] as? String ?? ""
+        fieldSPVtestnetServer.text = networkSettings[Constants.testnetElectrumSrv] as? String ?? ""
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -217,14 +219,21 @@ class WalletSettingsViewController: KeyboardViewController {
                       message: NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: ""))
             return
         }
+        let btcElectrumSrv = fieldSPVbtcServer.text ?? "" //need validation
+        let liquidElectrumSrv = fieldSPVliquidServer.text ?? "" //need validation
+        let testnetElectrumSrv = fieldSPVtestnetServer.text ?? "" //need validation
+
         networkSettings = [
             "proxy": switchProxy.isOn,
             "tor": switchTor.isOn,
             "socks5_hostname": socks5.split(separator: ":").first ?? "",
-            "socks5_port": socks5.split(separator: ":").last ?? ""]
-
+            "socks5_port": socks5.split(separator: ":").last ?? "",
+            Constants.personalNodeEnabled: switchPSPVPersonalNode.isOn,
+            Constants.btcElectrumSrv: btcElectrumSrv,
+            Constants.liquidElectrumSrv: liquidElectrumSrv,
+            Constants.testnetElectrumSrv: testnetElectrumSrv
+        ]
         UserDefaults.standard.set(switchTestnet.isOn, forKey: AppStorage.testnetIsVisible)
-
         delegate?.didSet(tor: switchTor.isOn)
         delegate?.didSet(testnet: switchTestnet.isOn)
         dismiss(animated: true, completion: nil)
