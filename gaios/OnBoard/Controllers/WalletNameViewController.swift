@@ -77,9 +77,9 @@ class WalletNameViewController: UIViewController {
 
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController")
-        present(vc, animated: true) {
-            //
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            vc.account = OnBoardManager.shared.account()
+            present(vc, animated: true) {}
         }
     }
 

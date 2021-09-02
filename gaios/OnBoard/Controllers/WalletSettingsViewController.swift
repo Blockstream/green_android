@@ -5,8 +5,9 @@ protocol WalletSettingsViewControllerDelegate: AnyObject {
     func didSet(testnet: Bool)
 }
 
-class WalletSettingsViewController: UIViewController {
+class WalletSettingsViewController: KeyboardViewController {
 
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
 
@@ -26,6 +27,21 @@ class WalletSettingsViewController: UIViewController {
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
     @IBOutlet weak var switchTestnet: UISwitch!
+    @IBOutlet weak var cardSPV: UIView!
+    @IBOutlet weak var lblSPVTitle: UILabel!
+    @IBOutlet weak var lblSPVHint: UILabel!
+
+    @IBOutlet weak var cardSPVPersonalNode: UIView!
+    @IBOutlet weak var lblSPVPersonalNodeTitle: UILabel!
+    @IBOutlet weak var lblSPVPersonalNodeHint: UILabel!
+    @IBOutlet weak var switchPSPVPersonalNode: UISwitch!
+    @IBOutlet weak var cardSPVPersonalNodeDetails: UIView!
+    @IBOutlet weak var lblSPVbtcServer: UILabel!
+    @IBOutlet weak var fieldSPVbtcServer: UITextField!
+    @IBOutlet weak var lblSPVliquidServer: UILabel!
+    @IBOutlet weak var fieldSPVliquidServer: UITextField!
+    @IBOutlet weak var lblSPVtestnetServer: UILabel!
+    @IBOutlet weak var fieldSPVtestnetServer: UITextField!
 
     @IBOutlet weak var cardTxCheck: UIView!
     @IBOutlet weak var lblTxCheckTitle: UILabel!
@@ -49,6 +65,7 @@ class WalletSettingsViewController: UIViewController {
     @IBOutlet weak var btnSave: UIButton!
 
     weak var delegate: WalletSettingsViewControllerDelegate?
+    var account: Account?
 
     private var networkSettings: [String: Any] {
         get {
@@ -67,12 +84,13 @@ class WalletSettingsViewController: UIViewController {
         setStyle()
         setActions()
         reload()
-        hideKeyboardWhenTappedAround()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.view
         switchTor.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.torSwitch
         btnSave.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.saveBtn
         btnCancel.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.cancelBtn
+
+        cardSPV.isHidden = account?.isSingleSig != true
     }
 
     func setContent() {
@@ -86,6 +104,18 @@ class WalletSettingsViewController: UIViewController {
         lblTestnetHint.text = ""
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
+        fieldProxyIp.placeholder = "Host Ip"
+
+        lblSPVTitle.text = "Backend and Validation"
+        lblSPVHint.text = "SPV Validation is currently available for singlesig wallets only."
+        lblSPVPersonalNodeTitle.text = "Personal Node"
+        lblSPVPersonalNodeHint.text = "Choose the Electrum servers you trust for chain data and SPV"
+        lblSPVbtcServer.text = "Bitcoin Electrum Server"
+        lblSPVliquidServer.text = "Liquid Electrum Server"
+        lblSPVtestnetServer.text = "Testnet Electrum Server"
+        fieldSPVbtcServer.placeholder = "Host Ip"
+        fieldSPVliquidServer.placeholder = "Host Ip"
+        fieldSPVtestnetServer.placeholder = "Host Ip"
         lblTxCheckTitle.text = NSLocalizedString("id_spv_verification", comment: "")
         lblTxCheckHint.text = NSLocalizedString("id_verify_your_transactions_are", comment: "")
         lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
@@ -104,8 +134,11 @@ class WalletSettingsViewController: UIViewController {
     func setStyle() {
         btnCancel.cornerRadius = 4.0
         btnSave.cornerRadius = 4.0
-        fieldProxyIp.setLeftPaddingPoints(10.0)
-        fieldProxyIp.setRightPaddingPoints(10.0)
+        let fields = [fieldProxyIp, fieldSPVbtcServer, fieldSPVliquidServer, fieldSPVtestnetServer]
+        fields.forEach {
+            $0?.setLeftPaddingPoints(10.0)
+            $0?.setRightPaddingPoints(10.0)
+        }
 
         cardTxCheck.alpha = 0.5
         cardMulti.alpha = 0.5
@@ -138,11 +171,39 @@ class WalletSettingsViewController: UIViewController {
             socks5 += ":\(port)"
         }
         fieldProxyIp.text = socks5
+<<<<<<< HEAD
         switchTestnet.setOn(UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true, animated: true)
+=======
+
+        cardSPVPersonalNodeDetails.isHidden = !switchPSPVPersonalNode.isOn
+    }
+
+    override func keyboardWillShow(notification: Notification) {
+        super.keyboardWillShow(notification: notification)
+
+        guard let userInfo = notification.userInfo else { return }
+        // swiftlint:disable force_cast
+        var keyboardFrame: CGRect = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue).cgRectValue
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+
+        var contentInset: UIEdgeInsets = self.scrollView.contentInset
+        contentInset.bottom = keyboardFrame.size.height + 20
+        scrollView.contentInset = contentInset
+    }
+
+    override func keyboardWillHide(notification: Notification) {
+        let contentInset: UIEdgeInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInset
+        super.keyboardWillHide(notification: notification)
+>>>>>>> 747882b (App Settings: SPV/Personal node card UI/UX)
     }
 
     @IBAction func switchProxyChange(_ sender: UISwitch) {
         cardProxyDetail.isHidden = !sender.isOn
+    }
+
+    @IBAction func switchPSPVPersonalNode(_ sender: UISwitch) {
+        cardSPVPersonalNodeDetails.isHidden = !sender.isOn
     }
 
     @IBAction func btnCancel(_ sender: Any) {
