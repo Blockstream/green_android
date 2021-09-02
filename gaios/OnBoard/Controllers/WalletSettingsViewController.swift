@@ -36,10 +36,16 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var lblSPVPersonalNodeHint: UILabel!
     @IBOutlet weak var switchPSPVPersonalNode: UISwitch!
     @IBOutlet weak var cardSPVPersonalNodeDetails: UIView!
+
+    @IBOutlet weak var cardSPVbtcServer: UIView!
     @IBOutlet weak var lblSPVbtcServer: UILabel!
     @IBOutlet weak var fieldSPVbtcServer: UITextField!
+
+    @IBOutlet weak var cardSPVliquidServer: UIView!
     @IBOutlet weak var lblSPVliquidServer: UILabel!
     @IBOutlet weak var fieldSPVliquidServer: UITextField!
+
+    @IBOutlet weak var cardSPVtestnetServer: UIView!
     @IBOutlet weak var lblSPVtestnetServer: UILabel!
     @IBOutlet weak var fieldSPVtestnetServer: UITextField!
 
@@ -80,6 +86,11 @@ class WalletSettingsViewController: KeyboardViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        fieldProxyIp.delegate = self
+        fieldSPVbtcServer.delegate = self
+        fieldSPVliquidServer.delegate = self
+        fieldSPVtestnetServer.delegate = self
+
         setContent()
         setStyle()
         setActions()
@@ -91,6 +102,7 @@ class WalletSettingsViewController: KeyboardViewController {
         btnCancel.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.cancelBtn
 
         cardSPV.isHidden = account?.isSingleSig != true
+        cardSPVliquidServer.isHidden = true
     }
 
     func setContent() {
@@ -206,6 +218,16 @@ class WalletSettingsViewController: KeyboardViewController {
 
     @IBAction func switchPSPVPersonalNode(_ sender: UISwitch) {
         cardSPVPersonalNodeDetails.isHidden = !sender.isOn
+
+        if sender.isOn {
+            fieldSPVbtcServer.text = Constants.btcElectrumSrvDefaultEndPoint
+            fieldSPVliquidServer.text = Constants.liquidElectrumSrvDefaultEndPoint
+            fieldSPVtestnetServer.text = Constants.testnetElectrumSrvDefaultEndPoint
+        } else {
+            fieldSPVbtcServer.text = ""
+            fieldSPVliquidServer.text = ""
+            fieldSPVtestnetServer.text = ""
+        }
     }
 
     @IBAction func btnCancel(_ sender: Any) {
@@ -219,9 +241,9 @@ class WalletSettingsViewController: KeyboardViewController {
                       message: NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: ""))
             return
         }
-        let btcElectrumSrv = fieldSPVbtcServer.text ?? "" //need validation
-        let liquidElectrumSrv = fieldSPVliquidServer.text ?? "" //need validation
-        let testnetElectrumSrv = fieldSPVtestnetServer.text ?? "" //need validation
+        let btcElectrumSrv = fieldSPVbtcServer.text ?? ""
+        let liquidElectrumSrv = fieldSPVliquidServer.text ?? ""
+        let testnetElectrumSrv = fieldSPVtestnetServer.text ?? ""
 
         networkSettings = [
             "proxy": switchProxy.isOn,
@@ -239,4 +261,11 @@ class WalletSettingsViewController: KeyboardViewController {
         dismiss(animated: true, completion: nil)
     }
 
+}
+
+extension WalletSettingsViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
+    }
 }

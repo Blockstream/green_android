@@ -64,6 +64,23 @@ class SessionManager: Session {
         #if DEBUG
         netParams["log_level"] = "debug"
         #endif
+
+        //SPV
+        if networkSettings[Constants.personalNodeEnabled] as? Bool ?? false {
+
+            let btcElectrumSrv = networkSettings[Constants.btcElectrumSrv] as? String ?? ""
+            // let liquidElectrumSrv = networkSettings[Constants.liquidElectrumSrv] as? String ?? ""
+            let testnetElectrumSrv = networkSettings[Constants.testnetElectrumSrv] as? String ?? ""
+
+            if network == Constants.electrumPrefix + "mainnet" && btcElectrumSrv != "" {
+                netParams["spv_enabled"] = true
+                netParams["electrum_url"] = btcElectrumSrv
+            } else if network == Constants.electrumPrefix + "testnet" && testnetElectrumSrv != "" {
+                netParams["spv_enabled"] = true
+                netParams["electrum_url"] = testnetElectrumSrv
+            }
+        }
+
         do {
             try super.connect(netParams: netParams)
             connected = true

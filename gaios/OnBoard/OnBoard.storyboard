@@ -1448,6 +1448,9 @@
                         <outlet property="cardSPV" destination="TEQ-zE-e6k" id="CvH-Bn-g8o"/>
                         <outlet property="cardSPVPersonalNode" destination="bD2-w9-BiW" id="uiw-Wj-ZgD"/>
                         <outlet property="cardSPVPersonalNodeDetails" destination="KvQ-nR-GR7" id="4eY-6a-P3w"/>
+                        <outlet property="cardSPVbtcServer" destination="b8e-Yx-02w" id="DLf-7m-PyG"/>
+                        <outlet property="cardSPVliquidServer" destination="7MO-gE-Lny" id="Xvi-Ha-SVs"/>
+                        <outlet property="cardSPVtestnetServer" destination="vSi-Wm-9BK" id="ZdG-ca-nLR"/>
                         <outlet property="cardTor" destination="ury-w8-Lva" id="fPj-nC-6WC"/>
                         <outlet property="cardTxCheck" destination="yrl-ay-xTo" id="Nd6-M8-G5i"/>
                         <outlet property="fieldProxyIp" destination="tlR-NM-gYw" id="pPv-K1-qfG"/>
