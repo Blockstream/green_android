@@ -65,7 +65,7 @@ class ChooseSecurityViewController: UIViewController {
 
     @objc func didPressCardSimple() {
         if !isSingleSigEnabled() {
-            DropAlert().warning(message: "Coming Soon!\nThis feature is coming soon, stay tuned!", delay: 3)
+            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
             return
         }
         OnBoardManager.shared.params?.singleSig = true

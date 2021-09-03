@@ -104,7 +104,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
     }
 
     @objc func didPressCard2of3() {
-        DropAlert().warning(message: "Coming Soon!\nThis feature is coming soon, stay tuned!", delay: 3)
+        DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
     }
 
     func next(_ accountType: AccountType) {

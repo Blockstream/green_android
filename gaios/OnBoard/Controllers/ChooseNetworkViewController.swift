@@ -79,7 +79,7 @@ class ChooseNetworkViewController: UIViewController {
         // migrating other wallet is implicitly SingleSig which is not
         // available yet for liqud network
         if isMigratingOtherWallet == true {
-            DropAlert().warning(message: "Coming Soon!\nThis feature is coming soon, stay tuned!", delay: 3)
+            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
             return
         }
         OnBoardManager.shared.params = OnBoardParams(network: "liquid")
