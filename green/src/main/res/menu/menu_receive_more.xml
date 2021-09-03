@@ -12,6 +12,6 @@
 
     <item
         android:id="@+id/sweep"
-        android:title="@string/id_sweep_paper" />
+        android:title="@string/id_sweep_from_paper_wallet" />
 
 </menu>

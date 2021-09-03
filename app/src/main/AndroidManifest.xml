@@ -101,7 +101,7 @@
             android:name=".twofactor.TwoFactorActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"
-            android:label="@string/id_1s_twofactor_set_up"
+            android:label="@string/id_1s_twofactor_setup"
             />
         <activity
             android:name=".preferences.SettingsActivity"

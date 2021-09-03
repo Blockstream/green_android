@@ -61,7 +61,7 @@ class TwoFactorResetSheetDialogFragment : AbstractHelpBottomSheetDialogFragment(
 
         if(twoFactorReset.isDisputed){
             list += HelpListItem(
-                StringHolder(R.string.id_your_wallet_locked_under_2fa),
+                StringHolder(R.string.id_your_wallet_is_locked_under_2fa),
                 StringHolder(R.string.id_the_1_year_2fa_reset_process),
             )
 

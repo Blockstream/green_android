@@ -191,11 +191,11 @@ public class MainFragment extends GAFragment implements View.OnClickListener, Li
 
                 if(status.getMetadataStatus() != CacheStatus.Latest){
                     mAssetsCardTitle.setText(R.string.id_failed_to_load_asset_registry);
-                    mAssetsCardMessage.setText(R.string.id_warning_asset_amounts_might);
+                    mAssetsCardMessage.setText(R.string.id_the_asset_registry_is_currently);
                     mAssetsCardAction.setText(R.string.id_reload);
                 } else {
                     mAssetsCardTitle.setText(R.string.id_failed_to_load_asset_icons);
-                    mAssetsCardMessage.setText(R.string.id_asset_icons_are_missing);
+                    mAssetsCardMessage.setText(R.string.id_asset_icons_are_missing_try);
                     mAssetsCardAction.setText(R.string.id_reload);
                 }
             });

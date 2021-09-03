@@ -113,7 +113,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
     private fun updateCurrency(){
         (if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)).let {
-            binding.amountTextInputLayout.helperText = getString(R.string.id_amount_in_, it)
+            binding.amountTextInputLayout.helperText = getString(R.string.id_amount_in_s, it)
             binding.symbol = it
         }
     }

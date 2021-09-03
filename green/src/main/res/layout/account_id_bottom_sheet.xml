@@ -45,7 +45,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="24dp"
-            android:text="@string/id_provide_this_id_to_the_asset_issuer"
+            android:text="@string/id_provide_your_amp_id_to_the"
             android:textAppearance="?attr/textAppearanceSubtitle2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

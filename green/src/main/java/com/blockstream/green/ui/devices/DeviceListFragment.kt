@@ -117,7 +117,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 
         binding.buttonEnableLocationService.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Green_MaterialAlertDialog)
-                .setMessage(R.string.id_location_service_seems_to_be_disabled)
+                .setMessage(R.string.id_location_services_are_disabled)
                 .setPositiveButton(R.string.id_enable){ _: DialogInterface, _: Int ->
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }

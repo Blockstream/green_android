@@ -16,7 +16,7 @@ fun Fragment.showTorSinglesigWarningIfNeeded(settingsManager: SettingsManager){
         val checkboxTitle = arrayOf(getString(R.string.id_dont_ask_me_again))
         var dontAskAgain = false
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.id_tor_is_not_available)
+            .setTitle(R.string.id_tor_is_not_yet_available_for)
             .setMultiChoiceItems(
                 checkboxTitle,
                 booleanArrayOf(false)

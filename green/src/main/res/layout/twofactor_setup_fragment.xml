@@ -82,7 +82,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:hint="@string/id_mobile_number"
+                    android:hint="@string/id_phone_number"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/countryTextInputLayout"
                     app:layout_constraintTop_toTopOf="parent">

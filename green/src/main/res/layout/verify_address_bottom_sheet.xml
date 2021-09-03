@@ -64,7 +64,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/id_verify_and_confirm"
+            android:text="@string/id_verify_on_device"
             isInvisible="@{confirmed}"
             android:textAppearance="?attr/textAppearanceCaption"
             app:layout_constraintEnd_toEndOf="@+id/icon"
@@ -100,7 +100,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/id_confirmed_"
+            android:text="@string/id_success"
             isInvisible="@{!confirmed}"
             android:textAppearance="?attr/textAppearanceHeadline5"
             app:layout_constraintBottom_toBottomOf="parent"

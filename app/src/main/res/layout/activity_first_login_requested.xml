@@ -106,7 +106,7 @@
             android:textSize="12dp"
             android:visibility="gone"
             tools:visibility="visible"
-            android:text="@string/id_singlesig_wallets_are_not_supported"/>
+            android:text="@string/id_singlesig_wallets_are_not_yet"/>
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

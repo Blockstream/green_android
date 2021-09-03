@@ -151,7 +151,7 @@ class WalletSettingsFragment :
         // Recovery Transactions
         recoveryTransactionsPreference = PreferenceListItem(
             StringHolder(R.string.id_recovery_transactions),
-            StringHolder(R.string.id_legacy_outputs)
+            StringHolder(R.string.id_legacy_script_coins)
         )
         setupEmailRecoveryTransactionsPreference = PreferenceListItem(
             StringHolder(R.string.id_set_an_email_for_recovery)
@@ -164,7 +164,7 @@ class WalletSettingsFragment :
             StringHolder(R.string.id_request_recovery_transactions)
         )
 
-        twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_2fa_authentication))
+        twoFactorAuthenticationPreference = PreferenceListItem(StringHolder(R.string.id_twofactor_authentication))
         pgpPreference = PreferenceListItem(StringHolder(R.string.id_pgp_key))
 
         versionPreference = PreferenceListItem(StringHolder(R.string.id_version), StringHolder(
@@ -367,8 +367,8 @@ class WalletSettingsFragment :
 
         if(args.showRecoveryTransactions){
             list += HelpListItem(
-                message = StringHolder(R.string.id_if_you_have_some_coins_on_the_legacy),
-                buttonOutline = StringHolder(R.string.id_read_more)
+                message = StringHolder(R.string.id_if_you_have_some_coins_on_the),
+                buttonOutline = StringHolder(R.string.id_more_info)
             )
 
             if(twoFactorConfig?.email?.confirmed == false){

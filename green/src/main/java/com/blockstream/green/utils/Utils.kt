@@ -56,7 +56,7 @@ fun Fragment.openBrowser(appSettings: ApplicationSettings, url: String) {
     if (appSettings.tor) {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.id_tor)
-            .setMessage(R.string.id_you_have_tor_enabled)
+            .setMessage(R.string.id_you_have_tor_enabled_are_you)
             .setPositiveButton(R.string.id_continue) { _, _ ->
                 openBrowserBlock.invoke(requireContext())
             }

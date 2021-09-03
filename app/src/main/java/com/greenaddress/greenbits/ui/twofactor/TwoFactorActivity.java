@@ -68,7 +68,7 @@ public class TwoFactorActivity extends LoggedActivity {
             break;
         case "undo_dispute":
             mContinueButton.setText(R.string.id_undo_2fa_dispute);
-            mPromptText.setText(R.string.id_enter_the_email_for_which_you_want_to_undo);
+            mPromptText.setText(R.string.id_enter_the_email_for_which_you);
             break;
         case "cancel":
             mContinueButton.setText(R.string.id_cancel_twofactor_reset);
@@ -99,7 +99,7 @@ public class TwoFactorActivity extends LoggedActivity {
             finishOnUiThread();
             return;
         }
-        setTitle(getString(mEnable ? R.string.id_1s_twofactor_set_up : R.string.id_delete_s_twofactor,
+        setTitle(getString(mEnable ? R.string.id_1s_twofactor_setup : R.string.id_delete_s_twofactor,
                            mLocalizedMap.get(mMethod)));
 
         switch (mMethod) {
@@ -380,7 +380,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
     private void disableTwoFactor(final String method) {
         if (!twoFactorConfigData.getEnabledMethods().contains(method.toLowerCase(Locale.US))) {
-            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully_secured, Toast.LENGTH_LONG);
+            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully, Toast.LENGTH_LONG);
             finishOnUiThread();
             return;
         }
@@ -410,7 +410,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
     public void resetTwoFactor(final String email, final Boolean isDispute, final Boolean isUndo) {
         if (twoFactorConfigData.getEnabledMethods().isEmpty()) {
-            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully_secured, Toast.LENGTH_LONG);
+            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully, Toast.LENGTH_LONG);
             finishOnUiThread();
             return;
         }
@@ -445,7 +445,7 @@ public class TwoFactorActivity extends LoggedActivity {
 
     public void cancelTwoFactor() {
         if (twoFactorConfigData.getEnabledMethods().isEmpty()) {
-            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully_secured, Toast.LENGTH_LONG);
+            UI.toast(this, R.string.id_your_wallet_is_not_yet_fully, Toast.LENGTH_LONG);
             finishOnUiThread();
             return;
         }
