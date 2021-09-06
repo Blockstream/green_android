@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+[Unreleased]
+### Added
+### Changed
+- Revamp Wallet view with new UI
+- Minor improvements to the Wallet Settings UI
+### Fixed
+- Limit number of words in wallet restore to 27
+
 ## [3.7.1] - 2021-09-16
 ### Fixed
 - Fix GDK build for f-droid

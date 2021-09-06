@@ -75,9 +75,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
     override fun getWalletViewModel() = viewModel
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
         viewModel.actionLogin.observe(viewLifecycleOwner) {

@@ -32,11 +32,10 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
     private var networkSnackbar: Snackbar? = null
 
-    // Protect the fragment/vm to continue initializing when fragment is finishing
-    protected var isFinishingGuard: Boolean = false
-        private set
+    // Guard initialization code for fragments that requires a connected session
+    abstract fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Recovery screens are reused in onBoarding
@@ -50,7 +49,6 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
         // Assuming we are in v4 codebase flow
         if (isLoggedInRequired() && !session.isConnected) {
             navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
-            isFinishingGuard = true
             return
         }
 
@@ -127,6 +125,8 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                 }
             }
         }
+
+        onViewCreatedGuarded(view, savedInstanceState)
     }
 
     open fun isLoggedInRequired(): Boolean = true

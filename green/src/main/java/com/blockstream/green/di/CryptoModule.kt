@@ -155,7 +155,6 @@ class CryptoModule {
                 DividerModule(),
                 TextModule("Logs", TextModule.Type.SECTION_HEADER),
                 LogListModule(maxItemCount = 60), // Might require additional setup, see below
-                LifecycleLogListModule(),
                 DividerModule(),
                 TextModule("Other", TextModule.Type.SECTION_HEADER),
                 DeviceInfoModule(),

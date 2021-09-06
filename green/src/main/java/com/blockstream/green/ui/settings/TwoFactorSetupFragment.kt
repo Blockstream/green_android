@@ -44,9 +44,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         TwoFactorSetupViewModel.provideFactory(viewModelFactory, args.wallet, args.method, args.action)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         val methodLocalized = requireContext().localized2faMethod(args.method.gdkType)
 
         val action = args.action

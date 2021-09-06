@@ -121,11 +121,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
     override fun getWalletViewModel() = viewModel
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isFinishingGuard) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         getNavigationResult<Long>(ADD_NEW_ACCOUNT)?.observe(viewLifecycleOwner) {
             it?.let {
                 viewModel.setSubAccount(it)

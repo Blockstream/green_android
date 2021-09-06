@@ -30,11 +30,7 @@ class ChooseAccountTypeFragment : WalletFragment<ChooseAccountTypeFragmentBindin
         WalletViewModel.provideFactory(viewModelFactory, wallet)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isFinishingGuard) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         val fastItemAdapter = createAdapter()
 
         fastItemAdapter.onClickListener = { _, _, item: GenericItem, _ ->

@@ -35,11 +35,7 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
     private val args: RecoveryPhraseFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet!! }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isFinishingGuard) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         val words = session.getMnemonicPassphrase().split(" ")
 
         val listItems = words.mapIndexed { index, word ->

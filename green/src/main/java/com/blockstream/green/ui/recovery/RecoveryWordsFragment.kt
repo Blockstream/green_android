@@ -33,11 +33,7 @@ class RecoveryWordsFragment : WalletFragment<RecoverySetupWordsFragmentBinding>(
         return args.wallet != null
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isFinishingGuard) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
         binding.buttonNext.setOnClickListener {

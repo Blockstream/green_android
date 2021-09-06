@@ -30,9 +30,7 @@ class ChangePinFragment : WalletFragment<ChangePinFragmentBinding>(R.layout.chan
 
     override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
 
         binding.pinView.isVerifyMode = true

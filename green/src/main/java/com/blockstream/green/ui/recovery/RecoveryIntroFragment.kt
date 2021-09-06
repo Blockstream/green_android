@@ -34,11 +34,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         return args.wallet != null
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        if(isFinishingGuard) return
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.buttonNext.setOnClickListener {
 
             if(args.wallet != null) {

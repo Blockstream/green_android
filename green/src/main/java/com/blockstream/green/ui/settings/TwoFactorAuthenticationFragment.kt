@@ -67,9 +67,7 @@ class TwoFactorAuthenticationFragment :
         WalletSettingsViewModel.provideFactory(viewModelFactory, args.wallet)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         getNavigationResult<Boolean>()?.observe(viewLifecycleOwner) {
             it?.let {
                 viewModel.updateTwoFactorConfig()
