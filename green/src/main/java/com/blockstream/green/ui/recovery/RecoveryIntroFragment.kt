@@ -37,24 +37,23 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.buttonNext.setOnClickListener {
 
-            if(args.wallet != null) {
-
+            // Onboarding
+            if(args.wallet == null){
+                navigateToWords()
+            }else{
                 // If recovery is confirmed, ask for user presence
                 if (wallet.isRecoveryPhraseConfirmed) {
                     launchUserPresencePrompt()
                 } else {
                     navigateToWords()
                 }
-
-            }else{
-                navigateToWords()
             }
         }
     }
 
-    private fun navigateToWords(){
+    private fun navigateToWords() {
         // Onboarding
-        if (args.wallet == null){
+        if (args.wallet == null) {
             navigate(
                 RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
                     wallet = args.wallet,
@@ -62,10 +61,13 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
                     mnemonic = args.mnemonic
                 )
             )
-        }else{
-            navigate(RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryPhraseFragment(wallet = args.wallet), navOptionsBuilder = NavOptions.Builder().also {
-                it.setPopUpTo(R.id.recoveryIntroFragment, true)
-            })
+        } else {
+            navigate(
+                RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryPhraseFragment(
+                    wallet = args.wallet
+                ), navOptionsBuilder = NavOptions.Builder().also {
+                    it.setPopUpTo(R.id.recoveryIntroFragment, true)
+                })
         }
     }
 

@@ -54,8 +54,10 @@ class SystemMessageBottomSheetDialogFragment :
                 dismiss()
             }
 
-            viewModel.onEvent.observe(viewLifecycleOwner) {
-                if(it.getContentIfNotHandledOrReturnNull() == AbstractWalletViewModel.Event.ACK_MESSAGE){
+            viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
+                consumableEvent?.getContentIfNotHandledOrReturnNull{ event ->
+                    event == AbstractWalletViewModel.Event.ACK_MESSAGE
+                }?.let {
                     dismiss()
                 }
             }

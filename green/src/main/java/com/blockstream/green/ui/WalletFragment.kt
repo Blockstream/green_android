@@ -38,89 +38,89 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         // Recovery screens are reused in onBoarding
-        // where we don't have a session yet. Skip initializing the WalletViewModel as it doesn't exists
-        if(!isSessionRequired()) {
-            return
-        }
+        // where we don't have a session yet
+        // Skip initializing the WalletViewModel as it doesn't exists
+        if(isSessionRequired()){
+            session = sessionManager.getWalletSession(wallet)
 
-        session = sessionManager.getWalletSession(wallet)
+            // Assuming we are in v4 codebase flow
+            if (isLoggedInRequired() && !session.isConnected) {
+                navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
+                return
+            }
 
-        // Assuming we are in v4 codebase flow
-        if (isLoggedInRequired() && !session.isConnected) {
-            navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
-            return
-        }
+            getWalletViewModel()?.let{
 
-        getWalletViewModel()?.let{
+                setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
 
-            setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
-
-            it.onNavigationEvent.observe(viewLifecycleOwner) { consumableEvent ->
-                consumableEvent.getContentIfNotHandledOrReturnNull()?.let {
-                    if(Bridge.useGreenModule){
-                        // If is hardware wallet, prefer going to intro
-                        if (wallet.isHardware) {
-                            NavGraphDirections.actionGlobalIntroFragment()
-                        } else {
-                            NavGraphDirections.actionGlobalLoginFragment(wallet)
-                        }.let { directions ->
-                            navigate(directions.actionId, directions.arguments, isLogout = true)
+                it.onNavigationEvent.observe(viewLifecycleOwner) { consumableEvent ->
+                    consumableEvent.getContentIfNotHandledOrReturnNull()?.let {
+                        if(Bridge.useGreenModule){
+                            // If is hardware wallet, prefer going to intro
+                            if (wallet.isHardware) {
+                                NavGraphDirections.actionGlobalIntroFragment()
+                            } else {
+                                NavGraphDirections.actionGlobalLoginFragment(wallet)
+                            }.let { directions ->
+                                navigate(directions.actionId, directions.arguments, isLogout = true)
+                            }
+                        }else{
+                            Bridge.navigateToLogin(requireActivity(), wallet.id)
                         }
-                    }else{
-                        Bridge.navigateToLogin(requireActivity(), wallet.id)
-                    }
 
-                    when(it){
-                        AbstractWalletViewModel.NavigationEvent.DISCONNECTED -> {
+                        when(it){
+                            AbstractWalletViewModel.NavigationEvent.DISCONNECTED -> {
 
-                        }
-                        AbstractWalletViewModel.NavigationEvent.TIMEOUT -> {
+                            }
+                            AbstractWalletViewModel.NavigationEvent.TIMEOUT -> {
 
-                        }
-                        AbstractWalletViewModel.NavigationEvent.DEVICE_DISCONNECTED -> {
-                            snackbar("Your device was disconnected")
+                            }
+                            AbstractWalletViewModel.NavigationEvent.DEVICE_DISCONNECTED -> {
+                                snackbar("Your device was disconnected")
+                            }
                         }
                     }
                 }
-            }
 
-            it.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-                consumableEvent?.getContentIfNotHandledOrReturnNull()?.let { event ->
-                    if (event == AbstractWalletViewModel.Event.DELETE_WALLET) {
+                it.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
+                    consumableEvent?.getContentIfNotHandledOrReturnNull{ event ->
+                        event == AbstractWalletViewModel.Event.DELETE_WALLET
+                    }?.let {
                         popBackStack()
                     }
                 }
-            }
 
-            it.onReconnectEvent.observe(viewLifecycleOwner) { event ->
-                event.getContentIfNotHandledOrReturnNull()?.let{ time ->
-                    if(time == -1L){
-                        networkSnackbar = networkSnackbar?.let { snackbar ->
-                            snackbar.dismiss()
-                            null
-                        }
-                    }else{
-                        networkSnackbar  = networkSnackbar ?: Snackbar.make(
-                            view,
-                            R.string.id_you_are_not_connected,
-                            Snackbar.LENGTH_INDEFINITE
-                        ).apply { show() }
-
-                        if(time == 0L){
-                            networkSnackbar?.setAction(null, null)
-                        }else{
-                            networkSnackbar?.setAction(R.string.id_now){
-                                session.reconnectHint()
-                                networkSnackbar = null
+                it.onReconnectEvent.observe(viewLifecycleOwner) { event ->
+                    event.getContentIfNotHandledOrReturnNull()?.let{ time ->
+                        if(time == -1L){
+                            networkSnackbar = networkSnackbar?.let { snackbar ->
+                                snackbar.dismiss()
+                                null
                             }
-                        }
+                        }else{
+                            networkSnackbar  = networkSnackbar ?: Snackbar.make(
+                                view,
+                                R.string.id_you_are_not_connected,
+                                Snackbar.LENGTH_INDEFINITE
+                            ).apply { show() }
 
-                        networkSnackbar?.setText(
-                            getString(
-                                if(time == 0L) R.string.id_connecting else R.string.id_not_connected_connecting_in_ds_, time
+                            if(time == 0L){
+                                networkSnackbar?.setAction(null, null)
+                            }else{
+                                networkSnackbar?.setAction(R.string.id_now){
+                                    session.reconnectHint()
+                                    networkSnackbar = null
+                                }
+                            }
+
+                            networkSnackbar?.setText(
+                                getString(
+                                    if(time == 0L) R.string.id_connecting else R.string.id_not_connected_connecting_in_ds_, time
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -139,10 +139,10 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
         // Recovery screens are reused in onboarding
         // where we don't have a session yet.
-        if(!isSessionRequired()) return
-
-        if (isLoggedInRequired() && !session.isConnected) {
-            getWalletViewModel()?.logout(AbstractWalletViewModel.NavigationEvent.TIMEOUT)
+        if(isSessionRequired()) {
+            if (isLoggedInRequired() && !session.isConnected) {
+                getWalletViewModel()?.logout(AbstractWalletViewModel.NavigationEvent.TIMEOUT)
+            }
         }
     }
 

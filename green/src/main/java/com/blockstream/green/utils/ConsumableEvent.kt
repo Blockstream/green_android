@@ -6,14 +6,19 @@ open class ConsumableEvent<out T>(private val content: T) {
         private set // Allow external read but not write
 
     /**
-     * Returns the content and prevents its use again.
+     * Returns the content and prevents its use again
+     * If filter is provided handles only when filter returns true.
      */
-    fun getContentIfNotHandledOrReturnNull(): T? {
+    fun getContentIfNotHandledOrReturnNull(filter: ((content: T) -> Boolean)? = null): T? {
         return if (hasBeenHandled) {
             null
         } else {
-            hasBeenHandled = true
-            content
+            if(filter == null || filter.invoke(content)) {
+                hasBeenHandled = true
+                content
+            }else{
+                null
+            }
         }
     }
 
