@@ -429,7 +429,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         val fastAdapter = FastAdapter.with(adapters)
 
         // Notify adapter when we have new assets
-        viewModel.assetsUpdated.observe(viewLifecycleOwner) {
+        viewModel.getAssetsUpdated().observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let {
                 fastAdapter.notifyAdapterDataSetChanged()
             }

@@ -59,7 +59,7 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
             false
         )
 
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
 
         return binding.root
     }

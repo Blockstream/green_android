@@ -63,7 +63,7 @@ abstract class AppFragment<T : ViewDataBinding>(
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(layoutInflater, layout, container, false)
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
 
         if (menuRes > 0) {
             setHasOptionsMenu(true)

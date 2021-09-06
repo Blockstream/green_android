@@ -29,33 +29,32 @@ class OverviewViewModel @AssistedInject constructor(
         Overview, Account, Asset
     }
 
+    val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
+
+
     private val systemMessage: MutableLiveData<String?> = MutableLiveData()
-    fun getSystemMessage(): LiveData<String?> = systemMessage
-
     private val state: MutableLiveData<State> = MutableLiveData(State.Overview)
-    fun getState(): LiveData<State> = state
-
     private val filteredSubAccounts: MutableLiveData<List<SubAccount>> = MutableLiveData()
-    fun getFilteredSubAccounts(): LiveData<List<SubAccount>> = filteredSubAccounts
 
     private var allBalances: Balances = linkedMapOf(BalanceLoading)
     private val shownBalances: MutableLiveData<Balances> = MutableLiveData(allBalances)
-    fun getBalancesLiveData(): LiveData<Balances> = shownBalances
-
     private val alerts = MutableLiveData<List<AlertType>>(listOf())
-    fun getAlerts(): LiveData<List<AlertType>> = alerts
+    private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData()
 
+    private val assetsUpdated: MutableLiveData<ConsumableEvent<Boolean>> = MutableLiveData()
+    private val selectedAsset = MutableLiveData<String?>()
+
+    fun getSystemMessage(): LiveData<String?> = systemMessage
+    fun getState(): LiveData<State> = state
+    fun getFilteredSubAccounts(): LiveData<List<SubAccount>> = filteredSubAccounts
+    fun getBalancesLiveData(): LiveData<Balances> = shownBalances
+    fun getAlerts(): LiveData<List<AlertType>> = alerts
     fun isMainnet(): LiveData<Boolean> = MutableLiveData(session.isMainnet)
     fun isLiquid(): LiveData<Boolean> = MutableLiveData(wallet.isLiquid)
-
-    private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData()
     fun getTransactions(): LiveData<List<Transaction>> = transactions
 
-    val assetsUpdated: MutableLiveData<ConsumableEvent<Boolean>> = MutableLiveData()
-
-    val isWatchOnly: LiveData<Boolean> = MutableLiveData(wallet.isWatchOnly)
-
-    val selectedAsset = MutableLiveData<String?>()
+    fun getSelectedAsset(): LiveData<String?> = selectedAsset
+    fun getAssetsUpdated(): MutableLiveData<ConsumableEvent<Boolean>> = assetsUpdated
 
     private var pendingSubAccountSwitch: Long = -1
 

@@ -27,7 +27,7 @@ abstract class AbstractWalletViewModel constructor(
 ) : AppViewModel() {
 
     enum class Event {
-        RENAME_WALLET, DELETE_WALLET, RENAME_ACCOUNT
+        RENAME_WALLET, DELETE_WALLET, RENAME_ACCOUNT, ACK_MESSAGE
     }
 
     enum class NavigationEvent {
@@ -177,7 +177,7 @@ abstract class AbstractWalletViewModel constructor(
             },
             onSuccess = {
                 subAccountLiveData.value = it
-                onEvent.value = ConsumableEvent(Event.RENAME_ACCOUNT)
+                onEvent.postValue(ConsumableEvent(Event.RENAME_ACCOUNT))
             }
         )
     }
@@ -209,7 +209,7 @@ abstract class AbstractWalletViewModel constructor(
             onProgress.postValue(false)
         }.subscribeBy(
             onSuccess = {
-                onEvent.postValue(ConsumableEvent(true))
+                onEvent.postValue(ConsumableEvent(Event.ACK_MESSAGE))
             },
             onError = {
                 onError.postValue(ConsumableEvent(it))
