@@ -157,6 +157,7 @@ public class JadeHWWallet extends HWWallet {
             Log.d(TAG, "getXpubs() returning " + xpubs.size() + " xpubs");
             return xpubs;
         } catch (final Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
     }

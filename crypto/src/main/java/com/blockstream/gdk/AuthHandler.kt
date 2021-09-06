@@ -83,7 +83,6 @@ class AuthHandler(
                                 try {
                                     resolveCode(it.getCode(twoFactorStatus).blockingGet())
                                 } catch (e: Exception){
-                                    e.printStackTrace()
                                     throw Exception("id_action_canceled")
                                 }
                             } ?: run {
@@ -91,21 +90,30 @@ class AuthHandler(
                             }
                         }else{
                             hardwareWalletResolver?.also {
+                                var dataFromDevice : String? = null
+
                                 try {
                                     // Use v3 codebase for HWW handling
-                                    resolveCode(it.requestDataFromDeviceV3(twoFactorStatus.getTwoFactorStatusDataV3().requiredData).blockingGet())
+                                    dataFromDevice = it.requestDataFromDeviceV3(twoFactorStatus.getTwoFactorStatusDataV3().requiredData).blockingGet()
 
                                     // Needs v4 implementation
-                                    // resolveCode(it.requestDataFromDevice(twoFactorStatus.requiredData!!).blockingGet())
+                                    // dataFromDevice = it.requestDataFromDevice(twoFactorStatus.requiredData!!).blockingGet()
                                 }catch (e: Exception){
-
                                     // TODO Handle all cancel exceptions so that we can catch the exceptions from the hardware wallet.
                                     // eg. signing a message in Trezor on testnet network
-                                    if(e is IllegalStateException) {
-                                        throw e
-                                    }else{
+                                    if(e.message?.lowercase()?.contains("cancelled") == true){
                                         throw Exception("id_action_canceled")
+                                    }else{
+                                        e.printStackTrace()
+                                        throw e
                                     }
+                                }
+
+                                try {
+                                    resolveCode(dataFromDevice!!)
+                                }catch (e: Exception){
+                                    e.printStackTrace()
+                                    throw e
                                 }
                             } ?: run {
                                 throw RuntimeException("TwoFactorCodeResolver was not provided")

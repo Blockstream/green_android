@@ -134,12 +134,12 @@ public class HardwareConnect {
 
     private void reconnectSession(final HardwareConnectInteraction interaction) throws Exception {
         Log.d(TAG, "(re-)connecting gdk session)");
-        interaction.getGreenSession().disconnect();
+        interaction.getGreenSession().disconnect(false);
         connect(interaction);
     }
 
     private void connect(final HardwareConnectInteraction interaction) throws Exception {
-        interaction.getGreenSession().connect(interaction.getGreenSession().getNetworks().getBitcoinGreen(), device);
+        interaction.getGreenSession().connect(interaction.getGreenSession().getNetworks().getBitcoinGreen());
     }
 
     private void onJadeConnected(final HardwareConnectInteraction interaction, final JadeAPI jade) {

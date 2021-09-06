@@ -98,7 +98,6 @@ abstract class AbstractWalletViewModel constructor(
                                     session.loginWithDevice(
                                         session.network,
                                         registerUser = false,
-                                        connectSession = true,
                                         device = session.device!!,
                                         hardwareWalletResolver = HardwareCodeResolver(session.hwWallet)
                                     )

@@ -226,7 +226,6 @@ class LoginViewModel @AssistedInject constructor(
         session.observable {
             it.loginWithDevice(it.networks.getNetworkById(wallet.network),
                 registerUser = true,
-                connectSession = true,
                 device = device,
                 hardwareWalletResolver = HardwareCodeResolver(this, device.hwWallet)
             )

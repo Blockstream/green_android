@@ -7,7 +7,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DeviceParams(
+data class DeviceParams constructor(
     @SerialName("device") val device: Device? = null,
 ) : GAJson<DeviceParams>() {
 

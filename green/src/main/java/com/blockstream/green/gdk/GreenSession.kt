@@ -91,7 +91,7 @@ class GreenSession constructor(
         private set
 
     val hasDevice
-        get() = hwWallet != null
+        get() = device != null
 
     val userAgent by lazy {
         String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
@@ -128,10 +128,10 @@ class GreenSession constructor(
         updateTransactionsAndBalance(isReset = true, isLoadMore = false)
     }
 
-    fun connect(network: Network, device: Device? = null) {
-        disconnect()
+    fun connect(network: Network) {
+        disconnect(disconnectDevice = false)
+
         this.network = network
-        this.device = device
 
         // Prevent multiple open sessions
         sessionManager.disconnectSessions(this)
@@ -180,14 +180,16 @@ class GreenSession constructor(
         e.printStackTrace()
     }
 
-    fun disconnect() {
+    fun disconnect(disconnectDevice : Boolean = true) {
         if(isConnected){
             sessionManager.fireConnectionChangeEvent()
         }
 
         isConnected = false
-        device?.disconect()
-        device = null
+        if(disconnectDevice){
+            device?.disconect()
+            device = null
+        }
         greenWallet.disconnect(gaSession)
     }
 
@@ -260,7 +262,7 @@ class GreenSession constructor(
     fun createNewWallet(network: Network, providedMnemonic: String?): LoginData {
         isWatchOnly = false
 
-        connect(network, null)
+        connect(network)
         val mnemonic = providedMnemonic ?: generateMnemonic12()
 
         AuthHandler(
@@ -304,17 +306,15 @@ class GreenSession constructor(
     fun loginWithDevice(
         network: Network,
         registerUser: Boolean,
-        connectSession: Boolean,
         device: Device,
         hardwareWalletResolver: HardwareWalletResolver
     ): LoginData {
+        this.device = device
         isWatchOnly = false
 
-        if(connectSession) {
-            connect(network, device)
+        if(!isConnected) {
+            connect(network)
         }
-
-        this.device = device
 
         val gdkDevice = device.hwWallet?.device
 
