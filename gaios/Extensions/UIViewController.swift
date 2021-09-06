@@ -10,7 +10,7 @@ extension UIViewController {
     }
 
     func showError(_ message: String) {
-        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
         self.present(alert, animated: true, completion: nil)
     }
