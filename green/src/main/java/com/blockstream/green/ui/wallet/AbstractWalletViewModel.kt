@@ -115,6 +115,7 @@ abstract class AbstractWalletViewModel constructor(
 
                             } else {
                                 logger.info { "Logout from network event" }
+                                onReconnectEvent.value = ConsumableEvent(-1)
                                 logout(NavigationEvent.DISCONNECTED)
                             }
                         } else {

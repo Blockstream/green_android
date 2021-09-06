@@ -174,7 +174,11 @@ class GreenSession constructor(
         }
     }
 
-    fun reconnectHint() = greenWallet.reconnectHint(gaSession)
+    fun reconnectHint() = try {
+        greenWallet.reconnectHint(gaSession)
+    }catch (e: Exception){
+        e.printStackTrace()
+    }
 
     fun disconnect() {
         if(isConnected){
