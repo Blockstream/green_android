@@ -92,6 +92,14 @@
                     android:textColor="@color/color_on_surface_emphasis_medium" />
 
                 <Button
+                    android:id="@+id/buttonLocationServiceMoreInfo"
+                    style="@style/Widget.Green.Button.Text"
+                    isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_PERMISSION_NOT_GRANTED }"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/id_more_info" />
+
+                <Button
                     android:id="@+id/buttonEnableLocationService"
                     isVisible="@{vm.hasBleConnectivity &amp;&amp; vm.bleAdapterState == State.LOCATION_SERVICES_NOT_ENABLED }"
                     android:layout_width="wrap_content"

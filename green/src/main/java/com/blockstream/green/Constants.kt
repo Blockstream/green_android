@@ -18,6 +18,7 @@ object Urls {
     const val JADE_STORE = "https://store.blockstream.com/product/blockstream-jade/"
     const val HARDWARE_STORE = "https://store.blockstream.com/product-category/physical_storage/"
     const val LEDGER_SUPPORTED_ASSETS = "https://docs.blockstream.com/green/hww/hww-index.html#ledger-supported-assets"
+    const val BLUETOOTH_PERMISSIONS = "https://developer.android.com/guide/topics/connectivity/bluetooth/permissions"
 }
 
 object Preferences {

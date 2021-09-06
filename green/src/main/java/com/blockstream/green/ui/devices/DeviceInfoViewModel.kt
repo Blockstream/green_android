@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.data.SubAccount
+import com.blockstream.gdk.params.SubAccountParams
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
@@ -15,14 +17,18 @@ import com.blockstream.green.devices.HardwareConnect
 import com.blockstream.green.devices.HardwareConnectInteraction
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.nameCleanup
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.HttpRequestProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import mu.KLogging
 import javax.inject.Inject
 
@@ -61,9 +67,19 @@ class DeviceInfoViewModel @AssistedInject constructor(
     val instructions = MutableLiveData<ConsumableEvent<Int>>()
 
     fun connectDevice(requestProvider: HttpRequestProvider, device: Device, wallet: Wallet){
-        onProgress.postValue(true)
-        hardwareWallet = wallet
-        hardwareConnect.connectDevice(this, requestProvider, device)
+        getGreenSession().observable {
+            // Disconnect any previous hww connection
+            it.disconnect(disconnectDevice = true)
+
+            hardwareWallet = wallet
+            hardwareConnect.connectDevice(this, requestProvider, device)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.subscribeBy(
+            onError = {
+                it.printStackTrace()
+            }
+        )
     }
 
     override fun onCleared() {

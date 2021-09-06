@@ -121,6 +121,10 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
                 .show()
         }
 
+        binding.buttonLocationServiceMoreInfo.setOnClickListener {
+            openBrowser(Urls.BLUETOOTH_PERMISSIONS)
+        }
+
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandledOrReturnNull()?.let {
                 if(it is Device){
