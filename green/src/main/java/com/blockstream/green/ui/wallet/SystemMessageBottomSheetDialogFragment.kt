@@ -4,15 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.R
 import com.blockstream.green.databinding.SystemMessageBottomSheetBinding
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
+import com.blockstream.green.utils.dismissIn
 import com.blockstream.green.utils.errorDialog
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -58,7 +61,8 @@ class SystemMessageBottomSheetDialogFragment :
                 consumableEvent?.getContentIfNotHandledOrReturnNull{ event ->
                     event == AbstractWalletViewModel.Event.ACK_MESSAGE
                 }?.let {
-                    dismiss()
+                    binding.closing = true
+                    dismissIn(1000)
                 }
             }
 

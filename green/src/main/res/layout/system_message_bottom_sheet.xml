@@ -14,6 +14,10 @@
             type="Boolean" />
 
         <variable
+            name="closing"
+            type="Boolean" />
+
+        <variable
             name="vm"
             type="com.blockstream.green.ui.wallet.AbstractWalletViewModel" />
 
@@ -62,8 +66,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:paddingBottom="24dp"
             android:clipToPadding="false"
+            android:paddingBottom="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -94,15 +98,36 @@
                     android:checked="@={confirmed}"
                     android:text="@string/id_i_confirm_i_have_read_and" />
 
-                <Button
-                    android:id="@+id/buttonAccept"
-                    style="@style/Widget.MaterialComponents.Button"
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
-                    android:enabled="@{confirmed &amp;&amp; !vm.onProgress}"
-                    android:text="@string/id_accept" />
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/buttonAccept"
+                        style="@style/Widget.MaterialComponents.Button"
+                        isInvisible="@{closing}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="@{confirmed &amp;&amp; !vm.onProgress}"
+                        android:text="@string/id_accept" />
+
+                    <TextView
+                        isInvisible="@{!closing}"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/id_success"
+                        android:textAppearance="?attr/textAppearanceHeadline5"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/progress" />
+
+                </FrameLayout>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

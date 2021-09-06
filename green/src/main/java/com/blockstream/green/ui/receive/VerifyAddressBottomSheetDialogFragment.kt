@@ -10,6 +10,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.VerifyAddressBottomSheetBinding
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
 import com.blockstream.green.utils.bounceDown
+import com.blockstream.green.utils.dismissIn
 import com.blockstream.green.utils.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -48,10 +49,7 @@ class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<V
     private fun responseFromDevice(addressMatch: Boolean){
         if(addressMatch){
             binding.confirmed = true
-            lifecycleScope.launchWhenResumed {
-                delay(2000)
-                dismiss()
-            }
+            dismissIn(2000)
         }else{
             errorDialog(getString(R.string.id_the_addresses_dont_match))
             dismiss()

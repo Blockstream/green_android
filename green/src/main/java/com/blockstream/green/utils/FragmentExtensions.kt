@@ -16,13 +16,16 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.app.ShareCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.gdk.isConnectionError
 import com.blockstream.green.gdk.isNotAuthorized
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.delay
 import java.util.*
 
 fun Fragment.hideKeyboard() {
@@ -36,6 +39,13 @@ fun Fragment.openKeyboard() {
         (requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?)?.toggleSoftInputFromWindow(
             view?.applicationWindowToken, InputMethodManager.SHOW_FORCED, 0
         )
+    }
+}
+
+fun BottomSheetDialogFragment.dismissIn(timeMillis: Long){
+    lifecycleScope.launchWhenResumed {
+        delay(timeMillis)
+        dismiss()
     }
 }
 
