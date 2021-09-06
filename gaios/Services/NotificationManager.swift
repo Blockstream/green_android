@@ -123,19 +123,8 @@ class NotificationManager {
         let session = SessionManager.shared
         let account = AccountsManager.shared.current
         let isHwLogin = account?.isJade ?? false || account?.isLedger ?? false
-        return Guarantee().compactMap(on: bgq) { _ in
-            if isHwLogin {
-                let info = account?.isLedger ?? false ? Ledger.shared.device : Jade.shared.device
-                guard let data = try? JSONEncoder().encode(info),
-                    let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
-                    throw JadeError.Abort("Invalid device configuration")
-                }
-                return ([:], ["device": device])
-            }
-            let mnemonic = try? session.getMnemonicPassphrase(password: "")
-            return (["mnemonic": mnemonic ?? "", "password": ""], [:])
-        }.then(on: bgq) { (details, device) in
-            return try session.loginUser(details: details, hw_device: device).resolve()
+        return Guarantee().then(on: bgq) { _ in
+            return try session.loginUser(details: [:], hw_device: [:]).resolve()
         }
     }
 }
