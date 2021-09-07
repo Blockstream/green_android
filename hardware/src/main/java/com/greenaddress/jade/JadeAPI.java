@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+
 /**
  * High-Level Synchronous Jade Client API
  * Builds on a JadeInterface to provide a properly typed API
@@ -531,5 +534,10 @@ public class JadeAPI {
 
         // Use helper function to send inputs and process replies
         return signTxInputs(baseId, inputs, useAeProtocol);
+    }
+
+
+    public PublishSubject<Boolean> getBleDisconnectEvent() {
+        return jade.getBleDisconnectEvent();
     }
 }

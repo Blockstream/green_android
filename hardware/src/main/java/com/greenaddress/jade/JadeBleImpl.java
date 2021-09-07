@@ -37,6 +37,7 @@ public class JadeBleImpl extends JadeConnectionImpl {
 
     private CompositeDisposable disposable;
     private Observable<RxBleConnection> connection;
+    private io.reactivex.rxjava3.subjects.PublishSubject<Boolean> bleDisconnectEvent = io.reactivex.rxjava3.subjects.PublishSubject.create();
 
     JadeBleImpl(final RxBleDevice device) {
         this.device = device;
@@ -64,6 +65,11 @@ public class JadeBleImpl extends JadeConnectionImpl {
     }
 
     @Override
+    public io.reactivex.rxjava3.subjects.PublishSubject<Boolean> getBleDisconnectEvent() {
+        return bleDisconnectEvent;
+    }
+
+    @Override
     public boolean isConnected() {
         return this.disposable != null && !this.disposable.isDisposed()
                 && this.connection != null && isBleConnected();
@@ -75,7 +81,15 @@ public class JadeBleImpl extends JadeConnectionImpl {
 
         // Log connection state changes
         this.disposable.add(this.device.observeConnectionStateChanges()
-                .subscribe(state -> Log.i(TAG, "Connection State Change: " + state))
+                .subscribe(state -> {
+                    Log.i(TAG, "Connection State Change: " + state);
+
+                    if(state == RxBleConnection.RxBleConnectionState.DISCONNECTING){
+                        // Trigger Disconnect
+                        Log.i(TAG, "Send BLE disconnect event");
+                        bleDisconnectEvent.onNext(true);
+                    }
+                })
         );
 
         // Create connection, set mtu, etc.

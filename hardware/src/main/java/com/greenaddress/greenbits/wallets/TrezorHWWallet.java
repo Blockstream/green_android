@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+
 
 public class TrezorHWWallet extends HWWallet {
 
@@ -384,6 +387,12 @@ public class TrezorHWWallet extends HWWallet {
     @Override
     public String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer,
                                   final long csvBlocks) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public PublishSubject<Boolean> getBleDisconnectEvent() {
         return null;
     }
 }

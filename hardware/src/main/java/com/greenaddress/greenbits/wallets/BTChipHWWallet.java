@@ -1,5 +1,9 @@
 package com.greenaddress.greenbits.wallets;
 
+import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
+
+import androidx.annotation.Nullable;
+
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.Network;
 import com.blockstream.hardware.R;
@@ -14,12 +18,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Joiner;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.SettableFuture;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.data.InputOutputData;
-import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SubaccountData;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -30,9 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
-import io.reactivex.SingleEmitter;
-
-import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 
 public class BTChipHWWallet extends HWWallet {
@@ -43,15 +45,17 @@ public class BTChipHWWallet extends HWWallet {
     private final BTChipDongle mDongle;
     private final String mPin;
     private final Map<String, String> mUserXPubs = new HashMap<>();
+    private final PublishSubject<Boolean> mBleDisconnectEvent;
 
     public BTChipHWWallet(final BTChipDongle dongle, final String pin,
-//                          final SingleEmitter<Integer> remainingAttemptsFuture,
                           final Network network,
-                          final Device device) {
+                          @Nullable final Device device,
+                          PublishSubject<Boolean> bleDisconnectEvent) {
         mDongle = dongle;
         mPin = pin;
         mNetwork = network;
         mDevice = device;
+        mBleDisconnectEvent = bleDisconnectEvent;
         if (pin == null)
             return;
         mExecutor.submit(() -> {
@@ -135,6 +139,12 @@ public class BTChipHWWallet extends HWWallet {
     public String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer,
                                   final long csvBlocks) throws BTChipException {
         return mDongle.getGreenAddress(csvBlocks > 0, subaccount.getPointer(), branch, pointer, csvBlocks);
+    }
+
+    @Nullable
+    @Override
+    public PublishSubject<Boolean> getBleDisconnectEvent() {
+        return mBleDisconnectEvent;
     }
 
     @Override

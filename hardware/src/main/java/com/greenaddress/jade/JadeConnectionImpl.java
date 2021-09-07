@@ -11,6 +11,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+
 /**
  * Abstract a low-level Jade connection - eg. over serial or ble.
  */
@@ -36,6 +39,8 @@ public abstract class JadeConnectionImpl {
             super.finalize();
         }
     }
+
+    abstract public PublishSubject<Boolean> getBleDisconnectEvent();
 
     abstract public boolean isConnected();
 

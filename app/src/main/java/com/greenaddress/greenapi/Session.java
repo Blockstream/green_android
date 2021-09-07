@@ -32,8 +32,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private static Session instance = new Session();
 
-    private Registry mRegistry;
-    private String mWatchOnlyUsername;
     private SettingsData mSettings;
     private TwoFactorReset mTwoFAReset = null;
     private String mNetwork;
@@ -46,10 +44,9 @@ public class Session extends GDKSession implements HttpRequestProvider {
         return instance;
     }
 
-    public void bridgeSession(Object session, String network, String watchOnlyUsername){
+    public void bridgeSession(Object session, String network){
         mNativeSession = session;
         mNetwork = network;
-        mWatchOnlyUsername = watchOnlyUsername;
 
         // Reset
         mSettings = null;
@@ -64,7 +61,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
     }
 
     public boolean isWatchOnly() {
-        return null != mWatchOnlyUsername;
+        return false;
     }
 
     public HWWallet getHWWallet() {
@@ -90,7 +87,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
     public void disconnect() throws Exception {
         super.disconnect();
 
-        mWatchOnlyUsername = null;
         mSettings = null;
         mTwoFAReset = null;
     }

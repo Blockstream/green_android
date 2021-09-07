@@ -59,6 +59,7 @@ import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_AS
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_SELECT_SUBACCOUNT;
 import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_TX_DETAILS;
 
+@Deprecated
 @AndroidEntryPoint
 public class MainFragment extends GAFragment implements View.OnClickListener, ListTransactionsAdapter.OnTxSelected {
 

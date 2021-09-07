@@ -14,6 +14,9 @@ import com.polidea.rxandroidble2.RxBleDevice;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+
 /**
  * Mid-level interface to Jade
  * Wraps either a serial or a ble connection
@@ -232,5 +235,9 @@ class JadeInterface {
         }
 
         return response;
+    }
+
+    public io.reactivex.rxjava3.subjects.PublishSubject<Boolean> getBleDisconnectEvent() {
+        return connection.getBleDisconnectEvent();
     }
 }

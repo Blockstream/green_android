@@ -4,6 +4,8 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.DeviceSupportsAntiExfilProtocol;
@@ -35,6 +37,8 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 
 public class HardwareConnect {
@@ -68,11 +72,11 @@ public class HardwareConnect {
 
                     if (BTChipTransportAndroid.isLedgerWithScreen(device.getUsbDevice())) {
                         // User entered PIN on-device
-                        onLedger(interaction, transport, true);
+                        onLedger(interaction, transport, true, null);
                     } else {
                         // Prompt for PIN to unlock device before setting it up
                         // showLedgerPinDialog(transport);
-                        onLedger(interaction, transport, false);
+                        onLedger(interaction, transport, false, null);
                     }
                     break;
                 case Trezor:
@@ -93,8 +97,8 @@ public class HardwareConnect {
                 // Ledger BLE adapter will call the 'onLedger' function when the BLE connection is established
                 // LedgerBLEAdapter.connectLedgerBLE(this, btDevice, this::onLedger, this::onLedgerError);
 
-                LedgerBLEAdapter.connectLedgerBLE(interaction.context(), device.getBleDevice().getBluetoothDevice(), (final BTChipTransport transport, final boolean hasScreen) -> {
-                    onLedger(interaction, transport, hasScreen);
+                LedgerBLEAdapter.connectLedgerBLE(interaction.context(), device.getBleDevice().getBluetoothDevice(), (final BTChipTransport transport, final boolean hasScreen, final PublishSubject<Boolean> bleDisconnectEvent) -> {
+                    onLedger(interaction, transport, hasScreen, bleDisconnectEvent);
                 }, (final BTChipTransport transport) -> {
                     interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
                     closeLedger(interaction, transport);
@@ -171,7 +175,7 @@ public class HardwareConnect {
                 .subscribe(
                         jadeWallet -> {
                             mHwWallet = jadeWallet;
-                            doLogin(interaction, false);
+                            doLogin(interaction);
                         },
                         throwable -> {
                             throwable.printStackTrace();
@@ -248,14 +252,14 @@ public class HardwareConnect {
         final Device device = new Device("Trezor", false , false, false, DeviceSupportsLiquid.None, DeviceSupportsAntiExfilProtocol.None);
         mHwWallet = new TrezorHWWallet(t, interaction.getConnectionNetwork(), device);
 
-        doLogin(interaction, true);
+        doLogin(interaction);
     }
 
     private void closeTrezor(final HardwareConnectInteraction interaction, final Trezor t) {
         interaction.onDeviceFailed();
     }
 
-    void onLedger(final HardwareConnectInteraction interaction, final BTChipTransport transport, final boolean hasScreen) {
+    void onLedger(final HardwareConnectInteraction interaction, final BTChipTransport transport, @Nullable final boolean hasScreen, PublishSubject<Boolean> bleDisconnectEvent) {
         transport.setDebug(BuildConfig.DEBUG);
         try {
             final BTChipDongle dongle = new BTChipDongle(transport, hasScreen);
@@ -305,7 +309,7 @@ public class HardwareConnect {
             if (isFirmwareOutdated) {
                 interaction.askForFirmwareUpgrade(DeviceBrand.Ledger, null, !Bridge.INSTANCE.isDevelopmentFlavor(), isPositive -> {
                     if(isPositive) {
-                        onLedgerConnected(interaction, dongle);
+                        onLedgerConnected(interaction, dongle, bleDisconnectEvent);
                     }else{
                         closeLedger(interaction, transport);
                     }
@@ -316,7 +320,7 @@ public class HardwareConnect {
             }
 
             // All good
-            onLedgerConnected(interaction, dongle);
+            onLedgerConnected(interaction, dongle, bleDisconnectEvent);
         } catch (final BTChipException e) {
             if (e.getSW() != BTChipConstants.SW_INS_NOT_SUPPORTED)
                 e.printStackTrace();
@@ -330,7 +334,7 @@ public class HardwareConnect {
         }
     }
 
-    private void onLedgerConnected(final HardwareConnectInteraction interaction, final BTChipDongle dongle) {
+    private void onLedgerConnected(final HardwareConnectInteraction interaction, final BTChipDongle dongle, @Nullable final PublishSubject<Boolean> bleDisconnectEvent) {
         mDisposables.add(Single
                 .just(interaction.getGreenSession())
                 .subscribeOn(Schedulers.io())
@@ -342,13 +346,13 @@ public class HardwareConnect {
 
                     Log.d(TAG, "Creating Ledger HW wallet" + (pin != null ? " with PIN" : ""));
                     final Device device = new Device("Ledger", true,false, false, DeviceSupportsLiquid.Lite, DeviceSupportsAntiExfilProtocol.None);
-                    mHwWallet = new BTChipHWWallet(dongle, pin , interaction.getConnectionNetwork(), device);
+                    mHwWallet = new BTChipHWWallet(dongle, pin , interaction.getConnectionNetwork(), device, bleDisconnectEvent);
                     return mHwWallet;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         hwWallet -> {
-                            doLogin(interaction, true);
+                            doLogin(interaction);
                         },
                         throwable -> {
                             Log.e(TAG, "Connecting to Ledger HW wallet got error: " + throwable);
@@ -365,7 +369,7 @@ public class HardwareConnect {
         interaction.onDeviceFailed();
     }
 
-    private void doLogin(final HardwareConnectInteraction interaction, final boolean bReConnectSession) {
+    private void doLogin(final HardwareConnectInteraction interaction) {
         device.setHwWallet(mHwWallet);
         interaction.onDeviceReady();
 

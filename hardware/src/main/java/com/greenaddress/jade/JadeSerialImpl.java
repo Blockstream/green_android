@@ -8,6 +8,9 @@ import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
 import com.greenaddress.jade.entities.JadeError;
 
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
+
 /**
  * Low-level Serial backend interface to Jade
  * Calls to send and receive bytes to/from Jade.
@@ -25,6 +28,11 @@ public class JadeSerialImpl extends JadeConnectionImpl {
         this.usbDevice = usbDevice;
         this.baud = baud;
         this.serial = null;
+    }
+
+    @Override
+    public PublishSubject<Boolean> getBleDisconnectEvent() {
+        return null;
     }
 
     @Override

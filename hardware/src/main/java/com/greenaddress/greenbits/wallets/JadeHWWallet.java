@@ -37,8 +37,12 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Single;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
+
+import androidx.annotation.Nullable;
 
 public class JadeHWWallet extends HWWallet {
     private static final String TAG = "JadeHWWallet";
@@ -546,6 +550,12 @@ public class JadeHWWallet extends HWWallet {
         } catch (final Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Nullable
+    @Override
+    public PublishSubject<Boolean> getBleDisconnectEvent() {
+        return jade.getBleDisconnectEvent();
     }
 
     @Override

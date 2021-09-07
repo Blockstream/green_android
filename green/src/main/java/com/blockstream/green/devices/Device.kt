@@ -10,8 +10,13 @@ import com.btchip.comm.LedgerDeviceBLE
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.jade.JadeBleImpl
 import com.polidea.rxandroidble2.RxBleDevice
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
+import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.parcelize.IgnoredOnParcel
 import mu.KLogging
+import kotlin.properties.Delegates
 
 
 class Device constructor(
@@ -27,7 +32,25 @@ class Device constructor(
 
     val deviceState = MutableLiveData(DeviceState.UNAUTHORIZED)
 
-    var hwWallet: HWWallet? = null
+    private val bleDisposables = CompositeDisposable()
+
+    var hwWallet: HWWallet? by Delegates.observable(null) { _, _, hwWallet ->
+        logger.info { "Set HWWallet" }
+
+        bleDisposables.clear()
+
+        hwWallet?.bleDisconnectEvent?.let{
+            logger.info { "Subscribe to BLE disconnect event" }
+            it.observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(onError = { e ->
+                    e.printStackTrace()
+                },
+                onNext = {
+                    logger.info { "BLE Disconnect event from device, marking it as offline" }
+                    offline()
+                }).addTo(bleDisposables)
+        }
+    }
 
     val usbManager
         get() = deviceManager.usbManager
@@ -114,7 +137,6 @@ class Device constructor(
         !isTrezor
     }
 
-
     fun hasPermissions(): Boolean {
         return usbDevice?.let { deviceManager.hasPermissions(it) } ?: false
     }
@@ -134,7 +156,8 @@ class Device constructor(
         deviceState.postValue(DeviceState.DISCONNECTED)
     }
 
-    fun disconect() {
+    fun disconnect() {
+        bleDisposables.clear()
         hwWallet?.disconnect()
     }
 

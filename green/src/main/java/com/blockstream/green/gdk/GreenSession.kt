@@ -40,9 +40,6 @@ class GreenSession constructor(
 ) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
     var isWatchOnly: Boolean = false
 
-    // Only needed for v3 codebase
-    var watchOnlyUsernameBridge: String? = null
-
     private var activeAccount = 0L
 
     private val balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
@@ -139,8 +136,7 @@ class GreenSession constructor(
         // Bridge Session to GDKSession
         Bridge.bridgeSession(
             gaSession,
-            network.network,
-            if (isWatchOnly) watchOnlyUsernameBridge else null
+            network.network
         )
 
         val applicationSettings = settingsManager.getApplicationSettings()
@@ -187,7 +183,7 @@ class GreenSession constructor(
 
         isConnected = false
         if(disconnectDevice){
-            device?.disconect()
+            device?.disconnect()
             device = null
         }
         greenWallet.disconnect(gaSession)
@@ -292,7 +288,6 @@ class GreenSession constructor(
 
     fun loginWatchOnly(network: Network, username: String, password: String): LoginData {
         isWatchOnly = true
-        watchOnlyUsernameBridge = username
 
         connect(network)
         return AuthHandler(
@@ -578,7 +573,7 @@ class GreenSession constructor(
 
     fun convertAmount(convert: Convert) = greenWallet.convertAmount(gaSession, convert)
 
-    // skip updating on the first block event
+    // Skip updating on the first block event
     private var updateTransactionsAndBalance = false
 
     fun onNewNotification(notification: Notification) {

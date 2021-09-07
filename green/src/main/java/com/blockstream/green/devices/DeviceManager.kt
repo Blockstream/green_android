@@ -188,7 +188,6 @@ class DeviceManager constructor(
                     it.printStackTrace()
                 },
                 onNext = {
-
                     val device = Device.fromScan(
                         this,
                         it.bleDevice,

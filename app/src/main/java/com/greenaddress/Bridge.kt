@@ -157,8 +157,8 @@ object Bridge {
         navigateFn?.invoke(activity, NavigateType.ADD_ACCOUNT, Session.getSession().nativeSession, null)
     }
 
-    fun bridgeSession(session: Any, networkId: String, watchOnlyUsername: String?) {
-        Session.getSession().bridgeSession(session, networkId, watchOnlyUsername)
+    fun bridgeSession(session: Any, networkId: String) {
+        Session.getSession().bridgeSession(session, networkId)
         setCurrentNetwork(context.get()!!, networkId)
     }
 

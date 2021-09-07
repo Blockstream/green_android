@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import com.blockstream.hardware.BuildConfig;
 import com.btchip.comm.BTChipTransport;
@@ -15,12 +16,15 @@ import com.btchip.comm.LedgerDeviceBLE;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.reactivex.schedulers.Schedulers;
 
 public class LedgerBLEAdapter {
+    private PublishSubject<Boolean> bleDisconnectEvent = PublishSubject.create();
 
     public interface OnConnectedListener {
-        void onConnected(final BTChipTransport transport, final boolean hasScreen);
+        void onConnected(final BTChipTransport transport, final boolean hasScreen, final PublishSubject<Boolean> bleDisconnectEvent);
     }
 
     public interface OnErrorListener {
@@ -78,14 +82,17 @@ public class LedgerBLEAdapter {
                                         ledgerDevice.connect();
                                         return ledgerDevice;
                                     })
-                                    .subscribe(device -> onConnected.onConnected(device, true),
+                                    .subscribe(device -> onConnected.onConnected(device, true, bleDisconnectEvent),
                                             error -> { error.printStackTrace();
                                                        onError.onError(ledgerDevice);
                                     });
 
-                        } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                        } else if (newState == BluetoothProfile.STATE_DISCONNECTING) {
                             // Disconnect, clean up BLE stack resources
                             gatt.close();
+                        }else if ( newState == BluetoothProfile.STATE_DISCONNECTED){
+                            Log.i("LedgerBLEAdapter", "Send BLE disconnect event");
+                            bleDisconnectEvent.onNext(true);
                         }
                     }
 
