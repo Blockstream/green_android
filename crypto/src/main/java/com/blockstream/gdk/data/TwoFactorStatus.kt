@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-data class TwoFactorStatus(
+data class TwoFactorStatus constructor(
     @SerialName("action") val action: String,
     @SerialName("methods") val methods: List<String> = listOf(),
     @SerialName("method") val method: String = "",

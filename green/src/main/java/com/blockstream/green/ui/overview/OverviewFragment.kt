@@ -380,7 +380,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         val transactionsFooterAdapter = ItemAdapter<ProgressItem>()
 
-        val endlessRecyclerOnScrollListener = object : EndlessRecyclerOnScrollListener() {
+        val endlessRecyclerOnScrollListener = object : EndlessRecyclerOnScrollListener(recycler) {
             override fun onLoadMore() {
                 transactionsFooterAdapter.set(listOf(ProgressItem()))
                 disable()

@@ -25,7 +25,7 @@ class GreenWallet constructor(
     private val wally: KotlinWally,
     dataDir: String,
     developmentFlavor: Boolean,
-    extraLogger: Logger? = null
+    val extraLogger: Logger? = null
 ) {
 
     private val bip39WordList by lazy { wally.bip39Wordlist(BIP39_WORD_LIST_LANG) }

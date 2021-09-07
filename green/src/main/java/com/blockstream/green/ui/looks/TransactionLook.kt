@@ -36,12 +36,12 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
     fun amount(index: Int): String {
         if (tx.txType == Transaction.Type.REDEPOSIT) {
             // Fee
-            return tx.fee.toBTCLook(session, withUnit = false, withDirection = tx.txType, withGrouping = true)
+            return tx.fee.toBTCLook(session, withUnit = false, withDirection = tx.txType, withGrouping = true, withMinimumDigits = true)
         }
 
         assets[index].let{
             return if(it.first == session.network.policyAsset){
-                it.second.toBTCLook(session, withUnit = false, withDirection = tx.txType, withGrouping = true)
+                it.second.toBTCLook(session, withUnit = false, withDirection = tx.txType, withGrouping = true, withMinimumDigits = true)
             }else{
                 val assetId = it.first
                 it.second.toAssetLook(

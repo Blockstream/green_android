@@ -53,8 +53,9 @@ fun gdkNumberFormat(decimals: Int, withDecimalSeparator: Boolean = false) = (Dec
 fun userNumberFormat(decimals: Int,
                     withDecimalSeparator: Boolean,
                     withGrouping: Boolean = false,
+                    withMinimumDigits:Boolean = false,
                     locale: Locale = Locale.getDefault()) = (DecimalFormat.getInstance(locale) as DecimalFormat).apply {
-    minimumFractionDigits = if(withDecimalSeparator) decimals else 0
+    minimumFractionDigits = if(withDecimalSeparator || withMinimumDigits) decimals else 0
     maximumFractionDigits = decimals
     isDecimalSeparatorAlwaysShown = withDecimalSeparator
     isGroupingUsed = withGrouping
@@ -78,14 +79,14 @@ fun Balance.fiat(withUnit: Boolean = true): String {
     } + if (withUnit) " $fiatCurrency" else ""
 }
 
-fun Balance.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false): String {
+fun Balance.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
     return this.btc(unit = session.getSettings()?.unit ?: "BTC", withUnit = withUnit, withGrouping = withGrouping)
 }
 
-private fun Balance.btc(unit: String, withUnit: Boolean = true, withGrouping: Boolean = false): String {
+private fun Balance.btc(unit: String, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
     return try {
         val value = getValue(unit).toDouble()
-        userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping).format(value)
+        userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = true).format(value)
     } catch (e: Exception) {
         "N.A."
     } + if (withUnit) " ${unit}" else ""
@@ -107,8 +108,8 @@ fun Balance.asset(withUnit: Boolean = true, withGrouping: Boolean = false): Stri
     } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""
 }
 
-fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null, withGrouping: Boolean = false): String {
-    val look = session.convertAmount(Convert(this)).btc(session, withUnit = withUnit, withGrouping = withGrouping)
+fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
+    val look = session.convertAmount(Convert(this)).btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)
 
     withDirection?.let {
         return if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){

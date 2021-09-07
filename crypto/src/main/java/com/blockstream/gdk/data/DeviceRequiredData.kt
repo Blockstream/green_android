@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-data class DeviceRequiredData(
+data class DeviceRequiredData constructor(
     @SerialName("action") val action: String,
     @SerialName("device") val device: Device,
     @SerialName("paths") val paths: List<List<Long>>? = null,

@@ -197,6 +197,7 @@ class GreenSession constructor(
         }.subscribeBy(
             onError = {
                 it.printStackTrace()
+                it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
             }
         )
     }
@@ -399,6 +400,7 @@ class GreenSession constructor(
             },
             onError = {
                 it.printStackTrace()
+                it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
             }).addTo(disposables)
     }
 
@@ -434,8 +436,7 @@ class GreenSession constructor(
         name
     )
 
-    private fun getTransactions(params: TransactionParams) =
-        AuthHandler(greenWallet, greenWallet.getTransactions(gaSession, params))
+    private fun getTransactions(params: TransactionParams) = AuthHandler(greenWallet, greenWallet.getTransactions(gaSession, params))
 
     private var txOffset = 0
     var hasMoreTransactions = false
@@ -457,7 +458,7 @@ class GreenSession constructor(
             val limit = if (isReset || isLoadMore) TRANSACTIONS_PER_PAGE else (txOffset + TRANSACTIONS_PER_PAGE)
 
             Pair(
-                it.getTransactions(TransactionParams(activeAccount, offset, limit))
+                it.getTransactions(TransactionParams(subaccount = activeAccount, offset = offset, limit = limit))
                     .result<Transactions>(
                         hardwareWalletResolver = HardwareCodeResolver(hwWallet)
                     ),
@@ -475,6 +476,7 @@ class GreenSession constructor(
         }
         .subscribeBy(onError = {
             it.printStackTrace()
+            it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
         }, onSuccess = {
             if (isReset || isLoadMore) {
                 hasMoreTransactions = it.first.transactions.size == TRANSACTIONS_PER_PAGE
@@ -551,7 +553,8 @@ class GreenSession constructor(
                 },
                 onError = {
                     it.printStackTrace()
-//                    settingsSubject.onError(it)
+                    // settingsSubject.onError(it)
+                    it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
                 }).addTo(disposables)
 
     }
@@ -568,6 +571,7 @@ class GreenSession constructor(
                 },
                 onError = {
                     it.printStackTrace()
+                    it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
                 }).addTo(disposables)
     }
 
