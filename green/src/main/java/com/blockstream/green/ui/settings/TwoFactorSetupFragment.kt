@@ -50,6 +50,12 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         val action = args.action
 
         binding.vm = viewModel
+
+        if(session.isLiquid && action == TwoFactorSetupAction.RESET){
+            snackbar("2FA Reset is not possible in a Liquid Wallet")
+            popBackStack()
+            return
+        }
         
         when(action){
             TwoFactorSetupAction.SETUP -> {
