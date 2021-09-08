@@ -1,7 +1,6 @@
 package com.blockstream.green.ui.looks
 
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.blockstream.gdk.BalancePair
@@ -10,6 +9,7 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.*
+import mu.KLogging
 
 class TransactionListLook(val session: GreenSession, private val tx: Transaction) {
 
@@ -27,8 +27,10 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
     val date
         get() = tx.createdAt.formatAuto()
 
-    val memo
+    val memo: String
         get() = tx.memo
+            .replace("\n", " ")
+            .replace("\\s+".toRegex(), " ")
 
     val assetSize
         get() = if(tx.txType == Transaction.Type.REDEPOSIT) 1 else assets.size
@@ -80,4 +82,6 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
             ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_testnet_network_60)
         }
     }
+
+    companion object: KLogging()
 }

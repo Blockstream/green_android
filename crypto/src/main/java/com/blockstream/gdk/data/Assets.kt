@@ -8,5 +8,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Assets(
     @SerialName("assets") val assets: Map<String, Asset> = mapOf(),
-    @SerialName("icons") val icons: Map<String, @Serializable(with = BitmapSerializer::class) Bitmap>? = null,
+    @SerialName("icons") val icons: Map<String, @Serializable(with = BitmapSerializer::class) Bitmap?>? = null,
 )

@@ -7,11 +7,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @Parcelize
-data class Asset(
+data class Asset constructor(
     @SerialName("name") val name: String,
     @SerialName("asset_id") val assetId: String,
     @SerialName("precision") val precision: Int = 0,
-    @SerialName("ticker") val ticker: String = "",
+    @SerialName("ticker") val ticker: String? = null,
     @SerialName("entity") val entity: Entity = Entity(""),
 ) : Parcelable
 

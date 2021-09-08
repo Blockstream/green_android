@@ -14,7 +14,7 @@ import com.blockstream.green.ui.looks.TransactionListLook
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import mu.KLogging
 
-data class TransactionListItem(val session: GreenSession, val tx: Transaction) : AbstractBindingItem<ListItemTransactionBinding>() {
+data class TransactionListItem constructor(val session: GreenSession, val tx: Transaction) : AbstractBindingItem<ListItemTransactionBinding>() {
     override val type: Int
         get() = R.id.fastadapter_transaction_item_id
 
@@ -33,6 +33,10 @@ data class TransactionListItem(val session: GreenSession, val tx: Transaction) :
     }
 
     override fun bindView(binding: ListItemTransactionBinding, payloads: List<Any>) {
+        binding.isLoading = tx.blockHeight == -1L
+
+        if(binding.isLoading == true){ return }
+
         binding.confirmations = tx.getConfirmations(session.blockHeight).also { logger.info { "Confs: $it" } }
         binding.date = look.date
         binding.memo = look.memo

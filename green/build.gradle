@@ -117,9 +117,9 @@ dependencies {
 
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Android / Google ------------------------------------------------------------------- */
@@ -209,17 +209,18 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Beagle  ---------------------------------------------------------------------------- */
-    debugImplementation "com.github.pandulapeter.beagle:ui-drawer:2.6.3"
-    debugImplementation "com.github.pandulapeter.beagle:log-crash:2.6.3"
-    releaseImplementation "com.github.pandulapeter.beagle:noop:2.6.3"
-    releaseImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.3"
+    developmentImplementation "com.github.pandulapeter.beagle:ui-drawer:2.6.3"
+    developmentImplementation "com.github.pandulapeter.beagle:log-crash:2.6.3"
+
+    productionImplementation "com.github.pandulapeter.beagle:noop:2.6.3"
+    productionImplementation "com.github.pandulapeter.beagle:log-crash-noop:2.6.3"
     /** ----------------------------------------------------------------------------------------- */
 
     testImplementation fileTree(dir: 'libs', include: ['.jar', '.so'])
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.0'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:3.2.0'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

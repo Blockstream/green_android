@@ -13,6 +13,7 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.blockstream.green.BuildConfig
 import com.blockstream.green.R
 import com.blockstream.green.settings.ApplicationSettings
 import com.blockstream.green.ui.AppFragment
@@ -136,6 +137,8 @@ fun Fragment.toPixels(size: Int) =
 
 fun String?.nameCleanup(): String? = if (isNullOrBlank()) null else trim().replace("\n", "")
 
+fun Context.isDebug() = BuildConfig.DEBUG
+fun Context.isDevelopmentOrDebug() = isDevelopmentFlavor() || isDebug()
 fun Context.isDevelopmentFlavor() = packageName.contains(".dev")
 fun Context.isProductionFlavor() = !this.isDevelopmentFlavor()
 

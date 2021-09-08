@@ -43,7 +43,7 @@ class GreenSession constructor(
     private var activeAccount = 0L
 
     private val balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
-    private val transactionsSubject = BehaviorSubject.createDefault<List<Transaction>>(listOf())
+    private val transactionsSubject = BehaviorSubject.createDefault<List<Transaction>>(listOf(Transaction.LoadingTransaction))
     private val assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
     private val subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
     private val systemMessageSubject = BehaviorSubject.create<String>()
@@ -441,15 +441,30 @@ class GreenSession constructor(
     private var txOffset = 0
     var hasMoreTransactions = false
     var isLoadingTransactions = AtomicBoolean(false)
+    var transactionListBootstrapped = false
     fun updateTransactionsAndBalance(isReset: Boolean, isLoadMore: Boolean) {
+
+        // For the pager to be instantiated correctly a call with isReset=true should be called first.
+        if(!(transactionListBootstrapped || isReset)){
+            return
+        }
+
         // Prevent race condition
-        if (!isLoadingTransactions.compareAndSet(false, true)) return
+        if (!isLoadingTransactions.compareAndSet(false, true)){
+            logger.info { "Prevent race condition" }
+            return
+        }
+
+        transactionListBootstrapped = true
+
+        val accountBeingFetched = activeAccount
 
         observable {
             var offset = 0
 
             if (isReset) {
                 balancesSubject.onNext(linkedMapOf(BalanceLoading))
+                transactionsSubject.onNext(listOf(Transaction.LoadingTransaction))
                 txOffset = 0
             } else if (isLoadMore) {
                 offset = txOffset + TRANSACTIONS_PER_PAGE
@@ -457,18 +472,19 @@ class GreenSession constructor(
 
             val limit = if (isReset || isLoadMore) TRANSACTIONS_PER_PAGE else (txOffset + TRANSACTIONS_PER_PAGE)
 
-            Pair(
-                it.getTransactions(TransactionParams(subaccount = activeAccount, offset = offset, limit = limit))
-                    .result<Transactions>(
-                        hardwareWalletResolver = HardwareCodeResolver(hwWallet)
-                    ),
-                it.getBalance(
-                    BalanceParams(
-                        subaccount = activeAccount,
-                        confirmations = 0
-                    )
+            it.getBalance(
+                BalanceParams(
+                    subaccount = activeAccount,
+                    confirmations = 0
                 )
-            )
+            ).also { balances ->
+                balancesSubject.onNext(balances)
+            }
+
+            it.getTransactions(TransactionParams(subaccount = activeAccount, offset = offset, limit = limit))
+                .result<Transactions>(
+                    hardwareWalletResolver = HardwareCodeResolver(hwWallet)
+                )
         }
         .retry(1)
         .doOnTerminate {
@@ -479,15 +495,21 @@ class GreenSession constructor(
             it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
         }, onSuccess = {
             if (isReset || isLoadMore) {
-                hasMoreTransactions = it.first.transactions.size == TRANSACTIONS_PER_PAGE
+                hasMoreTransactions = it.transactions.size == TRANSACTIONS_PER_PAGE
             }
             if (isLoadMore) {
-                transactionsSubject.onNext((transactionsSubject.value ?: listOf()) + it.first.transactions)
+                transactionsSubject.onNext((transactionsSubject.value ?: listOf()) + it.transactions)
                 txOffset += TRANSACTIONS_PER_PAGE
             }else{
-                transactionsSubject.onNext(it.first.transactions)
+                transactionsSubject.onNext(it.transactions)
             }
-            balancesSubject.onNext(it.second)
+
+            // If user changed his active account without this method still running (blocked), check
+            // if active account is changed and fetch transaction of the current active account
+            if(accountBeingFetched != activeAccount){
+                updateTransactionsAndBalance(isReset = true, isLoadMore = false)
+            }
+
         }).addTo(disposables)
     }
 
@@ -577,9 +599,6 @@ class GreenSession constructor(
 
     fun convertAmount(convert: Convert) = greenWallet.convertAmount(gaSession, convert)
 
-    // Skip updating on the first block event
-    private var updateTransactionsAndBalance = false
-
     fun onNewNotification(notification: Notification) {
         logger.info { "onNewNotification $notification" }
 
@@ -587,10 +606,7 @@ class GreenSession constructor(
             "block" -> {
                 notification.block?.let {
                     blockSubject.onNext(it)
-                    if(updateTransactionsAndBalance) {
-                        updateTransactionsAndBalance(isReset = false, isLoadMore = false)
-                    }
-                    updateTransactionsAndBalance = true
+                    updateTransactionsAndBalance(isReset = false, isLoadMore = false)
                 }
             }
             "fees" -> {

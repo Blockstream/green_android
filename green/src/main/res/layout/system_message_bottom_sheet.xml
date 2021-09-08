@@ -107,7 +107,7 @@
 
                     <Button
                         android:id="@+id/buttonAccept"
-                        style="@style/Widget.MaterialComponents.Button"
+                        style="@style/Widget.Green.Button"
                         isInvisible="@{closing}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

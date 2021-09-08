@@ -13,8 +13,6 @@ import com.blockstream.green.gdk.observable
 import com.blockstream.green.lifecycle.ListenableLiveData
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.nameCleanup
-import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

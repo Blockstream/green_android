@@ -8,8 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.gdk.data.SubAccount
-import com.blockstream.gdk.params.SubAccountParams
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
@@ -20,8 +18,6 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.nameCleanup
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.HttpRequestProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject

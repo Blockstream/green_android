@@ -46,7 +46,7 @@ class AssetManager(
     private val applicationId: String
 ) {
     private var metadata: Map<String, Asset> = mapOf()
-    private var icons: Map<String, Bitmap> = mapOf()
+    private var icons: Map<String, Bitmap?> = mapOf()
 
     // Internal representation of the Status
     private val status = AssetStatus()

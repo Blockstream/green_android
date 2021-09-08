@@ -39,7 +39,8 @@ class OverviewViewModel @AssistedInject constructor(
     private var allBalances: Balances = linkedMapOf(BalanceLoading)
     private val shownBalances: MutableLiveData<Balances> = MutableLiveData(allBalances)
     private val alerts = MutableLiveData<List<AlertType>>(listOf())
-    private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData()
+    private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData(listOf(
+        Transaction.LoadingTransaction))
 
     private val assetsUpdated: MutableLiveData<ConsumableEvent<Boolean>> = MutableLiveData()
     private val selectedAsset = MutableLiveData<String?>()

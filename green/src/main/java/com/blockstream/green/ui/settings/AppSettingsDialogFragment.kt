@@ -35,12 +35,6 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: DialogAppSettingsBottomSheetBinding
 
-    // Needed only for initialization from v3
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.Green_BottomSheetDialogTheme_Wallet)
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED

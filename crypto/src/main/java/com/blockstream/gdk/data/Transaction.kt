@@ -75,4 +75,32 @@ data class Transaction(
         )
     }
 
+    companion object {
+        // Create a dummy transaction to describe the loading state (blockHeight == -1)
+        val LoadingTransaction = Transaction(
+            listOf(),
+            blockHeight = -1,
+            false,
+            false,
+            Date(),
+            listOf(),
+            listOf(),
+            0,
+            0,
+            false,
+            false,
+            "",
+            false,
+            false,
+            "",
+            0,
+            0,
+            0,
+            "",
+            "",
+            false,
+            mapOf()
+
+        )
+    }
 }
