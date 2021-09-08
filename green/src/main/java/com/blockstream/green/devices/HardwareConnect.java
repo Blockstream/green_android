@@ -372,36 +372,9 @@ public class HardwareConnect {
     private void doLogin(final HardwareConnectInteraction interaction) {
         device.setHwWallet(mHwWallet);
         interaction.onDeviceReady();
-
-//        mDisposables.add(Observable.just(interaction.getGreenSession())
-//                .observeOn(Schedulers.computation())
-//                .map((session) -> {
-//
-//                    //Bridge.INSTANCE.loginWithDevice(interaction.context(), interaction.getSession().getNativeSession(), network, bReConnectSession, mHwWallet, new HardwareCodeResolver(interaction, mHwWallet));
-//
-//                    return session;
-//                })
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe((session) -> {
-//                    interaction.onLoginSuccess();
-//                }, (final Throwable e) -> {
-//                    e.printStackTrace();
-//                    interaction.getGreenSession().disconnect();
-//
-//                    // If the error is the Anti-Exfil validation violation we show that prominently.
-//                    // Otherwise show a generic error and reconnect/retry message.
-//                    final String idValidationFailed = interaction.context().getResources().getResourceEntryName(R.string.id_signature_validation_failed_if);
-//                    if (idValidationFailed.equals(e.getMessage())) {
-//                        interaction.showInstructions(R.string.id_signature_validation_failed_if);
-//                    } else {
-//                        interaction.showError(interaction.context().getString(R.string.id_error_logging_in_with_hardware));
-//                        interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
-//                    }
-//                })
-//        );
     }
 
     public void onDestroy() {
-        mDisposables.dispose();
+        mDisposables.clear();
     }
 }
