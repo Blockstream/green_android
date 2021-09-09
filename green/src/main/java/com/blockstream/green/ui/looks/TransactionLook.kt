@@ -67,7 +67,7 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
                 getBitcoinOrLiquidUnit(session)
             } else {
                 val assetId = it.first
-                session.getAsset(assetId)?.ticker ?: "N/A"
+                session.getAsset(assetId)?.ticker ?: "n/a"
             }
         }
     }

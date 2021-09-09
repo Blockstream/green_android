@@ -9,9 +9,9 @@ import kotlinx.serialization.json.*
 data class Balance(
     @SerialName("bits") val bits: String,
     @SerialName("btc") val btc: String,
-    @SerialName("fiat") val fiat: String,
+    @SerialName("fiat") val fiat: String?,
     @SerialName("fiat_currency") val fiatCurrency: String,
-    @SerialName("fiat_rate") val fiatRate: String,
+    @SerialName("fiat_rate") val fiatRate: String?,
     @SerialName("is_fiat") val isFiat: Boolean = false, // this options is only available in 2fa threshold
     @SerialName("mbtc") val mbtc: String,
     @SerialName("satoshi") val satoshi: Long,
@@ -21,6 +21,8 @@ data class Balance(
     var assetValue : String? = null
     var assetInfo : Asset? = null
 
+    fun getFiatValue() = "%s %s".format(fiat ?: "n/a", fiatCurrency)
+
     fun getValue(unit: String): String {
         return when(unit.lowercase()){
             "\u00B5btc", "ubtc" -> ubtc
@@ -28,7 +30,7 @@ data class Balance(
             "bits" -> bits
             "sats" -> sats
             "btc" -> btc
-            else -> fiat
+            else -> fiat ?: "n/a"
         }
     }
 

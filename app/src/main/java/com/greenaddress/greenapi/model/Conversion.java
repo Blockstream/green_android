@@ -58,7 +58,7 @@ public class Conversion {
             final Double number = Double.parseDouble(balanceData.getFiat());
             return getNumberFormat(2).format(number) + (withUnit ? " " + getFiatCurrency(session) : "");
         } catch (final NumberFormatException | NullPointerException e) {
-            return "N.A." + (withUnit ? " " + getFiatCurrency(session) : "");
+            return "n/a" + (withUnit ? " " + getFiatCurrency(session) : "");
         }
     }
 

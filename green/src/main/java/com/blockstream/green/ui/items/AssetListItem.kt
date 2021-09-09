@@ -44,9 +44,7 @@ data class AssetListItem constructor(
 
         val fiatValue = look.fiatValue
 
-        binding.secondaryValue.text = fiatValue?.let {
-            "%s %s".format(it.fiat, it.fiatCurrency)
-        }
+        binding.secondaryValue.text = fiatValue?.getFiatValue()
         binding.secondaryValue.isVisible = fiatValue != null
 
         binding.icon.setImageDrawable(look.icon(binding.root.context))
@@ -58,7 +56,7 @@ data class AssetListItem constructor(
                 .format(look.issuer ?: res.getString(R.string.id_unknown))
 
             binding.content.text = fiatValue?.let {
-                "1 %s ~ %s %s".format(look.ticker, it.fiatRate, it.fiatCurrency)
+                "1 %s ~ %s %s".format(look.ticker, it.fiatRate ?: "n/a", it.fiatCurrency)
             }
         }
 

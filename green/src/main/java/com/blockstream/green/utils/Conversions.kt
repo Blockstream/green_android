@@ -11,7 +11,7 @@ import java.text.DecimalFormatSymbols
 import java.util.*
 
 fun getFiatCurrency(session: GreenSession): String{
-    return session.getSettings()?.pricing?.currency ?: "N/A"
+    return session.getSettings()?.pricing?.currency ?: "n/a"
 }
 
 // Use it for GDK purposes
@@ -22,7 +22,7 @@ fun getUnit(session: GreenSession) = session.getSettings()?.unit?.lowercase()
 
 // Use it for UI purposes
 fun getBitcoinOrLiquidUnit(session: GreenSession): String{
-    val unit = session.getSettings()?.unit ?: "N/A"
+    val unit = session.getSettings()?.unit ?: "n/a"
     if(session.network.isLiquid) {
         return "L-$unit"
     }
@@ -72,10 +72,10 @@ fun Double.feeRateWithUnit(): String {
 
 fun Balance.fiat(withUnit: Boolean = true): String {
     return try {
-        val value = fiat.toDouble()
+        val value = fiat!!.toDouble()
         userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(value)
     } catch (e: Exception) {
-        "N.A."
+        "n/a"
     } + if (withUnit) " $fiatCurrency" else ""
 }
 
@@ -88,7 +88,7 @@ private fun Balance.btc(unit: String, withUnit: Boolean = true, withGrouping: Bo
         val value = getValue(unit).toDouble()
         userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = true).format(value)
     } catch (e: Exception) {
-        "N.A."
+        "n/a"
     } + if (withUnit) " ${unit}" else ""
 }
 
@@ -96,7 +96,7 @@ fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
     return try {
         userNumberFormat(decimals = getDecimals(settings.unit), withDecimalSeparator = false, withGrouping = false).format(this)
     } catch (e: Exception) {
-        "N.A."
+        "n/a"
     } + if (withUnit) " ${settings.unit}" else ""
 }
 
@@ -104,7 +104,7 @@ fun Balance.asset(withUnit: Boolean = true, withGrouping: Boolean = false): Stri
     return try {
         userNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = withGrouping).format(assetValue?.toDouble() ?: satoshi)
     } catch (e: Exception) {
-        "N.A."
+        "n/a"
     } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""
 }
 
