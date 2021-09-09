@@ -49,14 +49,6 @@ correctly, then run:
 If you get errors building please ensure your are using the recommended NDK
 version.
 
-####  Liquid Assets
-
-The app has a local cache used as a fallback if GDK fails to update it's asset registry.
-Gradle/Android Studio will automatically download liquid assets json file and icons **only** if they don't exist.
-You can manually update the cache using:
-
-`cd crypto && ./fetch_assets.sh && cd ..`
-
 #### Build the Android app
 
 Run:

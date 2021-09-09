@@ -7,6 +7,7 @@ import com.blockstream.gdk.BalancePair
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.gdk.data.Transaction
+import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.*
 import mu.KLogging
@@ -72,14 +73,16 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
     }
 
     fun getIcon(index: Int, context: Context): Drawable? {
-        return if (session.isLiquid) {
-            assets[index].let{
-                session.getAsset(it.first)?.getIcon(context, session)
+        return when {
+            session.isLiquid -> {
+                assets[index].first.getAssetIcon(context, session)
             }
-        } else if (session.isMainnet) {
-            ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_network_60)
-        } else {
-            ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_testnet_network_60)
+            session.isMainnet -> {
+                ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_network_60)
+            }
+            else -> {
+                ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_testnet_network_60)
+            }
         }
     }
 

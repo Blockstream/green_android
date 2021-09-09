@@ -43,7 +43,7 @@ class GreenSession constructor(
     private var activeAccount = 0L
 
     private val balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
-    private val transactionsSubject = BehaviorSubject.createDefault<List<Transaction>>(listOf(Transaction.LoadingTransaction))
+    private val transactionsSubject = BehaviorSubject.createDefault(listOf(Transaction.LoadingTransaction))
     private val assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
     private val subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
     private val systemMessageSubject = BehaviorSubject.create<String>()

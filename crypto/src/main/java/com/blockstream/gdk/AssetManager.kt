@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 
 interface AssetQATester {
-    fun isAssetAppCacheDisabled(): Boolean
     fun isAssetGdkCacheDisabled(): Boolean
     fun isAssetFetchDisabled(): Boolean
     fun isAssetIconsFetchDisabled(): Boolean
@@ -53,21 +52,6 @@ class AssetManager(
 
     val statusLiveData =  MutableLiveData(status)
 
-    private val assetsCache: Map<String, Asset>? by lazy {
-        if (QATester.isAssetAppCacheDisabled()) {
-            return@lazy null
-        }
-
-        try {
-            val json = context.resources.openRawResource(R.raw.assets).bufferedReader()
-                .use { it.readText() }
-            return@lazy GreenWallet.JsonDeserializer.decodeFromString(json)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        null
-    }
-
     fun setGdkCache(assets: Assets) {
         this.metadata = assets.assets
         this.icons = assets.icons ?: mapOf()
@@ -93,10 +77,7 @@ class AssetManager(
 
     fun getAsset(assetId: String): Asset? {
         // Asset from GDK (cache or up2date)
-        return metadata[assetId] ?: run {
-            // Asset from app hardcoded cache
-            assetsCache?.get(assetId)
-        }
+        return metadata[assetId]
     }
 
     fun getAssetDrawableOrDefault(assetId: String): Drawable {
@@ -196,10 +177,6 @@ class AssetManager(
     private fun getAssetIcon(assetId: String): Bitmap? {
         // Icon from GDK (cache or up2date)
         return icons[assetId] ?: run {
-
-            if (QATester.isAssetAppCacheDisabled()) {
-                return null
-            }
 
             // Icon from app hardcoded cache
             try {

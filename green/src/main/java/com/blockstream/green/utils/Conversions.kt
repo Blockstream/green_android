@@ -126,8 +126,10 @@ fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean =
     val look = session.convertAmount(Convert(this, session.getAsset(assetId))).asset(withUnit = withUnit, withGrouping = withGrouping)
 
     withDirection?.let {
-        if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){
-            return "-$look"
+        return if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){
+            "-$look"
+        }else{
+            "+$look"
         }
     }
 

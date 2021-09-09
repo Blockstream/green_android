@@ -44,99 +44,107 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             isVisible="@{!isLoading}"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:paddingBottom="16dp"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/dateView"
-                isVisible="@{confirmations > 6}"
-                android:layout_width="0dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="@color/color_on_surface_emphasis_medium"
-                android:textSize="10dp"
-                android:text="@{date}"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
-                tools:ignore="SpUsage"
-                tools:text="Jul 29, 2020" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/unconfirmedView"
-                isVisible="@{confirmations == 0}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/color_warning_round"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:text="@string/id_unconfirmed"
-                android:textAllCaps="true"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="@color/color_on_surface_emphasis_medium"
-                android:textSize="10dp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
-                tools:ignore="SpUsage" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/confirmationsView"
-                isVisible="@{confirmations > 0 &amp;&amp; confirmations &lt;= 6}"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/color_surface_light_round"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:text="@{String.format(@string/id_d6_confirmations, confirmations)}"
-                android:textAllCaps="true"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="@color/color_on_surface_emphasis_medium"
-                android:textSize="10dp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
-                tools:text="@string/id_d6_confirmations"
-                tools:ignore="SpUsage" />
+                    <TextView
+                        android:id="@+id/dateView"
+                        isVisible="@{confirmations > 6}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="@color/color_on_surface_emphasis_medium"
+                        android:textSize="10dp"
+                        android:text="@{date}"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:includeFontPadding="false"
+                        tools:ignore="SpUsage"
+                        tools:text="Jul 29, 2020" />
 
-            <TextView
-                android:id="@+id/memoView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textAlignment="viewEnd"
-                android:textAppearance="?attr/textAppearanceCaption"
-                android:textColor="@color/color_on_surface_emphasis_low"
-                android:text="@{memo}"
-                app:layout_constraintBottom_toTopOf="@+id/assetWrapper"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/barrierTopLeft"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Body gif to Mom Body gif to Mom Body gif to Mom " />
+                    <TextView
+                        android:id="@+id/unconfirmedView"
+                        isVisible="@{confirmations == 0}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/color_warning_round"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="@string/id_unconfirmed"
+                        android:textAllCaps="true"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="@color/color_on_surface_emphasis_medium"
+                        android:textSize="10dp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        tools:visibility="gone"
+                        tools:ignore="SpUsage" />
+
+                    <TextView
+                        android:id="@+id/confirmationsView"
+                        isVisible="@{confirmations > 0 &amp;&amp; confirmations &lt;= 6}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/color_surface_light_round"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="@{String.format(@string/id_d6_confirmations, confirmations)}"
+                        android:textAllCaps="true"
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="@color/color_on_surface_emphasis_medium"
+                        android:textSize="10dp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        tools:visibility="gone"
+                        tools:text="@string/id_d6_confirmations"
+                        tools:ignore="SpUsage" />
+
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/memoView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="6dp"
+                    android:gravity="end"
+                    android:ellipsize="start"
+                    android:singleLine="true"
+                    android:clipToPadding="false"
+                    android:textAppearance="?attr/textAppearanceBody2"
+                    android:textColor="@color/color_on_surface_emphasis_high"
+                    android:textSize="10dp"
+                    android:includeFontPadding="false"
+                    android:text="@{memo}"
+                    tools:text="This is a note. This is a note.This is a note.This is a note.This is a note.This is a note.This is a note. This is a note." />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
 
             <com.blockstream.green.views.GappedLinearLayout
                 android:id="@+id/assetWrapper"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:orientation="vertical"
@@ -151,13 +159,7 @@
 
             </com.blockstream.green.views.GappedLinearLayout>
 
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrierTopLeft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="right"
-                app:constraint_referenced_ids="dateView,unconfirmedView,confirmationsView" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </layout>
