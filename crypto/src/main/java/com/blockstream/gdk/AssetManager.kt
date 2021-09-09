@@ -174,7 +174,7 @@ class AssetManager(
         }
     }
 
-    private fun getAssetIcon(assetId: String): Bitmap? {
+    fun getAssetIcon(assetId: String): Bitmap? {
         // Icon from GDK (cache or up2date)
         return icons[assetId] ?: run {
 

@@ -29,7 +29,9 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import mu.KLogging
 import java.net.URL
+import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.collections.LinkedHashMap
 
 
 class GreenSession constructor(
@@ -518,7 +520,27 @@ class GreenSession constructor(
             .result<BalanceMap>().let { balanceMap ->
                 return LinkedHashMap(
                     balanceMap.toSortedMap { o1, o2 ->
-                        if (o1 == policyAsset) -1 else o1.compareTo(o2)
+                        when {
+                            o1 == policyAsset -> -1
+                            o2 == policyAsset -> 1
+                            else -> {
+                                val asset1 = assetsManager.getAsset(o1)
+                                val icon1 = assetsManager.getAssetIcon(o1)
+
+                                val asset2 = assetsManager.getAsset(o2)
+                                val icon2 = assetsManager.getAssetIcon(o2)
+
+                                if ((icon1 == null) xor (icon2 == null)) {
+                                    if (icon1 != null) -1 else 1
+                                } else if ((asset1 == null) xor (asset2 == null)) {
+                                    if (asset1 != null) -1 else 1
+                                } else if (asset1 != null && asset2 != null) {
+                                    asset1.name.compareTo(asset2.name)
+                                } else {
+                                    o1.compareTo(o2)
+                                }
+                            }
+                        }
                     }
                 )
             }
