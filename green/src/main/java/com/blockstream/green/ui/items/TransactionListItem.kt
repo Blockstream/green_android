@@ -2,8 +2,6 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.core.view.size
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
@@ -19,7 +17,7 @@ import mu.KLogging
 data class TransactionListItem constructor(
     val session: GreenSession,
     val tx: Transaction,
-    val confirmations: Long
+    val confirmations: Int
 ) : AbstractBindingItem<ListItemTransactionBinding>() {
 
     override val type: Int
@@ -32,26 +30,6 @@ data class TransactionListItem constructor(
         look = TransactionListLook(session, tx)
     }
 
-    private fun setAsset(index: Int, binding: ListItemTransactionAssetBinding) {
-        binding.value.text = look.amount(index)
-        binding.value.setTextColor(ContextCompat.getColor(binding.value.context, look.valueColor))
-        binding.ticker.text = look.ticker(index)
-        binding.icon.setImageDrawable(look.getIcon(index, binding.icon.context))
-
-        if (tx.spv == Transaction.SPVResult.Disabled || tx.spv == Transaction.SPVResult.Verified) {
-            binding.spv.isVisible = false
-        } else {
-            binding.spv.isVisible = true
-            binding.spv.setImageResource(
-                when (tx.spv) {
-                    Transaction.SPVResult.InProgress -> R.drawable.ic_spv_in_progress
-                    Transaction.SPVResult.NotLongest -> R.drawable.ic_spv_warning
-                    else -> R.drawable.ic_spv_error
-                }
-            )
-        }
-    }
-
     override fun bindView(binding: ListItemTransactionBinding, payloads: List<Any>) {
         if (tx.isLoadingTransaction()) {
             binding.isLoading = true
@@ -60,11 +38,11 @@ data class TransactionListItem constructor(
 
         binding.isLoading = false
         binding.confirmations = confirmations
-        binding.confirmationsRequired = if (session.isLiquid) 2 else 6
+        binding.confirmationsRequired = session.network.confirmationsRequired
         binding.date = look.date
         binding.memo = look.memo
 
-        setAsset(0, binding.firstValue)
+        look.setAssetToBinding(0, binding.firstValue)
 
         // remove all view other than main value
         while (binding.assetWrapper.size > 1) {
@@ -74,7 +52,7 @@ data class TransactionListItem constructor(
         for (i in 1 until look.assetSize) {
             val assetBinding =
                 ListItemTransactionAssetBinding.inflate(LayoutInflater.from(binding.root.context))
-            setAsset(i, assetBinding)
+            look.setAssetToBinding(i, assetBinding)
             binding.assetWrapper.addView(assetBinding.root)
         }
     }

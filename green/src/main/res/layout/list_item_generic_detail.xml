@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="com.blockstream.green.ui.items.GenericDetailListItem" />
+
+        <variable
+            name="self"
+            type="GenericDetailListItem" />
+
+    </data>
+
+    <com.blockstream.green.views.GappedLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        app:gap="4dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/id_transactions"
+            android:textAppearance="@style/TextAppearance.Green.Caption" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/content"
+            isVisible="@{self.liveContent == null}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="8dp"
+            android:focusable="false"
+            android:text="@string/id_transactions"
+            android:textAppearance="@style/TextAppearance.Green.Body1"
+            android:textIsSelectable="true"
+            app:drawableTint="@color/color_on_surface_emphasis_low" />
+
+        <!--   Review: V3 had android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"    -->
+        <EditText
+            isVisible="@{self.liveContent != null}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/color_surface_round"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:lines="2"
+            android:maxLength="1024"
+            android:maxLines="5"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="10dp"
+            android:text="@={self.liveContent}"
+            android:textColor="@color/textColor"
+            tools:text="This is a note" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button"
+            style="@style/Widget.Green.Button.Outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="@{self.enableButton}"
+            tools:text="Save" />
+
+    </com.blockstream.green.views.GappedLinearLayout>
+</layout>

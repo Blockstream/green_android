@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.util.TypedValue
+import android.view.View
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -79,9 +80,10 @@ fun getClipboard(context: Context): String? =
         it.primaryClip?.getItemAt(0)?.text?.toString()
     }
 
-fun copyToClipboard(label: String, content: String, context: Context) {
+fun copyToClipboard(label: String, content: String, context: Context, animateView: View? = null) {
     (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).let {
         it.setPrimaryClip(ClipData.newPlainText(label, content))
+        animateView?.pulse()
     }
 }
 

@@ -315,7 +315,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
 
         if(!wallet.isWatchOnly){
-            addAccountAdapter.add(ButtonActionListItem(StringHolder(R.string.id_add_new_account), true))
+            addAccountAdapter.add(ButtonActionListItem(text = StringHolder(R.string.id_add_new_account), useCard = true, extraPadding = true))
         }
 
         // Alert cards
@@ -428,9 +428,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             transactionsFooterAdapter
         )
 
-        val fastAdapter = FastAdapter.with(adapters).also{
-            it.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-        }
+        val fastAdapter = FastAdapter.with(adapters)
 
         // Notify adapter when we have new assets
         viewModel.getAssetsUpdated().observe(viewLifecycleOwner) {
@@ -492,7 +490,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                     }
                 }
                 is TransactionListItem -> {
-                    // navigate(OverviewFragmentDirections.actionOverviewFragmentToTransactionDetailsFragment())
+                     navigate(OverviewFragmentDirections.actionOverviewFragmentToTransactionDetailsFragment(wallet = wallet, transaction = item.tx))
 
                     val txIntent = Intent(activity, TransactionActivity::class.java)
                     viewModel.getBalancesLiveData().value?.let {

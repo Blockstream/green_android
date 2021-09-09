@@ -14,8 +14,8 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
-fun Transaction.getConfirmationsMax(session: GreenSession): Long {
-    return this.getConfirmations(session.blockHeight).coerceAtMost((if (session.isLiquid) 3 else 7))
+fun Transaction.getConfirmationsMax(session: GreenSession): Int {
+    return getConfirmations(session.blockHeight).coerceAtMost((if (session.isLiquid) 3 else 7)).toInt()
 }
 
 fun AccountType?.titleRes(): Int = when (this) {

@@ -6,10 +6,10 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTitleBinding
+import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 
-data class TitleListItem(
+data class TitleListItem constructor(
     val title: StringHolder,
     val showBackButton: Boolean = false,
     val withTopPadding: Boolean = true,

@@ -11,11 +11,11 @@
 
         <variable
             name="confirmations"
-            type="Long" />
+            type="Integer" />
 
         <variable
             name="confirmationsRequired"
-            type="Long" />
+            type="Integer" />
 
         <variable
             name="date"
@@ -152,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:orientation="vertical"
-                app:gap="4dp"
+                app:gap="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/memoView">

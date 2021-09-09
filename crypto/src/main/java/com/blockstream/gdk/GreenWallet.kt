@@ -198,6 +198,8 @@ class GreenWallet constructor(
 
     fun ackSystemMessage(session: GASession, message: String) = gdk.ackSystemMessage(session, message)
 
+    fun setTransactionMemo(session: GASession, txHash: String, memo: String) = gdk.setTransactionMemo(session, txHash, memo)
+
     fun convertAmount(session: GASession, amount: Convert): Balance = Balance.fromJsonElement(
         JsonDeserializer,
         gdk.convertAmount(session, amount) as JsonElement,

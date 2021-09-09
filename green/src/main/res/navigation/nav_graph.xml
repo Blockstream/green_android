@@ -372,6 +372,9 @@
         <action
             android:id="@+id/action_overviewFragment_to_walletSettingsFragment"
             app:destination="@id/walletSettingsFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_transactionDetailsFragment"
+            app:destination="@id/transactionDetailsFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_overviewFragment"
@@ -520,5 +523,20 @@
         app:destination="@id/deviceBottomSheetDialogFragment" />
     <action android:id="@+id/action_global_twoFractorAuthenticationFragment" app:destination="@id/twoFractorAuthenticationFragment" />
     <action android:id="@+id/action_global_twoFactorSetupFragment" app:destination="@id/twoFactorSetupFragment" /><action android:id="@+id/action_global_introFragment" app:destination="@id/introFragment"/>
+    <fragment
+        android:id="@+id/transactionDetailsFragment"
+        android:name="com.blockstream.green.ui.wallet.TransactionDetailsFragment"
+        tools:layout="@layout/base_recycler_view">
+
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="transaction"
+            app:argType="com.blockstream.gdk.data.Transaction" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_assetBottomSheetFragment"
+            app:destination="@id/assetBottomSheetFragment" />
+    </fragment>
 
 </navigation>

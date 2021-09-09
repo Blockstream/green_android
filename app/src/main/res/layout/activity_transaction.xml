@@ -84,7 +84,6 @@
                     android:paddingBottom="4dp"
                     android:paddingTop="4dp"
                     android:drawablePadding="4dp"
-                    tools:visibility="gone"
                     android:drawableEnd="@drawable/ic_bump_fee"
                     android:drawableTint="@color/accent"/>
 

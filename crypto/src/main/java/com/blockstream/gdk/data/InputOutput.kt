@@ -1,5 +1,7 @@
 package com.blockstream.gdk.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,16 +11,20 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
+@Parcelize
 data class InputOutput(
     @SerialName("address") val address: String? = null,
     @SerialName("addressee") val addressee: String? = null,
     @SerialName("address_type") val addressType: String? = null,
+
+
 
     // Maybe se it to null ?
     @SerialName("is_change") val isChange: Boolean? = null,
     @SerialName("is_output") val isOutput: Boolean,
     @SerialName("is_relevant") val isRelevant: Boolean,
     @SerialName("is_spent") val isSpent: Boolean,
+    @SerialName("is_internal") val isInternal: Boolean? = null,
 
     @SerialName("pointer") val pointer: Int,
     @SerialName("prevout_script") val prevoutScript: String? = null,
@@ -42,4 +48,4 @@ data class InputOutput(
     @SerialName("assetblinder") val assetblinder: String? = null,
     @SerialName("amountblinder") val amountblinder: String? = null,
     @SerialName("public_key") val publicKey: String? = null,
-)
+): Parcelable

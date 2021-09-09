@@ -23,5 +23,8 @@
     <item name="fastadapter_country_item_id" type="id" />
     <item name="fastadapter_title_expandable_item_id" type="id" />
     <item name="fastadapter_recovery_word_item_id" type="id" />
+    <item name="fastadapter_generic_detail_item_id" type="id" />
+    <item name="fastadapter_transaction_progress_item_id" type="id" />
+    <item name="fastadapter_transaction_fee_item_id" type="id" />
 
 </resources>

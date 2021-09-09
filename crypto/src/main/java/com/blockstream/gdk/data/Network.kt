@@ -61,6 +61,10 @@ data class Network(
     val defaultFee: Long
         get() = if(isLiquid) 100L else 1000L
 
+    val confirmationsRequired by lazy {
+        if(isLiquid) 2 else 6
+    }
+
     fun getVerPublic(): Int {
         return if (isMainnet) Wally.BIP32_VER_MAIN_PUBLIC else Wally.BIP32_VER_TEST_PUBLIC
     }

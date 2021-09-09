@@ -41,7 +41,6 @@ class MainActivity : AppActivity() {
             it.setDisplayShowTitleEnabled(false)
         }
 
-
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController

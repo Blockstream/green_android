@@ -3,26 +3,26 @@ package com.blockstream.green.ui.looks
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.blockstream.gdk.BalancePair
+import com.blockstream.gdk.data.Balance
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.gdk.data.Transaction
+import com.blockstream.gdk.params.Convert
+import com.blockstream.green.databinding.ListItemTransactionAssetBinding
 import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.utils.*
+import com.greenaddress.greenapi.model.Conversion
 import mu.KLogging
 
-class TransactionListLook(val session: GreenSession, private val tx: Transaction) {
+abstract class TransactionLook constructor(open val session: GreenSession, internal open val tx: Transaction) {
+    abstract val showFiat : Boolean
+    abstract val assetSize : Int
 
-    val assets : List<BalancePair> = tx.satoshi.toSortedMap { o1, o2 ->
-        if (o1 == session.network.policyAsset) -1 else o1.compareTo(o2)
-    }.mapNotNull {
-        if(session.isLiquid && it.key == session.network.policyAsset && tx.txType == Transaction.Type.OUT && tx.satoshi.size > 1){
-            // Remove to display fee as amount in liquid
-            null
-        }else {
-            it.toPair()
-        }
+    val assets by lazy {
+        tx.assets(session.network)
     }
 
     val date
@@ -33,12 +33,17 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
             .replace("\n", " ")
             .replace("\\s+".toRegex(), " ")
 
-    val assetSize
-        get() = if(tx.txType == Transaction.Type.REDEPOSIT) 1 else assets.size
+    val fee : String
+        get() = tx.fee.toBTCLook(session, withUnit = true, withDirection = tx.txType, withGrouping = true, withMinimumDigits = true)
+
+    val feeRate : String
+        get() = tx.feeRate.toFeeRate()
+
+    fun isPolicyAsset(index: Int) = assets[index].first == session.policyAsset
+
 
     fun amount(index: Int): String {
         if (tx.txType == Transaction.Type.REDEPOSIT) {
-            // Fee
             return tx.fee.toBTCLook(session, withUnit = false, withDirection = tx.txType, withGrouping = true, withMinimumDigits = true)
         }
 
@@ -58,7 +63,18 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
         }
     }
 
-    val valueColor
+
+    fun fiat(index: Int): String? {
+        assets[index].let{
+            return if(it.first == session.network.policyAsset){
+                session.convertAmount(Convert(satoshi = it.second)).fiat(withUnit = true)
+            }else{
+                null
+            }
+        }
+    }
+
+    private val valueColor
         get() = if (tx.isIn) R.color.brand_green else R.color.white
 
     fun ticker(index: Int): String {
@@ -83,6 +99,29 @@ class TransactionListLook(val session: GreenSession, private val tx: Transaction
             else -> {
                 ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_testnet_network_60)
             }
+        }
+    }
+
+    fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding) {
+        binding.directionColor = ContextCompat.getColor(binding.root.context, valueColor)
+
+        binding.amount = amount(index)
+        binding.fiat = if(showFiat) fiat(index)?.let { "≈ $it" } else null
+
+        binding.ticker.text = ticker(index)
+        binding.icon.setImageDrawable(getIcon(index, binding.icon.context))
+
+        if (tx.spv == Transaction.SPVResult.Disabled || tx.spv == Transaction.SPVResult.Verified) {
+            binding.spv.isVisible = false
+        } else {
+            binding.spv.isVisible = true
+            binding.spv.setImageResource(
+                when (tx.spv) {
+                    Transaction.SPVResult.InProgress -> R.drawable.ic_spv_in_progress
+                    Transaction.SPVResult.NotLongest -> R.drawable.ic_spv_warning
+                    else -> R.drawable.ic_spv_error
+                }
+            )
         }
     }
 

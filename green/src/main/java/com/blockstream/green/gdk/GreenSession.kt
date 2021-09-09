@@ -478,6 +478,13 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.ackSystemMessage(gaSession, message))
 
+    fun setTransactionMemo(txHash: String, memo: String): Boolean = try{
+        greenWallet.setTransactionMemo(gaSession, txHash, memo)
+        true
+    }catch (e: Exception){
+        e.printStackTrace()
+        false
+    }
 
     fun setPin(pin: String) =
         greenWallet.setPin(gaSession, greenWallet.getMnemonicPassphrase(gaSession), pin)

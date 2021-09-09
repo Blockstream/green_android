@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="fee"
+            type="String" />
+
+        <variable
+            name="feeRate"
+            type="String" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="top
+"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/id_fee"
+            android:textAppearance="@style/TextAppearance.Green.Body1" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{fee}"
+                android:textAlignment="viewEnd"
+                android:textAppearance="@style/TextAppearance.Green.Body1"
+                tools:text="0.000001123 BTC" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:includeFontPadding="false"
+                android:text="@{`(`+feeRate+`)`}"
+                android:textAlignment="viewEnd"
+                android:textSize="11sp"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                tools:text="(fee / rate)" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </LinearLayout>
+</layout>

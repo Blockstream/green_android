@@ -35,6 +35,17 @@ fun bindIsInvisible(view: View, isInvisible: Boolean) {
     view.isInvisible = isInvisible
 }
 
+@BindingAdapter("isInvissible")
+fun bindVisibility(view: View, visibility: Int) {
+    // Better to use View constants, but works even with 0, 1, 2
+    view.visibility = when (visibility) {
+        0 -> View.VISIBLE
+        1 -> View.INVISIBLE
+        2 -> View.GONE
+        else -> visibility
+    }
+}
+
 @BindingAdapter("error")
 fun bindError(view: TextInputLayout, error: String?) {
     view.error = error

@@ -11,7 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.Green.Button.Outlined"
+            tools:text="Button"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card"
@@ -23,7 +31,7 @@
             android:layout_marginBottom="16dp">
 
                 <TextView
-                    android:id="@+id/title"
+                    android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/id_add_new_account"

@@ -5,6 +5,7 @@ import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.GreenSession
+import com.greenaddress.greenapi.model.Conversion
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -137,6 +138,12 @@ fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean =
     } ?: "n/a"
 }
 
+fun Long.toFeeRate(): String {
+    val feePerByte = this / 1000.0
+    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte).let {
+        "$it satoshi / vbyte"
+    }
+}
 
 fun Date.formatOnlyDate(): String = DateFormat.getDateInstance(DateFormat.LONG).format(this)
 

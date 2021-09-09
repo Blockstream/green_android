@@ -74,7 +74,11 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     override fun onResume() {
         super.onResume()
-        requireActivity().window.setSoftInputMode(if (isAdjustResize) WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE else WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
+        // Prevent DrawerFragment from corrupting the main fragment
+        if(this !is DrawerFragment) {
+            requireActivity().window.setSoftInputMode(if (isAdjustResize) WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE else WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

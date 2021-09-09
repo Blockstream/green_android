@@ -1,6 +1,8 @@
 package com.blockstream.green.utils
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -40,6 +42,10 @@ fun Fragment.openKeyboard() {
             view?.applicationWindowToken, InputMethodManager.SHOW_FORCED, 0
         )
     }
+}
+
+fun Fragment.copyToClipboard(label: String, content: String, animateView: View? = null) {
+    copyToClipboard(label = label, content = content, context = requireContext(), animateView = animateView)
 }
 
 fun BottomSheetDialogFragment.dismissIn(timeMillis: Long){
