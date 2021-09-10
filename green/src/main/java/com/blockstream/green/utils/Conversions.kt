@@ -70,7 +70,8 @@ fun Double.feeRateWithUnit(): String {
     return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(this) + " satoshi / vbyte"
 }
 
-fun Balance.fiat(withUnit: Boolean = true): String {
+fun Balance?.fiat(withUnit: Boolean = true): String {
+    if(this == null) return "n/a"
     return try {
         val value = fiat!!.toDouble()
         userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(value)
@@ -79,17 +80,19 @@ fun Balance.fiat(withUnit: Boolean = true): String {
     } + if (withUnit) " $fiatCurrency" else ""
 }
 
-fun Balance.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
-    return this.btc(unit = session.getSettings()?.unit ?: "BTC", withUnit = withUnit, withGrouping = withGrouping)
+fun Balance?.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
+    if(this == null) return "n/a"
+    return btc(unit = session.getSettings()?.unit ?: "BTC", withUnit = withUnit, withGrouping = withGrouping)
 }
 
-private fun Balance.btc(unit: String, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
+private fun Balance?.btc(unit: String, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
+    if(this == null) return "n/a"
     return try {
         val value = getValue(unit).toDouble()
         userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = true).format(value)
     } catch (e: Exception) {
         "n/a"
-    } + if (withUnit) " ${unit}" else ""
+    } + if (withUnit) " $unit" else ""
 }
 
 fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
@@ -100,7 +103,9 @@ fun Long.btc(settings: Settings, withUnit: Boolean = true): String {
     } + if (withUnit) " ${settings.unit}" else ""
 }
 
-fun Balance.asset(withUnit: Boolean = true, withGrouping: Boolean = false): String {
+fun Balance?.asset(withUnit: Boolean = true, withGrouping: Boolean = false): String {
+    if(this == null) return "n/a"
+
     return try {
         userNumberFormat(assetInfo?.precision ?: 0, withDecimalSeparator = false, withGrouping = withGrouping).format(assetValue?.toDouble() ?: satoshi)
     } catch (e: Exception) {
@@ -109,32 +114,29 @@ fun Balance.asset(withUnit: Boolean = true, withGrouping: Boolean = false): Stri
 }
 
 fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
-    val look = session.convertAmount(Convert(this)).btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)
-
-    withDirection?.let {
-        return if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){
-            "-$look"
-        }else{
-            "+$look"
-        }
-    }
-
-    return look
+    return session.convertAmount(Convert(this))?.btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)?.let{ amount ->
+        withDirection?.let { direction ->
+            return if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){
+                "-$amount"
+            }else{
+                "+$amount"
+            }
+        } ?: amount
+    } ?: "n/a"
 }
 
 fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean = true, withGrouping: Boolean = false, withDirection: Transaction.Type? = null): String {
-    val look = session.convertAmount(Convert(this, session.getAsset(assetId))).asset(withUnit = withUnit, withGrouping = withGrouping)
-
-    withDirection?.let {
-        return if(it == Transaction.Type.REDEPOSIT || it == Transaction.Type.OUT){
-            "-$look"
-        }else{
-            "+$look"
-        }
-    }
-
-    return look
+    return session.convertAmount(Convert(this, session.getAsset(assetId)))?.asset(withUnit = withUnit, withGrouping = withGrouping)?.let{ amount ->
+        withDirection?.let { direction ->
+            if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){
+                "-$amount"
+            }else{
+                "+$amount"
+            }
+        } ?: amount
+    } ?: "n/a"
 }
+
 
 fun Date.formatOnlyDate(): String = DateFormat.getDateInstance(DateFormat.LONG).format(this)
 

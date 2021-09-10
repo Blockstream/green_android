@@ -7,7 +7,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Convert(
+data class Convert constructor(
     @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("asset_info") val asset: Asset? = null,
 

@@ -619,7 +619,12 @@ class GreenSession constructor(
                 }).addTo(disposables)
     }
 
-    fun convertAmount(convert: Convert) = greenWallet.convertAmount(gaSession, convert)
+    fun convertAmount(convert: Convert) = try{
+        greenWallet.convertAmount(gaSession, convert)
+    }catch (e: Exception){
+        e.printStackTrace()
+        null
+    }
 
     fun onNewNotification(notification: Notification) {
         logger.info { "onNewNotification $notification" }

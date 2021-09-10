@@ -39,8 +39,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
                 try {
                     // Amount is always in BTC value, convert it to user's settings
                     session
-                        .convertAmount(Convert.forUnit(session.network.policyAsset, amount))
-                        .btc(session, withUnit = false)
+                        .convertAmount(Convert.forUnit(session.network.policyAsset, amount)).btc(session, withUnit = false)
                 }catch (e: Exception){
                     e.printStackTrace()
                     amount
@@ -60,7 +59,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
 
                 // Convert it to BTC as per BIP21 spec
                 amount = input.getBalance(session).let { balance ->
-                    if(balance.satoshi > 0){
+                    if(balance != null && balance.satoshi > 0){
                         balance.btc.let {
                             // Remove trailing zeros if needed
                             if(it.contains(".")) it.replace("0*$".toRegex(), "").replace("\\.$".toRegex(), "") else it
@@ -84,7 +83,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
             binding.amount = try{
                 val input = UserInput.parseUserInput(session, binding.amount, isFiat = isFiat)
                 input.getBalance(session).let {
-                    if(it.satoshi > 0){
+                    if(it != null && it.satoshi > 0){
                         it.getValue(if(isFiat) getUnit(session) else getFiatCurrency(session))
                     }else{
                         ""

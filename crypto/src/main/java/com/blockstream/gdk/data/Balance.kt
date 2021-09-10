@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 
 @Serializable
-data class Balance(
+data class Balance constructor(
     @SerialName("bits") val bits: String,
     @SerialName("btc") val btc: String,
     @SerialName("fiat") val fiat: String?,
@@ -17,14 +17,14 @@ data class Balance(
     @SerialName("satoshi") val satoshi: Long,
     @SerialName("sats") val sats: String,
     @SerialName("ubtc") val ubtc: String,
-){
-    var assetValue : String? = null
-    var assetInfo : Asset? = null
+) {
+    var assetValue: String? = null
+    var assetInfo: Asset? = null
 
     fun getFiatValue() = "%s %s".format(fiat ?: "n/a", fiatCurrency)
 
     fun getValue(unit: String): String {
-        return when(unit.lowercase()){
+        return when (unit.lowercase()) {
             "\u00B5btc", "ubtc" -> ubtc
             "mbtc" -> mbtc
             "bits" -> bits
@@ -40,10 +40,11 @@ data class Balance(
          */
         fun fromJsonElement(json: Json, element: JsonElement, conversionFrom: Convert): Balance {
 
-            val balance : Balance = json.decodeFromJsonElement(element)
+            val balance: Balance = json.decodeFromJsonElement(element)
             conversionFrom.asset?.let {
                 balance.assetInfo = it
-                balance.assetValue = element.jsonObject[conversionFrom.asset.assetId]?.jsonPrimitive?.content
+                balance.assetValue =
+                    element.jsonObject[conversionFrom.asset.assetId]?.jsonPrimitive?.content
             }
 
             return balance
