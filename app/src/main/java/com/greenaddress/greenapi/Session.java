@@ -51,7 +51,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
         // Reset
         mSettings = null;
         mTwoFAReset = null;
-        mSubAccount = 0;
 
         getNotificationModel().reset();
     }

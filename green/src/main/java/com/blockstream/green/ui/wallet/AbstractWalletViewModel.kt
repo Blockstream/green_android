@@ -144,9 +144,12 @@ abstract class AbstractWalletViewModel constructor(
         subAccountLiveData.value = account
 
         wallet.activeAccount = account.pointer
-        wallet.observable {
-            walletRepository.updateWalletSync(wallet)
-        }.subscribeBy()
+
+        if(!wallet.isHardwareEmulated) {
+            wallet.observable {
+                walletRepository.updateWalletSync(wallet)
+            }.subscribeBy()
+        }
 
         session.setActiveAccount(account.pointer)
     }

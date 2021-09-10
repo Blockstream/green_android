@@ -42,7 +42,8 @@ class GreenSession constructor(
 ) : HttpRequestHandler, HttpRequestProvider, AssetsProvider {
     var isWatchOnly: Boolean = false
 
-    private var activeAccount = 0L
+    var activeAccount = 0L
+        private set
 
     private val balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
     private val transactionsSubject = BehaviorSubject.createDefault(listOf(Transaction.LoadingTransaction))

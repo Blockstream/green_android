@@ -258,8 +258,6 @@ class GreenApplication : Application(){
                     walletRepository.updateWalletSync(it)
                 }
             }
-
-            Session.getSession().subAccount = subaccount
         }
 
         Bridge.updateSettingsV4Fn = { gaSession ->
@@ -304,7 +302,8 @@ class GreenApplication : Application(){
             if(walletId >= 0){
                  walletRepository.getWalletSync(walletId)?.activeAccount?.toInt() ?: 0
             }else{
-                Session.getSession()?.subAccount ?: 0
+                // On HHW activeAccount is saved on the Wallet object (but not on the DB) and into the GreenSession
+                sessionManager.getWalletSession(gaSession)?.activeAccount?.toInt() ?: 0
             }
         }
 
@@ -368,7 +367,7 @@ class GreenApplication : Application(){
                 network = network.network,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = true,
-                activeAccount = Session.getSession().subAccount.toLong()
+                activeAccount = 0
             )
         }
     }
