@@ -13,7 +13,7 @@ func getNetwork() -> String {
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: EventWindow?
+    var window: UIWindow?
 
     func instantiateViewControllerAsRoot(storyboard: String, identifier: String) {
         let storyboard = UIStoryboard(name: storyboard, bundle: nil)
@@ -69,8 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupAppearance()
 
         // Load custom window to handle touches event
-        window = EventWindow.init(frame: UIScreen.main.bounds)
-        window?.startObserving()
+        window = UIWindow(frame: UIScreen.main.bounds)
 
         // Initialize gdk and accounts
         try? gdkinitialize()
@@ -126,7 +125,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         ScreenLocker.shared.stopObserving()
-        window?.stopObserving()
     }
 
 }
