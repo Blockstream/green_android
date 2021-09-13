@@ -26,6 +26,8 @@ import com.greenaddress.greenbits.wallets.TrezorHWWallet;
 import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.JadeError;
+import com.greenaddress.jade.entities.JadeVersion;
+import com.greenaddress.jade.entities.VersionInfo;
 import com.satoshilabs.trezor.Trezor;
 
 import java.util.Collections;
@@ -43,6 +45,8 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class HardwareConnect {
     private static final String TAG = HardwareConnect.class.getSimpleName();
+
+    private static final JadeVersion JADE_VERSION_SUPPORTS_HOST_UNBLINDING = new JadeVersion("0.1.27");
 
     private final CompositeDisposable mDisposables = new CompositeDisposable();
     private HWWallet mHwWallet;
@@ -120,7 +124,8 @@ public class HardwareConnect {
                         rslt -> {
                             if (rslt) {
                                 // Connected - ok to proceed to fw check, pin, login etc.
-                                onJadeConnected(interaction, jade);
+                                final VersionInfo verInfo = jade.getVersionInfo();
+                                onJadeConnected(interaction, verInfo, jade);
                             } else {
                                 Log.e(TAG, "Failed to connect to Jade");
                                 interaction.showInstructions(R.string.id_please_reconnect_your_hardware);
@@ -146,7 +151,10 @@ public class HardwareConnect {
         interaction.getGreenSession().connect(interaction.getGreenSession().getNetworks().getBitcoinGreen());
     }
 
-    private void onJadeConnected(final HardwareConnectInteraction interaction, final JadeAPI jade) {
+    private void onJadeConnected(final HardwareConnectInteraction interaction, final VersionInfo verInfo, final JadeAPI jade) {
+        final JadeVersion version = new JadeVersion(verInfo.getJadeVersion());
+        final boolean supportsHostUnblinding = JADE_VERSION_SUPPORTS_HOST_UNBLINDING.compareTo(version) <= 0;
+
         mDisposables.add(Single.just(interaction.getGreenSession())
                 .subscribeOn(Schedulers.io())
 
@@ -161,7 +169,7 @@ public class HardwareConnect {
 
                 // Then create JadeHWWallet instance and authenticate (with pinserver) still on background thread
                 .doOnSuccess(session -> Log.d(TAG, "Creating Jade HW Wallet)"))
-                .map(session -> new Device("Jade", true, true, false,
+                .map(session -> new Device("Jade", true, true, supportsHostUnblinding,
                         DeviceSupportsLiquid.Lite,
                         DeviceSupportsAntiExfilProtocol.Optional))
                 .map(device -> {
