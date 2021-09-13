@@ -58,7 +58,7 @@ class ReceiveViewModel @AssistedInject constructor(
     fun generateAddress() {
 
         session.observable {
-            it.getReceiveAddress(wallet.activeAccount)
+            it.getReceiveAddress(session.activeAccount)
                 .result<Address>(
                     hardwareWalletResolver = HardwareCodeResolver(
                         this,
@@ -86,7 +86,7 @@ class ReceiveViewModel @AssistedInject constructor(
             deviceAddressValidationEvent.value = ConsumableEvent(null)
 
             session.hwWallet?.observable(timeout = 30) {
-                val subAccount = session.getSubAccount(wallet.activeAccount).result<SubAccount>(
+                val subAccount = session.getSubAccount(session.activeAccount).result<SubAccount>(
                     hardwareWalletResolver = HardwareCodeResolver(
                         this,
                         session.hwWallet

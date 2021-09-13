@@ -71,7 +71,7 @@ abstract class AbstractWalletViewModel constructor(
         if (session.isConnected) {
 
             session.observable {
-                it.getSubAccount(wallet.activeAccount).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(session.hwWallet))
+                it.getSubAccount(session.activeAccount).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(session.hwWallet))
             }.subscribe({
                 subAccountLiveData.value = it
             }, {

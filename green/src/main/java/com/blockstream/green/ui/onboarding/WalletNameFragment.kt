@@ -48,14 +48,7 @@ class WalletNameFragment :
 
         binding.buttonContinue.setOnClickListener {
             options?.let {
-                if(it.isHardwareOnboarding()){
-
-                    // This is only available in DEVELOPMENT flavor until development completes
-                    if(requireContext().isDevelopmentFlavor()){
-                        viewModel.loginWithDevice(it)
-                    }
-
-                } else if(it.isRestoreFlow){
+                if(it.isRestoreFlow){
                     viewModel.checkRecoveryPhrase(it.network!!, args.mnemonic, args.mnemonicPassword)
                 }else{
                     navigateToPin()

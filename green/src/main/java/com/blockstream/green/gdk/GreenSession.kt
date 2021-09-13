@@ -282,7 +282,7 @@ class GreenSession constructor(
                 ).resolve()
             }
 
-            onLoginSuccess(it)
+            onLoginSuccess(it, 0)
         }
     }
 
@@ -298,7 +298,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(username = username, password = password))
         ).result<LoginData>().also {
-            onLoginSuccess(it)
+            onLoginSuccess(it, 0)
         }
     }
 
@@ -328,7 +328,7 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, deviceParams = DeviceParams(gdkDevice))
         ).result<LoginData>(hardwareWalletResolver = hardwareWalletResolver).also {
-            onLoginSuccess(it)
+            onLoginSuccess(it, 0)
         }
     }
 
@@ -360,7 +360,7 @@ class GreenSession constructor(
                }
            }
 
-            onLoginSuccess(it)
+            onLoginSuccess(it, 0)
         }
     }
 
@@ -372,21 +372,23 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(pin = pin, pinData = pinData))
         ).result<LoginData>().also {
-            onLoginSuccess(it)
+            onLoginSuccess(it, wallet.activeAccount)
         }
     }
 
-    private fun onLoginSuccess(loginData: LoginData){
+    private fun onLoginSuccess(loginData: LoginData, initAccountIndex: Long){
         isConnected = true
         walletHashId = loginData.walletHashId
-        initializeSessionData()
+        initializeSessionData(initAccountIndex)
 
         sessionManager.fireConnectionChangeEvent()
     }
 
-    private fun initializeSessionData() {
+    private fun initializeSessionData(initAccountIndex: Long) {
         updateSubAccounts()
         updateSystemMessage()
+
+        setActiveAccount(initAccountIndex)
 
         if (network.isLiquid) {
             assetsManager.updateAssetsIfNeeded(this)

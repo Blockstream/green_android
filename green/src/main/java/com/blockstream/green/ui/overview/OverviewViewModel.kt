@@ -22,8 +22,8 @@ import kotlin.properties.Delegates
 class OverviewViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
-    @Assisted wallet: Wallet,
-) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
+    @Assisted initWallet: Wallet,
+) : AbstractWalletViewModel(sessionManager, walletRepository, initWallet) {
 
     enum class State {
         Overview, Account, Asset
@@ -64,8 +64,6 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     init {
-        session.setActiveAccount(wallet.activeAccount)
-
         session
             .getBalancesObservable()
             .subscribe {
@@ -130,7 +128,7 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     private fun filterSubAccounts(subAccounts: List<SubAccount>): List<SubAccount> {
-        return subAccounts.filter { it.pointer != wallet.activeAccount }
+        return subAccounts.filter { it.pointer != session.activeAccount }
     }
 
     fun setSubAccount(index: Long) {
@@ -152,9 +150,7 @@ class OverviewViewModel @AssistedInject constructor(
         allBalances = linkedMapOf(BalanceLoading)
         shownBalances.postValue(allBalances)
 
-        allSubAccounts.let {
-            filteredSubAccounts.value = filterSubAccounts(it)
-        }
+        filteredSubAccounts.value = filterSubAccounts(allSubAccounts)
     }
 
     fun setAsset(balancePair: BalancePair) {

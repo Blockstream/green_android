@@ -103,40 +103,6 @@ open class OnboardingViewModel(
         })
     }
 
-    // EMULATES DEVICE LOGIN
-    fun loginWithDevice(options: OnboardingOptions){
-        session.observable {
-
-            // DON'T USE THIS MNEMONIC
-            // DON'T MOVE ANY FUNDS, It's just here for development purposes and should be removed
-            val network = options.network!!
-            val mnemonic = "ADD MNEMONIC HERE"
-            val loginData = it.loginWithMnemonic(network, mnemonic, "")
-
-            val wallet = Wallet(
-                walletHashId = loginData.walletHashId,
-                name = generateWalletName(network, options.walletName),
-                network = network.id,
-                isRecoveryPhraseConfirmed = true,
-                isHardware = true
-            )
-
-            wallet.id = walletRepository.addWallet(wallet)
-
-            sessionManager.upgradeOnBoardingSessionToWallet(wallet)
-
-            wallet
-        }.doOnSubscribe {
-            onProgress.value = true
-        }.doOnTerminate {
-            onProgress.value = false
-        }.subscribe({
-            onEvent.postValue(ConsumableEvent(it))
-        }, {
-            onError.value = ConsumableEvent(it)
-        })
-    }
-
     fun restoreWithPin(options: OnboardingOptions, pin: String) {
         session.observable {
             val network = options.network!!

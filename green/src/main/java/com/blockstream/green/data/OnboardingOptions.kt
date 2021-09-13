@@ -17,12 +17,8 @@ data class OnboardingOptions(
     val isBIP39: Boolean = false,
     val networkType: String? = null,
     val network: Network? = null,
-    val walletName: String? = null,
-    val deviceId: Int = 0
+    val walletName: String? = null
 ) : Parcelable{
-
-    fun isHardwareOnboarding() = deviceId != 0
-
     fun getNetwork(isElectrum: Boolean, greenWallet: GreenWallet): Network {
         val id = when (networkType) {
             Network.GreenMainnet -> {

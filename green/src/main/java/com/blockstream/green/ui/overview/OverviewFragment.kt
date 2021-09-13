@@ -390,8 +390,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             it.disable()
         }
 
-        val transactionAdapter = ModelAdapter<Transaction, TransactionListItem>() {
-            TransactionListItem(session, it)
+        val transactionAdapter = ModelAdapter<Transaction, TransactionListItem> {
+            TransactionListItem(session, it, it.getConfirmations(session.blockHeight))
         }.observeList(viewLifecycleOwner, viewModel.getTransactions()) {
             transactionsFooterAdapter.clear()
 

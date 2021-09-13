@@ -14,7 +14,10 @@ import com.blockstream.green.ui.looks.TransactionListLook
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import mu.KLogging
 
-data class TransactionListItem constructor(val session: GreenSession, val tx: Transaction) : AbstractBindingItem<ListItemTransactionBinding>() {
+// Confirmation is used as part of the data class so that we can identify if the item needs to be re-draw
+// based on equal() method of the implemented data class
+data class TransactionListItem constructor(val session: GreenSession, val tx: Transaction, val confirmations: Long) : AbstractBindingItem<ListItemTransactionBinding>() {
+
     override val type: Int
         get() = R.id.fastadapter_transaction_item_id
 
@@ -37,7 +40,8 @@ data class TransactionListItem constructor(val session: GreenSession, val tx: Tr
 
         if(binding.isLoading == true){ return }
 
-        binding.confirmations = tx.getConfirmations(session.blockHeight).also { logger.info { "Confs: $it" } }
+        binding.confirmations = confirmations
+        binding.confirmationsRequired = if(session.isLiquid) 2 else 6
         binding.date = look.date
         binding.memo = look.memo
 
