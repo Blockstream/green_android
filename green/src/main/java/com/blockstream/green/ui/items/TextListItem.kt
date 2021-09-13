@@ -7,7 +7,7 @@ import com.blockstream.green.databinding.ListItemTextBinding
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-data class TextListItem(
+data class TextListItem constructor(
     val title: StringHolder,
 ) : AbstractBindingItem<ListItemTextBinding>() {
     override val type: Int

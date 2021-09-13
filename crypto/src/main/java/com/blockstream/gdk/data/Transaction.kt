@@ -75,6 +75,8 @@ data class Transaction(
         )
     }
 
+    fun isLoadingTransaction() = blockHeight == -1L
+
     companion object {
         // Create a dummy transaction to describe the loading state (blockHeight == -1)
         val LoadingTransaction = Transaction(

@@ -36,10 +36,12 @@ data class TransactionListItem constructor(val session: GreenSession, val tx: Tr
     }
 
     override fun bindView(binding: ListItemTransactionBinding, payloads: List<Any>) {
-        binding.isLoading = tx.blockHeight == -1L
+        if(tx.isLoadingTransaction()){
+            binding.isLoading = true
+            return
+        }
 
-        if(binding.isLoading == true){ return }
-
+        binding.isLoading = false
         binding.confirmations = confirmations
         binding.confirmationsRequired = if(session.isLiquid) 2 else 6
         binding.date = look.date

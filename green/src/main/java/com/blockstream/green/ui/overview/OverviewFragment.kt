@@ -27,6 +27,7 @@ import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAccountBinding
 import com.blockstream.green.databinding.OverviewFragmentBinding
+import com.blockstream.green.gdk.getConfirmationsMax
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
@@ -361,6 +362,21 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         }
 
+        // Block headers
+        val blockHeaderAdapter = FastItemAdapter<GenericItem>()
+        if(isDevelopmentFlavor()) {
+            viewModel.getBlock().observe(viewLifecycleOwner) {
+                blockHeaderAdapter.set(
+                    listOf(
+                        BlockHeaderListItem(
+                            StringHolder("Block height: ${it.height}"),
+                            session.network
+                        )
+                    )
+                )
+            }
+        }
+
         // Assets Balance
         val assetsBalanceAdapter =  ModelAdapter<BalancePair, AssetListItem>() {
             AssetListItem(session, it, isAssetState && viewModel.wallet.isLiquid, (it.first.isEmpty() && it.second == -1L))
@@ -378,7 +394,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         }
 
-        val transactionsFooterAdapter = ItemAdapter<ProgressItem>()
+        val transactionsFooterAdapter = ItemAdapter<GenericItem>()
 
         val endlessRecyclerOnScrollListener = object : EndlessRecyclerOnScrollListener(recycler) {
             override fun onLoadMore() {
@@ -391,7 +407,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         val transactionAdapter = ModelAdapter<Transaction, TransactionListItem> {
-            TransactionListItem(session, it, it.getConfirmations(session.blockHeight))
+            // use getConfirmationsMax to avoid animations after a tx is confirmed
+            TransactionListItem(session, it, it.getConfirmationsMax(session))
         }.observeList(viewLifecycleOwner, viewModel.getTransactions()) {
             transactionsFooterAdapter.clear()
 
@@ -415,6 +432,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             alertCardsAdapter,
             systemMessageAdapter,
             managedAssetsAccountIdAdapter,
+            blockHeaderAdapter,
             assetsTitleAdapter,
             assetsBalanceAdapter,
             titleAdapter,
@@ -554,6 +572,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             managedAssetsAccountIdAdapter.itemAdapter.active = isOverviewState
             assetsTitleAdapter.itemAdapter.active = isOverviewOrAssets && wallet.isLiquid
             assetsBalanceAdapter.active = isOverviewOrAssets
+            blockHeaderAdapter.itemAdapter.active = isOverviewOrAssets
             titleAdapter.itemAdapter.active = isOverviewOrAssets
             transactionAdapter.active = isOverviewOrAssets
             transactionsFooterAdapter.active = isOverviewOrAssets

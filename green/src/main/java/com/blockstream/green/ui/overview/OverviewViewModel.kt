@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 
 
 import com.blockstream.gdk.*
+import com.blockstream.gdk.data.Block
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.database.Wallet
@@ -45,6 +46,8 @@ class OverviewViewModel @AssistedInject constructor(
     private val assetsUpdated: MutableLiveData<ConsumableEvent<Boolean>> = MutableLiveData()
     private val selectedAsset = MutableLiveData<String?>()
 
+    private val block: MutableLiveData<Block> = MutableLiveData()
+
     fun getSystemMessage(): LiveData<String?> = systemMessage
     fun getState(): LiveData<State> = state
     fun getFilteredSubAccounts(): LiveData<List<SubAccount>> = filteredSubAccounts
@@ -53,6 +56,8 @@ class OverviewViewModel @AssistedInject constructor(
     fun isMainnet(): LiveData<Boolean> = MutableLiveData(session.isMainnet)
     fun isLiquid(): LiveData<Boolean> = MutableLiveData(wallet.isLiquid)
     fun getTransactions(): LiveData<List<Transaction>> = transactions
+    fun getBlock(): LiveData<Block> = block
+
 
     fun getSelectedAsset(): LiveData<String?> = selectedAsset
     fun getAssetsUpdated(): MutableLiveData<ConsumableEvent<Boolean>> = assetsUpdated
@@ -64,6 +69,10 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     init {
+        session.getBlockObservable().subscribe {
+            block.postValue(it)
+        }.addTo(disposables)
+
         session
             .getBalancesObservable()
             .subscribe {
@@ -170,14 +179,13 @@ class OverviewViewModel @AssistedInject constructor(
 //        }
     }
 
-    fun refreshTransactions(){
-        session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
+    fun refreshTransactions(): Boolean {
+        return session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
     }
 
-    fun loadMoreTransactions(){
+    fun loadMoreTransactions(): Boolean {
         logger.info { "loadMoreTransactions" }
-        // session.loadMoreTransactions()
-        session.updateTransactionsAndBalance(isReset = false, isLoadMore = true)
+        return session.updateTransactionsAndBalance(isReset = false, isLoadMore = true)
     }
 
     @dagger.assisted.AssistedFactory

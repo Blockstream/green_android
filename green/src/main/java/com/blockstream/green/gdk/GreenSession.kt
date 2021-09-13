@@ -447,17 +447,16 @@ class GreenSession constructor(
     var hasMoreTransactions = false
     var isLoadingTransactions = AtomicBoolean(false)
     var transactionListBootstrapped = false
-    fun updateTransactionsAndBalance(isReset: Boolean, isLoadMore: Boolean) {
+    fun updateTransactionsAndBalance(isReset: Boolean, isLoadMore: Boolean) : Boolean {
 
         // For the pager to be instantiated correctly a call with isReset=true should be called first.
         if(!(transactionListBootstrapped || isReset)){
-            return
+            return false
         }
 
         // Prevent race condition
         if (!isLoadingTransactions.compareAndSet(false, true)){
-            logger.info { "Prevent race condition" }
-            return
+            return false
         }
 
         transactionListBootstrapped = true
@@ -495,27 +494,42 @@ class GreenSession constructor(
         .doOnTerminate {
             isLoadingTransactions.set(false)
         }
-        .subscribeBy(onError = {
-            it.printStackTrace()
-            it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
-        }, onSuccess = {
-            if (isReset || isLoadMore) {
-                hasMoreTransactions = it.transactions.size == TRANSACTIONS_PER_PAGE
-            }
-            if (isLoadMore) {
-                transactionsSubject.onNext((transactionsSubject.value ?: listOf()) + it.transactions)
-                txOffset += TRANSACTIONS_PER_PAGE
-            }else{
-                transactionsSubject.onNext(it.transactions)
-            }
+        .subscribeBy(
+            onError = {
+                it.printStackTrace()
+                it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
 
-            // If user changed his active account without this method still running (blocked), check
-            // if active account is changed and fetch transaction of the current active account
-            if(accountBeingFetched != activeAccount){
-                updateTransactionsAndBalance(isReset = true, isLoadMore = false)
-            }
+                // Re-set the list to unblock endless loader
+                transactionsSubject.onNext(
+                    if (transactionsSubject.value?.getOrNull(0)?.isLoadingTransaction() == true) {
+                        listOf()
+                    } else {
+                        transactionsSubject.value
+                    }
+                )
+            }, onSuccess = {
+                if (isReset || isLoadMore) {
+                    hasMoreTransactions = it.transactions.size == TRANSACTIONS_PER_PAGE
+                }
+                if (isLoadMore) {
+                    transactionsSubject.onNext(
+                        (transactionsSubject.value ?: listOf()) + it.transactions
+                    )
+                    txOffset += TRANSACTIONS_PER_PAGE
+                } else {
+                    transactionsSubject.onNext(it.transactions)
+                }
 
-        }).addTo(disposables)
+                // If user changed his active account without this method still running (blocked), check
+                // if active account is changed and fetch transaction of the current active account
+                if (accountBeingFetched != activeAccount) {
+                    updateTransactionsAndBalance(isReset = true, isLoadMore = false)
+                }
+
+            }
+        ).addTo(disposables)
+
+        return true
     }
 
     private fun getBalance(params: BalanceParams): Balances {

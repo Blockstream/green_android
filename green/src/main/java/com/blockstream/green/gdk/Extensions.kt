@@ -3,10 +3,7 @@ package com.blockstream.green.gdk
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import com.blockstream.gdk.data.AccountType
-import com.blockstream.gdk.data.Asset
-import com.blockstream.gdk.data.Device
-import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.*
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.libgreenaddress.KotlinGDK
@@ -16,6 +13,10 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
+
+fun Transaction.getConfirmationsMax(session: GreenSession): Long {
+    return this.getConfirmations(session.blockHeight).coerceAtMost((if (session.isLiquid) 3 else 7))
+}
 
 fun AccountType?.titleRes(): Int = when (this) {
     AccountType.STANDARD -> R.string.id_standard_account
