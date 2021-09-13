@@ -9,9 +9,9 @@ import kotlinx.serialization.json.*
 data class Balance constructor(
     @SerialName("bits") val bits: String,
     @SerialName("btc") val btc: String,
-    @SerialName("fiat") val fiat: String?,
+    @SerialName("fiat") val fiat: String? = null,
     @SerialName("fiat_currency") val fiatCurrency: String,
-    @SerialName("fiat_rate") val fiatRate: String?,
+    @SerialName("fiat_rate") val fiatRate: String? = null,
     @SerialName("is_fiat") val isFiat: Boolean = false, // this options is only available in 2fa threshold
     @SerialName("mbtc") val mbtc: String,
     @SerialName("satoshi") val satoshi: Long,
@@ -35,6 +35,18 @@ data class Balance constructor(
     }
 
     companion object {
+        fun fromAssetWithoutMetadata(convert: Convert): Balance {
+            return Balance(
+                satoshi = convert.satoshi ?: 0,
+                bits = "",
+                btc = "",
+                fiatCurrency = "",
+                mbtc = "",
+                sats = "",
+                ubtc = ""
+            )
+        }
+
         /**
         Transform the gdk json to a more appropriate format
          */

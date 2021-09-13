@@ -23,7 +23,7 @@ data class Convert constructor(
         get() = false
 
     override fun kSerializer(): KSerializer<Convert> {
-        return Convert.serializer()
+        return serializer()
     }
 
     companion object{

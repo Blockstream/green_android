@@ -620,8 +620,14 @@ class GreenSession constructor(
                 }).addTo(disposables)
     }
 
-    fun convertAmount(convert: Convert) = try{
-        greenWallet.convertAmount(gaSession, convert)
+    // asset_info in Convert object can be null for liquid assets that don't have asset metadata
+    // if no asset is given, no conversion is needed (conversion will be identified as a btc value in gdk)
+    fun convertAmount(convert: Convert, isAsset: Boolean = false) = try{
+        if(isAsset && convert.asset == null){
+            Balance.fromAssetWithoutMetadata(convert)
+        }else {
+            greenWallet.convertAmount(gaSession, convert)
+        }
     }catch (e: Exception){
         e.printStackTrace()
         null

@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import com.blockstream.green.R
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.gdk.data.Asset
-import com.blockstream.green.gdk.getIcon
+import com.blockstream.gdk.data.Balance
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.utils.asset
@@ -14,7 +14,7 @@ import com.blockstream.green.utils.btc
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 
 
-class AssetListLook(
+class AssetListLook constructor(
     private val id: String,
     val amount: Long,
     val asset: Asset?,
@@ -30,17 +30,16 @@ class AssetListLook(
             return if(isBTCValue){
                 session.convertAmount(Convert(satoshi = amount)).btc(session, withUnit = false, withGrouping = true)
             }else{
-                session.convertAmount(Convert(satoshi = amount, asset = asset)).asset(withUnit = false, withGrouping = true)
+                session.convertAmount(Convert(satoshi = amount, asset = asset), isAsset = true).asset(withUnit = false, withGrouping = true)
             }
         }
 
-    val fiatValue by lazy {
-        if (isBTCValue) {
-            session.convertAmount(Convert(amount))
-        } else {
-            null
-        }
-    }
+    val fiatValue : Balance?
+        get() = if (isBTCValue) {
+                session.convertAmount(Convert(satoshi = amount))
+            } else {
+                null
+            }
 
     val name: String
         get() {

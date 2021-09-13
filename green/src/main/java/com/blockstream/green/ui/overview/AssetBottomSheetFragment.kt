@@ -62,7 +62,7 @@ class AssetBottomSheetFragment : WalletBottomSheetDialogFragment<AssetDetailsBot
             .subscribeBy(
                 onNext = {
                     it[assetId]?.let {
-                        balanceListItem.text = StringHolder(session.convertAmount(Convert(satoshi = it, asset = asset)).asset(false))
+                        balanceListItem.text = StringHolder(session.convertAmount(Convert(satoshi = it, asset = asset), isAsset = true).asset(false))
                     }
                 }
             )

@@ -114,7 +114,7 @@ fun Balance?.asset(withUnit: Boolean = true, withGrouping: Boolean = false): Str
 }
 
 fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
-    return session.convertAmount(Convert(this))?.btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)?.let{ amount ->
+    return session.convertAmount(Convert(satoshi = this))?.btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)?.let{ amount ->
         withDirection?.let { direction ->
             return if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){
                 "-$amount"
@@ -126,7 +126,7 @@ fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirectio
 }
 
 fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean = true, withGrouping: Boolean = false, withDirection: Transaction.Type? = null): String {
-    return session.convertAmount(Convert(this, session.getAsset(assetId)))?.asset(withUnit = withUnit, withGrouping = withGrouping)?.let{ amount ->
+    return session.convertAmount(Convert(satoshi = this, session.getAsset(assetId)), isAsset = true)?.asset(withUnit = withUnit, withGrouping = withGrouping)?.let{ amount ->
         withDirection?.let { direction ->
             if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){
                 "-$amount"
