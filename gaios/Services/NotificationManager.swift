@@ -121,8 +121,6 @@ class NotificationManager {
     func reconnect() -> Promise<[String: Any]> {
         let bgq = DispatchQueue.global(qos: .background)
         let session = SessionManager.shared
-        let account = AccountsManager.shared.current
-        let isHwLogin = account?.isJade ?? false || account?.isLedger ?? false
         return Guarantee().then(on: bgq) { _ in
             return try session.loginUser(details: [:], hw_device: [:]).resolve()
         }
