@@ -440,7 +440,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             transactionsFooterAdapter
         )
 
-        val fastAdapter = FastAdapter.with(adapters)
+        val fastAdapter = FastAdapter.with(adapters).also{
+            it.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        }
 
         // Notify adapter when we have new assets
         viewModel.getAssetsUpdated().observe(viewLifecycleOwner) {
