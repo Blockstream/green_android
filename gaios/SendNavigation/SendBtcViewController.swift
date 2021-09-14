@@ -119,10 +119,10 @@ class SendBtcViewController: KeyboardViewController {
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().compactMap { [unowned self] _ -> [String: Any] in
             if self.isSweep {
-                return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount]
+                return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount, "utxos": []]
             } else {
                 // user input can be a bitcoin or liquid uri as well as an address
-                return ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount]
+                return ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount, "utxos": []]
             }
         }.compactMap(on: bgq) { data in
             try SessionManager.shared.createTransaction(details: data)
