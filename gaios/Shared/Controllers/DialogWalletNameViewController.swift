@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import PromiseKit
 
-protocol DialogWalletNameViewControllerDelegate: class {
+protocol DialogWalletNameViewControllerDelegate: AnyObject {
     func didSave(_ name: String)
     func didCancel()
 }
@@ -27,12 +27,18 @@ class DialogWalletNameViewController: KeyboardViewController {
     weak var delegate: DialogWalletNameViewControllerDelegate?
 
     var buttonConstraint: NSLayoutConstraint?
+    var isAccountRename = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         lblTitle.text = NSLocalizedString("id_set_wallet_name", comment: "")
         lblHint.text = NSLocalizedString("id_choose_a_name_for_your_wallet", comment: "")
+
+        if isAccountRename {
+            lblTitle.text = "Account Name"
+            lblHint.text = ""
+        }
 
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
         btnSave.cornerRadius = 4.0

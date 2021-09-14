@@ -439,9 +439,12 @@ extension TransactionsController: UITableViewDataSourcePrefetching {
         if !filteredIndexPaths.contains(where: { $0.row >= self.txs[$0.section - 1].list.count - 1 }) { return }
         if self.txs.count == 0 { return }
         if self.txs.last?.list.count == 0 { return }
-        if fetchTxs != nil && fetchTxs!.isPending { return }
+        if fetchTxs != nil && fetchTxs!.isPending {
+            print("---> null or pending")
+            return }
         let count = txs.map { $0.list.count }.reduce(0, +)
         fetchTxs = SessionManager.shared.transactions(first: UInt32(count)).map { txs in
+            print("---> fetch \(count)")
             self.txs.append(txs)
             self.showTransactions()
         }

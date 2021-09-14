@@ -3,6 +3,7 @@ enum Constants {
     static let wordsPerPage = 6
     static let wordsPerQuiz = 4
     static let electrumPrefix = "electrum-"
+    static let trxPerPage: UInt32 = 30
 }
 
 enum AppStorage {

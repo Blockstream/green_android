@@ -3,6 +3,7 @@ import UIKit
 enum ButtonStyle {
     case primary
     case primaryDisabled
+    case outlinedGray
 }
 
 @IBDesignable
@@ -146,6 +147,12 @@ extension UIButton {
             backgroundColor = UIColor.customBtnOff()
             setTitleColor(UIColor.customGrayLight(), for: .normal)
             isEnabled = false
+        case .outlinedGray:
+            backgroundColor = UIColor.clear
+            setTitleColor(UIColor.white, for: .normal)
+            layer.borderWidth = 1.0
+            layer.borderColor = UIColor.customGrayLight().cgColor
+            layer.cornerRadius = 5.0
         }
     }
 }

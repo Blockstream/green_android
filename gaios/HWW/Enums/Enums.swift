@@ -36,4 +36,15 @@ enum AvailableNetworks: String, CaseIterable {
             return UIImage(named: "ntw_testnet")!
         }
     }
+
+    func color() -> UIColor {
+        switch self {
+        case .bitcoin:
+            return UIColor.accountOrange()
+        case .liquid:
+            return UIColor.accountLightBlue()
+        case .testnet:
+            return UIColor.accountGray()
+        }
+    }
 }

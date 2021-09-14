@@ -1,5 +1,7 @@
 import Foundation
 
+typealias VoidToVoid = () -> Void
+
 extension UInt {
     func uint32BE() -> [UInt8] {
         return [UInt8((self >> 24) & 0xff), UInt8((self >> 16) & 0xff),

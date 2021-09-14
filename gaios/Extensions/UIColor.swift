@@ -101,4 +101,16 @@ extension UIColor {
     class func infoBlue() -> UIColor {
         return UIColor(named: "infoBlue")!
     }
+    
+    class func accountOrange() -> UIColor {
+        return UIColor(named: "accountOrange")!
+    }
+    
+    class func accountGray() -> UIColor {
+        return UIColor(named: "accountGray")!
+    }
+    
+    class func accountLightBlue() -> UIColor {
+        return UIColor(named: "accountLightBlue")!
+    }
 }

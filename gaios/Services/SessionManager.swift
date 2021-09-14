@@ -62,7 +62,7 @@ class SessionManager: Session {
         let bgq = DispatchQueue.global(qos: .background)
         let pointer = activeWallet
         return Guarantee().then(on: bgq) {_ in
-            try SessionManager.shared.getTransactions(details: ["subaccount": pointer, "first": first, "count": 15]).resolve()
+            try SessionManager.shared.getTransactions(details: ["subaccount": pointer, "first": first, "count": Constants.trxPerPage]).resolve()
         }.compactMap(on: bgq) { data in
             let result = data["result"] as? [String: Any]
             let dict = result?["transactions"] as? [[String: Any]]

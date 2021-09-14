@@ -93,5 +93,9 @@ class ContainerViewController: UIViewController {
            let vc = nv.topViewController as? TransactionsController {
             vc.presentingWallet = presentingWallet
         }
+        if let nv = segue.destination as? UINavigationController,
+           let vc = nv.topViewController as? OverviewViewController {
+            vc.presentingWallet = presentingWallet
+        }
     }
 }
