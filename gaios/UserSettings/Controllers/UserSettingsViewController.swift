@@ -19,7 +19,7 @@ class UserSettingsViewController: UIViewController {
         }
     }
     var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
-    var isHW: Bool { get { return Ledger.shared.connected || Jade.shared.connected } }
+    var isHW: Bool { get { return account?.isHW ?? false } }
     var isSingleSig: Bool { get { return account?.isSingleSig ?? false }}
 
     var headerH: CGFloat = 54.0

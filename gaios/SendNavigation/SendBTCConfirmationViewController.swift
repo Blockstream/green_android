@@ -105,9 +105,9 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
         }
 
         // Show change address only for hardware wallet transaction
-        Acc
-        content.changeAddressView.isHidden = !Ledger.shared.connected
-        if let outputs = transaction.transactionOutputs, !outputs.isEmpty, Ledger.shared.connected {
+        let isHW = AccountsManager.shared.current?.isHW ?? false
+        content.changeAddressView.isHidden = !isHW
+        if let outputs = transaction.transactionOutputs, !outputs.isEmpty, isHW {
             var changeAddress = [String]()
             outputs.forEach { output in
                 let isChange = output["is_change"] as? Bool ?? false
@@ -160,8 +160,8 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
 
         firstly {
             content.slidingButton.isUserInteractionEnabled = false
-            let hw: HWProtocol = AccountsManager.shared.current?.isLedger ?? false ? Ledger.shared : Jade.shared
-            if hw.connected {
+            let account = AccountsManager.shared.current
+            if account?.isHW ?? false {
                 DropAlert().success(message: NSLocalizedString("id_please_follow_the_instructions", comment: ""), delay: 4)
             }
             return Guarantee()
