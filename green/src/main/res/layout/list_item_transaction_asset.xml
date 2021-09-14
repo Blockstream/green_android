@@ -7,35 +7,42 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:adjustViewBounds="true"
-            android:src="@drawable/ic_bitcoin_network_60"
-            app:layout_constraintBottom_toBottomOf="@+id/ticker"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/ticker" />
+            android:src="@drawable/ic_bitcoin_network_60" />
 
         <TextView
             android:id="@+id/ticker"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
+            android:includeFontPadding="false"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textSize="20sp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/value"
-            app:layout_constraintStart_toEndOf="@+id/icon"
+            tools:text="BTC" />
+
+        <ImageView
+            android:id="@+id/spv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_spv_error"
             tools:text="BTC" />
 
         <TextView
             android:id="@+id/value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
@@ -44,10 +51,7 @@
             tools:text="1532.12345678"
             android:textAlignment="textEnd"
             android:textAppearance="?attr/textAppearanceBody1"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ticker"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="20sp" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

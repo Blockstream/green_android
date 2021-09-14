@@ -45,6 +45,9 @@ data class Transaction(
 
     @SerialName("satoshi") val satoshi: Map<String, Long>
 ) {
+    enum class SPVResult {
+        Disabled, InProgress, NotVerified, NotLongest, Unconfirmed, Verified
+    }
 
     enum class Type {
         OUT, IN, REDEPOSIT
@@ -60,6 +63,17 @@ data class Transaction(
 
     val isIn
         get() = txType == Type.IN
+
+    val spv: SPVResult by lazy{
+        when (spvVerified) {
+            "in_progress" -> SPVResult.InProgress
+            "not_verified" -> SPVResult.NotVerified
+            "not_longest" -> SPVResult.NotLongest
+            "unconfirmed" -> SPVResult.Unconfirmed
+            "verified" -> SPVResult.Verified
+            else -> SPVResult.Disabled
+        }
+    }
 
     fun getConfirmations(currentBlock: Long): Long{
         if (blockHeight == 0L || currentBlock == 0L) return 0

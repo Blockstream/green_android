@@ -58,13 +58,13 @@
                     app:tint="@color/accent" />
 
                 <TextView
-                    android:id="@+id/status_spv_unverified"
+                    android:id="@+id/status_spv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/id_spv_unverified"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:textColor="@color/red" />
+                    android:text="@string/id_spv_verification"
+                    app:drawableStartCompat="@drawable/ic_spv_verified" />
 
                 <TextView
                     android:id="@+id/status_increase_fee"
@@ -84,6 +84,7 @@
                     android:paddingBottom="4dp"
                     android:paddingTop="4dp"
                     android:drawablePadding="4dp"
+                    tools:visibility="gone"
                     android:drawableEnd="@drawable/ic_bump_fee"
                     android:drawableTint="@color/accent"/>
 

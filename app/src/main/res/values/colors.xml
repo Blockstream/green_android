@@ -39,6 +39,8 @@
     <color name="grey_light">#6D7880</color>
     <color name="separator">#313B45</color>
 
+    <color name="error">#b74747</color>
+    <color name="warning">#d2934a</color>
 
     <!-- scanner -->
     <color name="scan_mask">#60000000</color>

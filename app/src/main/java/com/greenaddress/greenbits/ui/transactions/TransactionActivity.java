@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,7 +59,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
     private TextView mMemoText;
     private TextView mUnconfirmedText;
     private TextView mStatusIncreaseFee;
-    private TextView mStatusSPVUnverified;
+    private TextView mStatusSPV;
     private Dialog mSummary;
     private Dialog mTwoFactor;
     private ImageView mStatusIcon;
@@ -86,7 +87,7 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
         mMemoText = UI.find(this, R.id.txMemoText);
         mUnconfirmedText = UI.find(this, R.id.txUnconfirmedText);
         mStatusIncreaseFee = UI.find(this, R.id.status_increase_fee);
-        mStatusSPVUnverified = UI.find(this, R.id.status_spv_unverified);
+        mStatusSPV = UI.find(this, R.id.status_spv);
         mStatusIcon = UI.find(this, R.id.status_icon);
 
         try {
@@ -218,14 +219,31 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
 
         // SPV
         final String spv = mTxItem.getSpvVerified();
-        final boolean isSpvVerified = mTxItem.isSpent() ||
-                                      mTxItem.getTxType() == TransactionData.TYPE.OUT || "disabled".equals(spv) || "verified".equals(spv);
+        final boolean isSpvHidden = mTxItem.isSpent() ||
+                                      mTxItem.getTxType() == TransactionData.TYPE.OUT || "disabled".equals(spv) || "unconfirmed".equals(spv);
 
-        if (!isSpvVerified) {
-            mStatusSPVUnverified.setVisibility(View.VISIBLE);
-            mStatusSPVUnverified.setText(String.format("⚠️ %s", getString(R.string.id_spv_unverified)));
-        } else {
-            mStatusSPVUnverified.setVisibility(View.GONE);
+        if(!isSpvHidden){
+            mStatusSPV.setVisibility(View.VISIBLE);
+
+            if("verified".equals(spv)){
+                mStatusSPV.setTextColor(ContextCompat.getColor(this, R.color.white));
+                mStatusSPV.setText(R.string.id_spv_verified);
+                mStatusSPV.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, R.drawable.ic_spv_verified), null, null, null);
+            }else if("not_verified".equals(spv)){
+                mStatusSPV.setTextColor(ContextCompat.getColor(this, R.color.error));
+                mStatusSPV.setText(R.string.id_invalid_spv);
+                mStatusSPV.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, R.drawable.ic_spv_error), null, null, null);
+            }else if("not_longest".equals(spv)){
+                mStatusSPV.setTextColor(ContextCompat.getColor(this, R.color.warning));
+                mStatusSPV.setText(R.string.id_not_on_longest_chain);
+                mStatusSPV.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, R.drawable.ic_spv_warning), null, null, null);
+            }else {
+                mStatusSPV.setTextColor(ContextCompat.getColor(this, R.color.white));
+                mStatusSPV.setText(R.string.id_verifying_transaction_validity);
+                mStatusSPV.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(this, R.drawable.ic_spv_in_progress), null, null, null);
+            }
+        }else{
+            mStatusSPV.setVisibility(View.GONE);
         }
     }
 
