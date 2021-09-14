@@ -6,7 +6,6 @@ import RxSwift
 protocol HWProtocol {
 
     var device: HWDevice { get }
-    var connected: Bool { get }
 
     func xpubs(paths: [[Int]]) -> Observable<[String]>
 
@@ -40,6 +39,4 @@ protocol HWProtocol {
                                transactions: [String: String],
                                addressTypes: [String],
                                useAeProtocol: Bool) -> Observable<[String: Any]>
-    func clear()
-
 }

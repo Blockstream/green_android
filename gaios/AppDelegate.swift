@@ -32,8 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func logout(with pin: Bool) {
         if let account = AccountsManager.shared.current,
            account.isJade || account.isLedger {
-            Ledger.shared.clear()
-            Jade.shared.clear()
             BLEManager.shared.dispose()
         }
         let bgq = DispatchQueue.global(qos: .background)

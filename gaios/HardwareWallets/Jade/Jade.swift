@@ -14,7 +14,6 @@ enum JadeError: Error {
 final class Jade: JadeChannel, HWProtocol {
 
     public static let shared = Jade()
-    var xPubsCached = [String: String]()
     let SIGHASH_ALL: UInt8 = 1
 
     var device: HWDevice {
@@ -27,7 +26,6 @@ final class Jade: JadeChannel, HWProtocol {
                      supportsHostUnblinding: false)
         }
     }
-    var connected: Bool { get { !self.xPubsCached.isEmpty }}
 
     func version() -> Observable<[String: Any]> {
         return Jade.shared.exchange(method: "get_version_info")
@@ -150,15 +148,11 @@ final class Jade: JadeChannel, HWProtocol {
 
     func xpubs(path: [Int]) -> Observable<String> {
         let key = path.map { String($0) }.joined(separator: "/")
-        if let xpub = xPubsCached[key] {
-            return Observable.just(xpub)
-        }
         let pathstr: [UInt32] = path.map { UInt32($0) }
         let params = [ "path": pathstr, "network": getNetwork()] as [String: Any]
         return Jade.shared.exchange(method: "get_xpub", params: params)
             .flatMap { res -> Observable<String> in
                 let xpub = res["result"] as? String
-                self.xPubsCached[key] = xpub
                 return Observable.just(xpub ?? "")
             }
     }
@@ -379,10 +373,6 @@ final class Jade: JadeChannel, HWProtocol {
             }
             return Observable.just(result)
         }
-    }
-
-    func clear() {
-        xPubsCached = [String: String]()
     }
 }
 // Jade ota

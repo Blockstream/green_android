@@ -6,8 +6,6 @@ import CoreBluetooth
 final class Ledger: LedgerCommands, HWProtocol {
 
     public static let shared = Ledger()
-
-    var xPubsCached = [String: String]()
     let SIGHASH_ALL: UInt8 = 1
 
     var device: HWDevice {
@@ -20,7 +18,6 @@ final class Ledger: LedgerCommands, HWProtocol {
                      supportsHostUnblinding: false)
         }
     }
-    var connected: Bool { get { !self.xPubsCached.isEmpty }}
 
     // swiftlint:disable:next function_parameter_count
     func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],
@@ -115,9 +112,6 @@ final class Ledger: LedgerCommands, HWProtocol {
 
     func xpubs(path: [Int]) -> Observable<String> {
         let key = path.map { String($0) }.joined(separator: "/")
-        if let base58 = xPubsCached[key] {
-            return Observable.just(base58)
-        }
         let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
         return self.pubKey(path: path)
             .flatMap { data -> Observable<String> in
@@ -125,7 +119,6 @@ final class Ledger: LedgerCommands, HWProtocol {
                 let publicKey = Array((data["publicKey"] as? Data)!)
                 let compressed = try! compressPublicKey(publicKey)
                 let base58 = try! bip32KeyToBase58(isMainnet: isMainnet, pubKey: compressed, chainCode: chainCode)
-                self.xPubsCached[key] = base58
                 return Observable.just(base58)
         }
     }
@@ -158,10 +151,6 @@ final class Ledger: LedgerCommands, HWProtocol {
     }
     func getSharedNonce(pubkey: String, scriptHex: String) -> Observable<String?> {
         return Observable.error(JadeError.Abort(""))
-    }
-
-    func clear() {
-        xPubsCached = [String: String]()
     }
 
     func getMasterBlindingKey() -> Observable<String> {
