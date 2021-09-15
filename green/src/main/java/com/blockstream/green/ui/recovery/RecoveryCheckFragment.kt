@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryCheckFragmentBinding
+import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.isDevelopmentFlavor
@@ -17,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
+class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
     layout = R.layout.recovery_check_fragment,
     menuRes = 0
 ) {
@@ -27,23 +28,17 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
     private val viewModel: RecoveryCheckViewModel by viewModels {
         RecoveryCheckViewModel.provideFactory(
             viewModelFactory,
-            args.wallet,
-            (args.mnemonic ?: session.getMnemonicPassphrase()).split(" "),
+            args.mnemonic.split(" "),
             args.page,
             requireContext().isDevelopmentFlavor()
         )
     }
 
     private val args: RecoveryCheckFragmentArgs by navArgs()
-    override val wallet by lazy { args.wallet!! }
 
-    // Recovery screens are reused in onboarding
-    // where we don't have a session yet.
-    override fun isSessionRequired(): Boolean {
-        return args.wallet != null
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         binding.vm = viewModel
         binding.isDevelopmentFlavor = requireContext().isDevelopmentFlavor()
 
@@ -59,7 +54,6 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
                     }else{
                         navigate(
                             RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentSelf(
-                                wallet = args.wallet,
                                 onboardingOptions = args.onboardingOptions,
                                 mnemonic = args.mnemonic,
                                 page = args.page + 1
@@ -78,5 +72,4 @@ class RecoveryCheckFragment : WalletFragment<RecoveryCheckFragmentBinding>(
             viewModel.selectWord((button as Button).text.toString())
         }
     }
-    override fun getWalletViewModel(): AbstractWalletViewModel? = null
 }

@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_walletSettingsFragment_self"
             app:destination="@id/walletSettingsFragment" />
+        <action
+            android:id="@+id/action_walletSettingsFragment_to_recoveryIntroFragment"
+            app:destination="@id/recoveryIntroFragment" />
     </fragment>
 
     <fragment
@@ -310,10 +313,6 @@
             android:id="@+id/action_recoveryWordsFragment_to_recoveryCheckFragment"
             app:destination="@id/recoveryCheckFragment" />
         <argument
-            android:name="wallet"
-            app:argType="com.blockstream.green.database.Wallet"
-            app:nullable="true" />
-        <argument
             android:name="onboardingOptions"
             android:defaultValue="@null"
             app:argType="com.blockstream.green.data.OnboardingOptions"
@@ -324,8 +323,7 @@
             app:argType="integer" />
         <argument
             android:name="mnemonic"
-            app:argType="string"
-            app:nullable="true" />
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/recoveryCheckFragment"
@@ -337,10 +335,6 @@
             android:id="@+id/action_recoveryCheckFragment_self"
             app:destination="@id/recoveryCheckFragment" />
         <argument
-            android:name="wallet"
-            app:argType="com.blockstream.green.database.Wallet"
-            app:nullable="true" />
-        <argument
             android:name="onboardingOptions"
             android:defaultValue="@null"
             app:argType="com.blockstream.green.data.OnboardingOptions"
@@ -351,15 +345,11 @@
             app:argType="integer" />
         <argument
             android:name="mnemonic"
-            app:argType="string"
-            app:nullable="true" />
+            app:argType="string" />
         <action
             android:id="@+id/action_recoveryCheckFragment_to_walletNameFragment"
             app:destination="@id/walletNameFragment" />
     </fragment>
-    <action
-        android:id="@+id/action_global_recoveryIntroFragment"
-        app:destination="@id/recoveryIntroFragment" />
     <action
         android:id="@+id/action_global_addWalletFragment"
         app:destination="@id/addWalletFragment" />

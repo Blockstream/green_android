@@ -19,7 +19,6 @@ import kotlin.random.asKotlinRandom
 class RecoveryCheckViewModel @AssistedInject constructor(
     private val walletRepository: WalletRepository,
     greenWallet: GreenWallet,
-    @Assisted val wallet: Wallet?,
     @Assisted val mnemonic: List<String>,
     @Assisted val page: Int,
     @Assisted val isDevelopmentFlavor: Boolean,
@@ -64,40 +63,16 @@ class RecoveryCheckViewModel @AssistedInject constructor(
     }
 
     fun selectWord(selectedWord: String) {
-
         if (correctWord == selectedWord) {
-            if(isLastPage){
-
-                if(wallet != null){
-                    wallet.isRecoveryPhraseConfirmed = true
-
-                    wallet.observable {
-                        walletRepository.updateWalletSync(it)
-                    }.subscribeBy(
-                        onError = {
-                            onError.postValue(ConsumableEvent(it))
-                        },
-                        onSuccess = {
-                            navigate.postValue(ConsumableEvent(true))
-                        }
-                    ).addTo(disposables)
-                }else{
-                    navigate.postValue(ConsumableEvent(true))
-                }
-
-            }else{
-                navigate.value = ConsumableEvent(true)
-            }
+            navigate.value = ConsumableEvent(true)
         } else {
             navigate.value = ConsumableEvent(false)
         }
-
     }
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            wallet: Wallet?,
             mnemonic: List<String>,
             page: Int,
             isDevelopmentFlavor: Boolean
@@ -107,14 +82,13 @@ class RecoveryCheckViewModel @AssistedInject constructor(
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            wallet: Wallet?,
             mnemonic: List<String>,
             page: Int,
             isDevelopmentFlavor: Boolean
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet, mnemonic, page, isDevelopmentFlavor) as T
+                return assistedFactory.create(mnemonic, page, isDevelopmentFlavor) as T
             }
         }
     }

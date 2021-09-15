@@ -6,16 +6,19 @@ import android.view.View
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.handleBiometricsError
 import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
@@ -26,11 +29,18 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
 
     private val args: RecoveryIntroFragmentArgs by navArgs()
 
+    // Warning: Be careful when you call wallet as it maybe null
     override val wallet by lazy { args.wallet!! }
+
+    @Inject
+    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
+    val viewModel: WalletViewModel by viewModels {
+        WalletViewModel.provideFactory(viewModelFactory, wallet)
+    }
 
     // Recovery screens are reused in onboarding
     // where we don't have a session yet.
-    override fun isSessionRequired(): Boolean {
+    override fun isSessionAndWalletRequired(): Boolean {
         return args.wallet != null
     }
 
@@ -56,9 +66,8 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         if (args.wallet == null) {
             navigate(
                 RecoveryIntroFragmentDirections.actionRecoveryIntroFragmentToRecoveryWordsFragment(
-                    wallet = args.wallet,
                     onboardingOptions = args.onboardingOptions,
-                    mnemonic = args.mnemonic
+                    mnemonic = args.mnemonic ?: ""
                 )
             )
         } else {
@@ -125,5 +134,5 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         }
     }
 
-    override fun getWalletViewModel(): AbstractWalletViewModel? = null
+    override fun getWalletViewModel(): AbstractWalletViewModel = if(args.wallet != null) viewModel else throw RuntimeException("Can't be happening")
 }

@@ -18,6 +18,7 @@ import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.RecoveryWordListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
+import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
@@ -26,6 +27,7 @@ import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.AlphaInAnimator
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
@@ -34,6 +36,12 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
 ) {
     private val args: RecoveryPhraseFragmentArgs by navArgs()
     override val wallet by lazy { args.wallet!! }
+
+    @Inject
+    lateinit var viewModelFactory: WalletViewModel.AssistedFactory
+    val viewModel: WalletViewModel by viewModels {
+        WalletViewModel.provideFactory(viewModelFactory, wallet)
+    }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
         val words = session.getMnemonicPassphrase().split(" ")
@@ -53,5 +61,5 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
         }
     }
 
-    override fun getWalletViewModel(): AbstractWalletViewModel? = null
+    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 }

@@ -186,7 +186,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 showAccountInToolbar = (recyclerView.layoutManager as NpaLinearLayoutManager).findFirstVisibleItemPosition() > 0
             }
         })
-
+        
         updateRecyclerPadding(topPadding = true, bottomPadding = true)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)

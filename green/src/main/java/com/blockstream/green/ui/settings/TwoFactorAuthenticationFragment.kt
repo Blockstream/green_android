@@ -283,7 +283,7 @@ class TwoFactorAuthenticationFragment :
         notifyDataSetChanged()
     }
 
-    override fun getWalletViewModel(): AbstractWalletViewModel? = viewModel
+    override fun getWalletViewModel(): AbstractWalletViewModel = viewModel
 
     private fun notifyDataSetChanged() {
         binding.recycler.adapter?.notifyDataSetChanged()

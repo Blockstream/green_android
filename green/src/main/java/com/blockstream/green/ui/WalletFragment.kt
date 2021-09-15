@@ -5,21 +5,14 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.MutableLiveData
-import com.blockstream.gdk.data.Device
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.GreenSession
-import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.WalletViewModel
-import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
 import com.greenaddress.Bridge
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import mu.KLogging
 
 abstract class WalletFragment<T : ViewDataBinding> constructor(
@@ -39,10 +32,10 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
         super.onViewCreated(view, savedInstanceState)
 
 
-        // Recovery screens are reused in onBoarding
+        // Recovery intro screen is reused in onBoarding
         // where we don't have a session yet
         // Skip initializing the WalletViewModel as it doesn't exists
-        if(isSessionRequired()){
+        if(isSessionAndWalletRequired()){
             session = sessionManager.getWalletSession(wallet)
 
             // Assuming we are in v4 codebase flow
@@ -51,7 +44,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                 return
             }
 
-            getWalletViewModel()?.let{
+            getWalletViewModel().let{
 
                 setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
 
@@ -130,18 +123,18 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     }
 
     open fun isLoggedInRequired(): Boolean = true
-    open fun isSessionRequired(): Boolean = true
+    open fun isSessionAndWalletRequired(): Boolean = true
 
-    abstract fun getWalletViewModel(): AbstractWalletViewModel?
+    abstract fun getWalletViewModel(): AbstractWalletViewModel
 
     override fun onResume() {
         super.onResume()
 
         // Recovery screens are reused in onboarding
         // where we don't have a session yet.
-        if(isSessionRequired()) {
+        if(isSessionAndWalletRequired()) {
             if (isLoggedInRequired() && !session.isConnected) {
-                getWalletViewModel()?.logout(AbstractWalletViewModel.NavigationEvent.TIMEOUT)
+                getWalletViewModel().logout(AbstractWalletViewModel.NavigationEvent.TIMEOUT)
             }
         }
     }

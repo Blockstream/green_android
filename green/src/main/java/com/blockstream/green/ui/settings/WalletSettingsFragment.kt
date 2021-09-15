@@ -182,7 +182,7 @@ class WalletSettingsFragment :
                     }
                     recoveryPreference -> {
                         navigate(
-                            NavGraphDirections.actionGlobalRecoveryIntroFragment(
+                            WalletSettingsFragmentDirections.actionWalletSettingsFragmentToRecoveryIntroFragment(
                                 wallet = wallet
                             )
                         )
