@@ -159,6 +159,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
         }
 
+        fastAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
         binding.recycler.apply {
             layoutManager = NpaLinearLayoutManager(context)
             itemAnimator = SlideDownAlphaAnimator()
@@ -186,8 +188,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 showAccountInToolbar = (recyclerView.layoutManager as NpaLinearLayoutManager).findFirstVisibleItemPosition() > 0
             }
         })
-        
-        updateRecyclerPadding(topPadding = true, bottomPadding = true)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackCallback)
     }
@@ -233,26 +233,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             ContextCompat.getColor(requireContext(), R.color.brand_background)
     }
 
-    private fun updateRecyclerPadding(topPadding: Boolean, bottomPadding: Boolean) {
-        binding.recycler.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                // Ensure you call it only once
-                binding.recycler.viewTreeObserver.removeOnGlobalLayoutListener(this)
-
-                val top = if (topPadding) resources.getDimension(R.dimen.dp16).toInt() else 0
-                val bottom = if (bottomPadding) binding.bottomBar.height else 0
-
-                binding.recycler.updatePadding(
-                    top = top,
-                    bottom = bottom
-                )
-
-                binding.recycler.scrollToPosition(0)
-            }
-        })
-    }
-
     private fun closeInnerAdapter() {
         viewModel.setState(OverviewViewModel.State.Overview)
         onBackCallback.isEnabled = isDrawerOpen()
@@ -277,18 +257,14 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         var topAccount : AccountListItem? = null
 
         viewModel.getSubAccountLiveData().observe(viewLifecycleOwner){ subAccount ->
-            // Move to top
-            recycler.scrollToPosition(0)
+            if(!viewModel.initialScrollToTop){
+                // If there is a delay getting the top card recycler can be moved to the middle
+                // of the scroll viewport
+                recycler.scrollToPosition(0)
+                viewModel.initialScrollToTop = true
+            }
 
-            // Use that if you don't want animations
-//            topAccount?.let {
-//                it.subAccount = subAccount
-//            } ?: run {
-//                topAccount = AccountListItem(subAccount, session.network, true, false)
-//                topAccountAdapter.set(listOf(topAccount!!))
-//            }
-
-            // and this if you want
+            // Top Account
             topAccount = AccountListItem(subAccount, session.network, true).also {
                 updateTopAccountCard(it)
             }

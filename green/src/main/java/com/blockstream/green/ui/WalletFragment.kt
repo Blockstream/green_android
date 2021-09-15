@@ -65,13 +65,13 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
                         when(it){
                             AbstractWalletViewModel.NavigationEvent.DISCONNECTED -> {
-
+                                snackbar(R.string.id_unstable_internet_connection)
                             }
                             AbstractWalletViewModel.NavigationEvent.TIMEOUT -> {
-
+                                snackbar(R.string.id_auto_logout_timeout_expired)
                             }
                             AbstractWalletViewModel.NavigationEvent.DEVICE_DISCONNECTED -> {
-                                snackbar("Your device was disconnected")
+                                snackbar(R.string.id_your_device_was_disconnected)
                             }
                         }
                     }

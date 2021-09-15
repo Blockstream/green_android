@@ -68,6 +68,8 @@ class OverviewViewModel @AssistedInject constructor(
         filteredSubAccounts.value = filterSubAccounts(newValue)
     }
 
+    var initialScrollToTop = false
+
     init {
         session.getBlockObservable().subscribe {
             block.postValue(it)
