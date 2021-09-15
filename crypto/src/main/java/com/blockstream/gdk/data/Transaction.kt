@@ -32,7 +32,7 @@ data class Transaction(
 
     @SerialName("has_payment_request") val hasPaymentRequest: Boolean,
     @SerialName("instant") val instant: Boolean,
-    @SerialName("memo") var memo: String, // Make Transaction stable by making memo constant
+    @SerialName("memo") val memo: String,
     @SerialName("rbf_optin") val rbfOptin: Boolean,
 
     @SerialName("server_signed") val serverSigned: Boolean,
@@ -50,7 +50,13 @@ data class Transaction(
     @SerialName("satoshi") val satoshi: Map<String, Long>
 ): Parcelable {
     enum class SPVResult {
-        Disabled, InProgress, NotVerified, NotLongest, Unconfirmed, Verified
+        Disabled, InProgress, NotVerified, NotLongest, Unconfirmed, Verified;
+
+        fun disabledOrVerified() = this == Disabled || this == Verified
+        fun inProgress() = this == InProgress
+        fun inProgressOrUnconfirmed() = this == InProgress || this == Unconfirmed
+        fun unconfirmed() = this == Unconfirmed
+        fun failed() = this == NotVerified || this == NotLongest
     }
 
     enum class Type {

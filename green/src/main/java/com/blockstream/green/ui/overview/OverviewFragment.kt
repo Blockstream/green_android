@@ -492,12 +492,12 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 is TransactionListItem -> {
                      navigate(OverviewFragmentDirections.actionOverviewFragmentToTransactionDetailsFragment(wallet = wallet, transaction = item.tx))
 
-                    val txIntent = Intent(activity, TransactionActivity::class.java)
-                    viewModel.getBalancesLiveData().value?.let {
-                        txIntent.putExtra("TRANSACTION", item.tx.getTransactionDataV3())
-                        txIntent.putExtra("BALANCE", HashMap(it))
-                        startForResultTransactionDetails.launch(txIntent)
-                    }
+//                    val txIntent = Intent(activity, TransactionActivity::class.java)
+//                    viewModel.getBalancesLiveData().value?.let {
+//                        txIntent.putExtra("TRANSACTION", item.tx.getTransactionDataV3())
+//                        txIntent.putExtra("BALANCE", HashMap(it))
+//                        startForResultTransactionDetails.launch(txIntent)
+//                    }
                 }
                 is TitleListItem -> {
                     if (item.showBackButton) {

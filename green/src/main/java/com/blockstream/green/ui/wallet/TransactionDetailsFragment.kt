@@ -25,6 +25,8 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
+import com.mikepenz.itemanimators.AlphaCrossFadeAnimator
+import com.mikepenz.itemanimators.AlphaInAnimator
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -117,7 +119,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(context)
-            itemAnimator = SlideDownAlphaAnimator()
+            itemAnimator = AlphaInAnimator()
             adapter = fastAdapter
         }
     }
@@ -150,6 +152,13 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         )
 
         list += TitleListItem(title = StringHolder(R.string.id_transaction_details))
+        val confirmations = transaction.getConfirmations(session.blockHeight)
+        if(confirmations > 0 && transaction.spv.disabledOrVerified()) {
+            list += GenericDetailListItem(
+                title = StringHolder(R.string.id_confirmations),
+                content = StringHolder("$confirmations")
+            )
+        }
         list += GenericDetailListItem(
             title = StringHolder(R.string.id_transaction_id),
             content = StringHolder(transaction.txHash),

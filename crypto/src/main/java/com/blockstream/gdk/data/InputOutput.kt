@@ -17,14 +17,11 @@ data class InputOutput(
     @SerialName("addressee") val addressee: String? = null,
     @SerialName("address_type") val addressType: String? = null,
 
-
-
     // Maybe se it to null ?
     @SerialName("is_change") val isChange: Boolean? = null,
     @SerialName("is_output") val isOutput: Boolean,
     @SerialName("is_relevant") val isRelevant: Boolean,
     @SerialName("is_spent") val isSpent: Boolean,
-    @SerialName("is_internal") val isInternal: Boolean? = null,
 
     @SerialName("pointer") val pointer: Int,
     @SerialName("prevout_script") val prevoutScript: String? = null,

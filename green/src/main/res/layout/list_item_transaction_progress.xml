@@ -21,6 +21,18 @@
             name="canRBF"
             type="Boolean" />
 
+        <variable
+            name="spvEnabled"
+            type="Boolean" />
+
+        <variable
+            name="spvInProgress"
+            type="Boolean" />
+
+        <variable
+            name="spvFailed"
+            type="Boolean" />
+
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -55,14 +67,14 @@
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progress"
-                    isVisible="true"
+                    indeterminate="@{spvInProgress}"
+                    isInvisible="@{spvFailed}"
                     progress="@{Math.min(confirmations, confirmationsRequired)}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="10dp"
-                    android:indeterminate="false"
                     android:max="@{confirmationsRequired}"
                     app:indicatorSize="50dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -72,7 +84,7 @@
 
                 <ImageView
                     android:id="@+id/tick"
-                    isVisible="@{confirmations >= confirmationsRequired}"
+                    isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled == false}"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@drawable/ic_progress_check"
@@ -81,6 +93,17 @@
                     app:layout_constraintStart_toStartOf="@+id/progress"
                     app:layout_constraintTop_toTopOf="@+id/progress"
                     tools:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/spv"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_spv_in_progress"
+                    isVisible="@{spvEnabled}"
+                    app:layout_constraintBottom_toBottomOf="@+id/progress"
+                    app:layout_constraintEnd_toEndOf="@+id/progress"
+                    app:layout_constraintStart_toStartOf="@+id/progress"
+                    app:layout_constraintTop_toTopOf="@+id/progress" />
 
                 <TextView
                     isVisible="@{confirmations &lt; confirmationsRequired}"
@@ -93,7 +116,8 @@
                     app:layout_constraintEnd_toEndOf="@+id/progress"
                     app:layout_constraintStart_toStartOf="@+id/progress"
                     app:layout_constraintTop_toTopOf="@+id/progress"
-                    tools:text="1/6" />
+                    tools:text="1/6"
+                    tools:visibility="gone" />
 
                 <TextView
                     android:id="@+id/dateView"
@@ -103,7 +127,7 @@
                     android:includeFontPadding="false"
                     android:text="@{date}"
                     android:textAppearance="?attr/textAppearanceBody1"
-                    app:layout_constraintBottom_toTopOf="@+id/confirmationsView"
+                    app:layout_constraintBottom_toTopOf="@+id/status"
                     app:layout_constraintEnd_toStartOf="@+id/progress"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
@@ -112,14 +136,12 @@
                     tools:text="Jun 22, 2018 - 22:22:22" />
 
                 <TextView
-                    android:id="@+id/confirmationsView"
+                    android:id="@+id/status"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:includeFontPadding="false"
-                    android:text="@{confirmations == 0L ? @string/id_unconfirmed : confirmations &lt; confirmationsRequired ? @string/id_pending_confirmation: @string/id_completed}"
                     android:textAppearance="?attr/textAppearanceBody1"
-                    android:textColor="@{confirmations &lt; confirmationsRequired ? @color/color_on_surface_emphasis_low: @color/brand_green }"
                     android:textSize="18dp"
                     app:layout_constraintBottom_toBottomOf="@+id/progress"
                     app:layout_constraintEnd_toStartOf="@+id/progress"

@@ -29,16 +29,11 @@ class TransactionDetailsViewModel @AssistedInject constructor(
 
     init {
 
-        // Update transaction data
+        // Update transaction data and create a copy with a stable memo so that we can properly animate
         session
             .getTransationsObservable()
-                // skip first
-//            .skip(1)
             .map {
-                (it.find { it.txHash == initialTransaction.txHash } ?: initialTransaction).also {
-                    // Keep memo consistent so that equals don't break recycler animation
-                    it.memo = "STABLE_FOR_EQUALS"
-                }
+                (it.find { it.txHash == initialTransaction.txHash } ?: initialTransaction).copy(memo = "STABLE_FOR_EQUALS")
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -46,10 +41,6 @@ class TransactionDetailsViewModel @AssistedInject constructor(
 
                 },
                 onNext = {
-                    Json.encodeToString(it).let{
-                        logger.info { "WTF: ${it}" }
-                    }
-
                     transaction.postValue(it)
                 }
             ).addTo(disposables)

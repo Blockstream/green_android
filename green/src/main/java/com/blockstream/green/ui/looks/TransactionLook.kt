@@ -20,6 +20,7 @@ import mu.KLogging
 abstract class TransactionLook constructor(open val session: GreenSession, internal open val tx: Transaction) {
     abstract val showFiat : Boolean
     abstract val assetSize : Int
+    abstract val hideSPVInAsset: Boolean
 
     val assets by lazy {
         tx.assets(session.network)
@@ -111,7 +112,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
         binding.ticker.text = ticker(index)
         binding.icon.setImageDrawable(getIcon(index, binding.icon.context))
 
-        if (tx.spv == Transaction.SPVResult.Disabled || tx.spv == Transaction.SPVResult.Verified) {
+        if (hideSPVInAsset || tx.spv.disabledOrVerified()) {
             binding.spv.isVisible = false
         } else {
             binding.spv.isVisible = true
