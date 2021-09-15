@@ -6,6 +6,13 @@ struct AssentEntity: Codable {
     let domain: String
 }
 
+struct SortingAsset {
+    let tag: String
+    let info: AssetInfo?
+    let hasImage: Bool
+    let value: UInt64
+}
+
 struct AssetInfo: Codable {
 
     enum CodingKeys: String, CodingKey {
@@ -60,6 +67,13 @@ class Registry: Codable {
             return UIImage(base64: icon.value)
         }
         return UIImage(named: "default_asset_icon")
+    }
+
+    func hasImage(for key: String?) -> Bool {
+        if let _ = icons.filter({ $0.key == key }).first {
+            return true
+        }
+        return false
     }
 
     func failStatus() -> RegistryFailStatus {

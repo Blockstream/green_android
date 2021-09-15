@@ -9,7 +9,8 @@ class OverviewTransactionCell: UITableViewCell {
     @IBOutlet weak var lblAmount: UILabel!
     @IBOutlet weak var lblDate: UILabel!
     @IBOutlet weak var lblDenom: UILabel!
-
+    @IBOutlet weak var icon: UIImageView!
+    
     var isLiquid: Bool {
         let account = AccountsManager.shared.current
         return account?.gdkNetwork?.liquid ?? false
@@ -38,9 +39,10 @@ class OverviewTransactionCell: UITableViewCell {
         lblAmount.text = ""
         lblDate.text = ""
         lblDenom.text = ""
+        icon.image = UIImage()
     }
 
-    func setup(with transaction: Transaction) {
+    func setup(transaction: Transaction, network: String?) {
         self.backgroundColor = UIColor.customTitaniumDark()
         statusBadge.layer.cornerRadius = 3.0
         let assetTag = transaction.defaultAsset
@@ -91,6 +93,13 @@ class OverviewTransactionCell: UITableViewCell {
                                   isLiquid ? NSLocalizedString("id_sent", comment: "") : transaction.address() ?? "",
                                   isLiquid && isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         }
+        if network == "mainnet" {
+            icon.image = UIImage(named: "ntw_btc")
+        } else if network == "testnet" {
+            icon.image = UIImage(named: "ntw_testnet")
+        } else {
+            icon.image = Registry.shared.image(for: transaction.defaultAsset)
+        }
     }
 
     func checkBlockHeight(transaction: Transaction, blockHeight: UInt32) {
@@ -131,10 +140,8 @@ class OverviewTransactionCell: UITableViewCell {
     func checkTransactionType(transaction: Transaction) {
         if isIncoming {
             lblAmount.textColor = isLiquid ? UIColor.blueLight() : UIColor.customMatrixGreen()
-//            imageDirection.image = UIImage(named: isLiquid ? "tx_received" : "tx_received_mainnet")
         } else {
             lblAmount.textColor = UIColor.white
-//            imageDirection.image = UIImage(named: isRedeposit ? "tx_received" : "tx_send")
         }
     }
 }

@@ -51,10 +51,7 @@ class OverviewAssetCell: UITableViewCell {
         }
         lblAmount2.text = ""
         selectionStyle = .none
-//        headerLabel.isHidden = !isTransaction
         lblAsset.text = isBtc ? "Liquid Bitcoin" : info?.name ?? tag
-//        lblDomain.text = info?.entity?.domain ?? ""
-//        lblDomain.isHidden = info?.entity?.domain.isEmpty ?? true
         self.icon.image = icon
     }
 }

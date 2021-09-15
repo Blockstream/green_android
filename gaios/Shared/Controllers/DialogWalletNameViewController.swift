@@ -63,6 +63,7 @@ class DialogWalletNameViewController: KeyboardViewController {
         UIView.animate(withDuration: 0.3) {
             self.view.alpha = 1.0
         }
+        nameTextField.becomeFirstResponder()
     }
 
     func updateUI() {

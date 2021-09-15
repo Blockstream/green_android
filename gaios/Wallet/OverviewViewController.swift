@@ -352,8 +352,24 @@ class OverviewViewController: UIViewController {
         assets = [(key: String, value: UInt64)]()
         if let wallet = presentingWallet {
             assets = Transaction.sort(wallet.satoshi ?? [:])
+            sortAssets()
         }
         tableView.reloadSections([OverviewSection.asset.rawValue], with: .none)
+    }
+
+    func sortAssets() {
+        var tAssets: [SortingAsset] = []
+        assets.forEach { asset in
+            let tAss = SortingAsset(tag: asset.key, info: Registry.shared.infos[asset.key], hasImage: Registry.shared.hasImage(for: asset.key), value: asset.value)
+            tAssets.append(tAss)
+        }
+        var oAssets = [(key: String, value: UInt64)]()
+        tAssets.sort(by: {!$0.hasImage && !$1.hasImage ? $0.info?.ticker != nil && !($1.info?.ticker != nil) : $0.hasImage && !$1.hasImage})
+
+        tAssets.forEach { asset in
+            oAssets.append((key:asset.tag, value: asset.value))
+        }
+        assets = oAssets
     }
 
     func reloadRegistry() {
@@ -583,7 +599,12 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewAssetCell", for: indexPath) as? OverviewAssetCell {
                 let tag = assets[indexPath.row].key
                 let info = Registry.shared.infos[tag]
-                let icon = Registry.shared.image(for: tag)
+                var icon = Registry.shared.image(for: tag)
+                if account?.network == "mainnet" {
+                    icon = UIImage(named: "ntw_btc")
+                } else if account?.network == "testnet" {
+                    icon = UIImage(named: "ntw_testnet")
+                }
                 let satoshi = assets[indexPath.row].value
                 cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi)
                 return cell
@@ -591,7 +612,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case OverviewSection.transaction.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "OverviewTransactionCell", for: indexPath) as? OverviewTransactionCell {
                 let transaction = transactions[indexPath.row]
-                cell.setup(with: transaction)
+                cell.setup(transaction: transaction, network: account?.network)
                 cell.checkBlockHeight(transaction: transaction, blockHeight: SessionManager.shared.notificationManager.blockHeight)
                 cell.checkTransactionType(transaction: transaction)
                 return cell

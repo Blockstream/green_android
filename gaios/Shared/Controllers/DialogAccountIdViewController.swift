@@ -20,7 +20,7 @@ class DialogAccountIdViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblTitle.text = "ID Account"
+        lblTitle.text = NSLocalizedString("id_amp_id", comment: "")
         lblHint.text = "Provide this ID to the asset issuer if requested"
 
         cardView.layer.cornerRadius = 20
@@ -28,14 +28,7 @@ class DialogAccountIdViewController: UIViewController {
 
         view.alpha = 0.0
 
-        lblAccountId.text = ""
-        guard let wallet = self.wallet else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().then(on: bgq) {
-            return wallet.getAddress()
-        }.done { [weak self] address in
-            self?.lblAccountId.text = address
-        }.catch { _ in }
+        lblAccountId.text = AccountsManager.shared.current?.id
     }
 
     override func viewDidAppear(_ animated: Bool) {
