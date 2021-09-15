@@ -114,7 +114,10 @@ class SendBtcViewController: KeyboardViewController {
     func createTransaction(userInput: String) {
         let subaccount = self.wallet!.pointer
         let feeRate = getFeeEstimates()?.first ?? 1000
-        var tx: Transaction? = nil
+        let isBip21 = userInput.starts(with: "bitcoin:") || userInput.starts(with: "liquidnetwork:")
+        let network = AccountsManager.shared.current?.gdkNetwork
+        let policyAsset = network?.policyAsset ?? "btc"
+        var tx: Transaction?
 
         self.startAnimating()
         let queue = DispatchQueue.global(qos: .default)
@@ -123,25 +126,32 @@ class SendBtcViewController: KeyboardViewController {
                 return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount, "utxos": []]
             } else {
                 // user input can be a bitcoin or liquid uri as well as an address
-                return ["addressees": [["address": userInput]], "fee_rate": feeRate, "subaccount": subaccount, "utxos": []]
+                var addressee: [String: Any] = ["address": userInput]
+                if network?.liquid ?? false && !isBip21 {
+                    addressee["asset_id"] = policyAsset
+                }
+                return ["addressees": [addressee], "fee_rate": feeRate, "subaccount": subaccount, "utxos": [:]]
             }
         }.then(on: queue) { data in
             try SessionManager.shared.createTransaction(details: data).resolve()
         }.then(on: queue) { data -> Promise<[String: Any]> in
             let result = data["result"] as? [String: Any]
             tx = Transaction(result ?? [:])
-            if let error = tx?.error, error == "id_invalid_address" {
+            if let error = tx?.error, !error.isEmpty && !["id_invalid_amount", "id_no_amount_specified", "id_insufficient_funds"].contains(error) {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(error, comment: ""))
             } else if let addressees = tx?.addressees, addressees.isEmpty {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString("id_invalid_address", comment: ""))
+            } else if network?.liquid ?? false && !isBip21 {
+                let addressee = tx?.addressees.first
+                tx?.addressees = [Addressee(address: addressee!.address, satoshi: addressee!.satoshi)]
             }
             return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
         }.done { data in
             let result = data["result"] as? [String: Any]
             let unspent = result?["unspent_outputs"] as? [String: Any]
             tx?.details["utxos"] = unspent ?? [:]
-            let haveAssets = tx?.details["addressees_have_assets"] as? Bool
-            if self.isLiquid && !(haveAssets ?? false) {
+            let haveAssets = tx?.addressees.first?.assetId != nil
+            if self.isLiquid && !haveAssets {
                 self.performSegue(withIdentifier: "asset_select", sender: tx)
             } else {
                 self.performSegue(withIdentifier: "next", sender: tx)
