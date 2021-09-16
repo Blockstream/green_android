@@ -78,7 +78,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="40dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat2" />
@@ -95,7 +95,7 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat2" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonConnectionSettings"
+            android:id="@+id/buttonAppSettings"
             style="@style/Widget.Green.Button.Text"
             isGone="@{vm.onProgress}"
             android:layout_width="wrap_content"

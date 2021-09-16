@@ -177,7 +177,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
             adapter = fastItemAdapter
         }
 
-        binding.buttonConnectionSettings.setOnClickListener {
+        binding.buttonAppSettings.setOnClickListener {
             navigate(NavGraphDirections.actionGlobalConnectionSettingsDialogFragment())
         }
     }

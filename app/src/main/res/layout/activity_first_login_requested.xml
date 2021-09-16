@@ -10,7 +10,7 @@
 
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonConnectionSettings"
+        android:id="@+id/buttonAppSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -28,7 +28,7 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
+        app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

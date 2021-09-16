@@ -38,7 +38,7 @@
             android:gravity="center"
             android:orientation="vertical"
             app:gap="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,7 +113,7 @@
         </com.blockstream.green.views.GappedLinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonConnectionSettings"
+            android:id="@+id/buttonAppSettings"
             style="@style/Widget.Green.Button.Text"
             isInvisible="@{vm.isInProgress}"
             android:layout_width="wrap_content"

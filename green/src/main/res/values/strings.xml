@@ -948,4 +948,5 @@
   <string name="id_unstable_internet_connection">Unstable internet connection</string>
   <string name="id_auto_logout_timeout_expired">Auto logout timeout expired</string>
   <string name="id_your_device_was_disconnected">Your device was disconnected</string>
+  <string name="id_too_many_pin_attempts">Too many PIN attempts</string>
 </resources>

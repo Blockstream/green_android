@@ -146,7 +146,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             }
         }
 
-        binding.buttonConnectionSettings.setOnClickListener {
+        binding.buttonAppSettings.setOnClickListener {
             navigate(NavGraphDirections.actionGlobalConnectionSettingsDialogFragment())
         }
 

@@ -73,7 +73,7 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonConnectionSettings"
+                    android:id="@+id/buttonAppSettings"
                     style="@style/Widget.Green.Button.Text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

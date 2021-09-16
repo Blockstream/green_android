@@ -21,7 +21,7 @@ class DrawerFragment : WalletListCommonFragment<DrawerFragmentBinding>(R.layout.
 
         init(binding.common)
 
-        binding.buttonConnectionSettings.setOnClickListener {
+        binding.buttonAppSettings.setOnClickListener {
             navigate(NavGraphDirections.actionGlobalConnectionSettingsDialogFragment())
             closeDrawer()
         }

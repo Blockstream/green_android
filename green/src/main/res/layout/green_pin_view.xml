@@ -210,7 +210,7 @@
                 android:layout_marginTop="24dp"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.Green.Subtitle2"
-                android:textColor="@color/red"
+                android:textColor="@color/error"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

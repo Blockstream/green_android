@@ -16,36 +16,63 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/wrapRestoreWallet"
             isVisible="@{vm.loginCredentialsInitialized &amp;&amp; !vm.wallet.watchOnly &amp;&amp; !vm.wallet.isHardware &amp;&amp; vm.pinCredentials == null &amp;&amp; vm.passwordCredentials == null &amp;&amp; !vm.onProgress}"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginEnd="48dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone"
-            android:orientation="vertical"
-            android:gravity="center">
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/id_too_many_pin_attempts"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_shield"
+                app:layout_constraintBottom_toTopOf="@+id/textView8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/textView8"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
+                android:text="@string/id_youve_entered_an_invalid_pin"
                 android:textAppearance="?attr/textAppearanceSubtitle2"
-                android:text="@string/id_youve_entered_an_invalid_pin" />
+                app:layout_constraintBottom_toTopOf="@+id/buttonRestoreWallet"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <Button
                 android:id="@+id/buttonRestoreWallet"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/id_restore_with_recovery_phrase" />
+                android:text="@string/id_restore_with_recovery_phrase"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/wrapPassword"
@@ -102,7 +129,8 @@
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintBottom_toTopOf="@+id/progress"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="gone"/>
 
         <Button
             android:id="@+id/buttonLoginWithDevice"
@@ -112,9 +140,10 @@
             android:layout_marginEnd="24dp"
             android:text="@string/id_log_in"
             isVisible="@{!vm.onProgress &amp;&amp; vm.device != null}"
-            app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="gone"/>
 
 
         <TextView
@@ -136,7 +165,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="24dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline"
@@ -153,7 +182,7 @@
             android:orientation="vertical"
             tools:visibility="gone"
             app:gap="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/buttonConnectionSettings"
+            app:layout_constraintBottom_toTopOf="@+id/buttonAppSettings"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -225,7 +254,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonConnectionSettings"
+            android:id="@+id/buttonAppSettings"
             style="@style/Widget.Green.Button.Text"
             isGone="@{vm.onProgress}"
             android:layout_width="wrap_content"
@@ -250,7 +279,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            tools:visibility="gone" />
 
         <ImageView
             android:id="@+id/deviceLogo"
@@ -264,7 +293,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone"/>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="0dp"
@@ -277,7 +307,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/deviceLogo"
-            tools:text="Blockstream Jade">
+            tools:text="Blockstream Jade"
+            tools:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"

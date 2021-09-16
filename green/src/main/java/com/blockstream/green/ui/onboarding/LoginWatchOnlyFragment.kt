@@ -29,7 +29,7 @@ class LoginWatchOnlyFragment :
 
         binding.vm = viewModel
 
-        binding.buttonConnectionSettings.setOnClickListener {
+        binding.buttonAppSettings.setOnClickListener {
             navigate(NavGraphDirections.actionGlobalConnectionSettingsDialogFragment())
         }
 
