@@ -1,8 +1,5 @@
 package com.greenaddress.greenapi;
 
-import android.app.Activity;
-
-import com.blockstream.gdk.data.Network;
 import com.blockstream.gdk.data.TwoFactorReset;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +9,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.Bridge;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
-import com.greenaddress.greenapi.data.EventData;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.SubaccountData;
@@ -28,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 public class Session extends GDKSession implements HttpRequestProvider {
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private static Session instance = new Session();
@@ -35,6 +33,7 @@ public class Session extends GDKSession implements HttpRequestProvider {
     private SettingsData mSettings;
     private TwoFactorReset mTwoFAReset = null;
     private String mNetwork;
+    private ObjectNode pendingTransaction = null;
 
     private Session() {
         super();
@@ -174,17 +173,26 @@ public class Session extends GDKSession implements HttpRequestProvider {
         return null;
     }
 
-    public GDKTwoFactorCall createTransactionFromUri(final Activity parent, final String uri, final int subaccount) throws Exception {
+    public GDKTwoFactorCall createTransactionFromUri(final ObjectNode utxos, final String uri, final int subaccount) throws Exception {
         NetworkData network = getNetworkData();
         String assetId = null;
         if(network.getLiquid()){
             assetId = network.getPolicyAsset();
         }
-        return createTransactionFromUri(parent, uri, assetId,subaccount);
+        return createTransactionFromUri(utxos, uri, assetId, subaccount);
     }
 
     public void setSettings(final SettingsData settings) {
         mSettings = settings;
+    }
+
+    public void setPendingTransaction(@Nullable ObjectNode pendingTransaction){
+        this.pendingTransaction = pendingTransaction;
+    }
+
+    @Nullable
+    public ObjectNode getPendingTransaction(){
+        return this.pendingTransaction;
     }
 
     @Override

@@ -9,7 +9,6 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.libgreenaddress.GASession
-import com.blockstream.libgreenaddress.KotlinGDK
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -29,7 +28,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import mu.KLogging
 import java.net.URL
-import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.LinkedHashMap
 
@@ -154,11 +152,12 @@ class GreenSession constructor(
                 proxy = applicationSettings.proxyURL ?: ""
             )
         )
+    }
 
-
-        // GDK doesn't send connection events on connect
-        // to avoid having invalid events from previous connections
-        // emulate a successful connect event
+    // GDK doesn't send connection events on connect
+    // to avoid having invalid events from previous connections
+    // emulate a successful connect event
+    private fun emulateConnectionEvent(){
         NetworkEvent(connected = true, loginRequired = false, waiting = 0).let {
             networkSubject.onNext(it)
 
@@ -373,6 +372,19 @@ class GreenSession constructor(
             greenWallet.loginUser(gaSession, loginCredentialsParams = LoginCredentialsParams(pin = pin, pinData = pinData))
         ).result<LoginData>().also {
             onLoginSuccess(it, wallet.activeAccount)
+        }
+    }
+
+    fun reLogin(): LoginData {
+        return AuthHandler(
+            greenWallet,
+            greenWallet.loginUser(
+                gaSession,
+                deviceParams = DeviceParams(),
+                loginCredentialsParams = LoginCredentialsParams()
+            )
+        ).result<LoginData>(hardwareWalletResolver = HardwareCodeResolver(hwWallet)).also {
+            emulateConnectionEvent()
         }
     }
 
@@ -683,6 +695,9 @@ class GreenSession constructor(
                 notification.network?.let {
                     networkSubject.onNext(it)
                 }
+            }
+            "session" -> {
+                // GDK 0.45
             }
             "ticker" -> {
                 // UPDATE UI

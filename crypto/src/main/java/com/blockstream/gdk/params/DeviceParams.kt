@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 data class DeviceParams constructor(
     @SerialName("device") val device: Device? = null,
 ) : GAJson<DeviceParams>() {
+    override val encodeDefaultsValues = false
 
     override fun kSerializer(): KSerializer<DeviceParams> {
         return serializer()

@@ -91,32 +91,18 @@ abstract class AbstractWalletViewModel constructor(
                         if(event.connected && event.loginRequired != true){
                             onReconnectEvent.value = ConsumableEvent(-1)
                         }else if (event.loginRequired == true) {
-                            if (session.hasDevice) {
-                                onReconnectEvent.value = ConsumableEvent(0)
-
-                                session.observable { session ->
-                                    session.loginWithDevice(
-                                        session.network,
-                                        registerUser = false,
-                                        device = session.device!!,
-                                        hardwareWalletResolver = HardwareCodeResolver(session.hwWallet)
-                                    )
-                                }.subscribeBy(
-                                    onError = {
-                                        it.printStackTrace()
-                                        logger.info { "Logout from Device reconnection failure" }
-                                        logout(NavigationEvent.DISCONNECTED)
-                                    },
-                                    onSuccess = {
-                                        logger.info { "Device login was successful" }
-                                    }
-                                )
-
-                            } else {
-                                logger.info { "Logout from network event" }
-                                onReconnectEvent.value = ConsumableEvent(-1)
-                                logout(NavigationEvent.DISCONNECTED)
-                            }
+                            logger.info { "Trying to re-establish connection" }
+                            session.observable { session ->
+                                session.reLogin()
+                            }.subscribeBy(
+                                onError = {
+                                    it.printStackTrace()
+                                    logger.info { "Re-login failed..." }
+                                },
+                                onSuccess = {
+                                    logger.info { "Re-login was successful" }
+                                }
+                            )
                         } else {
                             reconnectTimer = Observable.interval(1, TimeUnit.SECONDS)
                                 .take((event.waiting ?: 0) + 1)

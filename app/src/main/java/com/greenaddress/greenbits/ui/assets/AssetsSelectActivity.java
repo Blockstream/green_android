@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.assets;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -7,40 +8,43 @@ import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
-
 import java.util.Map;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
-
     private RecyclerView mRecyclerView;
     private Map<String, Long> mAssetsBalances;
     private Disposable refreshDisposable;
+    private ObjectNode mPendingTransaction;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitleBackTransparent();
         setContentView(R.layout.activity_assets_selection);
+        setTitle(R.string.id_select_asset);
 
-        final String callingActivity = getCallingActivity() != null ? getCallingActivity().getClassName() : "";
-        if (callingActivity.equals(ScanActivity.class.getName())) {
-            setTitle(R.string.id_select_asset);
+        // Get pending transaction
+        mPendingTransaction = getSession().getPendingTransaction();
+        if(mPendingTransaction == null){
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            setResult(Activity.RESULT_CANCELED);
+            finishOnUiThread();
+            return;
         }
 
         mRecyclerView = findViewById(R.id.assetsList);
@@ -63,13 +67,12 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
 
     @Override
     public void onAssetSelected(final String assetId) {
-        if (getIntent().hasExtra(PrefKeys.INTENT_STRING_TX)) {
+        if (getSession().getPendingTransaction() != null) {
             // Update transaction in send navigation flow
             try {
                 final ObjectNode tx = updateTransaction(assetId);
                 final Intent intent = new Intent(this, SendAmountActivity.class);
-                removeUtxosIfTooBig(tx);
-                intent.putExtra(PrefKeys.INTENT_STRING_TX, tx.toString());
+                getSession().setPendingTransaction(tx);
                 startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
             } catch (final Exception e) {
                 Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
@@ -125,11 +128,9 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
     }
 
     private ObjectNode updateTransaction(final String assetId) throws Exception {
-        final String tx = getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX);
-        final ObjectNode txJson = new ObjectMapper().readValue(tx, ObjectNode.class);
-        final ObjectNode addressee = (ObjectNode) txJson.get("addressees").get(0);
+        final ObjectNode addressee = (ObjectNode) mPendingTransaction.get("addressees").get(0);
         addressee.put("asset_id", assetId);
-        final GDKTwoFactorCall call = getSession().createTransactionRaw(null, txJson);
+        final GDKTwoFactorCall call = getSession().createTransactionRaw(mPendingTransaction);
         return call.resolve(new HardwareCodeResolver(this), null);
     }
 }

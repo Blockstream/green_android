@@ -59,10 +59,21 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
 
         mObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         final boolean isSweep = getIntent().getBooleanExtra(PrefKeys.SWEEP, false);
-        final Device mDevice = getIntent().getParcelableExtra("hww");
+        mDevice = getIntent().getParcelableExtra("hww");
 
         setTitle(isSweep ? R.string.id_sweep : R.string.id_send);
 
+        // Get pending transaction
+        mTxJson = getSession().getPendingTransaction();
+        if(mTxJson == null){
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            setResult(Activity.RESULT_CANCELED);
+            finishOnUiThread();
+            return;
+        }
+
+        setup();
+        /*
         startLoading();
         setupDisposable = Observable.just(getSession())
                           .observeOn(AndroidSchedulers.mainThread())
@@ -74,7 +85,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             // FIXME: If we didn't pass in the full transaction (with utxos)
             // then this call will go to the server. So, we should do it in
             // the background and display a wait icon until it returns
-            return getSession().createTransactionRaw(this, tx)
+            return getSession().createTransactionRaw(tx)
             .resolve(new HardwareCodeResolver(this), Bridge.INSTANCE.createTwoFactorResolver(this));
         })
                           .observeOn(AndroidSchedulers.mainThread())
@@ -89,6 +100,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             setResult(Activity.RESULT_CANCELED);
             finishOnUiThread();
         });
+         */
     }
 
     private void setup() {

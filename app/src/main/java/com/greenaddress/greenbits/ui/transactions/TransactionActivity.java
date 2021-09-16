@@ -25,6 +25,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenapi.data.BalanceData;
@@ -360,23 +361,27 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                                                        "transactions"), txhash);
         })
                          .map((txToBump) -> {
+             final ObjectNode utxosRaw = getSession().getUTXO(subaccount, 0, null)
+                     .resolve(new HardwareCodeResolver(this), null);
+             final ObjectNode utxos = (ObjectNode) utxosRaw.get("unspent_outputs");
+
             final JsonNode feeRate = txToBump.get("fee_rate");
             BumpTxData bumpTxData = new BumpTxData();
             bumpTxData.setPreviousTransaction(txToBump);
             bumpTxData.setFeeRate(feeRate.asLong());
             bumpTxData.setSubaccount(subaccount);
+            bumpTxData.setUtxos(utxos);
             Log.d(TAG,"createTransactionRaw(" + bumpTxData.toString() + ")");
             return bumpTxData;
         })
                          .map((bumpTxData) -> {
-            return getSession().createTransactionRaw(null, bumpTxData).resolve(new HardwareCodeResolver(this), null);
+            return getSession().createTransactionRaw(bumpTxData).resolve(new HardwareCodeResolver(this), null);
         })
                          .observeOn(AndroidSchedulers.mainThread())
                          .subscribe((tx) -> {
             stopLoading();
             final Intent intent = new Intent(this, SendAmountActivity.class);
-            removeUtxosIfTooBig(tx);
-            intent.putExtra(PrefKeys.INTENT_STRING_TX, tx.toString());
+            getSession().setPendingTransaction(tx);
             startActivity(intent);
             finish();
         }, (e) -> {

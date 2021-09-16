@@ -233,17 +233,6 @@ public abstract class LoggedActivity extends GaActivity {
         amountText.setText(isFiat ? fiat : btc);
     }
 
-    protected void removeUtxosIfTooBig(final ObjectNode transactionFromUri) {
-        if (transactionFromUri.toString().length() <= 200000)
-            return;
-        if (transactionFromUri.has("utxos")) {
-            transactionFromUri.remove("utxos");
-        }
-        if (transactionFromUri.get("send_all").asBoolean() && transactionFromUri.has("used_utxos")) {
-            transactionFromUri.remove("used_utxos");
-        }
-    }
-
     protected int getActiveAccount() {
         return Bridge.INSTANCE.getActiveAccount();
     }

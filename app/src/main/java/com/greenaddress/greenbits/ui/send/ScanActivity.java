@@ -410,7 +410,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             return sweepData;
         })
                      .map((sweepData) -> {
-            final GDKTwoFactorCall call = getSession().createTransactionRaw(null, sweepData);
+            final GDKTwoFactorCall call = getSession().createTransactionRaw(sweepData);
             final ObjectNode transactionRaw = call.resolve(new HardwareCodeResolver(this), null);
             final String error = transactionRaw.get("error").asText();
             if (!error.isEmpty())
@@ -419,8 +419,7 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         })
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe((transactionRaw) -> {
-            removeUtxosIfTooBig(transactionRaw);
-            result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
+            getSession().setPendingTransaction(transactionRaw);
             result.setClass(this, SendAmountActivity.class);
             startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
         }, (e) -> {
@@ -439,7 +438,12 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         disposable = Observable.just(getSession())
                      .observeOn(Schedulers.computation())
                      .map((session) -> {
-            final GDKTwoFactorCall call = getSession().createTransactionFromUri(null, scanned, subaccount);
+            final ObjectNode utxosRaw = getSession().getUTXO(subaccount, 0, null)
+                    .resolve(new HardwareCodeResolver(this), null);
+
+            final ObjectNode utxos = (ObjectNode) utxosRaw.get("unspent_outputs");
+
+            final GDKTwoFactorCall call = getSession().createTransactionFromUri(utxos, scanned, subaccount);
             final ObjectNode transactionRaw = call.resolve(new HardwareCodeResolver(this), null);
             if (!transactionRaw.has("addressees"))
                 throw new Exception("Missing field addressees");
@@ -453,12 +457,12 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         })
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe((transactionRaw) -> {
-            removeUtxosIfTooBig(transactionRaw);
             if (networkData.getLiquid())
                 result.setClass(this, AssetsSelectActivity.class);
             else
                 result.setClass(this, SendAmountActivity.class);
-            result.putExtra(PrefKeys.INTENT_STRING_TX, transactionRaw.toString());
+
+            getSession().setPendingTransaction(transactionRaw);
             startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);
         }, (e) -> {
             e.printStackTrace();

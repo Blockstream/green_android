@@ -255,15 +255,15 @@ public class GDKSession implements HttpRequestHandler {
         return convert(amount);
     }
 
-    public GDKTwoFactorCall createTransactionRaw(final Activity parent, final JSONData createTransactionData) throws Exception {
+    public GDKTwoFactorCall createTransactionRaw(final JSONData createTransactionData) throws Exception {
         return new GDKTwoFactorCall(GDK.create_transaction(mNativeSession, createTransactionData));
     }
 
-    public GDKTwoFactorCall createTransactionRaw(final Activity parent, final ObjectNode tx) throws Exception {
+    public GDKTwoFactorCall createTransactionRaw(final ObjectNode tx) throws Exception {
         return new GDKTwoFactorCall(GDK.create_transaction(mNativeSession, tx));
     }
 
-    public GDKTwoFactorCall createTransactionFromUri(final Activity parent, final String uri, final String assetId, final int subaccount) throws Exception {
+    public GDKTwoFactorCall createTransactionFromUri(@Nullable final ObjectNode utxos, final String uri, final String assetId, final int subaccount) throws Exception {
         final ObjectNode tx = mObjectMapper.createObjectNode();
         tx.put("subaccount", subaccount);
         final ObjectNode address = mObjectMapper.createObjectNode();
@@ -274,8 +274,11 @@ public class GDKSession implements HttpRequestHandler {
         final ArrayNode addressees = mObjectMapper.createArrayNode();
         addressees.add(address);
         tx.set("addressees", addressees);
+        if(utxos != null) {
+            tx.set("utxos", utxos);
+        }
 
-        return createTransactionRaw(parent, tx);
+        return createTransactionRaw(tx);
     }
 
     public GDKTwoFactorCall signTransactionRaw(final ObjectNode createTransactionData) throws Exception {
@@ -297,7 +300,7 @@ public class GDKSession implements HttpRequestHandler {
         return mObjectMapper.treeToValue(feeEstimates, EstimatesData.class).getFees();
     }
 
-    public GDKTwoFactorCall getUTXO(final long subAccount, final long confirmations, final Long expiredΑt) throws Exception {
+    public GDKTwoFactorCall getUTXO(final long subAccount, final long confirmations, @Nullable final Long expiredΑt) throws Exception {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);

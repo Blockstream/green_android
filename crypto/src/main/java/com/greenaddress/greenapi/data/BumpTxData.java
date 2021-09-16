@@ -12,6 +12,7 @@ public class BumpTxData extends JSONData {
     // }
 
     private JsonNode previousTransaction;
+    private JsonNode utxos;
     private Long feeRate;
     private int subaccount;
 
@@ -37,5 +38,13 @@ public class BumpTxData extends JSONData {
 
     public void setFeeRate(final Long feeRate) {
         this.feeRate = feeRate;
+    }
+
+    public JsonNode getUtxos() {
+        return utxos;
+    }
+
+    public void setUtxos(final JsonNode utxos) {
+        this.utxos = utxos;
     }
 }

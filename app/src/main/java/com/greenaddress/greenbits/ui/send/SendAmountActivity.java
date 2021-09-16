@@ -1,5 +1,6 @@
 package com.greenaddress.greenbits.ui.send;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -150,44 +151,33 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             mFeeButtons[i].setOnClickListener(this);
         }
 
-        // Create the initial transaction
-        final String text = getIntent().getStringExtra(PrefKeys.INTENT_STRING_TX);
-        final ObjectNode txJson;
-        try {
-            txJson = new ObjectMapper().readValue(text, ObjectNode.class);
-        } catch (final IOException e) {
-            e.printStackTrace();
+        // Get pending transaction
+        mTx = getSession().getPendingTransaction();
+        if(mTx == null){
             UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            setResult(Activity.RESULT_CANCELED);
             finishOnUiThread();
             return;
         }
 
         // FIXME: If default fee is custom then fetch it here
         final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
-        txJson.set("fee_rate", fee_rate);
+        mTx.set("fee_rate", fee_rate);
 
         // Update transaction
         setupKeyboard();
-        startLoading();
+
+
         setupDisposable = Observable.just(getSession())
                           .observeOn(Schedulers.computation())
                           .map((session) -> {
-            // FIXME: If we didn't pass in the full transaction (with utxos)
-            // then this call will go to the server. So, we should do it in
-            // the background and display a wait icon until it returns
-            if (mTx != null)
-                return mTx;
-            return session.createTransactionRaw(null, txJson).resolve(new HardwareCodeResolver(this), null);
-        })
-                          .map((tx) -> {
             final SubaccountData subAccount = getSession().getSubAccount(this, getActiveAccount());
-            return new Pair<SubaccountData, ObjectNode>(subAccount, tx);
+            return subAccount;
         })
                           .observeOn(AndroidSchedulers.mainThread())
-                          .subscribe((pair) -> {
+                          .subscribe((subaccount) -> {
             stopLoading();
-            mSubaccount = pair.first;
-            mTx = pair.second;
+            mSubaccount = subaccount;
             setup(mTx);
             updateTransaction();
             updateAssetSelected();
@@ -506,7 +496,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         updateDisposable = Observable.just(mTx)
                            .observeOn(Schedulers.computation())
                            .map((tx) -> {
-            return getSession().createTransactionRaw(null, tx).resolve(new HardwareCodeResolver(this), null);
+            return getSession().createTransactionRaw(tx).resolve(new HardwareCodeResolver(this), null);
         })
                            .observeOn(AndroidSchedulers.mainThread())
                            .subscribe((tx) -> {
@@ -593,8 +583,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         // Open next fragment
         final Intent intent = new Intent(this, SendConfirmActivity.class);
         final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
-        removeUtxosIfTooBig(transactionData);
-        intent.putExtra(PrefKeys.INTENT_STRING_TX, transactionData.toString());
+        getSession().setPendingTransaction(transactionData);
         intent.putExtra("asset_info", info);
         intent.putExtra(PrefKeys.SWEEP, isSweep);
         if (getSession().getHWWallet() != null)
