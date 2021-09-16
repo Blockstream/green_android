@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [3.7.1] - 2021-09-16
+### Fixed
+- Fix GDK build for f-droid
+
+## [3.7.0] - 2021-09-03
+### Added
+- Support for creating and restoring singlesig wallets on Bitcoin
+
+### Changed
+- Update GDK to version 0.0.44
+- Update Gradle dependencies
+
 ## [3.6.4] - 2021-07-23
 ### Added
 - Adds a PIN pad for 2FA codes
