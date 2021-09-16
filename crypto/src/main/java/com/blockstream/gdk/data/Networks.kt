@@ -23,7 +23,7 @@ data class Networks(
     val hardwareSupportedNetworks by lazy { listOf(bitcoinGreen, liquidGreen, testnetGreen) }
 
     fun getNetworkById(id: String): Network {
-        return networks[id] ?: bitcoinGreen
+        return networks[id] ?: throw Exception("Network '$id' is not available in the current build of GDK")
     }
 
     companion object {
