@@ -129,39 +129,25 @@ class TwoFactorResetSheetDialogFragment : WalletBottomSheetDialogFragment<Recycl
         val fastAdapter = FastAdapter.with(itemAdapter)
 
         fastAdapter.addClickListener<ListItemHelpBinding, HelpListItem>({ binding -> binding.button }) { _, _, _, item ->
-            if(Bridge.useGreenModule){
-                val twoFactorSetupAction = if(item == cancelItem){
-                    TwoFactorSetupAction.CANCEL
+            val twoFactorSetupAction = if(item == cancelItem){
+                TwoFactorSetupAction.CANCEL
+            }else{
+                if(twoFactorReset.isDisputed) {
+                    TwoFactorSetupAction.UNDO_DISPUTE
                 }else{
-                    if(twoFactorReset.isDisputed) {
-                        TwoFactorSetupAction.UNDO_DISPUTE
-                    }else{
-                        TwoFactorSetupAction.DISPUTE
-                    }
+                    TwoFactorSetupAction.DISPUTE
                 }
-
-                val directions = OverviewFragmentDirections.actionGlobalTwoFactorSetupFragment(
-                    wallet = viewModel.wallet,
-                    method = TwoFactorMethod.EMAIL,
-                    action = twoFactorSetupAction
-                )
-
-                navigate(findNavController(), directions.actionId, directions.arguments, false)
-
-                dismiss()
-            } else {
-                if(item == cancelItem){
-                    Bridge.twoFactorCancelReset(requireActivity())
-                }else{
-                    if(twoFactorReset.isDisputed) {
-                        Bridge.twoFactorUndoDisputeReset(requireActivity())
-                    }else {
-                        Bridge.twoFactorDisputeReset(requireActivity())
-                    }
-                }
-
-                dismiss()
             }
+
+            val directions = OverviewFragmentDirections.actionGlobalTwoFactorSetupFragment(
+                wallet = viewModel.wallet,
+                method = TwoFactorMethod.EMAIL,
+                action = twoFactorSetupAction
+            )
+
+            navigate(findNavController(), directions.actionId, directions.arguments, false)
+
+            dismiss()
         }
 
         return fastAdapter

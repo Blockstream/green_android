@@ -31,7 +31,6 @@ object Bridge {
     private lateinit var context: WeakReference<Context>
 
     const val appModuleInUse = true
-    const val useGreenModule = true
     
     var isDevelopmentFlavor = false
         private set
@@ -44,23 +43,18 @@ object Bridge {
 
     var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, extraData: Any?) -> Unit)? = null
     var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
-    var updateSettingsV4Fn: ((gaSession: Any?) -> Unit)? = null
     var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
-    var getWalletNameFn: ((gaSession: Any?) -> String?)? = null
     var getWalletIdFn: ((gaSession: Any?) -> Long?)? = null
-    var getActiveAssetProviderFn: ((gaSession: Any?) -> AssetsProvider?)? = null
     var getHWWalletFn: ((gaSession: Any?) -> HWWallet?)? = null
     var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
     var sessionIsConnectedProviderFn: ((gaSession: Any?) -> Boolean)? = null
-    var recoveryConfirmedProviderFn: ((gaSession: Any?) -> Boolean)? = null
     var connectFn: ((context: Context, gaSession: Any?, networkId: String, hwWallet: HWWallet?) -> Unit)? = null
-    var loginWithDeviceFn: ((context: Context, gaSession: Any?, networkId: String, connectSession: Boolean, hwWallet: HWWallet, hardwareDataResolver: HardwareCodeResolver) -> Unit)? = null
     var createTwoFactorResolverFn: ((context: Context) -> TwoFactorResolver)? = null
 
     private var initialized = false
 
     enum class NavigateType {
-        LOGOUT, CHANGE_PIN, SETTINGS, APP_SETTINGS, BACKUP_RECOVERY, TWO_FACTOR_RESET, ADD_ACCOUNT, RECEIVE, ACCOUNT_ID, TWO_FACTOR_CANCEL_RESET, TWO_FACTOR_DISPUTE, TWO_FACTOR_UNDO_DISPUTE, TWO_FACTOR_AUTHENTICATION
+        LOGOUT, RECEIVE, TWO_FACTOR_CANCEL_RESET
     }
 
     fun initializeBridge(
@@ -95,66 +89,12 @@ object Bridge {
         connectFn?.invoke(context, gaSession, network, hwWallet)
     }
 
-    fun loginWithDevice(context:Context, gaSession: Any?, network: String,connectSession: Boolean,  hwWallet: HWWallet, hardwareDataResolver: HardwareCodeResolver){
-        loginWithDeviceFn?.invoke(context, gaSession, network, connectSession, hwWallet, hardwareDataResolver)
-    }
-
     fun isSessionConnected() = sessionIsConnectedProviderFn?.invoke(Session.getSession().nativeSession) ?: false
-
-    fun getIsRecoveryConfirmed() = recoveryConfirmedProviderFn?.invoke(Session.getSession().nativeSession) ?: true
 
     fun getWallets() = walletsProviderFn?.invoke(Session.getSession().nativeSession)
 
     fun navigateToLogin(activity: FragmentActivity, walletId: Long? = null){
         navigateFn?.invoke(activity, NavigateType.LOGOUT, Session.getSession().nativeSession, walletId)
-    }
-
-    fun navigateToReceive(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.RECEIVE, Session.getSession().nativeSession, null)
-    }
-
-    fun navigateToChangePin(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.CHANGE_PIN, Session.getSession().nativeSession, null)
-    }
-
-    fun navigateToSettings(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.SETTINGS, Session.getSession().nativeSession, null)
-    }
-
-    fun navigateToBackupRecovery(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.BACKUP_RECOVERY, Session.getSession().nativeSession, null)
-    }
-
-    fun appSettingsDialog(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.APP_SETTINGS, Session.getSession().nativeSession, null)
-    }
-
-    fun accountIdDialog(activity: FragmentActivity, subAccount: SubAccount){
-        navigateFn?.invoke(activity, NavigateType.ACCOUNT_ID, Session.getSession().nativeSession, subAccount)
-    }
-
-    fun twoFactorResetDialog(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_RESET, Session.getSession().nativeSession, null)
-    }
-
-    fun twoFactorAuthentication(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_AUTHENTICATION, Session.getSession().nativeSession, null)
-    }
-
-    fun twoFactorCancelReset(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_CANCEL_RESET, Session.getSession().nativeSession, null)
-    }
-
-    fun twoFactorUndoDisputeReset(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_UNDO_DISPUTE, Session.getSession().nativeSession, null)
-    }
-
-    fun twoFactorDisputeReset(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.TWO_FACTOR_DISPUTE, Session.getSession().nativeSession, null)
-    }
-
-    fun addAccount(activity: FragmentActivity){
-        navigateFn?.invoke(activity, NavigateType.ADD_ACCOUNT, Session.getSession().nativeSession, null)
     }
 
     fun bridgeSession(session: Any, networkId: String) {
@@ -166,28 +106,9 @@ object Bridge {
         setSubaccountFn?.invoke(Session.getSession().nativeSession, account)
     }
 
-    // Send signal to v4 codebase to update settings data
-    fun updateSettingsV4(){
-        updateSettingsV4Fn?.invoke(Session.getSession().nativeSession)
-    }
-
     // Send signal to v3 codebase to update settings data
     fun updateSettingsV3(){
         Session.getSession().refreshSettings()
-    }
-
-    fun getWalletName(): String? {
-        return getWalletNameFn?.let {
-            val session = Session.getSession()
-
-            if(session != null && session.nativeSession != null){
-                session.nativeSession.let { nativeSession ->
-                    return@getWalletName it.invoke(nativeSession)
-                }
-            }
-
-            null
-        }
     }
 
     fun getActiveWalletId(): Long? {
@@ -220,20 +141,6 @@ object Bridge {
         } ?: 0
     }
 
-    fun getActiveAssetProvider(): AssetsProvider? {
-        return getActiveAssetProviderFn?.let {
-            val session = Session.getSession()
-
-            if(session != null && session.nativeSession != null){
-                session.nativeSession.let { nativeSession ->
-                    return@getActiveAssetProvider it.invoke(nativeSession)
-                }
-            }
-
-            null
-        }
-    }
-
     fun getHWWallet() = getHWWalletFn?.invoke(Session.getSession().nativeSession)
 
     fun setCurrentNetwork(context: Context, networkId: String) = BridgeJava.setCurrentNetwork(
@@ -242,8 +149,6 @@ object Bridge {
     )
 
     fun getCurrentNetworkData(context: Context) = BridgeJava.getCurrentNetworkData(context)
-
-    fun getCurrentNetwork(context: Context) = greenWallet?.networks?.getNetworkById(BridgeJava.getCurrentNetwork(context))
 
     fun getCurrentNetworkId(context: Context) = BridgeJava.getCurrentNetwork(context)
 

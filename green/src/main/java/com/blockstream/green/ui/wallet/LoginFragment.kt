@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.wallet
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.security.keystore.KeyPermanentlyInvalidatedException
@@ -14,7 +13,6 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.green.NavGraphDirections
@@ -25,14 +23,10 @@ import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.LoginFragmentBinding
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.dialogs.showTorSinglesigWarningIfNeeded
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.GreenPinViewListener
-import com.greenaddress.Bridge
-import com.greenaddress.greenbits.ui.TabbedMainActivity
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.hilt.android.AndroidEntryPoint
 import java.security.UnrecoverableKeyException
 import javax.inject.Inject
@@ -80,13 +74,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
         viewModel.actionLogin.observe(viewLifecycleOwner) {
             if (it) {
-                if(Bridge.useGreenModule) {
-                    navigate(LoginFragmentDirections.actionGlobalOverviewFragment(viewModel.wallet))
-                }else{
-                    val intent = Intent(requireContext(), TabbedMainActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                }
+                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(viewModel.wallet))
             }
         }
 

@@ -16,16 +16,6 @@ import javax.annotation.Nullable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public abstract class LoginActivity extends GaActivity {
-
-    protected void onLoggedIn() {
-        final Intent intent = new Intent(LoginActivity.this, TabbedMainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.setData(getIntent().getData());
-        intent.setAction(getIntent().getAction());
-        startActivity(intent);
-        finishOnUiThread();
-    }
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -42,12 +42,8 @@ class AddAccountFragment : WalletFragment<AddAccountFragmentBinding>(
         }
 
         viewModel.accountCreated.observe(viewLifecycleOwner) {
-            if(Bridge.useGreenModule){
-                setNavigationResult(result = it.pointer, key = OverviewFragment.ADD_NEW_ACCOUNT, destinationId = R.id.overviewFragment)
-                findNavController().popBackStack(R.id.overviewFragment, false)
-            }else{
-                requireActivity().finish()
-            }
+            setNavigationResult(result = it.pointer, key = OverviewFragment.ADD_NEW_ACCOUNT, destinationId = R.id.overviewFragment)
+            findNavController().popBackStack(R.id.overviewFragment, false)
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {

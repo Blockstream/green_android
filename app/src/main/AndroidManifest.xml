@@ -50,30 +50,12 @@
         android:allowBackup="false"
         android:label="@string/app_name"
         android:supportsRtl="true">
-
-        <activity
-            android:name=".TabbedMainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
-            <meta-data android:name="useNoActionBar" android:value="true"/>
-        </activity>
         <activity
             android:name=".assets.AssetsSelectActivity"
             android:screenOrientation="portrait"
             android:label="@string/app_name"
             android:theme="@style/BitcoinTheme"
             />
-
-        <activity
-            android:name=".accounts.SubaccountSelectActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            android:label="@string/app_name">
-            <meta-data android:name="useNoActionBar" android:value="true"/>
-        </activity>
-
         <activity
             android:name=".ScanForResultActivity"
             android:screenOrientation="portrait"
@@ -105,17 +87,6 @@
             android:windowSoftInputMode="stateHidden|adjustPan"
             />
         <activity
-            android:name=".notifications.MessagesActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            />
-        <activity
-            android:name=".notifications.NotificationsActivity"
-            android:label="@string/id_notifications"
-            android:theme="@style/BitcoinTheme"
-            android:screenOrientation="portrait"
-            />
-        <activity
             android:name=".authentication.TrezorPinActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"
@@ -130,13 +101,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"
             android:label="@string/id_asset"
-            />
-
-        <activity
-            android:name=".accounts.SweepSelectActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            android:label="@string/id_sweep"
             />
 
     </application>

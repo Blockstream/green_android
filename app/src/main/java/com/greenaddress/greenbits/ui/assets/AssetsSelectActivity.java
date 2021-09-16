@@ -19,15 +19,12 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.TabbedMainActivity;
 import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 import com.greenaddress.greenbits.ui.send.ScanActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
 
 import java.util.Map;
-
-import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
 
 public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapter.OnAssetSelected {
 
@@ -42,9 +39,7 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
         setContentView(R.layout.activity_assets_selection);
 
         final String callingActivity = getCallingActivity() != null ? getCallingActivity().getClassName() : "";
-        if (callingActivity.equals(TabbedMainActivity.class.getName())) {
-            setTitle(R.string.id_total_balance);
-        } else if (callingActivity.equals(ScanActivity.class.getName())) {
+        if (callingActivity.equals(ScanActivity.class.getName())) {
             setTitle(R.string.id_select_asset);
         }
 

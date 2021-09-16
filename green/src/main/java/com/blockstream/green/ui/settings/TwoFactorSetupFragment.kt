@@ -174,22 +174,6 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         }
     }
 
-    // TODO Remove it when migrated to overview v4
-    override fun popBackStack(){
-        hideKeyboard() // hide keyboard as is no longer required for the backstacked fragments
-        if(Bridge.useGreenModule){
-            findNavController().popBackStack()
-        }else{
-            // Initiated from v4 codebase
-            if(args.action == TwoFactorSetupAction.SETUP || args.action == TwoFactorSetupAction.SETUP_EMAIL){
-                findNavController().popBackStack()
-            }else{
-                // Initiated from v3 codebase
-                requireActivity().finish()
-            }
-        }
-    }
-
     private fun openCountryFilter(){
         FilterBottomSheetDialogFragment().also {
             it.show(childFragmentManager, it.toString())

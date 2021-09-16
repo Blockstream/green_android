@@ -18,7 +18,6 @@ import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.ui.BridgeActivity
 import com.blockstream.green.ui.MainActivity
@@ -33,15 +32,9 @@ import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.Bridge
-import com.greenaddress.Bridge.getActiveWalletId
-import com.greenaddress.Bridge.navigateToLogin
 import com.greenaddress.greenapi.Registry
-import com.greenaddress.greenapi.Session
 import com.pandulapeter.beagle.Beagle
 import dagger.hilt.android.HiltAndroidApp
-import hu.akarnokd.rxjava3.bridge.RxJavaBridge
-import io.reactivex.Single
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -111,141 +104,6 @@ class GreenApplication : Application(){
                         .createPendingIntent()
                         .send()
                 }
-
-                Bridge.NavigateType.CHANGE_PIN, Bridge.NavigateType.SETTINGS -> {
-                    sessionManager.getWalletSession(gaSession)?.let { session ->
-                        GlobalScope.launch {
-                            val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
-
-                            val intent = Intent(activity, BridgeActivity::class.java)
-                            intent.putExtras(WalletSettingsFragmentArgs(wallet, type == Bridge.NavigateType.CHANGE_PIN).toBundle())
-                            intent.action = BridgeActivity.PIN
-
-                            activity.startActivity(intent)
-                        }
-                    }
-                }
-
-                Bridge.NavigateType.BACKUP_RECOVERY -> {
-
-                    val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-                    if (walletId >= 0) {
-
-                        GlobalScope.launch {
-                            val wallet = walletRepository.getWalletSuspend(walletId)
-
-                            val intent = Intent(activity, BridgeActivity::class.java)
-                            // Seems there is a bug in Default Nav args, so we must set a dummy OnboardingOptions
-                            intent.putExtras(
-                                RecoveryIntroFragmentArgs(
-                                    wallet, onboardingOptions = OnboardingOptions(
-                                        false
-                                    )
-                                ).toBundle()
-                            )
-                            intent.action = BridgeActivity.BACKUP_RECOVERY
-
-                            activity.startActivity(intent)
-
-                        }
-                    }
-                }
-
-                Bridge.NavigateType.APP_SETTINGS -> {
-                    AppSettingsDialogFragment().also {
-                        it.show(activity.supportFragmentManager, it.toString())
-                    }
-                }
-
-                Bridge.NavigateType.ACCOUNT_ID -> {
-                    if(extraData is SubAccount) {
-                        AccountIdBottomSheetDialogFragment(extraData).also {
-                            it.show(activity.supportFragmentManager, it.toString())
-                        }
-                    }
-                }
-
-                Bridge.NavigateType.TWO_FACTOR_RESET -> {
-                    sessionManager.getWalletSession(gaSession)?.getTwoFactorResetObservable()
-                        ?.blockingFirst()?.let {
-                        TwoFactorResetSheetDialogFragment.newInstance(it).also { dialog ->
-                            dialog.show(activity.supportFragmentManager, dialog.toString())
-                        }
-                    }
-                }
-
-                Bridge.NavigateType.TWO_FACTOR_AUTHENTICATION,
-                Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET,
-                Bridge.NavigateType.TWO_FACTOR_DISPUTE,
-                Bridge.NavigateType.TWO_FACTOR_UNDO_DISPUTE -> {
-                    sessionManager.getWalletSession(gaSession)?.let { session ->
-
-                        /*GlobalScope.launch {
-
-                            val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
-
-                            val intent = Intent(activity, BridgeActivity::class.java)
-                            if(type == Bridge.NavigateType.TWO_FACTOR_AUTHENTICATION){
-                                intent.putExtras(
-                                    WalletSettingsFragmentArgs(
-                                        wallet = wallet,
-                                        twoFactorAuthentication = true,
-                                    ).toBundle()
-                                )
-                                intent.action = BridgeActivity.TWO_FACTOR_AUTHENTICATION
-                            }else {
-                                intent.putExtras(
-                                    WalletSettingsFragmentArgs(
-                                        wallet = wallet,
-                                        twoFactorReset = true,
-                                        twoFactorSetupType = when (type) {
-                                            Bridge.NavigateType.TWO_FACTOR_CANCEL_RESET -> TwoFactorSetupAction.CANCEL
-                                            Bridge.NavigateType.TWO_FACTOR_DISPUTE -> TwoFactorSetupAction.DISPUTE
-                                            else -> TwoFactorSetupAction.UNDO_DISPUTE
-                                        }
-                                    ).toBundle()
-                                )
-                                intent.action = BridgeActivity.TWO_FACTOR_RESET
-                            }
-
-                            activity.startActivity(intent)
-                        }*/
-                    }
-                }
-
-                Bridge.NavigateType.ADD_ACCOUNT -> {
-                    sessionManager.getWalletSession(gaSession)?.let { session ->
-
-                        GlobalScope.launch {
-
-                            val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
-
-                            val intent = Intent(activity, BridgeActivity::class.java)
-                            intent.putExtras(ChooseAccountTypeFragmentArgs(wallet).toBundle())
-                            intent.action = BridgeActivity.ADD_ACCOUNT
-
-                            activity.startActivity(intent)
-                        }
-
-                    }
-                }
-
-                Bridge.NavigateType.RECEIVE -> {
-                    sessionManager.getWalletSession(gaSession)?.let { session ->
-
-                        GlobalScope.launch {
-                            val wallet = getWalletOrEmulatedHardwareWallet(gaSession, session.network)
-
-                            val intent = Intent(activity, BridgeActivity::class.java)
-                            intent.putExtras(ReceiveFragmentArgs(wallet).toBundle())
-                            intent.action = BridgeActivity.RECEIVE
-
-                            activity.startActivity(intent)
-                        }
-
-                    }
-                }
             }
         }
 
@@ -258,10 +116,6 @@ class GreenApplication : Application(){
                     walletRepository.updateWalletSync(it)
                 }
             }
-        }
-
-        Bridge.updateSettingsV4Fn = { gaSession ->
-            sessionManager.getWalletSession(gaSession)?.updateSettings()
         }
 
         Bridge.walletsProviderFn = { gaSession ->
@@ -282,16 +136,6 @@ class GreenApplication : Application(){
             wallets
         }
 
-        Bridge.recoveryConfirmedProviderFn = { gaSession ->
-            val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-            if(walletId >= 0){
-                walletRepository.getWalletSync(walletId)?.isRecoveryPhraseConfirmed ?: true
-            }else{
-                true
-            }
-        }
-
         Bridge.sessionIsConnectedProviderFn = { gaSession ->
             sessionManager.getWalletSession(gaSession)?.isConnected ?: false
         }
@@ -307,16 +151,6 @@ class GreenApplication : Application(){
             }
         }
 
-        Bridge.getWalletNameFn = { gaSession ->
-            val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-            if(walletId >= 0){
-                walletRepository.getWalletSync(walletId)?.name
-            }else{
-                null
-            }
-        }
-
         Bridge.getWalletIdFn = { gaSession ->
             val walletId = sessionManager.getWalletIdFromSession(gaSession)
 
@@ -325,10 +159,6 @@ class GreenApplication : Application(){
             }else{
                 null
             }
-        }
-
-        Bridge.getActiveAssetProviderFn = { gaSession ->
-            sessionManager.getWalletSession(gaSession)
         }
 
         Bridge.createTwoFactorResolverFn = { context: Context ->

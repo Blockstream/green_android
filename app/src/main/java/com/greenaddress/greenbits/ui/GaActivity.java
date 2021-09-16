@@ -43,6 +43,12 @@ import io.reactivex.rxjava3.core.SingleEmitter;
  * support code to handle service initialization, error handling etc.
  */
 public abstract class GaActivity extends AppCompatActivity implements HWWalletBridge {
+    public static final int
+            REQUEST_BITCOIN_URL_LOGIN = 1,
+            REQUEST_TX_DETAILS = 2,
+            REQUEST_BITCOIN_URL_SEND = 3,
+            REQUEST_SELECT_ASSET = 4,
+            REQUEST_SELECT_SUBACCOUNT = 5;
 
     public static final int HARDWARE_PIN_REQUEST = 59212;
     public static final int HARDWARE_PASSPHRASE_REQUEST = 21392;
@@ -254,13 +260,6 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
         }
     }
 
-    protected void goToTabbedMainActivity() {
-        final Intent intent = new Intent(this, TabbedMainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
     public SharedPreferences cfg() {
         return getSharedPreferences(network(), MODE_PRIVATE);
     }
@@ -275,10 +274,6 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
             cachedNetworkData = Bridge.INSTANCE.getCurrentNetworkData(this);
         }
         return cachedNetworkData;
-    }
-
-    protected Network getNetworkV4() {
-        return Bridge.INSTANCE.getCurrentNetwork(this);
     }
 
     public Session getSession() {

@@ -53,11 +53,7 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         val devicesAdapter = FastAdapter.with(ItemAdapter<DeviceBrandListItem>().add(list))
 
         devicesAdapter.onClickListener = { _, _, item, _ ->
-            if(Bridge.useGreenModule) {
-                navigate(NavGraphDirections.actionGlobalDeviceListFragment(item.deviceBrand))
-            }else{
-                navigate(NavGraphDirections.actionGlobalDeviceListFragment(item.deviceBrand))
-            }
+            navigate(NavGraphDirections.actionGlobalDeviceListFragment(item.deviceBrand))
             closeDrawer()
 
             true
@@ -84,14 +80,10 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
     }
 
     internal fun navigate(wallet: Wallet) {
-        if(Bridge.useGreenModule){
-            val walletSession = sessionManager.getWalletSession(wallet)
+        val walletSession = sessionManager.getWalletSession(wallet)
 
-            if(walletSession.isConnected){
-                navigate(LoginFragmentDirections.actionGlobalOverviewFragment(wallet))
-            }else{
-                navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
-            }
+        if(walletSession.isConnected){
+            navigate(LoginFragmentDirections.actionGlobalOverviewFragment(wallet))
         }else{
             navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
         }

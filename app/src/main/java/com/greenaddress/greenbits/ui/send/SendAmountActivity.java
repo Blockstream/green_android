@@ -48,8 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.greenaddress.greenbits.ui.TabbedMainActivity.REQUEST_BITCOIN_URL_SEND;
-
 public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
     private static final String TAG = SendAmountActivity.class.getSimpleName();
 

@@ -50,17 +50,13 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
                 it.onNavigationEvent.observe(viewLifecycleOwner) { consumableEvent ->
                     consumableEvent.getContentIfNotHandledOrReturnNull()?.let {
-                        if(Bridge.useGreenModule){
-                            // If is hardware wallet, prefer going to intro
-                            if (wallet.isHardware) {
-                                NavGraphDirections.actionGlobalIntroFragment()
-                            } else {
-                                NavGraphDirections.actionGlobalLoginFragment(wallet)
-                            }.let { directions ->
-                                navigate(directions.actionId, directions.arguments, isLogout = true)
-                            }
-                        }else{
-                            Bridge.navigateToLogin(requireActivity(), wallet.id)
+                        // If is hardware wallet, prefer going to intro
+                        if (wallet.isHardware) {
+                            NavGraphDirections.actionGlobalIntroFragment()
+                        } else {
+                            NavGraphDirections.actionGlobalLoginFragment(wallet)
+                        }.let { directions ->
+                            navigate(directions.actionId, directions.arguments, isLogout = true)
                         }
 
                         when(it){
