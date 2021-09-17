@@ -50,7 +50,7 @@ class AuthHandler(
                             .also { twoFactorStatus ->
 
                                 // Save the raw JsonElement for further processing if needed by v3 code
-                                twoFactorStatus.rawJsonElement = jsonElement
+                                twoFactorStatus.jsonElement = jsonElement
                             }
                     }
 
@@ -146,8 +146,13 @@ class AuthHandler(
             resolve(twoFactorResolver, hardwareWalletResolver)
         }
 
-        return result?.let {
-            JsonDeserializer.decodeFromJsonElement(it)
+        return result?.let { result ->
+            JsonDeserializer.decodeFromJsonElement<T>(result).let{
+                if(it is GAJson<*> && it.keepJsonElement) {
+                    it.jsonElement = result
+                }
+                it
+            }
         } ?: throw Exception("nothing is resolved")
     }
 

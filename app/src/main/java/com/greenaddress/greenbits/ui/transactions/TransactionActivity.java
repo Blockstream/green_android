@@ -361,9 +361,10 @@ public class TransactionActivity extends LoggedActivity implements View.OnClickL
                                                        "transactions"), txhash);
         })
                          .map((txToBump) -> {
-             final ObjectNode utxosRaw = getSession().getUTXO(subaccount, 0, null)
+            // Get utxos with at least 1 confirmation
+            final ObjectNode utxosRaw = getSession().getUTXO(subaccount, 1, null)
                      .resolve(new HardwareCodeResolver(this), null);
-             final ObjectNode utxos = (ObjectNode) utxosRaw.get("unspent_outputs");
+            final ObjectNode utxos = (ObjectNode) utxosRaw.get("unspent_outputs");
 
             final JsonNode feeRate = txToBump.get("fee_rate");
             BumpTxData bumpTxData = new BumpTxData();

@@ -23,5 +23,4 @@ data class DeviceRequest(
 
     // TODO BlindedScriptsData
     @SerialName("blinded_scripts") var blindedScripts: List<JsonElement>,
-
 )

@@ -1,5 +1,6 @@
 package com.blockstream.libgreenaddress
 
+import com.blockstream.gdk.data.RawTransaction
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.*
@@ -60,6 +61,12 @@ class KotlinGDK {
 
     fun getUnspentOutputs(session: GASession, details: BalanceParams): GAAuthHandler =
         GDK.get_unspent_outputs(session, details)
+
+    fun createTransaction(session: GASession, params: CreateTransactionParams): GAAuthHandler =
+        GDK.create_transaction(session, params)
+
+    fun updateTransaction(session: GASession, rawTransaction: JsonElement): GAAuthHandler =
+        GDK.create_transaction(session, rawTransaction)
 
     fun getTransactions(session: GASession, details: TransactionParams): GAAuthHandler =
         GDK.get_transactions(session, details)

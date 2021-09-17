@@ -10,7 +10,7 @@ import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class CreateTransactionParams(
-    @SerialName("subaccount") val subaccount: Int,
+    @SerialName("subaccount") val subaccount: Long,
     @SerialName("addressees") val addressees: List<String>,
     @SerialName("asset_id") val assetId: String? = null,
     @SerialName("utxos") val utxos: JsonElement? = null,

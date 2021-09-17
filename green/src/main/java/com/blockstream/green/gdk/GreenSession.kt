@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.Bridge
+import com.greenaddress.gdk.GDKSession
 import com.greenaddress.greenapi.HWWallet
 import com.greenaddress.greenapi.Session
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
@@ -659,6 +660,28 @@ class GreenSession constructor(
     }catch (e: Exception){
         e.printStackTrace()
         null
+    }
+
+    fun getUnspentOutputs(params: BalanceParams) = AuthHandler(
+        greenWallet,
+        greenWallet.getUnspentOutputs(gaSession, params)
+    ).result<UnspentOutputs>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+
+    fun createTransaction(unspentOutputs: UnspentOutputs, addresses: List<String>) {
+        val params = CreateTransactionParams(
+            subaccount = activeAccount,
+            utxos = unspentOutputs.unspentOutputs,
+            addressees = addresses
+        )
+
+        AuthHandler(greenWallet, greenWallet.createTransaction(gaSession, params)).result<RawTransaction>()
+    }
+
+    fun updateRawTransaction(rawTransaction: RawTransaction) {
+        AuthHandler(
+            greenWallet,
+            greenWallet.updateTransaction(gaSession, rawTransaction = rawTransaction.jsonElement!!)
+        ).result<RawTransaction>()
     }
 
     fun onNewNotification(notification: Notification) {

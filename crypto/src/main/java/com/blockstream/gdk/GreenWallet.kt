@@ -153,6 +153,12 @@ class GreenWallet constructor(
 
     fun getBalance(session: GASession, details: BalanceParams) = gdk.getBalance(session, details)
 
+    fun getUnspentOutputs(session: GASession, details: BalanceParams) = gdk.getUnspentOutputs(session, details)
+
+    fun createTransaction(session: GASession, params: CreateTransactionParams) = gdk.createTransaction(session, params)
+
+    fun updateTransaction(session: GASession, rawTransaction: JsonElement) = gdk.updateTransaction(session, rawTransaction)
+
     fun createSubAccount(session: GASession, params: SubAccountParams) = gdk.createSubAccount(
         session,
         params

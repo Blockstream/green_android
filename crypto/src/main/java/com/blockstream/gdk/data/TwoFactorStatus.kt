@@ -22,19 +22,17 @@ data class TwoFactorStatus constructor(
     // Wait for a fix #535
     @SerialName("auth_data") val authData: JsonElement? = null,
 ) : GAJson<TwoFactorStatus>() {
+    override val keepJsonElement = true
 
     override fun kSerializer(): KSerializer<TwoFactorStatus> {
         return serializer()
     }
 
-    // Used to convert object to Jackson based classes
-    var rawJsonElement: JsonElement? = null
-
     private val objectMapper by lazy { ObjectMapper() }
 
     fun getTwoFactorStatusDataV3(): TwoFactorStatusData {
         return objectMapper.treeToValue(
-            objectMapper.readTree(Json.encodeToString(rawJsonElement)),
+            objectMapper.readTree(Json.encodeToString(jsonElement)),
             TwoFactorStatusData::class.java
         )
     }
