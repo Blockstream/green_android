@@ -52,6 +52,7 @@ class TransactionDetailViewController: KeyboardViewController {
             return resetStatus.isResetActive || !transaction.canRBF || account?.isWatchonly ?? false
         }
     }
+    var updateTransaction: (_ transaction: Transaction) -> Void = { _ in }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -136,9 +137,10 @@ class TransactionDetailViewController: KeyboardViewController {
             next.satoshi = wallet?.satoshi?[next.tag] ?? 0
         } else if let next = segue.destination as? NotesViewController {
             next.transaction = sender as? Transaction
-            next.updateTransaction = { transaction in
-                self.transaction = transaction
-                self.transactionDetailTableView.reloadData()
+            next.updateTransaction = { [weak self] transaction in
+                self?.transaction = transaction
+                self?.transactionDetailTableView.reloadData()
+                self?.updateTransaction(transaction)
             }
         }
     }

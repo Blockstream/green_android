@@ -46,10 +46,14 @@ class OverviewAssetCell: UITableViewCell {
             let (amount, denom) = balance.get(tag: tag)
             let ticker = isBtc ? denom : asset.ticker ?? ""
             let amountTxt = sendAll ? NSLocalizedString("id_all", comment: "") : amount
-            lblAmount.text = "\(negative ? "-": "+")\(amountTxt ?? "")"
+            lblAmount.text = "\(negative ? "-": "")\(amountTxt ?? "")"
             lblDenom.text = "\(ticker)"
+            lblAmount2.text = ""
+            if isBtc || tag == getGdkNetwork("liquid").policyAsset {
+                let (fiat, fiatCurrency) = balance.get(tag: "fiat")
+                lblAmount2.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
+            }
         }
-        lblAmount2.text = ""
         selectionStyle = .none
         lblAsset.text = isBtc ? "Liquid Bitcoin" : info?.name ?? tag
         self.icon.image = icon

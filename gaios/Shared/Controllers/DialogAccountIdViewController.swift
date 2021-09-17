@@ -22,13 +22,11 @@ class DialogAccountIdViewController: UIViewController {
 
         lblTitle.text = NSLocalizedString("id_amp_id", comment: "")
         lblHint.text = "Provide this ID to the asset issuer if requested"
-
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
         view.alpha = 0.0
 
-        lblAccountId.text = AccountsManager.shared.current?.id
+        lblAccountId.text = wallet?.receivingId ?? ""
     }
 
     override func viewDidAppear(_ animated: Bool) {

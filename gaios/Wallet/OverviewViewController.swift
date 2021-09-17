@@ -83,6 +83,9 @@ class OverviewViewController: UIViewController {
 
     var alertCards: [AlertCardType] = []
 
+    var editedTransaction: Transaction?
+    var needRefresh: Bool = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -148,9 +151,15 @@ class OverviewViewController: UIViewController {
 
     @objc func settingsBtnTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true, completion: nil)
+        if let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController") as? UINavigationController {
+            if let vc = nvc.viewControllers.first as? UserSettingsViewController {
+                vc.needRefresh = { [weak self] in
+                    self?.needRefresh = true
+                }
+                nvc.modalPresentationStyle = .fullScreen
+                present(nvc, animated: true, completion: nil)
+            }
+        }
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
@@ -333,10 +342,12 @@ class OverviewViewController: UIViewController {
             return Guarantee()
         }.then(on: bgq) {
             SessionManager.shared.subaccounts()
-        }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
-            let balances = wallets.map { wallet in { wallet.getBalance() } }
-            return Promise.chain(balances).compactMap { _ in wallets }
-        }.ensure {
+        }
+//        .then(on: bgq) { wallets -> Promise<[WalletItem]> in
+//            let balances = wallets.map { wallet in { wallet.getBalance() } }
+//            return Promise.chain(balances).compactMap { _ in wallets }
+//        }
+        .ensure {
             self.stopAnimating()
         }.done { wallets in
             self.subAccounts = wallets
@@ -628,6 +639,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case OverviewSection.transaction.rawValue:
             return headerH
+        case OverviewSection.asset.rawValue:
+            return headerH
         default:
             return 1
         }
@@ -659,6 +672,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case OverviewSection.transaction.rawValue:
             return headerView("Transactions")
+        case OverviewSection.asset.rawValue:
+            return headerView(NSLocalizedString("id_assets", comment: ""))
         default:
             return headerView("")
         }
@@ -699,7 +714,9 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 vc.tag = tag
                 vc.asset = Registry.shared.infos[tag]
                 vc.satoshi = presentingWallet?.satoshi?[tag]
-                present(vc, animated: true, completion: nil)
+                if isLiquid {
+                    present(vc, animated: true, completion: nil)
+                }
             }
         case OverviewSection.transaction.rawValue:
             let transaction = transactions[indexPath.row]
@@ -707,6 +724,9 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionDetailViewController") as? TransactionDetailViewController {
                 vc.transaction = transaction
                 vc.wallet = presentingWallet
+                vc.updateTransaction = { [weak self] transaction in
+                    self?.editedTransaction = transaction
+                }
                 navigationController?.pushViewController(vc, animated: true)
             }
         default:
@@ -833,6 +853,28 @@ extension OverviewViewController {
 }
 
 extension OverviewViewController {
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // if a transaction has been edited, update the list and reload only visible cells
+        if let eTransaction = editedTransaction {
+            if let cTransaction = transactions.filter({ $0.hash == eTransaction.hash }).first {
+                if let index = transactions.firstIndex(where: {$0.hash == cTransaction.hash}) {
+                    transactions[index] = eTransaction
+                    guard let visibleRows = tableView.indexPathsForVisibleRows else { return }
+                    tableView.beginUpdates()
+                    tableView.reloadRows(at: visibleRows, with: .none)
+                    tableView.endUpdates()
+                    
+                }
+            }
+            editedTransaction = nil
+        }
+        if needRefresh {
+            handleRefresh()
+            needRefresh = false
+        }
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
