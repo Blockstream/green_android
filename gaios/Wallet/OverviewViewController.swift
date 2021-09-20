@@ -31,6 +31,7 @@ class OverviewViewController: UIViewController {
     private var assetsUpdatedToken: NSObjectProtocol?
     private var settingsUpdatedToken: NSObjectProtocol?
     private var tickerUpdatedToken: NSObjectProtocol?
+    private var enterForegroundToken: NSObjectProtocol?
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
@@ -83,9 +84,6 @@ class OverviewViewController: UIViewController {
 
     var alertCards: [AlertCardType] = []
 
-    var editedTransaction: Transaction?
-    var needRefresh: Bool = false
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -106,8 +104,6 @@ class OverviewViewController: UIViewController {
         settingsBtn.addTarget(self, action: #selector(settingsBtnTapped), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
 
-        // ME, is this ok?
-        // ricorda i metodi che mancano anche in assetslisttableviewcontroller
         loadAccounts()
         checkFiatRate()
         loadAlertCards()
@@ -120,6 +116,10 @@ class OverviewViewController: UIViewController {
         default:
             break
         }
+
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl!.tintColor = UIColor.white
+        tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
     }
 
     func setContent() {
@@ -151,15 +151,9 @@ class OverviewViewController: UIViewController {
 
     @objc func settingsBtnTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-        if let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController") as? UINavigationController {
-            if let vc = nvc.viewControllers.first as? UserSettingsViewController {
-                vc.needRefresh = { [weak self] in
-                    self?.needRefresh = true
-                }
-                nvc.modalPresentationStyle = .fullScreen
-                present(nvc, animated: true, completion: nil)
-            }
-        }
+        let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
+        nvc.modalPresentationStyle = .fullScreen
+        present(nvc, animated: true, completion: nil)
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
@@ -274,17 +268,14 @@ class OverviewViewController: UIViewController {
     }
 
     func showTransactions() {
+        if tableView.refreshControl?.isRefreshing ?? false {
+            tableView.refreshControl?.endRefreshing()
+        }
         UIView.setAnimationsEnabled(false)
         self.tableView.beginUpdates()
         self.tableView.reloadSections([OverviewSection.transaction.rawValue], with: .none)
         self.tableView.endUpdates()
         UIView.setAnimationsEnabled(true)
-
-//        let count = txs.map { $0.list.count }.reduce(0, +)
-//        if tableView.refreshControl?.isRefreshing ?? false {
-//            tableView.refreshControl?.endRefreshing()
-//        }
-//        tableView.reloadData()
     }
 
     func onNewBlock(_ notification: Notification) {
@@ -343,17 +334,12 @@ class OverviewViewController: UIViewController {
         }.then(on: bgq) {
             SessionManager.shared.subaccounts()
         }
-//        .then(on: bgq) { wallets -> Promise<[WalletItem]> in
-//            let balances = wallets.map { wallet in { wallet.getBalance() } }
-//            return Promise.chain(balances).compactMap { _ in wallets }
-//        }
         .ensure {
             self.stopAnimating()
         }.done { wallets in
             self.subAccounts = wallets
-            self.tableView.reloadSections([0], with: .none)
-            self.handleRefresh()
-//            self.collectionView?.reloadData()
+            self.tableView.reloadSections([OverviewSection.account.rawValue], with: .none)
+//            self.handleRefresh()
         }.catch { err in
             print(err.localizedDescription)
         }
@@ -524,6 +510,10 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
                     UIApplication.shared.keyWindow?.rootViewController = nav
                 }
             }
+    }
+
+    @objc func applicationWillEnterForeground(_ notification: Notification) {
+        handleRefresh()
     }
 }
 
@@ -724,9 +714,6 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionDetailViewController") as? TransactionDetailViewController {
                 vc.transaction = transaction
                 vc.wallet = presentingWallet
-                vc.updateTransaction = { [weak self] transaction in
-                    self?.editedTransaction = transaction
-                }
                 navigationController?.pushViewController(vc, animated: true)
             }
         default:
@@ -853,26 +840,6 @@ extension OverviewViewController {
 }
 
 extension OverviewViewController {
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // if a transaction has been edited, update the list and reload only visible cells
-        if let eTransaction = editedTransaction {
-            if let cTransaction = transactions.filter({ $0.hash == eTransaction.hash }).first {
-                if let index = transactions.firstIndex(where: {$0.hash == cTransaction.hash}) {
-                    transactions[index] = eTransaction
-                    guard let visibleRows = tableView.indexPathsForVisibleRows else { return }
-                    tableView.beginUpdates()
-                    tableView.reloadRows(at: visibleRows, with: .none)
-                    tableView.endUpdates()
-                }
-            }
-            editedTransaction = nil
-        }
-        if needRefresh {
-            handleRefresh()
-            needRefresh = false
-        }
-    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -881,6 +848,9 @@ extension OverviewViewController {
         assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
         settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
         tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
+        enterForegroundToken = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main, using: applicationWillEnterForeground)
+
+        handleRefresh()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -904,6 +874,10 @@ extension OverviewViewController {
         if let token = tickerUpdatedToken {
             NotificationCenter.default.removeObserver(token)
             tickerUpdatedToken = nil
+        }
+        if let token = enterForegroundToken {
+            NotificationCenter.default.removeObserver(token)
+            enterForegroundToken = nil
         }
     }
 }

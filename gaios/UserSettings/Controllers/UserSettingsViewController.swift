@@ -23,7 +23,6 @@ class UserSettingsViewController: UIViewController {
     var isSingleSig: Bool { get { return account?.isSingleSig ?? false }}
 
     var headerH: CGFloat = 54.0
-    var needRefresh: VoidToVoid?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -389,10 +388,8 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .WatchOnly:
             showWatchOnly()
         case .BitcoinDenomination:
-            needRefresh?()
             showBitcoinDenomination()
         case .ReferenceExchangeRate:
-            needRefresh?()
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "CurrencySelectorViewController")
             navigationController?.pushViewController(vc, animated: true)

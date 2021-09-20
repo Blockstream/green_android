@@ -137,10 +137,9 @@ class TransactionDetailViewController: KeyboardViewController {
             next.satoshi = wallet?.satoshi?[next.tag] ?? 0
         } else if let next = segue.destination as? NotesViewController {
             next.transaction = sender as? Transaction
-            next.updateTransaction = { [weak self] transaction in
-                self?.transaction = transaction
-                self?.transactionDetailTableView.reloadData()
-                self?.updateTransaction(transaction)
+            next.updateTransaction = { transaction in
+                self.transaction = transaction
+                self.transactionDetailTableView.reloadData()
             }
         }
     }
