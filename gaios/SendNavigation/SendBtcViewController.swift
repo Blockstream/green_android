@@ -128,6 +128,7 @@ class SendBtcViewController: KeyboardViewController {
                 // user input can be a bitcoin or liquid uri as well as an address
                 var addressee: [String: Any] = ["address": userInput]
                 if network?.liquid ?? false && !isBip21 {
+                    // insert dummy policy asset to validate address
                     addressee["asset_id"] = policyAsset
                 }
                 return ["addressees": [addressee], "fee_rate": feeRate, "subaccount": subaccount, "utxos": [:]]
@@ -137,15 +138,22 @@ class SendBtcViewController: KeyboardViewController {
         }.then(on: queue) { data -> Promise<[String: Any]> in
             let result = data["result"] as? [String: Any]
             tx = Transaction(result ?? [:])
+            // handle tx errors
             if let error = tx?.error, !error.isEmpty && !["id_invalid_amount", "id_no_amount_specified", "id_insufficient_funds"].contains(error) {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString(error, comment: ""))
             } else if let addressees = tx?.addressees, addressees.isEmpty {
                 throw TransactionError.invalid(localizedDescription: NSLocalizedString("id_invalid_address", comment: ""))
             } else if network?.liquid ?? false && !isBip21 {
+                // remove dummy assetid
                 let addressee = tx?.addressees.first
                 tx?.addressees = [Addressee(address: addressee!.address, satoshi: addressee!.satoshi)]
             }
-            return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
+            if self.isSweep {
+                return Promise { seal in seal.fulfill([:])}
+            } else {
+                // fetch utxos to create transaction
+                return try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 0]).resolve()
+            }
         }.done { data in
             let result = data["result"] as? [String: Any]
             let unspent = result?["unspent_outputs"] as? [String: Any]
