@@ -617,7 +617,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                     icon = UIImage(named: "ntw_testnet")
                 }
                 let satoshi = assets[indexPath.row].value
-                cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi)
+                cell.configure(tag: tag, info: info, icon: icon, satoshi: satoshi, isLiquid: isLiquid)
                 return cell
             }
         case OverviewSection.transaction.rawValue:

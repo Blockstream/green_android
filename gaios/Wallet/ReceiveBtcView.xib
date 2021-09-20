@@ -11,10 +11,6 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ReceiveBtcView" customModule="gaios" customModuleProvider="target">
             <connections>
-                <outlet property="accountButton" destination="ss8-xB-jCB" id="MMP-fT-3Eu"/>
-                <outlet property="accountTitle" destination="gHi-en-15p" id="DwA-7s-B1A"/>
-                <outlet property="accountValue" destination="OXW-e2-djF" id="gbT-Ep-lcK"/>
-                <outlet property="accountView" destination="uDR-E1-cKx" id="j2P-8w-Nfb"/>
                 <outlet property="amountLabel" destination="dkq-lA-yQC" id="gGv-iP-CpE"/>
                 <outlet property="amountTextfield" destination="Uc3-Sb-jPo" id="gyR-1C-3dQ"/>
                 <outlet property="amountView" destination="Npf-aB-Hxu" id="rGz-e8-Nct"/>
@@ -131,45 +127,6 @@
                         <constraint firstAttribute="trailing" secondItem="bSC-VE-okg" secondAttribute="trailing" constant="16" id="wye-XX-ImZ"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uDR-E1-cKx">
-                    <rect key="frame" x="16" y="279" width="343" height="49.5"/>
-                    <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Account ID" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gHi-en-15p">
-                            <rect key="frame" x="0.0" y="0.0" width="72.5" height="22"/>
-                            <constraints>
-                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="22" id="Tph-n5-rVP"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
-                            <color key="textColor" name="customTitaniumLight"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ss8-xB-jCB">
-                            <rect key="frame" x="80.5" y="0.0" width="22" height="22"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="22" id="Wob-4g-6Bj"/>
-                                <constraint firstAttribute="width" constant="22" id="aX1-Qe-1fg"/>
-                            </constraints>
-                            <state key="normal" image="helpcircle"/>
-                        </button>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="249" text="Account ID" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OXW-e2-djF">
-                            <rect key="frame" x="0.0" y="30" width="343" height="19.5"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                    </subviews>
-                    <constraints>
-                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="ss8-xB-jCB" secondAttribute="trailing" constant="16" id="4ki-7q-n3d"/>
-                        <constraint firstItem="ss8-xB-jCB" firstAttribute="leading" secondItem="gHi-en-15p" secondAttribute="trailing" constant="8" id="Frp-Rj-l6g"/>
-                        <constraint firstItem="OXW-e2-djF" firstAttribute="top" secondItem="gHi-en-15p" secondAttribute="bottom" constant="8" id="JFD-qn-BXt"/>
-                        <constraint firstItem="gHi-en-15p" firstAttribute="top" secondItem="uDR-E1-cKx" secondAttribute="top" id="Kb1-Ls-PEq"/>
-                        <constraint firstItem="ss8-xB-jCB" firstAttribute="centerY" secondItem="gHi-en-15p" secondAttribute="centerY" id="OCX-EO-wh7"/>
-                        <constraint firstItem="OXW-e2-djF" firstAttribute="leading" secondItem="uDR-E1-cKx" secondAttribute="leading" id="Sfl-eD-yzL"/>
-                        <constraint firstAttribute="trailing" secondItem="OXW-e2-djF" secondAttribute="trailing" id="Wsm-Hd-wwz"/>
-                        <constraint firstItem="gHi-en-15p" firstAttribute="leading" secondItem="uDR-E1-cKx" secondAttribute="leading" id="gO6-xh-iW2"/>
-                        <constraint firstAttribute="bottom" secondItem="OXW-e2-djF" secondAttribute="bottom" id="qVC-oK-BHr"/>
-                    </constraints>
-                </view>
             </subviews>
             <viewLayoutGuide key="safeArea" id="6fk-r0-0a7"/>
             <color key="backgroundColor" name="customTitaniumDark"/>
@@ -178,28 +135,21 @@
                 <constraint firstItem="lVM-qD-yc4" firstAttribute="top" secondItem="6fk-r0-0a7" secondAttribute="top" id="4Di-Ns-ihR"/>
                 <constraint firstAttribute="trailing" secondItem="Npf-aB-Hxu" secondAttribute="trailing" constant="16" id="4h4-tt-tZM"/>
                 <constraint firstItem="6fk-r0-0a7" firstAttribute="trailing" secondItem="lVM-qD-yc4" secondAttribute="trailing" id="7Ha-Bl-cX8"/>
-                <constraint firstItem="6fk-r0-0a7" firstAttribute="trailing" secondItem="uDR-E1-cKx" secondAttribute="trailing" constant="16" id="Gt2-d1-3Ep"/>
                 <constraint firstItem="3rh-EJ-Kc6" firstAttribute="bottom" secondItem="6fk-r0-0a7" secondAttribute="bottom" id="cWt-4p-PON"/>
                 <constraint firstItem="lVM-qD-yc4" firstAttribute="leading" secondItem="6fk-r0-0a7" secondAttribute="leading" id="dbb-EH-vaW"/>
                 <constraint firstItem="3rh-EJ-Kc6" firstAttribute="trailing" secondItem="6fk-r0-0a7" secondAttribute="trailing" id="j2Z-qN-r13"/>
                 <constraint firstItem="3rh-EJ-Kc6" firstAttribute="leading" secondItem="6fk-r0-0a7" secondAttribute="leading" id="pph-60-6hN"/>
                 <constraint firstItem="Npf-aB-Hxu" firstAttribute="leading" secondItem="6fk-r0-0a7" secondAttribute="leading" constant="16" id="uwO-v5-vX9"/>
-                <constraint firstItem="uDR-E1-cKx" firstAttribute="top" secondItem="lVM-qD-yc4" secondAttribute="bottom" constant="16" id="xCF-K6-fan"/>
-                <constraint firstItem="uDR-E1-cKx" firstAttribute="leading" secondItem="6fk-r0-0a7" secondAttribute="leading" constant="16" id="xhb-67-suz"/>
             </constraints>
             <point key="canvasLocation" x="138.40000000000001" y="137.18140929535232"/>
         </view>
     </objects>
     <resources>
-        <image name="helpcircle" width="12" height="12"/>
         <namedColor name="customLowerBar">
             <color red="0.097999997437000275" green="0.13300000131130219" blue="0.17299999296665192" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="customTitaniumDark">
             <color red="0.071000002324581146" green="0.090000003576278687" blue="0.11800000071525574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="customTitaniumLight">
-            <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

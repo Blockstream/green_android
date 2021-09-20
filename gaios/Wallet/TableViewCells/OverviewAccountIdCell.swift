@@ -20,7 +20,7 @@ class OverviewAccountIdCell: UITableViewCell {
     }
 
     func configure(onAction: VoidToVoid?) {
-        lblTitle.text = "Managed Assets Account ID"
+        lblTitle.text = NSLocalizedString("id_amp_id", comment: "")
         btnAction.setTitle("  " + "GET ID" + "  ", for: .normal)
         btnAction.setStyle(.primary)
         self.onAction = onAction

@@ -38,7 +38,7 @@ class OverviewAssetCell: UITableViewCell {
         icon.image = nil
     }
 
-    func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64) {
+    func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64, isLiquid: Bool = false) {
         let isBtc = tag == btc
         let asset = info ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
         var details = ["satoshi": satoshi] as [String: Any]
@@ -58,7 +58,8 @@ class OverviewAssetCell: UITableViewCell {
             }
         }
         selectionStyle = .none
-        lblAsset.text = isBtc ? "Liquid Bitcoin" : info?.name ?? tag
+        let ntwName = isLiquid ? "Liquid Bitcoin" : "Bitcoin"
+        lblAsset.text = isBtc ? ntwName : info?.name ?? tag
         self.icon.image = icon
     }
 }

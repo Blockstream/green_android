@@ -25,21 +25,14 @@ class ReceiveBtcViewController: KeyboardViewController {
 
         content.walletQRCode.isUserInteractionEnabled = true
         content.walletAddressLabel.isUserInteractionEnabled = true
-        content.accountValue.isUserInteractionEnabled = true
         content.walletQRCode.addGestureRecognizer(gestureTapQRCode!)
         content.walletAddressLabel.addGestureRecognizer(gestureTap!)
-        content.accountValue.addGestureRecognizer(gestureTapAccountId!)
         content.amountLabel.text = NSLocalizedString("id_amount", comment: "")
-        content.accountTitle.text = NSLocalizedString("id_amp_id", comment: "")
         content.shareButton.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
         content.shareButton.setGradient(true)
 
         let isLiquid = account?.gdkNetwork?.liquid ?? false
         content.amountView.isHidden = isLiquid
-        content.accountView.isHidden = !(isLiquid && "2of2_no_recovery" == wallet?.type)
-        if isLiquid && "2of2_no_recovery" == wallet?.type {
-            content.accountValue.text = wallet?.receivingId ?? ""
-        }
 
         content.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveBtcScreen.view
         content.walletQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveBtcScreen.qrCodeView
@@ -51,7 +44,6 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         content.fiatSwitchButton.addTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
         content.shareButton.addTarget(self, action: #selector(shareButtonClicked(_:)), for: .touchUpInside)
-        content.accountButton.addTarget(self, action: #selector(authInfoTapped(_:)), for: .touchUpInside)
         refreshClick(nil)
     }
 
@@ -67,7 +59,6 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.amountTextfield.removeTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         content.fiatSwitchButton.removeTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
         content.shareButton.removeTarget(self, action: #selector(shareButtonClicked(_:)), for: .touchUpInside)
-        content.shareButton.removeTarget(self, action: #selector(authInfoTapped(_:)), for: .touchUpInside)
     }
 
     @IBAction func refreshClick(_ sender: Any?) {
@@ -232,10 +223,6 @@ class ReceiveBtcViewController: KeyboardViewController {
         }.catch { _ in }
     }
 
-    @objc func authInfoTapped(_ sender: UIButton?) {
-        performSegue(withIdentifier: "auth_info", sender: nil)
-    }
-
     func getSatoshi() -> UInt64? {
         var amountText = content.amountTextfield.text!
         amountText = amountText.isEmpty ? "0" : amountText
@@ -285,10 +272,6 @@ class ReceiveBtcView: UIView {
     @IBOutlet weak var fiatSwitchButton: UIButton!
     @IBOutlet weak var amountLabel: UILabel!
     @IBOutlet weak var amountView: UIView!
-    @IBOutlet weak var accountView: UIView!
-    @IBOutlet weak var accountButton: UIButton!
-    @IBOutlet weak var accountValue: UILabel!
-    @IBOutlet weak var accountTitle: UILabel!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
