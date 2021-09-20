@@ -38,15 +38,18 @@ class OverviewAssetCell: UITableViewCell {
         icon.image = nil
     }
 
-    func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64, negative: Bool = false, isTransaction: Bool = false, sendAll: Bool = false) {
+    func configure(tag: String, info: AssetInfo?, icon: UIImage?, satoshi: UInt64) {
         let isBtc = tag == btc
         let asset = info ?? AssetInfo(assetId: tag, name: tag, precision: 0, ticker: "")
-        let details = ["satoshi": satoshi, "asset_info": asset.encode()!] as [String: Any]
+        var details = ["satoshi": satoshi] as [String: Any]
+            if let encode = asset.encode(), !isBtc {
+                details["asset_info"] = encode
+            }
         if let balance = Balance.convert(details: details) {
             let (amount, denom) = balance.get(tag: tag)
             let ticker = isBtc ? denom : asset.ticker ?? ""
-            let amountTxt = sendAll ? NSLocalizedString("id_all", comment: "") : amount
-            lblAmount.text = "\(negative ? "-": "")\(amountTxt ?? "")"
+            let amountTxt = amount
+            lblAmount.text = "\(amountTxt ?? "")"
             lblDenom.text = "\(ticker)"
             lblAmount2.text = ""
             if isBtc || tag == getGdkNetwork("liquid").policyAsset {

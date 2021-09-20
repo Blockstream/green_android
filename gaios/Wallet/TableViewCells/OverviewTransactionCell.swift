@@ -10,7 +10,7 @@ class OverviewTransactionCell: UITableViewCell {
     @IBOutlet weak var lblDate: UILabel!
     @IBOutlet weak var lblDenom: UILabel!
     @IBOutlet weak var icon: UIImageView!
-    
+
     var isLiquid: Bool {
         let account = AccountsManager.shared.current
         return account?.gdkNetwork?.liquid ?? false
@@ -93,6 +93,11 @@ class OverviewTransactionCell: UITableViewCell {
                                   isLiquid ? NSLocalizedString("id_sent", comment: "") : transaction.address() ?? "",
                                   isLiquid && isAsset ? NSLocalizedString("id_asset", comment: "") : "")
         }
+
+        setIcon(transaction: transaction, network: network)
+    }
+
+    func setIcon(transaction: Transaction, network: String?) {
         if network == "mainnet" {
             icon.image = UIImage(named: "ntw_btc")
         } else if network == "testnet" {

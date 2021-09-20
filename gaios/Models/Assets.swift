@@ -70,10 +70,7 @@ class Registry: Codable {
     }
 
     func hasImage(for key: String?) -> Bool {
-        if let _ = icons.filter({ $0.key == key }).first {
-            return true
-        }
-        return false
+        return icons.filter({ $0.key == key }).first != nil
     }
 
     func failStatus() -> RegistryFailStatus {

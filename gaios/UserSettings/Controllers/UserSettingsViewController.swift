@@ -24,7 +24,7 @@ class UserSettingsViewController: UIViewController {
 
     var headerH: CGFloat = 54.0
     var needRefresh: VoidToVoid?
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

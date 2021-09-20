@@ -864,7 +864,6 @@ extension OverviewViewController {
                     tableView.beginUpdates()
                     tableView.reloadRows(at: visibleRows, with: .none)
                     tableView.endUpdates()
-                    
                 }
             }
             editedTransaction = nil
