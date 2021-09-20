@@ -5,8 +5,6 @@ import RxSwift
 
 protocol HWProtocol {
 
-    var device: HWDevice { get }
-
     func xpubs(paths: [[Int]]) -> Observable<[String]>
 
     func signMessage(path: [Int]?,

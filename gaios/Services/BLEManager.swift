@@ -63,6 +63,8 @@ class BLEManager {
 
     weak var delegate: BLEManagerDelegate?
     weak var scanDelegate: BLEManagerScanDelegate?
+    
+    var fmwVersion: String?
 
     init() {
         manager = CentralManager(queue: queue, options: nil)
@@ -202,6 +204,7 @@ class BLEManager {
             .compactMap { (fwFile: [String: String]?) in
                 if let fw = fwFile,
                    let ver = verInfo?["JADE_VERSION"] as? String {
+                    self.fmwVersion = ver
                     self.delegate?.onCheckFirmware(p, fw: fw, currentVersion: ver)
                     throw BLEManagerError.firmwareErr(txt: "")
                 }
@@ -232,8 +235,28 @@ class BLEManager {
         }
     }
 
+    func device(isJade: Bool, fmwVersion: String) -> HWDevice {
+        if !isJade {
+            return HWDevice(name: "Ledger",
+                     supportsArbitraryScripts: true,
+                     supportsLowR: false,
+                     supportsLiquid: 0,
+                     supportsAntiExfilProtocol: 0,
+                     supportsHostUnblinding: false)
+        }
+        // Host Unblinding enabled by default on 0.1.27
+        let supportUnblinding = fmwVersion >= "0.1.27"
+        return HWDevice(name: "Jade",
+                         supportsArbitraryScripts: true,
+                         supportsLowR: true,
+                         supportsLiquid: 1,
+                         supportsAntiExfilProtocol: 1,
+                         supportsHostUnblinding: supportUnblinding)
+    }
+
     func login(_ p: Peripheral, checkFirmware: Bool = true) {
         let session = SessionManager.shared
+        let account = AccountsManager.shared.current
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p -> Observable<Peripheral> in
@@ -245,7 +268,7 @@ class BLEManager {
             }
             .flatMap { _ in
                 return Observable<[String: Any]>.create { observer in
-                    let info = AccountsManager.shared.current?.isLedger ?? false ? Ledger.shared.device : Jade.shared.device
+                    let info = self.device(isJade: account?.isJade ?? false, fmwVersion: self.fmwVersion ?? "")
                     guard let data = try? JSONEncoder().encode(info),
                         let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
                         observer.onError(JadeError.Abort("Invalid device configuration"))

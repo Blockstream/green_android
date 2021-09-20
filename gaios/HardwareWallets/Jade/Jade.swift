@@ -16,17 +16,6 @@ final class Jade: JadeChannel, HWProtocol {
     public static let shared = Jade()
     let SIGHASH_ALL: UInt8 = 1
 
-    var device: HWDevice {
-        get {
-            HWDevice(name: "Jade",
-                     supportsArbitraryScripts: true,
-                     supportsLowR: true,
-                     supportsLiquid: 1,
-                     supportsAntiExfilProtocol: 1,
-                     supportsHostUnblinding: false)
-        }
-    }
-
     func version() -> Observable<[String: Any]> {
         return Jade.shared.exchange(method: "get_version_info")
     }
@@ -147,7 +136,6 @@ final class Jade: JadeChannel, HWProtocol {
     }
 
     func xpubs(path: [Int]) -> Observable<String> {
-        let key = path.map { String($0) }.joined(separator: "/")
         let pathstr: [UInt32] = path.map { UInt32($0) }
         let params = [ "path": pathstr, "network": getNetwork()] as [String: Any]
         return Jade.shared.exchange(method: "get_xpub", params: params)

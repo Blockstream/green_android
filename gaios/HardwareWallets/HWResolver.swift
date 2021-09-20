@@ -93,17 +93,17 @@ class HWResolver {
             let signingAddressTypes = params["signing_address_types"] as? [String]
             let signingTxs = params["signing_transactions"] as? [String: String]
             let useAeProtocol = params["use_ae_protocol"] as? Bool
-            let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
+            let account = AccountsManager.shared.current
             // Increment connection timeout for sign transaction command
             Ledger.shared.TIMEOUT = 120
             _ = Observable.just(hw)
                 .flatMap { hw -> Observable<[String: Any]> in
-                    if isLiquid {
+                    if account?.gdkNetwork?.liquid ?? false {
                         return hw.signLiquidTransaction(tx: tx!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)
                     }
                     var txinfo = tx
                     if let txhash = tx?["txhash"] as? String,
-                       hw.device.name == "Ledger" {
+                       account?.isLedger ?? false {
                         txinfo = try SessionManager.shared.getTransactionDetails(txhash: txhash)
                     }
                     return hw.signTransaction(tx: txinfo!, inputs: signingInputs!, outputs: txOutputs!, transactions: signingTxs ?? [:], addressTypes: signingAddressTypes!, useAeProtocol: useAeProtocol ?? false)

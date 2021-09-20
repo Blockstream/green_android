@@ -8,17 +8,6 @@ final class Ledger: LedgerCommands, HWProtocol {
     public static let shared = Ledger()
     let SIGHASH_ALL: UInt8 = 1
 
-    var device: HWDevice {
-        get {
-            HWDevice(name: "Ledger",
-                     supportsArbitraryScripts: true,
-                     supportsLowR: false,
-                     supportsLiquid: 0,
-                     supportsAntiExfilProtocol: 0,
-                     supportsHostUnblinding: false)
-        }
-    }
-
     // swiftlint:disable:next function_parameter_count
     func signTransaction(tx: [String: Any], inputs: [[String: Any]], outputs: [[String: Any]],
                          transactions: [String: String], addressTypes: [String], useAeProtocol: Bool) -> Observable<[String: Any]> {
