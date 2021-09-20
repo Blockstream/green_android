@@ -1,5 +1,6 @@
 package com.blockstream.green.ui.wallet
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -15,10 +16,8 @@ import com.blockstream.green.gdk.getConfirmationsMax
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.looks.TransactionDetailsLook
-import com.blockstream.green.utils.StringHolder
-import com.blockstream.green.utils.hideKeyboard
-import com.blockstream.green.utils.openBrowser
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.utils.*
+import com.greenaddress.greenbits.ui.send.SendAmountActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
@@ -84,10 +83,23 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             updateAdapter(it)
         }
 
+        viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
+            consumableEvent?.getContentIfNotHandledOrReturnNull()?.let {
+                val intent = Intent(requireContext(), SendAmountActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
+        viewModel.onError.observe(viewLifecycleOwner) {
+            it?.getContentIfNotHandledOrReturnNull()?.let {
+                errorDialog(it)
+            }
+        }
+
         val fastAdapter = FastAdapter.with(listOf(amountsAdapter, detailsAdapter))
 
         fastAdapter.addClickListener<ListItemTransactionProgressBinding, GenericItem>({ binding -> binding.buttonIncreaseFee }) { _, _, _, item ->
-            snackbar("INCREASE FEE")
+            viewModel.bumpFee()
         }
 
         fastAdapter.addClickListener<ListItemGenericDetailBinding, GenericItem>({ binding -> binding.button }) { _, i: Int, fastAdapter: FastAdapter<GenericItem>, item: GenericItem ->
@@ -153,7 +165,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
         list += TitleListItem(title = StringHolder(R.string.id_transaction_details))
         val confirmations = transaction.getConfirmations(session.blockHeight)
-        if(confirmations > 0 && transaction.spv.disabledOrVerified()) {
+        if(confirmations > session.network.confirmationsRequired && transaction.spv.disabledOrVerified()) {
             list += GenericDetailListItem(
                 title = StringHolder(R.string.id_confirmations),
                 content = StringHolder("$confirmations")

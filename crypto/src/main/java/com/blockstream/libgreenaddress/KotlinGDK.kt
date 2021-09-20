@@ -65,6 +65,9 @@ class KotlinGDK {
     fun createTransaction(session: GASession, params: CreateTransactionParams): GAAuthHandler =
         GDK.create_transaction(session, params)
 
+    fun createTransaction(session: GASession, params: BumpTransactionParams): GAAuthHandler =
+        GDK.create_transaction(session, params)
+
     fun updateTransaction(session: GASession, rawTransaction: JsonElement): GAAuthHandler =
         GDK.create_transaction(session, rawTransaction)
 

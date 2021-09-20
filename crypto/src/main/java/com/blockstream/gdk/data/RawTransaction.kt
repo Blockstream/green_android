@@ -3,6 +3,7 @@ package com.blockstream.gdk.data
 import com.blockstream.gdk.GAJson
 import com.blockstream.gdk.serializers.DateSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.greenaddress.greenapi.data.TransactionData
 import com.greenaddress.greenapi.data.TwoFactorStatusData
 import kotlinx.serialization.KSerializer
@@ -15,7 +16,15 @@ import java.util.*
 
 @Serializable
 data class RawTransaction(
-    @SerialName("addressees") val addressees: List<String>
+    @SerialName("addressees") val addressees: List<JsonElement>
 ) : GAJson<RawTransaction>() {
+    override val keepJsonElement = true
+
     override fun kSerializer(): KSerializer<RawTransaction> = serializer()
+
+    private val objectMapper by lazy { ObjectMapper() }
+
+    fun toObjectNode(): ObjectNode {
+        return objectMapper.readTree(Json.encodeToString(jsonElement)) as ObjectNode
+    }
 }

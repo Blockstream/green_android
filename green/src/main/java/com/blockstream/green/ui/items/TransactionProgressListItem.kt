@@ -36,7 +36,7 @@ data class TransactionProgressListItem constructor(
         binding.date = transaction.createdAt.formatWithTime()
         binding.confirmations = confirmations
         binding.confirmationsRequired = confirmationsRequired
-        binding.canRBF = transaction.canRBF
+        binding.canRBF = transaction.canRBF && transaction.isIn == false
 
         val spv = transaction.spv
 

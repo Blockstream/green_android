@@ -520,12 +520,12 @@ class GreenSession constructor(
         FeeEstimation(fees = listOf(network.defaultFee))
     }
 
-    private fun getTransactions(params: TransactionParams) = AuthHandler(greenWallet, greenWallet.getTransactions(gaSession, params))
+    fun getTransactions(params: TransactionParams) = AuthHandler(greenWallet, greenWallet.getTransactions(gaSession, params))
 
     private var txOffset = 0
+    private var transactionListBootstrapped = false
     var hasMoreTransactions = false
     var isLoadingTransactions = AtomicBoolean(false)
-    var transactionListBootstrapped = false
     fun updateTransactionsAndBalance(isReset: Boolean, isLoadMore: Boolean) : Boolean {
 
         // For the pager to be instantiated correctly a call with isReset=true should be called first.
@@ -733,22 +733,29 @@ class GreenSession constructor(
         greenWallet.getUnspentOutputs(gaSession, params)
     ).result<UnspentOutputs>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
-    fun createTransaction(unspentOutputs: UnspentOutputs, addresses: List<String>) {
+    fun createTransaction(unspentOutputs: UnspentOutputs, addresses: List<String>): RawTransaction {
         val params = CreateTransactionParams(
             subaccount = activeAccount,
             utxos = unspentOutputs.unspentOutputs,
             addressees = addresses
         )
 
-        AuthHandler(greenWallet, greenWallet.createTransaction(gaSession, params)).result<RawTransaction>()
+        return AuthHandler(
+            greenWallet,
+            greenWallet.createTransaction(gaSession, params)
+        ).result<RawTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
     }
 
-    fun updateRawTransaction(rawTransaction: RawTransaction) {
+    fun createTransaction(params: BumpTransactionParams) = AuthHandler(
+        greenWallet,
+        greenWallet.createTransaction(gaSession, params)
+    ).result<RawTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+
+    fun updateRawTransaction(rawTransaction: RawTransaction) =
         AuthHandler(
             greenWallet,
             greenWallet.updateTransaction(gaSession, rawTransaction = rawTransaction.jsonElement!!)
-        ).result<RawTransaction>()
-    }
+        ).result<RawTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
     fun onNewNotification(notification: Notification) {
         logger.info { "onNewNotification $notification" }

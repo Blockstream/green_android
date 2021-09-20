@@ -4,10 +4,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.Transaction
+import com.blockstream.gdk.data.Transactions
+import com.blockstream.gdk.params.BumpTransactionParams
+import com.blockstream.gdk.params.TransactionParams
+import com.blockstream.green.database.CredentialType
+import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.ConsumableEvent
+import com.greenaddress.greenapi.Session
+import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -15,6 +23,9 @@ import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 class TransactionDetailsViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
@@ -27,13 +38,16 @@ class TransactionDetailsViewModel @AssistedInject constructor(
     val editableNote = MutableLiveData(initialTransaction.memo)
     val originalNote = MutableLiveData(initialTransaction.memo)
 
+    private var txIndex = -1
+
     init {
 
         // Update transaction data and create a copy with a stable memo so that we can properly animate
         session
             .getTransationsObservable()
             .map {
-                (it.find { it.txHash == initialTransaction.txHash } ?: initialTransaction).copy(memo = "STABLE_FOR_EQUALS")
+                txIndex = it.indexOfFirst { it.txHash == initialTransaction.txHash }
+                (if(txIndex == -1) initialTransaction else it[txIndex]).copy(memo = "STABLE_FOR_EQUALS")
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
@@ -58,6 +72,48 @@ class TransactionDetailsViewModel @AssistedInject constructor(
         }else{
             onError.postValue(ConsumableEvent(Exception("Couldn't save note")))
         }
+    }
+
+    fun bumpFee() {
+        session.observable {
+
+            val transactions = it.getTransactions(
+                TransactionParams(
+                    subaccount = wallet.activeAccount,
+                    offset = 0,
+                    limit = txIndex + 1,
+                    confirmations = 0
+                )
+            ).result<Transactions>(hardwareWalletResolver = HardwareCodeResolver(session.hwWallet))
+
+            val transaction = transactions.jsonElement?.jsonObject?.get("transactions")?.jsonArray?.get(txIndex)
+
+            // check if the transaction found is correct
+            if(transaction?.jsonObject?.get("txhash")?.jsonPrimitive?.content != initialTransaction.txHash){
+                throw Exception("Couldn't find the transaction")
+            }
+
+            val params = BumpTransactionParams(
+                previousTransaction = transaction,
+                feeRate = initialTransaction.feeRate,
+                subAccount = wallet.activeAccount
+            )
+
+            it.createTransaction(params).toObjectNode()
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
+        }.subscribeBy(
+            onSuccess = {
+                Session.getSession().pendingTransaction = it
+                onEvent.postValue(ConsumableEvent(true))
+            },
+            onError = {
+                it.printStackTrace()
+                onError.postValue(ConsumableEvent(it))
+            }
+        )
     }
 
     @dagger.assisted.AssistedFactory

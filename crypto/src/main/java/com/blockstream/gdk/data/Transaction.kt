@@ -2,11 +2,13 @@ package com.blockstream.gdk.data
 
 import android.os.Parcelable
 import com.blockstream.gdk.BalancePair
+import com.blockstream.gdk.GAJson
 import com.blockstream.gdk.serializers.DateSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.greenaddress.greenapi.data.TransactionData
 import com.greenaddress.greenapi.data.TwoFactorStatusData
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -49,6 +51,7 @@ data class Transaction(
 
     @SerialName("satoshi") val satoshi: Map<String, Long>
 ): Parcelable {
+
     enum class SPVResult {
         Disabled, InProgress, NotVerified, NotLongest, Unconfirmed, Verified;
 
