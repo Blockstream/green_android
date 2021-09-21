@@ -379,7 +379,7 @@ extension Jade {
     static let BOARD_TYPE_JADE_V1_1 = "JADE_V1.1"
     static let FEATURE_SECURE_BOOT = "SB"
 
-    // Check Jade fw against minimum allowed firmware version
+    // Check Jade fmw against minimum allowed firmware version
     func isJadeFwValid(_ version: String) -> Bool {
         return Jade.MIN_ALLOWED_FW_VERSION <= version
     }
@@ -390,7 +390,7 @@ extension Jade {
             return nil
         }
         let isV1BoardType = boardType == Jade.BOARD_TYPE_JADE
-        // Alas the first version of the jade fw didn't have 'BoardType' - so we assume an early jade.
+        // Alas the first version of the jade fmw didn't have 'BoardType' - so we assume an early jade.
         if let jadeFeatures = info["JADE_FEATURES"] as? String, jadeFeatures.contains(Jade.FEATURE_SECURE_BOOT) {
             // Production Jade (Secure-Boot [and flash-encryption] enabled)
             return isV1BoardType ? Jade.FW_JADE_PATH : Jade.FW_JADE1_1_PATH
@@ -420,7 +420,7 @@ extension Jade {
         guard let hasPin = verInfo["JADE_HAS_PIN"] as? Bool, hasPin else {
             throw JadeError.Abort("Authentication required")
         }
-        // Get relevant fw path (or if hw not supported)
+        // Get relevant fmw path (or if hw not supported)
         guard let fwPath = firmwarePath(verInfo) else {
             throw JadeError.Abort("Unsupported hardware, firmware updates not available")
         }
@@ -447,20 +447,20 @@ extension Jade {
         return versions.first
     }
 
-    func updateFirmare( verInfo: [String: Any], fwFile: [String: String])-> Observable<Bool> {
-        guard let res = download(fwFile["filepath"] ?? "", base64: true),
+    func updateFirmare( verInfo: [String: Any], fmwFile: [String: String])-> Observable<Bool> {
+        guard let res = download(fmwFile["filepath"] ?? "", base64: true),
             let body = res["body"] as? String,
-            let fw = Data(base64Encoded: body) else {
+            let fmw = Data(base64Encoded: body) else {
             return Observable.error(JadeError.Abort("Error downloading firmware file"))
         }
         let chunk = verInfo["JADE_OTA_MAX_CHUNK"] as? UInt64
-        let uncompressedSize = Int(fwFile["fwSize"] ?? "")
-        let compressedSize = fw.count
+        let uncompressedSize = Int(fmwFile["fwSize"] ?? "")
+        let compressedSize = fmw.count
         return Jade.shared.exchange(method: "ota", params: ["fwsize": uncompressedSize!,
                                                             "cmpsize": compressedSize,
                                                             "otachunk": chunk!])
         .flatMap { _ in
-            self.otaSend(fw, size: uncompressedSize!, chunksize: chunk!)
+            self.otaSend(fmw, size: uncompressedSize!, chunksize: chunk!)
         }.flatMap { _ in
             return Observable.just(true)
         }

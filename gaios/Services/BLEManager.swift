@@ -36,7 +36,7 @@ protocol BLEManagerDelegate: class {
     func onLogin(_: Peripheral)
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
-    func onCheckFirmware(_: Peripheral, fw: [String: String], currentVersion: String)
+    func onCheckFirmware(_: Peripheral, fmw: [String: String], currentVersion: String)
     func onUpdateFirmware(_: Peripheral)
 }
 
@@ -202,22 +202,22 @@ class BLEManager {
                 return try Jade.shared.checkFirmware(verInfo!)
             }.observeOn(MainScheduler.instance)
             .compactMap { (fwFile: [String: String]?) in
-                if let fw = fwFile,
+                if let fmw = fwFile,
                    let ver = verInfo?["JADE_VERSION"] as? String {
                     self.fmwVersion = ver
-                    self.delegate?.onCheckFirmware(p, fw: fw, currentVersion: ver)
+                    self.delegate?.onCheckFirmware(p, fmw: fmw, currentVersion: ver)
                     throw BLEManagerError.firmwareErr(txt: "")
                 }
                 return p
             }
     }
 
-    func updateFirmware(_ p: Peripheral, fwFile: [String: String]) {
+    func updateFirmware(_ p: Peripheral, fmwFile: [String: String]) {
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Jade.shared.version() }
             .compactMap { $0["result"] as? [String: Any] }
-            .flatMap { Jade.shared.updateFirmare(verInfo: $0, fwFile: fwFile) }
+            .flatMap { Jade.shared.updateFirmare(verInfo: $0, fmwFile: fmwFile) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.delegate?.onUpdateFirmware(p)

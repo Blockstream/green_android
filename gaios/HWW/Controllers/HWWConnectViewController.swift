@@ -297,14 +297,14 @@ extension HWWConnectViewController: BLEManagerDelegate {
     func onConnectivityChange(peripheral: Peripheral, status: Bool) {
     }
 
-    func onCheckFirmware(_ peripheral: Peripheral, fw: [String: String], currentVersion: String) {
+    func onCheckFirmware(_ peripheral: Peripheral, fmw: [String: String], currentVersion: String) {
         let required = !Jade.shared.isJadeFwValid(currentVersion)
         let alert = UIAlertController(title: required ? NSLocalizedString("id_new_jade_firmware_required", comment: "") : NSLocalizedString("id_new_jade_firmware_available", comment: ""),
-                                      message: String(format: NSLocalizedString("id_version_1s", comment: ""), fw["version"] ?? ""),
+                                      message: String(format: NSLocalizedString("id_version_1s", comment: ""), fmw["version"] ?? ""),
                                       preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_update", comment: ""), style: .default) { _ in
             self.hwwState = .upgradingFirmware
-            BLEManager.shared.updateFirmware(peripheral, fwFile: fw)
+            BLEManager.shared.updateFirmware(peripheral, fmwFile: fmw)
         })
         alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
             if required {
