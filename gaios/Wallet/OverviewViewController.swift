@@ -21,7 +21,6 @@ class OverviewViewController: UIViewController {
     @IBOutlet weak var receiveImage: UIImageView!
 
     var presentingWallet: WalletItem?
-    private var txs: [Transactions] = []
     private var transactions: [Transaction] = []
     private var fetchTxs: Promise<Void>?
     var callPage: UInt32 = 0
@@ -259,8 +258,6 @@ class OverviewViewController: UIViewController {
     func loadTransactions(_ pageId: Int = 0) -> Promise<Void> {
         return SessionManager.shared.transactions(first: UInt32(pageId))
         .map { page in
-//            self.txs.removeAll()
-//            self.txs.append(txs)
             self.transactions.removeAll()
             self.transactions += page.list
             self.callPage = UInt32(pageId) + 1
@@ -280,10 +277,8 @@ class OverviewViewController: UIViewController {
 
     func onNewBlock(_ notification: Notification) {
         // update txs only if pending txs > 0
-        if txs.first?.list.filter({ $0.blockHeight == 0 }).first != nil {
-            self.loadTransactions().done {
-                self.showTransactions()
-            }.catch { _ in }
+        if transactions.filter({ $0.blockHeight == 0 }).first != nil {
+            handleRefresh()
         }
     }
 
@@ -308,22 +303,8 @@ class OverviewViewController: UIViewController {
     }
 
     func refresh(_ notification: Notification) {
-//        self.showWallet()
-//        self.showTransactions()
         tableView.reloadSections([OverviewSection.asset.rawValue], with: .none)
         tableView.reloadSections([OverviewSection.transaction.rawValue], with: .none)
-    }
-
-    func onChange(_ wallet: WalletItem) {
-        // vecchio metodo di delegate
-
-        // Replace wallet and balance
-        SessionManager.shared.activeWallet = wallet.pointer
-        presentingWallet = wallet
-//        showWallet()
-        // Empty and reload transactions list
-//        txs.removeAll()
-        tableView.reloadData()
     }
 
     func loadAccounts() {
@@ -725,21 +706,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
 extension OverviewViewController: UITableViewDataSourcePrefetching {
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
 
-//        print("----> paths \(indexPaths)")
-
         let filteredIndexPaths = indexPaths.filter { $0.section == OverviewSection.transaction.rawValue }
-
-//        print("----> filtered paths \(filteredIndexPaths)")
-
-//        if !filteredIndexPaths.contains(where: { $0.row >= self.txs[$0.section - 1].list.count - 1 }) { return }
-//        if self.txs.count == 0 { return }
-//        if self.txs.last?.list.count == 0 { return }
-//        if fetchTxs != nil && fetchTxs!.isPending { return }
-//        let count = txs.map { $0.list.count }.reduce(0, +)
-//        fetchTxs = SessionManager.shared.transactions(first: UInt32(count)).map { txs in
-//            self.txs.append(txs)
-//            self.showTransactions()
-//        }
 
         if let row = filteredIndexPaths.last?.row {
             if self.callPage > 0 && row > ((self.callPage - 1 ) * Constants.trxPerPage) {
