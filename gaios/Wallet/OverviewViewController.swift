@@ -223,6 +223,7 @@ class OverviewViewController: UIViewController {
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
+        startAnimating()
         self.loadWallet()
         .compactMap {
             self.tableView.reloadSections([OverviewSection.accountId.rawValue], with: .none)
@@ -232,6 +233,8 @@ class OverviewViewController: UIViewController {
             self.loadTransactions()
         }.done { _ in
             self.showTransactions()
+        }.ensure {
+            self.stopAnimating()
         }.catch { err in
             print(err.localizedDescription)
         }
@@ -320,7 +323,7 @@ class OverviewViewController: UIViewController {
         }.done { wallets in
             self.subAccounts = wallets
             self.tableView.reloadSections([OverviewSection.account.rawValue], with: .none)
-//            self.handleRefresh()
+            self.handleRefresh()
         }.catch { err in
             print(err.localizedDescription)
         }
@@ -817,7 +820,9 @@ extension OverviewViewController {
         tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
         enterForegroundToken = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main, using: applicationWillEnterForeground)
 
-        handleRefresh()
+        if subAccounts.count > 0 {
+            handleRefresh()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
