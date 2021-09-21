@@ -161,5 +161,9 @@ class ScreenLocker {
             return
         }
         clear()
+        DispatchQueue.main.async {
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            appDelegate?.logout(with: false)
+        }
     }
 }
