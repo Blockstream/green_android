@@ -16,7 +16,7 @@ PODS:
 
 DEPENDENCIES:
   - PromiseKit (= 6.10.0)
-  - RxBluetoothKit (= 6.0.0)
+  - RxBluetoothKit (from `https://github.com/chamira-at/RxBluetoothKit.git`, branch `ios-15-support`)
   - RxSwift (~> 5.1)
   - SwiftCBOR (from `https://github.com/lvaccaro/SwiftCBOR.git`, branch `green`)
   - SwiftLint (= 0.35.0)
@@ -24,16 +24,21 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - PromiseKit
-    - RxBluetoothKit
     - RxSwift
     - SwiftLint
 
 EXTERNAL SOURCES:
+  RxBluetoothKit:
+    :branch: ios-15-support
+    :git: https://github.com/chamira-at/RxBluetoothKit.git
   SwiftCBOR:
     :branch: green
     :git: https://github.com/lvaccaro/SwiftCBOR.git
 
 CHECKOUT OPTIONS:
+  RxBluetoothKit:
+    :commit: 086f4598f2a203f8b415d79c396178e3927f075e
+    :git: https://github.com/chamira-at/RxBluetoothKit.git
   SwiftCBOR:
     :commit: eccdfd1f41a865a356e6b211fb9754e49e29e041
     :git: https://github.com/lvaccaro/SwiftCBOR.git
@@ -45,6 +50,6 @@ SPEC CHECKSUMS:
   SwiftCBOR: c7d740966575e0fd5d971466de2b6776db3f10c3
   SwiftLint: 5553187048b900c91aa03552807681bb6b027846
 
-PODFILE CHECKSUM: cea9caa1134f1831d01aa79352289cd53f656d0e
+PODFILE CHECKSUM: 185f6b04e1e6fe4ed0acf81f7659aa8811c6aaea
 
 COCOAPODS: 1.10.1
