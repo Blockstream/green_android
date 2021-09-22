@@ -284,7 +284,7 @@ extension TransactionDetailViewController: UITableViewDelegate, UITableViewDataS
         let cellType = cellTypes[indexPath.row]
         switch cellType {
         case .status:
-            if !transaction.canRBF || account?.isWatchonly ?? false || SessionManager.shared.notificationManager.twoFactorReset!.isResetActive { return }
+            if !transaction.canRBF || account?.isWatchonly ?? false || SessionManager.shared.notificationManager.twoFactorReset?.isResetActive ?? false { return }
             let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate, "subaccount": wallet.pointer]
             gaios.createTransaction(details: details).done { tx in
                 self.performSegue(withIdentifier: "rbf", sender: tx)

@@ -41,7 +41,7 @@ class NotificationManager {
                 let json = try JSONSerialization.data(withJSONObject: data, options: [])
                 self.twoFactorReset = try JSONDecoder().decode(TwoFactorReset.self, from: json)
                 events.removeAll(where: { $0.kindOf(TwoFactorReset.self)})
-                if self.twoFactorReset!.isResetActive {
+                if self.twoFactorReset?.isResetActive ?? false {
                     events.append(Event(value: data))
                 }
             } catch { break }
