@@ -614,7 +614,11 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case OverviewSection.transaction.rawValue:
             return headerH
         case OverviewSection.asset.rawValue:
-            return headerH
+            if isLiquid {
+                return headerH
+            } else {
+                return 1
+            }
         default:
             return 1
         }
@@ -647,7 +651,11 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         case OverviewSection.transaction.rawValue:
             return headerView("Transactions")
         case OverviewSection.asset.rawValue:
-            return headerView(NSLocalizedString("id_assets", comment: ""))
+            if isLiquid {
+                return headerView(NSLocalizedString("id_assets", comment: ""))
+            } else {
+                return headerView("")
+            }
         default:
             return headerView("")
         }
