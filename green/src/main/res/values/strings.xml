@@ -942,6 +942,7 @@
   <string name="id_issuer_domain">Issuer Domain: %s</string>
   <string name="id_all_assets">All Assets</string>
   <string name="id_view_more">View More</string>
+  <string name="id_you_have_no_coins_to_send">You have no coins to send. Generate an address to receive some bitcoins.</string>
   <string name="id_managed_assets_account_id">Managed Assets Account ID</string>
   <string name="id_unstable_internet_connection">Unstable internet connection</string>
   <string name="id_auto_logout_timeout_expired">Auto logout timeout expired</string>

@@ -25,6 +25,7 @@ import com.blockstream.gdk.data.AccountType
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
+import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ListItemAccountBinding
 import com.blockstream.green.databinding.OverviewFragmentBinding
 import com.blockstream.green.gdk.getConfirmationsMax
@@ -139,23 +140,34 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         binding.buttonSend.setOnClickListener {
-            if (viewModel.isLiquid().value == true &&
-                (viewModel.getBalancesLiveData().value?.get(session.network.policyAsset) ?: 0) == 0L
-            ){
+
+            if (viewModel.getBalancesLiveData().value?.get(session.network.policyAsset) ?: 0 == 0L){
+
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.id_warning)
-                    .setMessage(R.string.id_insufficient_lbtc_to_send_a)
-                    .setPositiveButton(R.string.id_receive) { _: DialogInterface, _: Int ->
-                        navigate(OverviewFragmentDirections.actionOverviewFragmentToReceiveFragment(viewModel.wallet))
-                        true
+                    .setMessage(if (session.isLiquid) R.string.id_insufficient_lbtc_to_send_a else R.string.id_you_have_no_coins_to_send)
+                    .also {
+                        if (session.isLiquid) {
+                            it.setPositiveButton(R.string.id_learn_more) { _: DialogInterface, _: Int ->
+                                openBrowser(Urls.HELP_GET_LIQUID)
+                            }
+                        } else {
+                            it.setPositiveButton(R.string.id_receive) { _: DialogInterface, _: Int ->
+                                navigate(
+                                    OverviewFragmentDirections.actionOverviewFragmentToReceiveFragment(
+                                        viewModel.wallet
+                                    )
+                                )
+                            }
+                        }
                     }
                     .setNegativeButton(R.string.id_cancel, null)
                     .show()
 
             }else{
-                val intent = Intent(activity, ScanActivity::class.java)
-                intent.putExtra(PrefKeys.SWEEP, session.isWatchOnly)
-                startActivity(intent)
+                startActivity(Intent(activity, ScanActivity::class.java).also {
+                    it.putExtra(PrefKeys.SWEEP, session.isWatchOnly)
+                })
             }
         }
 
