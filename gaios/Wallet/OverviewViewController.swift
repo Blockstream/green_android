@@ -223,7 +223,6 @@ class OverviewViewController: UIViewController {
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
-        startAnimating()
         self.loadWallet()
         .compactMap {
             self.tableView.reloadSections([OverviewSection.accountId.rawValue], with: .none)
@@ -233,8 +232,6 @@ class OverviewViewController: UIViewController {
             self.loadTransactions()
         }.done { _ in
             self.showTransactions()
-        }.ensure {
-            self.stopAnimating()
         }.catch { err in
             print(err.localizedDescription)
         }
