@@ -215,8 +215,23 @@ class TransactionDetailViewController: KeyboardViewController {
 
     @objc func increaseFeeTapped(_ sender: UIButton) {
         if self.cantBumpFees { return }
-        let details: [String: Any] = ["previous_transaction": transaction.details, "fee_rate": transaction.feeRate, "subaccount": wallet.pointer]
-        gaios.createTransaction(details: details).done { tx in
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then {
+            try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 1]).resolve()
+        }.compactMap { data in
+            let result = data["result"] as? [String: Any]
+            let unspent = result?["unspent_outputs"] as? [String: Any]
+            return ["previous_transaction": self.transaction.details,
+                    "fee_rate": self.transaction.feeRate,
+                    "subaccount": self.wallet.pointer,
+                    "utxos": unspent ?? [:]]
+        }.then { details in
+            gaios.createTransaction(details: details)
+        }.ensure {
+            self.stopAnimating()
+        }.done { tx in
             self.performSegue(withIdentifier: "rbf", sender: tx)
         }.catch { err in
             print(err.localizedDescription)
