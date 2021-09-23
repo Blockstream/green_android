@@ -44,14 +44,18 @@ class SessionManager(
         greenWallet.setNotificationHandler { gaSession, jsonObject ->
             sessions[gaSession]?.apply {
 
-                // Pass notification to to GDKSession
-                Session.getSession().also {
-                    if(it.nativeSession == gaSession){
-                        it.notificationModel.onNewNotification(gaSession, jsonObject)
+                try{
+                    // Pass notification to to GDKSession
+                    Session.getSession().also {
+                        if(it.nativeSession == gaSession){
+                            it.notificationModel.onNewNotification(gaSession, jsonObject)
+                        }
                     }
-                }
 
-                onNewNotification(JsonDeserializer.decodeFromJsonElement(jsonObject as JsonElement))
+                    onNewNotification(JsonDeserializer.decodeFromJsonElement(jsonObject as JsonElement))
+                }catch (e: Exception){
+                    e.printStackTrace()
+                }
             }
         }
 
