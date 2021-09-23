@@ -13,18 +13,12 @@ import androidx.navigation.NavDeepLinkBuilder
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.SubAccount
-import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.settings.Migrator
-import com.blockstream.green.ui.BridgeActivity
 import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.QATesterActivity
-import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
-import com.blockstream.green.ui.receive.ReceiveFragmentArgs
-import com.blockstream.green.ui.recovery.RecoveryIntroFragmentArgs
 import com.blockstream.green.ui.settings.*
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.*
@@ -35,12 +29,11 @@ import com.greenaddress.Bridge
 import com.greenaddress.greenapi.Registry
 import com.pandulapeter.beagle.Beagle
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
+typealias ApplicationScope = kotlinx.coroutines.CoroutineScope
 
 @HiltAndroidApp
 class GreenApplication : Application(){
@@ -65,6 +58,9 @@ class GreenApplication : Application(){
 
     @Inject
     lateinit var beagle: Beagle
+
+    @Inject
+    lateinit var applicationScope: ApplicationScope
 
     override fun onCreate() {
         super.onCreate()
@@ -174,7 +170,7 @@ class GreenApplication : Application(){
         // Init Registry
         Registry.init(assetManager)
 
-        GlobalScope.launch(Dispatchers.IO){
+        applicationScope.launch {
             migrator.migrate()
         }
 

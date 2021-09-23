@@ -2,8 +2,8 @@ package com.blockstream.green.ui.wallet
 
 import android.util.Base64
 import androidx.lifecycle.*
-import com.blockstream.gdk.HardwareWalletResolver
 import com.blockstream.gdk.data.TORStatus
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -11,8 +11,6 @@ import com.blockstream.green.devices.Device
 import com.blockstream.green.gdk.*
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.greenapi.HWWalletBridge
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -21,7 +19,6 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.crypto.Cipher
 
@@ -29,6 +26,7 @@ class LoginViewModel @AssistedInject constructor(
     private var appKeystore: AppKeystore,
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
+    private val applicationScope: ApplicationScope,
     @Assisted wallet: Wallet,
     @Assisted val device: Device?
 ) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
@@ -247,7 +245,7 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     fun deleteLoginCredentials(loginCredentials: LoginCredentials){
-        GlobalScope.launch {
+        applicationScope.launch {
             walletRepository.deleteLoginCredentialsSuspend(loginCredentials)
         }
     }

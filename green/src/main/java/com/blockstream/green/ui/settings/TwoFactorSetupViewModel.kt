@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.util.Patterns
 import androidx.lifecycle.*
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -21,10 +22,11 @@ class TwoFactorSetupViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     appKeystore: AppKeystore,
     greenWallet: GreenWallet,
+    applicationScope: ApplicationScope,
     @Assisted wallet: Wallet,
     @Assisted val method: TwoFactorMethod,
     @Assisted val action: TwoFactorSetupAction
-) : WalletSettingsViewModel(sessionManager, walletRepository, appKeystore, greenWallet, wallet) {
+) : WalletSettingsViewModel(sessionManager, walletRepository, appKeystore, greenWallet, applicationScope, wallet) {
 
     var authenticatorUrl: String? = null
     val country = MutableLiveData("")

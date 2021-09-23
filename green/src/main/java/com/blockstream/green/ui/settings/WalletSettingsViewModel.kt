@@ -8,6 +8,7 @@ import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
 import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.Limits
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.CredentialType
@@ -21,15 +22,12 @@ import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
-import com.blockstream.green.utils.createQrBitmap
 import com.greenaddress.Bridge
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonElement
 import javax.crypto.Cipher
 
 open class WalletSettingsViewModel @AssistedInject constructor(
@@ -37,6 +35,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     walletRepository: WalletRepository,
     val appKeystore: AppKeystore,
     val greenWallet: GreenWallet,
+    val applicationScope: ApplicationScope,
     @Assisted wallet: Wallet
 ) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
 
@@ -346,7 +345,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
     }
 
     fun removeBiometrics(){
-        GlobalScope.launch {
+        applicationScope.launch {
             walletRepository.deleteLoginCredentialsSuspend(wallet.id, CredentialType.BIOMETRICS)
         }
     }

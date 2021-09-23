@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.Logger
+import com.blockstream.green.ApplicationScope
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.GreenApplication
 import com.blockstream.green.R
@@ -29,11 +30,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.MainScope
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
 class GreenModules {
+    @Singleton
+    @Provides
+    fun provideApplicationScope(): ApplicationScope {
+        return MainScope()
+    }
+
     @Singleton
     @Provides
     fun provideKotlinGDK(): KotlinGDK {

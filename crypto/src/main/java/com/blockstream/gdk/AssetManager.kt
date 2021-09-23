@@ -10,9 +10,6 @@ import com.blockstream.crypto.R
 import com.blockstream.gdk.data.Asset
 import com.blockstream.gdk.data.Assets
 import com.blockstream.gdk.params.AssetsParams
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 
 interface AssetQATester {
     fun isAssetGdkCacheDisabled(): Boolean
@@ -93,9 +90,10 @@ class AssetManager(
     }
 
     fun updateAssetsAsync(provider: AssetsProvider) {
-        GlobalScope.launch {
-            updateMetadata(provider, true)
-        }
+        // Use ApplicationScope
+        //applicationScope.launch {
+        //    updateMetadata(provider, true)
+        //}
     }
 
     private fun updateMetadata(provider: AssetsProvider, forceUpdate: Boolean) {
