@@ -31,7 +31,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private Integer mBlockHeight = 0;
     private JsonNode mNetworkNode;
-    private final List<Long> mFees = new ArrayList<>();
     private final List<EventData> mEventDataList = new ArrayList<>();
 
     private final PublishSubject<JsonNode> mTransactionPublish = PublishSubject.create();
@@ -73,10 +72,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         return mBlockHeight;
     }
 
-    public List<Long> getFees() {
-        return mFees;
-    }
-
     public List<EventData> getEvents() {
         return mEventDataList;
     }
@@ -88,7 +83,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     public void reset() {
         mBlockHeight = 0;
         mNetworkNode = null;
-        mFees.clear();
         mEventDataList.clear();
     }
 
@@ -121,14 +115,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
                 Log.d("OBSNTF", "blockHeight " + blockHeight);
                 mBlockHeight = blockHeight.asInt(0);
                 mBlockPublish.onNext(mBlockHeight);
-                break;
-            }
-            case "fees": {
-                //{"fees":[1000,86602,86602,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249,23249]}
-                final EstimatesData estimatesData = mObjectMapper.treeToValue(objectNode, EstimatesData.class);
-                mFees.clear();
-                mFees.addAll(estimatesData.getFees());
-                Log.d("OBSNTF", "estimatesData " + estimatesData);
                 break;
             }
             case "transaction": {

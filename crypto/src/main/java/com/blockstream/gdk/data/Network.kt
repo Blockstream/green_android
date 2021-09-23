@@ -57,6 +57,8 @@ data class Network(
             "Multisig $canonicalName"
         }
 
+    val defaultFee = 1000L
+
     fun getVerPublic(): Int {
         return if (isMainnet) Wally.BIP32_VER_MAIN_PUBLIC else Wally.BIP32_VER_TEST_PUBLIC
     }

@@ -137,6 +137,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
 
         final List<Long> estimates = getSession().getFees();
+        if(estimates.isEmpty()){
+            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_SHORT);
+            finishOnUiThread();
+            return;
+        }
         mMinFeeRate = estimates.get(0);
 
         for (int i = 0; i < mButtonIds.length; ++i) {

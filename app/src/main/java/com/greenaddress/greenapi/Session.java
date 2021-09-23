@@ -154,8 +154,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
     }
 
     public List<Long> getFees() {
-        if (!getNotificationModel().getFees().isEmpty())
-            return getNotificationModel().getFees();
         try {
             return getFeeEstimates();
         } catch (final Exception e) {

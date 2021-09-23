@@ -117,6 +117,8 @@ class KotlinGDK {
 
     fun getNetworks() = GDK.get_networks()
 
+    fun getFeeEstimates(session: GASession) = GDK.get_fee_estimates(session)
+
     fun getSystemMessage(session: GASession) = GDK.get_system_message(session)
     fun ackSystemMessage(session: GASession, message: String) = GDK.ack_system_message(session, message)
 

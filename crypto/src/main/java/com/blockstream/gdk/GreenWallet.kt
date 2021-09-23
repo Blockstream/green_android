@@ -192,6 +192,8 @@ class GreenWallet constructor(
 
     fun sendNlocktimes(session: GASession) = gdk.sendNlocktimes(session)
 
+    fun getFeeEstimates(session: GASession) = JsonDeserializer.decodeFromJsonElement<FeeEstimation>(gdk.getFeeEstimates(session) as JsonElement)
+
     fun getSystemMessage(session: GASession) = gdk.getSystemMessage(session)
 
     fun ackSystemMessage(session: GASession, message: String) = gdk.ackSystemMessage(session, message)

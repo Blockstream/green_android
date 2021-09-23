@@ -26,6 +26,7 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import mu.KLogging
 import java.net.URL
@@ -50,7 +51,6 @@ class GreenSession constructor(
     private val subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
     private val systemMessageSubject = BehaviorSubject.create<String>()
     private val blockSubject = BehaviorSubject.create<Block>()
-    private val feesSubject = BehaviorSubject.createDefault<List<Long>>(listOf())
     private val settingsSubject = BehaviorSubject.create<Settings>()
     private val twoFactorResetSubject = BehaviorSubject.create<TwoFactorReset>()
     private val torStatusSubject = BehaviorSubject.create<TORStatus?>()
@@ -114,7 +114,6 @@ class GreenSession constructor(
 
     fun getSettings() : Settings? = settingsSubject.value
 
-    fun getFees(): List<Long> = feesSubject.value
 
     val availableCurrencies by lazy {
         greenWallet.getAvailableCurrencies(gaSession)
@@ -454,6 +453,13 @@ class GreenSession constructor(
         name
     )
 
+    fun getFeeEstimates() = try {
+        greenWallet.getFeeEstimates(gaSession)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        FeeEstimation(fees = listOf(network.defaultFee))
+    }
+
     private fun getTransactions(params: TransactionParams) = AuthHandler(greenWallet, greenWallet.getTransactions(gaSession, params))
 
     private var txOffset = 0
@@ -692,11 +698,6 @@ class GreenSession constructor(
                 notification.block?.let {
                     blockSubject.onNext(it)
                     updateTransactionsAndBalance(isReset = false, isLoadMore = false)
-                }
-            }
-            "fees" -> {
-                notification.fees?.let {
-                    feesSubject.onNext(it)
                 }
             }
             "settings" -> {

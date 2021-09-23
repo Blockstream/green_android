@@ -632,7 +632,7 @@ class WalletSettingsFragment :
                         if (input.isNullOrBlank()) {
                             sharedPreferences.edit().remove(Preferences.DEFAULT_FEE_RATE).apply()
                         } else {
-                            val minFeeRateKB: Long = session.getFees()[0]
+                            val minFeeRateKB: Long = session.getFeeEstimates().fees.firstOrNull() ?: session.network.defaultFee
                             val enteredFeeRate = dialogBinding.text?.toDouble() ?: 0.0
                             if (enteredFeeRate * 1000 < minFeeRateKB) {
                                 snackbar(
@@ -678,7 +678,7 @@ class WalletSettingsFragment :
 
     private fun getDefaultFeeRateAsDouble(): Double {
         // As a fallback set default fee from session
-        var defaultFee = (session.getFees().firstOrNull() ?: 1000L) / 1000.0
+        var defaultFee = (session.getFeeEstimates().fees.firstOrNull() ?: session.network.defaultFee) / 1000.0
 
         try {
             if(sharedPreferences.contains(Preferences.DEFAULT_FEE_RATE)) {
