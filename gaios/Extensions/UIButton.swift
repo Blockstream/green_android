@@ -2,6 +2,7 @@ import UIKit
 
 enum ButtonStyle {
     case primary
+    case primaryGray
     case primaryDisabled
     case outlinedGray
 }
@@ -141,6 +142,10 @@ extension UIButton {
         switch type {
         case .primary:
             backgroundColor = UIColor.customMatrixGreen()
+            setTitleColor(.white, for: .normal)
+            isEnabled = true
+        case .primaryGray:
+            backgroundColor = UIColor.customModalMedium()
             setTitleColor(.white, for: .normal)
             isEnabled = true
         case .primaryDisabled:

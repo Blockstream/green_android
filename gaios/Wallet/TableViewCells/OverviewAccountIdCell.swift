@@ -11,7 +11,7 @@ class OverviewAccountIdCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         bg.layer.borderWidth = 1.0
-        bg.layer.borderColor = UIColor.customGrayLight().cgColor
+        bg.layer.borderColor = UIColor.gray.cgColor
         bg.layer.cornerRadius = 5.0
     }
 
@@ -22,7 +22,7 @@ class OverviewAccountIdCell: UITableViewCell {
     func configure(onAction: VoidToVoid?) {
         lblTitle.text = NSLocalizedString("id_amp_id", comment: "")
         btnAction.setTitle("  " + "GET ID" + "  ", for: .normal)
-        btnAction.setStyle(.primary)
+        btnAction.setStyle(.primaryGray)
         self.onAction = onAction
     }
 
