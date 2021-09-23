@@ -34,7 +34,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="@string/id_managed_assets_account_id"
+                android:text="@string/id_amp_account"
                 android:textColor="@color/color_on_surface_emphasis_very_low"
                 android:textAppearance="?attr/textAppearanceSubtitle2"
                 app:layout_constraintBottom_toBottomOf="parent"
