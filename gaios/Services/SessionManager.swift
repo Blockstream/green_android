@@ -28,7 +28,9 @@ class SessionManager: Session {
     }
 
     public static func newSession() -> SessionManager {
-        SessionManager.shared = SessionManager()
+        // Todo: destroy the session in a thread-safe way
+        //SessionManager.shared = SessionManager()
+        try? SessionManager.shared.disconnect()
         return SessionManager.shared
     }
 
