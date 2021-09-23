@@ -39,7 +39,7 @@ class OverviewViewController: UIViewController {
 
     var showAccounts = false
     var assets = [(key: String, value: UInt64)]()
-
+    var isLoading = false
     var accounts: [WalletItem] {
         get {
             if subAccounts.count == 0 { return [] }
@@ -119,6 +119,8 @@ class OverviewViewController: UIViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
+
+        isLoading = true
     }
 
     func setContent() {
@@ -223,6 +225,7 @@ class OverviewViewController: UIViewController {
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
+        self.isLoading = true
         self.loadWallet()
         .compactMap {
             self.tableView.reloadSections([OverviewSection.accountId.rawValue], with: .none)
@@ -231,6 +234,7 @@ class OverviewViewController: UIViewController {
         .then {
             self.loadTransactions()
         }.done { _ in
+            self.isLoading = false
             self.showTransactions()
         }.catch { err in
             print(err.localizedDescription)
@@ -684,6 +688,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 presentingWallet = accounts[indexPath.row]
                 showAccounts = !showAccounts
                 self.transactions.removeAll()
+                assets = [(key: String, value: UInt64)]()
+                isLoading = true
                 tableView.reloadData { [weak self] in
                     self?.handleRefresh()
                 }
@@ -802,14 +808,37 @@ extension OverviewViewController {
             lblNoTransactions.numberOfLines = 0
             lblNoTransactions.textAlignment = .center
             lblNoTransactions.text = NSLocalizedString("id_your_transactions_will_be_shown", comment: "")
-
             lblNoTransactions.translatesAutoresizingMaskIntoConstraints = false
             section.addSubview(lblNoTransactions)
 
             NSLayoutConstraint.activate([
-                lblNoTransactions.centerYAnchor.constraint(equalTo: section.centerYAnchor),
-                lblNoTransactions.centerXAnchor.constraint(equalTo: section.centerXAnchor)
+                lblNoTransactions.topAnchor.constraint(equalTo: section.topAnchor, constant: 0.0),
+                lblNoTransactions.bottomAnchor.constraint(equalTo: section.bottomAnchor, constant: 0.0),
+                lblNoTransactions.leadingAnchor.constraint(equalTo: section.leadingAnchor, constant: 40.0),
+                lblNoTransactions.trailingAnchor.constraint(equalTo: section.trailingAnchor, constant: -40.0)
             ])
+
+            if isLoading {
+                let loader = UIActivityIndicatorView(style: .white)
+                section.addSubview(loader)
+                loader.startAnimating()
+                loader.translatesAutoresizingMaskIntoConstraints = false
+                let horizontalConstraint = NSLayoutConstraint(item: loader,
+                                                              attribute: .left,
+                                                              relatedBy: .equal,
+                                                              toItem: section,
+                                                              attribute: .left,
+                                                              multiplier: 1,
+                                                              constant: 20.0)
+                let verticalConstraint = NSLayoutConstraint(item: loader,
+                                                            attribute: .centerY,
+                                                            relatedBy: .equal,
+                                                            toItem: lblNoTransactions,
+                                                            attribute: .centerY,
+                                                            multiplier: 1,
+                                                            constant: 0)
+                NSLayoutConstraint.activate([horizontalConstraint, verticalConstraint])
+            }
             return section
         }
 
