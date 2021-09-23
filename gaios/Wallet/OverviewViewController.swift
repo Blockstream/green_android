@@ -683,8 +683,10 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 SessionManager.shared.activeWallet = accounts[indexPath.row].pointer
                 presentingWallet = accounts[indexPath.row]
                 showAccounts = !showAccounts
-                tableView.reloadSections([OverviewSection.account.rawValue], with: .none)
-                handleRefresh()
+                self.transactions.removeAll()
+                tableView.reloadData { [weak self] in
+                    self?.handleRefresh()
+                }
             }
         case OverviewSection.asset.rawValue:
             let storyboard = UIStoryboard(name: "Assets", bundle: nil)
