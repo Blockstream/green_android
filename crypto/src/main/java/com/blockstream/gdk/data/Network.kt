@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.blockstream.crypto.R
 import com.blockstream.gdk.GAJson
 import com.blockstream.libwally.Wally
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -57,7 +58,8 @@ data class Network(
             "Multisig $canonicalName"
         }
 
-    val defaultFee = 1000L
+    val defaultFee: Long
+        get() = if(isLiquid) 100L else 1000L
 
     fun getVerPublic(): Int {
         return if (isMainnet) Wally.BIP32_VER_MAIN_PUBLIC else Wally.BIP32_VER_TEST_PUBLIC
