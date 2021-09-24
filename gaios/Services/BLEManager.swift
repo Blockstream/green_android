@@ -63,7 +63,6 @@ class BLEManager {
 
     weak var delegate: BLEManagerDelegate?
     weak var scanDelegate: BLEManagerScanDelegate?
-    
     var fmwVersion: String?
 
     init() {
@@ -167,6 +166,7 @@ class BLEManager {
             }.flatMap { version -> Observable<[String: Any]> in
                 let result = version["result"] as? [String: Any]
                 hasPin = result?["JADE_HAS_PIN"] as? Bool ?? false
+                self.fmwVersion = result?["JADE_VERSION"] as? String ?? ""
                 if let networks = result?["JADE_NETWORKS"] as? String {
                     if networks == "TEST" && network != "testnet" {
                         throw JadeError.Abort("\(network) not supported in Jade \(networks) mode")
