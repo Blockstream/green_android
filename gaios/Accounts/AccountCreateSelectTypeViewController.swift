@@ -83,7 +83,7 @@ class AccountCreateSelectTypeViewController: UIViewController {
             cardSegWit.isHidden = !isSingleSig
             cardStandard.isHidden = isSingleSig
             cardAmp.isHidden = !(!isSingleSig && isLiquid)
-            card2of3.isHidden = isSingleSig
+            card2of3.isHidden = isSingleSig || isLiquid
         }
     }
 
