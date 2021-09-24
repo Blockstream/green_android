@@ -3,13 +3,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-[Unreleased]
+## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+## [3.7.2] - 2021-09-24
+### Added
+- Add SPV support to singlesig wallets in app settings
+- Support host unblinding for Blockstream Jade version 0.1.27 and higher
+
 ### Changed
 - Revamp Wallet view with new UI
-- Minor improvements to the Wallet Settings UI
+- Minor improvements to the Wallet Settings UI and PIN view
+- Update and support GDK version 0.0.45
+
 ### Fixed
 - Limit number of words in wallet restore to 27
+- Fix crash reported on Play Store
+- Fix bugs in hardware wallets support
 
 ## [3.7.1] - 2021-09-16
 ### Fixed
