@@ -58,7 +58,7 @@ class LoginViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = NSLocalizedString("id_enter_pin", comment: "")
-        lblWalletLockHint1.text = NSLocalizedString("id_youve_entered_an_invalid_pin", comment: "")
+        lblWalletLockHint1.text = NSLocalizedString("id_youve_entered_an_invalid_pin", comment: "") + "\n" + NSLocalizedString("id_youll_need_your_recovery_phrase", comment: "")
         lblWalletLockHint2.isHidden = true
         btnWalletLock.setTitle(NSLocalizedString("id_restore_with_recovery_phrase", comment: ""), for: .normal)
         connectionSettingsButton.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
