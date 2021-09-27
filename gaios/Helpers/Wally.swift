@@ -55,11 +55,11 @@ public func bip32KeyFromParentToBase58(isMainnet: Bool = true, pubKey: [UInt8], 
         wally_free_string(xpubPtr)
     }
 
-    if bip32_key_init(UInt32(version), UInt32(0), UInt32(0), chainCode_, chainCode.count,
-                             pubKey_, pubKey.count, nil, 0, nil, 0, nil, 0, subactkey) != WALLY_OK {
+    if bip32_key_init_alloc(UInt32(version), UInt32(0), UInt32(0), chainCode_, chainCode.count,
+                             pubKey_, pubKey.count, nil, 0, nil, 0, nil, 0, &subactkey) != WALLY_OK {
         throw GaError.GenericError
     }
-    if bip32_key_from_parent(subactkey, branch, UInt32(BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH), branchkey) != WALLY_OK {
+    if bip32_key_from_parent_alloc(subactkey, branch, UInt32(BIP32_FLAG_KEY_PUBLIC | BIP32_FLAG_SKIP_HASH), &branchkey) != WALLY_OK {
         throw GaError.GenericError
     }
     if bip32_key_to_base58(branchkey, UInt32(BIP32_FLAG_KEY_PUBLIC), &xpubPtr) != WALLY_OK {
