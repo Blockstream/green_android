@@ -201,8 +201,8 @@ class BLEManager {
                 verInfo = data["result"] as? [String: Any]
                 return try Jade.shared.checkFirmware(verInfo!)
             }.observeOn(MainScheduler.instance)
-            .compactMap { (fwFile: [String: String]?) in
-                if let fmw = fwFile,
+            .compactMap { (fmwFile: [String: String]?) in
+                if let fmw = fmwFile,
                    let ver = verInfo?["JADE_VERSION"] as? String {
                     self.fmwVersion = ver
                     self.delegate?.onCheckFirmware(p, fmw: fmw, currentVersion: ver)
