@@ -56,9 +56,10 @@ class JadeChannel: HWChannelProtocol {
                 return CBOR.parser(decoded ?? CBOR("")) as? [String: Any] ?? [:]
             }.flatMap { res in
                 return Observable<[String: Any]>.create { observer in
-                    if let error = res["error"] as? [String: Any],
-                       let message = error["message"] as? String {
-                        observer.onError(JadeError.Abort(message))
+                    if let error = res["error"] as? [String: Any] {
+                        let code = error["code"] as? Int
+                        let message = error["message"] as? String
+                        observer.onError(JadeError.from(code: code ?? 0, message: message ?? ""))
                     } else {
                         observer.onNext(res)
                         observer.onCompleted()

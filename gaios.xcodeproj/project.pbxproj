@@ -219,6 +219,7 @@
 		81286119222212DB005598D3 /* SetGauthView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81286118222212DB005598D3 /* SetGauthView.xib */; };
 		81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81310C442189D10F00563B91 /* TwoFactorCall.swift */; };
 		815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815431952445C0EE00EE34DB /* JadeChannel.swift */; };
+		8158974B2701980700DDF6D4 /* JadeError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8158974A2701980700DDF6D4 /* JadeError.swift */; };
 		816282B1260BB201003E5FA6 /* OnBoardParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B0260BB201003E5FA6 /* OnBoardParams.swift */; };
 		816282B5260BB3C6003E5FA6 /* OnBoardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */; };
 		81640CDE21FB2B1100E7F79C /* FeeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81640CDD21FB2B1100E7F79C /* FeeButton.swift */; };
@@ -541,6 +542,7 @@
 		81286118222212DB005598D3 /* SetGauthView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetGauthView.xib; sourceTree = "<group>"; };
 		81310C442189D10F00563B91 /* TwoFactorCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoFactorCall.swift; sourceTree = "<group>"; };
 		815431952445C0EE00EE34DB /* JadeChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeChannel.swift; sourceTree = "<group>"; };
+		8158974A2701980700DDF6D4 /* JadeError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JadeError.swift; sourceTree = "<group>"; };
 		816282B0260BB201003E5FA6 /* OnBoardParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardParams.swift; sourceTree = "<group>"; };
 		816282B4260BB3C6003E5FA6 /* OnBoardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardManager.swift; sourceTree = "<group>"; };
 		81640CDD21FB2B1100E7F79C /* FeeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeButton.swift; sourceTree = "<group>"; };
@@ -1231,6 +1233,7 @@
 				8169EBBC2445F16F0053BC73 /* Jade.swift */,
 				815431952445C0EE00EE34DB /* JadeChannel.swift */,
 				81E0B4C2255302BB001C8544 /* CBOR.swift */,
+				8158974A2701980700DDF6D4 /* JadeError.swift */,
 			);
 			path = Jade;
 			sourceTree = "<group>";
@@ -1738,6 +1741,7 @@
 				34C2464D2670AFA5009E8FCE /* AccountCreateSetNameViewController.swift in Sources */,
 				67439CDB21D937D300280FE2 /* KeyboardSuggestions.swift in Sources */,
 				6D8099D222FA24200069A69F /* NotesViewController.swift in Sources */,
+				8158974B2701980700DDF6D4 /* JadeError.swift in Sources */,
 				815431962445C0EE00EE34DB /* JadeChannel.swift in Sources */,
 				81F74BA52278857800A397C9 /* Network.swift in Sources */,
 				349E5F8C264AD48700EACB9B /* DialogRegistryFailViewController.swift in Sources */,

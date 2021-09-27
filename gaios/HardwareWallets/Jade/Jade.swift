@@ -5,12 +5,6 @@ import CoreBluetooth
 import ga.wally
 import SwiftCBOR
 
-enum JadeError: Error {
-    case Abort(_ localizedDescription: String)
-    case URLError(_ localizedDescription: String)
-    case Declined(_ localizedDescription: String)
-}
-
 final class Jade: JadeChannel, HWProtocol {
 
     public static let shared = Jade()
@@ -699,8 +693,9 @@ extension Jade {
     func getMasterBlindingKey() -> Observable<String> {
         return Jade.shared.exchange(method: "get_master_blinding_key", params: [:])
             .compactMap { res in
-                let result = res["result"] as? String
-                return result ?? ""
+                dataToHex(Data(res["result"] as? [UInt8] ?? []))
+            }.catchError { _ in
+                Observable.just("")
             }
     }
 }
