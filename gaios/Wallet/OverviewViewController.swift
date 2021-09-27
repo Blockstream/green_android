@@ -738,7 +738,6 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
                     return
                 }
                 fetchTxs = SessionManager.shared.transactions(first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
-                    print("----> fetched page \(self.callPage) found \(page.list.count)")
                     self.transactions += page.list
                     self.callPage += 1
                     tableView.reloadSections([OverviewSection.transaction.rawValue], with: .none)
