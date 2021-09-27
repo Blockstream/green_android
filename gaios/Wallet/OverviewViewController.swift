@@ -158,15 +158,22 @@ class OverviewViewController: UIViewController {
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
-        let account = AccountsManager.shared.current
-        if (account?.gdkNetwork?.liquid ?? false) && presentingWallet?.btc == 0 {
-            let message = NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "")
+        if presentingWallet?.btc == 0 {
+            let message = isLiquid ? NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "") : NSLocalizedString("id_you_have_no_coins_to_send", comment: "")
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_receive", comment: ""), style: .default) { [weak self ]_ in
-                self?.receiveScreen()
-            })
+            if isLiquid {
+                alert.addAction(UIAlertAction(title: NSLocalizedString("id_learn_more", comment: ""), style: .default) { _ in
+                    let url = URL(string: "https://help.blockstream.com/hc/en-us/articles/900000630846-How-do-I-get-Liquid-Bitcoin-L-BTC-")
+                    UIApplication.shared.open(url!, options: [:])
+                })
+            } else {
+                alert.addAction(UIAlertAction(title: NSLocalizedString("id_receive", comment: ""), style: .default) { [weak self ]_ in
+                    self?.receiveScreen()
+                })
+            }
             self.present(alert, animated: true, completion: nil)
+            return
         }
 
         let storyboard = UIStoryboard(name: "Send", bundle: nil)
