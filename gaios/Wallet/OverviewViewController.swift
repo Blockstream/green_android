@@ -158,6 +158,14 @@ class OverviewViewController: UIViewController {
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
+        if account?.isWatchonly ?? false {
+            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""),
+                                          message: "Send is disabled in watch-only mode",
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .default) { _ in })
+            self.present(alert, animated: true, completion: nil)
+            return
+        }
         if presentingWallet?.btc == 0 {
             let message = isLiquid ? NSLocalizedString("id_insufficient_lbtc_to_send_a", comment: "") : NSLocalizedString("id_you_have_no_coins_to_send", comment: "")
             let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: message, preferredStyle: .alert)
@@ -673,7 +681,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         switch section {
         case OverviewSection.account.rawValue:
-            return showAccounts ? footerView(.addAccount) : footerView(.none)
+            let isWatchonly = account?.isWatchonly ?? false
+            return showAccounts && !isWatchonly ? footerView(.addAccount) : footerView(.none)
         case OverviewSection.transaction.rawValue:
             return transactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
         default:
