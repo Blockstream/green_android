@@ -93,7 +93,7 @@ class ScreenLocker {
             return
         }
         let countdown: TimeInterval = CACurrentMediaTime() - countdownInterval!
-        if Int(countdown) >= settings.altimeout {
+        if Int(countdown) >= settings.altimeout * 60 {
             // after timeout
             self.isScreenLockLocked = true
         }
