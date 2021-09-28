@@ -25,7 +25,21 @@ data class SubAccount(
         return serializer()
     }
 
-    fun nameOrDefault(default: String): String = name.ifBlank { default }
+    fun nameOrDefault(default: String): String = name.ifBlank {
+        when(type){
+            AccountType.BIP44_LEGACY,
+            AccountType.BIP49_SEGWIT_WRAPPED,
+            AccountType.BIP84_SEGWIT -> {
+                val type = if(type == AccountType.BIP84_SEGWIT) "Segwit" else "Legacy"
+                val accountNumber = (pointer / 16) + 1
+
+                "$type account $accountNumber"
+            }
+            else -> {
+                default
+            }
+        }
+    }
 
     private val objectMapper by lazy { ObjectMapper() }
 
