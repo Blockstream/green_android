@@ -1,18 +1,12 @@
 package com.blockstream.gdk.data
 
+
 import android.os.Parcelable
 import com.blockstream.gdk.BalancePair
-import com.blockstream.gdk.GAJson
-import com.blockstream.gdk.serializers.DateSerializer
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.greenaddress.greenapi.data.TransactionData
-import com.greenaddress.greenapi.data.TwoFactorStatusData
+import com.blockstream.gdk.serializers.DateAsStringSerializer
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.util.*
 
 @Serializable
@@ -23,8 +17,10 @@ data class Transaction(
     @SerialName("can_cpfp") val canCPFP: Boolean,
     @SerialName("can_rbf") val canRBF: Boolean,
 
-    @Serializable(with = DateSerializer::class)
+    @Serializable(with = DateAsStringSerializer::class)
     @SerialName("created_at") val createdAt: Date,
+    // @Serializable(with = DateAsLongSerializer::class)
+    @SerialName("created_at_ts") val createdAtTs: Long,
 
     @SerialName("inputs") val inputs: List<InputOutput>,
     @SerialName("outputs") val outputs: List<InputOutput>,
@@ -32,8 +28,6 @@ data class Transaction(
     @SerialName("fee") val fee: Long,
     @SerialName("fee_rate") val feeRate: Long,
 
-    @SerialName("has_payment_request") val hasPaymentRequest: Boolean,
-    @SerialName("instant") val instant: Boolean,
     @SerialName("memo") val memo: String,
     @SerialName("rbf_optin") val rbfOptin: Boolean,
 
@@ -138,12 +132,11 @@ data class Transaction(
             canCPFP = false,
             canRBF = false,
             createdAt = Date(),
+            createdAtTs = 0,
             inputs = listOf(),
             outputs = listOf(),
             fee = 0,
             feeRate = 0,
-            hasPaymentRequest = false,
-            instant = false,
             memo = "",
             rbfOptin = false,
             serverSigned = false,

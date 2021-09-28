@@ -37,7 +37,6 @@ public class TransactionData extends JSONData implements Serializable {
     private Boolean canCpfp;
     private Boolean rbfOptin;
     private String privateKey;
-    private Boolean instant;
     private String transaction;
     private Integer transactionSize;
     private Integer transactionVsize;
@@ -54,7 +53,6 @@ public class TransactionData extends JSONData implements Serializable {
     private Long gaAssetId;
     private Long subtype;
     // END FIXME
-    private Boolean hasPaymentRequest;
     private List<String> addressees;
     private List<InputOutputData> inputs;
     private List<InputOutputData> outputs;
@@ -107,22 +105,6 @@ public class TransactionData extends JSONData implements Serializable {
 
     public void setRbfOptin(Boolean rbfOptin) {
         this.rbfOptin = rbfOptin;
-    }
-
-    public Boolean getInstant() {
-        return instant;
-    }
-
-    public void setInstant(Boolean instant) {
-        this.instant = instant;
-    }
-
-    public Boolean getHasPaymentRequest() {
-        return hasPaymentRequest;
-    }
-
-    public void setHasPaymentRequest(Boolean hasPaymentRequest) {
-        this.hasPaymentRequest = hasPaymentRequest;
     }
 
     public Long getFeeRate() {

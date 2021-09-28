@@ -9,7 +9,7 @@ import kotlinx.serialization.encoding.Encoder
 import java.text.SimpleDateFormat
 import java.util.*
 
-object DateSerializer : KSerializer<Date> {
+object DateAsStringSerializer : KSerializer<Date> {
 
     val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss",  Locale.getDefault()).also {
         it.timeZone = TimeZone.getTimeZone("GMT")

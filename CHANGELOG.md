@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Support GDK 0.0.46
 - Sweep paper wallet UI
 - New Camera QR Scanner
 - Handle BIP-21 payment uris from the Android OS (bitcoin: & liquidnetwork:)
