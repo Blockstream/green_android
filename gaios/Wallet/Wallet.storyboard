@@ -97,97 +97,12 @@
             </objects>
             <point key="canvasLocation" x="4399" y="755"/>
         </scene>
-        <!--SendBtcViewController-->
-        <scene sceneID="CHa-MC-LT0">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Send" referencedIdentifier="SendBtcViewController" id="h6g-rr-LAM" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="U78-dL-IIz"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="b0P-sw-feX" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6203" y="521"/>
-        </scene>
-        <!--Transactions Controller-->
-        <scene sceneID="xDR-n6-1G7">
-            <objects>
-                <tableViewController storyboardIdentifier="TransactionsController" id="nnX-e3-FvS" customClass="TransactionsController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" showsHorizontalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="lOc-MI-e19">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                        <color key="separatorColor" name="customGreyDark"/>
-                        <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                        <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="TransactionTableCell" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="TransactionTableCell" id="gA0-ML-vwU" customClass="TransactionTableCell" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="44.5" width="414" height="43.5"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="gA0-ML-vwU" id="8XK-cl-bXV">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="AlertCardCell" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="AlertCardCell" id="YbH-il-3Sl" customClass="AlertCardCell" customModule="gaios" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="88" width="414" height="43.5"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="YbH-il-3Sl" id="5m8-ta-vM2">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="nnX-e3-FvS" id="dIp-VD-brq"/>
-                            <outlet property="delegate" destination="nnX-e3-FvS" id="ZbG-m7-0Pb"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="kY1-07-MTC">
-                        <barButtonItem key="backBarButtonItem" title=" " id="r1G-eU-Kua"/>
-                        <rightBarButtonItems>
-                            <barButtonItem title="Item" image="settings" id="mfo-Lj-aic">
-                                <connections>
-                                    <action selector="settings:" destination="nnX-e3-FvS" id="agz-Rv-viS"/>
-                                </connections>
-                            </barButtonItem>
-                            <barButtonItem title="Item" image="notifications" id="0xc-J5-rGy">
-                                <connections>
-                                    <action selector="notifications:" destination="nnX-e3-FvS" id="rsf-eR-3y4"/>
-                                </connections>
-                            </barButtonItem>
-                        </rightBarButtonItems>
-                    </navigationItem>
-                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
-                    <connections>
-                        <outlet property="btnSettings" destination="mfo-Lj-aic" id="gkp-2J-bBf"/>
-                        <segue destination="4Ad-Du-Nja" kind="show" identifier="detail" id="4Ob-Ap-ykz"/>
-                        <segue destination="R7F-mq-oqL" kind="show" identifier="receive" id="uYc-26-M8s"/>
-                        <segue destination="h6g-rr-LAM" kind="show" identifier="send" id="U7f-MS-5Z1"/>
-                        <segue destination="fuN-54-EEf" kind="show" identifier="assets" id="Azw-5Y-ZWP"/>
-                        <segue destination="JMx-ld-n78" kind="show" identifier="wallets" id="sRf-Gc-KhT"/>
-                        <segue destination="Tml-O4-tHP" kind="show" identifier="leaarnMore2fa" id="Cai-01-qcB"/>
-                        <segue destination="Izl-XR-ebQ" kind="show" identifier="reactivate2fa" id="n67-yi-7Dw"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="nnN-0s-aUM" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5393" y="754"/>
-        </scene>
-        <!--AssetsListTableViewController-->
-        <scene sceneID="TfI-YR-20x">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Assets" referencedIdentifier="AssetsListTableViewController" id="fuN-54-EEf" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="0yg-Ud-yQb"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="oGk-nC-Yp0" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6245" y="627"/>
-        </scene>
         <!--Receive-->
         <scene sceneID="5RU-Fp-d7a">
             <objects>
                 <viewController storyboardIdentifier="ReceiveBtcViewController" hidesBottomBarWhenPushed="YES" id="R7F-mq-oqL" customClass="ReceiveBtcViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="UDg-yk-7Wh" customClass="ReceiveBtcView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="qlN-GG-xcs"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
@@ -318,26 +233,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zeu-2d-aNG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="6516" y="2192"/>
-        </scene>
-        <!--TransactionDetailViewController-->
-        <scene sceneID="7vp-m2-ZHT">
-            <objects>
-                <viewControllerPlaceholder storyboardName="TransactionDetail" referencedIdentifier="TransactionDetailViewController" id="4Ad-Du-Nja" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="2kZ-D3-DmN"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="3Fb-p9-zis" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6256" y="683"/>
-        </scene>
-        <!--AccountsViewController-->
-        <scene sceneID="vcP-LN-0oG">
-            <objects>
-                <viewControllerPlaceholder storyboardIdentifier="AccountsViewController" storyboardName="Accounts" referencedIdentifier="AccountsViewController" id="JMx-ld-n78" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="mRu-gR-ej0"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="HDt-ro-wrb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6209" y="467"/>
         </scene>
         <!--Learn 2fa View Controller-->
         <scene sceneID="DkH-rI-D00">
@@ -509,11 +404,11 @@
             <objects>
                 <viewController storyboardIdentifier="Reactivate2faViewController" id="Izl-XR-ebQ" customClass="Reactivate2faViewController" customModule="gaios" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="oue-Tr-9do">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="913"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="967"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Un4-M9-rPn">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="879"/>
+                                <rect key="frame" x="0.0" y="88" width="375" height="845"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bKT-yg-gwh">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="566"/>
@@ -1273,7 +1168,7 @@
                         <outlet property="sendView" destination="wsY-2P-Vvt" id="yz9-1e-yZ3"/>
                         <outlet property="tableView" destination="sKi-7g-2ET" id="0sa-b8-Jbl"/>
                         <segue destination="Tml-O4-tHP" kind="show" identifier="overviewLeaarnMore2fa" id="yn8-SW-kkQ"/>
-                        <segue destination="Tml-O4-tHP" kind="show" identifier="overviewReactivate2fa" id="PTy-0m-eog"/>
+                        <segue destination="Izl-XR-ebQ" kind="show" identifier="overviewReactivate2fa" id="rFb-bh-vWb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3QL-7C-3jn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1281,17 +1176,12 @@
             <point key="canvasLocation" x="5113.04347826087" y="-44.196428571428569"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="PTy-0m-eog"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <image name="default_asset_icon" width="32" height="32"/>
         <image name="ellipses_vertical" width="36" height="36"/>
         <image name="logo" width="22.5" height="28"/>
-        <image name="notifications" width="25" height="25"/>
         <image name="receive" width="25" height="25"/>
         <image name="send" width="25" height="25"/>
-        <image name="settings" width="25" height="25"/>
         <namedColor name="accountOrange">
             <color red="0.99607843137254903" green="0.55686274509803924" blue="0.0078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

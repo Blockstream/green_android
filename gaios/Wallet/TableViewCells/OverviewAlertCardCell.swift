@@ -1,5 +1,14 @@
 import UIKit
 
+enum AlertCardType {
+    case reset(Int)
+    case dispute
+    case reactivate
+    case assetsRegistryFail
+    case iconsRegistryFail
+    case systemMessage(String)
+}
+
 class OverviewAlertCardCell: UITableViewCell {
 
     @IBOutlet weak var bg: UIView!

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -97,11 +97,11 @@
                         <constraint firstAttribute="trailing" secondItem="8Ij-Zp-CwT" secondAttribute="trailing" id="Sbu-tB-8zu"/>
                         <constraint firstAttribute="trailing" secondItem="saC-Zl-FAd" secondAttribute="trailing" id="VFG-mE-AkZ"/>
                         <constraint firstAttribute="bottom" secondItem="saC-Zl-FAd" secondAttribute="bottom" id="Z2p-4U-s3U"/>
+                        <constraint firstItem="saC-Zl-FAd" firstAttribute="top" secondItem="Uc3-Sb-jPo" secondAttribute="bottom" constant="1.5" id="cSK-UB-SXH"/>
                         <constraint firstItem="Uc3-Sb-jPo" firstAttribute="top" secondItem="dkq-lA-yQC" secondAttribute="bottom" constant="8" id="dLr-RC-ivT"/>
                         <constraint firstItem="saC-Zl-FAd" firstAttribute="leading" secondItem="Npf-aB-Hxu" secondAttribute="leading" id="djg-2X-MYE"/>
                         <constraint firstItem="dkq-lA-yQC" firstAttribute="leading" secondItem="Npf-aB-Hxu" secondAttribute="leading" id="eLr-7P-KMf"/>
                         <constraint firstItem="8Ij-Zp-CwT" firstAttribute="centerY" secondItem="Uc3-Sb-jPo" secondAttribute="centerY" id="inS-b2-BB5"/>
-                        <constraint firstItem="saC-Zl-FAd" firstAttribute="firstBaseline" secondItem="Uc3-Sb-jPo" secondAttribute="baseline" constant="21" symbolType="layoutAnchor" id="keN-g0-MEo"/>
                         <constraint firstItem="dkq-lA-yQC" firstAttribute="top" secondItem="Npf-aB-Hxu" secondAttribute="top" id="umu-I5-AT5"/>
                     </constraints>
                 </view>

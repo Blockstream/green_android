@@ -1,11 +1,3 @@
-//
-//  OverviewAssetCell.swift
-//  gaios
-//
-//  Created by Mauro Olivo on 09/09/21.
-//  Copyright © 2021 Blockstream Corporation. All rights reserved.
-//
-
 import UIKit
 
 class OverviewAssetCell: UITableViewCell {

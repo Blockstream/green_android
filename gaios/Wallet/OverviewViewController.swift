@@ -203,7 +203,7 @@ class OverviewViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-    
+
     func systemMessageScreen(text: String) {
         let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "SystemMessageViewController") as? SystemMessageViewController {
@@ -236,6 +236,8 @@ class OverviewViewController: UIViewController {
                 self.alertCards.append(AlertCardType.systemMessage(text))
                 self.tableView.reloadSections([OverviewSection.card.rawValue], with: .none)
             }
+        }.catch { err in
+            print(err.localizedDescription)
         }
         //We will use Card2faType.reactivate for expired coins
     }
@@ -609,7 +611,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                                    onRight: {[weak self] in
                                     self?.reloadRegistry()
                                    })
-                 case .systemMessage(let text):
+                case .systemMessage(let text):
                      cell.configure(alertCards[indexPath.row],
                                     onLeft: nil,
                                     onRight: {[weak self] in
