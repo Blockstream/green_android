@@ -203,6 +203,14 @@ class OverviewViewController: UIViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
+    
+    func systemMessageScreen(text: String) {
+        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "SystemMessageViewController") as? SystemMessageViewController {
+            vc.text = text
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
 
     func loadAlertCards() {
         alertCards = []
@@ -218,6 +226,15 @@ class OverviewViewController: UIViewController {
                 alertCards.append(AlertCardType.iconsRegistryFail)
             case .none:
                 break
+            }
+        }
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().map(on: bgq) {
+            try SessionManager.shared.getSystemMessage()
+        }.done { text in
+            if !text.isEmpty {
+                self.alertCards.append(AlertCardType.systemMessage(text))
+                self.tableView.reloadSections([OverviewSection.card.rawValue], with: .none)
             }
         }
         //We will use Card2faType.reactivate for expired coins
@@ -592,6 +609,12 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                                    onRight: {[weak self] in
                                     self?.reloadRegistry()
                                    })
+                 case .systemMessage(let text):
+                     cell.configure(alertCards[indexPath.row],
+                                    onLeft: nil,
+                                    onRight: {[weak self] in
+                                    self?.systemMessageScreen(text: text)
+                                    })
                 }
                 cell.selectionStyle = .none
                 return cell

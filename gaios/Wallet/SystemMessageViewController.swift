@@ -5,10 +5,7 @@ import PromiseKit
 class SystemMessageViewController: UIViewController {
 
     @IBOutlet var content: SystemMessageView!
-    var systemMessage: Event!
-    private var text: String {
-        get { return systemMessage.value["text"] as? String ?? "" }
-    }
+    var text: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,11 +36,10 @@ class SystemMessageViewController: UIViewController {
         } else if sender == content.confirmButton {
             let bgq = DispatchQueue.global(qos: .background)
             Guarantee().map(on: bgq) {
-                try SessionManager.shared.ackSystemMessage(message: self.text)
+                try SessionManager.shared.ackSystemMessage(message: self.text ?? "")
             }.then(on: bgq) { twoFactorCall in
                 twoFactorCall.resolve()
             }.done { _ in
-                SessionManager.shared.notificationManager.reloadSystemMessage()
                 self.navigationController?.popViewController(animated: true)
             }.catch { _ in
                 print("Error on remove system message")

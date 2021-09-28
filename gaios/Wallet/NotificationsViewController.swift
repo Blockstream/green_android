@@ -84,8 +84,6 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let nextController = segue.destination as? EnableTwoFactorViewController {
             nextController.isHiddenWalletButton = true
-        } else if let nextController = segue.destination as? SystemMessageViewController {
-            nextController.systemMessage = sender as? Event
         }
     }
 }

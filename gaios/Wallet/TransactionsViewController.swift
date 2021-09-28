@@ -288,6 +288,8 @@ class TransactionsController: UITableViewController {
                                onRight: {[weak self] in
                                 self?.reloadRegistry()
                                })
+            default:
+                break
             }
 
             cell.selectionStyle = .none

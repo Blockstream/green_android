@@ -6,6 +6,7 @@ enum AlertCardType {
     case reactivate
     case assetsRegistryFail
     case iconsRegistryFail
+    case systemMessage(String)
 }
 
 class AlertCardCell: UITableViewCell {
@@ -62,8 +63,12 @@ class AlertCardCell: UITableViewCell {
             lblHint.text = "Asset icons are missing, try reloading them"
             btnRight.setTitle("Reload", for: .normal)
             btnLeft.isHidden = true
+        case .systemMessage(let text):
+            lblTitle.text = "System Message"
+            lblHint.text = text
+            btnRight.setTitle("Open", for: .normal)
+            btnLeft.isHidden = true
         }
-
     }
 
     @IBAction func btnRight(_ sender: Any) {
