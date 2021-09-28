@@ -45,7 +45,7 @@ class ChooseNetworkFragment :
                 is NetworkListItem -> {
                     options?.apply {
                         if(isRestoreFlow){
-                            val newOptions = createCopyForNetwork(greenWallet, item.network, isBIP39)
+                            val newOptions = createCopyForNetwork(greenWallet, item.network, isSingleSig)
 
                             if(newOptions.network?.isMultisig == true || newOptions.isSinglesigNetworkEnabledForBuildFlavor(requireContext())){
                                 navigate(newOptions)

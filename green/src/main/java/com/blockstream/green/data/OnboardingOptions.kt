@@ -8,13 +8,11 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.utils.isProductionFlavor
 import kotlinx.parcelize.Parcelize
 
-// TODO remove deviceId
-
 @Parcelize
 data class OnboardingOptions(
     val isRestoreFlow: Boolean,
     val isWatchOnly: Boolean = false,
-    val isBIP39: Boolean = false,
+    val isSingleSig: Boolean = false,
     val networkType: String? = null,
     val network: Network? = null,
     val walletName: String? = null

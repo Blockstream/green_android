@@ -19,15 +19,15 @@ class RestoreWalletFragment :
 
         options = args.onboardingOptions
 
-        binding.cardRestoreGreen.setOnClickListener {
+        binding.restoreSingleSig.setOnClickListener {
             options?.apply {
-             navigate(copy(isBIP39 = false))
+                navigate(copy(isSingleSig = true))
             }
         }
 
-        binding.cardMigrate.setOnClickListener {
+        binding.restoreMultisigSig.setOnClickListener {
             options?.apply {
-                navigate(copy(isBIP39 = true))
+             navigate(copy(isSingleSig = false))
             }
         }
     }

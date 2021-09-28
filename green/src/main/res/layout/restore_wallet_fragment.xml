@@ -52,26 +52,25 @@
                 android:orientation="vertical">
 
                 <com.blockstream.green.views.GreenContentCardView
-                    android:id="@+id/cardRestoreGreen"
+                    android:id="@+id/restoreSingleSig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
-                    app:captionText="@string/id_import_a_wallet_created_on"
-                    app:icon="@drawable/ic_wallet_restore"
-                    app:titleText="@string/id_restore_green_wallet" />
+                    app:captionText="@string/id_restore_a_singlesig_wallet_created_on_blockstream_green"
+                    app:icon="@drawable/ic_singlesig"
+                    app:titleText="@string/id_singlesig" />
 
                 <com.blockstream.green.views.GreenContentCardView
-                    android:id="@+id/cardMigrate"
+                    android:id="@+id/restoreMultisigSig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
-
-                    app:captionText="@string/id_import_a_wallet_created_with"
-                    app:icon="@drawable/ic_migrate_wallet_45"
-                    app:titleText="@string/id_migrate_another_wallet" />
+                    app:captionText="@string/id_import_a_multisig_shield_wallet_created"
+                    app:icon="@drawable/ic_multisig"
+                    app:titleText="@string/id_multisig_shield" />
 
             </LinearLayout>
 
