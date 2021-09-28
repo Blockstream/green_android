@@ -20,6 +20,7 @@ class AppSettingsViewModel @Inject constructor(
         proxyURLInvalid.postValue(it.isBlank())
     }
 
+    val enableTestnet = MutableLiveData(appSettings.testnet)
     val enableTorRouting = MutableLiveData(appSettings.tor)
     val enableProxy = MutableLiveData(appSettings.proxyUrl != null)
 
@@ -47,16 +48,17 @@ class AppSettingsViewModel @Inject constructor(
     val spvTestnetElectrumServer = MutableLiveData(appSettings.spvTestnetElectrumServer ?: DEFAULT_MULTI_SPV_URL)
 
     fun getSettings() = ApplicationSettings(
+        testnet = enableTestnet.value ?: false,
         proxyUrl = if (enableProxy.value == true && !proxyURL.value.isNullOrBlank()) proxyURL.value else null,
-        electrumNode = enableElectrumNode?.value ?: false,
+        electrumNode = enableElectrumNode.value ?: false,
         tor = enableTorRouting.value ?: false,
         spv = enableSPV?.value ?: false,
         multiServerValidation = enableMultiServerValidation?.value ?: false,
 
         // use null value as a reset to re-set the default urls and blank as a way to disabled it for a specific network
-        personalBitcoinElectrumServer = if(enableElectrumNode?.value == true) personalBitcoinElectrumServer.value else null,
-        personalLiquidElectrumServer = if(enableElectrumNode?.value == true) personalLiquidElectrumServer.value else null,
-        personalTestnetElectrumServer = if(enableElectrumNode?.value == true) personalTestnetElectrumServer.value else null,
+        personalBitcoinElectrumServer = if(enableElectrumNode.value == true) personalBitcoinElectrumServer.value else null,
+        personalLiquidElectrumServer = if(enableElectrumNode.value == true) personalLiquidElectrumServer.value else null,
+        personalTestnetElectrumServer = if(enableElectrumNode.value == true) personalTestnetElectrumServer.value else null,
 
         spvBitcoinElectrumServer = if(enableSPV?.value == true) spvBitcoinElectrumServer.value else null,
         spvLiquidElectrumServer = if(enableSPV?.value == true) spvLiquidElectrumServer.value else null,

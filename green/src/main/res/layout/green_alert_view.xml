@@ -8,6 +8,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:background="@color/white">
@@ -33,6 +34,7 @@
             android:layout_marginEnd="24dp"
             android:textAppearance="?attr/textAppearanceHeadline6"
             android:textColor="@color/black"
+            android:includeFontPadding="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -64,7 +66,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:visibility="gone"
-            tools:visibility="visible"
+            tools:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Set Up Recovery Phrase" />

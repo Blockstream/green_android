@@ -3,6 +3,8 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAlertBinding
@@ -18,6 +20,10 @@ class AlertListItem constructor(private val alertType: AlertType, val action : (
 
     override fun bindView(binding: ListItemAlertBinding, payloads: List<Any>) {
         val res = binding.root.resources
+
+        binding.alertView.primaryButton(res.getString(R.string.id_learn_more)){
+            action.invoke(false)
+        }
 
         when(alertType){
             is AlertType.SystemMessage -> {
@@ -40,10 +46,15 @@ class AlertListItem constructor(private val alertType: AlertType, val action : (
                 binding.alertView.setMaxLines(0)
                 binding.alertView.closeButton(null)
             }
+            AlertType.TestnetWarning -> {
+                binding.alertView.title = res.getString(R.string.id_warning)
+                binding.alertView.message = res.getString(R.string.id_this_wallet_operates_on_a_test_network)
+                binding.alertView.setMaxLines(0)
+                binding.alertView.closeButton(null)
+                binding.alertView.primaryButton("", null)
+            }
         }
-        binding.alertView.primaryButton(res.getString(R.string.id_learn_more)){
-            action.invoke(false)
-        }
+
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemAlertBinding {
@@ -56,4 +67,5 @@ sealed class AlertType{
     abstract class Abstract2FA(val twoFactorReset: TwoFactorReset) : AlertType()
     class Dispute2FA(twoFactorReset: TwoFactorReset) : Abstract2FA(twoFactorReset)
     class Reset2FA(twoFactorReset: TwoFactorReset): Abstract2FA(twoFactorReset)
+    object TestnetWarning : AlertType()
 }

@@ -39,7 +39,7 @@ class OverviewViewModel @AssistedInject constructor(
 
     private var allBalances: Balances = linkedMapOf(BalanceLoading)
     private val shownBalances: MutableLiveData<Balances> = MutableLiveData(allBalances)
-    private val alerts = MutableLiveData<List<AlertType>>(listOf())
+    private val alerts = MutableLiveData<List<AlertType>>(if(session.isTestnet) listOf(AlertType.TestnetWarning) else listOf())
     private val transactions: MutableLiveData<List<Transaction>> = MutableLiveData(listOf(
         Transaction.LoadingTransaction))
 
@@ -127,6 +127,9 @@ class OverviewViewModel @AssistedInject constructor(
                         list += AlertType.Dispute2FA(it)
                     }else{
                         list += AlertType.Reset2FA(it)
+                    }
+                    if(session.isTestnet){
+                        list += AlertType.TestnetWarning
                     }
                     alerts.postValue(list)
                 }

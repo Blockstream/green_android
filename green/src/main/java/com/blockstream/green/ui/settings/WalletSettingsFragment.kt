@@ -272,7 +272,7 @@ class WalletSettingsFragment :
 
         viewModel.settingsLiveData.observe(viewLifecycleOwner) {
             it?.let {
-                unitPreference.subtitle = StringHolder((if (session.isLiquid) "L-" else "") + it.unit)
+                unitPreference.subtitle = StringHolder(getBitcoinOrLiquidUnit(session, it.unit))
                 priceSourcePreference.subtitle = StringHolder(
                     getString(
                         R.string.id_s_from_s,
@@ -504,7 +504,9 @@ class WalletSettingsFragment :
         viewModel.settingsLiveData.value?.let { settings ->
 
             val denominationsUnits = resources.getTextArray(R.array.btc_units_entries)
-            val denominationsEntries = if (wallet.isLiquid) resources.getTextArray(R.array.liquid_units_entries) else denominationsUnits
+            val denominationsEntries = if(session.isTestnet) resources.getTextArray(R.array.btc_units_entries).map {
+                getBitcoinOrLiquidUnit(session, it.toString())
+            }.toTypedArray() as Array<CharSequence> else if (wallet.isLiquid) resources.getTextArray(R.array.liquid_units_entries) else denominationsUnits
 
             showChoiceDialog(
                 getString(R.string.id_bitcoin_denomination),

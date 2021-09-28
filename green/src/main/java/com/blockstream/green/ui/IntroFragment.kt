@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.IntroFragmentBinding
@@ -27,6 +28,10 @@ class IntroFragment : WalletListCommonFragment<IntroFragmentBinding>(R.layout.in
         super.onViewCreated(view, savedInstanceState)
 
         binding.vm = viewModel
+
+        binding.buttonAppSettings.setOnClickListener {
+            navigate(NavGraphDirections.actionGlobalAppSettingsDialogFragment())
+        }
 
         init(binding.common)
     }

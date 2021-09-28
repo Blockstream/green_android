@@ -57,7 +57,7 @@ class WalletNameFragment :
         }
 
         binding.buttonSettings.setOnClickListener {
-            navigate(WalletNameFragmentDirections.actionGlobalConnectionSettingsDialogFragment())
+            navigate(WalletNameFragmentDirections.actionGlobalAppSettingsDialogFragment())
         }
 
         viewModel.onError.observe(viewLifecycleOwner){

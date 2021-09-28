@@ -147,7 +147,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
         }
 
         binding.buttonAppSettings.setOnClickListener {
-            navigate(NavGraphDirections.actionGlobalConnectionSettingsDialogFragment())
+            navigate(NavGraphDirections.actionGlobalAppSettingsDialogFragment())
         }
 
         binding.buttonLoginWithBiometrics.setOnClickListener {

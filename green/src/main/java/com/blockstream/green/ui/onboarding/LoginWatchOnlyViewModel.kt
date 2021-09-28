@@ -10,6 +10,7 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
+import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent

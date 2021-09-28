@@ -178,7 +178,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         }
 
         binding.buttonAppSettings.setOnClickListener {
-            navigate(NavGraphDirections.actionGlobalConnectionSettingsDialogFragment())
+            navigate(NavGraphDirections.actionGlobalAppSettingsDialogFragment())
         }
     }
 

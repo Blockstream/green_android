@@ -77,6 +77,9 @@ class GreenSession constructor(
     val isLiquid
         get() = network.isLiquid
 
+    val isTestnet
+        get() = network.isTestnet
+
     val isElectrum
         get() = network.isElectrum
 

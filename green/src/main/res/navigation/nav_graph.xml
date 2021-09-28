@@ -395,7 +395,7 @@
         android:label=""
         tools:layout="@layout/login_watch_only_fragment" />
     <dialog
-        android:id="@+id/connectionSettingsDialogFragment"
+        android:id="@+id/appSettingsDialogFragment"
         android:name="com.blockstream.green.ui.settings.AppSettingsDialogFragment"
         android:label=""
         tools:layout="@layout/dialog_app_settings_bottom_sheet" />
@@ -457,8 +457,8 @@
             app:argType="com.blockstream.green.database.Wallet" />
     </fragment>
     <action
-        android:id="@+id/action_global_connectionSettingsDialogFragment"
-        app:destination="@id/connectionSettingsDialogFragment" />
+        android:id="@+id/action_global_appSettingsDialogFragment"
+        app:destination="@id/appSettingsDialogFragment" />
     <action
         android:id="@+id/action_global_loginFragment"
         app:destination="@id/loginFragment" />

@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Improved wallet restore flow
 - Do not pass additional root certificate when fetching files from Jade firmware server
 - Revamp transaction details view with new UI
+- Testnet networks must be enabled from AppSettings to appear as create/restore option
+- Show a warning when operating on a testnet network
 
 ### Fixed
 - Fix read-only amount when bumping transaction fees

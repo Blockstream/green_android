@@ -7,6 +7,10 @@
         <variable
             name="vm"
             type="com.blockstream.green.ui.onboarding.LoginWatchOnlyViewModel" />
+
+        <variable
+            name="showTestnet"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -93,6 +97,7 @@
                 android:checked="@={vm.isTestnet}"
                 android:text="Testnet"
                 app:useMaterialThemeColors="false"
+                isVisible="@{showTestnet}"
                 tools:ignore="HardcodedText" />
 
             <Button

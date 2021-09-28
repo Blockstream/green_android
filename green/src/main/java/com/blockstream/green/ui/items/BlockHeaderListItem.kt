@@ -9,12 +9,12 @@ import com.blockstream.green.databinding.ListItemBlockHeaderBinding
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-class BlockHeaderListItem constructor(val height: StringHolder, val network: Network) : AbstractBindingItem<ListItemBlockHeaderBinding>() {
+data class BlockHeaderListItem constructor(val height: StringHolder, val network: Network) : AbstractBindingItem<ListItemBlockHeaderBinding>() {
     override val type: Int
         get() = R.id.fastadapter_block_header_item_id
 
     init {
-        identifier = height.hashCode().toLong()
+        identifier = 0L
     }
 
     @SuppressLint("SetTextI18n")

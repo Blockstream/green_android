@@ -30,7 +30,12 @@ class LoginWatchOnlyFragment :
         binding.vm = viewModel
 
         binding.buttonAppSettings.setOnClickListener {
-            navigate(NavGraphDirections.actionGlobalConnectionSettingsDialogFragment())
+            navigate(NavGraphDirections.actionGlobalAppSettingsDialogFragment())
+        }
+
+        settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner){
+            binding.showTestnet = it.testnet
+            viewModel.isTestnet.postValue(false)
         }
 
         viewModel.onError.observe(viewLifecycleOwner) {

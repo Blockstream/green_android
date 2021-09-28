@@ -251,7 +251,7 @@ class TwoFactorAuthenticationFragment :
                     if (!limits.isFiat && limits.satoshi == 0L) {
                         getString(R.string.id_set_twofactor_threshold)
                     } else if (limits.isFiat) {
-                        limits.fiat()
+                        limits.fiat(session)
                     } else {
                         limits.btc(session)
                     }
@@ -303,7 +303,7 @@ class TwoFactorAuthenticationFragment :
             binding.currency.setSelection(if (limits.isFiat) 1 else 0)
 
             if (limits.isFiat) {
-                binding.amount = limits.fiat(withUnit = false)
+                binding.amount = limits.fiat(session, withUnit = false)
             } else {
                 binding.amount = limits.btc(session, withUnit = false)
             }

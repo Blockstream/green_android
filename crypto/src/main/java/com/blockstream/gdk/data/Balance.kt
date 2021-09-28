@@ -21,8 +21,6 @@ data class Balance constructor(
     var assetValue: String? = null
     var assetInfo: Asset? = null
 
-    fun getFiatValue() = "%s %s".format(fiat ?: "n/a", fiatCurrency)
-
     fun getValue(unit: String): String {
         return when (unit.lowercase()) {
             "\u00B5btc", "ubtc" -> ubtc

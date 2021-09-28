@@ -38,7 +38,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
         get() = tx.fee.toBTCLook(session, withUnit = true, withGrouping = true, withMinimumDigits = true)
 
     val feeFiat: String?
-        get() = session.convertAmount(Convert(satoshi = tx.fee)).fiatOrNull(withUnit = true).let {
+        get() = session.convertAmount(Convert(satoshi = tx.fee)).fiatOrNull(session, withUnit = true).let {
             if(it == null) it else "≈ $it"
         }
 
@@ -73,7 +73,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     fun fiat(index: Int): String? {
         assets[index].let{
             return if(it.first == session.network.policyAsset){
-                session.convertAmount(Convert(satoshi = it.second)).fiat(withUnit = true)
+                session.convertAmount(Convert(satoshi = it.second)).fiat(session, withUnit = true)
             }else{
                 null
             }

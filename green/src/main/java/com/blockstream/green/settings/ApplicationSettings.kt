@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ApplicationSettings constructor(
+    val testnet: Boolean = false,
     val proxyUrl: String? = null,
     val tor: Boolean = false,
     val electrumNode: Boolean = false,
@@ -48,6 +49,7 @@ data class ApplicationSettings constructor(
     }
 
     companion object {
+        private const val TESTNET = "testnet"
         private const val PROXY_URL = "proxyURL"
         private const val TOR = "tor"
         private const val ELECTRUM_NODE = "electrumNode"
@@ -64,6 +66,7 @@ data class ApplicationSettings constructor(
 
         fun fromSharedPreferences(prefs: SharedPreferences): ApplicationSettings {
             return ApplicationSettings(
+                testnet = prefs.getBoolean(TESTNET, false),
                 proxyUrl = prefs.getString(PROXY_URL, null),
                 tor = prefs.getBoolean(TOR, false),
                 electrumNode = prefs.getBoolean(ELECTRUM_NODE, false),
@@ -82,6 +85,7 @@ data class ApplicationSettings constructor(
 
         fun toSharedPreferences(appSettings: ApplicationSettings, prefs: SharedPreferences) {
             prefs.edit().also {
+                it.putBoolean(TESTNET, appSettings.testnet)
                 it.putString(PROXY_URL, appSettings.proxyUrl)
                 it.putBoolean(TOR, appSettings.tor)
                 it.putBoolean(ELECTRUM_NODE, appSettings.electrumNode)

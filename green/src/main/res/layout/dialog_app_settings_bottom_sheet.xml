@@ -83,6 +83,19 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.blockstream.green.views.DividerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/settings_element_margin" />
+
+            <com.blockstream.green.views.GreenSwitch
+                android:id="@+id/switchTestnet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="@={vm.enableTestnet}"
+                app:icon="@drawable/ic_testnet_btc"
+                app:titleText="@string/id_enable_testnet" />
+
 
             <TextView
                 android:layout_width="match_parent"

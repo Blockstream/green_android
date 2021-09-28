@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import com.blockstream.green.R
 import com.blockstream.green.databinding.GreenAlertViewBinding
 import com.google.android.material.card.MaterialCardView
@@ -37,15 +39,17 @@ class GreenAlertView @JvmOverloads constructor(
         binding.message.maxLines = if(maxLines > 0) maxLines else Int.MAX_VALUE
     }
 
-    fun primaryButton(text: String, listener: OnClickListener) {
+    fun primaryButton(text: String?, listener: OnClickListener?) {
         binding.buttonPrimary.text = text
         binding.buttonPrimary.setOnClickListener(listener)
-        binding.buttonPrimary.visibility = VISIBLE
+        binding.buttonPrimary.isVisible = listener != null
+        // add bottom padding if the button is hidden
+        binding.container.updatePadding(bottom = binding.root.resources.getDimension(if(listener == null) R.dimen.dp16 else R.dimen.dp0).toInt())
     }
 
     fun closeButton(listener: OnClickListener?) {
         binding.closeButton.setOnClickListener(listener)
-        binding.closeButton.visibility = if(listener != null) VISIBLE else GONE
+        binding.closeButton.isVisible = listener != null
     }
 
 }

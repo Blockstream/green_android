@@ -11,10 +11,6 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-fun getFiatCurrency(session: GreenSession): String{
-    return session.getSettings()?.pricing?.currency ?: "n/a"
-}
-
 // Use it for GDK purposes
 // Lowercase & replace μbtc -> ubtc
 fun getUnit(session: GreenSession) = session.getSettings()?.unit?.lowercase()
@@ -22,12 +18,35 @@ fun getUnit(session: GreenSession) = session.getSettings()?.unit?.lowercase()
     ?: "btc"
 
 // Use it for UI purposes
-fun getBitcoinOrLiquidUnit(session: GreenSession): String{
-    val unit = session.getSettings()?.unit ?: "n/a"
-    if(session.network.isLiquid) {
-        return "L-$unit"
+fun getFiatCurrency(session: GreenSession): String{
+    return session.getSettings()?.pricing?.currency?.getFiatUnit(session) ?: "n/a"
+}
+
+// Use it for UI purposes
+fun String.getFiatUnit(session: GreenSession ): String {
+    return if(session.isTestnet) "FIAT" else this
+}
+
+// Use it for UI purposes
+fun getBitcoinOrLiquidUnit(session: GreenSession, unitGdk: String = session.getSettings()?.unit ?: "n/a"): String {
+    var unit = unitGdk
+
+    if (session.isTestnet) {
+        unit = when (unit.lowercase()) {
+            "btc" -> "TEST"
+            "mbtc" -> "mTEST"
+            "\u00B5btc" -> "\u00B5TEST"
+            "bits" -> "bTEST"
+            "sats" -> "sTEST"
+            else -> unit
+        }
     }
-    return unit
+
+    return if (session.isLiquid) {
+        "L-$unit"
+    } else {
+        unit
+    }
 }
 
 fun getBitcoinOrLiquidSymbol(session: GreenSession): String = if(session.network.isLiquid) "L-BTC" else "BTC"
@@ -71,27 +90,27 @@ fun Double.feeRateWithUnit(): String {
     return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(this) + " satoshi / vbyte"
 }
 
-fun Balance?.fiat(withUnit: Boolean = true): String {
+fun Balance?.fiat(session: GreenSession, withUnit: Boolean = true): String {
     if(this == null) return "n/a"
-    return fiatOrNull(withUnit = withUnit) ?: "n/a"
+    return fiatOrNull(session, withUnit = withUnit) ?: "n/a"
 }
 
-fun Balance?.fiatOrNull(withUnit: Boolean = true): String? {
+fun Balance?.fiatOrNull(session: GreenSession, withUnit: Boolean = true): String? {
     if(this == null) return null
     return try {
         val value = fiat!!.toDouble()
         userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(value)
     } catch (e: Exception) {
         return null
-    } + if (withUnit) " $fiatCurrency" else ""
+    } + if (withUnit) " ${fiatCurrency.getFiatUnit(session)}" else ""
 }
 
-fun Balance?.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
+fun Balance?.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = true): String {
     if(this == null) return "n/a"
     return try {
         val unit = session.getSettings()?.unit ?: "BTC"
         val value = getValue(unit).toDouble()
-        userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = true).format(value)
+        userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits).format(value)
     } catch (e: Exception) {
         "n/a"
     } + if (withUnit) " ${getBitcoinOrLiquidUnit(session)}" else ""
@@ -115,7 +134,7 @@ fun Balance?.asset(withUnit: Boolean = true, withGrouping: Boolean = false): Str
     } + if (withUnit) " ${assetInfo?.ticker ?: ""}" else ""
 }
 
-fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
+fun Long.toBTCLook(session: GreenSession, withUnit: Boolean = true, withDirection: Transaction.Type? = null, withGrouping: Boolean = false, withMinimumDigits: Boolean = true): String {
     return session.convertAmount(Convert(satoshi = this))?.btc(session, withUnit = withUnit, withGrouping = withGrouping, withMinimumDigits = withMinimumDigits)?.let{ amount ->
         withDirection?.let { direction ->
             return if(direction == Transaction.Type.REDEPOSIT || direction == Transaction.Type.OUT){

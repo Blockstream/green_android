@@ -48,6 +48,8 @@ class AssetListLook constructor(
                     "Liquid Bitcoin"
                 } else {
                     "Bitcoin"
+                }.let {
+                    if(session.network.isTestnet) "Testnet $it" else it
                 }
             }
             return asset?.name ?: id

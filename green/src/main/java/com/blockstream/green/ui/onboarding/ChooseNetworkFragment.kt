@@ -78,20 +78,28 @@ class ChooseNetworkFragment :
         fastItemAdapter.add(NetworkListItem(Network.GreenMainnet,"Bitcoin", getCaption("mainnet")))
         fastItemAdapter.add(NetworkListItem(Network.GreenLiquid, "Liquid", getCaption("liquid")))
 
-        val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
-        expandable.subItems.add(NetworkListItem(Network.GreenTestnet, "Testnet", getCaption("testnet")))
-
-        if (isDevelopmentFlavor()) {
+        if(settingsManager.getApplicationSettings().testnet) {
+            val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
             expandable.subItems.add(
                 NetworkListItem(
-                    Network.GreenTestnetLiquid,
-                    "Testnet Liquid",
-                    getCaption("testnet-liquid")
+                    Network.GreenTestnet,
+                    "Testnet",
+                    getCaption("testnet")
                 )
             )
-        }
 
-        fastItemAdapter.add(expandable)
+            if (isDevelopmentFlavor()) {
+                expandable.subItems.add(
+                    NetworkListItem(
+                        Network.GreenTestnetLiquid,
+                        "Testnet Liquid",
+                        getCaption("testnet-liquid")
+                    )
+                )
+            }
+
+            fastItemAdapter.add(expandable)
+        }
 
         return fastItemAdapter
     }
