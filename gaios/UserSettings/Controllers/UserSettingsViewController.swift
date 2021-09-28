@@ -71,7 +71,7 @@ class UserSettingsViewController: UIViewController {
 
     func getSections() -> [UserSettingsSections] {
         if isWatchOnly {
-            return [.logout, .about]
+            return [.logout, .advanced, .about]
         } else if isResetActive {
             return [.logout, .general, .security, .about]
         } else if isSingleSig {

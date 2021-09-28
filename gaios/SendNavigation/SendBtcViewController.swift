@@ -123,7 +123,7 @@ class SendBtcViewController: KeyboardViewController {
         let queue = DispatchQueue.global(qos: .default)
         Guarantee().compactMap { [unowned self] _ -> [String: Any] in
             if self.isSweep {
-                return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount, "utxos": []]
+                return ["private_key": userInput, "fee_rate": feeRate, "subaccount": subaccount, "utxos": [:]]
             } else {
                 // user input can be a bitcoin or liquid uri as well as an address
                 var addressee: [String: Any] = ["address": userInput]
