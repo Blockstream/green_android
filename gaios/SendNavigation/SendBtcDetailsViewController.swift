@@ -160,6 +160,13 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func reloadAmount() {
+        if transaction.isSweep {
+            // In sweep, addressees are empty
+            let satoshi = transaction.satoshi
+            let (amount, _) = satoshi == 0 ? ("", "") : Balance.convert(details: ["satoshi": satoshi])?.get(tag: isFiat ? "fiat" : assetId) ?? ("", "")
+            content.amountTextField.text = amount
+            return
+        }
         content.amountTextField.textColor = content.amountTextField.isEnabled ? UIColor.white : UIColor.lightGray
         if content.sendAllFundsButton.isSelected {
             content.amountTextField.text = NSLocalizedString("id_all", comment: "")
