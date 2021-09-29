@@ -63,9 +63,8 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         binding.vm = viewModel
 
         binding.address.setOnClickListener {
-            copyToClipboard("Address", binding.address.text.toString(), requireContext())
+            copyToClipboard("Address", binding.address.text.toString(), requireContext(), animateView = binding.address)
             snackbar(R.string.id_address_copied_to_clipboard)
-            binding.address.pulse()
         }
 
         binding.buttonShare.setOnClickListener {

@@ -953,4 +953,8 @@
   <string name="id_enter_a_pgp_public_key_to_securely_encrypt">Enter a PGP public key to securely encrypt all emails you receive from the Green service</string>
   <string name="id_pending_confirmation">Pending Confirmation</string>
   <string name="id_confirmations">Confirmations</string>
+  <string name="id_non_confidential">Non Confidential</string>
+  <string name="id_confidential_transaction">Confidential Transaction</string>
+  <string name="id_non_confidential_transaction">Non Confidential Transaction</string>
+  <string name="id_unblinding_data">Unblinding data</string>
 </resources>

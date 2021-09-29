@@ -39,10 +39,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="8dp"
-            android:focusable="false"
             android:text="@string/id_transactions"
             android:textAppearance="@style/TextAppearance.Green.Body1"
             android:textIsSelectable="true"
+            android:focusableInTouchMode="false"
+            android:focusable="false"
             app:drawableTint="@color/color_on_surface_emphasis_low" />
 
         <!--   Review: V3 had android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"    -->

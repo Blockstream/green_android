@@ -73,27 +73,28 @@ fun Double.feeRateWithUnit(): String {
 
 fun Balance?.fiat(withUnit: Boolean = true): String {
     if(this == null) return "n/a"
+    return fiatOrNull(withUnit = withUnit) ?: "n/a"
+}
+
+fun Balance?.fiatOrNull(withUnit: Boolean = true): String? {
+    if(this == null) return null
     return try {
         val value = fiat!!.toDouble()
         userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(value)
     } catch (e: Exception) {
-        "n/a"
+        return null
     } + if (withUnit) " $fiatCurrency" else ""
 }
 
 fun Balance?.btc(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
     if(this == null) return "n/a"
-    return btc(unit = session.getSettings()?.unit ?: "BTC", withUnit = withUnit, withGrouping = withGrouping)
-}
-
-private fun Balance?.btc(unit: String, withUnit: Boolean = true, withGrouping: Boolean = false, withMinimumDigits: Boolean = false): String {
-    if(this == null) return "n/a"
     return try {
+        val unit = session.getSettings()?.unit ?: "BTC"
         val value = getValue(unit).toDouble()
         userNumberFormat(decimals = getDecimals(unit), withDecimalSeparator = false, withGrouping = withGrouping, withMinimumDigits = true).format(value)
     } catch (e: Exception) {
         "n/a"
-    } + if (withUnit) " $unit" else ""
+    } + if (withUnit) " ${getBitcoinOrLiquidUnit(session)}" else ""
 }
 
 fun Long.btc(settings: Settings, withUnit: Boolean = true): String {

@@ -35,7 +35,12 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
             .replace("\\s+".toRegex(), " ")
 
     val fee : String
-        get() = tx.fee.toBTCLook(session, withUnit = true, withDirection = tx.txType, withGrouping = true, withMinimumDigits = true)
+        get() = tx.fee.toBTCLook(session, withUnit = true, withGrouping = true, withMinimumDigits = true)
+
+    val feeFiat: String?
+        get() = session.convertAmount(Convert(satoshi = tx.fee)).fiatOrNull(withUnit = true).let {
+            if(it == null) it else "≈ $it"
+        }
 
     val feeRate : String
         get() = tx.feeRate.toFeeRate()

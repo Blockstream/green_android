@@ -28,7 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="16dp"
+            android:padding="16dp"
+            android:clipToPadding="false"
             app:gap="8dp">
 
             <TextView
@@ -41,14 +42,15 @@
                 tools:text="Recipient" />
 
             <TextView
+                android:id="@+id/addressTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceBody1"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:text="@{address}"
                 android:includeFontPadding="false"
                 android:textIsSelectable="true"
-                isVisible="@{address != null &amp;&amp; type == Type.OUT}"
+                isVisible="@{address != null}"
                 tools:text="33ttwPQbgNkKvQbW8KaVp3tDNaxa3f1MAA" />
 
             <androidx.appcompat.widget.LinearLayoutCompat

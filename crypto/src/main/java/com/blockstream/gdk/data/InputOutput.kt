@@ -41,8 +41,22 @@ data class InputOutput(
 
     @SerialName("user_path") val userPath: List<Long>? = null,
 
-    @SerialName("commitment") val commitment: String? = null,
-    @SerialName("assetblinder") val assetblinder: String? = null,
-    @SerialName("amountblinder") val amountblinder: String? = null,
-    @SerialName("public_key") val publicKey: String? = null,
-): Parcelable
+    @SerialName("commitment") val commitment: String? = null, // blinded value
+    @SerialName("assetblinder") val assetblinder: String? = null, // asset blinding factor
+    @SerialName("amountblinder") val amountblinder: String? = null, // value blinding factor
+    @SerialName("asset_id") val assetId: String? = null, // asset id for Liquid txs
+    @SerialName("public_key") val publicKey: String? = null, // the pubkey embedded into the blinded address we are sending to
+
+    @SerialName("eph_keypair_sec") val ephKeypairSec: String? = null, // our secret key used for the blinding
+    @SerialName("eph_keypair_pub") val ephKeypairPub: String? = null, // and the public key
+) : Parcelable {
+
+    fun getUnblindedString(): String? = if (hasUnblindingData()) {
+        // <value_in_satoshi>,<asset_id_hex>,<amount_blinder_hex>,<asset_blinder_hex>
+        String.format("%d,%s,%s,%s", satoshi, assetId, amountblinder, assetblinder)
+    } else null
+
+    fun hasUnblindingData(): Boolean {
+        return assetId != null && satoshi != null && assetblinder != null && amountblinder != null && assetId.isNotEmpty() && amountblinder.isNotEmpty() && assetblinder.isNotEmpty()
+    }
+}

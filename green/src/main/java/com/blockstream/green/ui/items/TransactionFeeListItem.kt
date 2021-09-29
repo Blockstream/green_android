@@ -25,6 +25,7 @@ data class TransactionFeeListItem constructor(
 
     override fun bindView(binding: ListItemTransactionFeeBinding, payloads: List<Any>) {
         binding.fee = look.fee
+        binding.feeFiat = look.feeFiat
         binding.feeRate = look.feeRate
     }
 

@@ -12,6 +12,10 @@
             name="feeRate"
             type="String" />
 
+        <variable
+            name="feeFiat"
+            type="String" />
+
     </data>
 
     <LinearLayout
@@ -46,6 +50,20 @@
                 android:textAlignment="viewEnd"
                 android:textAppearance="@style/TextAppearance.Green.Body1"
                 tools:text="0.000001123 BTC" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:textAlignment="textEnd"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textSize="11sp"
+                isVisible="@{feeFiat != null}"
+                android:text="@{feeFiat}"
+                tools:text="~ 3434.34 USD" />
 
             <TextView
                 android:layout_width="match_parent"

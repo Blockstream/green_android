@@ -122,6 +122,24 @@ data class Transaction(
 
     fun isLoadingTransaction() = blockHeight == -1L
 
+    fun getUnblindedString() = (inputs.mapNotNull { it.getUnblindedString() } + outputs.mapNotNull { it.getUnblindedString() }).joinToString(",")
+
+    fun getUnblindedData(): TransactionUnblindedData {
+        val unblindedInputs = inputs.filter {
+            it.hasUnblindingData()
+        }.map {
+            InputUnblindedData(vin = it.ptIdx, assetId = it.assetId ?: "", assetblinder = it.assetblinder ?: "", satoshi = it.satoshi ?: 0, amountblinder = it.amountblinder ?: "")
+        }
+
+        val unblindedOutputs = outputs.filter {
+            it.hasUnblindingData()
+        }.map {
+            OutputUnblindedData(vout = it.ptIdx, assetId = it.assetId ?: "", assetblinder = it.assetblinder ?: "", satoshi = it.satoshi ?: 0, amountblinder = it.amountblinder ?: "")
+        }
+
+        return TransactionUnblindedData(txid = txHash, type = type, inputs = unblindedInputs, outputs = unblindedOutputs, version = 0)
+    }
+
     companion object {
         // Create a dummy transaction to describe the loading state (blockHeight == -1)
         val LoadingTransaction = Transaction(
