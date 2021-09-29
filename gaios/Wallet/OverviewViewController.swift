@@ -82,6 +82,7 @@ class OverviewViewController: UIViewController {
     }
 
     var alertCards: [AlertCardType] = []
+    var userWillLogout = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -153,8 +154,13 @@ class OverviewViewController: UIViewController {
     @objc func settingsBtnTapped(_ sender: Any) {
         let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
         let nvc = storyboard.instantiateViewController(withIdentifier: "UserSettingsNavigationController")
-        nvc.modalPresentationStyle = .fullScreen
-        present(nvc, animated: true, completion: nil)
+        if let nvc = nvc as? UINavigationController {
+            if let vc = nvc.viewControllers.first as? UserSettingsViewController {
+                vc.delegate = self
+                nvc.modalPresentationStyle = .fullScreen
+                present(nvc, animated: true, completion: nil)
+            }
+        }
     }
 
     @objc func sendfromWallet(_ sender: UIButton) {
@@ -896,7 +902,7 @@ extension OverviewViewController {
         tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
         enterForegroundToken = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main, using: applicationWillEnterForeground)
 
-        if subAccounts.count > 0 {
+        if subAccounts.count > 0 && !userWillLogout {
             handleRefresh()
         }
     }
@@ -949,5 +955,17 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
         }
     }
     func didCancel() {
+    }
+}
+
+extension OverviewViewController: UserSettingsViewControllerDelegate {
+    func userLogout() {
+        userWillLogout = true
+        self.presentedViewController?.dismiss(animated: true, completion: {
+            DispatchQueue.main.async {
+                let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                appDelegate?.logout(with: false)
+            }
+        })
     }
 }

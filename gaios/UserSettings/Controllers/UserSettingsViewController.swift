@@ -1,9 +1,14 @@
 import UIKit
 import PromiseKit
 
+protocol UserSettingsViewControllerDelegate: AnyObject {
+    func userLogout()
+}
+
 class UserSettingsViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
+    weak var delegate: UserSettingsViewControllerDelegate?
 
     var items = [UserSettingsItem]()
     var sections = [UserSettingsSections]()
@@ -474,10 +479,7 @@ extension UserSettingsViewController {
     }
 
     func logout() {
-        DispatchQueue.main.async {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.logout(with: false)
-        }
+        delegate?.userLogout()
     }
 
     func showBitcoinDenomination() {
