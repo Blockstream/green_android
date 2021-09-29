@@ -108,15 +108,6 @@ class OverviewViewController: UIViewController {
         checkFiatRate()
         loadAlertCards()
 
-        switch Registry.shared.failStatus() {
-        case .all, .assets:
-            if AccountsManager.shared.current!.network == "liquid" {
-                presentDialogRegistryFail()
-            }
-        default:
-            break
-        }
-
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
@@ -278,16 +269,6 @@ class OverviewViewController: UIViewController {
             self.showTransactions()
         }.catch { err in
             print(err.localizedDescription)
-        }
-    }
-
-    func presentDialogRegistryFail() {
-        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
-        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogRegistryFailViewController") as? DialogRegistryFailViewController {
-            vc.modalPresentationStyle = .overFullScreen
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.present(vc, animated: false, completion: nil)
-            }
         }
     }
 
