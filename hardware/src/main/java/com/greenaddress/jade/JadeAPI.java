@@ -33,6 +33,10 @@ import io.reactivex.rxjava3.subjects.PublishSubject;
 public class JadeAPI {
     private static final String TAG = "JadeAPI";
 
+    // Temporary workaround - prune old cert (from Jade pre- 0.1.28 fw)
+    // until gdk better at ignoring bad/invalid/expired certs
+    private final static String EXCLUDED_CERTIFICATE = "-----BEGIN CERTIFICATE-----\nMIIDSjCCAjKgAwIBAgIQRK+wgNajJ7qJMDmGLvhAazANBgkqhkiG9w0BAQUFADA/\nMSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT\nDkRTVCBSb290IENBIFgzMB4XDTAwMDkzMDIxMTIxOVoXDTIxMDkzMDE0MDExNVow\nPzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMRcwFQYDVQQD\nEw5EU1QgUm9vdCBDQSBYMzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\nAN+v6ZdQCINXtMxiZfaQguzH0yxrMMpb7NnDfcdAwRgUi+DoM3ZJKuM/IUmTrE4O\nrz5Iy2Xu/NMhD2XSKtkyj4zl93ewEnu1lcCJo6m67XMuegwGMoOifooUMM0RoOEq\nOLl5CjH9UL2AZd+3UWODyOKIYepLYYHsUmu5ouJLGiifSKOeDNoJjj4XLh7dIN9b\nxiqKqy69cK3FCxolkHRyxXtqqzTWMIn/5WgTe1QLyNau7Fqckh49ZLOMxt+/yUFw\n7BZy1SbsOFU5Q9D8/RhcQPGX69Wam40dutolucbY38EVAjqr2m7xPi71XAicPNaD\naeQQmxkqtilX4+U9m5/wAl0CAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAOBgNV\nHQ8BAf8EBAMCAQYwHQYDVR0OBBYEFMSnsaR7LHH62+FLkHX/xBVghYkQMA0GCSqG\nSIb3DQEBBQUAA4IBAQCjGiybFwBcqR7uKGY3Or+Dxz9LwwmglSBd49lZRNI+DT69\nikugdB/OEIKcdBodfpga3csTS7MgROSR6cz8faXbauX+5v3gTt23ADq1cEmv8uXr\nAvHRAosZy5Q6XkjEGB5YGV8eAlrwDPGxrancWYaLbumR9YbK+rlmM6pZW87ipxZz\nR8srzJmwN0jP41ZL9c8PDHIyh8bwRLtTcm1D9SZImlJnt1ir/md2cXjbDaJWFBM5\nJDGFoqgCWjBH4d1QB7wCCZAA62RjYJsWvIjJEubSfZGL+T0yjWW06XyxV3bqxbYo\nOb8VZRzI9neWagqNdwvYkQsEjgfbKbYK7p2CNTUQ\n-----END CERTIFICATE-----\n";
+
     public static boolean isDebug = false;
 
     // Timeouts for autonomous calls that should return quickly, calls that require user confirmation,
@@ -197,7 +201,15 @@ public class JadeAPI {
             final JsonNode httpRequest = result.get("http_request");
             final String onHttpReplyCall = httpRequest.get("on-reply").asText();
 
-            final JsonNode httpParams = httpRequest.get("params");
+            // Temporary workaround - prune old cert (from Jade pre- 0.1.28 fw)
+            // until gdk better at ignoring bad/invalid/expired certs
+            final ObjectNode httpParams = (ObjectNode)httpRequest.get("params");
+            final ArrayNode certs = (ArrayNode)httpParams.get("root_certificates");
+            if (certs != null && certs.size() == 1 && EXCLUDED_CERTIFICATE.equals(certs.get(0).asText())) {
+                Log.w(TAG, "Ignoring explicitly excluded certificate");
+                httpParams.remove("root_certificates");
+            }
+
             final JsonNode httpResponse = makeHttpRequest(requestProvider.getHttpRequest(), httpParams);
             return this.jadeRpc(onHttpReplyCall, httpResponse, timeout);
         }
