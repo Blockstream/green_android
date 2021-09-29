@@ -105,7 +105,6 @@ class OverviewViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
 
         loadAccounts()
-        checkFiatRate()
         loadAlertCards()
 
         tableView.refreshControl = UIRefreshControl()
@@ -237,18 +236,16 @@ class OverviewViewController: UIViewController {
             print(err.localizedDescription)
         }
         //We will use Card2faType.reactivate for expired coins
-    }
 
-    func checkFiatRate() {
-        // diplay errore if fiat_rate is missing
-        let bgq = DispatchQueue.global(qos: .background)
+        let bgqu = DispatchQueue.global(qos: .background)
         firstly {
             return Guarantee()
-        }.map(on: bgq) { () -> (String?, String) in
+        }.map(on: bgqu) { () -> (String?, String) in
             return Balance.convert(details: ["satoshi": 0])?.get(tag: "fiat") ?? (nil, "")
         }.done { (amount, _) in
             if amount == nil {
-                self.showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
+                self.alertCards.append(AlertCardType.fiatMissing)
+                self.tableView.reloadSections([OverviewSection.card.rawValue], with: .none)
             }
         }.catch { err in
             print(err.localizedDescription)
@@ -587,23 +584,27 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 case .reset, .dispute, .reactivate:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: {[weak self] in
-                                    self?.performSegue(withIdentifier: "overviewReactivate2fa", sender: self)
-                                   },
+                        self?.performSegue(withIdentifier: "overviewReactivate2fa", sender: self)
+                    },
                                    onRight: {[weak self] in
-                                    self?.performSegue(withIdentifier: "overviewLeaarnMore2fa", sender: self)
-                                   })
+                        self?.performSegue(withIdentifier: "overviewLeaarnMore2fa", sender: self)
+                    })
                 case .assetsRegistryFail, .iconsRegistryFail:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
                                    onRight: {[weak self] in
-                                    self?.reloadRegistry()
-                                   })
+                        self?.reloadRegistry()
+                    })
                 case .systemMessage(let text):
-                     cell.configure(alertCards[indexPath.row],
-                                    onLeft: nil,
-                                    onRight: {[weak self] in
-                                    self?.systemMessageScreen(text: text)
-                                    })
+                    cell.configure(alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: {[weak self] in
+                        self?.systemMessageScreen(text: text)
+                    })
+                case .fiatMissing:
+                    cell.configure(alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil)
                 }
                 cell.selectionStyle = .none
                 return cell

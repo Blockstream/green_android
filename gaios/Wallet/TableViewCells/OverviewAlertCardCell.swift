@@ -7,6 +7,7 @@ enum AlertCardType {
     case assetsRegistryFail
     case iconsRegistryFail
     case systemMessage(String)
+    case fiatMissing
 }
 
 class OverviewAlertCardCell: UITableViewCell {
@@ -36,6 +37,7 @@ class OverviewAlertCardCell: UITableViewCell {
         bg.layer.cornerRadius = 6.0
         self.onLeft = onLeft
         self.onRight = onRight
+        btnsContainer.isHidden = false
 
         switch type {
         case .reset(let resetDaysRemaining):
@@ -68,8 +70,13 @@ class OverviewAlertCardCell: UITableViewCell {
             lblHint.text = text
             btnRight.setTitle(NSLocalizedString("id_accept", comment: ""), for: .normal)
             btnLeft.isHidden = true
+        case .fiatMissing:
+            lblTitle.text = NSLocalizedString("id_warning", comment: "")
+            lblHint.text = NSLocalizedString("id_your_favourite_exchange_rate_is", comment: "")
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
         }
-
     }
 
     @IBAction func btnRight(_ sender: Any) {
