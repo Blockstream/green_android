@@ -10,6 +10,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+## [3.7.3] - 2021-09-30
+### Changed
+- Bump GDK to version 0.0.45.post1
+
+### Fixed
+- Ignore expired server certs in Jade PIN requests
+
 ## [3.7.2] - 2021-09-24
 ### Added
 - Add SPV support to singlesig wallets in app settings
