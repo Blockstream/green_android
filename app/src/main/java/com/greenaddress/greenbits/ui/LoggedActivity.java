@@ -226,11 +226,16 @@ public abstract class LoggedActivity extends GaActivity {
     protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
                                  final NumberFormat btcOrAssetNf, final String asset) throws Exception {
         final NumberFormat us = Conversion.getNumberFormat(8, Locale.US);
-        final NumberFormat fiatNf = Conversion.getNumberFormat(2);
-        final String fiat = fiatNf.format(us.parse(currentAmount.get("fiat").asText()));
         final String source = currentAmount.get(getNetwork().getPolicyAsset().equals(asset) ? getBitcoinUnitClean() : asset).asText();
         final String btc = btcOrAssetNf.format(us.parse(source));
-        amountText.setText(isFiat ? fiat : btc);
+
+        if(isFiat) {
+            final NumberFormat fiatNf = Conversion.getNumberFormat(2);
+            final String fiat = fiatNf.format(us.parse(currentAmount.get("fiat").asText()));
+            amountText.setText(fiat);
+        }else{
+            amountText.setText(btc);
+        }
     }
 
     protected int getActiveAccount() {

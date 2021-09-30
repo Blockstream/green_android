@@ -236,7 +236,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 mAmountText.addTextChangedListener(mAmountTextWatcher);
             }
         } catch (final Exception e) {
-            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
+            e.printStackTrace();
         }
 
         // Setup read-only
