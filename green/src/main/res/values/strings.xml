@@ -950,5 +950,5 @@
   <string name="id_too_many_pin_attempts">Too many PIN attempts</string>
   <string name="id_restore_a_singlesig_wallet_created_on_blockstream_green">Restore a Singlesig wallet created on Blockstream Green, or import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.</string>
   <string name="id_import_a_multisig_shield_wallet_created">Import a Multisig Shield wallet created on Blockstream Green.</string>
-
+  <string name="id_enter_a_pgp_public_key_to_securely_encrypt">Enter a PGP public key to securely encrypt all emails you receive from the Green service</string>
 </resources>
