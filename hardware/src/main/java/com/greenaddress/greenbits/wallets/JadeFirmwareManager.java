@@ -1,21 +1,16 @@
 package com.greenaddress.greenbits.wallets;
 
-import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
 import com.blockstream.DeviceBrand;
-import com.blockstream.hardware.R;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 import com.greenaddress.jade.HttpRequestProvider;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.JadeVersion;
 import com.greenaddress.jade.entities.VersionInfo;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +42,6 @@ public class JadeFirmwareManager {
     private static final String JADE_BOARD_TYPE_JADE = "JADE";
     private static final String JADE_BOARD_TYPE_JADE_V1_1 = "JADE_V1.1";
     private static final String JADE_FEATURE_SECURE_BOOT = "SB";
-    private final Context context;
 
     private FirmwareInteraction firmwareInteraction;
     private final HttpRequestProvider httpRequestProvider;
@@ -78,8 +72,7 @@ public class JadeFirmwareManager {
         }
     }
 
-    public JadeFirmwareManager(final Context context, final FirmwareInteraction firmwareInteraction, HttpRequestProvider httpRequestProvider) {
-        this.context = context.getApplicationContext();
+    public JadeFirmwareManager(final FirmwareInteraction firmwareInteraction, HttpRequestProvider httpRequestProvider) {
         this.firmwareInteraction = firmwareInteraction;
         this.httpRequestProvider = httpRequestProvider;
     }
@@ -113,9 +106,6 @@ public class JadeFirmwareManager {
     private byte[] downloadJadeFwFile(final String fwFilePath, final boolean isBase64) throws IOException {
         final URL tls = new URL(JADE_FW_SERVER_HTTPS + fwFilePath);
         final URL onion = new URL(JADE_FW_SERVER_ONION + fwFilePath);
-        final String certificate = CharStreams.toString(new InputStreamReader(
-                this.context.getResources().openRawResource(R.raw.jade_services_certificate),
-                Charsets.UTF_8));
 
         // Make http GET call to fetch file
         Log.i(TAG, "Fetching firmware file: " + fwFilePath);
@@ -123,7 +113,7 @@ public class JadeFirmwareManager {
                 Arrays.asList(tls, onion),
                 null,
                 isBase64 ? "base64" : "text",
-                Collections.singletonList(certificate));
+                Collections.emptyList());
 
         if (ret == null || !ret.has("body")) {
             throw new IOException("Failed to fetch firmware file: " + fwFilePath);

@@ -176,7 +176,7 @@ public class HardwareConnect {
                     final JadeHWWallet jadeWallet = new JadeHWWallet(jade, interaction.getConnectionNetwork(), device, Bridge.INSTANCE.getHardwareQATester());
                     return jadeWallet;
                 })
-                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction.context(), interaction, interaction, interaction.getGreenSession()).as(RxJavaBridge.toV3Single()))
+                .flatMap(jadeWallet -> jadeWallet.authenticate(interaction, interaction, interaction.getGreenSession()).as(RxJavaBridge.toV3Single()))
 
                 // If all succeeded, set as current hw wallet and login ... otherwise handle error/display error
                 .observeOn(AndroidSchedulers.mainThread())

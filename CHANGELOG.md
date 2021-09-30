@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Improved wallet restore flow
+- Do not pass additional root certificate when fetching files from Jade firmware server
 
 ### Fixed
 
