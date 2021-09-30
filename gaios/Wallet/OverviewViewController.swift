@@ -105,7 +105,6 @@ class OverviewViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: settingsBtn)
 
         loadAccounts()
-        loadAlertCards()
 
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
@@ -224,6 +223,7 @@ class OverviewViewController: UIViewController {
                 break
             }
         }
+        tableView.reloadSections([OverviewSection.card.rawValue], with: .none)
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) {
             try SessionManager.shared.getSystemMessage()
@@ -267,6 +267,7 @@ class OverviewViewController: UIViewController {
         }.catch { err in
             print(err.localizedDescription)
         }
+        loadAlertCards()
     }
 
     func loadWallet() -> Promise<Void> {
@@ -388,7 +389,6 @@ class OverviewViewController: UIViewController {
         Registry.shared.load().done { () in
             self.stopAnimating()
             self.loadAlertCards()
-            self.tableView.reloadSections([OverviewSection.card.rawValue], with: .none)
         }.catch { _ in }
     }
 

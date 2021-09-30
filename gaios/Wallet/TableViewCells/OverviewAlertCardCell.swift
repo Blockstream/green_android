@@ -31,6 +31,12 @@ class OverviewAlertCardCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
 
+    override func prepareForReuse() {
+        btnsContainer.isHidden = false
+        btnRight.isHidden = false
+        btnLeft.isHidden = false
+    }
+
     func configure(_ type: AlertCardType, onLeft:(() -> Void)?, onRight:(() -> Void)?) {
         self.type = type
         self.backgroundColor = UIColor.customTitaniumDark()
