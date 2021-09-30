@@ -39,13 +39,15 @@ class AppSettingsViewModel @Inject constructor(
         }
     }
 
-    val personalBitcoinElectrumServer = MutableLiveData(appSettings.personalBitcoinElectrumServer ?: DEFAULT_BITCOIN_ELECTRUM_URL)
-    val personalLiquidElectrumServer = MutableLiveData(appSettings.personalLiquidElectrumServer ?: DEFAULT_LIQUID_ELECTRUM_URL)
-    val personalTestnetElectrumServer = MutableLiveData(appSettings.personalTestnetElectrumServer ?: DEFAULT_TESTNET_ELECTRUM_URL)
+    val personalBitcoinElectrumServer = MutableLiveData(appSettings.personalBitcoinElectrumServer ?: "")
+    val personalLiquidElectrumServer = MutableLiveData(appSettings.personalLiquidElectrumServer ?: "")
+    val personalTestnetElectrumServer = MutableLiveData(appSettings.personalTestnetElectrumServer ?: "")
+    val personalTestnetLiquidElectrumServer = MutableLiveData(appSettings.personalTestnetLiquidElectrumServer ?: "")
 
-    val spvBitcoinElectrumServer = MutableLiveData(appSettings.spvBitcoinElectrumServer ?: DEFAULT_MULTI_SPV_URL )
-    val spvLiquidElectrumServer = MutableLiveData(appSettings.spvLiquidElectrumServer ?: DEFAULT_MULTI_SPV_URL)
-    val spvTestnetElectrumServer = MutableLiveData(appSettings.spvTestnetElectrumServer ?: DEFAULT_MULTI_SPV_URL)
+    val spvBitcoinElectrumServer = MutableLiveData(appSettings.spvBitcoinElectrumServer ?: "" )
+    val spvLiquidElectrumServer = MutableLiveData(appSettings.spvLiquidElectrumServer ?: "")
+    val spvTestnetElectrumServer = MutableLiveData(appSettings.spvTestnetElectrumServer ?: "")
+    val spvTestnetLiquidElectrumServer = MutableLiveData(appSettings.spvTestnetLiquidElectrumServer ?: "")
 
     fun getSettings() = ApplicationSettings(
         testnet = enableTestnet.value ?: false,
@@ -59,10 +61,13 @@ class AppSettingsViewModel @Inject constructor(
         personalBitcoinElectrumServer = if(enableElectrumNode.value == true) personalBitcoinElectrumServer.value else null,
         personalLiquidElectrumServer = if(enableElectrumNode.value == true) personalLiquidElectrumServer.value else null,
         personalTestnetElectrumServer = if(enableElectrumNode.value == true) personalTestnetElectrumServer.value else null,
+        personalTestnetLiquidElectrumServer = if(enableElectrumNode.value == true) personalTestnetLiquidElectrumServer.value else null,
 
         spvBitcoinElectrumServer = if(enableSPV?.value == true) spvBitcoinElectrumServer.value else null,
         spvLiquidElectrumServer = if(enableSPV?.value == true) spvLiquidElectrumServer.value else null,
-        spvTestnetElectrumServer = if(enableSPV?.value == true) spvTestnetElectrumServer.value else null
+        spvTestnetElectrumServer = if(enableSPV?.value == true) spvTestnetElectrumServer.value else null,
+        spvTestnetLiquidElectrumServer = if(enableSPV?.value == true) spvTestnetLiquidElectrumServer.value else null,
+
     )
 
     fun saveSettings(){
@@ -75,6 +80,9 @@ class AppSettingsViewModel @Inject constructor(
         const val DEFAULT_TESTNET_ELECTRUM_URL = "blockstream.info:993"
         const val DEFAULT_TESTNET_LIQUID_ELECTRUM_URL = "blockstream.info:465"
 
-        const val DEFAULT_MULTI_SPV_URL = "blockstream.info:993, electrum.blockstream.info:60002"
+        const val DEFAULT_MULTI_SPV_BITCOIN_URL = "electrum.blockstream.info:50002"
+        const val DEFAULT_MULTI_SPV_LIQUID_URL = "blockstream.info:995"
+        const val DEFAULT_MULTI_SPV_TESTNET_URL = "electrum.blockstream.info:60002"
+        const val DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL = "blockstream.info:465"
     }
 }

@@ -161,19 +161,22 @@ class GreenSession constructor(
         var spvMulti = false
 
         if(network.isElectrum){
-            var url = applicationSettings.getPersonalElectrumServer(network)
+            var tempUrl = applicationSettings.getPersonalElectrumServer(network)
 
-            if(!url.isNullOrBlank()){
-                electrumUrl = url
+            if(!tempUrl.isNullOrBlank()){
+                electrumUrl = tempUrl
             }
 
-            spvEnabled = applicationSettings.spv
+            // SPV for liquid is disabled // https://gl.blockstream.com/blockstream/green/gdk/-/issues/580
+            spvEnabled = applicationSettings.spv && Network.isLiquid(network.id) == false
             spvMulti = applicationSettings.multiServerValidation
 
-            url = applicationSettings.getSpvElectrumServer(network)
+            tempUrl = applicationSettings.getSpvElectrumServer(network)
 
-            if(spvMulti && !url.isNullOrBlank()){
-                spvServers = url.split(",")
+            if(spvMulti && !tempUrl.isNullOrBlank()){
+                spvServers = tempUrl
+                    .split(",")
+                    .map { it.trim() }
             }
 
         }

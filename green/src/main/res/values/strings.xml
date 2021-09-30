@@ -793,6 +793,7 @@
   <string name="id_terms_of_service">Terms of Service</string>
   <string name="id_terms_of_use">Terms of Use</string>
   <string name="id_testnet_electrum_server">Testnet Electrum server</string>
+  <string name="id_testnet_liquid_electrum_server">Testnet Liquid Electrum server</string>
   <string name="id_testnet_wallets">Testnet wallets</string>
   <string name="id_thank_you_for_downloading_green">Thank you for downloading Green! Please leave us a review when you get a chance</string>
   <string name="id_the_1_year_2fa_reset_process">The 1 year 2FA reset process was ongoing, but someone blocked it by disputing the 2FA reset.</string>

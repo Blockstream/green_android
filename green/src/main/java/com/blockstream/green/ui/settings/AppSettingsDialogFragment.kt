@@ -6,17 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
+import com.blockstream.green.settings.ApplicationSettings
 import com.blockstream.green.utils.endIconCopyMode
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -46,6 +45,16 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
 
         binding.lifecycleOwner = viewLifecycleOwner
 
+        binding.bitcoinElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_BITCOIN_ELECTRUM_URL
+        binding.liquidElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_LIQUID_ELECTRUM_URL
+        binding.testnetElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_TESTNET_ELECTRUM_URL
+        binding.testnetLiquidElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_TESTNET_LIQUID_ELECTRUM_URL
+
+        binding.bitcoinSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_BITCOIN_URL
+        binding.liquidSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_LIQUID_URL
+        binding.testnetSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_TESTNET_URL
+        binding.testnetLiquidSpvElectrumServerPlaceholder = AppSettingsViewModel.DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL
+
         return binding.root
     }
 
@@ -59,10 +68,12 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
         binding.personalBitcoinElectrumServerInputLayout.endIconCopyMode()
         binding.personalLiquidElectrumServerInputLayout.endIconCopyMode()
         binding.personalTestnetElectrumServerInputLayout.endIconCopyMode()
+        binding.personalTestnetLiquidElectrumServerInputLayout.endIconCopyMode()
         binding.proxyURLInputLayout.endIconCopyMode()
         binding.spvBitcoinElectrumServerInputLayout.endIconCopyMode()
         binding.spvLiquidElectrumServerInputLayout.endIconCopyMode()
         binding.spvTestnetElectrumServerInputLayout.endIconCopyMode()
+        binding.spvTestnetLiquidElectrumServerInputLayout.endIconCopyMode()
 
         binding.buttonSave.setOnClickListener {
             viewModel.saveSettings()

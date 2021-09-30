@@ -12,6 +12,40 @@
         <variable
             name="isDevelopment"
             type="Boolean" />
+
+        <variable
+            name="bitcoinElectrumServerPlaceholder"
+            type="String" />
+
+        <variable
+            name="liquidElectrumServerPlaceholder"
+            type="String" />
+
+        <variable
+            name="testnetElectrumServerPlaceholder"
+            type="String" />
+
+        <variable
+            name="testnetLiquidElectrumServerPlaceholder"
+            type="String" />
+
+        <variable
+            name="bitcoinSpvElectrumServerPlaceholder"
+            type="String" />
+
+        <variable
+            name="liquidSpvElectrumServerPlaceholder"
+            type="String" />
+
+        <variable
+            name="testnetSpvElectrumServerPlaceholder"
+            type="String" />
+
+        <variable
+            name="testnetLiquidSpvElectrumServerPlaceholder"
+            type="String" />
+
+
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -117,10 +151,9 @@
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableElectrumNode}"
                 android:layout_marginBottom="4dp"
-                android:visibility="gone"
                 app:captionText="@string/id_choose_the_electrum_servers_you"
-                app:icon="@drawable/ic_spv_60"
-                app:titleText="@string/id_spv_verification" />
+                app:icon="@drawable/ic_electrum_60"
+                app:titleText="@string/id_personal_node" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/personalBitcoinElectrumServerInputLayout"
@@ -137,6 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
+                    app:placeholder="@{bitcoinElectrumServerPlaceholder}"
                     android:text="@={vm.personalBitcoinElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -156,6 +190,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
+                    app:placeholder="@{liquidElectrumServerPlaceholder}"
                     android:text="@={vm.personalLiquidElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -167,15 +202,36 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="@string/id_bitcoin_electrum_server"
+                android:hint="@string/id_testnet_electrum_server"
                 tools:ignore="HardcodedText"
-                app:isVisible="@{vm.enableElectrumNode}">
+                app:isVisible="@{vm.enableElectrumNode &amp;&amp; vm.enableTestnet}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
+                    app:placeholder="@{testnetElectrumServerPlaceholder}"
                     android:text="@={vm.personalTestnetElectrumServer}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/personalTestnetLiquidElectrumServerInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_marginBottom="4dp"
+                android:hint="@string/id_testnet_liquid_electrum_server"
+                tools:ignore="HardcodedText"
+                app:isVisible="@{vm.enableElectrumNode &amp;&amp; vm.enableTestnet}">
+
+                <com.blockstream.green.views.PlaceholderTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    app:placeholder="@{testnetLiquidElectrumServerPlaceholder}"
+                    android:text="@={vm.personalTestnetLiquidElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -185,7 +241,7 @@
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableSPV}"
                 android:layout_marginBottom="4dp"
-                app:captionText="@string/id_choose_the_electrum_servers_you"
+                app:captionText="@string/id_verify_your_transactions_are"
                 app:icon="@drawable/ic_spv_60"
                 app:titleText="@string/id_spv_verification" />
 
@@ -194,8 +250,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:visibility="gone"
                 android:checked="@={vm.enableMultiServerValidation}"
+                isVisible="@{isDevelopment}"
                 app:captionText="@string/id_double_check_spv_with_other"
                 app:icon="@drawable/ic_multiserver_60"
                 app:titleText="@string/id_multi_server_validation" />
@@ -207,14 +263,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="Bitcoin Electrum Server"
-                tools:ignore="HardcodedText"
+                android:hint="@string/id_bitcoin_electrum_server"
                 app:isVisible="@{vm.enableMultiServerValidation}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
+                    app:placeholder="@{bitcoinSpvElectrumServerPlaceholder}"
                     android:text="@={vm.spvBitcoinElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -226,14 +282,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="Liquid Electrum Server"
-                app:isVisible="@{vm.enableMultiServerValidation}"
-                tools:ignore="HardcodedText">
+                android:hint="@string/id_liquid_electrum_server"
+                app:isVisible="@{vm.enableMultiServerValidation}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
+                    app:placeholder="@{liquidSpvElectrumServerPlaceholder}"
                     android:text="@={vm.spvLiquidElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -245,15 +301,35 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="Testnet Electrum Server"
-                tools:ignore="HardcodedText"
-                app:isVisible="@{vm.enableMultiServerValidation}">
+                android:hint="@string/id_testnet_electrum_server"
+                app:isVisible="@{vm.enableMultiServerValidation &amp;&amp; vm.enableTestnet}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
+                    app:placeholder="@{testnetSpvElectrumServerPlaceholder}"
                     android:text="@={vm.spvTestnetElectrumServer}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/spvTestnetLiquidElectrumServerInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_marginBottom="4dp"
+                android:hint="@string/id_testnet_liquid_electrum_server"
+                tools:ignore="HardcodedText"
+                app:isVisible="@{vm.enableMultiServerValidation &amp;&amp; vm.enableTestnet}">
+
+                <com.blockstream.green.views.PlaceholderTextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    app:placeholder="@{testnetLiquidSpvElectrumServerPlaceholder}"
+                    android:text="@={vm.spvTestnetLiquidElectrumServer}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
