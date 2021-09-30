@@ -30,7 +30,7 @@ class OverviewViewController: UIViewController {
     private var assetsUpdatedToken: NSObjectProtocol?
     private var settingsUpdatedToken: NSObjectProtocol?
     private var tickerUpdatedToken: NSObjectProtocol?
-    private var enterForegroundToken: NSObjectProtocol?
+    private var networkToken: NSObjectProtocol?
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
@@ -324,6 +324,17 @@ class OverviewViewController: UIViewController {
         }
     }
 
+    @objc func onNetworkEvent(_ notification: Notification) {
+        guard let dict = notification.userInfo as NSDictionary? else { return }
+        guard let connected = dict["connected"] as? Bool else { return }
+        guard let loginRequired = dict["login_required"] as? Bool else { return }
+        if connected == true && loginRequired == false {
+            DispatchQueue.main.async { [weak self] in
+                self?.handleRefresh()
+            }
+        }
+    }
+
     func refresh(_ notification: Notification) {
         tableView.reloadSections([OverviewSection.asset.rawValue], with: .none)
         tableView.reloadSections([OverviewSection.transaction.rawValue], with: .none)
@@ -513,10 +524,6 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
                     UIApplication.shared.keyWindow?.rootViewController = nav
                 }
             }
-    }
-
-    @objc func applicationWillEnterForeground(_ notification: Notification) {
-        handleRefresh()
     }
 }
 
@@ -882,7 +889,7 @@ extension OverviewViewController {
         assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
         settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
         tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
-        enterForegroundToken = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main, using: applicationWillEnterForeground)
+        networkToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: onNetworkEvent)
 
         if subAccounts.count > 0 && !userWillLogout {
             handleRefresh()
@@ -911,9 +918,9 @@ extension OverviewViewController {
             NotificationCenter.default.removeObserver(token)
             tickerUpdatedToken = nil
         }
-        if let token = enterForegroundToken {
+        if let token = networkToken {
             NotificationCenter.default.removeObserver(token)
-            enterForegroundToken = nil
+            networkToken = nil
         }
     }
 }
