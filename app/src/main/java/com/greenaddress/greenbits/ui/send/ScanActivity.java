@@ -33,6 +33,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
@@ -47,6 +48,7 @@ import com.google.zxing.qrcode.QRCodeReader;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.BalanceData;
 import com.greenaddress.greenapi.data.NetworkData;
+import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.greenapi.data.SweepData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
@@ -438,12 +440,12 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
         disposable = Observable.just(getSession())
                      .observeOn(Schedulers.computation())
                      .map((session) -> {
-            final ObjectNode utxosRaw = getSession().getUTXO(subaccount, 0, null)
+            final ObjectNode utxosRaw = session.getUTXO(subaccount, 0, null)
                     .resolve(new HardwareCodeResolver(this), null);
 
             final ObjectNode utxos = (ObjectNode) utxosRaw.get("unspent_outputs");
 
-            final GDKTwoFactorCall call = getSession().createTransactionFromUri(utxos, scanned, subaccount);
+            final GDKTwoFactorCall call = session.createTransactionFromUri(utxos, scanned, subaccount);
             final ObjectNode transactionRaw = call.resolve(new HardwareCodeResolver(this), null);
             if (!transactionRaw.has("addressees"))
                 throw new Exception("Missing field addressees");
@@ -451,16 +453,29 @@ public class ScanActivity extends LoggedActivity implements TextureView.SurfaceT
             //  Missing amounts in addressees will now generate the error `id_no_amount_specified`.
             //  Previously under certain circumstances this would return `id_invalid_amount`.
             //  The latter error will still be returned if the amount field is present but malformed/invalid.
-            if (!error.isEmpty() && !"id_invalid_amount".equals(error) && !"id_no_amount_specified".equals(error))
+            if (!error.isEmpty() && !"id_invalid_amount".equals(error) && !"id_no_amount_specified".equals(error) && !"id_insufficient_funds".equals(error) && !"Invalid AssetID".equals(error) )
                 throw new Exception(error);
+
+            // Check if the specified asset in the uri exists in the wallet
+            final String assetId = transactionRaw.get("addressees").get(0).hasNonNull("asset_id") ? transactionRaw.get("addressees").get(0).get("asset_id").asText() : null;
+            if(assetId != null){
+                final SubaccountData subAccount = session.getSubAccount(this, subaccount);
+                if(!subAccount.getSatoshi().containsKey(assetId)){
+                    throw new Exception("id_invalid_payment_request_assetid");
+                }
+            }
+
             return transactionRaw;
         })
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe((transactionRaw) -> {
-            if (networkData.getLiquid())
+
+            final boolean showAssets = !transactionRaw.get("addressees").get(0).hasNonNull("asset_id");
+            if (networkData.getLiquid() && showAssets) {
                 result.setClass(this, AssetsSelectActivity.class);
-            else
+            } else {
                 result.setClass(this, SendAmountActivity.class);
+            }
 
             getSession().setPendingTransaction(transactionRaw);
             startActivityForResult(result, REQUEST_BITCOIN_URL_SEND);

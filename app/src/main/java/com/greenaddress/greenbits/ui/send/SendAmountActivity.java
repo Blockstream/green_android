@@ -183,9 +183,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                           .subscribe((subaccount) -> {
             stopLoading();
             mSubaccount = subaccount;
+            updateAssetSelected();
             setup(mTx);
             updateTransaction();
-            updateAssetSelected();
+
         }, (e) -> {
             e.printStackTrace();
             stopLoading();

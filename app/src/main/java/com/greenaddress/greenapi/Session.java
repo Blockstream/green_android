@@ -171,15 +171,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
         return null;
     }
 
-    public GDKTwoFactorCall createTransactionFromUri(final ObjectNode utxos, final String uri, final int subaccount) throws Exception {
-        NetworkData network = getNetworkData();
-        String assetId = null;
-        if(network.getLiquid()){
-            assetId = network.getPolicyAsset();
-        }
-        return createTransactionFromUri(utxos, uri, assetId, subaccount);
-    }
-
     public void setSettings(final SettingsData settings) {
         mSettings = settings;
     }

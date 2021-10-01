@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Fix read-only amount when bumping transaction fees
 - Fix 2FA popup truncated on small screen
+- Fix BIP21 uris 
 
 ## [3.7.3] - 2021-09-30
 ### Changed
