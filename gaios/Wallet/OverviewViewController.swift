@@ -884,15 +884,18 @@ extension OverviewViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
-        blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
-        assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
-        settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
-        tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
-        networkToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: onNetworkEvent)
 
-        if subAccounts.count > 0 && !userWillLogout {
-            handleRefresh()
+        if !userWillLogout {
+            transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: onNewTransaction)
+            blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
+            assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
+            settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
+            tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
+            networkToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: onNetworkEvent)
+
+            if subAccounts.count > 0 {
+                handleRefresh()
+            }
         }
     }
 
@@ -951,9 +954,15 @@ extension OverviewViewController: UserSettingsViewControllerDelegate {
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {
-            DispatchQueue.main.async {
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate
-                appDelegate?.logout(with: false)
+            DispatchQueue.main.async { [weak self] in
+                self?.logout()
+                    .recover { _ in }
+                    .done {
+                        self?.stopLoader()
+                        let storyboard = UIStoryboard(name: "Home", bundle: nil)
+                        let nav = storyboard.instantiateViewController(withIdentifier: "HomeViewController") as? UINavigationController
+                        UIApplication.shared.keyWindow?.rootViewController = nav
+                    }
             }
         })
     }
