@@ -29,8 +29,12 @@ class WatchOnlyLoginViewController: KeyboardViewController {
         loginButton.setTitle(NSLocalizedString("id_log_in", comment: ""), for: .normal)
         loginButton.addTarget(self, action: #selector(click), for: .touchUpInside)
         loginButton.setStyle(.primary)
-        usernameTextField.placeholder =  NSLocalizedString("id_username", comment: "")
-        passwordTextField.placeholder = NSLocalizedString("id_password", comment: "")
+        usernameTextField.attributedPlaceholder = NSAttributedString(
+            string: NSLocalizedString("id_username", comment: ""),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        passwordTextField.attributedPlaceholder = NSAttributedString(
+            string: NSLocalizedString("id_password", comment: ""),
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
         btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
 
         usernameTextField.setLeftPaddingPoints(10.0)
