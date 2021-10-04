@@ -68,8 +68,8 @@ struct Transaction {
         get { return get("can_rbf") ?? false }
     }
 
-    var createdAt: String {
-        get { return get("created_at") ?? String() }
+    var createdAtTs: UInt64 {
+        get { return get("created_at_ts") ?? 0 }
     }
 
     var error: String {
@@ -160,12 +160,7 @@ struct Transaction {
     }
 
     func date(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
-        guard let date = dateFormatter.date(from: createdAt) else {
-            return createdAt
-        }
+        let date = Date(timeIntervalSince1970: TimeInterval(Double(createdAtTs)))
         return DateFormatter.localizedString(from: date, dateStyle: dateStyle, timeStyle: timeStyle)
     }
 

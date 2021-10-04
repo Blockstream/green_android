@@ -262,7 +262,6 @@
 		81E0B4C3255302BB001C8544 /* CBOR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4C2255302BB001C8544 /* CBOR.swift */; };
 		81E0B4CB25531470001C8544 /* Commitment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4CA25531470001C8544 /* Commitment.swift */; };
 		81E0B4D725531AD6001C8544 /* TxInputLiquid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */; };
-		81E6E21F24E00E1C00853C06 /* fwserver.pem in Resources */ = {isa = PBXBuildFile; fileRef = 81E6E21E24E00E1C00853C06 /* fwserver.pem */; };
 		81E9B7FE21C90F74004D87B6 /* AccountsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E9B7FD21C90F74004D87B6 /* AccountsViewController.swift */; };
 		81E9B80021C92DB1004D87B6 /* AccountCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E9B7FF21C92DB1004D87B6 /* AccountCardView.swift */; };
 		81E9B80221C92EF7004D87B6 /* AccountCardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 81E9B80121C92EF7004D87B6 /* AccountCardView.xib */; };
@@ -598,7 +597,6 @@
 		81E0B4C2255302BB001C8544 /* CBOR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBOR.swift; sourceTree = "<group>"; };
 		81E0B4CA25531470001C8544 /* Commitment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Commitment.swift; sourceTree = "<group>"; };
 		81E0B4D625531AD6001C8544 /* TxInputLiquid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TxInputLiquid.swift; sourceTree = "<group>"; };
-		81E6E21E24E00E1C00853C06 /* fwserver.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fwserver.pem; sourceTree = "<group>"; };
 		81E9B7FD21C90F74004D87B6 /* AccountsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsViewController.swift; sourceTree = "<group>"; };
 		81E9B7FF21C92DB1004D87B6 /* AccountCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCardView.swift; sourceTree = "<group>"; };
 		81E9B80121C92EF7004D87B6 /* AccountCardView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountCardView.xib; sourceTree = "<group>"; };
@@ -1064,7 +1062,6 @@
 				817417362236E85500A28E36 /* ScreenLockWindow.swift */,
 				676FCF2A1F9D0CF800354E93 /* LaunchScreen.storyboard */,
 				676FCF281F9D0CF800354E93 /* Assets.xcassets */,
-				81E6E21E24E00E1C00853C06 /* fwserver.pem */,
 				676FCF2D1F9D0CF800354E93 /* Info.plist */,
 			);
 			path = gaios;
@@ -1525,7 +1522,6 @@
 				345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */,
 				81ACC4B1227337F3004B1E92 /* Wallet.storyboard in Resources */,
 				34BAD9DC2636A12700FB8011 /* HWW.storyboard in Resources */,
-				81E6E21F24E00E1C00853C06 /* fwserver.pem in Resources */,
 				3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */,
 				6DF2DEE723F382F7005F16E9 /* Help.storyboard in Resources */,
 				3497937F25F8B3F90029ECB1 /* Loader.xib in Resources */,

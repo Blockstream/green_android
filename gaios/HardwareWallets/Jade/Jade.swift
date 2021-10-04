@@ -401,11 +401,8 @@ extension Jade {
     }
 
     func download(_ fwpath: String, base64: Bool = false) -> [String: Any]? {
-        let path = Bundle.main.path(forResource: "fwserver", ofType: "pem")
-        let rootCert = try? String(contentsOfFile: path!, encoding: String.Encoding.utf8)
         let params: [String: Any] = [
             "method": "GET",
-            "root_certificates": [rootCert!],
             "accept": base64 ? "base64": "text",
             "urls": ["\(Jade.FW_SERVER_HTTPS)\(fwpath)",
                      "\(Jade.FW_SERVER_ONION)\(fwpath)"] ]
