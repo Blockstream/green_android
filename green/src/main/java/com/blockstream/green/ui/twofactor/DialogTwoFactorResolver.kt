@@ -107,9 +107,7 @@ class DialogTwoFactorResolver : TwoFactorResolver {
 
             appFragment?.let {
                 try {
-
                     twoFactorStatus.authData?.jsonObject?.get("telegram_url")?.jsonPrimitive?.content?.let { url ->
-                        println(url)
                         it.openBrowser(url)
                     }
                 } catch (e: Exception) {

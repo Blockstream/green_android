@@ -179,4 +179,10 @@
         <item name="android:background">@drawable/color_surface_round_stroked</item>
     </style>
 
+    <style name="GreenPinViewButton">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:minHeight">24dip</item>
+        <item name="android:minWidth">24dip</item>
+    </style>
+
 </resources>

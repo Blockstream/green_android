@@ -31,8 +31,8 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/two_factor_dialog_icon"
+            android:layout_height="@dimen/two_factor_dialog_icon"
             android:src="@drawable/ic_2fa"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -54,24 +54,26 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView10"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/icon"
             app:showDigits="true"
-            app:withPaste="true" />
+            app:withPaste="true"
+            tools:layout_height="200dp"/>
 
         <TextView
+            android:id="@+id/textView10"
             isVisible="@{attemptsRemaining != null}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:text="@{attemptsRemaining}"
             android:textAlignment="center"
-            android:textAppearance="?attr/textAppearanceSubtitle2"
+            android:textAppearance="?attr/textAppearanceBody1"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.666"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pinView"
             tools:text="@string/id_please_provide_your_1s" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
