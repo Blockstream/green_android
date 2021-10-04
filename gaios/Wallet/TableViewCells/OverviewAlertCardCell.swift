@@ -71,8 +71,9 @@ class OverviewAlertCardCell: UITableViewCell {
             lblHint.text = "Asset icons are missing, try reloading them"
             btnRight.setTitle("Reload", for: .normal)
             btnLeft.isHidden = true
-        case .systemMessage(let text):
+        case .systemMessage(var text):
             lblTitle.text = NSLocalizedString("id_system_message", comment: "")
+            if text.count > 200 { text = text.prefix(200) + " ..." }
             lblHint.text = text
             btnRight.setTitle(NSLocalizedString("id_accept", comment: ""), for: .normal)
             btnLeft.isHidden = true
