@@ -467,8 +467,6 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         logout()
             .recover { _ in }
             .done {
-                self.navigationController?.dismiss(animated: true, completion: {})
-                self.navigationController?.popToRootViewController(animated: true)
                 self.stopLoader()
 
                 let homeS = UIStoryboard(name: "Home", bundle: nil)
@@ -486,8 +484,6 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         logout()
             .recover { _ in }
             .done {
-                self.navigationController?.dismiss(animated: true, completion: {})
-                self.navigationController?.popToRootViewController(animated: true)
                 self.stopLoader()
 
                 let homeS = UIStoryboard(name: "Home", bundle: nil)
@@ -516,8 +512,6 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
         logout()
             .recover { _ in }
             .done {
-                self.navigationController?.dismiss(animated: true, completion: {})
-                self.navigationController?.popToRootViewController(animated: true)
                 self.stopLoader()
 
                 let storyboard = UIStoryboard(name: "Home", bundle: nil)
