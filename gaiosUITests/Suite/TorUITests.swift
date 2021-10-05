@@ -11,7 +11,7 @@ class EditUITests: XCTestBase {
         
         prepareWallet()
 
-        Transactions()
+        Overview()
             .pause(1)
             .tapSettings()
 
@@ -51,7 +51,7 @@ class EditUITests: XCTestBase {
             .pause(1)
             .digitPin()
 
-        Transactions()
+        Overview()
             .pause(1)
     }
     

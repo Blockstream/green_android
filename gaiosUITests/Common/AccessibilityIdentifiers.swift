@@ -83,15 +83,14 @@ struct AccessibilityIdentifiers {
     struct ContainerScreen {
         static let view = "view_container"
     }
-    
-    struct TransactionsScreen {
-        static let view = "view_transactions"
+
+    struct OverviewScreen {
+        static let view = "view_overview"
         static let settingsBtn = "settings_btn"
         static let sendView = "send_view"
         static let receiveView = "receive_view"
-        static let stackBtn = "stack_btn"
     }
-    
+
     struct LoginScreen {
         static let view = "view_login"
         static let menuBtn = "menu_btn"

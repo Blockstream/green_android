@@ -111,6 +111,12 @@ class OverviewViewController: UIViewController {
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
 
         isLoading = true
+
+        tableView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.view
+        settingsBtn.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.settingsBtn
+
+        sendView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.sendView
+        receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
     }
 
     func setContent() {

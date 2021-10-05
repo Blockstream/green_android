@@ -9,7 +9,7 @@ class PinUITests: XCTestBase {
 
         prepareWallet()
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapSettings()
         
@@ -36,7 +36,7 @@ class PinUITests: XCTestBase {
             .pause(1)
             .digitPin2()
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapSettings()
         
@@ -63,7 +63,7 @@ class PinUITests: XCTestBase {
             .pause(1)
             .digitPin()
         
-        Transactions()
+        Overview()
             .pause(1)
     }
     
@@ -71,7 +71,7 @@ class PinUITests: XCTestBase {
 
         prepareWallet()
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapSettings()
         
@@ -91,7 +91,7 @@ class PinUITests: XCTestBase {
             .pause(1)
             .digitPin()
         
-        Transactions()
+        Overview()
             .pause(1)
     }
     

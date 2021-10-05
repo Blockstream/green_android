@@ -9,7 +9,7 @@ class DrawerMenuUITests: XCTestBase {
 
         prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
   
-        Transactions()
+        Overview()
             .pause(1)
             .tapSettings()
         
@@ -19,7 +19,7 @@ class DrawerMenuUITests: XCTestBase {
         prepareWallet(walletName: Constants.walletNameSingleSig, words: Constants.mnemonic, isSingleSig: true)
         
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapDrawerBtn(Constants.walletNameSingleSig)
             .pause(1)
@@ -37,7 +37,7 @@ class DrawerMenuUITests: XCTestBase {
                 .pause(1)
                 .digitPin()
             
-            Transactions()
+            Overview()
                 .pause(1)
             
         } else {
@@ -50,7 +50,7 @@ class DrawerMenuUITests: XCTestBase {
         
         prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapDrawerBtn(Constants.walletName)
         
@@ -67,7 +67,7 @@ class DrawerMenuUITests: XCTestBase {
         let name = "Blockstream Jade"
         prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapDrawerBtn(Constants.walletName)
         
@@ -85,7 +85,7 @@ class DrawerMenuUITests: XCTestBase {
         let name = "Ledger Nano X"
         prepareWallet(walletName: Constants.walletName, words: Constants.mnemonic, isSingleSig: false)
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapDrawerBtn(Constants.walletName)
         

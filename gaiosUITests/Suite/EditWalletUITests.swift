@@ -10,7 +10,7 @@ class EditWalletUITests: XCTestBase {
         if !Home().existsWallet(named: walletName) {
             restoreWallet(walletName: walletName, words: words, isSingleSig: false)
 
-            Transactions()
+            Overview()
                 .pause(1)
                 .tapSettings()
 

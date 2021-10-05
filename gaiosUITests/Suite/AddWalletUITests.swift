@@ -66,7 +66,7 @@ class AddWalletUITests: XCTestBase {
             .pause(1)
             .tapNext()
             
-        Transactions()
+        Overview()
             .pause(1)
     }
     
@@ -116,7 +116,7 @@ class AddWalletUITests: XCTestBase {
             restoreWallet(walletName: walletName, words: words, isSingleSig: false)
         }
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapSettings()
         
@@ -150,7 +150,7 @@ class AddWalletUITests: XCTestBase {
             .pause(1)
             .tapLogin()
             
-        Transactions()
+        Overview()
             .pause(2)
     }
 
@@ -217,7 +217,7 @@ class AddWalletUITests: XCTestBase {
             .pause(1)
             .tapNext()
             
-        Transactions()
+        Overview()
             .pause(1)
     }
     

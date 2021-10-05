@@ -69,7 +69,7 @@ class XCTestBase: XCTestCase {
             .pause(1)
             .tapNext()
             
-        Transactions()
+        Overview()
             .pause(1)
     }
     

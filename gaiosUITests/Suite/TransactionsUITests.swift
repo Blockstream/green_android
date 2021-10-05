@@ -7,7 +7,7 @@ class TransactionstUITests: XCTestBase {
 
         prepareWallet()
         
-        Transactions()
+        Overview()
             .pause(1)
             .tapReceive()
         
@@ -17,7 +17,7 @@ class TransactionstUITests: XCTestBase {
             .pause(1)
             .tapBack()
 
-        Transactions()
+        Overview()
             .pause(1)
             .tapSend()
         
@@ -40,7 +40,7 @@ class TransactionstUITests: XCTestBase {
             .pause(1)
             .drag()
 
-        Transactions()
+        Overview()
             .pause(3)
     }
     
