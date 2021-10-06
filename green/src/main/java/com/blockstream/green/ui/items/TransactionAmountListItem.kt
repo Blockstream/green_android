@@ -25,7 +25,7 @@ data class TransactionAmountListItem constructor(
 
     override fun bindView(binding: ListItemTransactionAmountBinding, payloads: List<Any>) {
         binding.type = tx.txType
-        binding.address = tx.addressees[index]
+        binding.address = tx.addressees.getOrNull(index)
 
         look.setAssetToBinding(index, binding.amount)
 
