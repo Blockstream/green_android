@@ -7,17 +7,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.gdk.BalancePair
@@ -41,7 +38,6 @@ import com.blockstream.green.views.NpaLinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import com.greenaddress.greenbits.ui.send.ScanActivity
-import com.greenaddress.greenbits.ui.transactions.TransactionActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericFastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -54,7 +50,6 @@ import com.mikepenz.fastadapter.ui.items.ProgressItem
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import java.util.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -485,13 +480,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 }
                 is TransactionListItem -> {
                      navigate(OverviewFragmentDirections.actionOverviewFragmentToTransactionDetailsFragment(wallet = wallet, transaction = item.tx))
-
-//                    val txIntent = Intent(activity, TransactionActivity::class.java)
-//                    viewModel.getBalancesLiveData().value?.let {
-//                        txIntent.putExtra("TRANSACTION", item.tx.getTransactionDataV3())
-//                        txIntent.putExtra("BALANCE", HashMap(it))
-//                        startForResultTransactionDetails.launch(txIntent)
-//                    }
                 }
                 is TitleListItem -> {
                     if (item.showBackButton) {

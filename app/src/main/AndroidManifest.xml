@@ -62,12 +62,6 @@
             android:theme="@style/BitcoinTheme"
             android:label="@string/id_qr_scanner"
             />
-        <activity
-            android:name=".transactions.TransactionActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            android:label="@string/id_transaction_details"
-            />
         <activity android:name=".send.ScanActivity"
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"
