@@ -15,6 +15,11 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var btn2faThreshold: UIButton!
     @IBOutlet weak var bg2faThreshold: UIView!
     @IBOutlet weak var thresholdView: UIStackView!
+    @IBOutlet weak var lblReset2faTitle: UILabel!
+    @IBOutlet weak var lblReset2faCardTitle: UILabel!
+    @IBOutlet weak var reset2faCardDisclosure: UIImageView!
+    @IBOutlet weak var bgReset2fa: UIView!
+    @IBOutlet weak var reset2faView: UIStackView!
     @IBOutlet weak var lbl2faExpiryTitle: UILabel!
     @IBOutlet weak var lbl2faExpiryHint: UILabel!
     @IBOutlet weak var tableViewCsvTime: DynamicTableView!
@@ -64,6 +69,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
         lbl2faExpiryHint.text = NSLocalizedString("id_customize_2fa_expiration_of", comment: "")
         lblRecoveryTool.text = NSLocalizedString("id_your_2fa_expires_so_that_if_you", comment: "")
         btnRecoveryTool.setTitle(NSLocalizedString("id_recovery_tool", comment: ""), for: .normal)
+        lblReset2faTitle.text = "Reset 2FA"
+        lblReset2faCardTitle.text = "I lost my 2FA"
     }
 
     func setStyle() {
@@ -90,6 +97,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
         lblRecoveryTool.textColor = UIColor.customGrayLight()
         btnRecoveryTool.setStyle(.primary)
         thresholdCardDisclosure.image = UIImage(named: "rightArrow")?.maskWithColor(color: .white)
+        lblReset2faTitle.font = UIFont.systemFont(ofSize: 20.0, weight: .heavy)
+        lblReset2faCardTitle.font = UIFont.systemFont(ofSize: 18.0, weight: .bold)
+        reset2faCardDisclosure.image = UIImage(named: "rightArrow")?.maskWithColor(color: .white)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -209,6 +219,50 @@ class TwoFactorAuthenticationViewController: UIViewController {
                 self.showAlert(title: NSLocalizedString("Error", comment: ""), message: "Select a new value to change csv")
             }
         }
+    }
+
+    func showResetTwoFactor() {
+        let hint = "jane@example.com"
+        let alert = UIAlertController(title: NSLocalizedString("id_request_twofactor_reset", comment: ""), message: NSLocalizedString("id_resetting_your_twofactor_takes", comment: ""), preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = hint
+            textField.keyboardType = .emailAddress
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_save", comment: ""), style: .default) { _ in
+            let textField = alert.textFields!.first
+            let email = textField!.text
+            self.resetTwoFactor(email: email!)
+        })
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    func resetTwoFactor(email: String) {
+        let bgq = DispatchQueue.global(qos: .background)
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then(on: bgq) {
+            try SessionManager.shared.resetTwoFactor(email: email, isDispute: false).resolve()
+        }.ensure {
+            self.stopAnimating()
+        }.done { _ in
+            // The old implementation sent a logout() here
+            DropAlert().success(message: "Resert 2FA done!")
+        }.catch { error in
+            var text: String
+            if let error = error as? TwoFactorCallError {
+                switch error {
+                case .failure(let localizedDescription), .cancel(let localizedDescription):
+                    text = localizedDescription
+                }
+                self.showError(text)
+            }
+        }
+    }
+
+    @IBAction func btnReset2fa(_ sender: Any) {
+        showResetTwoFactor()
     }
 
     @IBAction func btn2faThreshold(_ sender: Any) {
