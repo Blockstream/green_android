@@ -218,7 +218,10 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             buttonText = StringHolder(R.string.id_view_in_explorer)
         )
 
-        list += noteListItem
+        // Watch-only sessions don't provide notes
+        if(!session.isWatchOnly) {
+            list += noteListItem
+        }
 
         FastAdapterDiffUtil.set(detailsAdapter.itemAdapter, list, true)
     }

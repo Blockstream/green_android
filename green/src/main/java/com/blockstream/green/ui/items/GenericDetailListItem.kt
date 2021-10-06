@@ -11,6 +11,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemGenericDetailBinding
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.copyToClipboard
+import com.blockstream.green.utils.snackbar
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import mu.KLogging
 
@@ -60,6 +61,7 @@ class GenericDetailListItem constructor(
                     binding.root.context,
                     binding.content
                 )
+                binding.root.snackbar(R.string.id_copied_to_clipboard)
             }
         }
 

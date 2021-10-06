@@ -160,6 +160,10 @@ fun Fragment.snackbar(text: String, duration: Int = Snackbar.LENGTH_SHORT) {
     }
 }
 
+fun View.snackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
+    Snackbar.make(this, resId, duration).show()
+}
+
 fun Fragment.share(text: String) {
     val builder = ShareCompat.IntentBuilder.from(requireActivity())
         .setType("text/plain")
