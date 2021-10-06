@@ -111,12 +111,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
     }
 
-    private val startForResultTransactionDetails = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            viewModel.refreshTransactions()
-        }
-    }
-
     companion object {
         const val ADD_NEW_ACCOUNT = "add_new_account"
     }

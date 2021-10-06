@@ -1,10 +1,13 @@
 package com.blockstream.green.ui.wallet
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.MenuRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -52,6 +55,12 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
     lateinit var noteListItem: GenericDetailListItem
 
+    private val startForResultFeeBump = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            popBackStack()
+        }
+    }
+
     @Inject
     lateinit var viewModelFactory: TransactionDetailsViewModel.AssistedFactory
     val viewModel: TransactionDetailsViewModel by viewModels {
@@ -89,8 +98,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledOrReturnNull()?.let {
-                val intent = Intent(requireContext(), SendAmountActivity::class.java)
-                startActivity(intent)
+                startForResultFeeBump.launch(Intent(requireContext(), SendAmountActivity::class.java))
             }
         }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.data.Transactions
+import com.blockstream.gdk.params.BalanceParams
 import com.blockstream.gdk.params.BumpTransactionParams
 import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.green.database.CredentialType
@@ -93,9 +94,12 @@ class TransactionDetailsViewModel @AssistedInject constructor(
                 throw Exception("Couldn't find the transaction")
             }
 
+            val unspentOutputs = it.getUnspentOutputs(BalanceParams(subaccount = wallet.activeAccount, confirmations = 1))
+
             val params = BumpTransactionParams(
                 previousTransaction = transaction,
                 feeRate = initialTransaction.feeRate,
+                utxos = unspentOutputs.unspentOutputs,
                 subAccount = wallet.activeAccount
             )
 

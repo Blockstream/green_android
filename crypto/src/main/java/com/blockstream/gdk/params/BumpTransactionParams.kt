@@ -12,6 +12,7 @@ import kotlinx.serialization.json.JsonElement
 data class BumpTransactionParams(
     @SerialName("previous_transaction") val previousTransaction: JsonElement,
     @SerialName("fee_rate") val feeRate: Long,
+    @SerialName("utxos") val utxos: JsonElement,
     @SerialName("subaccount") val subAccount: Long
 ): GAJson<BumpTransactionParams>() {
 
