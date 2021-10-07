@@ -65,6 +65,7 @@ struct TwoFactorConfig: Codable {
         case allMethods = "all_methods"
         case enableMethods = "enabled_methods"
         case limits = "limits"
+        case twofactorReset = "twofactor_reset"
     }
     let anyEnabled: Bool
     let allMethods: [String]
@@ -74,6 +75,7 @@ struct TwoFactorConfig: Codable {
     let phone: TwoFactorConfigItem
     let sms: TwoFactorConfigItem
     let gauth: TwoFactorConfigItem
+    let twofactorReset: TwoFactorReset
 
     func gauthSecret() -> String? {
         return URL(string: gauth.data)!.queryItems["secret"]
