@@ -98,6 +98,7 @@ class NotificationManager {
                 if twoFactorConfig.enableMethods.count <= 1 {
                     self.events.append(Event(value: data!))
                 }
+                self.twoFactorReset = twoFactorConfig.twofactorReset
             }
         }.catch { _ in
             print("Error on get settings")
