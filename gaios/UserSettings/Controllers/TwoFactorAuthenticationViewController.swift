@@ -253,10 +253,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
             try SessionManager.shared.resetTwoFactor(email: email, isDispute: false).resolve()
         }.ensure {
             self.stopAnimating()
-        }.done { _ in
+        }.done { [weak self] _ in
             DropAlert().success(message: "Resert 2FA done!")
-//            self?.delegate?.userLogout()
-            SessionManager.shared.notificationManager.reloadTwoFactor()
+            self?.delegate?.userLogout()
         }.catch { error in
             var text: String
             if let error = error as? TwoFactorCallError {
