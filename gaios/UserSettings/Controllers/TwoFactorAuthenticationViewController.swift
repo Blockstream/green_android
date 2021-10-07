@@ -76,7 +76,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         lbl2faExpiryHint.text = NSLocalizedString("id_customize_2fa_expiration_of", comment: "")
         lblRecoveryTool.text = NSLocalizedString("id_your_2fa_expires_so_that_if_you", comment: "")
         btnRecoveryTool.setTitle(NSLocalizedString("id_recovery_tool", comment: ""), for: .normal)
-        lblReset2faTitle.text = "Reset 2FA"
+        lblReset2faTitle.text = NSLocalizedString("id_request_twofactor_reset", comment: "")
         lblReset2faCardTitle.text = NSLocalizedString("id_i_lost_my_2fa", comment: "")
     }
 
@@ -254,7 +254,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { [weak self] _ in
-            DropAlert().success(message: "Resert 2FA done!")
+            DropAlert().success(message: NSLocalizedString("id_2fa_reset_in_progress", comment: ""))
             self?.delegate?.userLogout()
         }.catch { error in
             var text: String
