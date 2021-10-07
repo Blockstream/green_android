@@ -181,8 +181,8 @@
 
     <style name="GreenPinViewButton">
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:minHeight">24dip</item>
-        <item name="android:minWidth">24dip</item>
+        <item name="android:minWidth">@dimen/green_pin_view_button</item>
+        <item name="android:minHeight">@dimen/green_pin_view_button</item>
     </style>
 
 </resources>

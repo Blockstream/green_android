@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="pin_circle">12dp</dimen>
-    <dimen name="pin_textsize">14sp</dimen>
-
-    <dimen name="two_factor_dialog_icon">24dp</dimen>
-
-    <dimen name="green_pin_view_button">20dip</dimen>
 
     <dimen name="headline1_textsize">22sp</dimen>
     <dimen name="headline5_textsize">13sp</dimen>

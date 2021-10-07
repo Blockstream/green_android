@@ -31,6 +31,20 @@
 
     <style name="AppTheme.Base" parent="Theme.MaterialComponents.Bridge">
 
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Green.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Green.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Green.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.Green.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.Green.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.Green.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Green.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.Green.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Green.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Green.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.Green.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Green.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.Green.Overline</item>
+
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense</item>
 
         <!-- colorPrimaryDark is used for the status bar -->

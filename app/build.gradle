@@ -98,7 +98,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation "androidx.preference:preference:1.1.1"
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation "androidx.constraintlayout:constraintlayout:2.1.1"
     implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'com.google.zxing:core:3.3.3' // API <=24 compatibility
