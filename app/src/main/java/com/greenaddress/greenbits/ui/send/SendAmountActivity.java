@@ -492,6 +492,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
 
         mTx.replace("send_all", mSendAll ? BooleanNode.TRUE : BooleanNode.FALSE);
         final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
+
+        if(mSendAll){
+            addressee.replace("satoshi", new LongNode(0));
+        }
         if (mCurrentAmount != null) {
             final LongNode satoshi = new LongNode(mCurrentAmount.get("satoshi").asLong());
             addressee.replace("satoshi", satoshi);
