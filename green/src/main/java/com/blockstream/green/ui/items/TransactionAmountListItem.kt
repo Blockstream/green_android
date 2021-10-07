@@ -25,7 +25,8 @@ data class TransactionAmountListItem constructor(
 
     override fun bindView(binding: ListItemTransactionAmountBinding, payloads: List<Any>) {
         binding.type = tx.txType
-        binding.address = tx.addressees.getOrNull(index)
+        // GDK returns non-confidential addresses for Liquid. Hide them for now
+        binding.address = if(look.session.isLiquid) null else tx.addressees.getOrNull(index)
 
         look.setAssetToBinding(index, binding.amount)
 

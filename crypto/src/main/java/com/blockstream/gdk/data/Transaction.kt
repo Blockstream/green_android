@@ -110,16 +110,6 @@ data class Transaction(
         return currentBlock - blockHeight + 1
     }
 
-
-    @Deprecated("REMOVE")
-    private val objectMapper by lazy { ObjectMapper() }
-    fun getTransactionDataV3() : TransactionData {
-        return objectMapper.treeToValue(
-            objectMapper.readTree(Json.encodeToString(this)),
-            TransactionData::class.java
-        )
-    }
-
     fun isLoadingTransaction() = blockHeight == -1L
 
     fun getUnblindedString() = (inputs.mapNotNull { it.getUnblindedString() } + outputs.mapNotNull { it.getUnblindedString() }).joinToString(",")
