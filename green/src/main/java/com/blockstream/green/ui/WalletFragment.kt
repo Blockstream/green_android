@@ -76,7 +76,9 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                     consumableEvent?.getContentIfNotHandledOrReturnNull{ event ->
                         event == AbstractWalletViewModel.Event.DELETE_WALLET
                     }?.let {
-                        popBackStack()
+                        NavGraphDirections.actionGlobalIntroFragment().let { directions ->
+                            navigate(directions.actionId, directions.arguments, isLogout = true)
+                        }
                     }
                 }
 

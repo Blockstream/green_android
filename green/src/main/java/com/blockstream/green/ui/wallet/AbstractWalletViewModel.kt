@@ -144,6 +144,10 @@ abstract class AbstractWalletViewModel constructor(
         wallet.observable {
             sessionManager.destroyWalletSession(wallet)
             walletRepository.deleteWallet(wallet)
+        }.doOnSubscribe {
+            onProgress.postValue(true)
+        }.doOnTerminate {
+            onProgress.postValue(false)
         }.subscribeBy(
             onError = {
                 onError.postValue(ConsumableEvent(it))
