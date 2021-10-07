@@ -77,7 +77,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         lblRecoveryTool.text = NSLocalizedString("id_your_2fa_expires_so_that_if_you", comment: "")
         btnRecoveryTool.setTitle(NSLocalizedString("id_recovery_tool", comment: ""), for: .normal)
         lblReset2faTitle.text = "Reset 2FA"
-        lblReset2faCardTitle.text = "I lost my 2FA"
+        lblReset2faCardTitle.text = NSLocalizedString("id_i_lost_my_2fa", comment: "")
     }
 
     func setStyle() {
