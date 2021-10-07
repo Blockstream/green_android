@@ -418,8 +418,11 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             showAutoLogout()
         case .TwoFactorAuthentication:
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController")
-            navigationController?.pushViewController(vc, animated: true)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
+                vc.delegate = self
+                navigationController?.pushViewController(vc, animated: true)
+            }
+
         case .Pgp:
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "PgpViewController")
@@ -689,5 +692,11 @@ extension UserSettingsViewController {
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
         }
+    }
+}
+
+extension UserSettingsViewController: TwoFactorAuthenticationViewControllerDelegate {
+    func userLogout() {
+        self.logout()
     }
 }

@@ -1,6 +1,10 @@
 import UIKit
 import PromiseKit
 
+protocol TwoFactorAuthenticationViewControllerDelegate: AnyObject {
+    func userLogout()
+}
+
 class TwoFactorAuthenticationViewController: UIViewController {
 
     @IBOutlet weak var lblEnable2faTitle: UILabel!
@@ -25,6 +29,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var tableViewCsvTime: DynamicTableView!
     @IBOutlet weak var lblRecoveryTool: UILabel!
     @IBOutlet weak var btnRecoveryTool: UIButton!
+
+    weak var delegate: TwoFactorAuthenticationViewControllerDelegate?
 
     var csvTypes = Settings.CsvTime.all()
     var csvValues = Settings.CsvTime.values()
@@ -54,6 +60,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             lbl2faExpiryHint.isHidden = true
             tableViewCsvTime.isHidden = true
             lblRecoveryTool.isHidden = true
+            reset2faView.isHidden = true
         }
     }
 
@@ -246,9 +253,9 @@ class TwoFactorAuthenticationViewController: UIViewController {
             try SessionManager.shared.resetTwoFactor(email: email, isDispute: false).resolve()
         }.ensure {
             self.stopAnimating()
-        }.done { _ in
-            // The old implementation sent a logout() here
+        }.done { [weak self] _ in
             DropAlert().success(message: "Resert 2FA done!")
+            self?.delegate?.userLogout()
         }.catch { error in
             var text: String
             if let error = error as? TwoFactorCallError {
