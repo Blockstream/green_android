@@ -74,7 +74,6 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         }
 
         sessionManager.connectionChangeEvent.observe(viewLifecycleOwner){
-            println("connectionChangeEvent")
             softwareWalletsAdapter.notifyAdapterDataSetChanged()
         }
     }

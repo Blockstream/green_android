@@ -30,6 +30,8 @@ import mu.KLogging
 import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.collections.LinkedHashMap
+import kotlin.properties.Delegates
+import kotlin.reflect.KProperty
 
 
 class GreenSession constructor(
@@ -89,7 +91,11 @@ class GreenSession constructor(
     val isMainnet
         get() = network.isMainnet
 
-    var isConnected = false
+    var isConnected : Boolean by Delegates.observable(false) { property, oldValue, newValue ->
+        if(oldValue != newValue){
+            sessionManager.fireConnectionChangeEvent()
+        }
+    }
         private set
 
     var walletHashId : String? = null
@@ -239,10 +245,6 @@ class GreenSession constructor(
     }
 
     fun disconnect(disconnectDevice : Boolean = true) {
-        if(isConnected){
-            sessionManager.fireConnectionChangeEvent()
-        }
-
         isConnected = false
         if(disconnectDevice){
             device?.disconnect()
@@ -467,8 +469,6 @@ class GreenSession constructor(
         isConnected = true
         walletHashId = loginData.walletHashId
         initializeSessionData(initAccountIndex)
-
-        sessionManager.fireConnectionChangeEvent()
     }
 
     private fun initializeSessionData(initAccountIndex: Long) {

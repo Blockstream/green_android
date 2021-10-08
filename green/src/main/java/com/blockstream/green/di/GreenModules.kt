@@ -88,9 +88,10 @@ class GreenModules {
         settingsManager: SettingsManager,
         assetManager: AssetManager,
         greenWallet: GreenWallet,
-        QATester: QATester
+        qaTester: QATester,
+        @ApplicationContext context: Context
     ): SessionManager {
-        return SessionManager(settingsManager, assetManager, greenWallet, QATester)
+        return SessionManager(settingsManager, assetManager, greenWallet, qaTester, context.isDevelopmentFlavor())
     }
 
     @Singleton

@@ -19,11 +19,12 @@ import mu.KLogging
 import java.util.*
 import kotlin.concurrent.schedule
 
-class SessionManager(
+class SessionManager constructor(
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
-    qaTester: QATester
+    qaTester: QATester,
+    isDevelopmentFlavor : Boolean
 ) : LifecycleObserver {
     private val sessions = mutableMapOf<GASession, GreenSession>()
     private val walletSessions = mutableMapOf<WalletId, GreenSession>()
@@ -37,7 +38,7 @@ class SessionManager(
 
     var connectionChangeEvent = MutableLiveData<Boolean>()
 
-    private val AllowMultipleConnectedSessions = false
+    private val AllowMultipleConnectedSessions = isDevelopmentFlavor
 
     init {
 
