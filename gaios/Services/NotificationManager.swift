@@ -3,7 +3,6 @@ import PromiseKit
 
 class NotificationManager {
 
-    var twoFactorReset: TwoFactorReset?
     var events = [Event]()
     var blockHeight: UInt32 = 0
 
@@ -37,21 +36,12 @@ class NotificationManager {
                 }
             } catch { break }
         case .TwoFactorReset:
-            do {
-                let json = try JSONSerialization.data(withJSONObject: data, options: [])
-                self.twoFactorReset = try JSONDecoder().decode(TwoFactorReset.self, from: json)
-                events.removeAll(where: { $0.kindOf(TwoFactorReset.self)})
-                if self.twoFactorReset?.isResetActive ?? false {
-                    events.append(Event(value: data))
-                }
-            } catch { break }
-            post(event: .TwoFactorReset, data: data)
+            SessionManager.shared.loadTwoFactorConfig().done { _ in
+                self.post(event: .TwoFactorReset, data: data)
+            }
         case .Settings:
             reloadSystemMessage()
             Settings.shared = Settings.from(data)
-            if let acc = AccountsManager.shared.current, !acc.isWatchonly {
-                reloadTwoFactor()
-            }
             post(event: .Settings, data: data)
         case .Session:
             post(event: EventType.Network, data: data)
@@ -84,25 +74,6 @@ class NotificationManager {
     func post(event: EventType, data: [String: Any]) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue),
                                         object: nil, userInfo: data)
-    }
-
-    func reloadTwoFactor() {
-        events.removeAll(where: { $0.kindOf(Settings.self)})
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map(on: bgq) {
-            try SessionManager.shared.getTwoFactorConfig()
-        }.done { dataTwoFactorConfig in
-            if dataTwoFactorConfig != nil {
-                let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig!, options: []))
-                let data = try JSONSerialization.jsonObject(with: JSONEncoder().encode(Settings.shared), options: .allowFragments) as? [String: Any]
-                if twoFactorConfig.enableMethods.count <= 1 {
-                    self.events.append(Event(value: data!))
-                }
-                self.twoFactorReset = twoFactorConfig.twofactorReset
-            }
-        }.catch { _ in
-            print("Error on get settings")
-        }
     }
 
     func reloadSystemMessage() {

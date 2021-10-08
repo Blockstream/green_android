@@ -8,6 +8,11 @@ class SessionManager: Session {
     var account: Account?
     var connected = false
     var notificationManager: NotificationManager
+    var twoFactorConfig: TwoFactorConfig?
+
+    var isResetActive: Bool? {
+        get { twoFactorConfig?.twofactorReset.isResetActive }
+    }
 
     var activeWallet: UInt32 {
         get {
@@ -101,6 +106,20 @@ class SessionManager: Session {
             let jsonData = try JSONSerialization.data(withJSONObject: subaccounts ?? [:])
             let wallets = try JSONDecoder().decode([WalletItem].self, from: jsonData)
             return wallets
+        }
+    }
+
+    func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
+        guard let acc = AccountsManager.shared.current, !acc.isWatchonly else {
+            return Promise<TwoFactorConfig> { seal in seal.reject(GaError.GenericError) }
+        }
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().compactMap(on: bgq) {
+            try SessionManager.shared.getTwoFactorConfig()
+        }.compactMap { dataTwoFactorConfig in
+            let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: []))
+            self.twoFactorConfig = twoFactorConfig
+            return twoFactorConfig
         }
     }
 }

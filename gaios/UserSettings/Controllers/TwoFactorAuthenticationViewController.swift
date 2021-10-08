@@ -173,11 +173,12 @@ class TwoFactorAuthenticationViewController: UIViewController {
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.then(on: bgq) { details in
             try SessionManager.shared.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
+        }.then(on: bgq) { details in
+            SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            SessionManager.shared.notificationManager.reloadTwoFactor()
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {

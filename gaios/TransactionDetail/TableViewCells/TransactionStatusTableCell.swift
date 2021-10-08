@@ -36,7 +36,7 @@ class TransactionStatusTableCell: UITableViewCell {
             statusLabel.text = NSLocalizedString("id_completed", comment: "")
         }
         let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false
-        let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(SessionManager.shared.notificationManager.twoFactorReset?.isResetActive ?? false)
+        let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(SessionManager.shared.isResetActive ?? false)
         statusImageView.isHidden = !(status == .confirmed)
         increaseFeeStackView.isHidden = !showBumpFee
     }

@@ -70,10 +70,11 @@ class SetGauthViewController: UIViewController {
             try SessionManager.shared.changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(connected: { self.connected })
+        }.then(on: bgq) { call in
+            SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            SessionManager.shared.notificationManager.reloadTwoFactor()
             self.navigationController?.popViewController(animated: true)
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {

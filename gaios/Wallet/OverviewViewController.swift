@@ -64,20 +64,17 @@ class OverviewViewController: UIViewController {
 
     var isResetActive: Bool {
         get {
-            guard let twoFactorConfig = SessionManager.shared.notificationManager.twoFactorReset else { return false }
-            return twoFactorConfig.isResetActive
+            SessionManager.shared.isResetActive ?? false
         }
     }
     var isDisputeActive: Bool {
         get {
-            guard let twoFactorConfig = SessionManager.shared.notificationManager.twoFactorReset else { return false }
-            return twoFactorConfig.isDisputeActive
+            SessionManager.shared.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
         }
     }
     var resetDaysRemaining: Int? {
         get {
-            guard let twoFactorConfig = SessionManager.shared.notificationManager.twoFactorReset else { return nil }
-            return twoFactorConfig.daysRemaining
+            SessionManager.shared.twoFactorConfig?.twofactorReset.daysRemaining ?? 0
         }
     }
 

@@ -19,8 +19,7 @@ class UserSettingsViewController: UIViewController {
     var twoFactorConfig: TwoFactorConfig?
     var isResetActive: Bool {
         get {
-            guard let twoFactorConfig = SessionManager.shared.notificationManager.twoFactorReset else { return false }
-            return twoFactorConfig.isResetActive
+            SessionManager.shared.isResetActive ?? false
         }
     }
     var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
