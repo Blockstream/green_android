@@ -967,7 +967,7 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="amount" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.60000002384185791" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qIE-Xc-qdg">
-                                                            <rect key="frame" x="118" y="46" width="256" height="22"/>
+                                                            <rect key="frame" x="108" y="46" width="266" height="22"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="22" id="Np0-ib-w3K"/>
                                                             </constraints>
@@ -995,9 +995,16 @@
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_spv_warning" translatesAutoresizingMaskIntoConstraints="NO" id="Q5M-oE-5e1">
+                                                            <rect key="frame" x="106" y="41" width="32" height="32"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="32" id="DDf-wU-hjg"/>
+                                                                <constraint firstAttribute="height" constant="32" id="YUI-pN-tmg"/>
+                                                            </constraints>
+                                                        </imageView>
                                                     </subviews>
                                                     <constraints>
-                                                        <constraint firstItem="qIE-Xc-qdg" firstAttribute="leading" secondItem="WNo-K8-4d5" secondAttribute="trailing" constant="20" id="2O4-SE-TQ1"/>
+                                                        <constraint firstItem="qIE-Xc-qdg" firstAttribute="leading" secondItem="WNo-K8-4d5" secondAttribute="trailing" constant="10" id="2O4-SE-TQ1"/>
                                                         <constraint firstItem="WNo-K8-4d5" firstAttribute="centerY" secondItem="qIE-Xc-qdg" secondAttribute="centerY" id="3bM-rL-Mtq"/>
                                                         <constraint firstItem="qIE-Xc-qdg" firstAttribute="top" secondItem="QBK-xX-Zzt" secondAttribute="bottom" constant="16" id="7Lr-C7-NPu"/>
                                                         <constraint firstItem="jqR-uJ-fXB" firstAttribute="centerY" secondItem="WNo-K8-4d5" secondAttribute="centerY" id="8vJ-Xe-TH6"/>
@@ -1011,8 +1018,10 @@
                                                         <constraint firstItem="5GX-9U-yRd" firstAttribute="leading" secondItem="tRU-wZ-1YL" secondAttribute="leading" id="fhB-0v-Owd"/>
                                                         <constraint firstItem="5GX-9U-yRd" firstAttribute="centerY" secondItem="QBK-xX-Zzt" secondAttribute="centerY" id="fmm-gJ-fem"/>
                                                         <constraint firstItem="jqR-uJ-fXB" firstAttribute="leading" secondItem="tRU-wZ-1YL" secondAttribute="leading" id="jPf-0a-t3D"/>
+                                                        <constraint firstItem="Q5M-oE-5e1" firstAttribute="leading" secondItem="WNo-K8-4d5" secondAttribute="trailing" constant="8" id="jp2-Dy-i0g"/>
                                                         <constraint firstItem="WNo-K8-4d5" firstAttribute="leading" secondItem="jqR-uJ-fXB" secondAttribute="trailing" constant="10" id="sbK-ZU-sIg"/>
                                                         <constraint firstAttribute="bottom" secondItem="qIE-Xc-qdg" secondAttribute="bottom" constant="16" id="ss0-nI-LS2"/>
+                                                        <constraint firstItem="Q5M-oE-5e1" firstAttribute="centerY" secondItem="jqR-uJ-fXB" secondAttribute="centerY" id="tbb-L0-d7i"/>
                                                     </constraints>
                                                 </view>
                                             </subviews>
@@ -1031,6 +1040,7 @@
                                             <outlet property="lblDate" destination="4OO-S3-Dcs" id="jjJ-6l-gub"/>
                                             <outlet property="lblDenom" destination="WNo-K8-4d5" id="bsJ-h4-c7j"/>
                                             <outlet property="lblStatus" destination="YeM-SF-7nX" id="9dW-q6-41o"/>
+                                            <outlet property="spvVerifyIcon" destination="Q5M-oE-5e1" id="eO7-Eo-c1q"/>
                                             <outlet property="statusBadge" destination="u4v-V2-N8e" id="gsR-6D-FXn"/>
                                         </connections>
                                     </tableViewCell>
@@ -1179,6 +1189,7 @@
     <resources>
         <image name="default_asset_icon" width="32" height="32"/>
         <image name="ellipses_vertical" width="36" height="36"/>
+        <image name="ic_spv_warning" width="60" height="60"/>
         <image name="logo" width="22.5" height="28"/>
         <image name="receive" width="25" height="25"/>
         <image name="send" width="25" height="25"/>

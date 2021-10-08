@@ -10,6 +10,7 @@ class OverviewTransactionCell: UITableViewCell {
     @IBOutlet weak var lblDate: UILabel!
     @IBOutlet weak var lblDenom: UILabel!
     @IBOutlet weak var icon: UIImageView!
+    @IBOutlet weak var spvVerifyIcon: UIImageView!
 
     var isLiquid: Bool {
         let account = AccountsManager.shared.current
@@ -95,6 +96,7 @@ class OverviewTransactionCell: UITableViewCell {
         }
 
         setIcon(transaction: transaction, network: network)
+        setSpvVerifyICon(tx: transaction)
     }
 
     func setIcon(transaction: Transaction, network: String?) {
@@ -104,6 +106,19 @@ class OverviewTransactionCell: UITableViewCell {
             icon.image = UIImage(named: "ntw_testnet")
         } else {
             icon.image = Registry.shared.image(for: transaction.defaultAsset)
+        }
+    }
+
+    func setSpvVerifyICon(tx: Transaction) {
+        switch tx.spvVerified {
+        case "disabled", "verified", nil:
+            spvVerifyIcon.isHidden = true
+        case "in_progress":
+            spvVerifyIcon.isHidden = false
+            spvVerifyIcon.image = UIImage(named: "spv_progress")
+        default:
+            spvVerifyIcon.isHidden = false
+            spvVerifyIcon.image = UIImage(named: "ic_spv_warning")
         }
     }
 
