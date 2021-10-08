@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hka-zm-5l0">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hka-zm-5l0">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -134,7 +134,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="TransactionDetailHeaderCell" rowHeight="58" id="n9r-WJ-xJl" customClass="TransactionDetailHeaderCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="24.5" width="414" height="58"/>
+                                        <rect key="frame" x="0.0" y="44.5" width="414" height="58"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="n9r-WJ-xJl" id="zjS-au-mxq">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="58"/>
@@ -160,7 +160,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="TransactionStatusTableCell" rowHeight="52" id="hf4-4P-Mpn" customClass="TransactionStatusTableCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="82.5" width="414" height="52"/>
+                                        <rect key="frame" x="0.0" y="102.5" width="414" height="52"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hf4-4P-Mpn" id="kXl-7H-sTS">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="52"/>
@@ -208,27 +208,37 @@
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="check" translatesAutoresizingMaskIntoConstraints="NO" id="j57-MW-JY0">
                                                     <rect key="frame" x="135.5" y="9.5" width="25" height="25"/>
                                                 </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.59999999999999998" translatesAutoresizingMaskIntoConstraints="NO" id="lSm-er-l16">
+                                                    <rect key="frame" x="240" y="12" width="166" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="bottomMargin" secondItem="8G7-vK-r0n" secondAttribute="bottom" constant="8" id="78M-Gd-Cwa"/>
+                                                <constraint firstItem="lSm-er-l16" firstAttribute="centerY" secondItem="8G7-vK-r0n" secondAttribute="centerY" id="7Xc-yN-5XO"/>
                                                 <constraint firstAttribute="trailing" secondItem="br6-Rw-m9m" secondAttribute="trailing" constant="8" id="Jgx-jq-00s"/>
                                                 <constraint firstItem="8G7-vK-r0n" firstAttribute="leading" secondItem="kXl-7H-sTS" secondAttribute="leadingMargin" id="QCa-zd-dZo"/>
+                                                <constraint firstItem="lSm-er-l16" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8G7-vK-r0n" secondAttribute="trailing" constant="12" id="RCW-Sb-Ryz"/>
                                                 <constraint firstItem="j57-MW-JY0" firstAttribute="leading" secondItem="8G7-vK-r0n" secondAttribute="trailing" constant="8" id="VoQ-n2-A78"/>
                                                 <constraint firstItem="8G7-vK-r0n" firstAttribute="top" secondItem="kXl-7H-sTS" secondAttribute="topMargin" id="f7t-sP-D6O"/>
                                                 <constraint firstItem="br6-Rw-m9m" firstAttribute="centerY" secondItem="8G7-vK-r0n" secondAttribute="centerY" id="jKB-oi-2AS"/>
                                                 <constraint firstItem="j57-MW-JY0" firstAttribute="centerY" secondItem="8G7-vK-r0n" secondAttribute="centerY" id="qhr-hA-xV7"/>
+                                                <constraint firstAttribute="trailing" secondItem="lSm-er-l16" secondAttribute="trailing" constant="8" id="vdt-OT-xjw"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" name="customTitaniumDark"/>
                                         <connections>
                                             <outlet property="increaseFeeButton" destination="gCI-6h-LDa" id="vEG-Rq-hoR"/>
                                             <outlet property="increaseFeeStackView" destination="br6-Rw-m9m" id="FY1-7R-WGQ"/>
+                                            <outlet property="spvVerifyLabel" destination="lSm-er-l16" id="jsL-kQ-9NG"/>
                                             <outlet property="statusImageView" destination="j57-MW-JY0" id="3kN-1v-2Gz"/>
                                             <outlet property="statusLabel" destination="8G7-vK-r0n" id="Lh8-xP-zx5"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="TransactionDetailTableCell" rowHeight="92" id="pTh-LR-sFe" customClass="TransactionDetailTableCell" customModule="gaios" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="134.5" width="414" height="92"/>
+                                        <rect key="frame" x="0.0" y="154.5" width="414" height="92"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="pTh-LR-sFe" id="DTs-1N-k7B">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="92"/>
@@ -300,7 +310,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Ec-T2-5yh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7972.5" y="1704.9295774647887"/>
+            <point key="canvasLocation" x="7972.4637681159429" y="1704.9107142857142"/>
         </scene>
         <!--SendBtcDetailsViewController-->
         <scene sceneID="tm8-cG-xMn">

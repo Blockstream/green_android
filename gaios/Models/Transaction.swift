@@ -151,6 +151,10 @@ struct Transaction {
         get { return get("inputs") }
     }
 
+    var spvVerified: String? {
+        get { return get("spv_verified") }
+    }
+
     func address() -> String? {
         let out: [String] = get("addressees") ?? []
         guard !out.isEmpty else {

@@ -9,6 +9,7 @@ enum TransactionStatus {
 class TransactionStatusTableCell: UITableViewCell {
 
     @IBOutlet weak var statusLabel: UILabel!
+    @IBOutlet weak var spvVerifyLabel: UILabel!
     @IBOutlet weak var statusImageView: UIImageView!
     @IBOutlet weak var increaseFeeButton: UIButton!
     @IBOutlet weak var increaseFeeStackView: UIStackView!
@@ -39,5 +40,22 @@ class TransactionStatusTableCell: UITableViewCell {
         let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(SessionManager.shared.isResetActive ?? false)
         statusImageView.isHidden = !(status == .confirmed)
         increaseFeeStackView.isHidden = !showBumpFee
+
+        // SPV verify
+        spvVerifyLabel.isHidden = ["disabled", "unconfirmed"].contains(transaction.spvVerified)
+        switch transaction.spvVerified {
+        case "verified":
+            spvVerifyLabel.textColor = .white
+            spvVerifyLabel.text = NSLocalizedString("id_spv_verified", comment: "")
+        case "not_verified":
+            spvVerifyLabel.textColor = .red
+            spvVerifyLabel.text = NSLocalizedString("id_invalid_spv", comment: "")
+        case "not_longest":
+            spvVerifyLabel.textColor = .yellow
+            spvVerifyLabel.text = NSLocalizedString("id_not_on_longest_chain", comment: "")
+        default:
+            spvVerifyLabel.textColor = .white
+            spvVerifyLabel.text = NSLocalizedString("id_verifying_transaction_validity", comment: "")
+        }
     }
 }

@@ -150,6 +150,7 @@ class WalletSettingsViewController: KeyboardViewController {
         fields.forEach {
             $0?.setLeftPaddingPoints(10.0)
             $0?.setRightPaddingPoints(10.0)
+            $0?.isHidden = true
         }
 
         cardTxCheck.alpha = 0.5
