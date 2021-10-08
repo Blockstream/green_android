@@ -100,9 +100,6 @@ class WalletSettingsViewController: KeyboardViewController {
         switchTor.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.torSwitch
         btnSave.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.saveBtn
         btnCancel.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.cancelBtn
-
-        cardSPV.isHidden = account?.isSingleSig != true
-        cardSPVliquidServer.isHidden = true
     }
 
     func setContent() {
@@ -141,6 +138,9 @@ class WalletSettingsViewController: KeyboardViewController {
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
 
         cardProxyDetail.isHidden = true
+        cardSPVliquidServer.isHidden = true
+        cardSPVbtcServer.isHidden = true
+        cardSPVtestnetServer.isHidden = true
     }
 
     func setStyle() {
@@ -187,7 +187,6 @@ class WalletSettingsViewController: KeyboardViewController {
         switchTestnet.setOn(UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true, animated: true)
 
         switchPSPVPersonalNode.setOn(networkSettings[Constants.personalNodeEnabled] as? Bool ?? false, animated: true)
-        cardSPVPersonalNodeDetails.isHidden = !switchPSPVPersonalNode.isOn
         fieldSPVbtcServer.text = networkSettings[Constants.btcElectrumSrv] as? String ?? ""
         fieldSPVliquidServer.text = networkSettings[Constants.liquidElectrumSrv] as? String ?? ""
         fieldSPVtestnetServer.text = networkSettings[Constants.testnetElectrumSrv] as? String ?? ""
