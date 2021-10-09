@@ -4,6 +4,7 @@ import androidx.lifecycle.Observer
 import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.TestViewModel
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
@@ -126,7 +127,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         verify(walletRepository, never()).updateWalletSync(any())
 
         verify(eventObserver).onChanged(argThat {
-            val wallet = this.peekContent() as Wallet
+            val wallet = (this.peekContent() as NavigateEvent.NavigateWithData).data as Wallet
             true
         })
         verify(errorObserver, never()).onChanged(any())
@@ -144,7 +145,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         verify(walletRepository).updateWalletSync(any())
 
         verify(eventObserver).onChanged(argThat {
-            val wallet = this.peekContent() as Wallet
+            val wallet = (this.peekContent() as NavigateEvent.NavigateWithData).data as Wallet
             true
         })
         verify(errorObserver, never()).onChanged(any())
@@ -155,7 +156,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         var options = OnboardingOptions(isRestoreFlow = false, network = multisigNetwork)
         viewModel.createNewWallet(options, "123456", "")
         verify(eventObserver, only()).onChanged(argThat {
-            val wallet = this.peekContent() as Wallet
+            val wallet = (this.peekContent() as NavigateEvent.NavigateWithData).data as Wallet
             Assert.assertEquals("Multisig Testnet", wallet.name)
             true
         })
@@ -166,7 +167,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         var options = OnboardingOptions(isRestoreFlow = false, network = singlesigNetwork)
         viewModel.createNewWallet(options, "123456", "")
         verify(eventObserver, only()).onChanged(argThat {
-            val wallet = this.peekContent() as Wallet
+            val wallet = (this.peekContent() as NavigateEvent.NavigateWithData).data as Wallet
             Assert.assertEquals("Singlesig Testnet", wallet.name)
             true
         })
@@ -181,7 +182,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         viewModel.createNewWallet(options, "123456", "")
 
         verify(eventObserver).onChanged(argThat {
-            val wallet = this.peekContent() as Wallet
+            val wallet = (this.peekContent() as NavigateEvent.NavigateWithData).data as Wallet
             Assert.assertEquals("Multisig Testnet #4", wallet.name)
             true
         })
@@ -196,7 +197,7 @@ class OnboardingViewModelUnitTests : TestViewModel<OnboardingViewModel>() {
         viewModel.restoreWithPin(options, "123456")
 
         verify(eventObserver).onChanged(argThat {
-            val wallet = this.peekContent() as Wallet
+            val wallet = (this.peekContent() as NavigateEvent.NavigateWithData).data as Wallet
             Assert.assertEquals("Multisig Testnet #4", wallet.name)
             true
         })
