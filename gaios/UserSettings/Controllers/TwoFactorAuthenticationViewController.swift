@@ -1,10 +1,6 @@
 import UIKit
 import PromiseKit
 
-protocol TwoFactorAuthenticationViewControllerDelegate: AnyObject {
-    func userLogout()
-}
-
 class TwoFactorAuthenticationViewController: UIViewController {
 
     @IBOutlet weak var lblEnable2faTitle: UILabel!
@@ -29,8 +25,6 @@ class TwoFactorAuthenticationViewController: UIViewController {
     @IBOutlet weak var tableViewCsvTime: DynamicTableView!
     @IBOutlet weak var lblRecoveryTool: UILabel!
     @IBOutlet weak var btnRecoveryTool: UIButton!
-
-    weak var delegate: TwoFactorAuthenticationViewControllerDelegate?
 
     var csvTypes = Settings.CsvTime.all()
     var csvValues = Settings.CsvTime.values()
@@ -173,12 +167,14 @@ class TwoFactorAuthenticationViewController: UIViewController {
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.then(on: bgq) { details in
             try SessionManager.shared.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
-        }.then(on: bgq) { details in
+        }.then(on: bgq) { _ in
             SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
+            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            NotificationCenter.default.post(name: notification,object: nil, userInfo: nil)
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {
                 switch twofaError {
@@ -250,11 +246,14 @@ class TwoFactorAuthenticationViewController: UIViewController {
             return Guarantee()
         }.then(on: bgq) {
             try SessionManager.shared.resetTwoFactor(email: email, isDispute: false).resolve()
+        }.then(on: bgq) {_ in
+            SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
-        }.done { [weak self] _ in
+        }.done { _ in
             DropAlert().success(message: NSLocalizedString("id_2fa_reset_in_progress", comment: ""))
-            self?.delegate?.userLogout()
+            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            NotificationCenter.default.post(name: notification,object: nil, userInfo: nil)
         }.catch { error in
             var text: String
             if let error = error as? TwoFactorCallError {

@@ -418,7 +418,6 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
         case .TwoFactorAuthentication:
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "TwoFactorAuthenticationViewController") as? TwoFactorAuthenticationViewController {
-                vc.delegate = self
                 navigationController?.pushViewController(vc, animated: true)
             }
 
@@ -691,11 +690,5 @@ extension UserSettingsViewController {
         DispatchQueue.main.async {
             self.present(alert, animated: true, completion: nil)
         }
-    }
-}
-
-extension UserSettingsViewController: TwoFactorAuthenticationViewControllerDelegate {
-    func userLogout() {
-        self.logout()
     }
 }

@@ -68,7 +68,9 @@ class Learn2faViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.logout()
+            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            NotificationCenter.default.post(name: notification,object: nil, userInfo: nil)
+            self.dismiss(animated: true, completion: nil)
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
         }
@@ -84,7 +86,9 @@ class Learn2faViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.logout()
+            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            NotificationCenter.default.post(name: notification,object: nil, userInfo: nil)
+            self.dismiss(animated: true, completion: nil)
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
         }
@@ -100,7 +104,9 @@ class Learn2faViewController: UIViewController {
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            self.logout()
+            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            NotificationCenter.default.post(name: notification,object: nil, userInfo: nil)
+            self.dismiss(animated: true, completion: nil)
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
         }
@@ -125,15 +131,5 @@ class Learn2faViewController: UIViewController {
             }
         })
         self.present(alert, animated: true, completion: nil)
-    }
-}
-
-extension Learn2faViewController {
-
-    func logout() {
-        DispatchQueue.main.async {
-            let appDelegate = UIApplication.shared.delegate as? AppDelegate
-            appDelegate?.logout(with: false)
-        }
     }
 }
