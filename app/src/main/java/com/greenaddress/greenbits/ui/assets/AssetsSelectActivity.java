@@ -15,10 +15,11 @@ import com.greenaddress.greenapi.data.AssetInfoData;
 import com.greenaddress.greenbits.ui.LoggedActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
-import com.greenaddress.greenbits.ui.send.ScanActivity;
 import com.greenaddress.greenbits.ui.send.SendAmountActivity;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
+
 import java.util.Map;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;

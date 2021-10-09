@@ -59,12 +59,6 @@ class ReceiveViewModel @AssistedInject constructor(
 
         session.observable {
             it.getReceiveAddress(session.activeAccount)
-                .result<Address>(
-                    hardwareWalletResolver = HardwareCodeResolver(
-                        this,
-                        session.hwWallet
-                    )
-                )
         }.doOnSubscribe {
             onProgress.postValue(true)
         }

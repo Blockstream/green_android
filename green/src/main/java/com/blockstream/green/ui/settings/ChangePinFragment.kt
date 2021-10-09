@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
+import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.databinding.ChangePinFragmentBinding
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
@@ -59,7 +60,7 @@ class ChangePinFragment : WalletFragment<ChangePinFragmentBinding>(R.layout.chan
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandledOrReturnNull()?.let {
+            it.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
                 snackbar(R.string.id_you_have_successfully_changed)
                 findNavController().popBackStack()
             }

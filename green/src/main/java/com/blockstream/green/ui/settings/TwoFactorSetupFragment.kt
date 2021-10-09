@@ -4,12 +4,11 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import com.blockstream.green.R
 import com.blockstream.green.data.Countries.COUNTRIES
 import com.blockstream.green.data.Country
+import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.TwofactorSetupFragmentBinding
 import com.blockstream.green.ui.FilterBottomSheetDialogFragment
@@ -19,11 +18,9 @@ import com.blockstream.green.ui.items.CountryListItem
 import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
-import com.greenaddress.Bridge
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 enum class TwoFactorSetupAction {
@@ -166,7 +163,7 @@ class TwoFactorSetupFragment : WalletFragment<TwofactorSetupFragmentBinding>(R.l
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
-            event?.getContentIfNotHandledOrReturnNull()?.let {
+            event?.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
                 // Hint TwoFactorAuthenticationFragment / WalletSettingsFragment to update TwoFactorConfig
                 setNavigationResult(result = true)
                 popBackStack()

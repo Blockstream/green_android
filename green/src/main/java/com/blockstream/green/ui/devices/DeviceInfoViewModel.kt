@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.DeviceBrand
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.green.data.AppEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
@@ -17,7 +18,9 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
+import com.greenaddress.greenapi.data.EventData
 import com.greenaddress.jade.HttpRequestProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -36,17 +39,17 @@ class DeviceInfoViewModel @AssistedInject constructor(
     @Assisted val device: Device
 ) : AppViewModel(), HardwareConnectInteraction {
 
-    sealed class Event{
-        object DeviceReady : Event()
-        data class RequestPin(val deviceBrand: DeviceBrand) : Event()
+    sealed class DeviceInfoEvent : AppEvent {
+        object DeviceReady : DeviceInfoEvent()
+        data class RequestPin(val deviceBrand: DeviceBrand) : DeviceInfoEvent()
         data class AskForFirmwareUpgrade(
             val deviceBrand: DeviceBrand,
             val version: String?,
             val upgradeRequired: Boolean,
             val callback: Function<Boolean?, Void?>?
-        ) : Event()
-        object RequestPinMatrix: Event()
-        object RequestPassphrase: Event()
+        ) : DeviceInfoEvent()
+        object RequestPinMatrix: DeviceInfoEvent()
+        object RequestPassphrase: DeviceInfoEvent()
     }
 
     var requestPinEmitter: SingleEmitter<String>? = null
@@ -105,7 +108,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         logger.info { "onDeviceReady" }
         onProgress.postValue(false)
 
-        onEvent.postValue(ConsumableEvent(Event.DeviceReady))
+        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.DeviceReady))
     }
 
     override fun onDeviceFailed() {
@@ -113,7 +116,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     override fun requestPin(deviceBrand: DeviceBrand): Single<String> {
-        onEvent.postValue(ConsumableEvent(Event.RequestPin(deviceBrand)))
+        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPin(deviceBrand)))
 
         return Single.create<String> { emitter ->
             requestPinEmitter = emitter
@@ -126,11 +129,11 @@ class DeviceInfoViewModel @AssistedInject constructor(
         isUpgradeRequired: Boolean,
         callback: Function<Boolean?, Void?>?
     ) {
-        onEvent.postValue(ConsumableEvent(Event.AskForFirmwareUpgrade(deviceBrand, version, isUpgradeRequired, callback)))
+        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.AskForFirmwareUpgrade(deviceBrand, version, isUpgradeRequired, callback)))
     }
 
     override fun requestPinMatrix(deviceBrand: DeviceBrand?): Single<String> {
-        onEvent.postValue(ConsumableEvent(Event.RequestPinMatrix))
+        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPinMatrix))
 
         return Single.create<String> { emitter ->
             requestPinMatrixEmitter = emitter
@@ -138,7 +141,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     override fun requestPassphrase(deviceBrand: DeviceBrand?): Single<String> {
-        onEvent.postValue(ConsumableEvent(Event.RequestPassphrase))
+        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPassphrase))
 
         return Single.create<String> { emitter ->
             requestPinPassphraseEmitter = emitter

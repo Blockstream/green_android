@@ -497,7 +497,7 @@ class GreenSession constructor(
     fun getReceiveAddress(index: Long) = AuthHandler(
         greenWallet,
         greenWallet.getReceiveAddress(gaSession, ReceiveAddressParams(index))
-    )
+    ).result<Address>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
     override fun refreshAssets(params: AssetsParams) = greenWallet.refreshAssets(gaSession, params)
 
@@ -749,7 +749,7 @@ class GreenSession constructor(
         ).result<RawTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
     }
 
-    fun createTransaction(params: BumpTransactionParams) = AuthHandler(
+    fun createTransaction(params: GAJson<*>) = AuthHandler(
         greenWallet,
         greenWallet.createTransaction(gaSession, params)
     ).result<RawTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))

@@ -9,6 +9,6 @@
 
     <item
         android:id="@+id/share_qr"
-        android:icon="@drawable/ic_qr_45"
+        android:icon="@drawable/ic_qr_60"
         android:title="@string/id_qr_code" />
 </menu>

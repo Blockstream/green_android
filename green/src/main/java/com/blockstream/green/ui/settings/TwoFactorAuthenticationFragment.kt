@@ -6,15 +6,14 @@ import android.view.View
 import android.widget.ArrayAdapter
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
 import com.blockstream.green.R
 import com.blockstream.green.Urls
+import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.databinding.*
 import com.blockstream.green.lifecycle.MergeLiveData
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
@@ -174,7 +173,7 @@ class TwoFactorAuthenticationFragment :
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
-            event?.getContentIfNotHandledOrReturnNull()?.let {
+            event?.getContentIfNotHandledForType<GdkEvent.Success>()?.let {
                 updateAdapter()
             }
         }

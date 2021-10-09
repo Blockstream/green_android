@@ -1,5 +1,6 @@
 package com.blockstream.green.ui
 
+import androidx.arch.core.util.Function
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -13,13 +14,19 @@ import io.reactivex.rxjava3.core.Single
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import androidx.lifecycle.LifecycleRegistry
+import com.blockstream.green.data.AppEvent
 
 
 open class AppViewModel : ViewModel(), HWWalletBridge, LifecycleOwner {
+
+//    enum class Event {
+//        NAVIGATE, RENAME_WALLET, DELETE_WALLET, RENAME_ACCOUNT, ACK_MESSAGE
+//    }
+
     internal val disposables = CompositeDisposable()
     private var lifecycleRegistry: LifecycleRegistry? = null
 
-    val onEvent = MutableLiveData<ConsumableEvent<Any>>()
+    val onEvent = MutableLiveData<ConsumableEvent<AppEvent>>()
     val onProgress = MutableLiveData(false)
     val onError = MutableLiveData<ConsumableEvent<Throwable>>()
 

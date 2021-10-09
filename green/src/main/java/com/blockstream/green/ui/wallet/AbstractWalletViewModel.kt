@@ -3,6 +3,7 @@ package com.blockstream.green.ui.wallet
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.blockstream.gdk.data.SubAccount
+import com.blockstream.green.data.AppEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
@@ -26,11 +27,16 @@ abstract class AbstractWalletViewModel constructor(
     var wallet: Wallet,
 ) : AppViewModel() {
 
-    enum class Event {
-        RENAME_WALLET, DELETE_WALLET, RENAME_ACCOUNT, ACK_MESSAGE
+    sealed class WalletEvent: AppEvent {
+        object RenameWallet : WalletEvent()
+        object DeleteWallet : WalletEvent()
+        object RenameAccount : WalletEvent()
+        object AckMessage : WalletEvent()
+
+        class Logout(val reason: LogoutReason) : WalletEvent()
     }
 
-    enum class NavigationEvent {
+    enum class LogoutReason {
         USER_ACTION, DISCONNECTED, TIMEOUT, DEVICE_DISCONNECTED
     }
 
@@ -43,7 +49,6 @@ abstract class AbstractWalletViewModel constructor(
     fun getSubAccountLiveData(): LiveData<SubAccount> = subAccountLiveData
 
     // Logout events, can be expanded in the future
-    val onNavigationEvent = MutableLiveData<ConsumableEvent<NavigationEvent>>()
     val onReconnectEvent = MutableLiveData<ConsumableEvent<Long>>()
 
     private var reconnectTimer: Disposable? = null
@@ -63,7 +68,7 @@ abstract class AbstractWalletViewModel constructor(
         session.device?.deviceState?.observe(viewLifecycleOwner){
             // Device went offline
             if(it == com.blockstream.green.devices.Device.DeviceState.DISCONNECTED){
-                logout(NavigationEvent.DEVICE_DISCONNECTED)
+                logout(LogoutReason.DEVICE_DISCONNECTED)
             }
         }
 
@@ -153,7 +158,7 @@ abstract class AbstractWalletViewModel constructor(
                 onError.postValue(ConsumableEvent(it))
             },
             onSuccess = {
-                onEvent.postValue(ConsumableEvent(Event.DELETE_WALLET))
+                onEvent.postValue(ConsumableEvent(WalletEvent.DeleteWallet))
             }
         )
     }
@@ -170,7 +175,7 @@ abstract class AbstractWalletViewModel constructor(
             },
             onSuccess = {
                 subAccountLiveData.value = it
-                onEvent.postValue(ConsumableEvent(Event.RENAME_ACCOUNT))
+                onEvent.postValue(ConsumableEvent(WalletEvent.RenameAccount))
             }
         )
     }
@@ -186,7 +191,7 @@ abstract class AbstractWalletViewModel constructor(
                 onError.postValue(ConsumableEvent(it))
             },
             onSuccess = {
-                onEvent.postValue(ConsumableEvent(Event.RENAME_WALLET))
+                onEvent.postValue(ConsumableEvent(WalletEvent.RenameWallet))
             }
         )
     }
@@ -202,7 +207,7 @@ abstract class AbstractWalletViewModel constructor(
             onProgress.postValue(false)
         }.subscribeBy(
             onSuccess = {
-                onEvent.postValue(ConsumableEvent(Event.ACK_MESSAGE))
+                onEvent.postValue(ConsumableEvent(WalletEvent.AckMessage))
             },
             onError = {
                 onError.postValue(ConsumableEvent(it))
@@ -210,9 +215,9 @@ abstract class AbstractWalletViewModel constructor(
         )
     }
 
-    fun logout(navigationEvent: NavigationEvent) {
+    fun logout(reason: LogoutReason) {
         session.disconnectAsync()
-        onNavigationEvent.postValue(ConsumableEvent(navigationEvent))
+        onEvent.postValue(ConsumableEvent(WalletEvent.Logout(reason)))
     }
 
     companion object : KLogging()

@@ -120,7 +120,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonAppSettings"
             style="@style/Widget.Green.Button.Text"
-            isInvisible="@{vm.isInProgress}"
+            isInvisible="@{vm.onProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="24dp"
@@ -132,7 +132,7 @@
 
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progress"
-            isVisible="@{vm.isInProgress}"
+            isVisible="@{vm.onProgress}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:indeterminate="true"

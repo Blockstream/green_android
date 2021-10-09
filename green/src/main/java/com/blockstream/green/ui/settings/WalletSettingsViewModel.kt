@@ -10,6 +10,7 @@ import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.Limits
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
+import com.blockstream.green.data.GdkEvent
 import com.blockstream.green.data.TwoFactorMethod
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
@@ -157,7 +158,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             },
             onSuccess = {
                 updateTwoFactorConfig()
-                onEvent.postValue(ConsumableEvent(true))
+                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
             }
         )
     }
@@ -177,7 +178,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             },
             onSuccess = {
                 updateTwoFactorConfig()
-                onEvent.postValue(ConsumableEvent(true))
+                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
             }
         )
     }
@@ -196,7 +197,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {
-                logout(NavigationEvent.USER_ACTION)
+                logout(LogoutReason.USER_ACTION)
             }
         )
     }
@@ -215,7 +216,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {
-                logout(NavigationEvent.USER_ACTION)
+                logout(LogoutReason.USER_ACTION)
             }
         )
     }
@@ -234,7 +235,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 onError.value = ConsumableEvent(it)
             },
             onSuccess = {
-                logout(NavigationEvent.USER_ACTION)
+                logout(LogoutReason.USER_ACTION)
             }
         )
     }
@@ -266,7 +267,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 onError.postValue(ConsumableEvent(it))
             },
             onSuccess = {
-                onEvent.postValue(ConsumableEvent(true))
+                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
             }
         )
     }
@@ -287,7 +288,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             },
             onSuccess = {
                 updateWatchOnlyUsername()
-                onEvent.postValue(ConsumableEvent(true))
+                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
             }
         )
     }
@@ -308,7 +309,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
                 onError.postValue(ConsumableEvent(it))
             },
             onSuccess = {
-                onEvent.postValue(ConsumableEvent(true))
+                onEvent.postValue(ConsumableEvent(GdkEvent.Success))
             }
         )
     }

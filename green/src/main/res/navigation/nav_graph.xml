@@ -161,9 +161,6 @@
             android:name="onboardingOptions"
             app:argType="com.blockstream.green.data.OnboardingOptions" />
         <action
-            android:id="@+id/action_chooseRecoveryPhraseFragment_to_recoveryScanQRFragment"
-            app:destination="@id/recoveryScanQRFragment" />
-        <action
             android:id="@+id/action_chooseRecoveryPhraseFragment_to_enterRecoveryPhraseFragment"
             app:destination="@id/enterRecoveryPhraseFragment" />
         <argument
@@ -201,22 +198,6 @@
         <action
             android:id="@+id/action_walletNameFragment_to_onBoardingCompleteFragment"
             app:destination="@id/onBoardingCompleteFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/recoveryScanQRFragment"
-        android:name="com.blockstream.green.ui.onboarding.RecoveryScanQRFragment"
-        android:label=""
-        tools:layout="@layout/recovery_scan_qr_fragment">
-        <argument
-            android:name="onboardingOptions"
-            app:argType="com.blockstream.green.data.OnboardingOptions" />
-        <argument
-            android:name="restoreWallet"
-            app:argType="com.blockstream.green.database.Wallet"
-            app:nullable="true" />
-        <action
-            android:id="@+id/action_recoveryScanQRFragment_to_enterRecoveryPhraseFragment"
-            app:destination="@id/enterRecoveryPhraseFragment" />
     </fragment>
     <fragment
         android:id="@+id/setPinFragment"
@@ -483,6 +464,9 @@
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <action
+            android:id="@+id/action_receiveFragment_to_sweepFragment"
+            app:destination="@id/sweepFragment" />
     </fragment>
 
     <fragment
@@ -537,6 +521,15 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_assetBottomSheetFragment"
             app:destination="@id/assetBottomSheetFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sweepFragment"
+        android:name="com.blockstream.green.ui.wallet.SweepFragment"
+        android:label="@string/id_sweep_from_paper_wallet"
+        tools:layout="@layout/sweep_fragment">
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
     </fragment>
 
 </navigation>

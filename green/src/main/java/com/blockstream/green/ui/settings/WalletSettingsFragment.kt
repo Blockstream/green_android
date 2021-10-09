@@ -10,10 +10,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
-import androidx.navigation.NavOptions
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import androidx.preference.*
 import com.blockstream.gdk.data.SettingsNotification
 import com.blockstream.gdk.data.asPricing
@@ -25,7 +22,6 @@ import com.blockstream.green.databinding.ListItemHelpBinding
 import com.blockstream.green.databinding.SettingsWatchOnlyDialogBinding
 import com.blockstream.green.databinding.WalletSettingsFragmentBinding
 import com.blockstream.green.filters.NumberValueFilter
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.items.PreferenceListItem
@@ -168,7 +164,7 @@ class WalletSettingsFragment :
             { _: View?, _: IAdapter<GenericItem>, iItem: GenericItem, _: Int ->
                 when (iItem) {
                     logoutPreference -> {
-                        viewModel.logout(AbstractWalletViewModel.NavigationEvent.USER_ACTION)
+                        viewModel.logout(AbstractWalletViewModel.LogoutReason.USER_ACTION)
                     }
                     watchOnlyPreference -> {
                         handleWatchOnly()

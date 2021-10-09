@@ -15,6 +15,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.BaseRecyclerViewBinding
 import com.blockstream.green.databinding.ListItemGenericDetailBinding
 import com.blockstream.green.databinding.ListItemTransactionAmountBinding
@@ -97,7 +98,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledOrReturnNull()?.let {
+            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
                 startForResultFeeBump.launch(Intent(requireContext(), SendAmountActivity::class.java))
             }
         }

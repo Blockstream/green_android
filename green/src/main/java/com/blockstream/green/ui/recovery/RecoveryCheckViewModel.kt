@@ -4,27 +4,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.utils.ConsumableEvent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.kotlin.addTo
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import java.security.SecureRandom
 import kotlin.random.asKotlinRandom
 
 class RecoveryCheckViewModel @AssistedInject constructor(
-    private val walletRepository: WalletRepository,
     greenWallet: GreenWallet,
     @Assisted val mnemonic: List<String>,
     @Assisted val page: Int,
     @Assisted val isDevelopmentFlavor: Boolean,
 ) : AppViewModel() {
-    val navigate = MutableLiveData<ConsumableEvent<Boolean>>()
-
     val wordLeft = MutableLiveData<String>()
     val wordRight = MutableLiveData<String>()
 
@@ -62,13 +53,7 @@ class RecoveryCheckViewModel @AssistedInject constructor(
         pointer.value = (wordsPerPage * page) + wordIndex + 1
     }
 
-    fun selectWord(selectedWord: String) {
-        if (correctWord == selectedWord) {
-            navigate.value = ConsumableEvent(true)
-        } else {
-            navigate.value = ConsumableEvent(false)
-        }
-    }
+    fun selectWord(selectedWord: String): Boolean = correctWord == selectedWord
 
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {

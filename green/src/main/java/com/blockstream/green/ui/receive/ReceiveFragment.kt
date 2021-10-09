@@ -19,10 +19,8 @@ import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.Urls
 import com.blockstream.green.databinding.ReceiveFragmentBinding
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
-import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.*
 import com.greenaddress.greenbits.ui.preferences.PrefKeys
 import com.greenaddress.greenbits.ui.send.ScanActivity
@@ -176,9 +174,11 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
                         //    notImpementedYet(requireActivity())
                         // }
                         R.id.sweep -> {
-                            val intent = Intent(activity, ScanActivity::class.java)
-                            intent.putExtra(PrefKeys.SWEEP, true)
-                            startActivity(intent)
+                            navigate(
+                                ReceiveFragmentDirections.actionReceiveFragmentToSweepFragment(
+                                    wallet
+                                )
+                            )
                         }
                         R.id.request_amount_label -> {
                             RequestAmountLabelBottomSheetDialogFragment().also {

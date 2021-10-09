@@ -2,10 +2,6 @@ package com.blockstream.green.ui.receive
 
 import android.os.Bundle
 import android.view.View
-import android.view.Window
-import android.view.WindowManager
-import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.R
 import com.blockstream.green.databinding.VerifyAddressBottomSheetBinding
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
@@ -13,7 +9,6 @@ import com.blockstream.green.utils.bounceDown
 import com.blockstream.green.utils.dismissIn
 import com.blockstream.green.utils.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 
 
 @AndroidEntryPoint

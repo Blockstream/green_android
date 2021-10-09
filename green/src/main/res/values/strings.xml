@@ -958,4 +958,5 @@
   <string name="id_non_confidential_transaction">Non Confidential Transaction</string>
   <string name="id_unblinding_data">Unblinding data</string>
   <string name="id_this_wallet_operates_on_a_test_network">This wallet operates on a test network. Anything you receive or send here has no value.</string>
+  <string name="id_private_key">Private Key</string>
 </resources>

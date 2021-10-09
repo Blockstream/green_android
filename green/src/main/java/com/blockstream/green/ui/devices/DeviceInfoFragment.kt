@@ -2,7 +2,6 @@ package com.blockstream.green.ui.devices
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +23,6 @@ import com.blockstream.green.databinding.DeviceInfoFragmentBinding
 import com.blockstream.green.databinding.PinTextDialogBinding
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
@@ -42,8 +40,6 @@ import com.mikepenz.fastadapter.expandable.getExpandableExtension
 import com.mikepenz.fastadapter.ui.utils.StringHolder
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.Single
-import io.reactivex.SingleEmitter
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -114,28 +110,26 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         setupDeviceInteractionEvent(viewModel.onDeviceInteractionEvent)
 
         viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
-            onEvent.getContentIfNotHandledOrReturnNull()?.let {
-                if(it is DeviceInfoViewModel.Event){
-                    when(it){
-                        is DeviceInfoViewModel.Event.DeviceReady -> {
-                            viewModel.hardwareWallet?.let{ wallet ->
-                                navigate(
-                                    DeviceInfoFragmentDirections.actionGlobalLoginFragment(wallet, deviceId = args.deviceId)
-                                )
-                            }
+            onEvent.getContentIfNotHandledForType<DeviceInfoViewModel.DeviceInfoEvent>()?.let {
+                when(it){
+                    is DeviceInfoViewModel.DeviceInfoEvent.DeviceReady -> {
+                        viewModel.hardwareWallet?.let{ wallet ->
+                            navigate(
+                                DeviceInfoFragmentDirections.actionGlobalLoginFragment(wallet, deviceId = args.deviceId)
+                            )
                         }
-                        is DeviceInfoViewModel.Event.RequestPin -> {
-                            requestPin(it.deviceBrand)
-                        }
-                        is DeviceInfoViewModel.Event.AskForFirmwareUpgrade -> {
-                            askForFirmwareUpgrade(it.deviceBrand, it.version, it.upgradeRequired, it.callback)
-                        }
-                        is DeviceInfoViewModel.Event.RequestPinMatrix -> {
-                            requestPinMatrix()
-                        }
-                        is DeviceInfoViewModel.Event.RequestPassphrase -> {
-                            requestPassphrase()
-                        }
+                    }
+                    is DeviceInfoViewModel.DeviceInfoEvent.RequestPin -> {
+                        requestPin(it.deviceBrand)
+                    }
+                    is DeviceInfoViewModel.DeviceInfoEvent.AskForFirmwareUpgrade -> {
+                        askForFirmwareUpgrade(it.deviceBrand, it.version, it.upgradeRequired, it.callback)
+                    }
+                    is DeviceInfoViewModel.DeviceInfoEvent.RequestPinMatrix -> {
+                        requestPinMatrix()
+                    }
+                    is DeviceInfoViewModel.DeviceInfoEvent.RequestPassphrase -> {
+                        requestPassphrase()
                     }
                 }
             }

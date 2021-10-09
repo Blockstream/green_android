@@ -16,7 +16,8 @@ import java.util.*
 
 @Serializable
 data class RawTransaction(
-    @SerialName("addressees") val addressees: List<JsonElement>
+    @SerialName("addressees") val addressees: List<JsonElement>,
+    @SerialName("error") val error: String?
 ) : GAJson<RawTransaction>() {
     override val keepJsonElement = true
 

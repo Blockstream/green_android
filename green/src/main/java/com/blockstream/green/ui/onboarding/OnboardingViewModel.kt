@@ -1,6 +1,7 @@
 package com.blockstream.green.ui.onboarding
 
 import com.blockstream.gdk.data.Network
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
@@ -53,7 +54,7 @@ open class OnboardingViewModel(
         }.doOnSubscribe {
             onProgress.value = true
         }.subscribe({
-            onEvent.postValue(ConsumableEvent(it))
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
         }, {
             it.printStackTrace()
             onProgress.value = false
@@ -97,7 +98,7 @@ open class OnboardingViewModel(
         }.doOnTerminate {
             onProgress.value = false
         }.subscribe({
-            onEvent.postValue(ConsumableEvent(true))
+            onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
         }, {
             onError.value = ConsumableEvent(it)
         })
@@ -144,7 +145,7 @@ open class OnboardingViewModel(
         }.doOnSubscribe {
             onProgress.value = true
         }.subscribe({
-            onEvent.postValue(ConsumableEvent(it))
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
         }, {
             onProgress.value = false
             onError.value = ConsumableEvent(it)

@@ -79,6 +79,9 @@ fun String.getNetworkIcon(): Int{
     return R.drawable.ic_unknown_network_60
 }
 
+// Helper fn for Data Binding as the original fn is InlineOnly
+fun String?.isBlank() = isNullOrBlank()
+
 fun Wallet.getIcon(): Int = network.getNetworkIcon()
 
 fun Throwable.getGDKErrorCode(): Int {

@@ -12,7 +12,6 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
-import com.greenaddress.Bridge
 import mu.KLogging
 
 abstract class WalletFragment<T : ViewDataBinding> constructor(
@@ -47,8 +46,8 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
                 setupDeviceInteractionEvent(it.onDeviceInteractionEvent)
 
-                it.onNavigationEvent.observe(viewLifecycleOwner) { consumableEvent ->
-                    consumableEvent.getContentIfNotHandledOrReturnNull()?.let {
+                it.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
+                    consumableEvent.getContentIfNotHandledForType<AbstractWalletViewModel.WalletEvent.Logout>()?.let {
                         // If is hardware wallet, prefer going to intro
                         if (wallet.isHardware) {
                             NavGraphDirections.actionGlobalIntroFragment()
@@ -58,14 +57,14 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                             navigate(directions.actionId, directions.arguments, isLogout = true)
                         }
 
-                        when(it){
-                            AbstractWalletViewModel.NavigationEvent.DISCONNECTED -> {
+                        when(it.reason){
+                            AbstractWalletViewModel.LogoutReason.DISCONNECTED -> {
                                 snackbar(R.string.id_unstable_internet_connection)
                             }
-                            AbstractWalletViewModel.NavigationEvent.TIMEOUT -> {
+                            AbstractWalletViewModel.LogoutReason.TIMEOUT -> {
                                 snackbar(R.string.id_auto_logout_timeout_expired)
                             }
-                            AbstractWalletViewModel.NavigationEvent.DEVICE_DISCONNECTED -> {
+                            AbstractWalletViewModel.LogoutReason.DEVICE_DISCONNECTED -> {
                                 snackbar(R.string.id_your_device_was_disconnected)
                             }
                         }
@@ -73,9 +72,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                 }
 
                 it.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-                    consumableEvent?.getContentIfNotHandledOrReturnNull{ event ->
-                        event == AbstractWalletViewModel.Event.DELETE_WALLET
-                    }?.let {
+                    consumableEvent?.getContentIfNotHandledForType<AbstractWalletViewModel.WalletEvent.DeleteWallet>()?.let {
                         NavGraphDirections.actionGlobalIntroFragment().let { directions ->
                             navigate(directions.actionId, directions.arguments, isLogout = true)
                         }
@@ -131,7 +128,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
         // where we don't have a session yet.
         if(isSessionAndWalletRequired()) {
             if (isLoggedInRequired() && !session.isConnected) {
-                getWalletViewModel().logout(AbstractWalletViewModel.NavigationEvent.TIMEOUT)
+                getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
             }
         }
     }

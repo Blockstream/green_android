@@ -42,34 +42,29 @@ class RecoveryCheckFragment : AppFragment<RecoveryCheckFragmentBinding>(
         binding.vm = viewModel
         binding.isDevelopmentFlavor = requireContext().isDevelopmentFlavor()
 
-        viewModel.navigate.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandledOrReturnNull()?.let { success ->
-                if(success){
-                    if(viewModel.isLastPage){
-                        navigate(RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentToWalletNameFragment(
+        binding.clickListener = View.OnClickListener { button ->
+            if (viewModel.selectWord((button as Button).text.toString())) {
+                if (viewModel.isLastPage) {
+                    navigate(
+                        RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentToWalletNameFragment(
                             onboardingOptions = args.onboardingOptions!!,
                             mnemonic = args.mnemonic!!,
-                            mnemonicPassword = "")
+                            mnemonicPassword = ""
                         )
-                    }else{
-                        navigate(
-                            RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentSelf(
-                                onboardingOptions = args.onboardingOptions,
-                                mnemonic = args.mnemonic,
-                                page = args.page + 1
-                            )
+                    )
+                } else {
+                    navigate(
+                        RecoveryCheckFragmentDirections.actionRecoveryCheckFragmentSelf(
+                            onboardingOptions = args.onboardingOptions,
+                            mnemonic = args.mnemonic,
+                            page = args.page + 1
                         )
-                    }
-
-                }else{
-                    snackbar(R.string.id_wrong_choice_check_your)
-                    findNavController().popBackStack(R.id.recoveryIntroFragment, false)
+                    )
                 }
+            } else {
+                snackbar(R.string.id_wrong_choice_check_your)
+                findNavController().popBackStack(R.id.recoveryIntroFragment, false)
             }
-        }
-
-        binding.clickListener = View.OnClickListener { button ->
-            viewModel.selectWord((button as Button).text.toString())
         }
     }
 }

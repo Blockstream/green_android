@@ -57,7 +57,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
                     app:captionText="@string/id_as_easy_as_snapping_a_photo"
-                    app:icon="@drawable/ic_qr_45"
+                    app:icon="@drawable/ic_qr_60"
                     app:titleText="@string/id_qr_code" />
 
                 <com.blockstream.green.views.GreenContentCardView

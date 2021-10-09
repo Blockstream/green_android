@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.DeviceBrand
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.AppViewModel
@@ -33,7 +34,7 @@ class DeviceListViewModel @AssistedInject constructor(
 
     fun askForPermissionOrBond(device: Device) {
         device.askForPermissionOrBond({
-            onEvent.postValue(ConsumableEvent(device))
+            onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(device)))
         }, {
             onError.postValue(ConsumableEvent(it))
         })

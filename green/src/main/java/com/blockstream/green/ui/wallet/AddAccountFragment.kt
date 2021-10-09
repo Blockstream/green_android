@@ -12,7 +12,6 @@ import com.blockstream.green.ui.overview.OverviewFragment
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.hideKeyboard
 import com.blockstream.green.utils.setNavigationResult
-import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

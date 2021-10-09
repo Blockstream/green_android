@@ -8,6 +8,7 @@ import com.blockstream.gdk.data.Transactions
 import com.blockstream.gdk.params.BalanceParams
 import com.blockstream.gdk.params.BumpTransactionParams
 import com.blockstream.gdk.params.TransactionParams
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.CredentialType
 import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
@@ -111,7 +112,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
         }.subscribeBy(
             onSuccess = {
                 Session.getSession().pendingTransaction = it
-                onEvent.postValue(ConsumableEvent(true))
+                onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
             },
             onError = {
                 it.printStackTrace()

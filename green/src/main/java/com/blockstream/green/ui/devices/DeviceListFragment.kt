@@ -15,20 +15,18 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blockstream.DeviceBrand
-import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
 import com.blockstream.green.Urls
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.databinding.DeviceListFragmentBinding
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
-import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.items.DeviceListItem
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.observeList
 import com.blockstream.green.utils.openBrowser
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.greenaddress.Bridge
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
@@ -126,10 +124,8 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandledOrReturnNull()?.let {
-                if(it is Device){
-                    navigateToDevice(it)
-                }
+            event.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let { navigate ->
+                navigateToDevice(navigate.data as Device)
             }
         }
 

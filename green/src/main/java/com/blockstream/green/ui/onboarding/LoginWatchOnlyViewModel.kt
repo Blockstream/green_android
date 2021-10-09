@@ -30,19 +30,18 @@ class LoginWatchOnlyViewModel @Inject constructor(
     var password = MutableLiveData("")
     val isRememberMe = MutableLiveData(true)
     val isTestnet = MutableLiveData(false)
-    val isInProgress = MutableLiveData(false)
     val newWallet: MutableLiveData<Wallet> = MutableLiveData()
 
     val isLoginEnabled: LiveData<Boolean> by lazy {
         MediatorLiveData<Boolean>().apply {
             val block = { _: Any? ->
                 value =
-                    !username.value.isNullOrBlank() && !password.value.isNullOrBlank() && !isInProgress.value!!
+                    !username.value.isNullOrBlank() && !password.value.isNullOrBlank() && !onProgress.value!!
             }
 
             addSource(username, block)
             addSource(password, block)
-            addSource(isInProgress, block)
+            addSource(onProgress, block)
         }
     }
 
@@ -80,9 +79,9 @@ class LoginWatchOnlyViewModel @Inject constructor(
             wallet
 
         }.doOnSubscribe {
-            isInProgress.postValue(true)
+            onProgress.postValue(true)
         }.doOnTerminate {
-            isInProgress.postValue(false)
+            onProgress.postValue(false)
         }.subscribeBy(
             onError = {
                 onError.postValue(ConsumableEvent(it))

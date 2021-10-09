@@ -7,6 +7,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
+import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.SetPinFragmentBinding
 import com.blockstream.green.utils.errorDialog
@@ -84,8 +85,8 @@ class SetPinFragment : AbstractOnboardingFragment<SetPinFragmentBinding>(R.layou
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandledOrReturnNull()?.let { wallet ->
-                navigate(SetPinFragmentDirections.actionSetPinFragmentToOnBoardingCompleteFragment(options!!, wallet as Wallet))
+            it.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let { navigate ->
+                navigate(SetPinFragmentDirections.actionSetPinFragmentToOnBoardingCompleteFragment(options!!, navigate.data as Wallet))
             }
         }
 
