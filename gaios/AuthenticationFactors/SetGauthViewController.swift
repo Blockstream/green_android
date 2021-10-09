@@ -70,7 +70,7 @@ class SetGauthViewController: UIViewController {
             try SessionManager.shared.changeSettingsTwoFactor(method: TwoFactorType.gauth.rawValue, details: details)
         }.then(on: bgq) { call in
             call.resolve(connected: { self.connected })
-        }.then(on: bgq) { call in
+        }.then(on: bgq) { _ in
             SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()

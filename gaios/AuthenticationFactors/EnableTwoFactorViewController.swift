@@ -128,7 +128,7 @@ class EnableTwoFactorViewController: UIViewController, UITableViewDelegate, UITa
             try JSONSerialization.jsonObject(with: JSONEncoder().encode(config), options: .allowFragments) as? [String: Any]
         }.then(on: bgq) { details in
             try SessionManager.shared.changeSettingsTwoFactor(method: type.rawValue, details: details).resolve(connected: { self.connected })
-        }.then(on: bgq) { details in
+        }.then(on: bgq) { _ in
             SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()

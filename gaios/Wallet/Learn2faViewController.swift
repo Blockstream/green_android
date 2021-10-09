@@ -69,7 +69,7 @@ class Learn2faViewController: UIViewController {
             self.stopAnimating()
         }.done { _ in
             let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
-            NotificationCenter.default.post(name: notification,object: nil, userInfo: nil)
+            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             self.dismiss(animated: true, completion: nil)
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
@@ -87,7 +87,7 @@ class Learn2faViewController: UIViewController {
             self.stopAnimating()
         }.done { _ in
             let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
-            NotificationCenter.default.post(name: notification,object: nil, userInfo: nil)
+            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             self.dismiss(animated: true, completion: nil)
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
@@ -105,7 +105,7 @@ class Learn2faViewController: UIViewController {
             self.stopAnimating()
         }.done { _ in
             let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
-            NotificationCenter.default.post(name: notification,object: nil, userInfo: nil)
+            NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             self.dismiss(animated: true, completion: nil)
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
