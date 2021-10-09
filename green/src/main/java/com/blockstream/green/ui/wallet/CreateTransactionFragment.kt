@@ -24,6 +24,7 @@ import com.blockstream.green.ui.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.utils.*
 import com.greenaddress.greenapi.Session
+import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity
 import com.greenaddress.greenbits.ui.send.SendAmountActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -32,8 +33,8 @@ import io.reactivex.rxjava3.kotlin.subscribeBy
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SweepFragment : WalletFragment<SweepFragmentBinding>(
-    layout = R.layout.sweep_fragment,
+class CreateTransactionFragment : WalletFragment<CreateTransactionFragmentBinding>(
+    layout = R.layout.create_transaction_fragment,
     menuRes = 0
 ) {
     override val isAdjustResize = true
@@ -42,16 +43,16 @@ class SweepFragment : WalletFragment<SweepFragmentBinding>(
 
     override val wallet by lazy { args.wallet }
 
-    private val startForResultSweep = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+    private val startForResultSentTransaction = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             findNavController().popBackStack(R.id.overviewFragment, false)
         }
     }
 
     @Inject
-    lateinit var viewModelFactory: SweepViewModel.AssistedFactory
-    val viewModel: SweepViewModel by viewModels {
-        SweepViewModel.provideFactory(viewModelFactory, wallet)
+    lateinit var viewModelFactory: CreateTransactionViewModel.AssistedFactory
+    val viewModel: CreateTransactionViewModel by viewModels {
+        CreateTransactionViewModel.provideFactory(viewModelFactory, wallet)
     }
 
     override fun getWalletViewModel() = viewModel
@@ -68,8 +69,12 @@ class SweepFragment : WalletFragment<SweepFragmentBinding>(
         binding.vm = viewModel
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
-                startForResultSweep.launch(Intent(requireContext(), SendAmountActivity::class.java))
+            consumableEvent?.getContentIfNotHandledForType<CreateTransactionViewModel.CreateTransactionEvent>()?.let {
+                if(it is CreateTransactionViewModel.CreateTransactionEvent.SelectAsset) {
+                    startForResultSentTransaction.launch(Intent(requireContext(), AssetsSelectActivity::class.java))
+                } else {
+                    startForResultSentTransaction.launch(Intent(requireContext(), SendAmountActivity::class.java))
+                }
             }
         }
 
@@ -88,7 +93,7 @@ class SweepFragment : WalletFragment<SweepFragmentBinding>(
         }
 
         binding.buttonContinue.setOnClickListener {
-            viewModel.sweep()
+            viewModel.createTransaction()
         }
     }
 }

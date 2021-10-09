@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.receive
 
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -22,8 +21,6 @@ import com.blockstream.green.databinding.ReceiveFragmentBinding
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
-import com.greenaddress.greenbits.ui.preferences.PrefKeys
-import com.greenaddress.greenbits.ui.send.ScanActivity
 import com.kennyc.bottomsheet.BottomSheetListener
 import com.kennyc.bottomsheet.BottomSheetMenuDialogFragment
 import dagger.hilt.android.AndroidEntryPoint

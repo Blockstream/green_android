@@ -2,32 +2,19 @@ package com.greenaddress.greenbits.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.text.Editable;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.method.DigitsKeyListener;
-import android.text.style.ForegroundColorSpan;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,21 +23,14 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.zxing.WriterException;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.google.zxing.qrcode.encoder.ByteMatrix;
-import com.google.zxing.qrcode.encoder.Encoder;
 import com.greenaddress.greenapi.model.Conversion;
 
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -376,20 +356,6 @@ public abstract class UI {
         return (T) dialog.findViewById(id);
     }
 
-    public static void preventScreenshots(final Activity activity) {
-        if (!BuildConfig.DEBUG) {
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-        }
-    }
-
-    public static LinearLayout.LayoutParams getScreenLayout(final Activity activity,
-                                                            final double scale) {
-        final DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        final int min = (int) (Math.min(dm.heightPixels, dm.widthPixels) * scale);
-        return new LinearLayout.LayoutParams(min, min);
-    }
-
     public static void showDialog(final Dialog dialog) {
         // (FIXME not sure if there's any smaller subset of these 3 calls below which works too)
         dialog.getWindow().clearFlags(LayoutParams.FLAG_NOT_FOCUSABLE |
@@ -401,38 +367,6 @@ public abstract class UI {
     public static String getFeeRateString(final long feePerKB) {
         final double feePerByte = feePerKB / 1000.0;
         return Conversion.getNumberFormat(2).format(feePerByte) + " satoshi / vbyte";
-    }
-
-    public static Spannable getColoredString(final String string, final int color) {
-        final Spannable sp = new SpannableString(string);
-        sp.setSpan(new ForegroundColorSpan(color), 0, sp.length(), 0);
-        return sp;
-    }
-
-    private static final int SCALE = 4;
-    public static Bitmap getQRCode(final String data) {
-        final ByteMatrix matrix;
-        try {
-            matrix = Encoder.encode(data, ErrorCorrectionLevel.M).getMatrix();
-        } catch (final WriterException e) {
-            throw new RuntimeException(e);
-        }
-
-        final int height = matrix.getHeight() * SCALE;
-        final int width = matrix.getWidth() * SCALE;
-        final int min = height < width ? height : width;
-
-        final Bitmap mQRCode = Bitmap.createBitmap(min, min, Bitmap.Config.ARGB_8888);
-        for (int x = 0; x < min; ++x)
-            for (int y = 0; y < min; ++y)
-                mQRCode.setPixel(x, y, matrix.get(x / SCALE, y / SCALE) == 1 ? Color.BLACK : Color.TRANSPARENT);
-        return mQRCode;
-    }
-
-    public static BitmapDrawable getQrBitmapDrawable(final Context context, final String address) {
-        final BitmapDrawable bd = new BitmapDrawable(context.getResources(), getQRCode(address));
-        bd.setFilterBitmap(false);
-        return bd;
     }
 
     // Return the translated string represented by the identifier given
@@ -449,15 +383,4 @@ public abstract class UI {
         }
     }
 
-    public static void shareChooser(final Context context, final Uri uri) {
-        shareChooser(context, uri.toString());
-    }
-
-    public static void shareChooser(final Context context, final String text) {
-        final Intent sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
-        sendIntent.setType("text/plain");
-        final Intent shareIntent = Intent.createChooser(sendIntent, null);
-        context.startActivity(shareIntent);
-    }
 }

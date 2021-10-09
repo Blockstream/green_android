@@ -21,7 +21,7 @@ class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<R
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.session.observable {
-             it.getSubAccount(viewModel.session.activeAccount).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(viewModel.session.hwWallet))
+             it.getSubAccount(viewModel.session.activeAccount)
         }.subscribeBy(
             onError = {
                 errorDialog(it)

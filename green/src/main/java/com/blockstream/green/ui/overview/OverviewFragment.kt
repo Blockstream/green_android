@@ -2,7 +2,6 @@ package com.blockstream.green.ui.overview
 
 import android.animation.ObjectAnimator
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -28,13 +27,13 @@ import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.looks.AssetListLook
-import com.blockstream.green.ui.wallet.*
+import com.blockstream.green.ui.wallet.AccountIdBottomSheetDialogFragment
+import com.blockstream.green.ui.wallet.RenameAccountBottomSheetDialogFragment
+import com.blockstream.green.ui.wallet.SystemMessageBottomSheetDialogFragment
 import com.blockstream.green.utils.*
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.blockstream.green.views.NpaLinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.greenaddress.greenbits.ui.preferences.PrefKeys
-import com.greenaddress.greenbits.ui.send.ScanActivity
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericFastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -127,33 +126,44 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         binding.buttonSend.setOnClickListener {
 
-            if (viewModel.getBalancesLiveData().value?.get(session.network.policyAsset) ?: 0 == 0L){
-
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.id_warning)
-                    .setMessage(if (session.isLiquid) R.string.id_insufficient_lbtc_to_send_a else R.string.id_you_have_no_coins_to_send)
-                    .also {
-                        if (session.isLiquid) {
-                            it.setPositiveButton(R.string.id_learn_more) { _: DialogInterface, _: Int ->
-                                openBrowser(Urls.HELP_GET_LIQUID)
-                            }
-                        } else {
-                            it.setPositiveButton(R.string.id_receive) { _: DialogInterface, _: Int ->
-                                navigate(
-                                    OverviewFragmentDirections.actionOverviewFragmentToReceiveFragment(
-                                        viewModel.wallet
+            when {
+                session.isWatchOnly -> {
+                    navigate(
+                        OverviewFragmentDirections.actionOverviewFragmentToSweepFragment(
+                            wallet
+                        )
+                    )
+                }
+                viewModel.getBalancesLiveData().value?.get(session.network.policyAsset) ?: 0 == 0L -> {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.id_warning)
+                        .setMessage(if (session.isLiquid) R.string.id_insufficient_lbtc_to_send_a else R.string.id_you_have_no_coins_to_send)
+                        .also {
+                            if (session.isLiquid) {
+                                it.setPositiveButton(R.string.id_learn_more) { _: DialogInterface, _: Int ->
+                                    openBrowser(Urls.HELP_GET_LIQUID)
+                                }
+                            } else {
+                                it.setPositiveButton(R.string.id_receive) { _: DialogInterface, _: Int ->
+                                    navigate(
+                                        OverviewFragmentDirections.actionOverviewFragmentToReceiveFragment(
+                                            viewModel.wallet
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
-                    }
-                    .setNegativeButton(R.string.id_cancel, null)
-                    .show()
+                        .setNegativeButton(R.string.id_cancel, null)
+                        .show()
 
-            }else{
-                startActivity(Intent(activity, ScanActivity::class.java).also {
-                    it.putExtra(PrefKeys.SWEEP, session.isWatchOnly)
-                })
+                }
+                else -> {
+                    navigate(
+                        OverviewFragmentDirections.actionOverviewFragmentToCreateTransactionFragment(
+                            wallet
+                        )
+                    )
+                }
             }
         }
 

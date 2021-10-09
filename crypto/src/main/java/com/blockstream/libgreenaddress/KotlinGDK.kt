@@ -1,7 +1,6 @@
 package com.blockstream.libgreenaddress
 
 import com.blockstream.gdk.GAJson
-import com.blockstream.gdk.data.RawTransaction
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.*
@@ -66,8 +65,8 @@ class KotlinGDK {
     fun createTransaction(session: GASession, params: GAJson<*>): GAAuthHandler =
         GDK.create_transaction(session, params)
 
-    fun updateTransaction(session: GASession, rawTransaction: JsonElement): GAAuthHandler =
-        GDK.create_transaction(session, rawTransaction)
+    fun updateTransaction(session: GASession, createTransaction: JsonElement): GAAuthHandler =
+        GDK.create_transaction(session, createTransaction)
 
     fun getTransactions(session: GASession, details: TransactionParams): GAAuthHandler =
         GDK.get_transactions(session, details)

@@ -87,8 +87,3 @@ A line that starts with:
 ```gpg: Good signature```
 
 A complete line saying:  ```Primary key fingerprint: 04BE BF2E 35A2 AF2F FDF1  FA5D E7F0 54AA 2E76 E792```
-
-
-### Acknowledgements
-
-Thanks to [Bitcoin Wallet for Android](https://github.com/schildbach/bitcoin-wallet) for their QR scanning activity source code!

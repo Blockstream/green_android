@@ -101,7 +101,6 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.1"
     implementation 'androidx.multidex:multidex:2.0.1'
 
-    implementation 'com.google.zxing:core:3.3.3' // API <=24 compatibility
     //noinspection GradleDependency
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.9.6'

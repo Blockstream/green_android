@@ -80,12 +80,7 @@ class ReceiveViewModel @AssistedInject constructor(
             deviceAddressValidationEvent.value = ConsumableEvent(null)
 
             session.hwWallet?.observable(timeout = 30) {
-                val subAccount = session.getSubAccount(session.activeAccount).result<SubAccount>(
-                    hardwareWalletResolver = HardwareCodeResolver(
-                        this,
-                        session.hwWallet
-                    )
-                )
+                val subAccount = session.getSubAccount(session.activeAccount)
                 it.getGreenAddress(subAccount.getSubaccountDataV3(), address.branch, address.pointer, address.subType ?: 0)
             }?.doOnSubscribe {
                 onProgress.postValue(true)

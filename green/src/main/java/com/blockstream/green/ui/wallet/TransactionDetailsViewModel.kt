@@ -104,7 +104,13 @@ class TransactionDetailsViewModel @AssistedInject constructor(
                 subAccount = wallet.activeAccount
             )
 
-            it.createTransaction(params).toObjectNode()
+            it.createTransaction(params).let { tx ->
+                if (!tx.error.isNullOrBlank()) {
+                    throw Exception(tx.error)
+                }
+
+                tx.toObjectNode()
+            }
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
