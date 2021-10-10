@@ -34,6 +34,7 @@ import com.blockstream.green.utils.*
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.blockstream.green.views.NpaLinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericFastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -113,6 +114,18 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             it?.let {
                 viewModel.setSubAccount(it)
                 clearNavigationResult(ADD_NEW_ACCOUNT)
+            }
+        }
+
+        // Handle pending BIP-21 uri
+        sessionManager.pendingBip21Uri.observe(viewLifecycleOwner) {
+            it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
+                navigate(
+                    OverviewFragmentDirections.actionOverviewFragmentToCreateTransactionFragment(
+                        wallet, address = bip21Uri
+                    )
+                )
+                snackbar(R.string.id_address_was_filled_by_a_payment_uri)
             }
         }
 

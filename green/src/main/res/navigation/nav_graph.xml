@@ -80,7 +80,7 @@
         android:id="@+id/introFragment"
         android:name="com.blockstream.green.ui.IntroFragment"
         android:label=""
-        tools:layout="@layout/intro_fragment" />
+        tools:layout="@layout/intro_fragment"/>
 
     <fragment
         android:id="@+id/addWalletFragment"
@@ -540,11 +540,16 @@
     <fragment
         android:id="@+id/createTransactionFragment"
         android:name="com.blockstream.green.ui.wallet.CreateTransactionFragment"
-        tools:layout="@layout/create_transaction_fragment"
-        android:label="@string/id_send_to">
+        android:label="@string/id_send_to"
+        tools:layout="@layout/create_transaction_fragment">
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
+        <argument
+            android:name="address"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 
 </navigation>

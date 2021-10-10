@@ -7,29 +7,17 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.params.SweepParams
 import com.blockstream.green.R
-import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.databinding.*
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.utils.*
-import com.greenaddress.greenapi.Session
+import com.google.android.material.snackbar.Snackbar
 import com.greenaddress.greenbits.ui.assets.AssetsSelectActivity
 import com.greenaddress.greenbits.ui.send.SendAmountActivity
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -39,7 +27,7 @@ class CreateTransactionFragment : WalletFragment<CreateTransactionFragmentBindin
 ) {
     override val isAdjustResize = true
 
-    val args: SweepFragmentArgs by navArgs()
+    val args: CreateTransactionFragmentArgs by navArgs()
 
     override val wallet by lazy { args.wallet }
 
@@ -52,7 +40,7 @@ class CreateTransactionFragment : WalletFragment<CreateTransactionFragmentBindin
     @Inject
     lateinit var viewModelFactory: CreateTransactionViewModel.AssistedFactory
     val viewModel: CreateTransactionViewModel by viewModels {
-        CreateTransactionViewModel.provideFactory(viewModelFactory, wallet)
+        CreateTransactionViewModel.provideFactory(viewModelFactory, wallet, args.address)
     }
 
     override fun getWalletViewModel() = viewModel
@@ -63,6 +51,14 @@ class CreateTransactionFragment : WalletFragment<CreateTransactionFragmentBindin
             it?.let { result ->
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
                 binding.textInputEditText.setText(result)
+            }
+        }
+
+        // Handle pending BIP-21 uri
+        sessionManager.pendingBip21Uri.observe(viewLifecycleOwner) {
+            it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
+                viewModel.address.value = bip21Uri
+                snackbar(R.string.id_address_was_filled_by_a_payment_uri)
             }
         }
 

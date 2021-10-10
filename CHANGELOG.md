@@ -5,11 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- Sweep paper wallet UI
+- New Camera QR Scanner
+- Handle BIP-21 payment uris from the Android OS (bitcoin: & liquidnetwork:)
 
 ### Changed
 - Improved wallet restore flow
 - Do not pass additional root certificate when fetching files from Jade firmware server
 - Revamp transaction details view with new UI
+- Simplify Sent screen adding a quick way to paste an address or scan a QR code
 - Testnet networks must be enabled from AppSettings to appear as create/restore option
 - Show a warning when operating on a testnet network
 

@@ -15,8 +15,12 @@ import androidx.navigation.ui.setupWithNavController
 import com.blockstream.green.R
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.devices.DeviceManager
+import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.getVersionName
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import mu.KLogging
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -24,6 +28,9 @@ class MainActivity : AppActivity() {
 
     @Inject
     lateinit var deviceManager: DeviceManager
+
+    @Inject
+    lateinit var sessionManager: SessionManager
 
     private lateinit var binding: MainActivityBinding
     private val viewModel: MainViewModel by viewModels()
@@ -57,18 +64,35 @@ class MainActivity : AppActivity() {
                 (destination.id == R.id.introFragment || destination.id == R.id.onBoardingCompleteFragment)
         }
 
-        deviceManager.handleIntent(intent)
-
         // Set version into the main VM
         viewModel.buildVersion.value =
             getString(R.string.id_version_1s_2s).format(getVersionName(this), "")
 
         setupSecureScreenListener()
+
+        handleIntent(intent)
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        intent?.let { deviceManager.handleIntent(it) }
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        // Handle BIP-21 uri
+        intent?.data?.let {
+            sessionManager.pendingBip21Uri.postValue(ConsumableEvent(it.toString()))
+
+            if(navController.currentDestination?.id == R.id.introFragment) {
+                Snackbar.make(
+                    binding.root,
+                    R.string.id_you_have_clicked_a_payment_uri,
+                    Snackbar.LENGTH_LONG
+                ).setAction(R.string.id_cancel) {
+                    sessionManager.pendingBip21Uri.postValue(null)
+                }.show()
+            }
+        }
     }
 
     override fun isDrawerOpen(): Boolean = binding.drawerLayout.isDrawerOpen(GravityCompat.START)
@@ -99,4 +123,6 @@ class MainActivity : AppActivity() {
             super.onBackPressed()
         }
     }
+
+    companion object: KLogging()
 }

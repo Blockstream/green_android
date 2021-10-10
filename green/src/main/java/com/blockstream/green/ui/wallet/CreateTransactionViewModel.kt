@@ -22,6 +22,7 @@ class CreateTransactionViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     @Assisted wallet: Wallet,
+    @Assisted address: String?,
 ) : AbstractWalletViewModel(sessionManager, walletRepository, wallet) {
 
     sealed class CreateTransactionEvent : AppEvent {
@@ -29,7 +30,7 @@ class CreateTransactionViewModel @AssistedInject constructor(
         object SelectAsset : CreateTransactionEvent()
     }
 
-    val address = MutableLiveData<String>()
+    val address = MutableLiveData<String>(address)
 
     fun createTransaction() {
         session.observable {
@@ -87,18 +88,20 @@ class CreateTransactionViewModel @AssistedInject constructor(
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            wallet: Wallet
+            wallet: Wallet,
+            address: String?,
         ): CreateTransactionViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            wallet: Wallet
+            wallet: Wallet,
+            address: String?,
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return assistedFactory.create(wallet) as T
+                return assistedFactory.create(wallet, address) as T
             }
         }
     }

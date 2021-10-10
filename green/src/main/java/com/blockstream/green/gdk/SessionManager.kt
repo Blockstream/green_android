@@ -7,6 +7,7 @@ import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.greenapi.Session
@@ -31,6 +32,8 @@ class SessionManager(
     private var hardwareSessionV3: GreenSession? = null
 
     private var timeoutTimers = mutableListOf<Timer>()
+
+    var pendingBip21Uri = MutableLiveData<ConsumableEvent<String>>()
 
     var connectionChangeEvent = MutableLiveData<Boolean>()
 

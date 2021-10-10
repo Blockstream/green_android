@@ -276,27 +276,6 @@ class DeviceManager constructor(
 
     fun getDevices(): Observable<List<Device>> = devicesSubject.hide()
 
-    @Deprecated("Handling intents it no longer used as we register a broadcast receiver")
-    fun handleIntent(intent: Intent) {
-        logger.info { "Intent action: ${intent.action}" }
-
-        when (intent.action) {
-            UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
-                intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
-                    ?.let { usbDevice ->
-                        // Handle if required
-                    }
-            }
-
-            UsbManager.ACTION_USB_DEVICE_DETACHED -> {
-                intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
-                    ?.let {
-                        // Handle if required
-                    }
-            }
-        }
-    }
-
     fun hasPermissions(device: UsbDevice) = usbManager.hasPermission(device)
 
     fun askForPermissions(device: UsbDevice, onSuccess: (() -> Unit)) {
