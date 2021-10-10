@@ -48,13 +48,10 @@ class DeviceInfoViewModel @AssistedInject constructor(
             val upgradeRequired: Boolean,
             val callback: Function<Boolean?, Void?>?
         ) : DeviceInfoEvent()
-        object RequestPinMatrix: DeviceInfoEvent()
-        object RequestPassphrase: DeviceInfoEvent()
     }
 
     var requestPinEmitter: SingleEmitter<String>? = null
-    var requestPinMatrixEmitter: SingleEmitter<String>? = null
-    var requestPinPassphraseEmitter: SingleEmitter<String>? = null
+
     private val hardwareConnect = HardwareConnect()
 
     @Inject
@@ -115,14 +112,6 @@ class DeviceInfoViewModel @AssistedInject constructor(
         onProgress.postValue(false)
     }
 
-    override fun requestPin(deviceBrand: DeviceBrand): Single<String> {
-        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPin(deviceBrand)))
-
-        return Single.create<String> { emitter ->
-            requestPinEmitter = emitter
-        }.subscribeOn(AndroidSchedulers.mainThread())
-    }
-
     override fun askForFirmwareUpgrade(
         deviceBrand: DeviceBrand,
         version: String?,
@@ -132,19 +121,11 @@ class DeviceInfoViewModel @AssistedInject constructor(
         onEvent.postValue(ConsumableEvent(DeviceInfoEvent.AskForFirmwareUpgrade(deviceBrand, version, isUpgradeRequired, callback)))
     }
 
-    override fun requestPinMatrix(deviceBrand: DeviceBrand?): Single<String> {
-        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPinMatrix))
+    override fun requestPin(deviceBrand: DeviceBrand): Single<String> {
+        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPin(deviceBrand)))
 
         return Single.create<String> { emitter ->
-            requestPinMatrixEmitter = emitter
-        }.subscribeOn(AndroidSchedulers.mainThread())
-    }
-
-    override fun requestPassphrase(deviceBrand: DeviceBrand?): Single<String> {
-        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.RequestPassphrase))
-
-        return Single.create<String> { emitter ->
-            requestPinPassphraseEmitter = emitter
+            requestPinEmitter = emitter
         }.subscribeOn(AndroidSchedulers.mainThread())
     }
 

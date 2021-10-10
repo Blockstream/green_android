@@ -24,6 +24,7 @@ import com.blockstream.green.databinding.PinTextDialogBinding
 import com.blockstream.green.devices.Device
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.ui.AppFragment
+import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
 import com.blockstream.green.utils.clearNavigationResult
@@ -64,23 +65,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     @Inject
     lateinit var greenWallet: GreenWallet
 
-    private val startForResultPinMatrix = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data
-            viewModel.requestPinMatrixEmitter?.onSuccess(intent?.getStringExtra(GaActivity.HARDWARE_PIN_REQUEST.toString()))
-        }else{
-            viewModel.requestPinMatrixEmitter?.onError(Exception("id_action_canceled"))
-        }
-    }
-
-    private val startForResultPassphrase = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data
-            viewModel.requestPinPassphraseEmitter?.onSuccess(intent?.getStringExtra(GaActivity.HARDWARE_PASSPHRASE_REQUEST.toString()))
-        }else{
-            viewModel.requestPinPassphraseEmitter?.onError(Exception("id_action_canceled"))
-        }
-    }
+    override fun getAppViewModel(): AppViewModel = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -124,12 +109,6 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                     }
                     is DeviceInfoViewModel.DeviceInfoEvent.AskForFirmwareUpgrade -> {
                         askForFirmwareUpgrade(it.deviceBrand, it.version, it.upgradeRequired, it.callback)
-                    }
-                    is DeviceInfoViewModel.DeviceInfoEvent.RequestPinMatrix -> {
-                        requestPinMatrix()
-                    }
-                    is DeviceInfoViewModel.DeviceInfoEvent.RequestPassphrase -> {
-                        requestPassphrase()
                     }
                 }
             }
@@ -297,13 +276,5 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
 
             // Send error?
         }
-    }
-
-    private fun requestPinMatrix() {
-        startForResultPinMatrix.launch(Intent(requireContext(), TrezorPinActivity::class.java))
-    }
-
-    private fun requestPassphrase() {
-        startForResultPassphrase.launch(Intent(requireContext(), TrezorPassphraseActivity::class.java))
     }
 }

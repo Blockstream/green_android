@@ -2,12 +2,17 @@ package com.blockstream.green.ui
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
+import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -16,16 +21,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
+import com.blockstream.DeviceBrand
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.R
+import com.blockstream.green.data.AppEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.ui.devices.DeviceInfoFragmentDirections
+import com.blockstream.green.ui.devices.DeviceInfoViewModel
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.navigate
 import com.blockstream.green.utils.snackbar
 import com.google.android.material.snackbar.Snackbar
+import com.greenaddress.greenbits.ui.GaActivity
+import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity
+import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity
 import mu.KLogging
 import javax.inject.Inject
 
@@ -47,6 +60,12 @@ abstract class AppFragment<T : ViewDataBinding>(
     @LayoutRes val layout: Int,
     @MenuRes val menuRes: Int
 ) : Fragment() {
+
+    sealed class DeviceRequestEvent : AppEvent {
+        object RequestPinMatrix: DeviceRequestEvent()
+        object RequestPassphrase: DeviceRequestEvent()
+    }
+
     open val isAdjustResize = false
 
     internal lateinit var binding: T
@@ -56,6 +75,8 @@ abstract class AppFragment<T : ViewDataBinding>(
 
     @Inject
     lateinit var settingsManager: SettingsManager
+
+    open fun getAppViewModel(): AppViewModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,6 +88,21 @@ abstract class AppFragment<T : ViewDataBinding>(
 
         if (menuRes > 0) {
             setHasOptionsMenu(true)
+        }
+
+        getAppViewModel()?.let { viewModel ->
+            viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
+                onEvent.getContentIfNotHandledForType<DeviceRequestEvent>()?.let {
+                    when(it){
+                        is DeviceRequestEvent.RequestPinMatrix -> {
+                            requestPinMatrix()
+                        }
+                        is DeviceRequestEvent.RequestPassphrase -> {
+                            requestPassphrase()
+                        }
+                    }
+                }
+            }
         }
 
         return binding.root
@@ -131,6 +167,32 @@ abstract class AppFragment<T : ViewDataBinding>(
                 snackbar(R.string.id_please_follow_the_instructions, Snackbar.LENGTH_LONG)
             }
         }
+    }
+
+    private val startForResultPinMatrix = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            getAppViewModel()?.requestPinMatrixEmitter?.onSuccess(intent?.getStringExtra(GaActivity.HARDWARE_PIN_REQUEST.toString()) ?: "")
+        }else{
+            getAppViewModel()?.requestPinMatrixEmitter?.onError(Exception("id_action_canceled"))
+        }
+    }
+
+    private val startForResultPassphrase = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val intent = result.data
+            getAppViewModel()?.requestPinPassphraseEmitter?.onSuccess(intent?.getStringExtra(GaActivity.HARDWARE_PASSPHRASE_REQUEST.toString()) ?: "")
+        }else{
+            getAppViewModel()?.requestPinPassphraseEmitter?.onError(Exception("id_action_canceled"))
+        }
+    }
+
+    private fun requestPinMatrix() {
+        startForResultPinMatrix.launch(Intent(requireContext(), TrezorPinActivity::class.java))
+    }
+
+    private fun requestPassphrase() {
+        startForResultPassphrase.launch(Intent(requireContext(), TrezorPassphraseActivity::class.java))
     }
 
     companion object: KLogging()
