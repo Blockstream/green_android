@@ -10,7 +10,6 @@
 		0926C14821178FEE0008F94A /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0926C14721178FEE0008F94A /* UITextField.swift */; };
 		092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */; };
 		092C7BD520D599D700F90DF2 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092C7BD420D599D700F90DF2 /* UIView.swift */; };
-		092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092D47F420EA2570005720F3 /* NotificationsViewController.swift */; };
 		092E1EB020CF993700362253 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 092E1EAF20CF993700362253 /* UIColor.swift */; };
 		09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F19212F8D8700DE093B /* SearchTextField.swift */; };
 		09309F222134D21D00DE093B /* ShowMnemonicsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */; };
@@ -309,7 +308,6 @@
 		0926C14721178FEE0008F94A /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
 		092A84D2211C0D870062F0B2 /* SetEmailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEmailViewController.swift; sourceTree = "<group>"; };
 		092C7BD420D599D700F90DF2 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
-		092D47F420EA2570005720F3 /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
 		092E1EAF20CF993700362253 /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		09309F19212F8D8700DE093B /* SearchTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTextField.swift; sourceTree = "<group>"; };
 		09309F212134D21D00DE093B /* ShowMnemonicsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowMnemonicsViewController.swift; sourceTree = "<group>"; };
@@ -1269,7 +1267,6 @@
 				81A3B5432244B23F0091B6BC /* TableViewCells */,
 				817A630422245B090054FC60 /* ReceiveBtcView.xib */,
 				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
-				092D47F420EA2570005720F3 /* NotificationsViewController.swift */,
 				34C3020326E7531E00A3F910 /* OverviewViewController.swift */,
 				81A8EBC72224524A00F5C577 /* SystemMessageView.xib */,
 				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
@@ -1691,7 +1688,6 @@
 				34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */,
 				819DFBAC26038E8B0022BD85 /* Account.swift in Sources */,
 				344F1C0C26B7CC4D009293E6 /* TwoFaMethodsCell.swift in Sources */,
-				092D47F520EA2570005720F3 /* NotificationsViewController.swift in Sources */,
 				34C3020426E7531E00A3F910 /* OverviewViewController.swift in Sources */,
 				3497936E25F8B18C0029ECB1 /* ProgressView.swift in Sources */,
 				811EFD8E21A719FC0006EA8C /* KeyboardViewController.swift in Sources */,
