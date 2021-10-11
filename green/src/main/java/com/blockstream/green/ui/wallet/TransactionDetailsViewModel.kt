@@ -28,6 +28,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import java.lang.Long.max
 
 class TransactionDetailsViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
@@ -98,15 +99,16 @@ class TransactionDetailsViewModel @AssistedInject constructor(
             val unspentOutputs = it.getUnspentOutputs(BalanceParams(subaccount = wallet.activeAccount, confirmations = 1))
 
             val params = BumpTransactionParams(
-                previousTransaction = transaction,
-                feeRate = initialTransaction.feeRate,
+                subAccount = wallet.activeAccount,
                 utxos = unspentOutputs.unspentOutputs,
-                subAccount = wallet.activeAccount
+                previousTransaction = transaction
             )
 
             it.createTransaction(params).let { tx ->
-                if (!tx.error.isNullOrBlank()) {
-                    throw Exception(tx.error)
+                tx.error?.let { error ->
+                    if(error.isNotBlank() && error != "id_invalid_replacement_fee_rate"){
+                        throw Exception(error)
+                    }
                 }
 
                 tx.toObjectNode()
