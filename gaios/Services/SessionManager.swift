@@ -145,15 +145,34 @@ class SessionManager: Session {
         }
     }
 
-    func login(details: [String: Any], hwDevice: HWDevice? = nil)-> Promise<Void> {
-        guard let hwDevice = hwDevice,
-            let data = try? JSONEncoder().encode(hwDevice),
-            let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
-                return Promise<Void> { seal in seal.reject(GaError.GenericError) }
-        }
+    func registerLogin(mnemonic: String? = nil, password: String? = nil, hwDevice: HWDevice? = nil)-> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().then(on: bgq) {
-                try super.loginUser(details: details, hw_device: ["device": device]).resolve()
+        return Guarantee().map(on: bgq) {
+                if let hwDevice = hwDevice,
+                    let data = try? JSONEncoder().encode(hwDevice),
+                    let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
+                    return ["device": device]
+                }
+                return [:]
+        }.then(on: bgq) { device in
+            try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve()
+        }.then(on: bgq) { _ in
+            self.login(details: mnemonic != nil ? ["mnemonic": mnemonic ?? "", "password": password ?? ""] : [:],
+                  hwDevice: hwDevice)
+        }
+    }
+
+    func login(details: [String: Any], hwDevice: HWDevice? = nil)-> Promise<Void> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().map(on: bgq) {
+                if let hwDevice = hwDevice,
+                    let data = try? JSONEncoder().encode(hwDevice),
+                    let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
+                    return ["device": device]
+                }
+                return [:]
+            }.then(on: bgq) { device in
+                try super.loginUser(details: details, hw_device: device).resolve()
             }.then { _ in
                 self.loadTwoFactorConfig()
             }.then { _ -> Promise<Void> in

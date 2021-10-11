@@ -115,9 +115,7 @@ class WalletNameViewController: UIViewController {
         }.compactMap(on: bgq) {
             try session.connect(account)
         }.then(on: bgq) {
-            try session.registerUser(mnemonic: params?.mnemonic ?? "").resolve()
-        }.then(on: bgq) { _ in
-            session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
+            session.registerLogin(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "")
         }.ensure {
             self.stopLoader()
         }.done { _ in
