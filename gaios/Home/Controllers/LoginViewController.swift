@@ -154,7 +154,7 @@ class LoginViewController: UIViewController {
 
     fileprivate func loginWithPin(usingAuth: String, withPIN: String?) {
         let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionManager.newSession()
+        let session = SessionManager.newSession(account: account)
         firstly {
             return Guarantee()
         }.compactMap {
@@ -162,7 +162,6 @@ class LoginViewController: UIViewController {
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
         }.then(on: bgq) { data -> Promise<Void> in
-            try session.connect(self.account!)
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
@@ -185,7 +184,7 @@ class LoginViewController: UIViewController {
             self.stopLoader()
             UIApplication.shared.keyWindow?.rootViewController = nav
         }.catch { error in
-            _ = SessionManager.newSession()
+            _ = SessionManager.newSession(account: self.account)
             self.stopLoader()
             switch error {
             case AuthenticationTypeHandler.AuthError.CanceledByUser:

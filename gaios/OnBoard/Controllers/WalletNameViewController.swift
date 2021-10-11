@@ -108,12 +108,10 @@ class WalletNameViewController: UIViewController {
         let bgq = DispatchQueue.global(qos: .background)
         let params = OnBoardManager.shared.params
         let account = OnBoardManager.shared.account()
-        let session = SessionManager.newSession()
+        let session = SessionManager.newSession(account: account)
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
-        }.compactMap(on: bgq) {
-            try session.connect(account)
         }.then(on: bgq) {
             session.registerLogin(mnemonic: params?.mnemonic ?? "", password: params?.mnemomicPassword ?? "")
         }.ensure {
@@ -133,7 +131,8 @@ class WalletNameViewController: UIViewController {
     func checkCredential() {
         let params = OnBoardManager.shared.params
         let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionManager.newSession()
+        let account = OnBoardManager.shared.account()
+        let session = SessionManager.newSession(account: account)
         firstly {
             self.startLoader(message: NSLocalizedString("id_setting_up_your_wallet", comment: ""))
             return Guarantee()
@@ -146,7 +145,7 @@ class WalletNameViewController: UIViewController {
         }.done { _ in
             self.next()
         }.catch { error in
-            _ = SessionManager.newSession()
+            _ = SessionManager.newSession(account: account)
             switch error {
             case AuthenticationTypeHandler.AuthError.ConnectionFailed:
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))

@@ -127,6 +127,7 @@ class BLEManager {
 
     func connectLedger(_ p: Peripheral, network: String) {
         let session = SessionManager.shared
+        let account = AccountsManager.shared.current
         enstablishDispose = p.establishConnection()
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { p in Ledger.shared.open(p) }
@@ -149,13 +150,14 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onAuthenticate(p, network: network, firstInitialization: false)
             }, onError: { err in
-                _ = SessionManager.newSession()
+                _ = SessionManager.newSession(account: account)
                 self.onError(err, network: network)
             })
     }
 
     func connectJade(_ p: Peripheral, network: String) {
-        let session = SessionManager.newSession()
+        let account = AccountsManager.shared.current
+        let session = SessionManager.newSession(account: account)
         var hasPin = false
         enstablishDispose = p.establishConnection()
             .flatMap { p in Jade.shared.open(p) }
@@ -186,7 +188,7 @@ class BLEManager {
             .subscribe(onNext: { _ in
                 self.delegate?.onAuthenticate(p, network: network, firstInitialization: !hasPin)
             }, onError: { err in
-                _ = SessionManager.newSession()
+                _ = SessionManager.newSession(account: account)
                 self.onError(err, network: network)
             })
     }
@@ -285,7 +287,7 @@ class BLEManager {
                 case BLEManagerError.firmwareErr(_): // nothing to do
                     return
                 default:
-                    _ = SessionManager.newSession()
+                    _ = SessionManager.newSession(account: account)
                     self.onError(err, network: nil)
                 }
             })

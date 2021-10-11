@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.rootViewController?.startAnimating()
             return Guarantee()
         }.map(on: bgq) {
-            _ = SessionManager.newSession()
+            _ = SessionManager.newSession(account: AccountsManager.shared.current)
         }.ensure {
             self.window?.rootViewController?.stopAnimating()
         }.done {

@@ -33,20 +33,22 @@ class SessionManager: Session {
         try! super.init(notificationCompletionHandler: notificationManager.newNotification)
     }
 
-    public static func newSession() -> SessionManager {
+    public static func newSession(account: Account?) -> SessionManager {
         // Todo: destroy the session in a thread-safe way
         //SessionManager.shared = SessionManager()
         let session = SessionManager.shared
         try? session.disconnect()
+        session.account = account
         session.connected = false
         session.twoFactorConfig = nil
         session.settings = nil
         return SessionManager.shared
     }
 
-    public func connect(_ account: Account) throws {
-        self.account = account
-        try connect(network: account.networkName)
+    public func connect() throws {
+        if connected == false {
+            try connect(network: self.account?.networkName ?? "mainnet")
+        }
     }
 
     public func connect(network: String, params: [String: Any]? = nil) throws {
@@ -147,24 +149,30 @@ class SessionManager: Session {
 
     func registerLogin(mnemonic: String? = nil, password: String? = nil, hwDevice: HWDevice? = nil)-> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().map(on: bgq) {
+        return Guarantee()
+            .map(on: bgq) {
+                try self.connect()
+            }.map(on: bgq) {
                 if let hwDevice = hwDevice,
                     let data = try? JSONEncoder().encode(hwDevice),
                     let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
                     return ["device": device]
                 }
                 return [:]
-        }.then(on: bgq) { device in
-            try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve()
-        }.then(on: bgq) { _ in
-            self.login(details: mnemonic != nil ? ["mnemonic": mnemonic ?? "", "password": password ?? ""] : [:],
-                  hwDevice: hwDevice)
-        }
+            }.then(on: bgq) { device in
+                try super.registerUser(mnemonic: mnemonic ?? "", hw_device: device).resolve()
+            }.then(on: bgq) { _ in
+                self.login(details: mnemonic != nil ? ["mnemonic": mnemonic ?? "", "password": password ?? ""] : [:],
+                      hwDevice: hwDevice)
+            }
     }
 
     func login(details: [String: Any], hwDevice: HWDevice? = nil)-> Promise<Void> {
         let bgq = DispatchQueue.global(qos: .background)
-        return Guarantee().map(on: bgq) {
+        return Guarantee()
+            .map(on: bgq) {
+                try self.connect()
+            }.map(on: bgq) {
                 if let hwDevice = hwDevice,
                     let data = try? JSONEncoder().encode(hwDevice),
                     let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {

@@ -454,7 +454,8 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
             self.startLoader(message: NSLocalizedString("id_logout", comment: ""))
             return Guarantee()
         }.map(on: bgq) {
-            _ = SessionManager.newSession()
+            let account = AccountsManager.shared.current
+            _ = SessionManager.newSession(account: account)
             if let account = AccountsManager.shared.current {
                 if account.isJade || account.isLedger {
                     BLEManager.shared.dispose()
