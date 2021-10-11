@@ -23,21 +23,17 @@ class XCTestBase: XCTestCase {
             .tapAcceptTerms()
             .pause(1)
             .tapRestoreWallet()
-        
-        RestoreWallet()
-            .tapRestoreCard()
-        
-        ChooseNetwork()
-            .tapTestnetCard()
-    
+
         if isSingleSig {
-            ChooseSecurity()
+            RestoreWallet()
                 .tapSingleSigCard()
         } else {
-            ChooseSecurity()
+            RestoreWallet()
                 .tapMultiSigCard()
         }
 
+        ChooseNetwork()
+            .tapTestnetCard()
         
         RecoveryPhrase()
             .tapPhraseCard()

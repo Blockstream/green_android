@@ -5,13 +5,13 @@ class RestoreWalletViewController: UIViewController {
     @IBOutlet weak var lblTitle: UILabel!
     @IBOutlet weak var lblHint: UILabel!
 
-    @IBOutlet weak var cardRestore: UIView!
-    @IBOutlet weak var lblRestoreTitle: UILabel!
-    @IBOutlet weak var lblRestoreHint: UILabel!
+    @IBOutlet weak var cardSingleSig: UIView!
+    @IBOutlet weak var lblSingleSigTitle: UILabel!
+    @IBOutlet weak var lblSingleSigHint: UILabel!
 
-    @IBOutlet weak var cardMigrate: UIView!
-    @IBOutlet weak var lblMigrateTitle: UILabel!
-    @IBOutlet weak var lblMigrateHint: UILabel!
+    @IBOutlet weak var cardMultiSig: UIView!
+    @IBOutlet weak var lblMultiSigTitle: UILabel!
+    @IBOutlet weak var lblMultiSigHint: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,43 +21,44 @@ class RestoreWalletViewController: UIViewController {
         setActions()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.RestoreWalletScreen.view
-        cardRestore.accessibilityIdentifier = AccessibilityIdentifiers.RestoreWalletScreen.restoreCard
+        cardMultiSig.accessibilityIdentifier = AccessibilityIdentifiers.RestoreWalletScreen.cardMultiSig
+        cardSingleSig.accessibilityIdentifier = AccessibilityIdentifiers.RestoreWalletScreen.cardSingleSig
     }
 
     func setContent() {
         title = ""
         lblTitle.text = NSLocalizedString("id_restore_a_wallet", comment: "")
         lblHint.text = NSLocalizedString("id_import_a_wallet_created_on", comment: "")
-        lblRestoreTitle.text = NSLocalizedString("id_restore_green_wallet", comment: "")
-        lblRestoreHint.text = NSLocalizedString("id_bitcoin_is_the_worlds_leading", comment: "")
-        lblMigrateTitle.text = NSLocalizedString("id_migrate_another_wallet", comment: "")
-        lblMigrateHint.text = NSLocalizedString("id_import_a_wallet_created_with", comment: "")
+        lblSingleSigTitle.text = NSLocalizedString("id_singlesig", comment: "")
+        lblSingleSigHint.text = NSLocalizedString("Restore a Singlesig wallet created on Blockstream Green, or import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.", comment: "")
+        lblMultiSigTitle.text = NSLocalizedString("id_multisig_shield", comment: "")
+        lblMultiSigHint.text = NSLocalizedString("Import a Multisig Shield wallet created on Blockstream Green.", comment: "")
     }
 
     func setStyle() {
-        cardRestore.layer.cornerRadius = 5.0
-        cardMigrate.layer.cornerRadius = 5.0
+        cardSingleSig.layer.cornerRadius = 5.0
+        cardMultiSig.layer.cornerRadius = 5.0
     }
 
     func setActions() {
-        let tapGesture1 = UITapGestureRecognizer(target: self, action: #selector(didPressCardRestore))
-        cardRestore.addGestureRecognizer(tapGesture1)
-        let tapGesture2 = UITapGestureRecognizer(target: self, action: #selector(didPressCardMigrate))
-        cardMigrate.addGestureRecognizer(tapGesture2)
+        let tapGesture1 = UITapGestureRecognizer(target: self, action: #selector(didPressCardSingleSig))
+        cardSingleSig.addGestureRecognizer(tapGesture1)
+        let tapGesture2 = UITapGestureRecognizer(target: self, action: #selector(didPressCardMultisig))
+        cardMultiSig.addGestureRecognizer(tapGesture2)
     }
 
-    @objc func didPressCardRestore() {
-        next(isMigratingOtherWallet: false)
+    @objc func didPressCardSingleSig() {
+        next(restoreSingleSig: true)
     }
 
-    @objc func didPressCardMigrate() {
-        next(isMigratingOtherWallet: true)
+    @objc func didPressCardMultisig() {
+        next(restoreSingleSig: false)
     }
 
-    func next(isMigratingOtherWallet: Bool) {
+    func next(restoreSingleSig: Bool) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController") as? ChooseNetworkViewController {
-            vc.isMigratingOtherWallet = isMigratingOtherWallet
+            vc.restoreSingleSig = restoreSingleSig
             navigationController?.pushViewController(vc, animated: true)
         }
 

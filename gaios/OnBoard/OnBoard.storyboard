@@ -491,7 +491,7 @@
                                                                     <constraint firstAttribute="height" constant="60" id="fkL-H3-Loc"/>
                                                                 </constraints>
                                                             </imageView>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Bitcoin" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pkX-rT-Rl0">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Singlesig" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pkX-rT-Rl0">
                                                                 <rect key="frame" x="100" y="37.333333333333343" width="179" height="33.666666666666657"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -527,7 +527,7 @@
                                                                     <constraint firstAttribute="width" constant="60" id="mum-ld-9yW"/>
                                                                 </constraints>
                                                             </imageView>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Liquid" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="6do-Km-hoL">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Mulstisig Shield" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="6do-Km-hoL">
                                                                 <rect key="frame" x="100" y="37.333333333333371" width="179" height="33.666666666666657"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1678,14 +1678,14 @@
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BK1-IC-M0Q">
                                                         <rect key="frame" x="0.0" y="0.0" width="303" height="188"/>
                                                         <subviews>
-                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_restore_wallet" translatesAutoresizingMaskIntoConstraints="NO" id="9o4-oh-rPr">
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_key" translatesAutoresizingMaskIntoConstraints="NO" id="9o4-oh-rPr">
                                                                 <rect key="frame" x="24" y="24" width="60" height="60"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="60" id="DIn-8B-4C1"/>
                                                                     <constraint firstAttribute="width" constant="60" id="oSh-Pj-9c6"/>
                                                                 </constraints>
                                                             </imageView>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Restore Green Wallet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="CDY-pi-Wxv">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Singlesig" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="CDY-pi-Wxv">
                                                                 <rect key="frame" x="100" y="37.333333333333343" width="179" height="33.666666666666657"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1714,14 +1714,14 @@
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qE1-lN-jVc">
                                                         <rect key="frame" x="0.0" y="212" width="303" height="188"/>
                                                         <subviews>
-                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_migrate" translatesAutoresizingMaskIntoConstraints="NO" id="v23-Tf-f3R">
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_keys_invert" translatesAutoresizingMaskIntoConstraints="NO" id="v23-Tf-f3R">
                                                                 <rect key="frame" x="24" y="24" width="60" height="60"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="60" id="4Nh-5X-fBJ"/>
                                                                     <constraint firstAttribute="width" constant="60" id="JNp-f5-zXs"/>
                                                                 </constraints>
                                                             </imageView>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Migrate" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="Vpl-IB-hej">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Mulstisig Shield" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="Vpl-IB-hej">
                                                                 <rect key="frame" x="100" y="37.333333333333371" width="179" height="33.666666666666657"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1789,13 +1789,13 @@
                         <barButtonItem key="backBarButtonItem" title=" " id="B6D-3T-H1A"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="cardMigrate" destination="qE1-lN-jVc" id="MJc-6p-lzr"/>
-                        <outlet property="cardRestore" destination="BK1-IC-M0Q" id="48z-Sn-SiV"/>
+                        <outlet property="cardMultiSig" destination="qE1-lN-jVc" id="VqV-1L-upT"/>
+                        <outlet property="cardSingleSig" destination="BK1-IC-M0Q" id="g5p-3P-As1"/>
                         <outlet property="lblHint" destination="D9X-nf-BOV" id="g8k-mA-NpO"/>
-                        <outlet property="lblMigrateHint" destination="l4I-uN-ykj" id="UKz-Hl-l8b"/>
-                        <outlet property="lblMigrateTitle" destination="Vpl-IB-hej" id="Am7-vx-I7e"/>
-                        <outlet property="lblRestoreHint" destination="0ZG-MU-uIq" id="5v9-P2-cCx"/>
-                        <outlet property="lblRestoreTitle" destination="CDY-pi-Wxv" id="yK1-hv-gci"/>
+                        <outlet property="lblMultiSigHint" destination="l4I-uN-ykj" id="YIr-0p-yvC"/>
+                        <outlet property="lblMultiSigTitle" destination="Vpl-IB-hej" id="rjy-dg-25i"/>
+                        <outlet property="lblSingleSigHint" destination="0ZG-MU-uIq" id="d4p-Li-Pf9"/>
+                        <outlet property="lblSingleSigTitle" destination="CDY-pi-Wxv" id="47J-Bj-eWB"/>
                         <outlet property="lblTitle" destination="uer-i1-44h" id="VbJ-ch-Zos"/>
                         <segue destination="gHC-xV-0nr" kind="show" id="crL-2e-JFn"/>
                     </connections>
@@ -2428,14 +2428,12 @@
         <image name="ic_eye" width="60" height="60"/>
         <image name="ic_key" width="60" height="60"/>
         <image name="ic_keys_invert" width="60" height="60"/>
-        <image name="ic_migrate" width="60" height="60"/>
         <image name="ic_multiserver" width="60" height="60"/>
         <image name="ic_plus" width="60" height="60"/>
         <image name="ic_proxy" width="60" height="60"/>
         <image name="ic_qr" width="60" height="60"/>
         <image name="ic_recovery_phrase" width="60" height="60"/>
         <image name="ic_restore" width="60" height="60"/>
-        <image name="ic_restore_wallet" width="60" height="60"/>
         <image name="ic_tor" width="60" height="60"/>
         <image name="ic_tx_check" width="60" height="60"/>
         <image name="main_connect" width="200" height="129.33332824707031"/>

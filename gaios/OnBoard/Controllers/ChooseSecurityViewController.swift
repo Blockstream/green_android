@@ -78,16 +78,8 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     func next() {
-        switch LandingViewController.flowType {
-        case .add:
-            let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
-            navigationController?.pushViewController(vc, animated: true)
-        case .restore:
-            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
-            navigationController?.pushViewController(vc, animated: true)
-        }
-
+        let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

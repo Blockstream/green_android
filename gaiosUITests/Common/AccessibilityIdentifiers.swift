@@ -121,7 +121,8 @@ struct AccessibilityIdentifiers {
     
     struct RestoreWalletScreen {
         static let view = "view_restore_wallet"
-        static let restoreCard = "restore_card"
+        static let cardMultiSig = "multisig_card"
+        static let cardSingleSig = "singlesig_card"
     }
     
     struct RecoveryPhraseScreen {

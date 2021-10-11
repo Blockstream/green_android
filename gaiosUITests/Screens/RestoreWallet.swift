@@ -7,9 +7,14 @@ class RestoreWallet: Screen {
     }
     
     @discardableResult
-    func tapRestoreCard() -> Self {
-        tap(app.otherElements[AccessibilityIdentifiers.RestoreWalletScreen.restoreCard])
+    func tapSingleSigCard() -> Self {
+        tap(app.otherElements[AccessibilityIdentifiers.RestoreWalletScreen.cardSingleSig])
         return self
     }
-    
+
+    @discardableResult
+    func tapMultiSigCard() -> Self {
+        tap(app.otherElements[AccessibilityIdentifiers.RestoreWalletScreen.cardMultiSig])
+        return self
+    }
 }

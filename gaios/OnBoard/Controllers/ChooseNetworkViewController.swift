@@ -16,7 +16,7 @@ class ChooseNetworkViewController: UIViewController {
     @IBOutlet weak var cardTestnet: UIView!
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
-    var isMigratingOtherWallet = false
+    var restoreSingleSig = false
 
     @IBOutlet weak var cardLiquidTestnet: UIView!
 
@@ -76,9 +76,8 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     @objc func didPressCardLiquid() {
-        // migrating other wallet is implicitly SingleSig which is not
-        // available yet for liqud network
-        if isMigratingOtherWallet == true {
+        // not available yet for liqud network
+        if restoreSingleSig == true {
             DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
             return
         }
@@ -97,16 +96,16 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     func next() {
-        if isMigratingOtherWallet == true {
-            //security is implicit
-            OnBoardManager.shared.params?.singleSig = true
+        switch LandingViewController.flowType {
+        case .add:
+            let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
+            navigationController?.pushViewController(vc, animated: true)
+        case .restore:
+            OnBoardManager.shared.params?.singleSig = restoreSingleSig
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
             navigationController?.pushViewController(vc, animated: true)
-            return
         }
-        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
-        navigationController?.pushViewController(vc, animated: true)
     }
 }
