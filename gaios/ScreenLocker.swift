@@ -88,7 +88,7 @@ class ScreenLocker {
             // We became inactive, but never started a countdown.
             return
         }
-        guard let settings = Settings.shared else {
+        guard let settings = SessionManager.shared.settings else {
             // App is not logged
             return
         }

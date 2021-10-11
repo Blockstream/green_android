@@ -37,8 +37,10 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func getCurrentRate() {
-        currentCurrency.text = Settings.shared?.pricing["currency"] ?? ""
-        currentExchange.text = Settings.shared?.pricing["exchange"]?.capitalized ?? ""
+        if let settings = SessionManager.shared.settings {
+            currentCurrency.text = settings.pricing["currency"] ?? ""
+            currentExchange.text = settings.pricing["exchange"]?.capitalized ?? ""
+        }
     }
 
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -79,7 +81,7 @@ class CurrencySelectorViewController: KeyboardViewController, UITableViewDelegat
     }
 
     func setExchangeRate(_ currency: CurrencyItem) {
-        guard let settings = Settings.shared else { return }
+        guard let settings = SessionManager.shared.settings else { return }
         let bgq = DispatchQueue.global(qos: .background)
 
         var pricing = [String: String]()

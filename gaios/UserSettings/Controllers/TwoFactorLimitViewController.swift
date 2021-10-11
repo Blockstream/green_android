@@ -35,7 +35,7 @@ class TwoFactorLimitViewController: KeyboardViewController {
     }
 
     var denomination: DenominationType {
-        return Settings.shared?.denomination ?? .BTC
+        return SessionManager.shared.settings?.denomination ?? .BTC
     }
 
     override func viewDidLoad() {

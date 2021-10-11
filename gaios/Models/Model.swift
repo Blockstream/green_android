@@ -47,7 +47,7 @@ struct Balance: Codable {
             return (fiat?.localeFormattedString(2), mainnet ? fiatCurrency : "FIAT")
         }
         if feeAsset == tag {
-            let denomination = Settings.shared?.denomination ?? .BTC
+            let denomination = SessionManager.shared.settings?.denomination ?? .BTC
             let res = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(self), options: .allowFragments) as? [String: Any]
             let value = res![denomination.rawValue] as? String
             return (value!.localeFormattedString(denomination.digits), denomination.string)

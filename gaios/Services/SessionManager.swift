@@ -9,6 +9,7 @@ class SessionManager: Session {
     var connected = false
     var notificationManager: NotificationManager
     var twoFactorConfig: TwoFactorConfig?
+    var settings: Settings?
 
     var isResetActive: Bool? {
         get { twoFactorConfig?.twofactorReset.isResetActive }
@@ -120,6 +121,23 @@ class SessionManager: Session {
             let twoFactorConfig = try JSONDecoder().decode(TwoFactorConfig.self, from: JSONSerialization.data(withJSONObject: dataTwoFactorConfig, options: []))
             self.twoFactorConfig = twoFactorConfig
             return twoFactorConfig
+        }
+    }
+
+    func loadSettings() -> Promise<Settings> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().compactMap(on: bgq) {
+            try SessionManager.shared.getSettings()
+        }.compactMap { data in
+            self.settings = Settings.from(data)
+            return self.settings
+        }
+    }
+
+    func loadSystemMessage() -> Promise<String> {
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().map(on: bgq) {
+            try SessionManager.shared.getSystemMessage()
         }
     }
 }

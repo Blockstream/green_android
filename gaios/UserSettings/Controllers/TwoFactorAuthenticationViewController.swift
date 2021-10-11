@@ -45,7 +45,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
         setContent()
         setStyle()
 
-        currentCsv = Settings.shared?.csvtime
+        currentCsv = SessionManager.shared.settings?.csvtime
         tableViewCsvTime.estimatedRowHeight = 80
         tableViewCsvTime.rowHeight = UITableView.automaticDimension
 
@@ -131,7 +131,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
         thresholdView.isHidden = true
         if self.twoFactorConfig?.anyEnabled ?? false,
-            let settings = Settings.shared,
+            let settings = Settings.shared.settings,
             let twoFactorConfig = self.twoFactorConfig {
 
             var balance: Balance?
@@ -196,10 +196,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
             return Guarantee()
         }.then(on: bgq) {
             try SessionManager.shared.setCSVTime(details: details).resolve()
-        }.map(on: bgq) { _ in
-            if let data = try? SessionManager.shared.getSettings() {
-                Settings.shared = Settings.from(data)
-            }
+        }.then(on: bgq) { _ in
+            SessionManager.shared.loadSettings()
         }.ensure {
             self.stopAnimating()
         }.done { _ in

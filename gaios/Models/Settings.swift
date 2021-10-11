@@ -204,8 +204,6 @@ struct SettingsNotifications: Codable {
 // Main setting
 class Settings: Codable {
 
-    static var shared: Settings?
-
     enum CodingKeys: String, CodingKey {
         case requiredNumBlock = "required_num_blocks"
         case altimeout = "altimeout"

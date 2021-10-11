@@ -50,7 +50,7 @@ class SendBtcDetailsViewController: UIViewController {
     }()
 
     private var selectedFee: Int = {
-        guard let settings = Settings.shared else { return 0 }
+        guard let settings = SessionManager.shared.settings else { return 0 }
         if let pref = TransactionPriority.getPreference() {
             settings.transactionPriority = pref
         }
@@ -183,8 +183,8 @@ class SendBtcDetailsViewController: UIViewController {
     }
 
     func reloadCurrencySwitch() {
-        let settings = Settings.shared!
         let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+        let settings = SessionManager.shared.settings!
         let currency = isMainnet ? settings.getCurrency() : "FIAT"
         let title = isFiat ? currency : settings.denomination.string
         let color = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
@@ -244,7 +244,7 @@ class SendBtcDetailsViewController: UIViewController {
         amountText = amountText.unlocaleFormattedString(8)
         guard let number = Double(amountText), number > 0 else { return nil }
         let isBtc = assetId == btc
-        let denominationBtc = Settings.shared!.denomination.rawValue
+        let denominationBtc = SessionManager.shared.settings!.denomination.rawValue
         let key = isFiat ? "fiat" : (isBtc ? denominationBtc : assetId)
         let details: [String: Any]
         if isBtc {
@@ -336,7 +336,7 @@ class SendBtcDetailsViewController: UIViewController {
                 feeRate = storedFeeRate
             } else if let oldFeeRate = self.oldFeeRate {
                 feeRate = (oldFeeRate + self.minFeeRate)
-            } else if let settings = Settings.shared {
+            } else if let settings = SessionManager.shared.settings {
                 feeRate = UInt64(settings.customFeeRate ?? self.minFeeRate)
             } else {
                 feeRate = self.minFeeRate
@@ -369,7 +369,7 @@ class SendBtcDetailsViewController: UIViewController {
 
     @objc func clickFeeButton(_ sender: UITapGestureRecognizer) {
         guard let view = sender.view else { return }
-        let settings = Settings.shared!
+        let settings = SessionManager.shared.settings!
         switch view {
         case content.fastFeeButton:
             settings.transactionPriority = .High

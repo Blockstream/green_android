@@ -64,7 +64,7 @@ class UserSettingsViewController: UIViewController {
     func load() throws {
         let session = SessionManager.shared
         if let settings = try session.getSettings() {
-            Settings.shared = Settings.from(settings)
+            SessionManager.shared.settings = Settings.from(settings)
         }
         self.username = try session.getWatchOnlyUsername()
         let dataTwoFactorConfig = try session.getTwoFactorConfig()
@@ -105,7 +105,7 @@ class UserSettingsViewController: UIViewController {
         if isLiquid || isSingleSig || isWatchOnly || isResetActive || isHW {} else {
             items += [watchOnly]
         }
-        if let settings = Settings.shared {
+        if let settings = SessionManager.shared.settings {
             let bitcoinDenomination = UserSettingsItem(
                 title: NSLocalizedString("id_bitcoin_denomination", comment: ""),
                 subtitle: settings.denomination.string,
@@ -159,7 +159,7 @@ class UserSettingsViewController: UIViewController {
             }
         }
 
-        if let settings = Settings.shared {
+        if let settings = SessionManager.shared.settings {
             let autolock = UserSettingsItem(
                 title: NSLocalizedString("id_auto_logout_timeout", comment: ""),
                 subtitle: settings.autolock.string,
@@ -245,7 +245,7 @@ class UserSettingsViewController: UIViewController {
             }
         }
 
-        if let settings = Settings.shared {
+        if let settings = SessionManager.shared.settings {
             var locktimeRecoveryEnable = false
             if let notifications = settings.notifications {
                 locktimeRecoveryEnable = notifications.emailOutgoing == true
@@ -289,7 +289,7 @@ class UserSettingsViewController: UIViewController {
 
     func getSwitchValue() -> Bool {
 
-        guard let screenlock = Settings.shared?.getScreenLock() else {
+        guard let screenlock = SessionManager.shared.settings?.getScreenLock() else {
             DropAlert().error(message: NSLocalizedString("id_operation_failure", comment: ""))
             return false
         }
@@ -485,7 +485,7 @@ extension UserSettingsViewController {
 
     func showBitcoinDenomination() {
         let list = [ .BTC, .MilliBTC, .MicroBTC, .Bits, .Sats].map { DenominationType.denominations[$0]! }
-        let settings = Settings.shared!
+        let settings = SessionManager.shared.settings!
         let selected = settings.denomination.string
         let alert = UIAlertController(title: NSLocalizedString("id_bitcoin_denomination", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
@@ -543,7 +543,7 @@ extension UserSettingsViewController {
 
     func showAutoLogout() {
         let list = [AutoLockType.minute.string, AutoLockType.twoMinutes.string, AutoLockType.fiveMinutes.string, AutoLockType.tenMinutes.string, AutoLockType.sixtyMinutes.string]
-        let settings = Settings.shared!
+        let settings = SessionManager.shared.settings!
         let selected = settings.autolock.string
         let alert = UIAlertController(title: NSLocalizedString("id_auto_logout_timeout", comment: ""), message: "", preferredStyle: .actionSheet)
         list.forEach { (item: String) in
@@ -577,7 +577,7 @@ extension UserSettingsViewController {
     }
 
     func showRecoveryTransactions() {
-        let settings = Settings.shared!
+        let settings = SessionManager.shared.settings!
         var enabled = false
         if let notifications = settings.notifications {
             enabled = notifications.emailOutgoing == true

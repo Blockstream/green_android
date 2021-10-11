@@ -38,8 +38,7 @@ class NotificationManager {
                 self.post(event: .TwoFactorReset, data: data)
             }
         case .Settings:
-            reloadSystemMessage()
-            Settings.shared = Settings.from(data)
+            SessionManager.shared.settings = Settings.from(data)
             post(event: .Settings, data: data)
         case .Session:
             post(event: EventType.Network, data: data)
@@ -72,16 +71,6 @@ class NotificationManager {
     func post(event: EventType, data: [String: Any]) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: event.rawValue),
                                         object: nil, userInfo: data)
-    }
-
-    func reloadSystemMessage() {
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().map(on: bgq) {
-            try SessionManager.shared.getSystemMessage()
-        }.done { text in
-        }.catch { _ in
-            print("Error on get system message")
-        }
     }
 
     func reconnect() -> Promise<[String: Any]> {
