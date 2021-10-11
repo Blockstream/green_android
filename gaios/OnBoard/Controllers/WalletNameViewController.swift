@@ -117,7 +117,7 @@ class WalletNameViewController: UIViewController {
         }.then(on: bgq) {
             try session.registerUser(mnemonic: params?.mnemonic ?? "").resolve()
         }.then(on: bgq) { _ in
-            try session.loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
+            session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
         }.ensure {
             self.stopLoader()
         }.done { _ in
@@ -142,7 +142,7 @@ class WalletNameViewController: UIViewController {
         }.compactMap(on: bgq) {
             return try session.connect(network: OnBoardManager.shared.networkName)
         }.then(on: bgq) {
-            return try session.loginUser(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""]).resolve()
+            session.login(details: ["mnemonic": params?.mnemonic ?? "", "password": params?.mnemomicPassword ?? ""])
         }.ensure {
             self.stopLoader()
         }.done { _ in

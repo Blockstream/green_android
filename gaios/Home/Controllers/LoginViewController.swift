@@ -161,17 +161,12 @@ class LoginViewController: UIViewController {
             try self.account?.auth(usingAuth)
         }.get { _ in
             self.startLoader(message: NSLocalizedString("id_logging_in", comment: ""))
-        }.then(on: bgq) { data -> Promise<[String: Any]> in
+        }.then(on: bgq) { data -> Promise<Void> in
             try session.connect(self.account!)
             let jsonData = try JSONSerialization.data(withJSONObject: data)
             let pin = withPIN ?? data["plaintext_biometric"] as? String
             let pinData = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
-            return try session.loginUser(details: ["pin": pin!, "pin_data": pinData!]).resolve()
-        }.then { _ -> Promise<Void> in
-            if self.account?.network == "liquid" {
-                return Registry.shared.load()
-            }
-            return Promise<Void>()
+            return session.login(details: ["pin": pin!, "pin_data": pinData!])
         }.compactMap { _ in
             self.startLoader(message: NSLocalizedString("id_loading_wallet", comment: ""))
         }.then(on: bgq) { _ in

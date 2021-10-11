@@ -36,7 +36,11 @@ class SessionManager: Session {
     public static func newSession() -> SessionManager {
         // Todo: destroy the session in a thread-safe way
         //SessionManager.shared = SessionManager()
-        try? SessionManager.shared.disconnect()
+        let session = SessionManager.shared
+        try? session.disconnect()
+        session.connected = false
+        session.twoFactorConfig = nil
+        session.settings = nil
         return SessionManager.shared
     }
 
@@ -139,5 +143,24 @@ class SessionManager: Session {
         return Guarantee().map(on: bgq) {
             try SessionManager.shared.getSystemMessage()
         }
+    }
+
+    func login(details: [String: Any], hwDevice: HWDevice? = nil)-> Promise<Void> {
+        guard let hwDevice = hwDevice,
+            let data = try? JSONEncoder().encode(hwDevice),
+            let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
+                return Promise<Void> { seal in seal.reject(GaError.GenericError) }
+        }
+        let bgq = DispatchQueue.global(qos: .background)
+        return Guarantee().then(on: bgq) {
+                try super.loginUser(details: details, hw_device: ["device": device]).resolve()
+            }.then { _ in
+                self.loadTwoFactorConfig()
+            }.then { _ -> Promise<Void> in
+                if self.account?.network == "liquid" {
+                    return Registry.shared.load()
+                }
+                return Promise<Void>()
+            }
     }
 }

@@ -267,21 +267,11 @@ class BLEManager {
                 }
             }
             .flatMap { _ in
-                return Observable<[String: Any]>.create { observer in
-                    let info = self.device(isJade: account?.isJade ?? false, fmwVersion: self.fmwVersion ?? "")
-                    guard let data = try? JSONEncoder().encode(info),
-                        let device = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) else {
-                        observer.onError(JadeError.Abort("Invalid device configuration"))
-                        return Disposables.create { }
-                    }
+                return Observable<Void>.create { observer in
+                    let device = self.device(isJade: account?.isJade ?? false, fmwVersion: self.fmwVersion ?? "")
                     _ = try? session.registerUser(mnemonic: "", hw_device: ["device": device]).resolve()
-                        .then { _ -> Promise<Void> in
-                            if AccountsManager.shared.current?.network == "liquid" {
-                                return Registry.shared.load()
-                            }
-                            return Promise<Void>()
-                        }.then { _ in
-                            try session.loginUser(details: [:], hw_device: ["device": device]).resolve()
+                        .then { _ in
+                            session.login(details: [:], hwDevice: device)
                         }.done { res in
                             observer.onNext(res)
                             observer.onCompleted()
