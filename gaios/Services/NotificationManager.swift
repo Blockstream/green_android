@@ -3,7 +3,6 @@ import PromiseKit
 
 class NotificationManager {
 
-    var events = [Event]()
     var blockHeight: UInt32 = 0
 
     public func newNotification(notification: [String: Any]?) {
@@ -25,7 +24,6 @@ class NotificationManager {
             do {
                 let json = try JSONSerialization.data(withJSONObject: data, options: [])
                 let txEvent = try JSONDecoder().decode(TransactionEvent.self, from: json)
-                events.append(Event(value: data))
                 if txEvent.type == "incoming" {
                     txEvent.subAccounts.forEach { pointer in
                         post(event: .AddressChanged, data: ["pointer": UInt32(pointer)])
@@ -77,14 +75,10 @@ class NotificationManager {
     }
 
     func reloadSystemMessage() {
-        events.removeAll(where: { $0.kindOf(SystemMessage.self)})
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) {
             try SessionManager.shared.getSystemMessage()
         }.done { text in
-            if !text.isEmpty {
-                self.events.append(Event(value: ["text": text]))
-            }
         }.catch { _ in
             print("Error on get system message")
         }
