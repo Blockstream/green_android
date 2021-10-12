@@ -377,6 +377,7 @@
 "id_if_you_have_access_to_a" = "If you have access to a Two-Factor method for this wallet, cancel the reset to be able to spend and receive immediately, or wait %d days.";
 "id_if_you_have_some_coins_on_the" = "If you have some coins on the legacy address type, and you won't spend them shortly, you might need to setup an email and receive your recovery transactions to be sure you are always in control of your funds.";
 "id_if_you_initiated_the_2fa_reset" = "If you initiated the 2FA reset dispute by mistake, you can undo it and set the wallet back to 2FA reset state.";
+"id_import_a_multisig_shield_wallet" = "Import a Multisig Shield wallet created on Blockstream Green.";
 "id_import_a_wallet_created_on" = "Import a wallet created on Blockstream Green.";
 "id_import_a_wallet_created_with" = "Import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.";
 "id_incoming" = "Incoming";
@@ -641,6 +642,7 @@
 "id_resetting_your_twofactor_takes" = "Resetting your Two-Factor takes 12 months minimum. If you are sure you have lost your Two-Factor, please provide a new email address below to receive the reset.";
 "id_restore" = "Restore";
 "id_restore_a_blockstream_green" = "Restore a Blockstream Green wallet using your 24 words mnemonic backup. You can find it in the settings of any Blockstream Green app.";
+"id_restore_a_singlesig_wallet" = "Restore a Singlesig wallet created on Blockstream Green, or import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.";
 "id_restore_a_wallet" = "Restore a Wallet";
 "id_restore_green_wallet" = "Restore Green Wallet";
 "id_restore_temporary_wallet" = "Restore temporary wallet";

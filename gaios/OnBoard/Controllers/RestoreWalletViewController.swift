@@ -30,9 +30,9 @@ class RestoreWalletViewController: UIViewController {
         lblTitle.text = NSLocalizedString("id_restore_a_wallet", comment: "")
         lblHint.text = NSLocalizedString("id_import_a_wallet_created_on", comment: "")
         lblSingleSigTitle.text = NSLocalizedString("id_singlesig", comment: "")
-        lblSingleSigHint.text = NSLocalizedString("Restore a Singlesig wallet created on Blockstream Green, or import a wallet created with other apps. This option only works with singlesig wallets using BIP39 mnemonics, and following the BIP44, BIP49, or BIP84 derivations.", comment: "")
+        lblSingleSigHint.text = NSLocalizedString("id_restore_a_singlesig_wallet", comment: "")
         lblMultiSigTitle.text = NSLocalizedString("id_multisig_shield", comment: "")
-        lblMultiSigHint.text = NSLocalizedString("Import a Multisig Shield wallet created on Blockstream Green.", comment: "")
+        lblMultiSigHint.text = NSLocalizedString("id_import_a_multisig_shield_wallet", comment: "")
     }
 
     func setStyle() {
