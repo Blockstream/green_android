@@ -117,10 +117,7 @@ class SessionManager: Session {
     }
 
     func loadTwoFactorConfig() -> Promise<TwoFactorConfig> {
-        guard let acc = AccountsManager.shared.current, !acc.isWatchonly else {
-            return Promise<TwoFactorConfig> { seal in seal.reject(GaError.GenericError) }
-        }
-        let bgq = DispatchQueue.global(qos: .background)
+       let bgq = DispatchQueue.global(qos: .background)
         return Guarantee().compactMap(on: bgq) {
             try SessionManager.shared.getTwoFactorConfig()
         }.compactMap { dataTwoFactorConfig in
@@ -181,8 +178,12 @@ class SessionManager: Session {
                 return [:]
             }.then(on: bgq) { device in
                 try super.loginUser(details: details, hw_device: device).resolve()
-            }.then { _ in
-                self.loadTwoFactorConfig()
+            }.then { _ -> Promise<Void> in
+                if let account = self.account,
+                        !account.isWatchonly && !(account.isSingleSig ?? false) {
+                    return self.loadTwoFactorConfig().then { _ in Promise<Void>() }
+                }
+                return Promise<Void>()
             }.then { _ -> Promise<Void> in
                 if self.account?.network == "liquid" {
                     return Registry.shared.load()
