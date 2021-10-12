@@ -76,7 +76,7 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     @objc func didPressCardLiquid() {
-        // not available yet for liqud network
+        // not available yet for liquid network
         if restoreSingleSig == true {
             DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
             return
