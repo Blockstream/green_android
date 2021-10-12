@@ -272,12 +272,19 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         final String defaultFeerate = cfg().getString(PrefKeys.DEFAULT_FEERATE_SATBYTE, null);
         final boolean isBump = tx.get("previous_transaction") != null;
         if (isBump) {
+            mSelectedFee = 3;
             mFeeEstimates[3] = getOldFeeRate(tx) + mMinFeeRate;
         } else if (defaultFeerate != null) {
             final Double mPrefDefaultFeeRate = Double.valueOf(defaultFeerate);
             mFeeEstimates[3] = Double.valueOf(mPrefDefaultFeeRate * 1000.0).longValue();
-            updateFeeSummaries();
         }
+
+        final boolean isLiquid = getSession().getNetworkData().getLiquid();
+        for (int i = 0; i < mButtonIds.length; ++i) {
+            mFeeButtons[i].setSelected(i == mSelectedFee, isLiquid);
+        }
+
+        updateFeeSummaries();
     }
 
     private void updateAssetSelected() {
