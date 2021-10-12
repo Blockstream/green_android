@@ -137,7 +137,7 @@ class OverviewViewModel @AssistedInject constructor(
     }
 
     fun refresh(){
-        session.updateSubAccounts()
+        session.updateSubAccountsAndBalances()
         session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
     }
 
@@ -154,7 +154,7 @@ class OverviewViewModel @AssistedInject constructor(
             selectSubAccount(subAccount)
         } else {
             pendingSubAccountSwitch = index
-            session.updateSubAccounts()
+            session.updateSubAccountsAndBalances()
         }
     }
 

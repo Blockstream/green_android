@@ -9,9 +9,7 @@ import com.blockstream.gdk.data.Asset
 import com.blockstream.gdk.data.Balance
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.getAssetIcon
-import com.blockstream.green.utils.asset
-import com.blockstream.green.utils.btc
-import com.blockstream.green.utils.getBitcoinOrLiquidUnit
+import com.blockstream.green.utils.*
 
 
 class AssetListLook constructor(
@@ -28,9 +26,9 @@ class AssetListLook constructor(
     val balance : String
         get() {
             return if(isBTCValue){
-                session.convertAmount(Convert(satoshi = amount)).btc(session, withUnit = false, withGrouping = true)
+                amount.toBTCLook(session, withUnit = false, withGrouping = true)
             }else{
-                session.convertAmount(Convert(satoshi = amount, asset = asset), isAsset = true).asset(withUnit = false, withGrouping = true)
+                amount.toAssetLook(session, assetId = id, withUnit = false, withGrouping = true)
             }
         }
 

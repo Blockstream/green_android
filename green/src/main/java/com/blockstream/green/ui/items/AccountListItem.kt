@@ -1,19 +1,28 @@
 package com.blockstream.green.ui.items
 
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.view.updateMargins
+import com.blockstream.gdk.WalletBalances
+import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAccountBinding
-import com.blockstream.gdk.data.Network
-import com.blockstream.gdk.data.SubAccount
-import com.blockstream.green.gdk.titleRes
+import com.blockstream.green.gdk.GreenSession
+import com.blockstream.green.gdk.getAssetIcon
+import com.blockstream.green.utils.getBitcoinOrLiquidUnit
+import com.blockstream.green.utils.toBTCLook
+import com.blockstream.green.utils.toPixels
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
-data class AccountListItem constructor(var subAccount: SubAccount, val network: Network,
+data class AccountListItem constructor(val session: GreenSession,
+                                       val subAccount: SubAccount,
+                                       val walletBalances: WalletBalances,
                                        val isTopAccount: Boolean = false,
                                        var showFakeCard: Boolean = false,
                                        var isAccountListOpen : Boolean = false) :
@@ -26,16 +35,45 @@ data class AccountListItem constructor(var subAccount: SubAccount, val network: 
     }
 
     override fun bindView(binding: ListItemAccountBinding, payloads: List<Any>) {
+        val context = binding.root.context
+
         binding.isTopAccount = isTopAccount
         binding.isAccountListOpen = isAccountListOpen
-        binding.isLiquid = network.isLiquid
-        binding.isMainnet = network.isMainnet
+        binding.isLiquid = session.isLiquid
+        binding.isMainnet = session.isMainnet
         binding.subAccount = subAccount
 
         if(isTopAccount){
             binding.fakeAccountCard.isInvisible = !showFakeCard || isAccountListOpen
         }else{
             binding.fakeAccountCard.isVisible = false
+        }
+
+        val policyAsset = walletBalances[subAccount.pointer.toInt()]?.entries?.firstOrNull()
+
+        binding.balance = policyAsset?.value?.toBTCLook(session, withUnit = false, withGrouping = true, withMinimumDigits = false)
+        binding.ticker = getBitcoinOrLiquidUnit(session)
+
+        if(session.isLiquid){
+            val iconSize = context.toPixels(20)
+            // Clear all icons
+            binding.assetsIcons.removeAllViews()
+
+            walletBalances[subAccount.pointer.toInt()]?.let { balances ->
+                balances.onEachIndexed { index, balance ->
+                    ImageView(context).also { imageView ->
+                        imageView.setImageDrawable(balance.key.getAssetIcon(context, session))
+                        imageView.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT).also {
+                            it.updateMargins(left = context.toPixels(12 * index))
+                        }
+                        imageView.adjustViewBounds = true
+                        imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+                        imageView.elevation = (balances.size - index).toFloat()
+
+                        binding.assetsIcons.addView(imageView)
+                    }
+                }
+            }
         }
     }
 

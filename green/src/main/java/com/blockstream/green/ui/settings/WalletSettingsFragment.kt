@@ -56,7 +56,7 @@ class WalletSettingsFragment :
     private lateinit var unitPreference: PreferenceListItem
     private lateinit var priceSourcePreference: PreferenceListItem
     private lateinit var txPriorityPreference: PreferenceListItem
-    private lateinit var customFeeRatePreference: PreferenceListItem
+    private lateinit var customFeeRatePreference:  PreferenceListItem
     private lateinit var pgpPreference: PreferenceListItem
     private lateinit var altTimeoutPreference: PreferenceListItem
     private lateinit var twoFactorAuthenticationPreference: PreferenceListItem

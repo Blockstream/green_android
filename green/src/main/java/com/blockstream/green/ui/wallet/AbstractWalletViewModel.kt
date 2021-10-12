@@ -178,7 +178,7 @@ abstract class AbstractWalletViewModel constructor(
                 onEvent.postValue(ConsumableEvent(WalletEvent.RenameAccount))
 
                 // Update the subaccounts list
-                session.updateSubAccounts()
+                session.updateSubAccountsAndBalances()
             }
         )
     }

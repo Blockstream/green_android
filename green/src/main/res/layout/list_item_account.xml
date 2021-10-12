@@ -26,16 +26,24 @@
         <variable
             name="subAccount"
             type="com.blockstream.gdk.data.SubAccount" />
+
+        <variable
+            name="balance"
+            type="String" />
+
+        <variable
+            name="ticker"
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        layoutMarginBottom="@{isTopAccount &amp;&amp; !isAccountListOpen ? @dimen/dp16 : @dimen/dp0}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipToPadding="false"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp"
-        layoutMarginBottom="@{isTopAccount &amp;&amp; !isAccountListOpen ? @dimen/dp16 : @dimen/dp0}">
+        android:paddingBottom="8dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/fakeAccountCard"
@@ -55,8 +63,8 @@
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/account"
-            layoutMarginLeft="@{isTopAccount ? @dimen/dp0 : @dimen/dp16}"
-            layoutMarginRight="@{isTopAccount ? @dimen/dp0 : @dimen/dp16}"
+            layoutMarginLeft="@{isTopAccount ? @dimen/dp0 : @dimen/dp8}"
+            layoutMarginRight="@{isTopAccount ? @dimen/dp0 : @dimen/dp8}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@{isLiquid ? @color/liquid : isMainnet ? @color/bitcoin : @color/testnet }"
@@ -94,7 +102,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:padding="16dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="16dp"
                     android:src="@drawable/ic_baseline_more_vert_24"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -105,16 +114,79 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:background="@drawable/transparent_darker_round"
+                    android:background="@drawable/transparent_dark_round"
                     android:padding="4dp"
                     android:text="@{ExtensionsKt.titleRes(subAccount.type)}"
                     android:textAllCaps="true"
                     android:textColor="@color/color_on_surface_emphasis_medium"
                     android:textSize="10sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/accountName"
                     app:layout_constraintTop_toBottomOf="@+id/accountName"
                     tools:text="2of2" />
+
+                <FrameLayout
+                    android:id="@+id/assetsIcons"
+                    isVisible="@{isAccountListOpen &amp;&amp; balance != null &amp;&amp; isLiquid}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/transparent_dark_round"
+                    android:orientation="horizontal"
+                    android:padding="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/type"
+                    app:layout_constraintStart_toEndOf="@+id/type"
+                    app:layout_constraintTop_toTopOf="@+id/type">
+
+                </FrameLayout>
+
+                <LinearLayout
+                    isVisible="@{isAccountListOpen &amp;&amp; balance != null}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="bottom"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/assetsIcons"
+                    app:layout_constraintTop_toBottomOf="@+id/type">
+
+                    <TextView
+                        android:id="@+id/symbol"
+                        style="@style/TextShadow"
+                        isVisible="@{balance != null}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:includeFontPadding="false"
+                        android:paddingRight="4dp"
+                        android:singleLine="true"
+                        android:text="@{ticker}"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textColor="@color/color_on_surface_emphasis_high"
+                        android:textSize="14sp"
+                        tools:text="BTC" />
+
+                    <TextView
+                        android:id="@+id/balanceTextView"
+                        style="@style/TextShadow"
+                        isVisible="@{balance != null}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:singleLine="true"
+                        android:text="@{balance}"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?attr/textAppearanceBody1"
+                        android:textColor="@color/color_on_surface_emphasis_high"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="1230.234124" />
+
+                </LinearLayout>
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>

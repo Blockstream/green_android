@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
@@ -34,7 +35,6 @@ import com.blockstream.green.utils.*
 import com.blockstream.green.views.EndlessRecyclerOnScrollListener
 import com.blockstream.green.views.NpaLinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericFastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -43,7 +43,6 @@ import com.mikepenz.fastadapter.adapters.GenericFastItemAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
-import com.mikepenz.fastadapter.ui.items.ProgressItem
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -274,7 +273,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         val assetsTitleAdapter: GenericFastItemAdapter = FastItemAdapter()
 
         // Top Account Card
-        var topAccountAdapter = FastItemAdapter<AccountListItem>()
+        var topAccountAdapter = FastItemAdapter<GenericItem>()
         var topAccount : AccountListItem? = null
 
         viewModel.getSubAccountLiveData().observe(viewLifecycleOwner){ subAccount ->
@@ -286,10 +285,16 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
 
             // Top Account
-            topAccount = AccountListItem(subAccount, session.network, true).also {
+            topAccount = AccountListItem(
+                session = session,
+                subAccount = subAccount,
+                walletBalances = session.walletBalances,
+                isTopAccount = true
+            ).also {
                 updateTopAccountCard(it)
+            }.also {
+                topAccountAdapter.set(listOf(it))
             }
-            topAccountAdapter.set(listOf(topAccount!!))
 
             // Account Id
             if(viewModel.wallet.isLiquid){
@@ -311,21 +316,32 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         // Account Cards
         val accountsModelAdapter = ModelAdapter { model: SubAccount ->
-            AccountListItem(model, session.network)
+            AccountListItem(session, model, session.walletBalances, isTopAccount = false, isAccountListOpen = true)
         }.observeList(viewLifecycleOwner, viewModel.getFilteredSubAccounts(),{
-            topAccount?.let { updateTopAccountCard(it) }
+            topAccount?.let { updateTopAccountCard(it, topAccountAdapter) }
         }).also {
             it.active = false
         }
 
         // Add new account button
         val addAccountAdapter = FastItemAdapter<GenericItem>().also {
-                it.itemAdapter.active = false
-            }
+            it.itemAdapter.active = false
+        }
+
+        addAccountAdapter.add(ProgressListItem())
 
         if(!wallet.isWatchOnly){
             addAccountAdapter.add(ButtonActionListItem(text = StringHolder(R.string.id_add_new_account), useCard = true, extraPadding = true))
         }
+
+        val removeAccountsLoader  = object : Observer<List<SubAccount>> {
+            override fun onChanged(p0: List<SubAccount>?) {
+                addAccountAdapter.itemAdapter.remove(0) // remove ProgressListItem
+                viewModel.getFilteredSubAccounts().removeObserver(this)
+            }
+        }
+
+        viewModel.getFilteredSubAccounts().observe(viewLifecycleOwner, removeAccountsLoader)
 
         // Alert cards
         val alertCardsAdapter =  ModelAdapter<AlertType, AlertListItem> {
@@ -395,7 +411,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         val endlessRecyclerOnScrollListener = object : EndlessRecyclerOnScrollListener(recycler) {
             override fun onLoadMore() {
-                transactionsFooterAdapter.set(listOf(ProgressItem()))
+                transactionsFooterAdapter.set(listOf(ProgressListItem()))
                 disable()
                 viewModel.loadMoreTransactions()
             }
@@ -551,9 +567,8 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             }
 
             topAccount?.let {
-                updateTopAccountCard(it)
+                updateTopAccountCard(it, topAccountAdapter)
             }
-
             accountsModelAdapter.active = isAccount
             addAccountAdapter.itemAdapter.active = isAccount
 
@@ -571,10 +586,14 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         return fastAdapter
     }
 
-    private fun updateTopAccountCard(topCard: AccountListItem) {
+    private fun updateTopAccountCard(
+        topCard: AccountListItem,
+        adapter: FastItemAdapter<GenericItem>? = null
+    ) {
         // getSubAccounts returns the accounts except the selected one
         topCard.showFakeCard = viewModel.getFilteredSubAccounts().value?.size ?: 0 > 0
         topCard.isAccountListOpen = isAccountState
+        adapter?.notifyItemChanged(0)
     }
 
     private fun updateToolbar(showSecondary: Boolean) {

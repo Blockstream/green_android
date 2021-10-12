@@ -1,6 +1,7 @@
 package com.blockstream.gdk
 
 import android.content.SharedPreferences
+import android.util.SparseArray
 import com.blockstream.crypto.BuildConfig
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
@@ -19,6 +20,7 @@ import kotlin.random.asKotlinRandom
 typealias Balances = LinkedHashMap<String, Long>
 typealias BalanceMap = Map<String, Long>
 typealias BalancePair = Pair<String, Long>
+typealias WalletBalances = SparseArray<Balances>
 
 val BalanceLoading = BalancePair("", -1)
 

@@ -1,6 +1,7 @@
 package com.blockstream.green.gdk
 
 import android.graphics.drawable.Drawable
+import android.util.SparseArray
 import com.blockstream.gdk.*
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
@@ -45,8 +46,14 @@ class GreenSession constructor(
     var activeAccount = 0L
         private set
 
+    // Active Account
     private var balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
     private var transactionsSubject = BehaviorSubject.createDefault(listOf(Transaction.LoadingTransaction))
+
+    // All Accounts
+    var walletBalances : WalletBalances = SparseArray()
+        private set
+
     private var assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
     private var subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
     private var systemMessageSubject = BehaviorSubject.create<String>()
@@ -268,6 +275,9 @@ class GreenSession constructor(
         torStatusSubject = BehaviorSubject.create()
         networkSubject = BehaviorSubject.create()
 
+        // Clear balances
+        walletBalances.clear()
+
         greenWallet.disconnect(gaSession)
     }
 
@@ -475,7 +485,7 @@ class GreenSession constructor(
     }
 
     private fun initializeSessionData(initAccountIndex: Long) {
-        updateSubAccounts()
+        updateSubAccountsAndBalances()
         updateSystemMessage()
 
         setActiveAccount(initAccountIndex)
@@ -526,8 +536,8 @@ class GreenSession constructor(
     fun createSubAccount(params: SubAccountParams) =
         AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
 
-    fun getSubAccounts() =
-        AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession))
+    fun getSubAccounts() = AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession))
+        .result<SubAccounts>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
     fun getSubAccount(index: Long) = AuthHandler(greenWallet, greenWallet.getSubAccount(gaSession, index)
         ).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
@@ -582,14 +592,15 @@ class GreenSession constructor(
 
             it.getBalance(
                 BalanceParams(
-                    subaccount = activeAccount,
+                    subaccount = accountBeingFetched,
                     confirmations = 0
                 )
             ).also { balances ->
                 balancesSubject.onNext(balances)
+                walletBalances.put(accountBeingFetched.toInt(), balances)
             }
 
-            it.getTransactions(TransactionParams(subaccount = activeAccount, offset = offset, limit = limit))
+            it.getTransactions(TransactionParams(subaccount = accountBeingFetched, offset = offset, limit = limit))
                 .result<Transactions>(
                     hardwareWalletResolver = HardwareCodeResolver(hwWallet)
                 )
@@ -724,20 +735,39 @@ class GreenSession constructor(
 
     }
 
-    fun updateSubAccounts() {
-        logger.info { "updateSubAccounts" }
+    var isUpdatingSubAccounts = AtomicBoolean(false)
+    fun updateSubAccountsAndBalances() {
+        // Prevent race condition
+        if (!isUpdatingSubAccounts.compareAndSet(false, true)){
+            return
+        }
+
+        logger.info { "updateSubAccountsAndBalances" }
 
         observable {
-            AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession)).result<SubAccounts>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
-        }.retry(1)
-            .subscribeBy(
-                onSuccess = {
-                    subAccountsSubject.onNext(it.subaccounts)
-                },
-                onError = {
-                    it.printStackTrace()
-                    it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
-                }).addTo(disposables)
+            getSubAccounts().also {
+                for(subaccount in it.subaccounts){
+                    getBalance(BalanceParams(
+                        subaccount = subaccount.pointer,
+                        confirmations = 0
+                    )).also {  accountBalances ->
+                        walletBalances.put(subaccount.pointer.toInt(), accountBalances)
+                    }
+                }
+            }
+        }
+        .retry(1)
+        .doOnTerminate {
+            isUpdatingSubAccounts.set(false)
+        }
+        .subscribeBy(
+            onSuccess = {
+                subAccountsSubject.onNext(it.subaccounts)
+            },
+            onError = {
+                it.printStackTrace()
+                it.message?.let { msg -> greenWallet.extraLogger?.log("ERR: $msg") }
+            }).addTo(disposables)
     }
 
     // asset_info in Convert object can be null for liquid assets that don't have asset metadata
@@ -822,6 +852,8 @@ class GreenSession constructor(
                 notification.transaction?.let {
                     if(it.subaccounts.contains(activeAccount)){
                         updateTransactionsAndBalance(isReset = false, isLoadMore = false)
+                    }else{
+                        updateSubAccountsAndBalances()
                     }
                 }
             }
