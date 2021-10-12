@@ -80,18 +80,6 @@ public class AssetsSelectActivity extends LoggedActivity implements AssetsAdapte
             }
             return;
         }
-
-        // Nothing for btc
-        if (getNetwork().getPolicyAsset().equals(assetId))
-            return;
-
-        // Open selected asset detail page
-        final Intent intent = new Intent(this, AssetActivity.class);
-        final AssetInfoData assetInfo = getSession().getRegistry().getAssetInfo(assetId);
-        intent.putExtra("ASSET_ID", assetId)
-        .putExtra("ASSET_INFO", assetInfo)
-        .putExtra("SATOSHI", mAssetsBalances.get(assetId));
-        startActivity(intent);
     }
 
     @Override

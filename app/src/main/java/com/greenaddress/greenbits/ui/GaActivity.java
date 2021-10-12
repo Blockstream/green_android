@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -17,10 +18,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
 import com.blockstream.DeviceBrand;
-import com.blockstream.gdk.data.Network;
 import com.blockstream.libwally.Wally;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
@@ -44,18 +43,12 @@ import io.reactivex.rxjava3.core.SingleEmitter;
  */
 public abstract class GaActivity extends AppCompatActivity implements HWWalletBridge {
     public static final int
-            REQUEST_BITCOIN_URL_LOGIN = 1,
-            REQUEST_TX_DETAILS = 2,
-            REQUEST_BITCOIN_URL_SEND = 3,
-            REQUEST_SELECT_ASSET = 4,
-            REQUEST_SELECT_SUBACCOUNT = 5;
+            REQUEST_BITCOIN_URL_SEND = 3;
 
     public static final int HARDWARE_PIN_REQUEST = 59212;
     public static final int HARDWARE_PASSPHRASE_REQUEST = 21392;
 
     protected static final String TAG = GaActivity.class.getSimpleName();
-    public static final String ACTION_USB_ATTACHED = "android.hardware.usb.action.USB_DEVICE_ATTACHED";
-    public static final String ACTION_BLE_SELECTED = "android.hardware.ble.action.ACTION_BLE_SELECTED";
 
     private ProgressBarHandler mProgressBarHandler;
     private final SparseArray<SingleEmitter<String>> mHwEmitter = new SparseArray<>();
@@ -103,62 +96,12 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
         runOnUiThread(GaActivity.this::finish);
     }
 
-    protected void setMenuItemVisible(final Menu m, final int id, final boolean visible) {
-        if (m == null)
-            return;
-        runOnUiThread(() -> {
-            final MenuItem item = m.findItem(id);
-            if (item != null)
-                item.setVisible(visible);
-        });
-    }
-
-    protected static boolean isHexSeed(final String hexSeed) {
-        if (hexSeed.endsWith("X") && hexSeed.length() == 129) {
-            try {
-                Wally.hex_to_bytes(hexSeed.substring(0, 128));
-                return true;
-            } catch (final Exception e) {}
-        }
-        return false;
-    }
-
-    public void hideKeyboardFrom(final View v) {
-        final View toHideFrom = v == null ? getCurrentFocus() : v;
-        if (toHideFrom != null) {
-            final InputMethodManager imm;
-            imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(toHideFrom.getWindowToken(), 0);
-        }
-    }
-
     protected boolean isPermissionGranted(final int[] granted, final int msgId) {
         if (granted == null || granted.length == 0 || granted[0] != PackageManager.PERMISSION_GRANTED) {
             UI.toast(this, msgId, Toast.LENGTH_SHORT);
             return false;
         }
         return true;
-    }
-
-    protected void setAppNameTitle() {
-        setTitleWithNetwork(R.string.app_name);
-    }
-
-    protected void setTitleWithNetwork(final int resource) {
-        final NetworkData networkData = Bridge.INSTANCE.getCurrentNetworkData(this);
-        if (networkData == null || getSupportActionBar() == null) {
-            setTitle(resource);
-            return;
-        }
-
-        final String netname = networkData.getName();
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(networkData.getIcon());
-        if (!"Bitcoin".equals(netname))
-            setTitle(String.format(" %s %s",
-                                   netname, getString(resource)));
-        else
-            setTitle(resource);
     }
 
     public void setTitleBackTransparent() {

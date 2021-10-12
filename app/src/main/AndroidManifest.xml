@@ -74,12 +74,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/BitcoinTheme"
             />
-        <activity
-            android:name=".assets.AssetActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            android:label="@string/id_asset"
-            />
 
     </application>
 

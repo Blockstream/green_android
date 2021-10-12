@@ -32,12 +32,6 @@ public abstract class LoginActivity extends GaActivity {
         });
     }
 
-    public void onPostLogin() {
-        // Uncomment to test slow login post processing
-        // android.os.SystemClock.sleep(10000);
-        Log.d(TAG, "Success LOGIN callback onPostLogin" );
-    }
-
     public void connect(@Nullable HWWallet hwWallet) throws Exception {
         final String network = PreferenceManager.getDefaultSharedPreferences(this).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
 
