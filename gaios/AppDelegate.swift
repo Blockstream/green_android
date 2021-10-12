@@ -50,11 +50,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupAppearance() {
-        if #available(iOS 13.0, *) {
+        if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
             appearance.backgroundColor = UIColor.customTitaniumDark()
             appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+            appearance.shadowImage = UIImage.imageWithColor(color: UIColor.customTitaniumDark())
+            appearance.backgroundImage = UIImage()
             UINavigationBar.appearance().standardAppearance = appearance
             UINavigationBar.appearance().scrollEdgeAppearance = appearance
             UINavigationBar.appearance().isTranslucent = false
