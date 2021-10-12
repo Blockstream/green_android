@@ -173,7 +173,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             self.stopAnimating()
         }.done { _ in
             self.reloadData()
-            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
         }.catch { error in
             if let twofaError = error as? TwoFactorCallError {
@@ -250,7 +250,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             self.stopAnimating()
         }.done { _ in
             DropAlert().success(message: NSLocalizedString("id_2fa_reset_in_progress", comment: ""))
-            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
         }.catch { error in
             var text: String

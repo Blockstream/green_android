@@ -65,10 +65,12 @@ class Learn2faViewController: UIViewController {
             return Guarantee()
         }.then(on: bgq) {
             try SessionManager.shared.cancelTwoFactorReset().resolve()
+        }.then(on: bgq) { _ in
+            SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             self.dismiss(animated: true, completion: nil)
         }.catch {_ in
@@ -83,10 +85,12 @@ class Learn2faViewController: UIViewController {
             return Guarantee()
         }.then(on: bgq) {
             try SessionManager.shared.resetTwoFactor(email: email, isDispute: true).resolve()
+        }.then(on: bgq) { _ in
+            SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             self.dismiss(animated: true, completion: nil)
         }.catch {_ in
@@ -101,10 +105,12 @@ class Learn2faViewController: UIViewController {
             return Guarantee()
         }.then(on: bgq) {
             try SessionManager.shared.undoTwoFactorReset(email: email).resolve()
+        }.then(on: bgq) { _ in
+            SessionManager.shared.loadTwoFactorConfig()
         }.ensure {
             self.stopAnimating()
         }.done { _ in
-            let notification = NSNotification.Name(rawValue: EventType.Settings.rawValue)
+            let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             self.dismiss(animated: true, completion: nil)
         }.catch {_ in

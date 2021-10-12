@@ -31,6 +31,7 @@ class OverviewViewController: UIViewController {
     private var settingsUpdatedToken: NSObjectProtocol?
     private var tickerUpdatedToken: NSObjectProtocol?
     private var networkToken: NSObjectProtocol?
+    private var reset2faToken: NSObjectProtocol?
 
     var headerH: CGFloat = 44.0
     var footerH: CGFloat = 54.0
@@ -343,8 +344,10 @@ class OverviewViewController: UIViewController {
     }
 
     func refresh(_ notification: Notification) {
+        tableView.reloadSections([OverviewSection.account.rawValue], with: .none)
         tableView.reloadSections([OverviewSection.asset.rawValue], with: .none)
         tableView.reloadSections([OverviewSection.transaction.rawValue], with: .none)
+        loadAlertCards()
     }
 
     func loadAccounts() {
@@ -707,7 +710,8 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
         switch section {
         case OverviewSection.account.rawValue:
             let isWatchonly = account?.isWatchonly ?? false
-            return showAccounts && !isWatchonly ? footerView(.addAccount) : footerView(.none)
+            let isResetActive = SessionManager.shared.isResetActive ?? false
+            return showAccounts && !isWatchonly && !isResetActive ? footerView(.addAccount) : footerView(.none)
         case OverviewSection.transaction.rawValue:
             return transactions.count == 0 ? footerView(.noTransactions) : footerView(.none)
         default:
@@ -895,8 +899,9 @@ extension OverviewViewController {
             blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: onNewBlock)
             assetsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AssetsUpdated.rawValue), object: nil, queue: .main, using: onAssetsUpdated)
             settingsUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
-            tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Settings.rawValue), object: nil, queue: .main, using: refresh)
+            tickerUpdatedToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Ticker.rawValue), object: nil, queue: .main, using: refresh)
             networkToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Network.rawValue), object: nil, queue: .main, using: onNetworkEvent)
+            reset2faToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue), object: nil, queue: .main, using: refresh)
 
             if subAccounts.count > 0 {
                 handleRefresh()
@@ -929,6 +934,10 @@ extension OverviewViewController {
         if let token = networkToken {
             NotificationCenter.default.removeObserver(token)
             networkToken = nil
+        }
+        if let token = reset2faToken {
+            NotificationCenter.default.removeObserver(token)
+            reset2faToken = nil
         }
     }
 }
