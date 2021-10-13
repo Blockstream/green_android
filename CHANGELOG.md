@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Reset two factor authentication
+- Refactoring restore wallet flow, enabled Liquid Testnet in production, UI fix for iOS15
 
 ### Changed
 
