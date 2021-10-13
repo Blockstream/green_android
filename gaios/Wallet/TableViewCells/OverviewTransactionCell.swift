@@ -41,6 +41,7 @@ class OverviewTransactionCell: UITableViewCell {
         lblDate.text = ""
         lblDenom.text = ""
         icon.image = UIImage()
+        spvVerifyIcon.image = UIImage()
     }
 
     func setup(transaction: Transaction, network: String?) {
