@@ -35,7 +35,7 @@ struct TwoFactorConfigLimits: Codable {
         case sats = "sats"
     }
     let isFiat: Bool
-    let fiat: String
+    let fiat: String?
     let btc: String
     let bits: String
     let mbtc: String
