@@ -190,8 +190,18 @@ class TwoFactorAuthenticationFragment :
     }
 
     private fun updateAdapter() {
-        val settings = viewModel.settingsLiveData.value!!
-        val twoFactorConfig = viewModel.twoFactorConfigLiveData.value!!
+        val settings = viewModel.settingsLiveData.value
+        val twoFactorConfig = viewModel.twoFactorConfigLiveData.value
+        
+        if (settings == null || twoFactorConfig == null) {
+            if (settings == null) {
+                session.updateSettings()
+            }
+            if (twoFactorConfig == null) {
+                viewModel.updateTwoFactorConfig()
+            }
+            return
+        }
 
         val list = mutableListOf<GenericItem>()
 

@@ -38,7 +38,13 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
             // Assuming we are in v4 codebase flow
             if (isLoggedInRequired() && !session.isConnected) {
-                navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
+                // If session is not initialized, avoid getting the ViewModel as can use GreenSession
+                // without being properly initialized and can lead to a crash
+                if (session.isInitialized) {
+                    getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
+                } else {
+                    navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
+                }
                 return
             }
 
@@ -130,7 +136,13 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
         // where we don't have a session yet.
         if(isSessionAndWalletRequired()) {
             if (isLoggedInRequired() && !session.isConnected) {
-                getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
+                // If session is not initialized, avoid getting the ViewModel as can use GreenSession
+                // without being properly initialized and can lead to a crash
+                if (session.isInitialized) {
+                    getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
+                } else {
+                    navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
+                }
             }
         }
     }

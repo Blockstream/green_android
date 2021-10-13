@@ -66,6 +66,11 @@ class GreenSession constructor(
     lateinit var network: Network
         private set
 
+    // Other solution is to check if lateinit var is initialized
+    // get() = this::network.isInitialized
+    var isInitialized: Boolean = false
+        private set
+
     val networks
         get() = greenWallet.networks
 
@@ -189,9 +194,10 @@ class GreenSession constructor(
         )
     }
 
-    fun connect(network: Network) {
+    fun connect(n: Network) {
         disconnect(disconnectDevice = false)
-        this.network = network
+        network = n
+        isInitialized = true
 
         // Prevent multiple open sessions
         sessionManager.disconnectSessions(this)
