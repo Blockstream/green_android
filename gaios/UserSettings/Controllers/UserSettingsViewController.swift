@@ -77,7 +77,7 @@ class UserSettingsViewController: UIViewController {
         if isWatchOnly {
             return [.logout, .advanced, .about]
         } else if isResetActive {
-            return [.logout, .general, .security, .about]
+            return [.logout, .general, .security, .recovery, .about]
         } else if isSingleSig {
             return [.logout, .general, .security, .recovery, .about]
         } else if isHW && isLiquid {
@@ -237,12 +237,8 @@ class UserSettingsViewController: UIViewController {
             section: .recovery,
             type: .BackUpRecoveryPhrase)
         if isHW {
-        } else if !isWatchOnly && !isResetActive {
+        } else if !isWatchOnly {
             items += [backUpRecoveryPhrase]
-        } else {
-            if isResetActive {
-                items += [backUpRecoveryPhrase]
-            }
         }
 
         if let settings = SessionManager.shared.settings {
