@@ -42,7 +42,7 @@ class TransactionStatusTableCell: UITableViewCell {
         increaseFeeStackView.isHidden = !showBumpFee
 
         // SPV verify
-        spvVerifyLabel.isHidden = ["disabled", "unconfirmed"].contains(transaction.spvVerified)
+        spvVerifyLabel.isHidden = ["disabled", "unconfirmed", nil].contains(transaction.spvVerified)
         switch transaction.spvVerified {
         case "verified":
             spvVerifyLabel.textColor = .white

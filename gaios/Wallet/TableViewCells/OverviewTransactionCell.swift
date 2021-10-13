@@ -97,7 +97,7 @@ class OverviewTransactionCell: UITableViewCell {
         }
 
         setIcon(transaction: transaction, network: network)
-        setSpvVerifyICon(tx: transaction)
+        setSpvVerifyIcon(tx: transaction)
     }
 
     func setIcon(transaction: Transaction, network: String?) {
@@ -110,16 +110,22 @@ class OverviewTransactionCell: UITableViewCell {
         }
     }
 
-    func setSpvVerifyICon(tx: Transaction) {
+    func setSpvVerifyIcon(tx: Transaction) {
         switch tx.spvVerified {
         case "disabled", "verified", nil:
             spvVerifyIcon.isHidden = true
         case "in_progress":
             spvVerifyIcon.isHidden = false
-            spvVerifyIcon.image = UIImage(named: "spv_progress")
+            spvVerifyIcon.image = UIImage(named: "ic_spv_progress")
+            spvVerifyIcon.tintColor = .white
+        case "not_verified":
+            spvVerifyIcon.isHidden = false
+            spvVerifyIcon.image = UIImage(named: "ic_spv_warning")
+            spvVerifyIcon.tintColor = .red
         default:
             spvVerifyIcon.isHidden = false
             spvVerifyIcon.image = UIImage(named: "ic_spv_warning")
+            spvVerifyIcon.tintColor = .yellow
         }
     }
 
