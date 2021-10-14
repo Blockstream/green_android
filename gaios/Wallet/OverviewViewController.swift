@@ -62,23 +62,6 @@ class OverviewViewController: UIViewController {
     }
 
     var color: UIColor = .clear
-
-    var isResetActive: Bool {
-        get {
-            SessionManager.shared.isResetActive ?? false
-        }
-    }
-    var isDisputeActive: Bool {
-        get {
-            SessionManager.shared.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
-        }
-    }
-    var resetDaysRemaining: Int? {
-        get {
-            SessionManager.shared.twoFactorConfig?.twofactorReset.daysRemaining ?? 0
-        }
-    }
-
     var alertCards: [AlertCardType] = []
     var userWillLogout = false
 
@@ -213,13 +196,16 @@ class OverviewViewController: UIViewController {
 
     func loadAlertCards() {
         alertCards = []
-        if AccountsManager.shared.current!.network != "liquid" && AccountsManager.shared.current!.network != "mainnet" {
-            alertCards.append(AlertCardType.testnetNoValue)
+        // load reset card
+        if SessionManager.shared.isResetActive ?? false {
+            if SessionManager.shared.twoFactorConfig?.twofactorReset.isDisputeActive ?? false {
+                alertCards.append(AlertCardType.dispute)
+            } else {
+                let resetDaysRemaining = SessionManager.shared.twoFactorConfig?.twofactorReset.daysRemaining
+                alertCards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
+            }
         }
-        if isResetActive {
-            let resetCard = isDisputeActive ? AlertCardType.dispute : AlertCardType.reset(resetDaysRemaining ?? 0)
-            alertCards.append(resetCard)
-        }
+        // load registry cards
         if AccountsManager.shared.current!.network == "liquid" {
             switch Registry.shared.failStatus() {
             case .assets, .all:

@@ -14,16 +14,7 @@ class Learn2faViewController: UIViewController {
     @IBOutlet weak var lblPermanentHint: UILabel!
     @IBOutlet weak var btnUndoReset: UIButton!
 
-    var resetDaysRemaining: Int? {
-        get {
-            SessionManager.shared.twoFactorConfig?.twofactorReset.daysRemaining ?? 0
-        }
-    }
-    var isDisputeActive: Bool {
-        get {
-            SessionManager.shared.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
-        }
-    }
+    let isDisputeActive = SessionManager.shared.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +37,7 @@ class Learn2faViewController: UIViewController {
             btnUndoReset.setTitle(NSLocalizedString("id_undo_2fa_dispute", comment: ""), for: .normal)
             return
         }
+        let resetDaysRemaining = SessionManager.shared.twoFactorConfig?.twofactorReset.daysRemaining
         lblTitle.text = NSLocalizedString("id_2fa_reset_in_progress", comment: "")
         lblResetTitle.text = String(format: NSLocalizedString("id_your_wallet_is_locked_for_a", comment: ""), resetDaysRemaining ?? 0)
         lblResetHint.text = NSLocalizedString("id_the_waiting_period_is_necessary", comment: "")
