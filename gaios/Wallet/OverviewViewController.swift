@@ -215,6 +215,9 @@ class OverviewViewController: UIViewController {
 
     func loadAlertCards() {
         alertCards = []
+        if AccountsManager.shared.current!.network != "liquid" && AccountsManager.shared.current!.network != "mainnet" {
+            alertCards.append(AlertCardType.testnetNoValue)
+        }
         if isResetActive {
             let resetCard = isDisputeActive ? AlertCardType.dispute : AlertCardType.reset(resetDaysRemaining ?? 0)
             alertCards.append(resetCard)
@@ -609,6 +612,10 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                         self?.systemMessageScreen(text: text)
                     })
                 case .fiatMissing:
+                    cell.configure(alertCards[indexPath.row],
+                                   onLeft: nil,
+                                   onRight: nil)
+                case .testnetNoValue:
                     cell.configure(alertCards[indexPath.row],
                                    onLeft: nil,
                                    onRight: nil)

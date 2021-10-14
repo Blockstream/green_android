@@ -8,6 +8,7 @@ enum AlertCardType {
     case iconsRegistryFail
     case systemMessage(String)
     case fiatMissing
+    case testnetNoValue
 }
 
 class OverviewAlertCardCell: UITableViewCell {
@@ -80,6 +81,12 @@ class OverviewAlertCardCell: UITableViewCell {
         case .fiatMissing:
             lblTitle.text = NSLocalizedString("id_warning", comment: "")
             lblHint.text = NSLocalizedString("id_your_favourite_exchange_rate_is", comment: "")
+            btnRight.isHidden = true
+            btnLeft.isHidden = true
+            btnsContainer.isHidden = true
+        case .testnetNoValue:
+            lblTitle.text = NSLocalizedString("id_warning", comment: "")
+            lblHint.text = NSLocalizedString("This wallet operates on a test network. Anything you receive or send here has no value", comment: "")
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
