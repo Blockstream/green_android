@@ -16,10 +16,10 @@ class ChooseNetworkViewController: UIViewController {
     @IBOutlet weak var cardTestnet: UIView!
     @IBOutlet weak var lblTestnetTitle: UILabel!
     @IBOutlet weak var lblTestnetHint: UILabel!
-    var restoreSingleSig = false
 
     @IBOutlet weak var cardLiquidTestnet: UIView!
 
+    var restoreSingleSig = false
     var isDebug = false
 
     override func viewDidLoad() {
@@ -33,6 +33,10 @@ class ChooseNetworkViewController: UIViewController {
         setStyle()
         setActions()
 
+        if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) != true {
+            cardTestnet.isHidden = true
+            cardLiquidTestnet.isHidden = true
+        }
         view.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.view
         cardTestnet.accessibilityIdentifier = AccessibilityIdentifiers.ChooseNetworkScreen.testnetCard
     }

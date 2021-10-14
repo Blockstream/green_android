@@ -4,6 +4,7 @@ class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var lblVersion: UILabel!
+    @IBOutlet weak var btnSettings: UIButton!
 
     var swAccounts =  [Account]()
     var hwAccounts =  [Account]()
@@ -29,6 +30,7 @@ class HomeViewController: UIViewController {
 
     func setContent() {
         lblVersion.text = String(format: NSLocalizedString("id_version_1s", comment: ""), "\(Bundle.main.versionNumber)")
+        btnSettings.setTitle(NSLocalizedString("id_app_settings", comment: ""), for: .normal)
     }
 
     func setStyle() {
@@ -67,6 +69,12 @@ class HomeViewController: UIViewController {
         navigationController?.pushViewController(vc, animated: true)
     }
 
+    @IBAction func btnSettings(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            present(vc, animated: true) {}
+        }
+    }
 }
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {

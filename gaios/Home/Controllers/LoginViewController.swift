@@ -382,4 +382,7 @@ extension LoginViewController: WalletSettingsViewControllerDelegate {
             }
         }
     }
+    func didSet(testnet: Bool) {
+        //
+    }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pNH-gf-OFC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="pNH-gf-OFC">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -25,7 +25,7 @@
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="aed-43-hVZ">
-                                <rect key="frame" x="0.0" y="293" width="414" height="541"/>
+                                <rect key="frame" x="0.0" y="293" width="414" height="501"/>
                                 <color key="backgroundColor" name="customTitaniumDark"/>
                                 <color key="sectionIndexBackgroundColor" name="customTitaniumDark"/>
                                 <prototypes>
@@ -166,6 +166,20 @@
                                     <outlet property="delegate" destination="Emf-d6-4he" id="rJD-rc-feP"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Dq-xp-d6d" userLabel="Next">
+                                <rect key="frame" x="0.0" y="794" width="414" height="40"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="KE2-5A-dBZ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                                <state key="normal" title="Connection Settings">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="btnSettings:" destination="Emf-d6-4he" eventType="touchUpInside" id="WZS-MD-UZI"/>
+                                </connections>
+                            </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fGw-87-fu0">
                                 <rect key="frame" x="0.0" y="834" width="414" height="28"/>
                                 <subviews>
@@ -188,21 +202,25 @@
                         <viewLayoutGuide key="safeArea" id="mwS-yc-07h"/>
                         <color key="backgroundColor" name="customTitaniumDark"/>
                         <constraints>
+                            <constraint firstItem="mwS-yc-07h" firstAttribute="trailing" secondItem="6Dq-xp-d6d" secondAttribute="trailing" id="58F-rj-IfG"/>
                             <constraint firstItem="mwS-yc-07h" firstAttribute="bottom" secondItem="fGw-87-fu0" secondAttribute="bottom" id="7Bk-hf-5Wo"/>
                             <constraint firstItem="aed-43-hVZ" firstAttribute="top" secondItem="xqN-bP-Poi" secondAttribute="bottom" constant="60" id="C5u-j2-G4U"/>
+                            <constraint firstItem="6Dq-xp-d6d" firstAttribute="top" secondItem="aed-43-hVZ" secondAttribute="bottom" id="POR-DV-uV1"/>
                             <constraint firstItem="aed-43-hVZ" firstAttribute="leading" secondItem="mwS-yc-07h" secondAttribute="leading" id="R6e-Ny-WPw"/>
                             <constraint firstItem="fGw-87-fu0" firstAttribute="leading" secondItem="mwS-yc-07h" secondAttribute="leading" id="Xf0-h0-4IR"/>
                             <constraint firstItem="mwS-yc-07h" firstAttribute="trailing" secondItem="aed-43-hVZ" secondAttribute="trailing" id="YgJ-y2-oyb"/>
                             <constraint firstItem="mwS-yc-07h" firstAttribute="trailing" secondItem="fGw-87-fu0" secondAttribute="trailing" id="ZOo-dw-8Uh"/>
                             <constraint firstItem="xqN-bP-Poi" firstAttribute="top" secondItem="mwS-yc-07h" secondAttribute="top" constant="80" id="aJu-90-9Qf"/>
                             <constraint firstItem="xqN-bP-Poi" firstAttribute="centerX" secondItem="mwS-yc-07h" secondAttribute="centerX" id="bcY-bs-wyk"/>
-                            <constraint firstItem="fGw-87-fu0" firstAttribute="top" secondItem="aed-43-hVZ" secondAttribute="bottom" id="o2Q-VN-nLP"/>
+                            <constraint firstItem="fGw-87-fu0" firstAttribute="top" secondItem="6Dq-xp-d6d" secondAttribute="bottom" id="oBO-cT-CIg"/>
+                            <constraint firstItem="6Dq-xp-d6d" firstAttribute="leading" secondItem="mwS-yc-07h" secondAttribute="leading" id="ssd-LY-VlL"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="sHu-JB-blG">
                         <barButtonItem key="backBarButtonItem" title=" " id="KWb-4D-S1L"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="btnSettings" destination="6Dq-xp-d6d" id="k0e-jV-MdF"/>
                         <outlet property="lblVersion" destination="K8m-75-Qe5" id="Cqf-oB-trn"/>
                         <outlet property="tableView" destination="aed-43-hVZ" id="MTw-P5-YZt"/>
                         <segue destination="jB1-8d-0nD" kind="show" id="Xla-wc-H4B"/>

@@ -12,6 +12,7 @@ class WatchOnlyViewController: KeyboardViewController {
     @IBOutlet weak var rememberTitle: UILabel!
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var warningLabel: UILabel!
+    @IBOutlet weak var cardTestnet: UIView!
     @IBOutlet weak var lblTestnet: UILabel!
     @IBOutlet weak var testnetSwitch: UISwitch!
     @IBOutlet weak var btnSettings: UIButton!
@@ -160,9 +161,18 @@ class WatchOnlyViewController: KeyboardViewController {
 
     @IBAction func btnSettings(_ sender: Any) {
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController")
-        present(vc, animated: true) {
+        if let vc = storyboard.instantiateViewController(withIdentifier: "WalletSettingsViewController") as? WalletSettingsViewController {
+            vc.delegate = self
+            present(vc, animated: true) {}
         }
     }
+}
 
+extension WatchOnlyViewController: WalletSettingsViewControllerDelegate {
+    func didSet(tor: Bool) {
+        //
+    }
+    func didSet(testnet: Bool) {
+        cardTestnet.isHidden = !testnet
+    }
 }

@@ -2,6 +2,7 @@ import UIKit
 
 protocol WalletSettingsViewControllerDelegate: AnyObject {
     func didSet(tor: Bool)
+    func didSet(testnet: Bool)
 }
 
 class WalletSettingsViewController: UIViewController {
@@ -20,6 +21,11 @@ class WalletSettingsViewController: UIViewController {
     @IBOutlet weak var cardProxyDetail: UIView!
     @IBOutlet weak var switchProxy: UISwitch!
     @IBOutlet weak var fieldProxyIp: UITextField!
+
+    @IBOutlet weak var cardTestnet: UIView!
+    @IBOutlet weak var lblTestnetTitle: UILabel!
+    @IBOutlet weak var lblTestnetHint: UILabel!
+    @IBOutlet weak var switchTestnet: UISwitch!
 
     @IBOutlet weak var cardTxCheck: UIView!
     @IBOutlet weak var lblTxCheckTitle: UILabel!
@@ -76,6 +82,8 @@ class WalletSettingsViewController: UIViewController {
 
         lblTorTitle.text = NSLocalizedString("id_connect_with_tor", comment: "")
         lblTorHint.text = NSLocalizedString("id_private_but_less_stable", comment: "")
+        lblTestnetTitle.text = NSLocalizedString("id_enable_testnet", comment: "")
+        lblTestnetHint.text = ""
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
         lblTxCheckTitle.text = NSLocalizedString("id_spv_verification", comment: "")
@@ -130,6 +138,7 @@ class WalletSettingsViewController: UIViewController {
             socks5 += ":\(port)"
         }
         fieldProxyIp.text = socks5
+        switchTestnet.setOn(UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true, animated: true)
     }
 
     @IBAction func switchProxyChange(_ sender: UISwitch) {
@@ -152,7 +161,11 @@ class WalletSettingsViewController: UIViewController {
             "tor": switchTor.isOn,
             "socks5_hostname": socks5.split(separator: ":").first ?? "",
             "socks5_port": socks5.split(separator: ":").last ?? ""]
+
+        UserDefaults.standard.set(switchTestnet.isOn, forKey: AppStorage.testnetIsVisible)
+
         delegate?.didSet(tor: switchTor.isOn)
+        delegate?.didSet(testnet: switchTestnet.isOn)
         dismiss(animated: true, completion: nil)
     }
 
