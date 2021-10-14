@@ -45,7 +45,7 @@ class TransactionStatusTableCell: UITableViewCell {
         spvVerifyLabel.isHidden = ["disabled", "unconfirmed", nil].contains(transaction.spvVerified)
         switch transaction.spvVerified {
         case "verified":
-            spvVerifyLabel.textColor = .white
+            spvVerifyLabel.textColor = .green
             spvVerifyLabel.text = NSLocalizedString("id_spv_verified", comment: "")
         case "not_verified":
             spvVerifyLabel.textColor = .red
