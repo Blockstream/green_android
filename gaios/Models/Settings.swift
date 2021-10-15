@@ -96,10 +96,16 @@ public enum DenominationType: String, CodingKey {
 
     static let denominationsBTC: [DenominationType: String] = [ .BTC: "BTC", .MilliBTC: "mBTC", .MicroBTC: "µBTC", .Bits: "bits", .Sats: "sats"]
     static let denominationsLBTC: [DenominationType: String] = [ .BTC: "L-BTC", .MilliBTC: "L-mBTC", .MicroBTC: "L-µBTC", .Bits: "L-bits", .Sats: "L-sats"]
+    static let denominationsTEST: [DenominationType: String] = [ .BTC: "TEST", .MilliBTC: "mTEST", .MicroBTC: "µTEST", .Bits: "bTEST", .Sats: "sTEST"]
+    static let denominationsLTEST: [DenominationType: String] = [ .BTC: "L-TEST", .MilliBTC: "L-mTEST", .MicroBTC: "L-µTEST", .Bits: "L-TEST", .Sats: "L-TEST"]
 
     static var denominations: [DenominationType: String] {
         let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
-        return isLiquid ? DenominationType.denominationsLBTC : DenominationType.denominationsBTC
+        let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+        if isLiquid {
+            return isMainnet ? DenominationType.denominationsLBTC : DenominationType.denominationsLTEST
+        }
+        return isMainnet ? DenominationType.denominationsBTC : DenominationType.denominationsTEST
     }
 
     var string: String {
