@@ -42,8 +42,9 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                     getWalletViewModel().logout(AbstractWalletViewModel.LogoutReason.TIMEOUT)
                 } else {
                     navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
+                    // Stop flow as usage of WalletViewModel will lead to crash
+                    return
                 }
-                return
             }
 
             getWalletViewModel().let{
@@ -152,6 +153,12 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Dismiss network to avoid UI leaking to other fragments
+        networkSnackbar?.dismiss()
     }
 
     companion object : KLogging()

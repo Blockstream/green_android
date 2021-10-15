@@ -1,6 +1,5 @@
 package com.greenaddress.greenbits.ui.assets;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,36 +61,55 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
     public void onBindViewHolder(final Item holder, final int position) {
         final String assetId = mAssetsIds.get(position);
         final boolean isBTC = mNetworkData.getPolicyAsset().equals(assetId);
+        final boolean isLiquid = mNetworkData.getLiquid();
+        final boolean isTestnet = mNetworkData.isTestnet();
         final Long satoshi = mAssets.get(assetId);
         final AssetInfoData assetInfo = mActivity.getSession().getRegistry().getAssetInfo(assetId);
         if (mOnAccountSelected != null)
             holder.mAssetLayout.setOnClickListener(v -> mOnAccountSelected.onAssetSelected(assetId));
-        if (isBTC) {
-            holder.mAssetName.setText("Liquid Bitcoin");
+
+        if(isLiquid){
+            if (isBTC) { // Liquid
+                holder.mAssetName.setText("Liquid Bitcoin");
+                holder.mAssetDomain.setVisibility(View.GONE);
+                try {
+                    holder.mAssetValue.setText(Conversion.getBtc(mActivity.getSession(), satoshi, true));
+                } catch (final Exception e) {
+                    Log.e("", "Conversion error: " + e.getLocalizedMessage());
+                }
+            } else {
+                holder.mAssetName.setText(assetInfo != null ? assetInfo.getName() : assetId);
+                final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
+                if (entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
+                    holder.mAssetDomain.setVisibility(View.VISIBLE);
+                    holder.mAssetDomain.setText(entity.getDomain());
+                } else {
+                    holder.mAssetDomain.setVisibility(View.GONE);
+                }
+                try {
+                    holder.mAssetValue.setText(Conversion.getAsset(mActivity.getSession(), satoshi, assetId, assetInfo, true));
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            // Get l-btc & asset icon from asset icon map
+            final String asset = isBTC ? mNetworkData.getPolicyAsset() : assetId;
+            holder.mAssetIcon.setImageDrawable(mActivity.getSession().getRegistry().getAssetManager().getAssetDrawableOrDefault(asset));
+        }else{
+            if(isTestnet){
+                holder.mAssetName.setText("Testnet Bitcoin");
+                holder.mAssetIcon.setImageResource(R.drawable.ic_testnet_btc);
+            }else{
+                holder.mAssetName.setText("Bitcoin");
+                holder.mAssetIcon.setImageResource(R.drawable.ic_btc);
+            }
             holder.mAssetDomain.setVisibility(View.GONE);
             try {
                 holder.mAssetValue.setText(Conversion.getBtc(mActivity.getSession(), satoshi, true));
             } catch (final Exception e) {
                 Log.e("", "Conversion error: " + e.getLocalizedMessage());
             }
-        } else {
-            holder.mAssetName.setText(assetInfo != null ? assetInfo.getName() : assetId);
-            final EntityData entity = assetInfo != null ? assetInfo.getEntity() : null;
-            if (entity != null && entity.getDomain() != null && !entity.getDomain().isEmpty()) {
-                holder.mAssetDomain.setVisibility(View.VISIBLE);
-                holder.mAssetDomain.setText(entity.getDomain());
-            } else {
-                holder.mAssetDomain.setVisibility(View.GONE);
-            }
-            try {
-                holder.mAssetValue.setText(Conversion.getAsset(mActivity.getSession(), satoshi, assetId, assetInfo, true));
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
         }
-        // Get l-btc & asset icon from asset icon map
-        final String asset = isBTC ? mNetworkData.getPolicyAsset() : assetId;
-        holder.mAssetIcon.setImageDrawable(mActivity.getSession().getRegistry().getAssetManager().getAssetDrawableOrDefault(asset));
     }
 
     @Override

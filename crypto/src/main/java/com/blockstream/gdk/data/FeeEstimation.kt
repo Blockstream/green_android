@@ -9,4 +9,6 @@ import kotlinx.serialization.Serializable
 @Parcelize
 data class FeeEstimation(
     @SerialName("fees") val fees: List<Long>
-) : Parcelable
+) : Parcelable{
+    val minimumRelayFee = fees.getOrNull(0)
+}

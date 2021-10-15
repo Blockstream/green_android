@@ -30,6 +30,7 @@ abstract class RecyclerBottomSheetDialogFragment : BottomSheetDialogFragment() {
             container,
             false
         )
+        binding.lifecycleOwner = viewLifecycleOwner
 
         binding.title = getTitle()
 

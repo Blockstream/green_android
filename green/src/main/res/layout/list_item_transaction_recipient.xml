@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.blockstream.green.gdk.ExtensionsKt" />
+        <import type="android.view.View" />
+
+
+        <variable
+            name="vm"
+            type="com.blockstream.green.ui.wallet.SendViewModel" />
+
+        <variable
+            name="liveData"
+            type="com.blockstream.green.ui.wallet.AddressParamsLiveData" />
+
+        <variable
+            name="index"
+            type="Integer" />
+
+        <variable
+            name="assetName"
+            type="String" />
+
+        <variable
+            name="assetBalance"
+            type="String" />
+
+        <variable
+            name="assetSatoshi"
+            type="Long" />
+
+        <variable
+            name="amountCurrency"
+            type="String" />
+
+        <variable
+            name="canConvert"
+            type="Boolean" />
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingTop="@{vm.recipientsLiveData.size() != 1 ? @dimen/dp0 : @dimen/dp16}"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/textViewIndex"
+                isVisible="@{vm.recipientsLiveData.size() != 1}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:includeFontPadding="false"
+                android:text="@{`#` + (index + 1)}"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="#1" />
+
+            <ImageView
+                android:id="@+id/buttonRemove"
+                isVisible="@{vm.recipientsLiveData.size() != 1}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="4dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_close"
+                app:layout_constraintBottom_toBottomOf="@+id/textViewIndex"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textViewIndex"
+                app:tint="@color/color_on_surface_emphasis_medium" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/addressInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="@integer/material_motion_duration_long_1"
+                android:hint="@{vm.isSweep ? @string/id_private_key : @string/id_recipient_address}"
+                android:orientation="horizontal"
+                gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) ? vm.transactionError : null}"
+                app:layout_constraintEnd_toStartOf="@+id/barrier"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrierIndex">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/addressInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine|textNoSuggestions"
+                    android:text="@={liveData.address}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <ImageButton
+                android:id="@+id/buttonScan"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="14dp"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_qr_60"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/addressInputLayout"
+                app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
+
+
+            <com.blockstream.green.views.RightTextInputLayout
+                android:id="@+id/assetTextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                isVisible="@{!vm.isSweep}"
+                android:hint="@{vm.session.network.isLiquid ? @string/id_asset : @string/id_coin}"
+                tools:hint="@string/id_asset"
+                app:endIconDrawable="@drawable/ic_baseline_arrow_drop_down_24"
+                app:endIconMode="custom"
+                app:helperText="@{vm.isSweep ? null : assetBalance}"
+                app:helperTextTextColor="@color/color_on_surface_emphasis_medium"
+                app:layout_constraintEnd_toStartOf="@+id/barrier"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/addressInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/assetInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:drawablePadding="8dp"
+                    android:focusable="false"
+                    android:inputType="none|textNoSuggestions"
+                    android:text="@{assetName}" />
+
+            </com.blockstream.green.views.RightTextInputLayout>
+
+            <ImageButton
+                android:id="@+id/buttonCoinControl"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="14dp"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_more_settings"
+                isVisible="@{!vm.isSweep &amp;&amp; false}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/assetTextInputLayout"
+                app:layout_constraintTop_toTopOf="@+id/assetTextInputLayout" />
+
+            <ImageView
+                android:id="@+id/utxoSelectionIcon"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:src="@drawable/indicator_dot_filled"
+                isVisible="@{!vm.isSweep &amp;&amp; false}"
+                app:layout_constraintBottom_toBottomOf="@+id/buttonCoinControl"
+                app:layout_constraintEnd_toEndOf="@+id/buttonCoinControl"
+                app:layout_constraintStart_toStartOf="@+id/buttonCoinControl"
+                app:layout_constraintTop_toTopOf="@+id/buttonCoinControl" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleGroupSendAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                isVisible="@{!vm.isSweep}"
+                app:layout_constraintEnd_toEndOf="@+id/assetTextInputLayout"
+                app:layout_constraintTop_toBottomOf="@+id/assetTextInputLayout">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSendAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.Green.Button.Outlined.Tiny"
+                    android:enabled="@{!ExtensionsKt.isBlank(liveData.assetId) &amp;&amp; assetSatoshi != 0}"
+                    android:paddingEnd="16dp"
+                    android:text="@string/id_send_all_funds"
+                     />
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <com.blockstream.green.views.RightTextInputLayout
+                android:id="@+id/amountTextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                gdkError="@{`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) ? vm.transactionError : null}"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:enabled="@{liveData.assetId != null &amp;&amp; liveData.enableAmount &amp;&amp; !liveData.isSendAll &amp;&amp; !vm.isSweep}"
+                android:gravity="end"
+                android:hint="@string/id_amount"
+                app:errorEnabled="true"
+                helperTextWithError="@{liveData.exchange}"
+                app:helperTextEnabled="true"
+                app:helperTextTextColor="@color/color_on_surface_emphasis_medium"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/barrier"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toggleGroupSendAll"
+                app:suffixText="@{` ` + amountCurrency}">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/amountInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:text="@={liveData.amount}"
+                    android:textAlignment="textEnd" />
+
+            </com.blockstream.green.views.RightTextInputLayout>
+
+            <Button
+                android:id="@+id/buttonCurrency"
+                style="@style/Widget.Green.Button.Text.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:text="@{amountCurrency}"
+                isInvisible="@{vm.isSweep || !canConvert}"
+                android:enabled="@{liveData.enableAmount &amp;&amp; !liveData.isSendAll}"
+                app:layout_constraintBaseline_toBaselineOf="@+id/amountTextInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/amountTextInputLayout"
+                tools:text="L-BTC" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="left"
+                app:barrierAllowsGoneWidgets="false"
+                app:constraint_referenced_ids="buttonCoinControl,buttonCurrency,buttonScan" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierIndex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="textViewIndex,buttonRemove"
+                tools:layout_editor_absoluteX="251dp"
+                tools:layout_editor_absoluteY="24dp" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</layout>

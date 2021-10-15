@@ -12,13 +12,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<VerifyAddressBottomSheetBinding>(
+class VerifyAddressBottomSheetDialogFragment : WalletBottomSheetDialogFragment<VerifyAddressBottomSheetBinding, ReceiveViewModel>(
     layout = R.layout.verify_address_bottom_sheet
 ) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (parentFragment as ReceiveFragment).viewModel.also { receiveViewModel ->
+        viewModel.also { receiveViewModel ->
             receiveViewModel.deviceAddressValidationEvent.observe(viewLifecycleOwner) {
                 it?.getContentIfNotHandledOrReturnNull()?.let { addressMatch ->
                     responseFromDevice(addressMatch)

@@ -9,7 +9,7 @@ import com.blockstream.green.utils.nameCleanup
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RenameWalletBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RenameWalletBottomSheetBinding>(
+class RenameWalletBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RenameWalletBottomSheetBinding, AbstractWalletViewModel>(
     layout = R.layout.rename_wallet_bottom_sheet
 ) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

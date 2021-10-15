@@ -100,7 +100,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
 
             val params = BumpTransactionParams(
                 subAccount = wallet.activeAccount,
-                utxos = unspentOutputs.unspentOutputs,
+                utxos = unspentOutputs.unspentOutputsAsJsonElement,
                 previousTransaction = transaction
             )
 

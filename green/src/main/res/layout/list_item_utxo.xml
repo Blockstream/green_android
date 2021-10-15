@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="ticker"
+            type="String" />
+
+        <variable
+            name="amount"
+            type="String" />
+
+        <variable
+            name="address"
+            type="String" />
+
+    </data>
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materiaCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:checkable="true"
+        app:cardBackgroundColor="@color/brand_surface_light">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_btc"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tickerTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{ticker}"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/color_on_surface_emphasis_high"
+                android:textSize="14sp"
+                app:layout_constraintBaseline_toBaselineOf="@+id/amountTextView"
+                app:layout_constraintStart_toStartOf="@+id/secondaryValue"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="USDT" />
+
+            <TextView
+                android:id="@+id/addressTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/id_address"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_on_surface_emphasis_low"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/icon"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/amountTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@{amount}"
+                android:textAlignment="textEnd"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/color_on_surface_emphasis_high"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/tickerTextView"
+                app:layout_constraintTop_toBottomOf="@+id/secondaryValue"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="1230.234124" />
+
+            <TextView
+                android:id="@+id/secondaryValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{address}"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="@color/color_on_surface_emphasis_medium"
+                app:layout_constraintEnd_toEndOf="@+id/addressTextView"
+                app:layout_constraintStart_toStartOf="@+id/addressTextView"
+                app:layout_constraintTop_toBottomOf="@+id/addressTextView"
+                tools:text="bc1asfdasdfasfdasdfasfd" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

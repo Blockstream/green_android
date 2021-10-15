@@ -8,9 +8,13 @@ import androidx.annotation.StringRes
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
 import com.blockstream.gdk.data.Device
 import com.blockstream.green.gdk.getIcon
+import com.blockstream.green.utils.errorFromResourcesAndGDK
 import com.google.android.material.progressindicator.BaseProgressIndicator
+import com.google.android.material.slider.Slider
 import com.google.android.material.textfield.TextInputLayout
 
 @BindingAdapter("isVisible")
@@ -35,7 +39,7 @@ fun bindIsInvisible(view: View, isInvisible: Boolean) {
     view.isInvisible = isInvisible
 }
 
-@BindingAdapter("isInvissible")
+@BindingAdapter("visibility")
 fun bindVisibility(view: View, visibility: Int) {
     // Better to use View constants, but works even with 0, 1, 2
     view.visibility = when (visibility) {
@@ -118,4 +122,51 @@ fun setLayoutMarginBottom(view: View, dimen: Float) {
     val layoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
     layoutParams.bottomMargin = dimen.toInt()
     view.layoutParams = layoutParams
+}
+
+@BindingAdapter("gdkError")
+fun setGdkError(textInputLayout: TextInputLayout, error: String?) {
+    if(error != null && !textInputLayout.editText?.text.isNullOrEmpty()){
+        textInputLayout.error = textInputLayout.context.errorFromResourcesAndGDK(error)
+    }else{
+        textInputLayout.error = null
+
+        // Restore helper text if existed
+        textInputLayout.getTag("helperText".hashCode())?.let {
+            if(it is String){
+                textInputLayout.helperText = it
+            }
+        }
+    }
+}
+
+// Set helper text if errors is null/blank else store it for gdkError to restore it
+@BindingAdapter("helperTextWithError")
+fun helperTextWithError(textInputLayout: TextInputLayout, text: String?) {
+    if(textInputLayout.error.isNullOrBlank()){
+        textInputLayout.helperText = text
+        textInputLayout.setTag("helperText".hashCode(), null) // clear old helper text
+    }else{
+        textInputLayout.setTag("helperText".hashCode(), text)
+    }
+}
+
+@BindingAdapter("gdkError")
+fun setGdkError(textView: TextView, error: String?) {
+    if(error.isNullOrBlank()){
+        textView.isVisible = false
+    }else{
+        textView.text = textView.context.errorFromResourcesAndGDK(error)
+        textView.isVisible = true
+    }
+}
+
+@InverseBindingAdapter(attribute = "android:value")
+fun getSliderValue(slider: Slider) = slider.value
+
+@BindingAdapter("android:valueAttrChanged")
+fun setSliderListeners(slider: Slider, attrChange: InverseBindingListener) {
+    slider.addOnChangeListener { _, _, _ ->
+        attrChange.onChange()
+    }
 }

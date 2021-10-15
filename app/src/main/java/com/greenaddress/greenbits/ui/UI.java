@@ -284,7 +284,7 @@ public abstract class UI {
         }
     }
 
-    private static void hideSoftKeyboard(final Activity activity) {
+    public static void hideSoftKeyboard(final Activity activity) {
         if (activity == null)
             return;
         final InputMethodManager inputMethodManager =

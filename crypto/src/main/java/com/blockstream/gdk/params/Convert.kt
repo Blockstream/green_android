@@ -11,6 +11,8 @@ data class Convert constructor(
     @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("asset_info") val asset: Asset? = null,
 
+    @SerialName("assetAmount") val assetAmount: String? = null, // this field is only in Android app
+
     @SerialName("btc") val btc: String? = null,
     @SerialName("mbtc") val mbtc: String? = null,
     @SerialName("bits") val bits: String? = null,
@@ -27,7 +29,7 @@ data class Convert constructor(
     }
 
     companion object{
-        fun forUnit(unit: String, amount: String): Convert {
+        fun forUnit(unit: String = "btc", amount: String): Convert {
 
             return when (unit.lowercase()) {
                 "btc" -> Convert(btc = amount)
@@ -36,6 +38,10 @@ data class Convert constructor(
                 "sats" -> Convert(sats = amount)
                 else -> Convert(fiat = amount)
             }
+        }
+
+        fun forAsset(asset: Asset, amount: String): Convert {
+            return Convert(asset = asset, assetAmount = amount)
         }
     }
 }

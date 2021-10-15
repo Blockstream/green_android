@@ -41,7 +41,7 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
 
     @JsonIgnore
     public boolean isTestnet() {
-        return "testnet".equals(network);
+        return network.contains("testnet");
     }
 
     @JsonIgnore

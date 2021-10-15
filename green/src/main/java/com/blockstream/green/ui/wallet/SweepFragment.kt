@@ -7,28 +7,19 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.blockstream.gdk.params.SweepParams
 import com.blockstream.green.R
 import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.Wallet
-import com.blockstream.green.database.WalletRepository
-import com.blockstream.green.databinding.*
-import com.blockstream.green.gdk.SessionManager
-import com.blockstream.green.gdk.observable
+import com.blockstream.green.databinding.SweepFragmentBinding
 import com.blockstream.green.ui.CameraBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
-import com.blockstream.green.utils.*
-import com.greenaddress.greenapi.Session
+import com.blockstream.green.utils.clearNavigationResult
+import com.blockstream.green.utils.endIconCopyMode
+import com.blockstream.green.utils.errorDialog
+import com.blockstream.green.utils.getNavigationResult
 import com.greenaddress.greenbits.ui.send.SendAmountActivity
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.kotlin.subscribeBy
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -61,12 +52,11 @@ class SweepFragment : WalletFragment<SweepFragmentBinding>(
         getNavigationResult<String>(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)?.observe(viewLifecycleOwner) {
             it?.let { result ->
                 clearNavigationResult(CameraBottomSheetDialogFragment.CAMERA_SCAN_RESULT)
-                binding.textInputEditText.setText(result)
+                binding.privateKeyInputEditText.setText(result)
             }
         }
 
         binding.vm = viewModel
-        binding.textInputLayout.endIconCopyMode()
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
@@ -79,6 +69,8 @@ class SweepFragment : WalletFragment<SweepFragmentBinding>(
                 errorDialog(it)
             }
         }
+
+        binding.privateKeyInputLayout.endIconCopyMode()
 
         binding.buttonScan.setOnClickListener {
             CameraBottomSheetDialogFragment.open(this)

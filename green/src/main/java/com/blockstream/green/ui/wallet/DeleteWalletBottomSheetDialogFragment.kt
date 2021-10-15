@@ -8,7 +8,7 @@ import com.blockstream.green.databinding.DeleteWalletBottomSheetBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DeleteWalletBottomSheetDialogFragment : WalletBottomSheetDialogFragment<DeleteWalletBottomSheetBinding>(
+class DeleteWalletBottomSheetDialogFragment : WalletBottomSheetDialogFragment<DeleteWalletBottomSheetBinding, AbstractWalletViewModel>(
     layout = R.layout.delete_wallet_bottom_sheet
 ) {
 

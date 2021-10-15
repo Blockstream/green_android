@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SystemMessageBottomSheetDialogFragment :
-    WalletBottomSheetDialogFragment<SystemMessageBottomSheetBinding>(
+    WalletBottomSheetDialogFragment<SystemMessageBottomSheetBinding, AbstractWalletViewModel>(
         layout = R.layout.system_message_bottom_sheet
     ) {
     companion object {

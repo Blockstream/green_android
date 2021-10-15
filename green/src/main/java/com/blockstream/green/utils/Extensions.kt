@@ -23,4 +23,3 @@ fun TextInputLayout.endIconCopyMode() {
         }
     }
 }
-

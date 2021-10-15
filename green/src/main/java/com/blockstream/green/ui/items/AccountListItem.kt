@@ -1,6 +1,5 @@
 package com.blockstream.green.ui.items
 
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout

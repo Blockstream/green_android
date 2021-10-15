@@ -39,7 +39,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
         }
 
     val feeRate : String
-        get() = tx.feeRate.toFeeRate()
+        get() = tx.feeRate.feeRateWithUnit()
 
     fun isPolicyAsset(index: Int) = assets[index].first == session.policyAsset
 

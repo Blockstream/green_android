@@ -14,7 +14,7 @@ data class BlockHeaderListItem constructor(val height: StringHolder, val network
         get() = R.id.fastadapter_block_header_item_id
 
     init {
-        identifier = 0L
+        identifier = hashCode().toLong()
     }
 
     @SuppressLint("SetTextI18n")

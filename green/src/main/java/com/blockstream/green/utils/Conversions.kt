@@ -1,6 +1,7 @@
 package com.blockstream.green.utils
 
 import com.blockstream.gdk.data.Balance
+import com.blockstream.gdk.data.CreateTransaction
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.params.Convert
@@ -81,25 +82,33 @@ fun userNumberFormat(decimals: Int,
     isGroupingUsed = withGrouping
 }
 
+fun CreateTransaction.feeRateWithUnit(): String? {
+    return feeRate?.feeRateWithUnit()
+}
+
 fun Long.feeRateWithUnit(): String {
     val feePerByte = this / 1000.0
-    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(feePerByte) + " satoshi / vbyte"
+    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte).let {
+        "$it satoshi / vbyte"
+    }
 }
 
 fun Double.feeRateWithUnit(): String {
-    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(this) + " satoshi / vbyte"
+    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(this).let {
+        "$it satoshi / vbyte"
+    }
 }
 
-fun Balance?.fiat(session: GreenSession, withUnit: Boolean = true): String {
+fun Balance?.fiat(session: GreenSession, withUnit: Boolean = true, withGrouping :Boolean = false): String {
     if(this == null) return "n/a"
-    return fiatOrNull(session, withUnit = withUnit) ?: "n/a"
+    return fiatOrNull(session, withUnit = withUnit, withGrouping = withGrouping) ?: "n/a"
 }
 
-fun Balance?.fiatOrNull(session: GreenSession, withUnit: Boolean = true): String? {
+fun Balance?.fiatOrNull(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false): String? {
     if(this == null) return null
     return try {
         val value = fiat!!.toDouble()
-        userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = false).format(value)
+        userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = withGrouping).format(value)
     } catch (e: Exception) {
         return null
     } + if (withUnit) " ${fiatCurrency.getFiatUnit(session)}" else ""
@@ -158,11 +167,8 @@ fun Long.toAssetLook(session: GreenSession, assetId: String, withUnit: Boolean =
     } ?: "n/a"
 }
 
-fun Long.toFeeRate(): String {
-    val feePerByte = this / 1000.0
-    return userNumberFormat(decimals = 2, withDecimalSeparator = true, withGrouping = true, withMinimumDigits = true).format(feePerByte).let {
-        "$it satoshi / vbyte"
-    }
+fun Long.toFiatLook(session: GreenSession, withUnit: Boolean = true, withGrouping: Boolean = false): String {
+    return session.convertAmount(Convert(satoshi = this))?.fiat(session, withUnit = withUnit, withGrouping = withGrouping) ?: "n/a"
 }
 
 fun Date.formatOnlyDate(): String = DateFormat.getDateInstance(DateFormat.LONG).format(this)

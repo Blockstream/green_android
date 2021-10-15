@@ -6,6 +6,7 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.settings.SettingsManager
 import org.junit.Assert
 import org.junit.Before
+import org.junit.ComparisonFailure
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -51,8 +52,8 @@ class JsonConverterUnitTest {
                 UserInput.parseUserInput(
                     session,
                     test.value.replace(' ', ','),
-                    false,
-                    dotLocale
+                    isFiat = false,
+                    locale = dotLocale
                 ).amount
             )
         }
@@ -64,8 +65,8 @@ class JsonConverterUnitTest {
                 UserInput.parseUserInput(
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
-                    false,
-                    commaLocale
+                    isFiat = false,
+                    locale = commaLocale
                 ).amount
             )
         }
@@ -87,7 +88,7 @@ class JsonConverterUnitTest {
         for (test in tests) {
             Assert.assertEquals(
                 test.key,
-                UserInput.parseUserInput(session, test.value.replace(' ', ','), false, dotLocale).amount
+                UserInput.parseUserInput(session, test.value.replace(' ', ','), isFiat = false, locale = dotLocale).amount
             )
         }
 
@@ -98,8 +99,8 @@ class JsonConverterUnitTest {
                 UserInput.parseUserInput(
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
-                    false,
-                    commaLocale
+                    isFiat = false,
+                    locale = commaLocale
                 ).amount
             )
         }
@@ -123,7 +124,7 @@ class JsonConverterUnitTest {
         for (test in tests) {
             Assert.assertEquals(
                 test.key,
-                UserInput.parseUserInput(session, test.value.replace(' ', ','), true, dotLocale).amount
+                UserInput.parseUserInput(session, test.value.replace(' ', ','), isFiat = true, locale = dotLocale).amount
             )
         }
 
@@ -134,10 +135,35 @@ class JsonConverterUnitTest {
                 UserInput.parseUserInput(
                     session,
                     test.value.replace('.', ',').replace(' ', '.'),
-                    true,
-                    commaLocale
+                    isFiat = true,
+                    locale = commaLocale
                 ).amount
             )
         }
+    }
+
+    @Test
+    fun test_invalid_inputs() {
+        initMock("BTC")
+
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, null).amount)
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "abc").amount)
+        Assert.assertEquals("", UserInput.parseUserInputSafe(session, "123abc").amount)
+    }
+
+    @Test
+    fun test_invalid_inputs_throws() {
+        initMock("BTC")
+
+        Assert.assertThrows(Exception::class.java) {
+            UserInput.parseUserInput(session, null)
+        }
+        Assert.assertThrows(Exception::class.java) {
+            UserInput.parseUserInput(session, "abc")
+        }
+        Assert.assertThrows(Exception::class.java) {
+            UserInput.parseUserInput(session, "123abc")
+        }
+
     }
 }

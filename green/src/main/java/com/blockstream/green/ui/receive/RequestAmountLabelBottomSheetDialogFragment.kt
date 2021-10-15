@@ -2,14 +2,18 @@ package com.blockstream.green.ui.receive
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RequestAmountLabelBottomSheetBinding
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
+import com.blockstream.green.ui.looks.AssetLook
 import com.blockstream.green.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 
 /*
@@ -17,40 +21,30 @@ import java.util.*
  * to save the address label
  */
 @AndroidEntryPoint
-class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding>(
+class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RequestAmountLabelBottomSheetBinding, ReceiveViewModel>(
     layout = R.layout.request_amount_label_bottom_sheet
 ) {
-    var isFiat = false
+    val session by lazy {
+        viewModel.session
+    }
 
-    lateinit var receiveViewModel: ReceiveViewModel
-    lateinit var session: GreenSession
+    @Inject
+    lateinit var viewModelFactory: RequestAmountLabelViewModel.AssistedFactory
+    private val requestViewModel: RequestAmountLabelViewModel by viewModels {
+        RequestAmountLabelViewModel.provideFactory(
+            viewModelFactory,
+            session,
+            viewModel.requestAmount.value,
+            viewModel.label.value
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        receiveViewModel = (parentFragment as ReceiveFragment).viewModel
-        session = viewModel.session
-
+        binding.vm = requestViewModel
         binding.amountTextInputLayout.endIconCopyMode()
         binding.labelInputLayout.endIconCopyMode()
-
-        // Init label from Receive
-        binding.label = receiveViewModel.label.value
-        // Init amount from Receive
-        binding.amount = receiveViewModel.requestAmount.value.let { amount ->
-            if(!amount.isNullOrBlank()){
-                try {
-                    // Amount is always in BTC value, convert it to user's settings
-                    session
-                        .convertAmount(Convert.forUnit(session.network.policyAsset, amount)).btc(session, withUnit = false)
-                }catch (e: Exception){
-                    e.printStackTrace()
-                    amount
-                }
-            }else{
-                amount
-            }
-        }
 
         AmountTextWatcher.watch(binding.amountEditText)
 
@@ -58,7 +52,7 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
             var amount : String? = null
 
             try{
-                val input = UserInput.parseUserInput(session, binding.amount, isFiat = isFiat)
+                val input = UserInput.parseUserInput(session, requestViewModel.requestAmount.value, isFiat = requestViewModel.isFiat.value ?: false)
 
                 // Convert it to BTC as per BIP21 spec
                 amount = input.getBalance(session).let { balance ->
@@ -75,48 +69,22 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
                 e.printStackTrace()
             }
 
-            (parentFragment as ReceiveFragment).viewModel.setRequestAmountAndLabel(amount, binding.label)
+            viewModel.setRequestAmountAndLabel(amount, requestViewModel.label.value)
 
             dismiss()
         }
 
         binding.buttonCurrency.setOnClickListener {
-
-            // Convert between BTC / Fiat
-            binding.amount = try{
-                val input = UserInput.parseUserInput(session, binding.amount, isFiat = isFiat)
-                input.getBalance(session).let {
-                    if(it != null && it.satoshi > 0){
-                        it.getValue(if(isFiat) getUnit(session) else getFiatCurrency(session))
-                    }else{
-                        ""
-                    }
-                }
-            }catch (e: Exception){
-                e.printStackTrace()
-                ""
-            }
-
-            isFiat = !isFiat
-            updateCurrency()
+            requestViewModel.toggleCurrency()
         }
 
         binding.buttonClear.setOnClickListener {
-            (parentFragment as ReceiveFragment).clearRequestAmountAndLabel()
+            viewModel.clearRequestAmountAndLabel()
             dismiss()
         }
 
         binding.buttonClose.setOnClickListener {
             dismiss()
-        }
-
-        updateCurrency()
-    }
-
-    private fun updateCurrency(){
-        (if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)).let {
-            binding.amountTextInputLayout.helperText = getString(R.string.id_amount_in_s, it)
-            binding.symbol = it
         }
     }
 }

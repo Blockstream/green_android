@@ -12,6 +12,7 @@ import com.blockstream.green.databinding.RecyclerBottomSheetBinding
 import com.blockstream.green.ui.items.HelpListItem
 import com.blockstream.green.ui.overview.OverviewFragmentDirections
 import com.blockstream.green.ui.settings.TwoFactorSetupAction
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.navigate
 import com.blockstream.green.utils.toPixels
@@ -22,7 +23,7 @@ import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator
 
-class TwoFactorResetSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding>(
+class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RecyclerBottomSheetBinding, AbstractWalletViewModel>(
     layout = R.layout.recycler_bottom_sheet
 ) {
     private lateinit var twoFactorReset: TwoFactorReset
@@ -33,7 +34,7 @@ class TwoFactorResetSheetDialogFragment : WalletBottomSheetDialogFragment<Recycl
     companion object{
         private const val TWO_FACTOR_RESET = "TWO_FACTOR_RESET"
 
-        fun newInstance(twoFactorReset: TwoFactorReset): TwoFactorResetSheetDialogFragment = TwoFactorResetSheetDialogFragment().also {
+        fun newInstance(twoFactorReset: TwoFactorReset): TwoFactorResetBottomSheetDialogFragment = TwoFactorResetBottomSheetDialogFragment().also {
             it.arguments = Bundle().also { bundle ->
                 bundle.putParcelable(TWO_FACTOR_RESET, twoFactorReset)
             }

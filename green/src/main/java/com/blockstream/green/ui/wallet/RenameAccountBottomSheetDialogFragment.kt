@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.kotlin.subscribeBy
 
 @AndroidEntryPoint
-class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RenameAccountBottomSheetBinding>(
+class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<RenameAccountBottomSheetBinding, AbstractWalletViewModel>(
     layout = R.layout.rename_account_bottom_sheet
 ) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -54,7 +54,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button12"
-                style="@style/Widget.Green.Button.Small.Outlined"
+                style="@style/Widget.Green.Button.Outlined.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="12"
@@ -62,7 +62,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button24"
-                style="@style/Widget.Green.Button.Small.Outlined"
+                style="@style/Widget.Green.Button.Outlined.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="24"
@@ -70,7 +70,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button27"
-                style="@style/Widget.Green.Button.Small.Outlined"
+                style="@style/Widget.Green.Button.Outlined.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="0dp"

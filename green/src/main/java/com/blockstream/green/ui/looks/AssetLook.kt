@@ -12,23 +12,22 @@ import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.utils.*
 
 
-class AssetListLook constructor(
+class AssetLook constructor(
     private val id: String,
     val amount: Long,
-    val asset: Asset?,
     val session: GreenSession
 ) {
+    private val asset = session.getAsset(id)
     private var isLiquid: Boolean = session.network.isLiquid
     private var isMainnet: Boolean = session.network.isMainnet
 
     private val isBTCValue by lazy { id == session.network.policyAsset }
 
-    val balance : String
-        get() {
+    fun balance(withUnit: Boolean = false) : String {
             return if(isBTCValue){
-                amount.toBTCLook(session, withUnit = false, withGrouping = true)
+                amount.toBTCLook(session, withUnit = withUnit, withGrouping = true)
             }else{
-                amount.toAssetLook(session, assetId = id, withUnit = false, withGrouping = true)
+                amount.toAssetLook(session, assetId = id, withUnit = withUnit, withGrouping = true)
             }
         }
 
@@ -73,17 +72,5 @@ class AssetListLook constructor(
         }
 
 
-    fun icon(context: Context): Drawable {
-        return when {
-            isLiquid -> {
-                id.getAssetIcon(context, session)
-            }
-            isMainnet -> {
-                ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_network_60)!!
-            }
-            else -> {
-                ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_testnet_network_60)!!
-            }
-        }
-    }
+    fun icon(context: Context): Drawable = id.getAssetIcon(context, session)
 }

@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import androidx.lifecycle.lifecycleScope
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
+import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.*
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.onboarding.ChooseRecoveryPhraseFragmentDirections

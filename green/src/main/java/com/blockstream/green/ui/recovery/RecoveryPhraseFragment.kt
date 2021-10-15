@@ -1,7 +1,11 @@
 package com.blockstream.green.ui.recovery
 
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
@@ -20,6 +24,7 @@ import com.blockstream.green.ui.items.RecoveryWordListItem
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.StringHolder
+import com.blockstream.green.utils.createQrBitmap
 import com.blockstream.green.utils.openBrowser
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
@@ -44,7 +49,18 @@ class RecoveryPhraseFragment : WalletFragment<RecoveryPhraseFragmentBinding>(
     }
 
     override fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?) {
-        val words = session.getMnemonicPassphrase().split(" ")
+        val mnemonic = session.getMnemonicPassphrase()
+        val words = mnemonic.split(" ")
+
+        binding.recoveryQR.setImageDrawable(BitmapDrawable(resources, createQrBitmap(mnemonic)).also { bitmap ->
+            bitmap.isFilterBitmap = false
+        })
+
+        binding.buttonShowQR.setOnClickListener {
+            binding.buttonShowQR.isInvisible = true
+            binding.recoveryQR.isVisible = true
+            binding.materialCardView.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+        }
 
         val listItems = words.mapIndexed { index, word ->
             RecoveryWordListItem(index = index + 1, StringHolder(word))

@@ -10,7 +10,7 @@ import com.blockstream.green.gdk.titleRes
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import com.mikepenz.fastadapter.ui.utils.StringHolder
 
-class AccountTypeListItem(
+class AccountTypeListItem constructor(
     val accountType: AccountType
 ) :
     AbstractBindingItem<ListItemAccountTypeBinding>() {

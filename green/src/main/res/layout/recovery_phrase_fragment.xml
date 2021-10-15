@@ -6,9 +6,6 @@
 
     <data>
 
-        <variable
-            name="vm"
-            type="com.blockstream.green.ui.onboarding.EnterRecoveryPhraseViewModel" />
     </data>
 
 
@@ -40,24 +37,80 @@
             app:layout_constraintStart_toStartOf="@+id/title"
             app:layout_constraintTop_toBottomOf="@+id/title" />
 
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:paddingTop="24dp"
-            android:paddingBottom="8dp"
-            android:scrollbars="none"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/subtitle"
-            app:spanCount="3" />
+            app:layout_constraintTop_toBottomOf="@+id/subtitle">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    android:paddingTop="24dp"
+                    android:paddingBottom="8dp"
+                    android:scrollbars="none"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:spanCount="3" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/materialCardView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="16dp"
+                    android:scaleType="fitCenter"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/recycler"
+                    app:layout_optimizationLevel="ratio">
+
+                    <ImageView
+                        android:id="@+id/recoveryQR"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp"
+                        android:scaleType="fitCenter"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:visibility="gone"
+                        tools:src="@mipmap/ic_launcher" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonShowQR"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="16dp"
+                        style="@style/Widget.Green.Button.Text.Small"
+                        app:icon="@drawable/ic_baseline_visibility_24"
+                        android:src="@drawable/ic_baseline_visibility_off_24"
+                        android:text="@string/id_show_qr_code" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

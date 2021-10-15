@@ -245,6 +245,12 @@ class GreenWallet constructor(
         amount
     )
 
+    fun convertAmount(session: GASession, amount: Convert, assetConvert :JsonElement): Balance = Balance.fromJsonElement(
+        JsonDeserializer,
+        gdk.convertAmount(session, assetConvert) as JsonElement,
+        amount
+    )
+
     fun getMnemonicWordList(): List<String> {
         val wordList = mutableListOf<String>()
         val enWords = bip39WordList
@@ -271,5 +277,7 @@ class GreenWallet constructor(
         const val BIP39_WORD_LIST_LANG = "en"
 
         const val KEY_CUSTOM_NETWORK = "custom_network"
+
+        val FeeBlockTarget = listOf(3, 12, 24)
     }
 }

@@ -116,6 +116,8 @@ class KotlinGDK {
 
     fun convertAmount(session: GASession, convert: Convert) = GDK.convert_amount(session, convert)
 
+    fun convertAmount(session: GASession, convert: JsonElement) = GDK.convert_amount(session, convert)
+
     fun getNetworks() = GDK.get_networks()
 
     fun registerNetwork(id: String, network: JsonElement) = GDK.register_network(id, network)

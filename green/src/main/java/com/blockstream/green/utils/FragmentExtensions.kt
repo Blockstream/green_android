@@ -71,21 +71,23 @@ fun Context.localized2faMethods(methods: List<String>): List<String> = methods.m
     localized2faMethod(it)
 }
 
-fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String {
-    throwable.message?.let {
-        val intRes = resources.getIdentifier(it, "string", BuildConfig.APPLICATION_ID)
-        if (intRes > 0) {
-            return getString(intRes)
-        }
+fun Fragment.errorFromResourcesAndGDK(throwable: Throwable): String = requireContext().errorFromResourcesAndGDK(throwable)
+
+fun Context.errorFromResourcesAndGDK(throwable: Throwable): String = errorFromResourcesAndGDK(throwable.cause?.message ?: throwable.message ?: "An error occurred")
+
+fun Context.errorFromResourcesAndGDK(error: String): String {
+    val intRes = resources.getIdentifier(error, "string", BuildConfig.APPLICATION_ID)
+    if (intRes > 0) {
+        return getString(intRes)
     }
 
-    if (throwable.isConnectionError()) {
+    if (error.isConnectionError()) {
         return getString(R.string.id_connection_failed)
-    } else if (throwable.isNotAuthorized()) {
+    } else if (error.isNotAuthorized()) {
         return getString(R.string.id_login_failed)
     }
 
-    return throwable.cause?.message ?: throwable.message ?: "An error occurred"
+    return error
 }
 
 fun Fragment.errorDialog(throwable: Throwable, listener: (() -> Unit)? = null) {

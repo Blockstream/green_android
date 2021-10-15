@@ -30,59 +30,48 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/privateKeyInputLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="10dp"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="@integer/material_motion_duration_long_1"
+            android:enabled="@{!vm.onProgress}"
+            android:hint="@string/id_private_key"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toStartOf="@+id/buttonScan"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView12">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textInputLayout"
-                android:layout_width="0dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/privateKeyInputEditText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="@integer/material_motion_duration_long_1"
-                android:enabled="@{!vm.onProgress}"
-                android:hint="@string/id_private_key"
-                android:orientation="horizontal"
-                app:endIconMode="clear_text">
+                android:inputType="textMultiLine|textNoSuggestions"
+                android:text="@={vm.privateKey}" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/textInputEditText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textMultiLine|textNoSuggestions"
-                    android:text="@={vm.privateKey}" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|end"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="2dp"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/buttonScan"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:adjustViewBounds="true"
-                    android:background="@android:color/transparent"
-                    android:enabled="@{!vm.onProgress}"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_qr_60" />
-
-            </LinearLayout>
-
-        </LinearLayout>
+        <ImageButton
+            android:id="@+id/buttonScan"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="16dp"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:enabled="@{!vm.onProgress}"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_qr_60"
+            app:layout_constraintBottom_toBottomOf="@+id/privateKeyInputLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/privateKeyInputLayout" />
 
 
         <Button

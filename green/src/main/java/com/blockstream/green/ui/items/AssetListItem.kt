@@ -8,7 +8,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAssetBinding
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.gdk.data.Asset
-import com.blockstream.green.ui.looks.AssetListLook
+import com.blockstream.green.ui.looks.AssetLook
 import com.blockstream.green.utils.fiat
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
@@ -21,6 +21,11 @@ data class AssetListItem constructor(
 ) : AbstractBindingItem<ListItemAssetBinding>() {
     override val type: Int
         get() = R.id.fastadapter_asset_item_id
+    
+    private val look = AssetLook(balancePair.first, balancePair.second, session)
+
+    val name
+        get() = look.name
 
     init {
         identifier = balancePair.first.hashCode().toLong() // asset.hashCode().toLong()
@@ -32,16 +37,13 @@ data class AssetListItem constructor(
             return
         }
 
-        val asset: Asset? = session.getAsset(balancePair.first)
-
-        val look = AssetListLook(balancePair.first, balancePair.second, asset, session)
         val res = binding.root.resources
 
         binding.isLoading = isLoading
         binding.name.text = look.name
         binding.ticker.text = look.ticker
 
-        binding.primaryValue.text = look.balance
+        binding.primaryValue.text = look.balance()
 
         val fiatValue = look.fiatValue
 

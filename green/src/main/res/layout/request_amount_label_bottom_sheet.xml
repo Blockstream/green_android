@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="amount"
-            type="String" />
 
         <variable
-            name="label"
-            type="String" />
+            name="vm"
+            type="com.blockstream.green.ui.receive.RequestAmountLabelViewModel" />
 
-        <variable
-            name="symbol"
-            type="String" />
     </data>
 
 
@@ -69,7 +64,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="8dp"
-                    android:hint="@string/id_request_amount">
+                    app:helperText="@{vm.exchange}"
+                    app:helperTextEnabled="true"
+                    app:helperTextTextColor="@color/color_on_surface_emphasis_medium"
+                    android:hint="@string/id_request_amount"
+                    app:suffixText="@{` ` + vm.amountCurrency}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/amountEditText"
@@ -79,17 +78,18 @@
                         android:inputType="numberDecimal"
                         android:maxLength="42"
                         android:singleLine="true"
-                        android:text="@={amount}" />
+                        android:text="@={vm.requestAmount}" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
                     android:id="@+id/buttonCurrency"
-                    style="@style/Widget.Green.Button.Text"
+                    style="@style/Widget.Green.Button.Text.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
-                    android:text="@{symbol}" />
+                    tools:text="BTC"
+                    android:text="@{vm.amountCurrency}" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -110,7 +110,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="textShortMessage"
                     android:singleLine="true"
-                    android:text="@={label}" />
+                    android:text="@={vm.label}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -28,7 +28,8 @@ class ReceiveViewModel @AssistedInject constructor(
     var address = MutableLiveData<Address>()
     var addressUri = MutableLiveData<String>()
 
-    var requestAmount = MutableLiveData<String?>()
+    val requestAmount = MutableLiveData<String?>()
+
     var label = MutableLiveData<String?>()
 
     var addressQRBitmap = MutableLiveData<Bitmap?>()

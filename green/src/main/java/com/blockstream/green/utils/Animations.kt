@@ -55,3 +55,20 @@ fun View.bounceDown(){
         start()
     }
 }
+
+//fun View.slideRight(translationX: Float, animationEnd: () -> Unit) {
+//    ObjectAnimator.ofFloat(this, "translationX", translationX).apply {
+//        duration = 200
+//
+//        addListener(object : Animator.AnimatorListener {
+//            override fun onAnimationStart(animation: Animator) {}
+//            override fun onAnimationEnd(animation: Animator) {
+//                animationEnd.invoke()
+//            }
+//
+//            override fun onAnimationCancel(animation: Animator) {}
+//            override fun onAnimationRepeat(animation: Animator) {}
+//        })
+//        start()
+//    }
+//}

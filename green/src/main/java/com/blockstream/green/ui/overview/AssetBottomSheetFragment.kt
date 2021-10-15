@@ -9,6 +9,7 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.ui.WalletBottomSheetDialogFragment
 import com.blockstream.green.ui.items.OverlineTextListItem
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.asset
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
@@ -20,7 +21,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class AssetBottomSheetFragment : WalletBottomSheetDialogFragment<AssetDetailsBottomSheetBinding>(
+class AssetBottomSheetFragment : WalletBottomSheetDialogFragment<AssetDetailsBottomSheetBinding, AbstractWalletViewModel>(
     layout = R.layout.asset_details_bottom_sheet
 ) {
 

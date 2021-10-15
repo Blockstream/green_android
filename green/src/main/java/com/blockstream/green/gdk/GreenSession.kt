@@ -24,9 +24,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.*
 import mu.KLogging
 import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
@@ -210,6 +208,14 @@ class GreenSession constructor(
         )
     }
 
+    fun bridgeSession(){
+        // Bridge Session to GDKSession
+        Bridge.bridgeSession(
+            gaSession,
+            network.network
+        )
+    }
+
     fun connect(n: Network) {
         disconnect(disconnectDevice = false)
         network = n
@@ -218,11 +224,7 @@ class GreenSession constructor(
         // Prevent multiple open sessions
         sessionManager.disconnectSessions(this)
 
-        // Bridge Session to GDKSession
-        Bridge.bridgeSession(
-            gaSession,
-            network.network
-        )
+        bridgeSession()
 
         greenWallet.connect(
             gaSession,
@@ -775,7 +777,13 @@ class GreenSession constructor(
     fun convertAmount(convert: Convert, isAsset: Boolean = false) = try{
         if(isAsset && convert.asset == null){
             Balance.fromAssetWithoutMetadata(convert)
-        }else {
+        }else if(isAsset && convert.assetAmount != null){
+            val jsonElement = buildJsonObject {
+                put("asset_info", convert.asset!!.toJsonElement())
+                put(convert.asset?.assetId ?: "", convert.assetAmount)
+            }
+            greenWallet.convertAmount(gaSession, convert, jsonElement)
+        } else{
             greenWallet.convertAmount(gaSession, convert)
         }
     }catch (e: Exception){
@@ -791,7 +799,7 @@ class GreenSession constructor(
     fun createTransaction(unspentOutputs: UnspentOutputs, addresses: List<AddressParams>): CreateTransaction {
         val params = CreateTransactionParams(
             subaccount = activeAccount,
-            utxos = unspentOutputs.unspentOutputs,
+            utxos = unspentOutputs.unspentOutputsAsJsonElement,
             addressees = addresses
         )
 

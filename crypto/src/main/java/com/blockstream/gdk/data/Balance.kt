@@ -53,8 +53,7 @@ data class Balance constructor(
             val balance: Balance = json.decodeFromJsonElement(element)
             conversionFrom.asset?.let {
                 balance.assetInfo = it
-                balance.assetValue =
-                    element.jsonObject[conversionFrom.asset.assetId]?.jsonPrimitive?.content
+                balance.assetValue = element.jsonObject[conversionFrom.asset.assetId]?.jsonPrimitive?.content
             }
 
             return balance

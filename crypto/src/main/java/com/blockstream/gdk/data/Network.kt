@@ -58,8 +58,13 @@ data class Network(
             "Multisig $canonicalName"
         }
 
-    val defaultFee: Long
-        get() = if(isLiquid) 100L else 1000L
+    val defaultFee by lazy {
+        if (isLiquid) 100L else 1000L
+    }
+
+    val blocksPerHour by lazy {
+        if (isLiquid) 60 else 6
+    }
 
     val confirmationsRequired by lazy {
         if(isLiquid) 2 else 6

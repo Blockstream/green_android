@@ -10,9 +10,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class CreateTransaction(
+data class CreateTransaction constructor(
     @SerialName("addressees") val addressees: List<Addressee>,
-    @SerialName("error") val error: String?
+    @SerialName("satoshi") val satoshi: Map<String, Long> = mapOf(),
+    @SerialName("fee") val fee: Long? = null,
+    @SerialName("fee_rate") val feeRate: Long? = null,
+    @SerialName("addressees_read_only") val isReadOnly: Boolean = false,
+    @SerialName("error") val error: String? = null,
 ) : GAJson<CreateTransaction>() {
     override val keepJsonElement = true
 
@@ -23,23 +27,4 @@ data class CreateTransaction(
     fun toObjectNode(): ObjectNode {
         return objectMapper.readTree(Json.encodeToString(jsonElement)) as ObjectNode
     }
-}
-
-@Serializable
-data class Addressee(
-    @SerialName("address") val address: String,
-    @SerialName("asset_id") val assetId: String? = null,
-    @SerialName("satoshi") val satoshi: Long? = null,
-    @SerialName("bip21-params") val bip21Params: Bip21Params? = null,
-) : GAJson<Addressee>() {
-    override fun kSerializer() = serializer()
-}
-
-@Serializable
-data class Bip21Params(
-    @SerialName("amount") val amount: String? = null,
-    @SerialName("assetid") val assetId: String? = null,
-    @SerialName("bip21-params") val bip21Params: String? = null,
-) : GAJson<Bip21Params>() {
-    override fun kSerializer() = serializer()
 }

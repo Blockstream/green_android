@@ -11,7 +11,7 @@ import com.blockstream.green.utils.pulse
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AccountIdBottomSheetDialogFragment(private val subAccount: SubAccount) : WalletBottomSheetDialogFragment<AccountIdBottomSheetBinding>(
+class AccountIdBottomSheetDialogFragment(private val subAccount: SubAccount) : WalletBottomSheetDialogFragment<AccountIdBottomSheetBinding, AbstractWalletViewModel>(
     layout = R.layout.account_id_bottom_sheet
 ) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

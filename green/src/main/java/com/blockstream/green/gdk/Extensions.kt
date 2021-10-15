@@ -39,14 +39,14 @@ fun AccountType?.descriptionRes(): Int = when (this) {
 }
 
 fun String.getAssetIcon(context: Context, session: GreenSession): Drawable {
-    if (this == session.network.policyAsset) {
-        return ContextCompat.getDrawable(
+    return if (session.network.policyAsset == this) {
+        ContextCompat.getDrawable(
             context,
-            if(session.network.isTestnet) R.drawable.ic_liquid_testnet_bitcoin_60 else R.drawable.ic_liquid_bitcoin_60
+            session.network.getNetworkIcon()
         )!!
+    } else {
+        session.getAssetDrawableOrDefault(this)
     }
-
-    return session.getAssetDrawableOrDefault(this)
 }
 
 fun Asset.getIcon(context: Context, session: GreenSession): Drawable = assetId.getAssetIcon(context, session)
@@ -85,10 +85,12 @@ fun String?.isBlank() = isNullOrBlank()
 fun Wallet.getIcon(): Int = network.getNetworkIcon()
 
 fun Throwable.getGDKErrorCode(): Int {
+    return this.message?.getGDKErrorCode() ?: KotlinGDK.GA_ERROR
+}
+fun String.getGDKErrorCode(): Int {
     return try {
-        val message = this.message
-        val stringCode = message!!.split(" ".toRegex()).toTypedArray()[1]
-        val function = message.split(" ".toRegex()).toTypedArray()[2]
+        val stringCode = this.split(" ".toRegex()).toTypedArray()[1]
+        val function = this.split(" ".toRegex()).toTypedArray()[2]
         val code = stringCode.toInt()
         // remap gdk connection error
         if (code == KotlinGDK.GA_ERROR && "GA_connect" == function) KotlinGDK.GA_RECONNECT else code
@@ -97,11 +99,13 @@ fun Throwable.getGDKErrorCode(): Int {
     }
 }
 
+// TODO combine
 fun Throwable.isNotAuthorized() =
     getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || message == "id_invalid_pin"
+fun String.isNotAuthorized() =
+    getGDKErrorCode() == KotlinGDK.GA_NOT_AUTHORIZED || this == "id_invalid_pin"
 
-fun Throwable.isConnectionError() =
-    message?.contains("failed to connect") == true
+fun String.isConnectionError() = this.contains("failed to connect")
 
 // Run mapper on IO, observer in Android Main
 @Suppress("UNCHECKED_CAST")

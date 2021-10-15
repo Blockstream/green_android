@@ -24,10 +24,10 @@ import com.blockstream.green.databinding.ListItemAccountBinding
 import com.blockstream.green.databinding.OverviewFragmentBinding
 import com.blockstream.green.gdk.getConfirmationsMax
 import com.blockstream.green.gdk.getIcon
-import com.blockstream.green.ui.TwoFactorResetSheetDialogFragment
+import com.blockstream.green.ui.TwoFactorResetBottomSheetDialogFragment
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.*
-import com.blockstream.green.ui.looks.AssetListLook
+import com.blockstream.green.ui.looks.AssetLook
 import com.blockstream.green.ui.wallet.AccountIdBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.RenameAccountBottomSheetDialogFragment
 import com.blockstream.green.ui.wallet.SystemMessageBottomSheetDialogFragment
@@ -120,7 +120,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         sessionManager.pendingBip21Uri.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
                 navigate(
-                    OverviewFragmentDirections.actionOverviewFragmentToCreateTransactionFragment(
+                    OverviewFragmentDirections.actionOverviewFragmentToSendFragment(
                         wallet, address = bip21Uri
                     )
                 )
@@ -137,7 +137,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         binding.buttonSend.setOnClickListener {
-
             when {
                 session.isWatchOnly -> {
                     navigate(
@@ -171,7 +170,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 }
                 else -> {
                     navigate(
-                        OverviewFragmentDirections.actionOverviewFragmentToCreateTransactionFragment(
+                        OverviewFragmentDirections.actionOverviewFragmentToSendFragment(
                             wallet
                         )
                     )
@@ -348,7 +347,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             AlertListItem(it) { _ ->
                 when(it){
                     is AlertType.Abstract2FA -> {
-                        TwoFactorResetSheetDialogFragment.newInstance(it.twoFactorReset).also { dialog ->
+                        TwoFactorResetBottomSheetDialogFragment.newInstance(it.twoFactorReset).also { dialog ->
                             dialog.show(childFragmentManager, dialog.toString())
                         }
                     }
@@ -391,11 +390,11 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
         }
 
         // Assets Balance
-        val assetsBalanceAdapter =  ModelAdapter<BalancePair, AssetListItem>() {
-            AssetListItem(session, it, isAssetState && viewModel.wallet.isLiquid, (it.first.isEmpty() && it.second == -1L))
-        }.observeMap(viewLifecycleOwner, viewModel.getBalancesLiveData() as LiveData<Map<*, *>>) {
+        val assetsBalanceAdapter = ModelAdapter<BalancePair, AssetListItem>() {
+            AssetListItem(session = session,balancePair = it, showInfo = isAssetState && viewModel.wallet.isLiquid, isLoading = (it.first.isEmpty() && it.second == -1L))
+        }.observeMap(viewLifecycleOwner, viewModel.getBalancesLiveData() as LiveData<Map<*, *>>, toModel = {
             BalancePair(it.key as String, it.value as Long)
-        }
+        })
 
         var titleAdapter = FastItemAdapter<GenericItem>()
 
@@ -615,8 +614,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             } else {
                 session.network.policyAsset.let{ policyAsset ->
                     viewModel.getBalancesLiveData().value?.get(policyAsset)?.let {
-                        val asset = session.getAsset(policyAsset)
-                        val look = AssetListLook(policyAsset, it, asset, session)
+                        val look = AssetLook(policyAsset, it, session)
 
                         subtitle = title // wallet name
                         title = look.name

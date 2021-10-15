@@ -3,6 +3,7 @@ package com.blockstream.green.ui.wallet;
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.blockstream.gdk.params.AddressParams
 import com.blockstream.gdk.params.SweepParams
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
@@ -30,7 +31,7 @@ class SweepViewModel @AssistedInject constructor(
                 feeRate = session.getFeeEstimates().fees.getOrNull(0) ?: session.network.defaultFee,
                 privateKey = privateKey.value?.trim() ?: "",
                 passphrase = "",
-                addressees = listOf(mapOf("address" to session.getReceiveAddress(wallet.activeAccount).address)),
+                addressees = listOf(AddressParams(address = session.getReceiveAddress(wallet.activeAccount).address)),
                 subAccount = wallet.activeAccount
             )
 

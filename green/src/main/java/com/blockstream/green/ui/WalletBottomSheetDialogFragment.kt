@@ -17,13 +17,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 
-abstract class WalletBottomSheetDialogFragment<T : ViewDataBinding>(
+abstract class WalletBottomSheetDialogFragment<T : ViewDataBinding, VM : AbstractWalletViewModel>(
     @LayoutRes val layout: Int
 ) : BottomSheetDialogFragment() {
     internal lateinit var binding: T
 
-    internal val viewModel : AbstractWalletViewModel by lazy {
-        (requireParentFragment() as WalletFragment<*>).getWalletViewModel()!!
+    internal val viewModel : VM by lazy {
+        (requireParentFragment() as WalletFragment<*>).getWalletViewModel() as VM
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

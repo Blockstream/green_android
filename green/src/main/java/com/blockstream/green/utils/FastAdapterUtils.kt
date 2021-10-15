@@ -22,7 +22,8 @@ fun <Model, Item : GenericItem> ModelAdapter<Model, Item>.observeList(
 
 fun <Model, Item : GenericItem> ModelAdapter<Model, Item>.observeMap(
     lifecycleOwner: LifecycleOwner, liveData: LiveData<Map<*, *>>,
-    toModel: (Map.Entry<*, *>) -> Model
+    toModel: (Map.Entry<*, *>) -> Model,
+    observer: ((Map<Model, Item>) -> Unit)? = null,
 ): ModelAdapter<Model, Item> {
     liveData.observe(lifecycleOwner) {
         val list = it.map {
@@ -30,6 +31,8 @@ fun <Model, Item : GenericItem> ModelAdapter<Model, Item>.observeMap(
         }
 
         FastAdapterDiffUtil.set(this, intercept(list), true)
+
+        observer?.invoke(it as Map<Model, Item>)
     }
     return this
 }

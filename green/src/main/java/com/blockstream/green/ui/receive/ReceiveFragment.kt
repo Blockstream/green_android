@@ -67,9 +67,9 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
         }
 
         binding.buttonMore.setOnClickListener {
-            if(session.isLiquid){
+            if(session.isLiquid || session.isElectrum){
                 // Sweep is not available in Liquid
-                showMenu(getString(R.string.id_more_options), R.menu.menu_receive_more_liquid)
+                showMenu(getString(R.string.id_more_options), R.menu.menu_receive_without_sweep)
             }else{
                 showMenu(getString(R.string.id_more_options), R.menu.menu_receive_more)
             }
@@ -172,8 +172,12 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
                         // }
                         R.id.sweep -> {
                             navigate(
-                                ReceiveFragmentDirections.actionReceiveFragmentToSweepFragment(
-                                    wallet
+//                                ReceiveFragmentDirections.actionReceiveFragmentToSweepFragment(
+//                                    wallet
+//                                )
+                                ReceiveFragmentDirections.actionReceiveFragmentToSendFragment(
+                                    wallet = wallet,
+                                    isSweep =  true
                                 )
                             )
                         }
@@ -277,9 +281,5 @@ class ReceiveFragment : WalletFragment<ReceiveFragmentBinding>(
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    fun clearRequestAmountAndLabel() {
-        viewModel.clearRequestAmountAndLabel()
     }
 }

@@ -49,30 +49,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class SendAmountActivity extends LoggedActivity implements TextWatcher, View.OnClickListener {
+public class SendAmountActivity extends LoggedActivity implements View.OnClickListener {
     private static final String TAG = SendAmountActivity.class.getSimpleName();
 
-    private boolean mSendAll = false;
-    private MaterialDialog mCustomFeeDialog;
     private ObjectNode mTx;
-    private Boolean isKeyboardOpen = false;
 
     private TextView mRecipientText;
-    private TextView mAccountBalance;
     private Button mNextButton;
-    private Button mSendAllButton;
-    private EditText mAmountText;
-    private Button mUnitButton;
 
-    private boolean mIsFiat = false;
-    private ObjectNode mCurrentAmount; // output from GA_convert_amount
 
     private long[] mFeeEstimates = new long[4];
     private int mSelectedFee;
     private long mMinFeeRate;
     private Long mVsize;
     private String mSelectedAsset;
-    private SubaccountData mSubaccount;
     private boolean isSweep;
 
     private static final int[] mButtonIds =
@@ -80,7 +70,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     private static final int[] mFeeButtonsText =
     {R.string.id_fast, R.string.id_medium, R.string.id_slow, R.string.id_custom};
     private FeeButtonView[] mFeeButtons = new FeeButtonView[4];
-    private AmountTextWatcher mAmountTextWatcher;
 
     private Disposable setupDisposable;
     private Disposable updateDisposable;
@@ -103,23 +92,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         setContentView(R.layout.activity_send_amount);
         setTitleBackTransparent();
         mRecipientText = UI.find(this, R.id.addressText);
-        mAccountBalance = UI.find(this, R.id.accountBalanceText);
-
-        mAmountText = UI.find(this, R.id.amountText);
-        mAmountTextWatcher = new AmountTextWatcher(mAmountText);
-        mAmountText.setHint(String.format("0%s00", mAmountTextWatcher.getDefaultSeparator()));
-        mAmountText.addTextChangedListener(mAmountTextWatcher);
-        mAmountText.addTextChangedListener(this);
-
-        mUnitButton = UI.find(this, R.id.unitButton);
-        mUnitButton.setOnClickListener(this);
-        try {
-            mUnitButton.setText(isFiat() ? Conversion.getFiatCurrency(getSession()) : Conversion.getBitcoinOrLiquidUnit(getSession()));
-            mUnitButton.setPressed(!isFiat());
-            mUnitButton.setSelected(!isFiat());
-        } catch (final Exception e) {}
-
-        mSendAllButton = UI.find(this, R.id.sendallButton);
 
         mNextButton = UI.find(this, R.id.nextButton);
         mNextButton.setOnClickListener(this);
@@ -170,85 +142,17 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         mTx.set("fee_rate", fee_rate);
 
         // Update transaction
-        setupKeyboard();
-
-
-        setupDisposable = Observable.just(getSession())
-                          .observeOn(Schedulers.computation())
-                          .map((session) -> {
-            final SubaccountData subAccount = getSession().getSubAccount(this, getActiveAccount());
-            return subAccount;
-        })
-                          .observeOn(AndroidSchedulers.mainThread())
-                          .subscribe((subaccount) -> {
-            stopLoading();
-            mSubaccount = subaccount;
-            updateAssetSelected();
-            setup(mTx);
-            updateTransaction();
-
-        }, (e) -> {
-            e.printStackTrace();
-            stopLoading();
-            UI.toast(this, R.string.id_operation_failure, Toast.LENGTH_LONG);
-            finishOnUiThread();
-        });
-    }
-
-    private void setupKeyboard() {
-        final View contentView = findViewById(android.R.id.content);
-        UI.attachHideKeyboardListener(this, contentView);
-
-        contentView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            Rect r = new Rect();
-            contentView.getWindowVisibleDisplayFrame(r);
-            int screenHeight = contentView.getHeight();
-
-            // r.bottom is the position above soft keypad or device button.
-            // if keypad is shown, the r.bottom is smaller than that before.
-            int keypadHeight = screenHeight - r.bottom;
-
-            Log.d(TAG, "keypadHeight = " + keypadHeight);
-
-            isKeyboardOpen = (keypadHeight > screenHeight * 0.15); // 0.15 ratio is perhaps enough to determine keypad height.
-        });
-    }
-
-    private void hideKeyboard() {
-        final InputMethodManager inputManager = (InputMethodManager)
-                                                this.getSystemService(Context.INPUT_METHOD_SERVICE);
-        final View currentFocus = getCurrentFocus();
-        inputManager.hideSoftInputFromWindow(currentFocus == null ? null : currentFocus.getWindowToken(),
-                                             InputMethodManager.HIDE_NOT_ALWAYS);
+        setup(mTx);
+        updateTransaction();
     }
 
     private void setup(final ObjectNode tx) {
         // Setup address and amount text
         try {
-            JsonNode assetsMap = tx.get("satoshi");
             final ObjectNode addressee = (ObjectNode) tx.get("addressees").get(0);
             mRecipientText.setText(addressee.get("address").asText());
-            // If addressee doesn't contain asset_id, we are sending btc
-            final String asset = addressee.hasNonNull("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
-            final long newSatoshi = assetsMap.get(asset).asLong();
-            if (newSatoshi > 0) {
-                mAmountText.removeTextChangedListener(mAmountTextWatcher);
-                setAmountText(mAmountText, isFiat(), convert(newSatoshi), mSelectedAsset);
-                mAmountText.addTextChangedListener(mAmountTextWatcher);
-            }
         } catch (final Exception e) {
             e.printStackTrace();
-        }
-
-        // Setup read-only
-        final JsonNode readOnlyNode = tx.get("addressees_read_only");
-        if (readOnlyNode != null && readOnlyNode.asBoolean()) {
-            mAmountText.setEnabled(false);
-            mSendAllButton.setVisibility(View.GONE);
-            mAccountBalance.setVisibility(View.GONE);
-        } else {
-            mAmountText.requestFocus();
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         }
 
         // Select the fee button that is the next highest rate from the old tx
@@ -288,34 +192,17 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     }
 
     private void updateAssetSelected() {
-        try {
-            final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
-            mSelectedAsset = addressee.get("asset_id").asText(getNetwork().getPolicyAsset());
-        } catch (final Exception e) {
-            // Asset not passed, default policyAsset
-        }
-
-        final long satoshi = mSubaccount.getSatoshi().get(mSelectedAsset);
-        final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
+        final JsonNode addressee = mTx.withArray("addressees").get(0);
+        final String asset = addressee.hasNonNull("asset_id") ? addressee.get("asset_id").asText() : getNetwork().getPolicyAsset();
+        final long amount = mTx.get("satoshi").get(asset).asLong(0);
 
         final Map<String, Long> balances = new HashMap<>();
-        balances.put(mSelectedAsset, satoshi);
+        balances.put(asset, amount);
 
         final RecyclerView assetsList = findViewById(R.id.assetsList);
         final AssetsAdapter adapter = new AssetsAdapter(this, balances, getNetwork(), null);
         assetsList.setLayoutManager(new LinearLayoutManager(this));
         assetsList.setAdapter(adapter);
-        UI.showIf(!isAsset(), mUnitButton);
-        UI.showIf(!isAsset(), mAccountBalance);
-        UI.showIf(isAsset(), assetsList);
-        try {
-            if (!isAsset())
-                mAccountBalance.setText(Conversion.getBtc(getSession(), satoshi, true));
-            else
-                mAccountBalance.setText(Conversion.getAsset(getSession(), satoshi, mSelectedAsset, info, true));
-        } catch (final Exception e) {
-            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-        }
     }
 
     private int[] getBlockTargets() {
@@ -347,9 +234,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             return;
 
         final boolean isLiquid = getSession().getNetworkData().getLiquid();
-        mSendAllButton.setPressed(mSendAll);
-        mSendAllButton.setSelected(mSendAll);
-        mSendAllButton.setOnClickListener(this);
         for (int i = 0; i < mButtonIds.length; ++i) {
             mFeeButtons[i].setSelected(i == mSelectedFee, isLiquid);
             mFeeButtons[i].setOnClickListener(this);
@@ -364,8 +248,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         if (isFinishing())
             return;
 
-        mCustomFeeDialog = UI.dismiss(this, mCustomFeeDialog);
-        UI.unmapClick(mSendAllButton);
         for (int i = 0; i < mButtonIds.length; ++i)
             UI.unmapClick(mFeeButtons[i]);
     }
@@ -382,37 +264,7 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
     @Override
     public void onClick(final View view) {
         if (view == mNextButton) {
-            if (isKeyboardOpen) {
-                hideKeyboard();
-            } else {
-                onFinish(mTx);
-            }
-        } else if (view == mSendAllButton) {
-            mSendAll = !mSendAll;
-            mAmountText.setText(mSendAll ? R.string.id_all : R.string.empty);
-            mCurrentAmount = null;
-            mAmountText.setEnabled(!mSendAll);
-            mSendAllButton.setPressed(mSendAll);
-            mSendAllButton.setSelected(mSendAll);
-            updateTransaction();
-        } else if (view == mUnitButton) {
-            try {
-                mIsFiat = !mIsFiat;
-                if (mCurrentAmount != null && mAmountTextWatcher != null) {
-                    mAmountText.removeTextChangedListener(mAmountTextWatcher);
-                    setAmountText(mAmountText, mIsFiat, mCurrentAmount);
-                    mAmountText.addTextChangedListener(mAmountTextWatcher);
-                }
-
-                // Toggle unit display and selected state
-                mUnitButton.setText(isFiat() ? Conversion.getFiatCurrency(getSession()) : Conversion.getBitcoinOrLiquidUnit(getSession()));
-                mUnitButton.setPressed(!isFiat());
-                mUnitButton.setSelected(!isFiat());
-                updateFeeSummaries();
-            } catch (final Exception e) {
-                mIsFiat = !mIsFiat;
-                UI.popup(this, R.string.id_your_favourite_exchange_rate_is).show();
-            }
+            onFinish(mTx);
         } else {
             final boolean isLiquid = getSession().getNetworkData().getLiquid();
 
@@ -470,11 +322,11 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                 updateFeeSummaries();
                 // FIXME: Probably want to do this in the background
                 updateTransaction();
-                hideKeyboard();
+                UI.hideSoftKeyboard(this);
             } catch (final Exception e) {
                 e.printStackTrace();
                 onClick(mFeeButtons[1]);          // FIXME: Get from user config
-                hideKeyboard();
+                UI.hideSoftKeyboard(this);
             }
         }).build();
         UI.showDialog(dialog);
@@ -489,24 +341,10 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             return;
         }
 
-        if (mCurrentAmount == null && !mSendAll) {
-            mNextButton.setText(R.string.id_invalid_amount);
-            return;
-        }
-
         if (updateDisposable != null)
             updateDisposable.dispose();
 
-        mTx.replace("send_all", mSendAll ? BooleanNode.TRUE : BooleanNode.FALSE);
-        final ObjectNode addressee = (ObjectNode) mTx.get("addressees").get(0);
 
-        if(mSendAll){
-            addressee.replace("satoshi", new LongNode(0));
-        }
-        if (mCurrentAmount != null) {
-            final LongNode satoshi = new LongNode(mCurrentAmount.get("satoshi").asLong());
-            addressee.replace("satoshi", satoshi);
-        }
         final LongNode fee_rate = new LongNode(mFeeEstimates[mSelectedFee]);
         mTx.replace("fee_rate", fee_rate);
 
@@ -518,6 +356,8 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                            .observeOn(AndroidSchedulers.mainThread())
                            .subscribe((tx) -> {
             mTx = tx;
+            updateAssetSelected();
+
             // TODO this should be removed when handled in gdk
             final String error = mTx.get("error").asText();
             if (error.isEmpty()) {
@@ -536,17 +376,6 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
         });
     }
 
-    public ObjectNode convert(final long satoshi) throws Exception {
-        final ObjectNode details = new ObjectMapper().createObjectNode();
-        details.put("satoshi", satoshi);
-        if (!getNetwork().getPolicyAsset().equals(mSelectedAsset)) {
-            final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
-            details.set("asset_info", info.toObjectNode());
-        }
-        mCurrentAmount = getSession().convert(details);
-        return mCurrentAmount;
-    }
-
     private void updateFeeSummaries() {
         String feeSummary;
         for (int i = 0; i < mButtonIds.length; ++i) {
@@ -557,7 +386,9 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
                     feeSummary = String.format("(%s)", feeRateString);
                 } else {
                     final long amount = (currentEstimate * mVsize)/1000L;
-                    final String formatted = isFiat() ? Conversion.getFiat(getSession(), amount, true) : Conversion.getBtc(getSession(), amount, true);
+
+                    String formatted = Conversion.getBtc(getSession(), amount, true);
+                    // final String formatted = isFiat() ? Conversion.getFiat(getSession(), amount, true) :
                     feeSummary = String.format("%s (%s)", formatted, feeRateString);
                 }
                 mFeeButtons[i].setSummary(feeSummary);
@@ -607,50 +438,4 @@ public class SendAmountActivity extends LoggedActivity implements TextWatcher, V
             intent.putExtra("hww", getSession().getHWWallet().getDevice());
         startActivityForResult(intent, REQUEST_BITCOIN_URL_SEND);
     }
-
-    private boolean isFiat() {
-        return mIsFiat;
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        final String localizedValue = mAmountText.getText().toString();
-        String value = "0";
-        try {
-            value = Conversion.getNumberFormat(8).parse(localizedValue).toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        final ObjectMapper mapper = new ObjectMapper();
-        final ObjectNode amount = mapper.createObjectNode();
-        if (isAsset()) {
-            final AssetInfoData assetInfoDefault = new AssetInfoData(mSelectedAsset);
-            final AssetInfoData info = getSession().getRegistry().getAssetInfo(mSelectedAsset);
-            amount.set("asset_info", (info == null ? assetInfoDefault : info).toObjectNode());
-        }
-        try {
-            final String key = isAsset() ? mSelectedAsset : isFiat() ? "fiat" : getBitcoinUnitClean();
-            amount.put(key, value);
-            // avoid updating the view if changing from fiat to btc or vice versa
-            if (!mSendAll &&
-                (mCurrentAmount == null || mCurrentAmount.get(key) == null ||
-                 !mCurrentAmount.get(key).asText().equals(value))) {
-                mCurrentAmount = getSession().convert(amount);
-                updateTransaction();
-            }
-        } catch (final Exception e) {
-            Log.e(TAG, "Conversion error: " + e.getLocalizedMessage());
-        }
-    }
-
-    private boolean isAsset() {
-        return getSession().getNetworkData().getLiquid() && !getNetwork().getPolicyAsset().equals(mSelectedAsset);
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {}
 }

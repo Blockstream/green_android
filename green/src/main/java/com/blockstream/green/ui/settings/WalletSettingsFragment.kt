@@ -427,10 +427,15 @@ class WalletSettingsFragment :
 
     override fun onResume() {
         super.onResume()
-        sharedPreferences.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
-        updateSharedPreferencesSummaries()
+        // Prevent crash when we are not initialized
+        if(::logoutPreference.isInitialized) {
+            sharedPreferences.registerOnSharedPreferenceChangeListener(
+                onSharedPreferenceChangeListener
+            )
+            updateSharedPreferencesSummaries()
 
-        updateAdapter()
+            updateAdapter()
+        }
     }
 
     override fun onPause() {

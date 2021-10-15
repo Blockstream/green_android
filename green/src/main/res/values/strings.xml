@@ -992,4 +992,12 @@
   <string name="id_your_wallet_is_not_yet_fully">Your wallet is not yet fully secured.\nPlease enable Two-Factor authentication.</string>
   <string name="id_your_watchonly_username_and">Your watch-only username and password will be stored un-encrypted on this device. If your device is compromised third parties can get access to your transaction history. Press "OK" to continue.</string>
   <string name="id_youve_entered_an_invalid_pin">You\'ve entered an invalid PIN too many times.</string>
+  <string name="id_address_was_filled_by_a_payment_uri">Address was filled by a Payment URI</string>
+  <string name="id_issuer_domain">Issuer Domain: %s</string>
+  <string name="id_add_recipient">Add Recipient</string>
+  <string name="id_transaction_fees_can_be_defined_on_the_last_step">Transaction fees can be defined on the last step. Note, if you send all, we’ll do the math for you.</string>
+  <string name="id_available_funds">Available funds %s</string>
+  <string name="id_are_you_sure_you_want_to_remove_the_recipient">Are you sure you want to remove the recipient?</string>
+  <string name="id_edit_fee">Edit Fee</string>
+  <string name="id_confirmation_time">Confirmation Time</string>
 </resources>

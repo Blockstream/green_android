@@ -15,6 +15,8 @@
     <item name="fastadapter_button_action_item_id" type="id" />
     <item name="fastadapter_network_item_id" type="id" />
     <item name="fastadapter_asset_item_id" type="id" />
+    <item name="fastadapter_asset_small_item_id" type="id" />
+    <item name="fastadapter_utxo_item_id" type="id" />
     <item name="fastadapter_alert_item_id" type="id" />
     <item name="fastadapter_go_back_item_id" type="id" />
     <item name="fastadapter_preference_item_id" type="id" />

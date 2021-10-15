@@ -357,11 +357,11 @@
             android:id="@+id/action_overviewFragment_to_transactionDetailsFragment"
             app:destination="@id/transactionDetailsFragment" />
         <action
-            android:id="@+id/action_overviewFragment_to_createTransactionFragment"
-            app:destination="@id/createTransactionFragment" />
-        <action
             android:id="@+id/action_overviewFragment_to_sweepFragment"
             app:destination="@id/sweepFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_sendFragment"
+            app:destination="@id/sendFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_overviewFragment"
@@ -473,6 +473,9 @@
         <action
             android:id="@+id/action_receiveFragment_to_sweepFragment"
             app:destination="@id/sweepFragment" />
+        <action
+            android:id="@+id/action_receiveFragment_to_sendFragment"
+            app:destination="@id/sendFragment" />
     </fragment>
 
     <fragment
@@ -538,10 +541,9 @@
             app:argType="com.blockstream.green.database.Wallet" />
     </fragment>
     <fragment
-        android:id="@+id/createTransactionFragment"
-        android:name="com.blockstream.green.ui.wallet.CreateTransactionFragment"
-        android:label="@string/id_send_to"
-        tools:layout="@layout/create_transaction_fragment">
+        android:id="@+id/sendFragment"
+        android:name="com.blockstream.green.ui.wallet.SendFragment"
+        tools:layout="@layout/send_fragment" >
         <argument
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
@@ -550,6 +552,10 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="isSweep"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 
 </navigation>
