@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Overview: warning card for testnet wallets
 
 ### Changed
+- Show TEST instead of BTC for a testnet wallet
 
 ### Fixed
 
