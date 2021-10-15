@@ -136,24 +136,22 @@ class TwoFactorAuthenticationViewController: UIViewController {
         tableViewCsvTime.reloadData()
 
         thresholdView.isHidden = true
-        if self.twoFactorConfig?.anyEnabled ?? false, let settings = Settings.shared {
+        if self.twoFactorConfig?.anyEnabled ?? false,
+            let settings = Settings.shared,
+            let twoFactorConfig = self.twoFactorConfig {
+
+            var balance: Balance?
+            let limits = twoFactorConfig.limits
+            let denom = settings.denomination.rawValue
+            if limits.isFiat {
+                balance = Balance.convert(details: ["fiat": limits.fiat])
+            } else {
+                balance = Balance.convert(details: [denom: limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)!])
+            }
+            let (amount, den) = balance?.get(tag: limits.isFiat ? "fiat" : "btc") ?? ("", "")
+            let thresholdValue = String(format: "%@ %@", amount ?? "N.A.", den)
 
             thresholdView.isHidden = false
-            var thresholdValue = ""
-
-            if let twoFactorConfig = self.twoFactorConfig {
-                var balance: Balance?
-                let limits = twoFactorConfig.limits
-                let denom = settings.denomination.rawValue
-                if limits.isFiat {
-                    balance = Balance.convert(details: ["fiat": limits.fiat])
-                } else {
-                    balance = Balance.convert(details: [denom: limits.get(TwoFactorConfigLimits.CodingKeys(rawValue: denom)!)!])
-                }
-                let (amount, den) = balance?.get(tag: limits.isFiat ? "fiat" : "btc") ?? ("", "")
-                thresholdValue = String(format: "%@ %@", amount ?? "N.A.", den)
-            }
-
             lbl2faThresholdCardTitle.text = NSLocalizedString("id_twofactor_threshold", comment: "")
             lbl2faThresholdCardHint.text = String(format: NSLocalizedString(thresholdValue == "" ? "" : "%@", comment: ""), thresholdValue)
         }

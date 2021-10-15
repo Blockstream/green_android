@@ -41,9 +41,10 @@ struct Balance: Codable {
     }
 
     func get(tag: String) -> (String?, String) {
-        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
+        let feeAsset = AccountsManager.shared.current?.gdkNetwork?.getFeeAsset()
+        let mainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
         if "fiat" == tag {
-            return (fiat?.localeFormattedString(2), fiatCurrency)
+            return (fiat?.localeFormattedString(2), mainnet ? fiatCurrency : "FIAT")
         }
         if feeAsset == tag {
             let denomination = Settings.shared?.denomination ?? .BTC

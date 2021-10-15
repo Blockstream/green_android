@@ -184,7 +184,9 @@ class SendBtcDetailsViewController: UIViewController {
 
     func reloadCurrencySwitch() {
         let settings = Settings.shared!
-        let title = isFiat ? settings.getCurrency() : settings.denomination.string
+        let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+        let currency = isMainnet ? settings.getCurrency() : "FIAT"
+        let title = isFiat ? currency : settings.denomination.string
         let color = isFiat ? UIColor.clear : UIColor.customMatrixGreen()
         content.currencySwitch.setTitle(title, for: UIControl.State.normal)
         content.currencySwitch.backgroundColor = color

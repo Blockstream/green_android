@@ -126,7 +126,9 @@ class SendBTCConfirmationViewController: KeyboardViewController, SlideButtonDele
             content.currencyButton.setTitle(settings.denomination.string, for: UIControl.State.normal)
             content.currencyButton.backgroundColor = UIColor.customMatrixGreen()
         } else {
-            content.currencyButton.setTitle(settings.getCurrency(), for: UIControl.State.normal)
+            let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+            let currency = isMainnet ? settings.getCurrency() : "FIAT"
+            content.currencyButton.setTitle(currency, for: UIControl.State.normal)
             content.currencyButton.backgroundColor = UIColor.clear
         }
         content.currencyButton.setTitleColor(UIColor.white, for: UIControl.State.normal)

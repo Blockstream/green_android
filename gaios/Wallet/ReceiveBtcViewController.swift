@@ -45,6 +45,7 @@ class ReceiveBtcViewController: KeyboardViewController {
         content.fiatSwitchButton.addTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
         content.shareButton.addTarget(self, action: #selector(shareButtonClicked(_:)), for: .touchUpInside)
         refreshClick(nil)
+        updateEstimate()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -162,15 +163,17 @@ class ReceiveBtcViewController: KeyboardViewController {
             content.fiatSwitchButton.backgroundColor = UIColor.customMatrixGreen()
             content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControl.State.normal)
         } else {
-            content.fiatSwitchButton.setTitle(settings.getCurrency(), for: UIControl.State.normal)
+            let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+            content.fiatSwitchButton.setTitle(isMainnet ? settings.getCurrency() : "FIAT", for: UIControl.State.normal)
             content.fiatSwitchButton.backgroundColor = UIColor.clear
             content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControl.State.normal)
         }
     }
 
     func updateEstimate() {
-        guard let satoshi = getSatoshi() else { return }
-        if let (amount, denom) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc") {
+        let satoshi = getSatoshi() ?? 0
+        let tag = selectedType == TransactionType.BTC ? "fiat": "btc"
+        if let (amount, denom) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: tag) {
             content.estimateLabel.text = "≈ \(amount ?? "N.A.") \(denom)"
         }
     }
