@@ -113,7 +113,7 @@ class WalletSettingsViewController: KeyboardViewController {
         lblTestnetHint.text = ""
         lblProxyTitle.text = NSLocalizedString("id_connect_through_a_proxy", comment: "")
         lblProxyHint.text = ""
-        fieldProxyIp.placeholder = "Host Ip"
+        fieldProxyIp.placeholder = NSLocalizedString("id_host_ip", comment: "")
 
         lblSPVTitle.text = NSLocalizedString("id_backend_and_validation", comment: "")
         lblSPVHint.text = NSLocalizedString("id_spv_validation_is_currently_available", comment: "")
@@ -121,10 +121,10 @@ class WalletSettingsViewController: KeyboardViewController {
         lblSPVPersonalNodeHint.text = NSLocalizedString("id_choose_the_electrum_servers_you_trust", comment: "")
         lblSPVbtcServer.text = NSLocalizedString("id_bitcoin_electrum_backend", comment: "")
         lblSPVliquidServer.text = NSLocalizedString("id_liquid_electrum_backend", comment: "")
-        lblSPVtestnetServer.text = "Testnet Electrum Server"
-        fieldSPVbtcServer.placeholder = "Host Ip"
-        fieldSPVliquidServer.placeholder = "Host Ip"
-        fieldSPVtestnetServer.placeholder = "Host Ip"
+        lblSPVtestnetServer.text = NSLocalizedString("id_testnet_electrum_backend", comment: "")
+        fieldSPVbtcServer.placeholder = NSLocalizedString("id_host_ip", comment: "")
+        fieldSPVliquidServer.placeholder = NSLocalizedString("id_host_ip", comment: "")
+        fieldSPVtestnetServer.placeholder = NSLocalizedString("id_host_ip", comment: "")
         lblTxCheckTitle.text = NSLocalizedString("id_spv_verification", comment: "")
         lblTxCheckHint.text = NSLocalizedString("id_verify_your_transactions_are", comment: "")
         lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
