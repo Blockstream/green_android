@@ -115,12 +115,12 @@ class WalletSettingsViewController: KeyboardViewController {
         lblProxyHint.text = ""
         fieldProxyIp.placeholder = "Host Ip"
 
-        lblSPVTitle.text = "Backend and Validation"
-        lblSPVHint.text = "SPV Validation is currently available for singlesig wallets only."
-        lblSPVPersonalNodeTitle.text = "Personal Node"
-        lblSPVPersonalNodeHint.text = "Choose the Electrum servers you trust for chain data and SPV"
-        lblSPVbtcServer.text = "Bitcoin Electrum Server"
-        lblSPVliquidServer.text = "Liquid Electrum Server"
+        lblSPVTitle.text = NSLocalizedString("id_backend_and_validation", comment: "")
+        lblSPVHint.text = NSLocalizedString("id_spv_validation_is_currently_available", comment: "")
+        lblSPVPersonalNodeTitle.text = NSLocalizedString("id_personal_node", comment: "")
+        lblSPVPersonalNodeHint.text = NSLocalizedString("id_choose_the_electrum_servers_you_trust", comment: "")
+        lblSPVbtcServer.text = NSLocalizedString("id_bitcoin_electrum_backend", comment: "")
+        lblSPVliquidServer.text = NSLocalizedString("id_liquid_electrum_backend", comment: "")
         lblSPVtestnetServer.text = "Testnet Electrum Server"
         fieldSPVbtcServer.placeholder = "Host Ip"
         fieldSPVliquidServer.placeholder = "Host Ip"
