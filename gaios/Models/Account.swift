@@ -99,6 +99,8 @@ struct Account: Codable, Equatable {
                 return UIImage(named: "ntw_btc")!
             case "liquid":
                 return UIImage(named: "ntw_liquid")!
+            case "testnet-liquid":
+                return UIImage(named: "ntw_testnet_liquid")!
             default:
                 return UIImage(named: "ntw_testnet")!
             }

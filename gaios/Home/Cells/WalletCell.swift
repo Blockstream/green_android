@@ -17,6 +17,12 @@ class WalletCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+    override func prepareForReuse() {
+        icon.image = UIImage()
+        lblTitle.text = ""
+        iconSecurityType.image = UIImage()
+    }
+
     func configure(_ item: Account) {
         self.lblTitle.text = item.name
         self.icon.image = item.icon
