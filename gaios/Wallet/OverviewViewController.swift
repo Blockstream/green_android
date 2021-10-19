@@ -100,6 +100,16 @@ class OverviewViewController: UIViewController {
         receiveView.accessibilityIdentifier = AccessibilityIdentifiers.OverviewScreen.receiveView
     }
 
+    func reloadSections(_ sections: [OverviewSection], animated: Bool) {
+        if animated {
+            tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+        } else {
+            UIView.performWithoutAnimation {
+                tableView.reloadSections(IndexSet(sections.map { $0.rawValue }), with: .none)
+            }
+        }
+    }
+
     func setContent() {
         sendLabel.text = NSLocalizedString("id_send", comment: "").capitalized
         receiveLabel.text = NSLocalizedString("id_receive", comment: "").capitalized
@@ -221,14 +231,14 @@ class OverviewViewController: UIViewController {
                 break
             }
         }
-        tableView.reloadSections([OverviewSection.card.rawValue], with: .none)
+        reloadSections([OverviewSection.card], animated: false)
         let bgq = DispatchQueue.global(qos: .background)
         Guarantee().map(on: bgq) {
             try SessionManager.shared.getSystemMessage()
         }.done { text in
             if !text.isEmpty {
                 self.alertCards.append(AlertCardType.systemMessage(text))
-                self.tableView.reloadSections([OverviewSection.card.rawValue], with: .none)
+                self.reloadSections([OverviewSection.card], animated: false)
             }
         }.catch { err in
             print(err.localizedDescription)
@@ -243,7 +253,7 @@ class OverviewViewController: UIViewController {
         }.done { (amount, _) in
             if amount == nil {
                 self.alertCards.append(AlertCardType.fiatMissing)
-                self.tableView.reloadSections([OverviewSection.card.rawValue], with: .none)
+                self.reloadSections([OverviewSection.card], animated: false)
             }
         }.catch { err in
             print(err.localizedDescription)
@@ -254,7 +264,7 @@ class OverviewViewController: UIViewController {
         self.isLoading = true
         self.loadWallet()
         .compactMap {
-            self.tableView.reloadSections([OverviewSection.accountId.rawValue], with: .none)
+            self.reloadSections([OverviewSection.accountId], animated: true)
             return self.loadAssets()
         }
         .then {
@@ -289,11 +299,7 @@ class OverviewViewController: UIViewController {
         if tableView.refreshControl?.isRefreshing ?? false {
             tableView.refreshControl?.endRefreshing()
         }
-        UIView.setAnimationsEnabled(false)
-        self.tableView.beginUpdates()
-        self.tableView.reloadSections([OverviewSection.transaction.rawValue], with: .none)
-        self.tableView.endUpdates()
-        UIView.setAnimationsEnabled(true)
+        reloadSections([OverviewSection.transaction], animated: false)
     }
 
     func onNewBlock(_ notification: Notification) {
@@ -307,7 +313,7 @@ class OverviewViewController: UIViewController {
         Guarantee()
             .compactMap { Registry.shared.cache() }
             .done {
-                self.tableView.reloadSections([OverviewSection.asset.rawValue], with: .none)
+                self.reloadSections([OverviewSection.asset], animated: true)
                 self.showTransactions()
             }
             .catch { err in
@@ -335,9 +341,7 @@ class OverviewViewController: UIViewController {
     }
 
     func refresh(_ notification: Notification) {
-        tableView.reloadSections([OverviewSection.account.rawValue], with: .none)
-        tableView.reloadSections([OverviewSection.asset.rawValue], with: .none)
-        tableView.reloadSections([OverviewSection.transaction.rawValue], with: .none)
+        reloadSections([OverviewSection.account, OverviewSection.asset, OverviewSection.transaction], animated: true)
         loadAlertCards()
     }
 
@@ -353,7 +357,7 @@ class OverviewViewController: UIViewController {
             self.stopAnimating()
         }.done { wallets in
             self.subAccounts = wallets
-            self.tableView.reloadSections([OverviewSection.account.rawValue], with: .none)
+            self.reloadSections([OverviewSection.account], animated: false)
             self.handleRefresh()
         }.catch { err in
             print(err.localizedDescription)
@@ -366,7 +370,7 @@ class OverviewViewController: UIViewController {
             assets = Transaction.sort(wallet.satoshi ?? [:])
             sortAssets()
         }
-        tableView.reloadSections([OverviewSection.asset.rawValue], with: .none)
+        self.reloadSections([OverviewSection.asset], animated: false)
     }
 
     func sortAssets() {
@@ -723,7 +727,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
             UIView.setAnimationsEnabled(true)
             if indexPath.row == 0 {
                 showAccounts = !showAccounts
-                tableView.reloadSections([OverviewSection.account.rawValue], with: .none)
+                reloadSections([OverviewSection.account], animated: true)
                 return
             } else {
                 SessionManager.shared.activeWallet = accounts[indexPath.row].pointer
@@ -772,10 +776,17 @@ extension OverviewViewController: UITableViewDataSourcePrefetching {
                     print("----> null or pending")
                     return
                 }
-                fetchTxs = SessionManager.shared.transactions(first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
+                self.fetchTxs = SessionManager.shared.transactions(first: UInt32(self.callPage * Constants.trxPerPage)).map { page in
+                    let c = self.transactions.count
                     self.transactions += page.list
                     self.callPage += 1
-                    tableView.reloadSections([OverviewSection.transaction.rawValue], with: .none)
+                    var paths: [IndexPath] = []
+                    for i in c..<(c+page.list.count) {
+                        paths.append(IndexPath(row: i, section: OverviewSection.transaction.rawValue))
+                    }
+                    self.tableView.performBatchUpdates({
+                        self.tableView.insertRows(at: paths, with: .none)
+                    }, completion: nil)
                 }
             }
         }
