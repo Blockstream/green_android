@@ -515,6 +515,12 @@ extension OverviewViewController: DrawerNetworkSelectionDelegate {
                 }
             }
     }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let nv = segue.destination as? Learn2faViewController {
+           nv.delegate = self
+        }
+    }
 }
 
 extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
@@ -950,7 +956,7 @@ extension OverviewViewController: DialogWalletNameViewControllerDelegate {
     }
 }
 
-extension OverviewViewController: UserSettingsViewControllerDelegate {
+extension OverviewViewController: UserSettingsViewControllerDelegate, Learn2faViewControllerDelegate {
     func userLogout() {
         userWillLogout = true
         self.presentedViewController?.dismiss(animated: true, completion: {

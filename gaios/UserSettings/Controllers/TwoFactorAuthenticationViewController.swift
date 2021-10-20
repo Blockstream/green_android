@@ -1,6 +1,10 @@
 import UIKit
 import PromiseKit
 
+protocol TwoFactorAuthenticationViewControllerDelegate: AnyObject {
+    func userLogout()
+}
+
 class TwoFactorAuthenticationViewController: UIViewController {
 
     @IBOutlet weak var lblEnable2faTitle: UILabel!
@@ -37,6 +41,8 @@ class TwoFactorAuthenticationViewController: UIViewController {
     var twoFactorConfig: TwoFactorConfig?
     var account = { AccountsManager.shared.current }()
     var isLiquid: Bool { get { return account?.gdkNetwork?.liquid ?? false } }
+
+    weak var delegate: TwoFactorAuthenticationViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -131,7 +137,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
 
         thresholdView.isHidden = true
         if self.twoFactorConfig?.anyEnabled ?? false,
-            let settings = Settings.shared.settings,
+            let settings = SessionManager.shared.settings,
             let twoFactorConfig = self.twoFactorConfig {
 
             var balance: Balance?
@@ -252,6 +258,7 @@ class TwoFactorAuthenticationViewController: UIViewController {
             DropAlert().success(message: NSLocalizedString("id_2fa_reset_in_progress", comment: ""))
             let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
+            self.delegate?.userLogout()
         }.catch { error in
             var text: String
             if let error = error as? TwoFactorCallError {

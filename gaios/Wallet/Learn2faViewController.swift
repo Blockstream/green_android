@@ -1,6 +1,10 @@
 import UIKit
 import PromiseKit
 
+protocol Learn2faViewControllerDelegate: AnyObject {
+    func userLogout()
+}
+
 class Learn2faViewController: UIViewController {
 
     @IBOutlet weak var lblTitle: UILabel!
@@ -14,6 +18,7 @@ class Learn2faViewController: UIViewController {
     @IBOutlet weak var lblPermanentHint: UILabel!
     @IBOutlet weak var btnUndoReset: UIButton!
 
+    weak var delegate: Learn2faViewControllerDelegate?
     let isDisputeActive = SessionManager.shared.twoFactorConfig?.twofactorReset.isDisputeActive ?? false
 
     override func viewDidLoad() {
@@ -64,7 +69,11 @@ class Learn2faViewController: UIViewController {
         }.done { _ in
             let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: true, completion: {
+                DispatchQueue.main.async {
+                    self.delegate?.userLogout()
+                }
+            })
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_cancel_twofactor_reset", comment: ""))
         }
@@ -85,6 +94,7 @@ class Learn2faViewController: UIViewController {
             let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             self.dismiss(animated: true, completion: nil)
+            self.delegate?.userLogout()
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_dispute_twofactor_reset", comment: ""))
         }
@@ -105,6 +115,7 @@ class Learn2faViewController: UIViewController {
             let notification = NSNotification.Name(rawValue: EventType.TwoFactorReset.rawValue)
             NotificationCenter.default.post(name: notification, object: nil, userInfo: nil)
             self.dismiss(animated: true, completion: nil)
+            self.delegate?.userLogout()
         }.catch {_ in
             self.showAlert(title: NSLocalizedString("id_error", comment: ""), message: NSLocalizedString("id_undo_2fa_dispute", comment: ""))
         }
