@@ -209,7 +209,6 @@ class WalletSettingsViewController: KeyboardViewController {
         let contentInset: UIEdgeInsets = UIEdgeInsets.zero
         scrollView.contentInset = contentInset
         super.keyboardWillHide(notification: notification)
->>>>>>> 747882b (App Settings: SPV/Personal node card UI/UX)
     }
 
     @IBAction func switchProxyChange(_ sender: UISwitch) {
