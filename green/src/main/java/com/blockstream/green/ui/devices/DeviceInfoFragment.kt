@@ -239,7 +239,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         callback: Function<Boolean?, Void?>?
     ) {
         if (request.deviceBrand == DeviceBrand.Blockstream) {
-            val usbIsRequired = !request.isUsb && request.hardwareVersion == "JADE_V1.1" && JadeVersion(request.currentVersion) < JadeVersion("0.1.29")
+            val usbIsRequired = !request.isUsb && request.hardwareVersion == "JADE_V1.1" && JadeVersion(request.currentVersion) < JadeVersion("0.1.28")
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(if (request.isUpgradeRequired) R.string.id_new_jade_firmware_required else R.string.id_new_jade_firmware_available)
                 .setCancelable(false)

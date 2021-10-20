@@ -20,7 +20,7 @@ data class Transaction(
     @Serializable(with = DateAsStringSerializer::class)
     @SerialName("created_at") val createdAt: Date,
     // @Serializable(with = DateAsLongSerializer::class)
-    @SerialName("created_at_ts") val createdAtTs: Long,
+    @SerialName("created_at_ts") val createdAtTs: Long = 0,
 
     @SerialName("inputs") val inputs: List<InputOutput>,
     @SerialName("outputs") val outputs: List<InputOutput>,
