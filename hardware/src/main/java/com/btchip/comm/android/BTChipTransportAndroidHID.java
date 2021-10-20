@@ -156,7 +156,12 @@ public class BTChipTransportAndroidHID implements BTChipTransport {
 	public void setDebug(boolean debugFlag) {
 		this.debug = debugFlag;
 	}
-	
+
+	@Override
+	public Boolean isUsb() {
+		return true;
+	}
+
 	private static final int HID_BUFFER_SIZE = 64;
 	private static final int LEDGER_DEFAULT_CHANNEL = 1;
 	private static final int SW1_DATA_AVAILABLE = 0x61;

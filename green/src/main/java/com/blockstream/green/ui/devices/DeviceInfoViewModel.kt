@@ -18,9 +18,8 @@ import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
-import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.greenapi.data.EventData
+import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.jade.HttpRequestProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -43,9 +42,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
         object DeviceReady : DeviceInfoEvent()
         data class RequestPin(val deviceBrand: DeviceBrand) : DeviceInfoEvent()
         data class AskForFirmwareUpgrade(
-            val deviceBrand: DeviceBrand,
-            val version: String?,
-            val upgradeRequired: Boolean,
+            val request: FirmwareUpgradeRequest,
             val callback: Function<Boolean?, Void?>?
         ) : DeviceInfoEvent()
     }
@@ -113,12 +110,11 @@ class DeviceInfoViewModel @AssistedInject constructor(
     }
 
     override fun askForFirmwareUpgrade(
-        deviceBrand: DeviceBrand,
-        version: String?,
-        isUpgradeRequired: Boolean,
+        firmwareUpgradeRequest: FirmwareUpgradeRequest,
         callback: Function<Boolean?, Void?>?
     ) {
-        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.AskForFirmwareUpgrade(deviceBrand, version, isUpgradeRequired, callback)))
+
+        onEvent.postValue(ConsumableEvent(DeviceInfoEvent.AskForFirmwareUpgrade(firmwareUpgradeRequest, callback)))
     }
 
     override fun requestPin(deviceBrand: DeviceBrand): Single<String> {

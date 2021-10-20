@@ -20,6 +20,7 @@ import com.btchip.comm.android.BTChipTransportAndroid;
 import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
+import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest;
 import com.greenaddress.greenbits.wallets.JadeHWWallet;
 import com.greenaddress.greenbits.wallets.LedgerBLEAdapter;
 import com.greenaddress.greenbits.wallets.TrezorHWWallet;
@@ -240,7 +241,7 @@ public class HardwareConnect {
                 (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0) ||
                 (version.get(0) == 2 && version.get(1) < 1);
         if (isFirmwareOutdated) {
-            interaction.askForFirmwareUpgrade(DeviceBrand.Trezor, null, !Bridge.INSTANCE.isDevelopmentFlavor(), isPositive -> {
+            interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Trezor, true,null, null, null, !Bridge.INSTANCE.isDevelopmentFlavor()), isPositive -> {
                 if(isPositive) {
                     onTrezorConnected(interaction, t);
                 }else{
@@ -315,7 +316,7 @@ public class HardwareConnect {
             }
 
             if (isFirmwareOutdated) {
-                interaction.askForFirmwareUpgrade(DeviceBrand.Ledger, null, !Bridge.INSTANCE.isDevelopmentFlavor(), isPositive -> {
+                interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Ledger, transport.isUsb(), null, null, null, !Bridge.INSTANCE.isDevelopmentFlavor()), isPositive -> {
                     if(isPositive) {
                         onLedgerConnected(interaction, dongle, bleDisconnectEvent);
                     }else{

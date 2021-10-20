@@ -5,9 +5,16 @@ import com.blockstream.DeviceBrand
 
 interface FirmwareInteraction {
     fun askForFirmwareUpgrade(
-        deviceBrand: DeviceBrand,
-        version: String?,
-        isUpgradeRequired: Boolean,
+        firmwareUpgradeRequest: FirmwareUpgradeRequest,
         callback: Function<Boolean?, Void?>?
     )
 }
+
+data class FirmwareUpgradeRequest(
+    val deviceBrand: DeviceBrand,
+    val isUsb: Boolean,
+    val currentVersion: String?,
+    val upgradeVersion: String?,
+    val hardwareVersion: String?,
+    val isUpgradeRequired: Boolean
+)

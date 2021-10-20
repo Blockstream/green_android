@@ -28,5 +28,5 @@ public interface BTChipTransport {
 	Future<byte[]> exchange(byte[] command) throws BTChipException;
 	void close() throws BTChipException;
 	void setDebug(boolean debugFlag);
-
+	Boolean isUsb();
 }

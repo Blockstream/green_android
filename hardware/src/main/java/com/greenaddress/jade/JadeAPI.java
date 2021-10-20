@@ -48,25 +48,27 @@ public class JadeAPI {
     private final JadeInterface jade;
     private final Random idgen;
     private final HttpRequestProvider requestProvider;
+    private final Boolean isUsb;
     private String efusemac;
     private boolean sync_error;
 
-    private JadeAPI(final JadeInterface jade, final HttpRequestProvider requestProvider) {
+    private JadeAPI(final JadeInterface jade, final HttpRequestProvider requestProvider, final Boolean isUsb) {
         this.jade = jade;
         this.idgen = new Random();
         this.efusemac = null;
         this.sync_error = false;
         this.requestProvider = requestProvider;
+        this.isUsb = isUsb;
     }
 
     public static JadeAPI createSerial(final HttpRequestProvider requestProvider, final UsbManager usbManager, final UsbDevice usbDevice, final int baud) {
         final JadeInterface jade = JadeInterface.createSerial(usbManager, usbDevice, baud);
-        return new JadeAPI(jade, requestProvider);
+        return new JadeAPI(jade, requestProvider, true);
     }
 
     public static JadeAPI createBle(final HttpRequestProvider requestProvider, final RxBleDevice device) {
         final JadeInterface jade = JadeInterface.createBle(device);
-        return new JadeAPI(jade, requestProvider);
+        return new JadeAPI(jade, requestProvider, false);
     }
 
     public boolean connect() {
@@ -548,6 +550,9 @@ public class JadeAPI {
         return signTxInputs(baseId, inputs, useAeProtocol);
     }
 
+    public boolean isUsb(){
+        return isUsb;
+    }
 
     public PublishSubject<Boolean> getBleDisconnectEvent() {
         return jade.getBleDisconnectEvent();

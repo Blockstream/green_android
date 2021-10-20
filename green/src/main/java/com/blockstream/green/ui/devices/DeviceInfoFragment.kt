@@ -18,6 +18,7 @@ import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.NavGraphDirections
 import com.blockstream.green.R
+import com.blockstream.green.Urls
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.DeviceInfoFragmentBinding
 import com.blockstream.green.databinding.PinTextDialogBinding
@@ -27,14 +28,13 @@ import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
-import com.blockstream.green.utils.clearNavigationResult
-import com.blockstream.green.utils.getNavigationResult
-import com.blockstream.green.utils.isDevelopmentFlavor
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.ui.GaActivity
 import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity
 import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity
+import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
+import com.greenaddress.jade.entities.JadeVersion
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.FastItemAdapter
 import com.mikepenz.fastadapter.expandable.getExpandableExtension
@@ -108,7 +108,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                         requestPin(it.deviceBrand)
                     }
                     is DeviceInfoViewModel.DeviceInfoEvent.AskForFirmwareUpgrade -> {
-                        askForFirmwareUpgrade(it.deviceBrand, it.version, it.upgradeRequired, it.callback)
+                        askForFirmwareUpgrade(it.request, it.callback)
                     }
                 }
             }
@@ -235,24 +235,33 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     }
 
     private fun askForFirmwareUpgrade(
-        deviceBrand: DeviceBrand,
-        version: String?,
-        isUpgradeRequired: Boolean,
+        request: FirmwareUpgradeRequest,
         callback: Function<Boolean?, Void?>?
     ) {
-        if (deviceBrand == DeviceBrand.Blockstream) {
+        if (request.deviceBrand == DeviceBrand.Blockstream) {
+            val usbIsRequired = !request.isUsb && request.hardwareVersion == "JADE_V1.1" && JadeVersion(request.currentVersion) < JadeVersion("0.1.29")
             MaterialAlertDialogBuilder(requireContext())
-                .setTitle(if (isUpgradeRequired) R.string.id_new_jade_firmware_required else R.string.id_new_jade_firmware_available)
-                .setMessage(getString(R.string.id_install_version_s, version))
-                .setPositiveButton(R.string.id_continue) { _, _ ->
-                    callback?.apply(true)
-                }.also {
-                    if (isUpgradeRequired) {
-                        it.setNegativeButton(R.string.id_cancel) { _, _ ->
+                .setTitle(if (request.isUpgradeRequired) R.string.id_new_jade_firmware_required else R.string.id_new_jade_firmware_available)
+                .setCancelable(false)
+                .apply {
+                    if(usbIsRequired){
+                        setMessage(R.string.id_please_use_a_usb_cable_to_update)
+                        setPositiveButton(R.string.id_read_more) { _, _ ->
+                            openBrowser(Urls.HELP_JADE_USB_UPGRADE)
+                            callback?.apply(false)
+                        }
+                    }else{
+                        setMessage(getString(R.string.id_install_version_s, request.upgradeVersion))
+                        setPositiveButton(R.string.id_continue) { _, _ ->
+                            callback?.apply(true)
+                        }
+                    }
+                    if (request.isUpgradeRequired) {
+                        setNegativeButton(R.string.id_cancel) { _, _ ->
                             callback?.apply(false)
                         }
                     } else {
-                        it.setNeutralButton(R.string.id_skip) { _, _ ->
+                        setNeutralButton(R.string.id_skip) { _, _ ->
                             callback?.apply(false)
                         }
                     }
@@ -261,7 +270,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         } else {
             snackbar(R.string.id_outdated_hardware_wallet)
 
-            if (!isUpgradeRequired) {
+            if (!request.isUpgradeRequired) {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.id_warning)
                     .setMessage(R.string.id_outdated_hardware_wallet)

@@ -962,5 +962,6 @@
   <string name="id_no_asset_in_this_account">No asset in this account</string>
   <string name="id_address_was_filled_by_a_payment_uri">Address was filled by a Payment URI</string>
   <string name="id_you_have_clicked_a_payment_uri">You have clicked a Payment URI, select a wallet to handle it</string>
-
+  <string name="id_please_use_a_usb_cable_to_update">Please use a USB cable to update your Jade\'s firmware.</string>
+  <string name="id_read_more">Read more</string>
 </resources>

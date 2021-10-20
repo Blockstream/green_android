@@ -296,6 +296,11 @@ public class LedgerDeviceBLE implements BTChipTransport {
     this.debug = debugFlag;
   }
 
+  @Override
+  public Boolean isUsb() {
+    return false;
+  }
+
   public boolean isOpened() {
     return opened;
   }

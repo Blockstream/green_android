@@ -237,8 +237,8 @@ public class JadeFirmwareManager {
                 // Get first/only match then offer as Y/N to user
                 // FIXME: show user full list and let them choose
                 final FwFileData fwFile = updates.get(0);
-
-                firmwareInteraction.askForFirmwareUpgrade(DeviceBrand.Blockstream, fwFile.version.toString(), !fwValid, isPositive -> {
+                
+                firmwareInteraction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Blockstream, jade.isUsb(), currentVersion.toString(), fwFile.version.toString(), verInfo.getBoardType(), !fwValid), isPositive -> {
                     if(isPositive){
                         // Update firmware
                         final Disposable unused = Single.just(fwFile)
