@@ -14,6 +14,7 @@ enum AvailableNetworks: String, CaseIterable {
     case bitcoin = "mainnet"
     case liquid = "liquid"
     case testnet = "testnet"
+    case testnetLiquid = "testnet-liquid"
 
     func name() -> String {
         switch self {
@@ -23,6 +24,8 @@ enum AvailableNetworks: String, CaseIterable {
             return "Liquid"
         case .testnet:
             return "Testnet"
+        case .testnetLiquid:
+            return "Liquid Testnet"
         }
     }
 
@@ -34,6 +37,8 @@ enum AvailableNetworks: String, CaseIterable {
             return UIImage(named: "ntw_liquid")!
         case .testnet:
             return UIImage(named: "ntw_testnet")!
+        case .testnetLiquid:
+            return UIImage(named: "ntw_testnet_liquid")!
         }
     }
 
@@ -44,6 +49,8 @@ enum AvailableNetworks: String, CaseIterable {
         case .liquid:
             return UIColor.accountLightBlue()
         case .testnet:
+            return UIColor.accountGray()
+        case .testnetLiquid:
             return UIColor.accountGray()
         }
     }

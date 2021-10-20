@@ -115,6 +115,7 @@ class OverviewViewController: UIViewController {
         if account?.network == AvailableNetworks.bitcoin.rawValue { color = AvailableNetworks.bitcoin.color() }
         if account?.network == AvailableNetworks.liquid.rawValue { color = AvailableNetworks.liquid.color() }
         if account?.network == AvailableNetworks.testnet.rawValue { color = AvailableNetworks.testnet.color() }
+        if account?.network == AvailableNetworks.testnetLiquid.rawValue { color = AvailableNetworks.testnetLiquid.color() }
     }
 
     @objc func switchNetwork() {
