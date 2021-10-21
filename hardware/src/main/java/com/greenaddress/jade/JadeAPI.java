@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.hash.Hashing;
 import com.greenaddress.jade.entities.JadeError;
 import com.greenaddress.jade.entities.Commitment;
 import com.greenaddress.jade.entities.SignMessageResult;
@@ -265,13 +266,16 @@ public class JadeAPI {
                              final int chunksize,
                              final OtaProgressCallback cb) throws Exception {
 
+        final byte[] cmphash = Hashing.sha256()
+                .hashBytes(compressed_firmware)
+                .asBytes();
         final int compressed_size = compressed_firmware.length;
 
         // Initiate OTA
         final JsonNode result = this.jadeRpc("ota",
                 makeParams("fwsize", uncompressed_size)
-                    .put("cmpsize", compressed_size)
-                    .put("otachunk", chunksize),
+                        .put("cmpsize", compressed_size)
+                        .put("cmphash", cmphash),
                 TIMEOUT_AUTONOMOUS);
 
         if (!result.asBoolean()) {
