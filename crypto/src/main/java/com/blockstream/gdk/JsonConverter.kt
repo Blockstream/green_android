@@ -12,7 +12,7 @@ class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean, private 
 
     override fun toJSONObject(jsonString: String?): Any? {
         if (log) {
-            "-> ${mask(jsonString)}".let{
+            "▲ ${mask(jsonString)}".let{
                 logger.info { it }
                 extraLogger?.log(it)
             }
@@ -26,7 +26,7 @@ class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean, private 
 
     override fun toJSONString(gaJson: Any?): String = gaJson.toString().also {
         if (log) {
-            "<- ${mask(it)}".let {
+            "▼ ${mask(it)}".let {
                 logger.info { it }
                 extraLogger?.log(it)
             }

@@ -11,12 +11,12 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
 import com.blockstream.green.R
 import com.blockstream.green.databinding.RecoveryIntroFragmentBinding
+import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.green.utils.handleBiometricsError
-import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -133,6 +133,9 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
             }
         }
     }
+
+    // If wallet is null, WalletFragment will give the viewModel to AppFragment, guard this behavior and return null
+    override fun getAppViewModel() : AppViewModel? = if(args.wallet == null) null else getWalletViewModel()
 
     override fun getWalletViewModel(): AbstractWalletViewModel = if(args.wallet != null) viewModel else throw RuntimeException("Can't be happening")
 }

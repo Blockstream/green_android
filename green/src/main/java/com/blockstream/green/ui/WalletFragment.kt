@@ -127,7 +127,7 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
     abstract fun getWalletViewModel(): AbstractWalletViewModel
 
-    override fun getAppViewModel() = getWalletViewModel()
+    override fun getAppViewModel() : AppViewModel? = getWalletViewModel()
 
     override fun onResume() {
         super.onResume()
