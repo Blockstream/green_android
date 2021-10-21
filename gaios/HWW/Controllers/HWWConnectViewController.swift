@@ -298,23 +298,38 @@ extension HWWConnectViewController: BLEManagerDelegate {
     }
 
     func onCheckFirmware(_ peripheral: Peripheral, fmw: [String: String], currentVersion: String) {
+
         let required = !Jade.shared.isJadeFwValid(currentVersion)
-        let alert = UIAlertController(title: required ? NSLocalizedString("id_new_jade_firmware_required", comment: "") : NSLocalizedString("id_new_jade_firmware_available", comment: ""),
-                                      message: String(format: NSLocalizedString("id_version_1s", comment: ""), fmw["version"] ?? ""),
-                                      preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_update", comment: ""), style: .default) { _ in
-            self.hwwState = .upgradingFirmware
-            BLEManager.shared.updateFirmware(peripheral, fmwFile: fmw)
-        })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in
-            if required {
-                BLEManager.shared.dispose()
-                self.onError(BLEManagerError.genericErr(txt: NSLocalizedString("id_new_jade_firmware_required", comment: "")))
-            } else {
-                BLEManager.shared.login(peripheral, checkFirmware: false)
+
+        let needCableUpdate = false
+
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogOTAViewController") as? DialogOTAViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.isRequired = required
+            vc.needCableUpdate = needCableUpdate
+            vc.firrmwareVersion = fmw["version"] ?? ""
+
+            vc.onSelect = { [weak self] (action: OTAAction) in
+                switch action {
+                case .update:
+                    self?.hwwState = .upgradingFirmware
+                    BLEManager.shared.updateFirmware(peripheral, fmwFile: fmw)
+                case .readMore:
+                    BLEManager.shared.dispose()
+                    UIApplication.shared.open(ExternalUrls.otaReadMore, options: [:], completionHandler: nil)
+                    self?.navigationController?.popViewController(animated: true)
+                case .cancel:
+                    if required {
+                        BLEManager.shared.dispose()
+                        self?.onError(BLEManagerError.genericErr(txt: NSLocalizedString("id_new_jade_firmware_required", comment: "")))
+                    } else {
+                        BLEManager.shared.login(peripheral, checkFirmware: false)
+                    }
+                }
             }
-        })
-        self.present(alert, animated: true, completion: nil)
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     func onUpdateFirmware(_ peripheral: Peripheral) {

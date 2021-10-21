@@ -4,6 +4,7 @@ enum ButtonStyle {
     case primary
     case primaryGray
     case primaryDisabled
+    case outlined
     case outlinedGray
 }
 
@@ -152,6 +153,12 @@ extension UIButton {
             backgroundColor = UIColor.customBtnOff()
             setTitleColor(UIColor.customGrayLight(), for: .normal)
             isEnabled = false
+        case .outlined:
+            backgroundColor = UIColor.clear
+            setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+            layer.borderWidth = 1.0
+            layer.borderColor = UIColor.customMatrixGreen().cgColor
+            layer.cornerRadius = 5.0
         case .outlinedGray:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.white, for: .normal)

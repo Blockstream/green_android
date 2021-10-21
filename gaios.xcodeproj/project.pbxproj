@@ -140,6 +140,7 @@
 		34C3020426E7531E00A3F910 /* OverviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C3020326E7531E00A3F910 /* OverviewViewController.swift */; };
 		34C3020626E7659000A3F910 /* OverviewAccountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C3020526E7659000A3F910 /* OverviewAccountCell.swift */; };
 		34C3022826E88A1D00A3F910 /* OverviewTransactionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C3022726E88A1D00A3F910 /* OverviewTransactionCell.swift */; };
+		34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */; };
 		34C978A5268DAF740061264D /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A4268DAF740061264D /* Settings.swift */; };
 		34C978A8268DC14D0061264D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A7268DC14D0061264D /* Extensions.swift */; };
 		34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C978A9268DDD8C0061264D /* WatchOnly.swift */; };
@@ -442,6 +443,7 @@
 		34C3020326E7531E00A3F910 /* OverviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewViewController.swift; sourceTree = "<group>"; };
 		34C3020526E7659000A3F910 /* OverviewAccountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewAccountCell.swift; sourceTree = "<group>"; };
 		34C3022726E88A1D00A3F910 /* OverviewTransactionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewTransactionCell.swift; sourceTree = "<group>"; };
+		34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogOTAViewController.swift; sourceTree = "<group>"; };
 		34C978A4268DAF740061264D /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		34C978A7268DC14D0061264D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		34C978A9268DDD8C0061264D /* WatchOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnly.swift; sourceTree = "<group>"; };
@@ -1003,6 +1005,7 @@
 				349E5F8B264AD48700EACB9B /* DialogRegistryFailViewController.swift */,
 				3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */,
 				34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */,
+				34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1763,6 +1766,7 @@
 				811006E12199C5BF00D14414 /* UIErrorLabel.swift in Sources */,
 				81E0B4C3255302BB001C8544 /* CBOR.swift in Sources */,
 				6713533921E23E7200A9ACC0 /* QRCodeReaderView.swift in Sources */,
+				34C7AD08272143E700F437B5 /* DialogOTAViewController.swift in Sources */,
 				347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */,
 				6D565ECF22C2E44F00C20786 /* TransactionDetailHeaderCell.swift in Sources */,
 				3497937125F8B18C0029ECB1 /* ProgressShapeLayer.swift in Sources */,

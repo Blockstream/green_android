@@ -1,3 +1,5 @@
+import Foundation
+
 enum Constants {
     static let wordsCount = 12
     static let wordsPerPage = 6
@@ -21,4 +23,8 @@ enum AppStorage {
     static let dontShowTorAlert = "dont_show_tor_alert"
     static let defaultTransactionPriority = "default_transaction_priority"
     static let testnetIsVisible = "testnet_is_visible"
+}
+
+enum ExternalUrls {
+    static let otaReadMore = URL(string: "https://blockstream.zendesk.com/hc/en-us/articles/4408030503577")!
 }
