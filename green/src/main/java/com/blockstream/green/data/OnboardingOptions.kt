@@ -17,34 +17,6 @@ data class OnboardingOptions(
     val network: Network? = null,
     val walletName: String? = null
 ) : Parcelable{
-    fun getNetwork(isElectrum: Boolean, greenWallet: GreenWallet): Network {
-        val id = when (networkType) {
-            Network.GreenMainnet -> {
-                if (isElectrum) Network.ElectrumMainnet else Network.GreenMainnet
-            }
-            Network.GreenLiquid -> {
-                if (isElectrum) Network.ElectrumLiquid else Network.GreenLiquid
-            }
-            Network.GreenTestnetLiquid -> {
-                if (isElectrum) Network.ElectrumTestnetLiquid else Network.GreenTestnetLiquid
-            }
-            else -> {
-                if (isElectrum) Network.ElectrumTestnet else Network.GreenTestnet
-            }
-        }
-
-        return greenWallet.networks.getNetworkById(id)
-    }
-
-    // Singlesig mainnet/liquid is enabled only in Development flavor
-    // Singlesig testnet is available in production
-    fun isSinglesigNetworkEnabledForBuildFlavor(context: Context): Boolean {
-        if(context.isProductionFlavor()){
-            return networkType == "testnet" || networkType == "mainnet"
-        }
-        return true
-    }
-
     fun createCopyForNetwork(greenWallet: GreenWallet, networkType: String, isElectrum: Boolean): OnboardingOptions {
         val id = when (networkType) {
             Network.GreenMainnet -> {

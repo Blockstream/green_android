@@ -42,7 +42,7 @@ fun String.getAssetIcon(context: Context, session: GreenSession): Drawable {
     if (this == session.network.policyAsset) {
         return ContextCompat.getDrawable(
             context,
-            R.drawable.ic_liquid_bitcoin_60
+            if(session.network.isTestnet) R.drawable.ic_liquid_testnet_bitcoin_60 else R.drawable.ic_liquid_bitcoin_60
         )!!
     }
 

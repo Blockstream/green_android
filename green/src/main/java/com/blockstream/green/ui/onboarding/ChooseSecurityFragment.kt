@@ -32,18 +32,9 @@ class ChooseSecurityFragment :
 
         options = args.onboardingOptions
 
-        val isSinglesigNetworkEnabledForBuildFlavor =
-            options!!.isSinglesigNetworkEnabledForBuildFlavor(requireContext())
-
         binding.singleSig.setOnClickListener {
-            if (isSinglesigNetworkEnabledForBuildFlavor) {
-                options?.apply {
-                    navigate(createCopyForNetwork(greenWallet, networkType!!, true))
-                }
-            }else{
-                ComingSoonBottomSheetDialogFragment().also {
-                    it.show(childFragmentManager, it.toString())
-                }
+            options?.apply {
+                navigate(createCopyForNetwork(greenWallet, networkType!!, true))
             }
         }
 

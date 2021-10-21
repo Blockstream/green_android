@@ -45,15 +45,7 @@ class ChooseNetworkFragment :
                 is NetworkListItem -> {
                     options?.apply {
                         if(isRestoreFlow){
-                            val newOptions = createCopyForNetwork(greenWallet, item.network, isSingleSig)
-
-                            if(newOptions.network?.isMultisig == true || newOptions.isSinglesigNetworkEnabledForBuildFlavor(requireContext())){
-                                navigate(newOptions)
-                            }else{
-                                ComingSoonBottomSheetDialogFragment().also {
-                                    it.show(childFragmentManager, it.toString())
-                                }
-                            }
+                            navigate(createCopyForNetwork(greenWallet, item.network, isSingleSig))
                         }else{
                             navigate(copy(networkType = item.network))
                         }
@@ -88,15 +80,13 @@ class ChooseNetworkFragment :
                 )
             )
 
-            if (isDevelopmentFlavor()) {
-                expandable.subItems.add(
-                    NetworkListItem(
-                        Network.GreenTestnetLiquid,
-                        "Testnet Liquid",
-                        getCaption("testnet-liquid")
-                    )
+            expandable.subItems.add(
+                NetworkListItem(
+                    Network.GreenTestnetLiquid,
+                    "Testnet Liquid",
+                    getCaption("testnet-liquid")
                 )
-            }
+            )
 
             fastItemAdapter.add(expandable)
         }
