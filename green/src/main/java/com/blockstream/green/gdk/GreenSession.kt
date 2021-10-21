@@ -43,16 +43,16 @@ class GreenSession constructor(
     var activeAccount = 0L
         private set
 
-    private val balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
-    private val transactionsSubject = BehaviorSubject.createDefault(listOf(Transaction.LoadingTransaction))
-    private val assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
-    private val subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
-    private val systemMessageSubject = BehaviorSubject.create<String>()
-    private val blockSubject = BehaviorSubject.create<Block>()
-    private val settingsSubject = BehaviorSubject.create<Settings>()
-    private val twoFactorResetSubject = BehaviorSubject.create<TwoFactorReset>()
-    private val torStatusSubject = BehaviorSubject.create<TORStatus?>()
-    private val networkSubject = BehaviorSubject.create<NetworkEvent>()
+    private var balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
+    private var transactionsSubject = BehaviorSubject.createDefault(listOf(Transaction.LoadingTransaction))
+    private var assetsSubject: BehaviorSubject<Assets> = BehaviorSubject.createDefault(Assets())
+    private var subAccountsSubject = BehaviorSubject.createDefault<List<SubAccount>>(listOf())
+    private var systemMessageSubject = BehaviorSubject.create<String>()
+    private var blockSubject = BehaviorSubject.create<Block>()
+    private var settingsSubject = BehaviorSubject.create<Settings>()
+    private var twoFactorResetSubject = BehaviorSubject.create<TwoFactorReset>()
+    private var torStatusSubject = BehaviorSubject.create<TORStatus?>()
+    private var networkSubject = BehaviorSubject.create<NetworkEvent>()
 
     val gaSession: GASession = greenWallet.createSession()
     private val disposables = CompositeDisposable()
@@ -248,6 +248,21 @@ class GreenSession constructor(
             device?.disconnect()
             device = null
         }
+
+        activeAccount = 0L
+
+        // Recreate subject so that can be sure we have fresh data, especially on shared sessions eg. HWW sessions
+        balancesSubject = BehaviorSubject.createDefault(linkedMapOf(BalanceLoading))
+        transactionsSubject = BehaviorSubject.createDefault(listOf(Transaction.LoadingTransaction))
+        assetsSubject = BehaviorSubject.createDefault(Assets())
+        subAccountsSubject = BehaviorSubject.createDefault(listOf())
+        systemMessageSubject = BehaviorSubject.create()
+        blockSubject = BehaviorSubject.create()
+        settingsSubject = BehaviorSubject.create()
+        twoFactorResetSubject = BehaviorSubject.create()
+        torStatusSubject = BehaviorSubject.create()
+        networkSubject = BehaviorSubject.create()
+
         greenWallet.disconnect(gaSession)
     }
 
