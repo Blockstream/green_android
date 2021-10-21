@@ -297,12 +297,12 @@ extension HWWConnectViewController: BLEManagerDelegate {
     func onConnectivityChange(peripheral: Peripheral, status: Bool) {
     }
 
-    func onCheckFirmware(_ peripheral: Peripheral, fmw: [String: String], currentVersion: String) {
+    func onCheckFirmware(_ peripheral: Peripheral,
+                         fmw: [String: String],
+                         currentVersion: String,
+                         needCableUpdate: Bool) {
 
         let required = !Jade.shared.isJadeFwValid(currentVersion)
-
-        let needCableUpdate = false
-
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogOTAViewController") as? DialogOTAViewController {
             vc.modalPresentationStyle = .overFullScreen

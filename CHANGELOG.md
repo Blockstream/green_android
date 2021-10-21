@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Enable liquid for singlesig wallets
 
 ### Fixed
-
+- Prompt to perform Jade OTA via cable
 
 ## [3.7.3] - 2021-09-30
 

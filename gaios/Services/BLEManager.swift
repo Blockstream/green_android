@@ -36,7 +36,7 @@ protocol BLEManagerDelegate: class {
     func onLogin(_: Peripheral)
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
-    func onCheckFirmware(_: Peripheral, fmw: [String: String], currentVersion: String)
+    func onCheckFirmware(_: Peripheral, fmw: [String: String], currentVersion: String, needCableUpdate: Bool)
     func onUpdateFirmware(_: Peripheral)
 }
 
@@ -204,10 +204,13 @@ class BLEManager {
                 return try Jade.shared.checkFirmware(verInfo!)
             }.observeOn(MainScheduler.instance)
             .compactMap { (fmwFile: [String: String]?) in
+                let version = verInfo?["JADE_VERSION"] as? String
+                let boardType = verInfo?["BOARD_TYPE"] as? String
+                let needCableUpdate = boardType == Jade.BOARD_TYPE_JADE_V1_1 && version ?? "" < "0.1.28"
+                self.fmwVersion = version
                 if let fmw = fmwFile,
-                   let ver = verInfo?["JADE_VERSION"] as? String {
-                    self.fmwVersion = ver
-                    self.delegate?.onCheckFirmware(p, fmw: fmw, currentVersion: ver)
+                    let ver = version {
+                    self.delegate?.onCheckFirmware(p, fmw: fmw, currentVersion: ver, needCableUpdate: needCableUpdate)
                     throw BLEManagerError.firmwareErr(txt: "")
                 }
                 return p
