@@ -19,9 +19,9 @@ data class InputOutput(
 
     // Maybe se it to null ?
     @SerialName("is_change") val isChange: Boolean? = null,
-    @SerialName("is_output") val isOutput: Boolean,
+    // @SerialName("is_output") val isOutput: Boolean, // Singlesig inconsistencies in .46
     @SerialName("is_relevant") val isRelevant: Boolean,
-    @SerialName("is_spent") val isSpent: Boolean,
+    // @SerialName("is_spent") val isSpent: Boolean, // Singlesig inconsistencies in .46
 
     @SerialName("pointer") val pointer: Int,
     @SerialName("prevout_script") val prevoutScript: String? = null,
