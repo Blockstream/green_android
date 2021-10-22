@@ -206,6 +206,10 @@ class OverviewViewController: UIViewController {
                 alertCards.append(AlertCardType.reset(resetDaysRemaining ?? 0))
             }
         }
+        // load testnet card
+        if let network = account?.network, !(network.mainnet ?? true) {
+            alertCards.append(AlertCardType.testnetNoValue)
+        }
         // load registry cards
         if AccountsManager.shared.current!.network == "liquid" {
             switch Registry.shared.failStatus() {
