@@ -86,7 +86,7 @@ class OverviewAlertCardCell: UITableViewCell {
             btnsContainer.isHidden = true
         case .testnetNoValue:
             lblTitle.text = NSLocalizedString("id_warning", comment: "")
-            lblHint.text = NSLocalizedString("This wallet operates on a test network. Anything you receive or send here has no value", comment: "")
+            lblHint.text = NSLocalizedString("id_this_wallet_operates_on_a_test", comment: "")
             btnRight.isHidden = true
             btnLeft.isHidden = true
             btnsContainer.isHidden = true
