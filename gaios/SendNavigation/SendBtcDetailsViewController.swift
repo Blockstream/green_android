@@ -36,7 +36,11 @@ class SendBtcDetailsViewController: UIViewController {
 
     private var feeEstimates: [UInt64?] = {
         var feeEstimates = [UInt64?](repeating: 0, count: 4)
-        let estimates = getFeeEstimates() ?? []
+        guard let estimates = getFeeEstimates() else {
+            // We use the default minimum fee rates when estimates are not available
+            let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
+            return [UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee), UInt64(defaultMinFee)]
+        }
         for (index, value) in [3, 12, 24, 0].enumerated() {
             feeEstimates[index] = estimates[value]
         }
@@ -45,7 +49,10 @@ class SendBtcDetailsViewController: UIViewController {
     }()
 
     private var minFeeRate: UInt64 = {
-        guard let estimates = getFeeEstimates() else { return 1000 }
+        guard let estimates = getFeeEstimates() else {
+            let defaultMinFee = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false ? 100 : 1000
+            return UInt64(defaultMinFee)
+        }
         return estimates[0]
     }()
 

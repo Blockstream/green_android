@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - Prompt to perform Jade OTA via cable
 - Show testnet card on overview screen
+- Check estimate fees on send
 
 ## [3.7.3] - 2021-09-30
 
