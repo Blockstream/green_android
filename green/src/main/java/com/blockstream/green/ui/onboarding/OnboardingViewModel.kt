@@ -88,7 +88,7 @@ open class OnboardingViewModel(
             }else{
                 // check if walletHashId is the same
                 if(restoreWallet.walletHashId.isNotBlank() && restoreWallet.walletHashId != it.walletHashId){
-                    throw Exception("id_the_recovery_phrase_youve_entered_doesnt_match")
+                    throw Exception("id_the_recovery_phrase_doesnt")
                 }
             }
 

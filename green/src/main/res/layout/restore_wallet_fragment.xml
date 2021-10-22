@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
-                    app:captionText="@string/id_restore_a_singlesig_wallet_created_on_blockstream_green"
+                    app:captionText="@string/id_restore_a_singlesig_wallet"
                     app:icon="@drawable/ic_singlesig"
                     app:titleText="@string/id_singlesig" />
 
@@ -68,7 +68,7 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="24dp"
-                    app:captionText="@string/id_import_a_multisig_shield_wallet_created"
+                    app:captionText="@string/id_import_a_multisig_shield_wallet"
                     app:icon="@drawable/ic_multisig"
                     app:titleText="@string/id_multisig_shield" />
 

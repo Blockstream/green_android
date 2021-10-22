@@ -102,14 +102,14 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 android:layout_marginTop="16dp"
-                android:text="@string/id_backend_and_validation" />
+                android:text="@string/id_custom_servers_and_validation" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:textAppearance="?attr/textAppearanceBody2"
-                android:text="@string/id_spv_validation_is_currently_available" />
+                android:text="@string/id_spv_mode_is_currently_available" />
 
             <com.blockstream.green.views.GreenSwitch
                 android:id="@+id/switchPersonalNode"
@@ -118,9 +118,9 @@
                 android:checked="@={vm.enableElectrumNode}"
                 android:layout_marginBottom="4dp"
                 android:visibility="gone"
-                app:captionText="@string/id_choose_the_electrum_servers_you_trust"
+                app:captionText="@string/id_choose_the_electrum_servers_you"
                 app:icon="@drawable/ic_spv_60"
-                app:titleText="@string/id_personal_node" />
+                app:titleText="@string/id_spv_verification" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -128,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="Bitcoin Electrum Server"
+                android:hint="@string/id_bitcoin_electrum_server"
                 tools:ignore="HardcodedText"
                 app:endIconMode="clear_text"
                 app:isVisible="@{vm.enableElectrumNode}">
@@ -147,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="Liquid Electrum Server"
+                android:hint="@string/id_liquid_electrum_server"
                 app:isVisible="@{vm.enableElectrumNode &amp;&amp; isDevelopment}"
                 app:endIconMode="clear_text"
                 tools:ignore="HardcodedText">
@@ -166,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="Testnet Electrum Server"
+                android:hint="@string/id_bitcoin_electrum_server"
                 tools:ignore="HardcodedText"
                 app:endIconMode="clear_text"
                 app:isVisible="@{vm.enableElectrumNode}">
@@ -185,7 +185,7 @@
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableSPV}"
                 android:layout_marginBottom="4dp"
-                app:captionText="@string/id_choose_the_electrum_servers_you_trust"
+                app:captionText="@string/id_choose_the_electrum_servers_you"
                 app:icon="@drawable/ic_spv_60"
                 app:titleText="@string/id_spv_verification" />
 
@@ -196,7 +196,7 @@
                 android:layout_marginBottom="4dp"
                 android:visibility="gone"
                 android:checked="@={vm.enableMultiServerValidation}"
-                app:captionText="@string/id_double_check_SPV"
+                app:captionText="@string/id_double_check_spv_with_other"
                 app:icon="@drawable/ic_multiserver_60"
                 app:titleText="@string/id_multi_server_validation" />
 

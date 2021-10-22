@@ -53,7 +53,7 @@ data class TransactionProgressListItem constructor(
                     R.string.id_pending_confirmation
                 }
                 spv.inProgressOrUnconfirmed() -> {
-                    R.string.id_verifying_transaction_validity
+                    R.string.id_verifying_transactions
                 }
                 spv == Transaction.SPVResult.NotVerified -> {
                     R.string.id_invalid_spv
@@ -62,7 +62,7 @@ data class TransactionProgressListItem constructor(
                     R.string.id_not_on_longest_chain
                 }
                 spv == Transaction.SPVResult.Verified -> {
-                    R.string.id_spv_verified
+                    R.string.id_verified
                 }
                 else -> {
                     R.string.id_completed

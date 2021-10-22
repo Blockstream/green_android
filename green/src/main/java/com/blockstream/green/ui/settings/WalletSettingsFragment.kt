@@ -277,7 +277,7 @@ class WalletSettingsFragment :
                     )
                 )
                 txPriorityPreference.subtitle = StringHolder(prioritySummary(it.requiredNumBlocks))
-                pgpPreference.subtitle = StringHolder(R.string.id_enter_a_pgp_public_key_to_securely_encrypt)
+                pgpPreference.subtitle = StringHolder(R.string.id_add_a_pgp_public_key_to_receive)
 
                 altTimeoutPreference.subtitle = StringHolder(
                     if (it.altimeout == 1) "1 " + getString(R.string.id_minute) else getString(

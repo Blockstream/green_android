@@ -245,7 +245,7 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
                 .setCancelable(false)
                 .apply {
                     if(usbIsRequired){
-                        setMessage(R.string.id_please_use_a_usb_cable_to_update)
+                        setMessage(R.string.id_connect_jade_with_a_usb_cable)
                         setPositiveButton(R.string.id_read_more) { _, _ ->
                             openBrowser(Urls.HELP_JADE_USB_UPGRADE)
                             callback?.apply(false)
