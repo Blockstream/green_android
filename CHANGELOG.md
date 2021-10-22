@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Fixed
+
+## [3.7.4] - 2021-10-22
+### Added
 - Support GDK 0.0.46
 - Support for creating and restoring Singlesig wallets on Liquid & Liquid Testnet
 - Sweep paper wallet UI
