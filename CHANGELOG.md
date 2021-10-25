@@ -7,21 +7,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Reset two factor authentication
-- Refactoring restore wallet flow, enabled Liquid Testnet in production, UI fix for iOS15
+- Enable Liquid Testnet in production builds
 - App Settings: new option to show/hide testnet selection during onboarding
-- Add spv header validation
+- Warn users in testnet with an alert
+- Add spv support to singlesig bitcoin wallets
 - Liquid Testnet UI
 
 ### Changed
 - Show TEST instead of BTC for a testnet wallet
-- Link settings and 2fa data into session to better handle 2fa reset/cancel
+- Refactor 2fa config handling
 - Enable liquid for singlesig wallets
+- Improved restored flow
+- Update GDK to version 0.0.46
 
 ### Fixed
-- Prompt to perform Jade OTA via cable
-- Show testnet card on overview screen
-- Check estimate fees on send
 - Update fastlane flags on debug mode
+- Prompt to perform Jade OTA via USB for versions lower than 0.1.29
+- Use default minimum fees when estimates are not available
+- UI fixes for iOS 15
 
 ## [3.7.3] - 2021-09-30
 
