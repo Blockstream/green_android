@@ -12,26 +12,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [3.7.4] - 2021-10-22
 ### Added
-- Support GDK 0.0.46
-- Support for creating and restoring Singlesig wallets on Liquid & Liquid Testnet
-- Sweep paper wallet UI
-- New Camera QR Scanner
-- Handle BIP-21 payment uris from the Android OS (bitcoin: & liquidnetwork:)
+- Supports creating and restoring Singlesig wallets on Liquid
+- Supports GDK 0.0.46
+- New camera Qr-code scanner
+- Handles BIP-21 payment URIs opened from other apps (bitcoin: & liquidnetwork:)
 
 ### Changed
-- Improved wallet restore flow
-- Do not pass additional root certificate when fetching files from Jade firmware server
-- Revamp transaction details view with new UI
-- Simplify Sent screen adding a quick way to paste an address or scan a QR code
-- Testnet networks must be enabled from AppSettings to appear as create/restore option
-- Show a warning when operating on a testnet network
+- Improves wallet restore flow
+- Improves transaction details view with a new UI
+- Improves sweep paper wallet
+- Simplifies "Send to" screen adding a way to quickly paste an address or scan a QR code
+- Testnet networks must be enabled from App Settings to appear as create/restore options
+- Shows a warning when operating on a testnet network
+- No longer passes additional root certificate when fetching files from Jade firmware server
 
 ### Fixed
-- Fix read-only amount when bumping transaction fees
-- Fix 2FA popup truncated on small screen
-- Fix BIP21 uris 
-- Fix crash when deleting a wallet
-- Fix Trezor One with Passphrase enabled
+- Read-only amount when bumping transaction fees
+- 2FA popup truncated on small screens
+- Crash when deleting a wallet
+- Trezor One login with Passphrase
 
 ## [3.7.3] - 2021-09-30
 ### Changed
