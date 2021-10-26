@@ -24,7 +24,13 @@ class HWWConnectViewController: UIViewController {
     var account: Account!
     var peripheral: Peripheral!
 
-    var networks: [AvailableNetworks] = AvailableNetworks.allCases
+    var networks: [AvailableNetworks] = {
+        if (UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible)) {
+            return AvailableNetworks.allCases
+        }
+        return [AvailableNetworks.bitcoin, AvailableNetworks.liquid]
+    }()
+
     var cellH = 70.0
 
     let loadingIndicator: ProgressView = {
