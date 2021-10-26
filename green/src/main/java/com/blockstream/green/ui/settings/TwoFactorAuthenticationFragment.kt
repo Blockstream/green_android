@@ -300,6 +300,7 @@ class TwoFactorAuthenticationFragment :
 
     private fun handleTwoFactorThreshold() {
         val binding = SettingsLimitsDialogBinding.inflate(requireActivity().layoutInflater)
+        binding.amountInputLayout.endIconCopyMode()
 
         // Warning, don't change the order of fiat and btc,
         val currencies = listOf(getBitcoinOrLiquidUnit(session), getFiatCurrency(session))

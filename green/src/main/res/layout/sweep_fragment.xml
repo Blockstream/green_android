@@ -80,17 +80,6 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_qr_60" />
 
-                <ImageButton
-                    android:id="@+id/buttonPaste"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:adjustViewBounds="true"
-                    android:background="@android:color/transparent"
-                    android:enabled="@{!vm.onProgress}"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_paste_60" />
             </LinearLayout>
 
         </LinearLayout>

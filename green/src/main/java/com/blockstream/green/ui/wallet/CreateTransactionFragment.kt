@@ -64,6 +64,8 @@ class CreateTransactionFragment : WalletFragment<CreateTransactionFragmentBindin
 
         binding.vm = viewModel
 
+        binding.textInputLayout.endIconCopyMode()
+
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<CreateTransactionViewModel.CreateTransactionEvent>()?.let {
                 if(it is CreateTransactionViewModel.CreateTransactionEvent.SelectAsset) {
@@ -78,10 +80,6 @@ class CreateTransactionFragment : WalletFragment<CreateTransactionFragmentBindin
             it?.getContentIfNotHandledOrReturnNull()?.let {
                 errorDialog(it)
             }
-        }
-
-        binding.buttonPaste.setOnClickListener {
-            binding.textInputEditText.setText(getClipboard(requireContext()))
         }
 
         binding.buttonScan.setOnClickListener {

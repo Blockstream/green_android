@@ -31,6 +31,9 @@ class RequestAmountLabelBottomSheetDialogFragment : WalletBottomSheetDialogFragm
         receiveViewModel = (parentFragment as ReceiveFragment).viewModel
         session = viewModel.session
 
+        binding.amountTextInputLayout.endIconCopyMode()
+        binding.labelInputLayout.endIconCopyMode()
+
         // Init label from Receive
         binding.label = receiveViewModel.label.value
         // Init amount from Receive

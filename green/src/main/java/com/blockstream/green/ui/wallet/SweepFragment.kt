@@ -66,6 +66,7 @@ class SweepFragment : WalletFragment<SweepFragmentBinding>(
         }
 
         binding.vm = viewModel
+        binding.textInputLayout.endIconCopyMode()
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
@@ -77,10 +78,6 @@ class SweepFragment : WalletFragment<SweepFragmentBinding>(
             it?.getContentIfNotHandledOrReturnNull()?.let {
                 errorDialog(it)
             }
-        }
-
-        binding.buttonPaste.setOnClickListener {
-            binding.textInputEditText.setText(getClipboard(requireContext()))
         }
 
         binding.buttonScan.setOnClickListener {

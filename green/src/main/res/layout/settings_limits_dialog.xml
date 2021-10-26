@@ -31,11 +31,11 @@
             android:layout_height="wrap_content" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/amountInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:endIconMode="clear_text"
             android:hint="@string/id_amount">
 
             <com.blockstream.green.views.PlaceholderTextInputEditText

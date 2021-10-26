@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
+import com.blockstream.green.utils.endIconCopyMode
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -54,6 +55,14 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
         binding.vm = viewModel
 
         binding.isDevelopment = isDevelopmentFlavor()
+
+        binding.personalBitcoinElectrumServerInputLayout.endIconCopyMode()
+        binding.personalLiquidElectrumServerInputLayout.endIconCopyMode()
+        binding.personalTestnetElectrumServerInputLayout.endIconCopyMode()
+        binding.proxyURLInputLayout.endIconCopyMode()
+        binding.spvBitcoinElectrumServerInputLayout.endIconCopyMode()
+        binding.spvLiquidElectrumServerInputLayout.endIconCopyMode()
+        binding.spvTestnetElectrumServerInputLayout.endIconCopyMode()
 
         binding.buttonSave.setOnClickListener {
             viewModel.saveSettings()

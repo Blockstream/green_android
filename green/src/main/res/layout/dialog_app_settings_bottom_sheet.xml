@@ -65,7 +65,7 @@
                 app:titleText="@string/id_connect_through_a_proxy" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/proxyLayout"
+                android:id="@+id/proxyURLInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 error="@{vm.proxyURLInvalid ? @string/id_host_ip : null}"
                 android:layout_width="match_parent"
@@ -123,6 +123,7 @@
                 app:titleText="@string/id_spv_verification" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/personalBitcoinElectrumServerInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -130,7 +131,6 @@
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_bitcoin_electrum_server"
                 tools:ignore="HardcodedText"
-                app:endIconMode="clear_text"
                 app:isVisible="@{vm.enableElectrumNode}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
@@ -142,6 +142,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/personalLiquidElectrumServerInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -149,7 +150,6 @@
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_liquid_electrum_server"
                 app:isVisible="@{vm.enableElectrumNode &amp;&amp; isDevelopment}"
-                app:endIconMode="clear_text"
                 tools:ignore="HardcodedText">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
@@ -161,6 +161,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/personalTestnetElectrumServerInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -168,7 +169,6 @@
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_bitcoin_electrum_server"
                 tools:ignore="HardcodedText"
-                app:endIconMode="clear_text"
                 app:isVisible="@{vm.enableElectrumNode}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
@@ -201,6 +201,7 @@
                 app:titleText="@string/id_multi_server_validation" />
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/spvBitcoinElectrumServerInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -208,7 +209,6 @@
                 android:layout_marginBottom="4dp"
                 android:hint="Bitcoin Electrum Server"
                 tools:ignore="HardcodedText"
-                app:endIconMode="clear_text"
                 app:isVisible="@{vm.enableMultiServerValidation}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
@@ -220,6 +220,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/spvLiquidElectrumServerInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -227,7 +228,6 @@
                 android:layout_marginBottom="4dp"
                 android:hint="Liquid Electrum Server"
                 app:isVisible="@{vm.enableMultiServerValidation}"
-                app:endIconMode="clear_text"
                 tools:ignore="HardcodedText">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText
@@ -239,6 +239,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/spvTestnetElectrumServerInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -246,7 +247,6 @@
                 android:layout_marginBottom="4dp"
                 android:hint="Testnet Electrum Server"
                 tools:ignore="HardcodedText"
-                app:endIconMode="clear_text"
                 app:isVisible="@{vm.enableMultiServerValidation}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText

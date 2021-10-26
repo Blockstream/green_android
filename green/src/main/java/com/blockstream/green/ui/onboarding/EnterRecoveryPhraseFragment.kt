@@ -17,6 +17,7 @@ import com.blockstream.green.databinding.EditTextDialogBinding
 import com.blockstream.green.databinding.EnterRecoveryPhraseFragmentBinding
 import com.blockstream.green.ui.HelpBottomSheetDialogFragment
 import com.blockstream.green.ui.items.RecoveryPhraseWordListItem
+import com.blockstream.green.utils.endIconCopyMode
 import com.blockstream.green.utils.getClipboard
 import com.blockstream.green.views.RecoveryPhraseKeyboardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -65,6 +66,7 @@ class EnterRecoveryPhraseFragment :
             if(viewModel.isEncryptionPasswordRequired){
 
                 val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
+                dialogBinding.textInputLayout.endIconCopyMode()
 
                 dialogBinding.hint = getString(R.string.id_password)
 

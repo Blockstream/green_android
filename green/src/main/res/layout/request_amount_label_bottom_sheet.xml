@@ -69,8 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="8dp"
-                    android:hint="@string/id_request_amount"
-                    app:endIconMode="clear_text">
+                    android:hint="@string/id_request_amount">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/amountEditText"
@@ -95,15 +94,15 @@
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/labelInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="24dp"
-                android:hint="@string/id_label"
                 android:visibility="gone"
-                app:endIconMode="clear_text">
+                android:hint="@string/id_label">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -140,6 +139,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="24dp"
             android:text="@string/id_ok"
+            style="@style/Widget.Green.Button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/buttonClear"

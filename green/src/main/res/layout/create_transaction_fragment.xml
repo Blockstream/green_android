@@ -48,8 +48,7 @@
                 android:layout_weight="@integer/material_motion_duration_long_1"
                 android:enabled="@{!vm.onProgress}"
                 android:hint="@string/id_recipient_address"
-                android:orientation="horizontal"
-                app:endIconMode="clear_text">
+                android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textInputEditText"
@@ -80,17 +79,6 @@
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_qr_60" />
 
-                <ImageButton
-                    android:id="@+id/buttonPaste"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:adjustViewBounds="true"
-                    android:background="@android:color/transparent"
-                    android:enabled="@{!vm.onProgress}"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_paste_60" />
             </LinearLayout>
 
         </LinearLayout>

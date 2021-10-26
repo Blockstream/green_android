@@ -484,12 +484,13 @@ class WalletSettingsFragment :
 
             val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
             dialogBinding.text = settings.pgp
+            dialogBinding.textInputLayout.endIconCopyMode()
 
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.id_pgp_key)
                 .setView(dialogBinding.root)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
-                    viewModel.saveSettings(settings.copy(pgp = dialogBinding.text))
+                    viewModel.saveSettings(settings.copy(pgp = dialogBinding.text?.trim()))
                 }
                 .setNegativeButton(android.R.string.cancel, null)
                 .show()
@@ -613,6 +614,7 @@ class WalletSettingsFragment :
 
     private fun handleCustomFeeRate(){
         val dialogBinding = EditTextDialogBinding.inflate(LayoutInflater.from(context))
+        dialogBinding.textInputLayout.endIconCopyMode()
 
         // TODO add locale
         dialogBinding.editText.setPlaceholder("0.00")
