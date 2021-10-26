@@ -7,6 +7,7 @@ import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorConfig
 import com.blockstream.gdk.data.TwoFactorMethodConfig
+import com.blockstream.gdk.data.TwoFactorReset
 import com.blockstream.gdk.params.Limits
 import com.blockstream.green.ApplicationScope
 import com.blockstream.green.R
@@ -187,7 +188,7 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         session.observable {
             session
                 .twofactorReset(email, isDispute)
-                .resolve(twoFactorResolver = twoFactorResolver)
+                .result<TwoFactorReset>(twoFactorResolver = twoFactorResolver)
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
