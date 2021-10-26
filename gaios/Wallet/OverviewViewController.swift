@@ -207,11 +207,11 @@ class OverviewViewController: UIViewController {
             }
         }
         // load testnet card
-        if let network = account?.network, !(network.mainnet ?? true) {
+        if let network = account?.gdkNetwork, !network.mainnet {
             alertCards.append(AlertCardType.testnetNoValue)
         }
         // load registry cards
-        if AccountsManager.shared.current!.network == "liquid" {
+        if let network = account?.gdkNetwork, network.liquid {
             switch Registry.shared.failStatus() {
             case .assets, .all:
                 alertCards.append(AlertCardType.assetsRegistryFail)
