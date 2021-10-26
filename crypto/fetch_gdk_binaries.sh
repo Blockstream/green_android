@@ -10,9 +10,9 @@ fi
 # The version of gdk to fetch and its sha256 checksum for integrity checking
 NAME="gdk-android-jni"
 TARBALL="${NAME}.tar.gz"
-TAGNAME="release_0.0.46"
+TAGNAME="release_0.0.46.post1"
 URL="https://github.com/Blockstream/gdk/releases/download/${TAGNAME}/${TARBALL}"
-SHA256="9cc2aa369982cca4419f7b30661d28a2bbe58b049571d4d8fe4810946213b22f"
+SHA256="fc88693f6b0b914cad89f2035fec7c17e7b177694d5b10939434ce5ff409ddb1"
 # Pre-requisites
 function check_command() {
     command -v $1 >/dev/null 2>&1 || { echo >&2 "$1 not found, exiting."; exit 1; }
