@@ -16,16 +16,21 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## iOS
-### ios build_debug
+### ios build_unsigned_debug
 ```
-fastlane ios build_debug
+fastlane ios build_unsigned_debug
 ```
-Run build debug app
-### ios build_dev
+Build unsigned debug
+### ios build_signed_adhoc_release
 ```
-fastlane ios build_dev
+fastlane ios build_signed_adhoc_release
 ```
-Run build dev app
+Build signed adhoc release
+### ios build_signed_prod_release
+```
+fastlane ios build_signed_prod_release
+```
+Build signed prod release
 ### ios ui_tests
 ```
 fastlane ios ui_tests

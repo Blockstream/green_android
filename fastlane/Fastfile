@@ -16,9 +16,10 @@ platform :ios do
       clean: true,
       output_directory: "./debug",
       output_name: "Green-debug.ipa",
-      skip_build_archive: true,
-      skip_archive: true,
+      include_symbols: true,
       include_bitcode: false,
+      skip_archive: true,
+      skip_package_ipa: true,
       skip_codesigning: true
     )
   end
