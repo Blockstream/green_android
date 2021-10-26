@@ -46,11 +46,10 @@ import javax.annotation.Nullable;
 import static com.blockstream.libgreenaddress.GDK.GA_ERROR;
 import static com.blockstream.libgreenaddress.GDK.GA_RECONNECT;
 
-public class GDKSession implements HttpRequestHandler {
+public class GDKSession{
 
     // Fine to have a static objectMapper according to docs if using always same configuration
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
-    private Boolean mIsDevelopmentFlavor = false;
 
     protected GreenWallet mGreenWallet;
     protected Object mNativeSession;
@@ -64,8 +63,7 @@ public class GDKSession implements HttpRequestHandler {
         mNotification = new NotificationHandlerImpl();
     }
 
-    public void initFromV4(Boolean IsDevelopmentFlavor, GreenWallet greenWallet){
-        mIsDevelopmentFlavor = IsDevelopmentFlavor;
+    public void initFromV4(GreenWallet greenWallet){
         mGreenWallet = greenWallet;
     }
 
@@ -75,87 +73,11 @@ public class GDKSession implements HttpRequestHandler {
     }
 
     public void disconnect() throws Exception {
-        GDK.disconnect(mNativeSession);
         mNotification.reset();
-    }
-
-    public String getTorSocks5() throws Exception {
-        return GDK.get_tor_socks5(mNativeSession);
-    }
-
-    public String getWatchOnlyUsername() throws Exception {
-        return GDK.get_watch_only_username(mNativeSession);
     }
 
     public GDKTwoFactorCall login(final Device device) throws Exception {
         return new GDKTwoFactorCall(GDK.login_user(mNativeSession, new DeviceParams(device), null));
-    }
-
-    // Pass ready-assembled json parameters
-    public JsonNode httpRequest(final JsonNode details) throws IOException {
-        final Object reply = GDK.http_request(mNativeSession, details);
-        final JsonNode response = mObjectMapper.readTree(reply.toString());
-        return response;
-    }
-
-    // 'data' and 'accept' and certificates can be null, and if so are not passed
-    public JsonNode httpRequest(final String method,
-                                final List<URL> urls,
-                                final String data,
-                                final String accept,
-                                final List<String> certs) throws IOException {
-        // Build the json parameters
-        final ObjectNode details = mObjectMapper.createObjectNode();
-
-        // Method and URLs
-        details.put("method", method);
-        final ArrayNode urlsArray = details.putArray("urls");
-        for (final URL url : urls) {
-            urlsArray.add(url.toExternalForm());
-        }
-
-        // Optional (POST) data, 'accept' strings, and additional certificates.
-        if (data != null) {
-            details.put("data", data);
-        }
-        if (accept != null) {
-            details.put("accept", accept);
-        }
-        if (certs != null) {
-            final ArrayNode certsArray = details.putArray("root_certificates");
-            for (final String cert : certs) {
-                certsArray.add(cert);
-            }
-        }
-
-        // Call httpRequest passing the assembled json parameters
-        return this.httpRequest(details);
-    }
-
-    public List<TransactionData> parseTransactions(final ArrayNode txListObject) throws Exception {
-        //final ArrayNode txListObject = getTransactionsRaw(subAccount, first, count);
-        final List<TransactionData> transactionDataPagedData =
-                mObjectMapper.readValue(mObjectMapper.treeAsTokens(txListObject),
-                        new TypeReference<List<TransactionData>>() {});
-        return transactionDataPagedData;
-    }
-
-    public JsonNode findTransactionRaw(final ArrayNode txListObject, final String txhash) throws Exception {
-        for (JsonNode node : txListObject) {
-            if (node.get("txhash").asText().equals(txhash))
-                return node;
-        }
-
-        return null;
-    }
-
-    public GDKTwoFactorCall getTransactionsRaw(final int subAccount, final int first, final int count) throws Exception {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("subaccount", subAccount);
-        details.put("first", first);
-        details.put("count", count);
-        details.put("num_confs", 0);
-        return new GDKTwoFactorCall(GDK.get_transactions(mNativeSession, details));
     }
 
     public void setWatchOnly(final String username, final String password) throws Exception {
@@ -166,68 +88,11 @@ public class GDKSession implements HttpRequestHandler {
         return new GDKTwoFactorCall(GDK.get_subaccount(mNativeSession, subAccount));
     }
 
-    public GDKTwoFactorCall getSubAccounts() {
-        return new GDKTwoFactorCall(GDK.get_subaccounts(mNativeSession));
-    }
-
-    public GDKTwoFactorCall createSubAccount(final String name, final String type) throws Exception {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.set("name", new TextNode(name));
-        details.set("type", new TextNode(type));
-        return new GDKTwoFactorCall(GDK.create_subaccount(mNativeSession, details));
-    }
-
-    public TwoFactorConfigData getTwoFactorConfig() throws Exception  {
-        final ObjectNode twofactorConfig = Bridge.INSTANCE.toJackson(GDK.get_twofactor_config(mNativeSession));
-        final TwoFactorConfigData twoFactorConfigData = mObjectMapper.treeToValue(twofactorConfig, TwoFactorConfigData.class);
-        debugEqual(twofactorConfig, twoFactorConfigData);
-        return twoFactorConfigData;
-    }
-
     public GDKTwoFactorCall getBalance(final Integer subAccount, final long confirmations) {
         final ObjectNode details = mObjectMapper.createObjectNode();
         details.put("subaccount", subAccount);
         details.put("num_confs", confirmations);
         return new GDKTwoFactorCall( GDK.get_balance(mNativeSession, details));
-    }
-
-    public Map<String, Bitmap> getAssetsIcons(final boolean refresh) throws Exception {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("icons", true);
-        details.put("assets", false);
-        details.put("refresh", refresh);
-        final ObjectNode data = Bridge.INSTANCE.toJackson(GDK.refresh_assets(mNativeSession, details));
-        final ObjectNode iconsData = (ObjectNode) data.get("icons");
-        if (iconsData.has("last_modified"))
-            iconsData.remove("last_modified");
-        final Map<String, Bitmap> icons = new HashMap<>();
-        final Iterator<String> iterator = iconsData.fieldNames();
-        while (iterator.hasNext()) {
-            final String key = iterator.next();
-            final byte[] decodedString = Base64.decode(iconsData.get(key).asText(), Base64.DEFAULT);
-            final Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-            icons.put(key, decodedByte);
-        }
-        return icons;
-    }
-
-    public Map<String, AssetInfoData> getAssetsInfos(final boolean refresh) throws Exception {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("icons", false);
-        details.put("assets", true);
-        details.put("refresh", refresh);
-        final ObjectNode data = Bridge.INSTANCE.toJackson(GDK.refresh_assets(mNativeSession, details));
-        final ObjectNode infosData = (ObjectNode) data.get("assets");
-        if (infosData.has("last_modified"))
-            infosData.remove("last_modified");
-        final Map<String, AssetInfoData> infos = new HashMap<>();
-        final Iterator<String> iterator = infosData.fieldNames();
-        while (iterator.hasNext()) {
-            final String key = iterator.next();
-            final AssetInfoData info = mObjectMapper.treeToValue(infosData.get(key), AssetInfoData.class);
-            infos.put(key, info);
-        }
-        return infos;
     }
 
     public BalanceData convertBalance(final BalanceData balanceData) throws Exception {
@@ -255,27 +120,8 @@ public class GDKSession implements HttpRequestHandler {
         return convert(amount);
     }
 
-    public GDKTwoFactorCall createTransactionRaw(final JSONData createTransactionData) throws Exception {
-        return new GDKTwoFactorCall(GDK.create_transaction(mNativeSession, createTransactionData));
-    }
-
     public GDKTwoFactorCall createTransactionRaw(final ObjectNode tx) throws Exception {
         return new GDKTwoFactorCall(GDK.create_transaction(mNativeSession, tx));
-    }
-
-    public GDKTwoFactorCall createTransactionFromUri(@Nullable final ObjectNode utxos, final String uri, final int subaccount) throws Exception {
-        final ObjectNode tx = mObjectMapper.createObjectNode();
-        tx.put("subaccount", subaccount);
-        final ObjectNode address = mObjectMapper.createObjectNode();
-        address.put("address", uri);
-        final ArrayNode addressees = mObjectMapper.createArrayNode();
-        addressees.add(address);
-        tx.set("addressees", addressees);
-        if(utxos != null) {
-            tx.set("utxos", utxos);
-        }
-
-        return createTransactionRaw(tx);
     }
 
     public GDKTwoFactorCall signTransactionRaw(final ObjectNode createTransactionData) throws Exception {
@@ -297,21 +143,6 @@ public class GDKSession implements HttpRequestHandler {
         return mObjectMapper.treeToValue(feeEstimates, EstimatesData.class).getFees();
     }
 
-    public GDKTwoFactorCall getUTXO(final long subAccount, final long confirmations, @Nullable final Long expiredΑt) throws Exception {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("subaccount", subAccount);
-        details.put("num_confs", confirmations);
-        if(expiredΑt != null) {
-            details.put("expired_at", confirmations);
-        }
-        return new GDKTwoFactorCall(GDK.get_unspent_outputs(mNativeSession, details));
-    }
-
-    public Map<String, Object> getAvailableCurrencies() throws Exception {
-        final ObjectNode availableCurrencies = Bridge.INSTANCE.toJackson(GDK.get_available_currencies(mNativeSession));
-        return mObjectMapper.treeToValue(availableCurrencies, Map.class);
-    }
-
     private List<NetworkData> cachedNetworks = null;
     public List<NetworkData> getNetworks() {
         if(cachedNetworks == null) {
@@ -331,38 +162,6 @@ public class GDKSession implements HttpRequestHandler {
         return cachedNetworks;
     }
 
-    public List<Network> getHardwareSupportedNetworks() {
-        return mGreenWallet.getNetworks().getHardwareSupportedNetworks();
-    }
-
-    public GDKTwoFactorCall getReceiveAddress(final int subAccount) throws Exception {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("subaccount", subAccount);
-        return new GDKTwoFactorCall(GDK.get_receive_address(mNativeSession, details));
-    }
-
-    public boolean isEnabled() {
-        return GDK.isEnabled();
-    }
-
-    public Boolean changeMemo(final String txHashHex, final String memo) throws Exception {
-        GDK.set_transaction_memo(mNativeSession, txHashHex, memo, 0);
-        return true;
-    }
-
-    public String getSystemMessage() throws Exception {
-        return GDK.get_system_message(mNativeSession);
-    }
-
-    public GDKTwoFactorCall ackSystemMessage(final String message) throws Exception {
-        return new GDKTwoFactorCall(GDK.ack_system_message(mNativeSession, message));
-    }
-
-    public String getMnemonicPassphrase() {
-        // TODO at the moment the encrypted mnemonic is not supported so we are always passing the empty string
-        return GDK.get_mnemonic_passphrase(mNativeSession, "");
-    }
-
     @Nullable
     public ObjectNode getGDKSettings() throws Exception  {
         if(mNativeSession == null) return null;
@@ -378,63 +177,11 @@ public class GDKSession implements HttpRequestHandler {
         }
     }
 
-    public GDKTwoFactorCall changeSettingsTwoFactor(final String method, final TwoFactorDetailData details) throws Exception  {
-        final Object twoFactorCall = GDK.change_settings_twofactor(mNativeSession, method, details);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
-        return gdkTwoFactorCall;
-    }
-
-    public GDKTwoFactorCall twoFactorReset(final String email, final boolean isDispute) throws Exception  {
-        final Object twoFactorCall = GDK.twofactor_reset(mNativeSession, email, isDispute ? GDK.GA_TRUE : GDK.GA_FALSE);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
-        return gdkTwoFactorCall;
-    }
-
-    public GDKTwoFactorCall twoFactorUndoDispute(final String email) throws Exception  {
-        final Object twoFactorCall = GDK.twofactor_undo_reset(mNativeSession, email);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
-        return gdkTwoFactorCall;
-    }
-
-    public GDKTwoFactorCall twofactorCancelReset() throws Exception  {
-        final Object twoFactorCall = GDK.twofactor_cancel_reset(mNativeSession);
-        final GDKTwoFactorCall gdkTwoFactorCall = new GDKTwoFactorCall(twoFactorCall);
-        return gdkTwoFactorCall;
-    }
-
-    public GDKTwoFactorCall twoFactorChangeLimits(final ObjectNode limitsData) throws Exception  {
-        return new GDKTwoFactorCall(GDK.twofactor_change_limits(mNativeSession, limitsData));
-    }
-
-    public void sendNlocktimes() throws Exception  {
-        GDK.send_nlocktimes(mNativeSession);
-    }
-
-    public GDKTwoFactorCall setCsvTime(final Integer value) throws Exception  {
-        final ObjectNode details = mObjectMapper.createObjectNode();
-        details.put("value", value);
-        return new GDKTwoFactorCall(GDK.set_csvtime(mNativeSession, details));
-    }
-
     public NotificationHandlerImpl getNotificationModel() {
         return mNotification;
     }
 
     public GDKTwoFactorCall changeSettings(final ObjectNode setting) throws Exception  {
         return new GDKTwoFactorCall(GDK.change_settings(mNativeSession, setting));
-    }
-
-    public Integer getErrorCode(final String message) {
-        try {
-            final String stringCode = message.split(" ")[1];
-            final String function = message.split(" ")[2];
-            final Integer code = Integer.parseInt(stringCode);
-            // remap gdk connection error
-            if (code == GA_ERROR && "GA_connect".equals(function))
-                return GA_RECONNECT;
-            return code;
-        } catch (final Exception e) {
-            return GA_ERROR;
-        }
     }
 }

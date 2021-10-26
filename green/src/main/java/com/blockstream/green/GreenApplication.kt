@@ -107,17 +107,6 @@ class GreenApplication : Application(){
             }
         }
 
-        Bridge.setSubaccountFn = { gaSession, subaccount ->
-            val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-            if(walletId >= 0){
-                walletRepository.getWalletSync(walletId)?.let {
-                    it.activeAccount = subaccount.toLong()
-                    walletRepository.updateWalletSync(it)
-                }
-            }
-        }
-
         Bridge.walletsProviderFn = { gaSession ->
 
             val walletId = sessionManager.getWalletIdFromSession(gaSession)

@@ -1,22 +1,15 @@
 package com.greenaddress.greenapi;
 
-import com.blockstream.gdk.data.TwoFactorReset;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import com.greenaddress.Bridge;
 import com.greenaddress.gdk.GDKSession;
 import com.greenaddress.gdk.GDKTwoFactorCall;
 import com.greenaddress.greenapi.data.NetworkData;
 import com.greenaddress.greenapi.data.SettingsData;
 import com.greenaddress.greenapi.data.SubaccountData;
-import com.greenaddress.greenapi.data.TransactionData;
 import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver;
-import com.greenaddress.jade.HttpRequestHandler;
-import com.greenaddress.jade.HttpRequestProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,12 +19,11 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class Session extends GDKSession implements HttpRequestProvider {
+public class Session extends GDKSession {
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
     private static Session instance = new Session();
 
     private SettingsData mSettings;
-    private TwoFactorReset mTwoFAReset = null;
     private String mNetwork;
     private ObjectNode pendingTransaction = null;
 
@@ -49,7 +41,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
 
         // Reset
         mSettings = null;
-        mTwoFAReset = null;
 
         getNotificationModel().reset();
     }
@@ -66,18 +57,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
         return Bridge.INSTANCE.getHWWallet();
     }
 
-    public TwoFactorReset getTwoFAReset() {
-        return this.mTwoFAReset;
-    }
-
-    public void setTwoFAReset(final TwoFactorReset eventData) {
-        this.mTwoFAReset = eventData;
-    }
-
-    public boolean isTwoFAReset() {
-        return mTwoFAReset != null;
-    }
-
     public void setNetwork(final String network) {
         mNetwork = network;
     }
@@ -86,7 +65,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
         super.disconnect();
 
         mSettings = null;
-        mTwoFAReset = null;
     }
 
     public SettingsData refreshSettings() {
@@ -130,29 +108,6 @@ public class Session extends GDKSession implements HttpRequestProvider {
         return map;
     }
 
-    public List<TransactionData> getTransactions(final GaActivity activity, final int subaccount, final int first, final int size) throws Exception {
-        final GDKTwoFactorCall call =
-                getTransactionsRaw(subaccount, first, size);
-        final ObjectNode txListObject = call.resolve(new HardwareCodeResolver(activity, getHWWallet()), null);
-        final List<TransactionData> transactions =
-                parseTransactions((ArrayNode) txListObject.get("transactions"));
-        return transactions;
-    }
-
-    public List<SubaccountData> getSubAccounts(final GaActivity activity) throws Exception {
-        final GDKTwoFactorCall call = getSubAccounts();
-        final ObjectNode accounts = call.resolve(new HardwareCodeResolver(activity, getHWWallet()), null);
-        final List<SubaccountData> subAccounts =
-                mObjectMapper.readValue(mObjectMapper.treeAsTokens(accounts.get("subaccounts")),
-                        new TypeReference<List<SubaccountData>>() {});
-
-        // GDK 0.44 removed balance info from SubAccount json. v4 should request balance only when needed
-        for(SubaccountData subAccount: subAccounts){
-            subAccount.setSatoshi(getBalance(activity, subAccount.getPointer()));
-        }
-        return subAccounts;
-    }
-
     public List<Long> getFees() {
         try {
             return getFeeEstimates();
@@ -182,10 +137,5 @@ public class Session extends GDKSession implements HttpRequestProvider {
     @Nullable
     public ObjectNode getPendingTransaction(){
         return this.pendingTransaction;
-    }
-
-    @Override
-    public HttpRequestHandler getHttpRequest() {
-        return this;
     }
 }

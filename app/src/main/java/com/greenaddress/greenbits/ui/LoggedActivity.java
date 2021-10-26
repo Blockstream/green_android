@@ -172,23 +172,6 @@ public abstract class LoggedActivity extends GaActivity {
         }
     }
 
-    public void logout(Long walletId) {
-        startLoading();
-        logoutDisposable = Observable.just(getSession())
-                           .subscribeOn(AndroidSchedulers.mainThread())
-                           .observeOn(Schedulers.computation())
-                           .map(session -> {
-            session.disconnect();
-            return session;
-        }).subscribe(session -> {
-            stopLoading();
-            exit(walletId);
-        }, (final Throwable e) -> {
-            stopLoading();
-            exit(walletId);
-        });
-    }
-
     private void exit(Long walletId) {
         if (isFinishing())
             return;
@@ -240,9 +223,5 @@ public abstract class LoggedActivity extends GaActivity {
 
     protected int getActiveAccount() {
         return Bridge.INSTANCE.getActiveAccount();
-    }
-
-    protected void setActiveAccount(final int subaccount) {
-        Bridge.INSTANCE.setActiveAccount(subaccount);
     }
 }

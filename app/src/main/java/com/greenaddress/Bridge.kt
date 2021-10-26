@@ -42,7 +42,6 @@ object Bridge {
     var greenWallet: GreenWallet? = null
 
     var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, extraData: Any?) -> Unit)? = null
-    var setSubaccountFn: ((gaSession: Any?, subaccount: Int) -> Unit)? = null
     var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
     var getWalletIdFn: ((gaSession: Any?) -> Long?)? = null
     var getHWWalletFn: ((gaSession: Any?) -> HWWallet?)? = null
@@ -79,7 +78,7 @@ object Bridge {
 
             hardwareQATester = QATester
 
-            Session.getSession().initFromV4(isDevelopmentFlavor, greenWallet)
+            Session.getSession().initFromV4(greenWallet)
 
             JadeAPI.isDebug = BuildConfig.DEBUG
         }
@@ -100,10 +99,6 @@ object Bridge {
     fun bridgeSession(session: Any, networkId: String) {
         Session.getSession().bridgeSession(session, networkId)
         setCurrentNetwork(context.get()!!, networkId)
-    }
-
-    fun setActiveAccount(account : Int){
-        setSubaccountFn?.invoke(Session.getSession().nativeSession, account)
     }
 
     // Send signal to v3 codebase to update settings data

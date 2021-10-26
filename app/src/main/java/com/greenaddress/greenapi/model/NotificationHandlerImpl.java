@@ -29,12 +29,10 @@ import static com.greenaddress.greenapi.Session.getSession;
 public class NotificationHandlerImpl implements GDK.NotificationHandler {
 
     private static final ObjectMapper mObjectMapper = new ObjectMapper();
-    private Integer mBlockHeight = 0;
     private JsonNode mNetworkNode;
     private final List<EventData> mEventDataList = new ArrayList<>();
 
     private final PublishSubject<JsonNode> mTransactionPublish = PublishSubject.create();
-    private final PublishSubject<Integer> mBlockPublish = PublishSubject.create();
     private final BehaviorSubject<JsonNode> mNetworkPublish = BehaviorSubject.create();
     private final PublishSubject<JsonNode> mTorPublish = PublishSubject.create();
     private final PublishSubject<List<EventData>> mEventsPublish = PublishSubject.create();
@@ -52,24 +50,8 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
         return mTorPublish.hide();
     }
 
-    public Observable<Integer> getBlockObservable() {
-        return mBlockPublish.hide();
-    }
-
     public Observable<JsonNode> getNetworkObservable() {
         return mNetworkPublish.hide();
-    }
-
-    public Observable<List<EventData>> getEventsObservable() {
-        return mEventsPublish.hide();
-    }
-
-    public Observable<SettingsData> getSettingsObservable() {
-        return mSettingsPublish.hide();
-    }
-
-    public Integer getBlockHeight() {
-        return mBlockHeight;
     }
 
     public List<EventData> getEvents() {
@@ -81,7 +63,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
     }
 
     public void reset() {
-        mBlockHeight = 0;
         mNetworkNode = null;
         mEventDataList.clear();
     }
@@ -111,10 +92,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
             }
             case "block": {
                 //{"block":{"block_hash":"0000000000003c640a577923dd385428edcfa570ee3bb46d435efca1efbb71a5","block_height":1435025},"event":"block"}
-                final JsonNode blockHeight = objectNode.get("block").get("block_height");
-                Log.d("OBSNTF", "blockHeight " + blockHeight);
-                mBlockHeight = blockHeight.asInt(0);
-                mBlockPublish.onNext(mBlockHeight);
                 break;
             }
             case "transaction": {
@@ -169,19 +146,6 @@ public class NotificationHandlerImpl implements GDK.NotificationHandler {
             }
             case "twofactor_reset": {
                 //{"event":"twofactor_reset","twofactor_reset":{"days_remaining":90,"is_active":true,"is_disputed":false}}
-                final JsonNode resetData = objectNode.get("twofactor_reset");
-
-                if (resetData.get("is_active").asBoolean()) {
-                    final TwoFactorReset reset;
-                    if (resetData.get("is_disputed").asBoolean()) {
-                        reset = new TwoFactorReset(true, -1, true);
-                    } else{
-                        final Integer days = resetData.get("days_remaining").asInt();
-                        reset = new TwoFactorReset(true, days, false);
-                    }
-
-                    getSession().setTwoFAReset(reset);
-                }
                 break;
             }
             }
