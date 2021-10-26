@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+### Added
+
+### Changed
+
+### Fixed
+
+## [3.7.5] - 2021-10-27
 
 ### Added
 - Reset two factor authentication
@@ -18,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Refactor 2fa config handling
 - Enable liquid for singlesig wallets
 - Improved restored flow
-- Update GDK to version 0.0.46
+- Update GDK to version 0.0.46.post1
 
 ### Fixed
 - Update fastlane flags on debug mode
