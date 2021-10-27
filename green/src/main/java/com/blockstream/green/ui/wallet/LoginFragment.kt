@@ -262,11 +262,19 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
         val isV4Authentication = loginCredentials.keystore.isNullOrBlank()
 
+        if(isV4Authentication && appKeystore.isBiometricsAuthenticationRequired()){
+            authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    launchBiometricPrompt(loginCredentials)
+                }
+            })
+            return
+        }
+
         loginCredentials.encryptedData?.let { encryptedData ->
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.id_login_with_biometrics))
                 .setConfirmationRequired(true)
-
 
             if(isV4Authentication){
                 promptInfo
@@ -275,30 +283,18 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
             }else{
                 // V3 only needs user presence
                 // Valid combinations for each SDK
-                if(Build.VERSION.SDK_INT == Build.VERSION_CODES.R){
-                    // SDK 30
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
                     promptInfo.setAllowedAuthenticators(BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 } else {
                     promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
                 }
             }
 
-
             biometricPrompt = BiometricPrompt(
                 this,
                 ContextCompat.getMainExecutor(context),
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationError(
-                        errorCode: Int,
-                        errString: CharSequence
-                    ) {
-                        super.onAuthenticationError(errorCode, errString)
-                        handleBiometricsError(errorCode, errString)
-                    }
-
+                object : AuthenticationCallback(this) {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        super.onAuthenticationSucceeded(result)
-
                         if (isV4Authentication) {
                             result.cryptoObject?.cipher?.let {
                                 viewModel.loginWithBiometrics(it, loginCredentials)
@@ -317,11 +313,6 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
                                 errorDialog(e)
                             }
                         }
-
-                    }
-
-                    override fun onAuthenticationFailed() {
-                        super.onAuthenticationFailed()
                     }
                 })
             try {

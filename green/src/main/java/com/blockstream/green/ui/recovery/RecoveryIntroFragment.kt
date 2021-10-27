@@ -15,8 +15,8 @@ import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.ui.wallet.WalletViewModel
+import com.blockstream.green.utils.AuthenticationCallback
 import com.blockstream.green.utils.errorDialog
-import com.blockstream.green.utils.handleBiometricsError
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -87,8 +87,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
             .setTitle(getString(R.string.id_authenticate_to_view_the))
             .setConfirmationRequired(true)
 
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.R){
-            // SDK 30
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
             promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
         } else {
             promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
@@ -97,28 +96,21 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         biometricPrompt = BiometricPrompt(
             this,
             ContextCompat.getMainExecutor(context),
-            object : BiometricPrompt.AuthenticationCallback() {
+            object : AuthenticationCallback(this) {
                 override fun onAuthenticationError(
                     errorCode: Int,
                     errString: CharSequence
                 ) {
-                    super.onAuthenticationError(errorCode, errString)
-
                     if(errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL){
                         // User hasn't enabled any device credential,
                         navigateToWords()
                     }else{
-                        handleBiometricsError(errorCode, errString)
+                        super.onAuthenticationError(errorCode, errString)
                     }
                 }
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
                     navigateToWords()
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
                 }
             })
 
@@ -128,7 +120,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
         } catch (e: Exception) {
             errorDialog(e) {
                 // If an unsupported method is initiated, it's better to show the words rather than
-                // block the user to retrieve his words
+                // block the user from retrieving his words
                 navigateToWords()
             }
         }

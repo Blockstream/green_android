@@ -6,6 +6,7 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
+import android.security.keystore.UserNotAuthenticatedException
 import android.util.Base64
 import androidx.annotation.VisibleForTesting
 import kotlinx.serialization.Serializable
@@ -18,6 +19,19 @@ import javax.crypto.spec.IvParameterSpec
 class AppKeystore {
     private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
         load(null)
+    }
+
+    fun isBiometricsAuthenticationRequired(): Boolean {
+        try{
+            getEncryptionCipher(BIOMETRICS_KEYSTORE_ALIAS)
+        }catch (e: UserNotAuthenticatedException){
+            e.printStackTrace()
+            return true
+        }catch (e: Exception){
+            e.printStackTrace()
+        }
+
+        return false
     }
 
     private fun keyStoreKeyExists(keystoreAlias: String): Boolean {

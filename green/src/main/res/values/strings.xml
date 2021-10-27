@@ -985,4 +985,8 @@
   <string name="id_unstable_internet_connection">Unstable internet connection</string>
   <string name="id_invalid_spv">Invalid SPV proof</string>
   <string name="id_not_on_longest_chain">Not on longest chain</string>
+  <string name="id_biometrics_authentication">Biometrics Authentication</string>
+  <string name="id_you_have_to_authenticate_using_biometrics">You have to Authenticate using biometrics</string>
+  <string name="id_authentication_error">Authentication error: %s</string>
+  <string name="id_authentication_failed">Authentication failed</string>
 </resources>

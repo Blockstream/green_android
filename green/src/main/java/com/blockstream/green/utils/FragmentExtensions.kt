@@ -165,7 +165,7 @@ fun View.snackbar(resId: Int, duration: Int = Snackbar.LENGTH_SHORT) {
 }
 
 fun Fragment.share(text: String) {
-    val builder = ShareCompat.IntentBuilder.from(requireActivity())
+    val builder = ShareCompat.IntentBuilder(requireActivity())
         .setType("text/plain")
         .setText(text)
 
@@ -178,7 +178,7 @@ fun Fragment.share(text: String) {
 }
 
 fun Fragment.shareJPEG(uri: Uri) {
-    val builder = ShareCompat.IntentBuilder.from(requireActivity())
+    val builder = ShareCompat.IntentBuilder(requireActivity())
         .setType("image/jpg")
         .setStream(uri)
 
@@ -201,15 +201,3 @@ fun Fragment.showPopupMenu(
     popup.show()
 }
 
-fun Fragment.handleBiometricsError(errorCode: Int, errString: CharSequence) {
-    if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
-        // This is OK
-    } else {
-        // TODO INVALIDATE ALL BIOMETRIC LOGIN CREDENTIALS
-        Toast.makeText(
-            context,
-            "Authentication error: $errorCode $errString",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-}

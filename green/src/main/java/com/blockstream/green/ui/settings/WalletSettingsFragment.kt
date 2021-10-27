@@ -703,6 +703,16 @@ class WalletSettingsFragment :
     }
 
     private fun enableBiometrics(){
+
+        if(appKeystore.isBiometricsAuthenticationRequired()){
+            authenticateWithBiometrics(object : AuthenticationCallback(fragment = this) {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    enableBiometrics()
+                }
+            })
+            return
+        }
+
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(getString(R.string.id_login_with_biometrics))
             .setDescription(getString(R.string.id_green_uses_biometric))
@@ -713,24 +723,11 @@ class WalletSettingsFragment :
         val biometricPrompt = BiometricPrompt(
             this,
             ContextCompat.getMainExecutor(context),
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(
-                    errorCode: Int,
-                    errString: CharSequence
-                ) {
-                    super.onAuthenticationError(errorCode, errString)
-                    handleBiometricsError(errorCode, errString)
-                }
-
+            object : AuthenticationCallback(fragment = this) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    super.onAuthenticationSucceeded(result)
                     result.cryptoObject?.cipher?.let {
                         viewModel.enableBiometrics(it)
                     }
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
                 }
             })
 
