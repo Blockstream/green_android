@@ -25,7 +25,7 @@ class HWWConnectViewController: UIViewController {
     var peripheral: Peripheral!
 
     var networks: [AvailableNetworks] = {
-        if (UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible)) {
+        if UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) {
             return AvailableNetworks.allCases
         }
         return [AvailableNetworks.bitcoin, AvailableNetworks.liquid]

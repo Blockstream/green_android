@@ -90,6 +90,7 @@
 		3470F9F02600A8D7009B5E33 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9EF2600A8D7009B5E33 /* Bundle.swift */; };
 		3470F9F52600D1A3009B5E33 /* WalletCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3470F9F42600D1A3009B5E33 /* WalletCell.swift */; };
 		34767E0E269439F4005F938B /* SendBtcConfirmation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34767E0D269439F4005F938B /* SendBtcConfirmation.swift */; };
+		347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347C037B272838D500C2EEF6 /* ReceiveViewController.swift */; };
 		347FD0A225FF74BA00BB3FAB /* MnemonicCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */; };
 		347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 347FD0AC25FFA91700BB3FAB /* Home.storyboard */; };
 		347FD0B125FFA98300BB3FAB /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347FD0B025FFA98300BB3FAB /* HomeViewController.swift */; };
@@ -154,6 +155,9 @@
 		34D678B3261F062300DBC0BB /* WalletDrawerHDCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */; };
 		34DDD0A9260A486300020380 /* Shared.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 34DDD0A8260A486300020380 /* Shared.storyboard */; };
 		34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */; };
+		34DEF5212729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */; };
+		34DEF5232729969F008C38EA /* DialogReceiveRequestAmountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF5222729969F008C38EA /* DialogReceiveRequestAmountViewController.swift */; };
+		34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */; };
 		34F589FB260B5ED30088010A /* DialogWalletDeleteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */; };
 		34F58A47260B9BF20088010A /* PopoverMenuWalletViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */; };
 		34FC83A326EA66B10087EE8B /* OverviewAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FC83A226EA66B10087EE8B /* OverviewAssetCell.swift */; };
@@ -392,6 +396,7 @@
 		3470F9EF2600A8D7009B5E33 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		3470F9F42600D1A3009B5E33 /* WalletCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCell.swift; sourceTree = "<group>"; };
 		34767E0D269439F4005F938B /* SendBtcConfirmation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcConfirmation.swift; sourceTree = "<group>"; };
+		347C037B272838D500C2EEF6 /* ReceiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveViewController.swift; sourceTree = "<group>"; };
 		347FD0A125FF74BA00BB3FAB /* MnemonicCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicCell.swift; sourceTree = "<group>"; };
 		347FD0AC25FFA91700BB3FAB /* Home.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Home.storyboard; sourceTree = "<group>"; };
 		347FD0B025FFA98300BB3FAB /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
@@ -457,6 +462,9 @@
 		34D678B2261F062300DBC0BB /* WalletDrawerHDCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDrawerHDCell.swift; sourceTree = "<group>"; };
 		34DDD0A8260A486300020380 /* Shared.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Shared.storyboard; sourceTree = "<group>"; };
 		34DDD0AF260A491300020380 /* DialogWalletNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletNameViewController.swift; sourceTree = "<group>"; };
+		34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveMoreOptionsViewController.swift; sourceTree = "<group>"; };
+		34DEF5222729969F008C38EA /* DialogReceiveRequestAmountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveRequestAmountViewController.swift; sourceTree = "<group>"; };
+		34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogReceiveVerifyAddressViewController.swift; sourceTree = "<group>"; };
 		34F589FA260B5ED30088010A /* DialogWalletDeleteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDeleteViewController.swift; sourceTree = "<group>"; };
 		34F58A46260B9BF20088010A /* PopoverMenuWalletViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWalletViewController.swift; sourceTree = "<group>"; };
 		34FC83A226EA66B10087EE8B /* OverviewAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewAssetCell.swift; sourceTree = "<group>"; };
@@ -1006,6 +1014,9 @@
 				3498B9A4265D4025001B0290 /* DialogTorSingleSigViewController.swift */,
 				34386C8926F086BA00EBB6A6 /* DialogAccountIdViewController.swift */,
 				34C7AD07272143E700F437B5 /* DialogOTAViewController.swift */,
+				34DEF5202729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift */,
+				34DEF5222729969F008C38EA /* DialogReceiveRequestAmountViewController.swift */,
+				34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1274,6 +1285,7 @@
 				81FE672423EB1D22001B2E48 /* ContainerViewController.swift */,
 				3403BDAB2630282600118C64 /* Learn2faViewController.swift */,
 				34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */,
+				347C037B272838D500C2EEF6 /* ReceiveViewController.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -1755,6 +1767,7 @@
 				6DD813B722BDA4F2002DCC8B /* AssetDetailTableCell.swift in Sources */,
 				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
+				34DEF5212729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift in Sources */,
 				818EE78026A5C2ED008CD09E /* HWDevice.swift in Sources */,
 				81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,
@@ -1785,6 +1798,7 @@
 				347FD0BC25FFC0E100BB3FAB /* WalletHDCell.swift in Sources */,
 				093544D6212E844400134235 /* CurrencySelectorViewController.swift in Sources */,
 				81D671F726C81B0800682508 /* NotificationManager.swift in Sources */,
+				34DEF5232729969F008C38EA /* DialogReceiveRequestAmountViewController.swift in Sources */,
 				811B963E21F72B5200DE02CB /* AccountsFooterCollection.swift in Sources */,
 				34C9E10726B91F2500200D2F /* TwoFaCsvTimeCell.swift in Sources */,
 				816F0AF423E4713600569A5D /* UIViewController.swift in Sources */,
@@ -1814,6 +1828,7 @@
 				81D94CF121B93905003B03F9 /* Settings.swift in Sources */,
 				34C2464B26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift in Sources */,
 				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
+				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
 				3470F9F52600D1A3009B5E33 /* WalletCell.swift in Sources */,
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
 				81BF4E3122E9E9EA005A04C6 /* LedgerCommands.swift in Sources */,
@@ -1852,6 +1867,7 @@
 				81E9B80021C92DB1004D87B6 /* AccountCardView.swift in Sources */,
 				81310C452189D10F00563B91 /* TwoFactorCall.swift in Sources */,
 				81A062D0245322B0003464A0 /* HWResolver.swift in Sources */,
+				347C037C272838D500C2EEF6 /* ReceiveViewController.swift in Sources */,
 				34386C8A26F086BA00EBB6A6 /* DialogAccountIdViewController.swift in Sources */,
 				81BF4E3022E9E9EA005A04C6 /* LedgerChannel.swift in Sources */,
 				81923A35228089BE0097BEA8 /* AssetTableCell.swift in Sources */,
