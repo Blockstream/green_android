@@ -142,6 +142,7 @@ class ReceiveViewController: UIViewController {
         }.done { address in
             UIPasteboard.general.string = self.uriBitcoin(address: address)
             DropAlert().info(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 1.0)
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         }.catch { _ in }
     }
 
