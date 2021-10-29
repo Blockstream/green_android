@@ -350,13 +350,14 @@ class BLEManager {
         }
 
         // dummy 1st connection for jade
-        enstablishDispose = peripheral.establishConnection().subscribe()
-        _ = manager.observeConnect(for: peripheral).take(1)
+        enstablishDispose = peripheral.establishConnection()
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .compactMap { _ in sleep(2) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.delegate?.onPrepare(peripheral)
+            }, onError: { err in
+                self.onError(err, network: nil)
         })
     }
 
