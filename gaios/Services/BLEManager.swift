@@ -94,8 +94,11 @@ class BLEManager {
         return manager.scanForPeripherals(withServices: [JadeChannel.SERVICE_UUID, LedgerChannel.SERVICE_UUID])
             .filter { self.isJade($0.peripheral) || self.isLedger($0.peripheral) }
             .subscribe(onNext: { p in
-                self.peripherals.removeAll { $0.advertisementData.localName == p.advertisementData.localName }
-                self.peripherals.append(p)
+                if let row = self.peripherals.firstIndex(where: { $0.advertisementData.localName == p.advertisementData.localName }) {
+                    self.peripherals[row] = p
+                } else {
+                    self.peripherals += [p]
+                }
                 self.scanDelegate?.didUpdatePeripherals(self.peripherals)
             }, onError: { error in
                 let err = BLEManagerError.scanErr(txt: error.localizedDescription)
