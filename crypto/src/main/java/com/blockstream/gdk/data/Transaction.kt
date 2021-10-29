@@ -3,8 +3,7 @@ package com.blockstream.gdk.data
 
 import android.os.Parcelable
 import com.blockstream.gdk.BalancePair
-import com.blockstream.gdk.serializers.DateAsLongSerializer
-import com.blockstream.gdk.serializers.DateAsStringSerializer
+import com.blockstream.gdk.serializers.DateAsMicrosecondsSerializer
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -18,7 +17,7 @@ data class Transaction(
     @SerialName("can_cpfp") val canCPFP: Boolean,
     @SerialName("can_rbf") val canRBF: Boolean,
 
-    @Serializable(with = DateAsLongSerializer::class)
+    @Serializable(with = DateAsMicrosecondsSerializer::class)
     @SerialName("created_at_ts") val createdAt: Date,
 
     @SerialName("inputs") val inputs: List<InputOutput>,
