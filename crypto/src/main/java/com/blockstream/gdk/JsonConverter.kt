@@ -1,6 +1,9 @@
 package com.blockstream.gdk
 
 import com.blockstream.libgreenaddress.GDK
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import mu.KLogging
 
 interface Logger{
@@ -9,6 +12,8 @@ interface Logger{
 
 class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean, private val extraLogger: Logger? = null) : GDK.JSONConverter {
     private val maskFields = listOf("pin", "mnemonic", "password", "recovery_mnemonic")
+
+    private val jsonSerializer by lazy { Json {  } }
 
     override fun toJSONObject(jsonString: String?): Any? {
         if (log) {
@@ -24,13 +29,18 @@ class JsonConverter(val log: Boolean, val maskSensitiveFields: Boolean, private 
         return null
     }
 
-    override fun toJSONString(gaJson: Any?): String = gaJson.toString().also {
-        if (log) {
-            "▼ ${mask(it)}".let {
-                logger.info { it }
-                extraLogger?.log(it)
+    override fun toJSONString(any: Any?): String {
+        return if(any is JsonElement){
+            jsonSerializer.encodeToString(any)
+        }else{
+            any.toString()
+        }.also {
+            if (log) {
+                "▼ ${mask(it)}".let {
+                    logger.info { it }
+                    extraLogger?.log(it)
+                }
             }
-
         }
     }
 

@@ -9,7 +9,7 @@ import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.expandable.items.AbstractExpandableItem
 
 
-class NetworkListItem(val network: String, val networkName: String, val caption : String) : AbstractExpandableItem<NetworkListItem.ViewHolder>(){
+class NetworkListItem constructor(val network: String, val networkName: String, val caption : String) : AbstractExpandableItem<NetworkListItem.ViewHolder>(){
     override val type: Int
         get() = R.id.fastadapter_network_item_id
 

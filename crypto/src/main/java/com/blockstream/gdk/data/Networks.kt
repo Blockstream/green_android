@@ -1,5 +1,8 @@
 package com.blockstream.gdk.data
 
+import com.blockstream.gdk.GAJson
+import com.blockstream.gdk.GreenWallet
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
@@ -7,8 +10,10 @@ import kotlinx.serialization.json.*
 
 @Serializable
 data class Networks(
-    @SerialName("networks") val networks: Map<String, Network>,
-) {
+    @SerialName("networks") val networks: MutableMap<String, Network>
+) : GAJson<Networks>() {
+
+    override val keepJsonElement = true
 
     val bitcoinGreen by lazy { getNetworkById(Network.GreenMainnet) }
     val liquidGreen by lazy { getNetworkById(Network.GreenLiquid) }
@@ -22,11 +27,26 @@ data class Networks(
 
     val hardwareSupportedNetworks by lazy { listOf(bitcoinGreen, liquidGreen, testnetGreen) }
 
+    val customNetwork: Network?
+        get() = getNetworkByIdOrNull(CustomNetworkId)
+
     fun getNetworkById(id: String): Network {
         return networks[id] ?: throw Exception("Network '$id' is not available in the current build of GDK")
     }
 
+    private fun getNetworkByIdOrNull(id: String): Network? {
+        return networks[id]
+    }
+
+    fun getNetworkAsJsonElement(id: String): JsonElement? = jsonElement?.jsonObject?.get("networks")?.jsonObject?.get(id)
+
+    fun setCustomNetwork(network: Network) {
+        networks[network.id] = network
+    }
+
     companion object {
+        val CustomNetworkId = "custom-network"
+
         /**
         Transform the gdk json to a more appropriate format
          */
@@ -49,14 +69,22 @@ data class Networks(
                 }
             }
 
-            return json.decodeFromJsonElement(buildJsonObject {
+            return buildJsonObject {
                 putJsonObject("networks") {
                     for(k in networks){
                         put(k.key, k.value)
                     }
                 }
-            })
+            }.let { jsonObject ->
+                json.decodeFromJsonElement<Networks>(jsonObject).apply {
+                    if(keepJsonElement) {
+                        jsonElement = jsonObject
+                    }
+                }
+            }
         }
 
     }
+
+    override fun kSerializer(): KSerializer<Networks> = serializer()
 }

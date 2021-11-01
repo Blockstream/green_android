@@ -88,6 +88,16 @@ class ChooseNetworkFragment :
                 )
             )
 
+            greenWallet.networks.customNetwork?.let {
+                expandable.subItems.add(
+                    NetworkListItem(
+                        it.id,
+                        it.name,
+                        "Force usage of custom network. Multisig/Singlesig selection is irrelevant."
+                    )
+                )
+            }
+
             fastItemAdapter.add(expandable)
         }
 

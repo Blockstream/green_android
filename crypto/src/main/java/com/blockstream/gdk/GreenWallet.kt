@@ -1,5 +1,6 @@
 package com.blockstream.gdk
 
+import android.content.SharedPreferences
 import com.blockstream.crypto.BuildConfig
 import com.blockstream.gdk.data.*
 import com.blockstream.gdk.params.*
@@ -8,9 +9,10 @@ import com.blockstream.libgreenaddress.GASession
 import com.blockstream.libgreenaddress.GDK
 import com.blockstream.libgreenaddress.KotlinGDK
 import com.blockstream.libwally.KotlinWally
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
+import java.lang.Exception
 import java.security.SecureRandom
-import java.util.*
 import kotlin.collections.LinkedHashMap
 import kotlin.random.asKotlinRandom
 
@@ -23,6 +25,7 @@ val BalanceLoading = BalancePair("", -1)
 class GreenWallet constructor(
     val gdk: KotlinGDK,
     private val wally: KotlinWally,
+    private val sharedPreferences: SharedPreferences,
     dataDir: String,
     developmentFlavor: Boolean,
     val extraLogger: Logger? = null
@@ -33,6 +36,17 @@ class GreenWallet constructor(
     init {
         gdk.init(JsonConverter(developmentFlavor, !BuildConfig.DEBUG, extraLogger), InitConfig(dataDir))
         wally.init(0, randomBytes(KotlinWally.WALLY_SECP_RANDOMIZE_LEN))
+
+        sharedPreferences.getString(KEY_CUSTOM_NETWORK, null)?.let {
+            try{
+                val jsonElement = JsonDeserializer.parseToJsonElement(it)
+                val network = JsonDeserializer.decodeFromJsonElement<Network>(jsonElement)
+                gdk.registerNetwork(network.id, jsonElement)
+                networks.setCustomNetwork(network)
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun randomBytes(len: Int): ByteArray {
@@ -60,6 +74,29 @@ class GreenWallet constructor(
 
     fun generateMnemonic12(): String = gdk.generateMnemonic12()
     fun generateMnemonic24(): String = gdk.generateMnemonic24()
+
+    fun registerCustomNetwork(originNetworkId: String, hostname: String){
+        networks.getNetworkAsJsonElement(originNetworkId)?.jsonObject?.let { obj ->
+            buildJsonObject {
+                // Copy all fields
+                for(k in obj){
+                    put(k.key, k.value)
+                }
+                // Replace values
+                put("id", Networks.CustomNetworkId)
+                put("network", Networks.CustomNetworkId)
+                put("wamp_url", "ws://$hostname/v2/ws") // for multisig
+                put("electrum_url", "$hostname") // for singlesig electrum
+            }.also { jsonElement ->
+                val network = JsonDeserializer.decodeFromJsonElement<Network>(jsonElement)
+                gdk.registerNetwork(network.id, jsonElement)
+                networks.setCustomNetwork(network)
+                sharedPreferences.edit().also {
+                    it.putString(KEY_CUSTOM_NETWORK, jsonElement.toString())
+                }.apply()
+            }
+        }
+    }
 
     fun createSession() = gdk.createSession()
 
@@ -230,5 +267,7 @@ class GreenWallet constructor(
         }
 
         const val BIP39_WORD_LIST_LANG = "en"
+
+        const val KEY_CUSTOM_NETWORK = "custom_network"
     }
 }

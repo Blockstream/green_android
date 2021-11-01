@@ -28,8 +28,10 @@ data class OnboardingOptions(
             Network.GreenTestnetLiquid -> {
                 if (isElectrum) Network.ElectrumTestnetLiquid else Network.GreenTestnetLiquid
             }
-            else -> {
+            Network.GreenTestnet -> {
                 if (isElectrum) Network.ElectrumTestnet else Network.GreenTestnet
+            }else -> {
+                networkType
             }
         }
 

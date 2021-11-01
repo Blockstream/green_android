@@ -5,8 +5,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.preference.PreferenceManager
 
-class SettingsManager(context: Context) {
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+class SettingsManager constructor(context: Context, private val sharedPreferences: SharedPreferences) {
 
     private var appSettingsSharedPreferences: SharedPreferences =
         context.getSharedPreferences(APPLICATION_SETTINGS_NAME, Context.MODE_PRIVATE)

@@ -1,6 +1,7 @@
 package com.blockstream.libgreenaddress
 
 import com.blockstream.gdk.GAJson
+import com.blockstream.gdk.data.Network
 import com.blockstream.gdk.data.Settings
 import com.blockstream.gdk.data.TwoFactorMethodConfig
 import com.blockstream.gdk.params.*
@@ -116,6 +117,8 @@ class KotlinGDK {
     fun convertAmount(session: GASession, convert: Convert) = GDK.convert_amount(session, convert)
 
     fun getNetworks() = GDK.get_networks()
+
+    fun registerNetwork(id: String, network: JsonElement) = GDK.register_network(id, network)
 
     fun getFeeEstimates(session: GASession) = GDK.get_fee_estimates(session)
 

@@ -190,27 +190,49 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
         val fastItemAdapter = FastItemAdapter<GenericItem>()
         fastItemAdapter.getExpandableExtension()
 
-        fastItemAdapter.add(NetworkListItem(Network.GreenMainnet, greenWallet.networks.bitcoinGreen.productName, ""))
-        if(device?.supportsLiquid == true){
-            fastItemAdapter.add(NetworkListItem(Network.GreenLiquid, greenWallet.networks.liquidGreen.productName, ""))
-        }
+        // Listen for app settings changes to enable/disable testnet networks
+        settingsManager.getApplicationSettingsLiveData().observe(viewLifecycleOwner) { applicationSettings ->
+            fastItemAdapter.clear()
 
-        val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
-        expandable.subItems.add(NetworkListItem(Network.GreenTestnet, greenWallet.networks.testnetGreen.productName, ""))
+            fastItemAdapter.add(NetworkListItem(Network.GreenMainnet, greenWallet.networks.bitcoinGreen.productName, ""))
+            if(device?.supportsLiquid == true){
+                fastItemAdapter.add(NetworkListItem(Network.GreenLiquid, greenWallet.networks.liquidGreen.productName, ""))
+            }
 
-        if (isDevelopmentFlavor()) {
-            if(device?.supportsLiquid == true) {
+            if(applicationSettings.testnet) {
+                val expandable = TitleExpandableListItem(StringHolder(R.string.id_additional_networks))
+
                 expandable.subItems.add(
                     NetworkListItem(
-                        Network.GreenTestnetLiquid,
-                        greenWallet.networks.testnetLiquidGreen.productName,
+                        Network.GreenTestnet,
+                        greenWallet.networks.testnetGreen.productName,
                         ""
                     )
                 )
+
+                if (device?.supportsLiquid == true) {
+                    expandable.subItems.add(
+                        NetworkListItem(
+                            Network.GreenTestnetLiquid,
+                            greenWallet.networks.testnetLiquidGreen.productName,
+                            ""
+                        )
+                    )
+                }
+
+                greenWallet.networks.customNetwork?.let {
+                    expandable.subItems.add(
+                        NetworkListItem(
+                            it.id,
+                            it.name,
+                            "Force usage of custom network. Multisig/Singlesig selection is irrelevant."
+                        )
+                    )
+                }
+
+                fastItemAdapter.add(expandable)
             }
         }
-
-        fastItemAdapter.add(expandable)
 
         return fastItemAdapter
     }

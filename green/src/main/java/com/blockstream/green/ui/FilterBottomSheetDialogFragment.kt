@@ -33,7 +33,8 @@ class FilterBottomSheetDialogFragment: BottomSheetDialogFragment(){
         params.height = resources.displayMetrics.heightPixels
         binding.linear.layoutParams = params
 
-        val parent = (parentFragment as FilterableDataProvider)
+        // QATesterActivity is the only activity that uses it without Fragment
+        val parent = (parentFragment ?: activity) as FilterableDataProvider
 
         val modelAdapter = parent.getModelAdapter()
 

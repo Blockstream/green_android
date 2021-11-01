@@ -60,6 +60,7 @@ class GreenModules {
         @ApplicationContext context: Context,
         gdk: KotlinGDK,
         wally: KotlinWally,
+        sharedPreferences: SharedPreferences,
         beagle: Beagle
     ): GreenWallet {
         var logger : Logger? = null
@@ -71,7 +72,14 @@ class GreenModules {
                 }
             }
         }
-        return GreenWallet(gdk, wally, context.filesDir.absolutePath, context.isDevelopmentFlavor(), logger)
+        return GreenWallet(
+            gdk = gdk,
+            wally = wally,
+            sharedPreferences = sharedPreferences,
+            dataDir = context.filesDir.absolutePath,
+            developmentFlavor = context.isDevelopmentFlavor(),
+            extraLogger = logger
+        )
     }
 
     @Singleton
@@ -93,8 +101,8 @@ class GreenModules {
 
     @Singleton
     @Provides
-    fun provideSettingsManager(@ApplicationContext context: Context): SettingsManager {
-        return SettingsManager(context)
+    fun provideSettingsManager(@ApplicationContext context: Context, sharedPreferences: SharedPreferences): SettingsManager {
+        return SettingsManager(context, sharedPreferences)
     }
 
     @Singleton
