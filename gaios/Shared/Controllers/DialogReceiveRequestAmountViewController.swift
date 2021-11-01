@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol DialogReceiveRequestAmountViewControllerDelegate: AnyObject {
-    func didConfirm(_ amount: String)
+    func didConfirm(satoshi: UInt64)
     func didCancel()
 }
 
@@ -30,6 +30,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
 
     var buttonConstraint: NSLayoutConstraint?
     var isAccountRename = false
+    var selectedType = TransactionType.BTC
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +38,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         setContent()
         setStyle()
         view.alpha = 0.0
-
-        updateUI()
+        amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
     }
 
     func setContent() {
@@ -58,6 +58,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         amountTextField.setRightPaddingPoints(10.0)
         cardView.layer.cornerRadius = 20
         cardView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        btnFiat.layer.cornerRadius = 4.0
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -68,8 +69,50 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         amountTextField.becomeFirstResponder()
     }
 
-    func updateUI() {
-        amountTextField.text?.count ?? 0 > 2 ? btnConfirm.setStyle(.primary) : btnConfirm.setStyle(.primaryDisabled)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reload()
+    }
+
+    func reload() {
+        let satoshi = self.getSatoshi() ?? 0
+        satoshi > 0 ? btnConfirm.setStyle(.primary) : btnConfirm.setStyle(.primaryDisabled)
+        setButton()
+        updateEstimate()
+    }
+
+    func updateEstimate() {
+        let satoshi = getSatoshi() ?? 0
+        let tag = selectedType == TransactionType.BTC ? "fiat": "btc"
+        if let (amount, denom) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: tag) {
+            lblHint.text = "≈ \(amount ?? "N.A.") \(denom)"
+        }
+    }
+
+    func setButton() {
+        guard let settings = SessionManager.shared.settings else {
+            return
+        }
+        if selectedType == TransactionType.BTC {
+            btnFiat.setTitle(settings.denomination.string, for: UIControl.State.normal)
+            btnFiat.backgroundColor = UIColor.customMatrixGreen()
+            btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)
+        } else {
+            let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
+            btnFiat.setTitle(isMainnet ? settings.getCurrency() : "FIAT", for: UIControl.State.normal)
+            btnFiat.backgroundColor = UIColor.clear
+            btnFiat.setTitleColor(UIColor.white, for: UIControl.State.normal)
+        }
+    }
+
+    func getSatoshi() -> UInt64? {
+        var amountText = amountTextField.text!
+        amountText = amountText.isEmpty ? "0" : amountText
+        amountText = amountText.unlocaleFormattedString(8)
+        guard let number = Double(amountText), number > 0 else { return nil }
+        let denomination = SessionManager.shared.settings!.denomination
+        let key = selectedType == TransactionType.BTC ? denomination.rawValue : "fiat"
+        return Balance.convert(details: [key: amountText])?.satoshi
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -98,21 +141,37 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
             case .cancel:
                 self.delegate?.didCancel()
             case .confirm:
-                self.delegate?.didConfirm(self.amountTextField.text ?? "")
+                self.delegate?.didConfirm(satoshi: self.getSatoshi() ?? 0)
             }
         })
     }
 
     @IBAction func amountDidChange(_ sender: Any) {
-        updateUI()
+        reload()
     }
 
     @IBAction func btnFiat(_ sender: Any) {
-        print("to do")
+        let satoshi = getSatoshi() ?? 0
+        let balance = Balance.convert(details: ["satoshi": satoshi])
+        if let (amount, _) = balance?.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc") {
+            if amount == nil {
+                showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
+                return
+            }
+        }
+        if selectedType == TransactionType.BTC {
+            selectedType = TransactionType.FIAT
+        } else {
+            selectedType = TransactionType.BTC
+        }
+        let tag = selectedType == TransactionType.BTC ? "btc" : "fiat"
+        amountTextField.text = String(format: "%@", balance?.get(tag: tag).0 ?? "")
+        reload()
     }
 
     @IBAction func btnClear(_ sender: Any) {
-        self.amountTextField.text = ""
+        amountTextField.text = ""
+        reload()
     }
 
     @IBAction func btnConfirm(_ sender: Any) {

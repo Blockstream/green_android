@@ -260,11 +260,6 @@ extension ReceiveBtcViewController: UIViewControllerTransitioningDelegate {
     }
 }
 
-public enum TransactionType: UInt32 {
-    case BTC = 0
-    case FIAT = 1
-}
-
 @IBDesignable
 class ReceiveBtcView: UIView {
     @IBOutlet weak var walletAddressLabel: UILabel!

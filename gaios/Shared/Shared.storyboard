@@ -1155,15 +1155,15 @@
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Request Amount" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="twS-sB-Y72">
-                                                        <rect key="frame" x="36" y="92" width="272" height="48"/>
+                                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Request Amount" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="twS-sB-Y72">
+                                                        <rect key="frame" x="36" y="92" width="279" height="48"/>
                                                         <color key="backgroundColor" name="customTextFieldBg"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="48" id="zZl-HA-hHI"/>
                                                         </constraints>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                        <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardAppearance="alert" enablesReturnKeyAutomatically="YES" textContentType="username"/>
+                                                        <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="decimalPad" keyboardAppearance="alert" enablesReturnKeyAutomatically="YES"/>
                                                         <connections>
                                                             <action selector="amountDidChange:" destination="tvv-eQ-egD" eventType="editingChanged" id="kdF-vB-W8x"/>
                                                         </connections>
@@ -1219,10 +1219,9 @@
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rFh-D8-kYz">
-                                                        <rect key="frame" x="318" y="100" width="60" height="32"/>
+                                                        <rect key="frame" x="325" y="100" width="53" height="32"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="32" id="Gyx-u3-eTS"/>
-                                                            <constraint firstAttribute="width" constant="60" id="gHl-yf-0ck"/>
                                                         </constraints>
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <state key="normal" title="Button"/>

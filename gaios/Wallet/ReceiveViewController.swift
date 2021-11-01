@@ -2,6 +2,11 @@ import Foundation
 import UIKit
 import PromiseKit
 
+public enum TransactionType: UInt32 {
+    case BTC = 0
+    case FIAT = 1
+}
+
 class ReceiveViewController: UIViewController {
 
     @IBOutlet weak var cardQRCode: UIView!
@@ -20,36 +25,20 @@ class ReceiveViewController: UIViewController {
 
     private var newAddressToken: NSObjectProtocol?
     private var account = AccountsManager.shared.current
+    var satoshi: UInt64?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setContent()
         setStyle()
-
         cardVerifyAddress.isHidden = !(self.account?.isHW == true && self.account?.isLedger == false)
-//        content.amountTextfield.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2),
-//                                                             attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
-//
-//        content.walletQRCode.isUserInteractionEnabled = true
-//        content.walletAddressLabel.isUserInteractionEnabled = true
-
-//        content.amountLabel.text = NSLocalizedString("id_amount", comment: "")
-//
-//        let isLiquid = account?.gdkNetwork?.liquid ?? false
-//        content.amountView.isHidden = isLiquid
-//
-//        content.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveBtcScreen.view
-//        content.walletQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveBtcScreen.qrCodeView
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         newAddressToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.AddressChanged.rawValue), object: nil, queue: .main, using: newAddress)
-//        content.amountTextfield.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-//        content.fiatSwitchButton.addTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
         refreshClick(nil)
-//        updateEstimate()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -57,12 +46,6 @@ class ReceiveViewController: UIViewController {
         if let token = newAddressToken {
             NotificationCenter.default.removeObserver(token)
         }
-//        guard gestureTap != nil else { return }
-
-//        content.walletAddressLabel.removeGestureRecognizer(gestureTap!)
-//        content.walletAddressLabel.removeGestureRecognizer(gestureTapAccountId!)
-//        content.amountTextfield.removeTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-//        content.fiatSwitchButton.removeTarget(self, action: #selector(fiatSwitchButtonClick(_:)), for: .touchUpInside)
     }
 
     func setContent() {
@@ -130,8 +113,6 @@ class ReceiveViewController: UIViewController {
 
     func reload() {
         updateQRCode()
-//        setButton()
-//        updateEstimate()
     }
 
     @objc func copyToClipboard(_ sender: Any) {
@@ -162,26 +143,8 @@ class ReceiveViewController: UIViewController {
     }
 
     func uriBitcoin(address: String) -> String {
-        let satoshi = self.getSatoshi() ?? 0
-        let isLiquid = AccountsManager.shared.current?.gdkNetwork?.liquid ?? false
-        if isLiquid || satoshi == 0 {
-            return address
-        }
-        return String(format: "bitcoin:%@?amount=%.8f", address, getBTC() ?? 0)
-    }
-
-    func getSatoshi() -> UInt64? {
-        var amountText = "0"
-        amountText = amountText.unlocaleFormattedString(8)
-        guard let number = Double(amountText), number > 0 else { return nil }
-        let denomination = SessionManager.shared.settings!.denomination
-        let key = selectedType == TransactionType.BTC ? denomination.rawValue : "fiat"
-        return Balance.convert(details: [key: amountText])?.satoshi
-    }
-
-    func getBTC() -> Double? {
-        guard let satoshi = getSatoshi() else { return nil }
-        return Double(satoshi) / 100000000
+        guard let satoshi = satoshi else { return address }
+        return satoshi == 0 ? address: String(format: "bitcoin:%@?amount=%.8f", address, Double(satoshi) / 100000000)
     }
 
     @IBAction func btnShare(_ sender: Any) {
@@ -225,73 +188,7 @@ class ReceiveViewController: UIViewController {
     @IBAction func copyAction(_ sender: Any) {
         copyToClipboard(sender)
     }
-
-//    @objc func fiatSwitchButtonClick(_ sender: Any) {
-//        let satoshi = getSatoshi() ?? 0
-//        let balance = Balance.convert(details: ["satoshi": satoshi])
-//        if let (amount, _) = balance?.get(tag: selectedType == TransactionType.BTC ? "fiat": "btc") {
-//            if amount == nil {
-//                showError(NSLocalizedString("id_your_favourite_exchange_rate_is", comment: ""))
-//                return
-//            }
-//        }
-//        if selectedType == TransactionType.BTC {
-//            selectedType = TransactionType.FIAT
-//        } else {
-//            selectedType = TransactionType.BTC
-//        }
-//        let tag = selectedType == TransactionType.BTC ? "btc" : "fiat"
-//        content.amountTextfield.text = String(format: "%@", balance?.get(tag: tag).0 ?? "")
-//        reload()
-//    }
-//
-//    func setButton() {
-//        guard let settings = SessionManager.shared.settings else {
-//            return
-//        }
-//        if selectedType == TransactionType.BTC {
-//            content.fiatSwitchButton.setTitle(settings.denomination.string, for: UIControl.State.normal)
-//            content.fiatSwitchButton.backgroundColor = UIColor.customMatrixGreen()
-//            content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControl.State.normal)
-//        } else {
-//            let isMainnet = AccountsManager.shared.current?.gdkNetwork?.mainnet ?? true
-//            content.fiatSwitchButton.setTitle(isMainnet ? settings.getCurrency() : "FIAT", for: UIControl.State.normal)
-//            content.fiatSwitchButton.backgroundColor = UIColor.clear
-//            content.fiatSwitchButton.setTitleColor(UIColor.white, for: UIControl.State.normal)
-//        }
-//    }
-//
-//    func updateEstimate() {
-//        let satoshi = getSatoshi() ?? 0
-//        let tag = selectedType == TransactionType.BTC ? "fiat": "btc"
-//        if let (amount, denom) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: tag) {
-//            content.estimateLabel.text = "≈ \(amount ?? "N.A.") \(denom)"
-//        }
-//    }
-
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if let next = segue.destination as? AccountInfoViewController {
-//            next.transitioningDelegate = self
-//            next.modalPresentationStyle = .custom
-//            next.accountInfoType = .accountID
-//        }
-//    }
 }
-
-//extension ReceiveBtcViewController: UIViewControllerTransitioningDelegate {
-//    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-//        return ModalPresentationController(presentedViewController: presented, presenting: presenting)
-//    }
-//
-//    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-//        ModalAnimator(isPresenting: true)
-//    }
-//}
-//
-//public enum TransactionType: UInt32 {
-//    case BTC = 0
-//    case FIAT = 1
-//}
 
 extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate {
     func didSelect(_ action: ReceiveOptionAction) {
@@ -300,7 +197,7 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
             let storyboard = UIStoryboard(name: "Shared", bundle: nil)
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveRequestAmountViewController") as? DialogReceiveRequestAmountViewController {
                 vc.modalPresentationStyle = .overFullScreen
-//                vc.delegate = self
+                vc.delegate = self
                 present(vc, animated: false, completion: nil)
             }
         case .sweep:
@@ -312,8 +209,9 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
 }
 
 extension ReceiveViewController: DialogReceiveRequestAmountViewControllerDelegate {
-    func didConfirm(_ amount: String) {
-        print(amount)
+    func didConfirm(satoshi: UInt64) {
+        self.satoshi = satoshi
+        updateQRCode()
     }
 
     func didCancel() {
