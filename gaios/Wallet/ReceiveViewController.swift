@@ -201,7 +201,13 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
                 present(vc, animated: false, completion: nil)
             }
         case .sweep:
-            break
+            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountsViewController") as? AccountsViewController {
+                vc.isSweep = true
+                navigationController?.pushViewController(viewController: vc, animated: true, completion: {
+                    self.navigationController?.viewControllers.remove(at: 1)
+                })
+            }
         case .cancel:
             break
         }
