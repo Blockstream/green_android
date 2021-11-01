@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import PromiseKit
+import LinkPresentation
 
 public enum TransactionType: UInt32 {
     case BTC = 0
@@ -148,19 +149,12 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func btnShare(_ sender: Any) {
-        guard let wallet = self.wallet else { return }
-        let bgq = DispatchQueue.global(qos: .background)
-        Guarantee().then(on: bgq) {
-            return wallet.getAddress()
-        }.done { address in
-            if address.isEmpty {
-                throw GaError.GenericError
-            }
-            let uri = self.uriBitcoin(address: address)
-            let activityViewController = UIActivityViewController(activityItems: [uri], applicationActivities: nil)
-            activityViewController.popoverPresentationController?.sourceView = self.view
-            self.present(activityViewController, animated: true, completion: nil)
-        }.catch { _ in }
+        let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveShareTypeViewController") as? DialogReceiveShareTypeViewController {
+            vc.modalPresentationStyle = .overFullScreen
+            vc.delegate = self
+            present(vc, animated: false, completion: nil)
+        }
     }
 
     @IBAction func btnOptions(_ sender: Any) {
@@ -222,5 +216,51 @@ extension ReceiveViewController: DialogReceiveRequestAmountViewControllerDelegat
 
     func didCancel() {
         //
+    }
+}
+
+extension ReceiveViewController: UIActivityItemSource {
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        return ""
+    }
+
+    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        return nil
+    }
+
+    @available(iOS 13.0, *)
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let image = (btnQRCode.imageView?.image)!
+        let imageProvider = NSItemProvider(object: image)
+        let metadata = LPLinkMetadata()
+        metadata.imageProvider = imageProvider
+        return metadata
+    }
+}
+
+extension ReceiveViewController: DialogReceiveShareTypeViewControllerDelegate {
+    func didSelect(_ option: ReceiveShareOption) {
+
+        if option == .cancel { return }
+        guard let wallet = self.wallet else { return }
+
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().then(on: bgq) {
+            return wallet.getAddress()
+        }.done { address in
+            if address.isEmpty {
+                throw GaError.GenericError
+            }
+            if option == .address {
+                let uri = self.uriBitcoin(address: address)
+            let activityViewController = UIActivityViewController(activityItems: [uri], applicationActivities: nil)
+            activityViewController.popoverPresentationController?.sourceView = self.view
+            self.present(activityViewController, animated: true, completion: nil)
+            } else if option == .qr {
+                let image = (self.btnQRCode.imageView?.image)!
+                let share = UIActivityViewController(activityItems: [image, self], applicationActivities: nil)
+                self.present(share, animated: true, completion: nil)
+            }
+        }.catch { _ in }
     }
 }
