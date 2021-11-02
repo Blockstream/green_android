@@ -27,6 +27,7 @@ class ReceiveViewController: UIViewController {
     private var newAddressToken: NSObjectProtocol?
     private var account = AccountsManager.shared.current
     var satoshi: UInt64?
+    var address: Address?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,28 +73,25 @@ class ReceiveViewController: UIViewController {
             return
         }
         Address.generate(with: wallet!)
-            .done { addr in
-                self.wallet?.receiveAddress = addr.address
-                self.reload()
-                if self.account?.isHW ?? false {
-                    if self.account?.isLedger ?? false {
-                        //Ledger does not suport address validation
-                    } else {
-                        self.validate(addr: addr)
-                    }
-                }
+            .done { [weak self] addr in
+                self?.address = addr
+                self?.wallet?.receiveAddress = addr.address
+                self?.reload()
             }.catch { _ in
                 DropAlert().error(message: NSLocalizedString("id_connection_failed", comment: ""))
             }
     }
 
-    func validate(addr: Address) {
+    func validate() {
+        guard let addr = self.address else { return }
         let hw: HWProtocol = account?.isLedger ?? false ? Ledger.shared : Jade.shared
         firstly {
             DropAlert().info(message: NSLocalizedString("id_please_verify_that_the_address", comment: ""))
             return Guarantee()
         }.then {
             Address.validate(with: self.wallet!, hw: hw, addr: addr, network: AccountsManager.shared.current!.network)
+        }.ensure {
+            self.presentedViewController?.dismiss(animated: true, completion: nil)
         }.done { addr in
             if self.wallet?.receiveAddress == addr {
                 DropAlert().success(message: NSLocalizedString("id_the_address_is_valid", comment: ""))
@@ -168,6 +166,7 @@ class ReceiveViewController: UIViewController {
     }
 
     @IBAction func btnVerify(_ sender: Any) {
+        validate()
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveVerifyAddressViewController") as? DialogReceiveVerifyAddressViewController {
             vc.modalPresentationStyle = .overFullScreen
