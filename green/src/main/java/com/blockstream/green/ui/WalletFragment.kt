@@ -127,7 +127,13 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
 
     abstract fun getWalletViewModel(): AbstractWalletViewModel
 
-    override fun getAppViewModel() : AppViewModel? = getWalletViewModel()
+    override fun getAppViewModel() : AppViewModel? {
+        // Prevent initializing WalletViewModel if session is not initialized
+        if(isSessionAndWalletRequired() && isLoggedInRequired() && !session.isInitialized) {
+            return null
+        }
+        return getWalletViewModel()
+    }
 
     override fun onResume() {
         super.onResume()
