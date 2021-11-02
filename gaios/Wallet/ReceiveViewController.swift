@@ -35,6 +35,11 @@ class ReceiveViewController: UIViewController {
         setContent()
         setStyle()
         cardVerifyAddress.isHidden = !(self.account?.isHW == true && self.account?.isLedger == false)
+
+        let helpBtn = UIButton(type: .system)
+        helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
+        helpBtn.addTarget(self, action: #selector(helpBtnTap), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpBtn)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -144,6 +149,10 @@ class ReceiveViewController: UIViewController {
     func uriBitcoin(address: String) -> String {
         guard let satoshi = satoshi else { return address }
         return satoshi == 0 ? address: String(format: "bitcoin:%@?amount=%.8f", address, Double(satoshi) / 100000000)
+    }
+
+    @objc func helpBtnTap() {
+        UIApplication.shared.open(ExternalUrls.receiveTransactionHelp, options: [:], completionHandler: nil)
     }
 
     @IBAction func btnShare(_ sender: Any) {
