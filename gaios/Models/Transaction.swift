@@ -169,7 +169,11 @@ struct Transaction {
     }
 
     func hasBlindingData(data: [String: Any]) -> Bool {
-        return data["asset_id"] != nil && data["satoshi"] != nil && data["assetblinder"] != nil && data["amountblinder"] != nil
+        let satoshi = data["satoshi"] as? UInt64 ?? 0
+        let assetId = data["asset_id"] as? String ?? ""
+        let amountBlinder = data["amountblinder"] as? String ?? ""
+        let assetBlinder = data["assetblinder"] as? String ?? ""
+        return assetId != "" && satoshi != 0 && amountBlinder != "" && assetBlinder != ""
     }
 
     func txoBlindingData(data: [String: Any], isUnspent: Bool) -> [String: Any] {
