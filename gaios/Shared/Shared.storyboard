@@ -1158,7 +1158,7 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Request Amount" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="twS-sB-Y72">
-                                                        <rect key="frame" x="36" y="92" width="279" height="48"/>
+                                                        <rect key="frame" x="36" y="92" width="281" height="48"/>
                                                         <color key="backgroundColor" name="customTextFieldBg"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="48" id="zZl-HA-hHI"/>
@@ -1221,13 +1221,14 @@
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rFh-D8-kYz">
-                                                        <rect key="frame" x="325" y="100" width="53" height="32"/>
+                                                        <rect key="frame" x="327" y="100" width="51" height="32"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="32" id="Gyx-u3-eTS"/>
                                                         </constraints>
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <state key="normal" title="Button"/>
-                                                        <buttonConfiguration key="configuration" style="plain" title="USD"/>
+                                                        <inset key="contentEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
+                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                        <state key="normal" title="USD"/>
                                                         <connections>
                                                             <action selector="btnFiat:" destination="tvv-eQ-egD" eventType="touchUpInside" id="OUo-0k-LLO"/>
                                                         </connections>
