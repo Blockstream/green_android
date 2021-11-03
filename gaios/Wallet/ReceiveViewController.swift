@@ -147,8 +147,9 @@ class ReceiveViewController: UIViewController {
     }
 
     func uriBitcoin(address: String) -> String {
+        let ntwPrefix = (account?.gdkNetwork?.liquid ?? false) ? "liquidnetwork" : "bitcoin"
         guard let satoshi = satoshi else { return address }
-        return satoshi == 0 ? address: String(format: "bitcoin:%@?amount=%.8f", address, Double(satoshi) / 100000000)
+        return satoshi == 0 ? address: String(format: "%@:%@?amount=%.8f", ntwPrefix, address, Double(satoshi) / 100000000)
     }
 
     @objc func helpBtnTap() {
