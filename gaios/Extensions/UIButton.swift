@@ -156,6 +156,7 @@ extension UIButton {
         case .outlined:
             backgroundColor = UIColor.clear
             setTitleColor(UIColor.customMatrixGreen(), for: .normal)
+            tintColor = UIColor.customMatrixGreen()
             layer.borderWidth = 1.0
             layer.borderColor = UIColor.customMatrixGreen().cgColor
             layer.cornerRadius = 5.0

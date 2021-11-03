@@ -15,6 +15,7 @@ class ReceiveViewController: UIViewController {
     @IBOutlet weak var btnAddress: UIButton!
     @IBOutlet weak var btnCopy: UIButton!
     @IBOutlet weak var btnShare: UIButton!
+    @IBOutlet weak var btnEdit: UIButton!
     @IBOutlet weak var btnOptions: UIButton!
 
     @IBOutlet weak var cardVerifyAddress: UIView!
@@ -35,7 +36,7 @@ class ReceiveViewController: UIViewController {
         setContent()
         setStyle()
         cardVerifyAddress.isHidden = !(self.account?.isHW == true && self.account?.isLedger == false)
-
+        btnEdit.isHidden = true
         let helpBtn = UIButton(type: .system)
         helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
         helpBtn.addTarget(self, action: #selector(helpBtnTap), for: .touchUpInside)
@@ -58,6 +59,7 @@ class ReceiveViewController: UIViewController {
     func setContent() {
         title = NSLocalizedString("id_receive", comment: "")
         btnShare.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
+        btnEdit.setTitle("Edit", for: .normal)
         btnOptions.setTitle("More Options", for: .normal)
         btnVerify.setTitle("Verify on Device", for: .normal)
         lblVerifyHint.text = "Please verify that the address shown on your hardware wallet matchesthe one on your phone"
@@ -66,6 +68,7 @@ class ReceiveViewController: UIViewController {
     func setStyle() {
         cardQRCode.layer.cornerRadius = 5.0
         btnShare.setStyle(.primary)
+        btnEdit.setStyle(.outlined)
         btnOptions.setStyle(.outlinedGray)
         cardVerifyAddress.layer.cornerRadius = 5.0
         btnVerify.layer.cornerRadius = 4.0
@@ -147,8 +150,16 @@ class ReceiveViewController: UIViewController {
 
     func uriBitcoin(address: String) -> String {
         let ntwPrefix = (account?.gdkNetwork?.liquid ?? false) ? "liquidnetwork" : "bitcoin"
-        guard let satoshi = satoshi else { return address }
-        return satoshi == 0 ? address: String(format: "%@:%@?amount=%.8f", ntwPrefix, address, Double(satoshi) / 100000000)
+        if satoshi == nil || satoshi == 0 {
+            btnEdit.isHidden = true
+            return address
+        }
+        btnEdit.isHidden = false
+        return String(format: "%@:%@?amount=%.8f", ntwPrefix, address, toBTC(satoshi!))
+    }
+
+    func toBTC(_ satoshi: UInt64) -> Double {
+        return Double(satoshi) / 100000000
     }
 
     @objc func helpBtnTap() {
@@ -162,6 +173,10 @@ class ReceiveViewController: UIViewController {
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
+    }
+
+    @IBAction func btnEdit(_ sender: Any) {
+        didSelect(.requestAmount)
     }
 
     @IBAction func btnOptions(_ sender: Any) {
@@ -200,6 +215,9 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveRequestAmountViewController") as? DialogReceiveRequestAmountViewController {
                 vc.modalPresentationStyle = .overFullScreen
                 vc.delegate = self
+                if let amount = self.satoshi {
+                    vc.prefill = "\(toBTC(amount))"
+                }
                 present(vc, animated: false, completion: nil)
             }
         case .sweep:
@@ -217,7 +235,7 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
 }
 
 extension ReceiveViewController: DialogReceiveRequestAmountViewControllerDelegate {
-    func didConfirm(satoshi: UInt64) {
+    func didConfirm(satoshi: UInt64?) {
         self.satoshi = satoshi
         updateQRCode()
     }

@@ -3,7 +3,7 @@ import UIKit
 import PromiseKit
 
 protocol DialogReceiveRequestAmountViewControllerDelegate: AnyObject {
-    func didConfirm(satoshi: UInt64)
+    func didConfirm(satoshi: UInt64?)
     func didCancel()
 }
 
@@ -31,6 +31,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     var buttonConstraint: NSLayoutConstraint?
     var isAccountRename = false
     var selectedType = TransactionType.BTC
+    var prefill: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +40,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         setStyle()
         view.alpha = 0.0
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+        amountTextField.text = prefill
     }
 
     func setContent() {
@@ -75,8 +77,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     }
 
     func reload() {
-        let satoshi = self.getSatoshi() ?? 0
-        satoshi > 0 ? btnConfirm.setStyle(.primary) : btnConfirm.setStyle(.primaryDisabled)
+        getSatoshi() != nil ? btnConfirm.setStyle(.primary) : btnConfirm.setStyle(.primaryDisabled)
         setButton()
         updateEstimate()
     }
@@ -141,7 +142,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
             case .cancel:
                 self.delegate?.didCancel()
             case .confirm:
-                self.delegate?.didConfirm(satoshi: self.getSatoshi() ?? 0)
+                self.delegate?.didConfirm(satoshi: self.getSatoshi())
             }
         })
     }
@@ -171,7 +172,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
 
     @IBAction func btnClear(_ sender: Any) {
         amountTextField.text = ""
-        reload()
+        dismiss(.confirm)
     }
 
     @IBAction func btnConfirm(_ sender: Any) {
