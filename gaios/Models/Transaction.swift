@@ -191,7 +191,7 @@ struct Transaction {
         let assetId = data["asset_id"] as? String ?? ""
         let amountBlinder = data["amountblinder"] as? String ?? ""
         let assetBlinder = data["assetblinder"] as? String ?? ""
-        return String(format: "%d,%@,%@,%@", satoshi, assetId, amountBlinder, assetBlinder)
+        return String(format: "%lu,%@,%@,%@", satoshi, assetId, amountBlinder, assetBlinder)
     }
 
     func blindingData() -> [String: Any]? {
