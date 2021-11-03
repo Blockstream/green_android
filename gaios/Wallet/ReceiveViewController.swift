@@ -91,7 +91,6 @@ class ReceiveViewController: UIViewController {
         guard let addr = self.address else { return }
         let hw: HWProtocol = account?.isLedger ?? false ? Ledger.shared : Jade.shared
         firstly {
-            DropAlert().info(message: NSLocalizedString("id_please_verify_that_the_address", comment: ""))
             return Guarantee()
         }.then {
             Address.validate(with: self.wallet!, hw: hw, addr: addr, network: AccountsManager.shared.current!.network)
