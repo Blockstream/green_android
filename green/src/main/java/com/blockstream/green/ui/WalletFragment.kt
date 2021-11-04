@@ -28,8 +28,6 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
     abstract fun onViewCreatedGuarded(view: View, savedInstanceState: Bundle?)
 
     final override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         // Recovery intro screen is reused in onBoarding
         // where we don't have a session yet
         // Skip initializing the WalletViewModel as it doesn't exists
@@ -118,6 +116,9 @@ abstract class WalletFragment<T : ViewDataBinding> constructor(
                 }
             }
         }
+
+        // Session must be initialized first if required as AppFragment can request appViewModel
+        super.onViewCreated(view, savedInstanceState)
 
         onViewCreatedGuarded(view, savedInstanceState)
     }

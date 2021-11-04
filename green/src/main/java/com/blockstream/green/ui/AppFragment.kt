@@ -90,6 +90,12 @@ abstract class AppFragment<T : ViewDataBinding>(
             setHasOptionsMenu(true)
         }
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         getAppViewModel()?.let { viewModel ->
             viewModel.onEvent.observe(viewLifecycleOwner) { onEvent ->
                 onEvent.getContentIfNotHandledForType<DeviceRequestEvent>()?.let {
@@ -104,8 +110,6 @@ abstract class AppFragment<T : ViewDataBinding>(
                 }
             }
         }
-
-        return binding.root
     }
 
     override fun onResume() {
