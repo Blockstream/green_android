@@ -8,6 +8,7 @@ enum Constants {
     static let trxPerPage: UInt32 = 30
 
     //SPV Settings
+    static let spvEnabled = "spv_enabled"
     static let personalNodeEnabled = "personal_node_enabled"
     static let btcElectrumSrv = "btc_electrum_srv"
     static let liquidElectrumSrv = "liquid_electrum_srv"

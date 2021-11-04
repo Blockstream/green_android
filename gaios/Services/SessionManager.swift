@@ -65,22 +65,25 @@ class SessionManager: Session {
         netParams["log_level"] = "debug"
         #endif
 
-        //SPV
-        if networkSettings[Constants.personalNodeEnabled] as? Bool ?? false {
-
-            let btcElectrumSrv = networkSettings[Constants.btcElectrumSrv] as? String ?? ""
-            // let liquidElectrumSrv = networkSettings[Constants.liquidElectrumSrv] as? String ?? ""
-            let testnetElectrumSrv = networkSettings[Constants.testnetElectrumSrv] as? String ?? ""
-
-            if network == Constants.electrumPrefix + "mainnet" && btcElectrumSrv != "" {
-                netParams["spv_enabled"] = true
+        // SPV available only for btc singlesig
+        if let spvEnabled = networkSettings[Constants.spvEnabled] as? Bool,
+           network == Constants.electrumPrefix + "mainnet" || network == Constants.electrumPrefix + "testnet" {
+            netParams["spv_enabled"] = spvEnabled
+        }
+        // Personal nodes
+        if let personalNodeEnabled = networkSettings[Constants.personalNodeEnabled] as? Bool, personalNodeEnabled {
+            if let btcElectrumSrv = networkSettings[Constants.btcElectrumSrv] as? String,
+                    network == Constants.electrumPrefix + "mainnet" && !btcElectrumSrv.isEmpty {
                 netParams["electrum_url"] = btcElectrumSrv
-            } else if network == Constants.electrumPrefix + "testnet" && testnetElectrumSrv != "" {
-                netParams["spv_enabled"] = true
+            } else if let testnetElectrumSrv = networkSettings[Constants.testnetElectrumSrv] as? String,
+                network == Constants.electrumPrefix + "testnet" && !testnetElectrumSrv.isEmpty {
                 netParams["electrum_url"] = testnetElectrumSrv
+            } else if let liquidElectrumSrv = networkSettings[Constants.liquidElectrumSrv] as? String,
+                network == Constants.electrumPrefix + "liquid" && !liquidElectrumSrv.isEmpty {
+                netParams["electrum_url"] = liquidElectrumSrv
             }
         }
-
+        // Connect
         do {
             try super.connect(netParams: netParams)
             connected = true

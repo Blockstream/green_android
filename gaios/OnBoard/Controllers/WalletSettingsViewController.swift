@@ -52,6 +52,7 @@ class WalletSettingsViewController: KeyboardViewController {
     @IBOutlet weak var cardTxCheck: UIView!
     @IBOutlet weak var lblTxCheckTitle: UILabel!
     @IBOutlet weak var lblTxCheckHint: UILabel!
+    @IBOutlet weak var switchTxCheck: UISwitch!
 
     @IBOutlet weak var cardMulti: UIView!
     @IBOutlet weak var lblMultiTitle: UILabel!
@@ -93,7 +94,6 @@ class WalletSettingsViewController: KeyboardViewController {
 
         setContent()
         setStyle()
-        setActions()
         reload()
 
         view.accessibilityIdentifier = AccessibilityIdentifiers.WalletSettingsScreen.view
@@ -117,8 +117,8 @@ class WalletSettingsViewController: KeyboardViewController {
 
         lblSPVTitle.text = NSLocalizedString("id_custom_servers_and_validation", comment: "")
         lblSPVHint.text = NSLocalizedString("id_spv_mode_is_currently_available", comment: "")
-        lblSPVPersonalNodeTitle.text = NSLocalizedString("id_spv_verification", comment: "")
-        lblSPVPersonalNodeHint.text = NSLocalizedString("id_spv_mode_is_currently_available", comment: "")
+        lblSPVPersonalNodeTitle.text = NSLocalizedString("id_personal_node", comment: "")
+        lblSPVPersonalNodeHint.text = NSLocalizedString("id_choose_the_electrum_servers_you", comment: "")
         lblSPVbtcServer.text = NSLocalizedString("id_bitcoin_electrum_server", comment: "")
         lblSPVliquidServer.text = NSLocalizedString("id_liquid_electrum_server", comment: "")
         lblSPVtestnetServer.text = NSLocalizedString("id_testnet_electrum_server", comment: "")
@@ -137,10 +137,9 @@ class WalletSettingsViewController: KeyboardViewController {
         btnCancel.setTitle(NSLocalizedString("id_cancel", comment: ""), for: .normal)
         btnSave.setTitle(NSLocalizedString("id_save", comment: ""), for: .normal)
 
-        cardProxyDetail.isHidden = true
-        cardSPVliquidServer.isHidden = true
-        cardSPVbtcServer.isHidden = true
-        cardSPVtestnetServer.isHidden = true
+        fieldSPVbtcServer.placeholder = Constants.btcElectrumSrvDefaultEndPoint
+        fieldSPVliquidServer.placeholder = Constants.liquidElectrumSrvDefaultEndPoint
+        fieldSPVtestnetServer.placeholder = Constants.testnetElectrumSrvDefaultEndPoint
     }
 
     func setStyle() {
@@ -150,10 +149,8 @@ class WalletSettingsViewController: KeyboardViewController {
         fields.forEach {
             $0?.setLeftPaddingPoints(10.0)
             $0?.setRightPaddingPoints(10.0)
-            $0?.isHidden = true
         }
 
-        cardTxCheck.alpha = 0.5
         cardMulti.alpha = 0.5
         cardElectBtc.alpha = 0.5
         cardElectLiquid.alpha = 0.5
@@ -168,10 +165,6 @@ class WalletSettingsViewController: KeyboardViewController {
         toolBar.setItems([flexButton, doneButton], animated: true)
     }
 
-    func setActions() {
-
-    }
-
     @objc func donePressed() {
         dismiss(animated: true, completion: nil)
     }
@@ -179,17 +172,28 @@ class WalletSettingsViewController: KeyboardViewController {
     func reload() {
         switchTor.setOn(networkSettings["tor"] as? Bool ?? false, animated: true)
         switchProxy.setOn(networkSettings["proxy"] as? Bool ?? false, animated: true)
-        var socks5 = networkSettings["socks5_hostname"] as? String ?? ""
-        if let port = networkSettings["socks5_port"] as? String {
-            socks5 += ":\(port)"
+        if let socks5 = networkSettings["socks5_hostname"] as? String,
+           let port = networkSettings["socks5_port"] as? String,
+           !socks5.isEmpty && !port.isEmpty {
+            fieldProxyIp.text = "\(socks5):\(port)"
         }
-        fieldProxyIp.text = socks5
-        switchTestnet.setOn(UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true, animated: true)
 
+        switchTestnet.setOn(UserDefaults.standard.bool(forKey: AppStorage.testnetIsVisible) == true, animated: true)
+        switchTxCheck.setOn(networkSettings[Constants.spvEnabled] as? Bool ?? false, animated: true)
         switchPSPVPersonalNode.setOn(networkSettings[Constants.personalNodeEnabled] as? Bool ?? false, animated: true)
-        fieldSPVbtcServer.text = networkSettings[Constants.btcElectrumSrv] as? String ?? ""
-        fieldSPVliquidServer.text = networkSettings[Constants.liquidElectrumSrv] as? String ?? ""
-        fieldSPVtestnetServer.text = networkSettings[Constants.testnetElectrumSrv] as? String ?? ""
+
+        if let uri = networkSettings[Constants.btcElectrumSrv] as? String, !uri.isEmpty {
+            fieldSPVbtcServer.text = uri
+        }
+        if let uri = networkSettings[Constants.liquidElectrumSrv] as? String, !uri.isEmpty {
+            fieldSPVliquidServer.text = uri
+        }
+        if let uri = networkSettings[Constants.testnetElectrumSrv] as? String, !uri.isEmpty {
+            fieldSPVtestnetServer.text = uri
+        }
+
+        switchPSPVPersonalNode(switchPSPVPersonalNode)
+        switchProxyChange(switchProxy)
     }
 
     override func keyboardWillShow(notification: Notification) {
@@ -217,16 +221,11 @@ class WalletSettingsViewController: KeyboardViewController {
 
     @IBAction func switchPSPVPersonalNode(_ sender: UISwitch) {
         cardSPVPersonalNodeDetails.isHidden = !sender.isOn
+        cardSPVtestnetServer.isHidden = !switchTestnet.isOn
+    }
 
-        if sender.isOn {
-            fieldSPVbtcServer.text = Constants.btcElectrumSrvDefaultEndPoint
-            fieldSPVliquidServer.text = Constants.liquidElectrumSrvDefaultEndPoint
-            fieldSPVtestnetServer.text = Constants.testnetElectrumSrvDefaultEndPoint
-        } else {
-            fieldSPVbtcServer.text = ""
-            fieldSPVliquidServer.text = ""
-            fieldSPVtestnetServer.text = ""
-        }
+    @IBAction func switchTestnet(_ sender: Any) {
+        cardSPVtestnetServer.isHidden = !switchTestnet.isOn
     }
 
     @IBAction func btnCancel(_ sender: Any) {
@@ -240,19 +239,17 @@ class WalletSettingsViewController: KeyboardViewController {
                       message: NSLocalizedString("id_socks5_proxy_and_port_must_be", comment: ""))
             return
         }
-        let btcElectrumSrv = fieldSPVbtcServer.text ?? ""
-        let liquidElectrumSrv = fieldSPVliquidServer.text ?? ""
-        let testnetElectrumSrv = fieldSPVtestnetServer.text ?? ""
 
         networkSettings = [
             "proxy": switchProxy.isOn,
             "tor": switchTor.isOn,
-            "socks5_hostname": socks5.split(separator: ":").first ?? "",
-            "socks5_port": socks5.split(separator: ":").last ?? "",
+            "socks5_hostname": String(socks5.split(separator: ":").first ?? ""),
+            "socks5_port": String(socks5.split(separator: ":").last ?? ""),
+            Constants.spvEnabled: switchTxCheck.isOn,
             Constants.personalNodeEnabled: switchPSPVPersonalNode.isOn,
-            Constants.btcElectrumSrv: btcElectrumSrv,
-            Constants.liquidElectrumSrv: liquidElectrumSrv,
-            Constants.testnetElectrumSrv: testnetElectrumSrv
+            Constants.btcElectrumSrv: fieldSPVbtcServer.text ?? "",
+            Constants.liquidElectrumSrv: fieldSPVliquidServer.text ?? "",
+            Constants.testnetElectrumSrv: fieldSPVtestnetServer.text ?? ""
         ]
         UserDefaults.standard.set(switchTestnet.isOn, forKey: AppStorage.testnetIsVisible)
         delegate?.didSet(tor: switchTor.isOn)
