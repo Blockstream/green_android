@@ -87,15 +87,15 @@ public class LedgerBLEAdapter {
                                                        onError.onError(ledgerDevice);
                                     });
 
-                        } else if (newState == BluetoothProfile.STATE_DISCONNECTING) {
-                            // Disconnect, clean up BLE stack resources
-                            gatt.close();
                         }
                     }
 
                     if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                         Log.i("LedgerBLEAdapter", "Send BLE disconnect event");
                         bleDisconnectEvent.onNext(true);
+
+                        // Disconnect, clean up BLE stack resources
+                        gatt.close();
                     }
 
                     ledgerDevice.getGattCallback().onConnectionStateChange(gatt, status, newState);
