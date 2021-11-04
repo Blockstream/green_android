@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(val walletRepository: WalletRepository) : AppViewModel() {
+    val lockScreen = MutableLiveData(false)
     val buildVersion = MutableLiveData("")
 
     val wallets: LiveData<List<Wallet>> = walletRepository.getWallets()

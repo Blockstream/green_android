@@ -12,9 +12,11 @@ import androidx.annotation.VisibleForTesting
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import mu.KLogging
 import java.security.*
 import javax.crypto.*
 import javax.crypto.spec.IvParameterSpec
+import kotlin.math.log
 
 class AppKeystore {
     private var keyStore: KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
@@ -199,7 +201,7 @@ class AppKeystore {
         return false
     }
 
-    companion object {
+    companion object : KLogging(){
         private const val TRANSFORMATION =
             "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_CBC}/${KeyProperties.ENCRYPTION_PADDING_PKCS7}"
         private const val ANDROID_KEYSTORE = "AndroidKeyStore"

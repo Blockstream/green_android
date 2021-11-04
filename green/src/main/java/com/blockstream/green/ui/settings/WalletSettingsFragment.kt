@@ -327,7 +327,6 @@ class WalletSettingsFragment :
                     getString(R.string.id_biometric_login_is_enabled)
                 }
             } else {
-                //getString(R.string.id_biometrics_are_disabled_in_your_device)
                 getString(R.string.id_a_screen_lock_must_be_enabled)
             }
         )

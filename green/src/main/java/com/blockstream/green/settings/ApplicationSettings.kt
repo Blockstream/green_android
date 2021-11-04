@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ApplicationSettings constructor(
+    val enhancedPrivacy: Boolean = false,
     val testnet: Boolean = false,
     val proxyUrl: String? = null,
     val tor: Boolean = false,
@@ -57,6 +58,7 @@ data class ApplicationSettings constructor(
     }
 
     companion object {
+        private const val ENHANCED_PRIVACY = "enhancedPrivacy"
         private const val TESTNET = "testnet"
         private const val PROXY_URL = "proxyURL"
         private const val TOR = "tor"
@@ -76,6 +78,7 @@ data class ApplicationSettings constructor(
 
         fun fromSharedPreferences(prefs: SharedPreferences): ApplicationSettings {
             return ApplicationSettings(
+                enhancedPrivacy = prefs.getBoolean(ENHANCED_PRIVACY, false),
                 testnet = prefs.getBoolean(TESTNET, false),
                 proxyUrl = prefs.getString(PROXY_URL, null),
                 tor = prefs.getBoolean(TOR, false),
@@ -97,6 +100,7 @@ data class ApplicationSettings constructor(
 
         fun toSharedPreferences(appSettings: ApplicationSettings, prefs: SharedPreferences) {
             prefs.edit().also {
+                it.putBoolean(ENHANCED_PRIVACY, appSettings.enhancedPrivacy)
                 it.putBoolean(TESTNET, appSettings.testnet)
                 it.putString(PROXY_URL, appSettings.proxyUrl)
                 it.putBoolean(TOR, appSettings.tor)

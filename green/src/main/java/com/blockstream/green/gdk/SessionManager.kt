@@ -1,5 +1,6 @@
 package com.blockstream.green.gdk
 
+import android.content.Context
 import androidx.lifecycle.*
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
@@ -7,8 +8,10 @@ import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletId
 import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
+import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.libgreenaddress.GASession
 import com.greenaddress.greenapi.Session
 import io.reactivex.rxjava3.kotlin.subscribeBy
@@ -20,11 +23,11 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 class SessionManager constructor(
+    private val context: Context,
     private val settingsManager: SettingsManager,
     private val assetManager: AssetManager,
     private val greenWallet: GreenWallet,
     qaTester: QATester,
-    isDevelopmentFlavor : Boolean
 ) : LifecycleObserver {
     private val sessions = mutableMapOf<GASession, GreenSession>()
     private val walletSessions = mutableMapOf<WalletId, GreenSession>()
@@ -38,10 +41,9 @@ class SessionManager constructor(
 
     var connectionChangeEvent = MutableLiveData<Boolean>()
 
-    private val AllowMultipleConnectedSessions = isDevelopmentFlavor
+    private val AllowMultipleConnectedSessions = context.isDevelopmentFlavor()
 
     init {
-
         // Listen to foreground / background events
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 

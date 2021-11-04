@@ -1,16 +1,21 @@
 package com.blockstream.green.ui
 
 import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.blockstream.green.R
+import com.blockstream.green.settings.SettingsManager
+import com.blockstream.green.utils.isDebug
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.green.utils.notifyDevelopmentFeature
+import javax.inject.Inject
 
 abstract class AppActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
 
     abstract fun isDrawerOpen(): Boolean
     abstract fun closeDrawer()
@@ -29,16 +34,24 @@ abstract class AppActivity : AppCompatActivity() {
 
     private var isWindowSecure: Boolean = false
 
+    private val secureFragments = listOf(R.id.recoveryIntroFragment, R.id.recoveryCheckFragment, R.id.recoveryWordsFragment, R.id.recoveryPhraseFragment)
+
     internal fun setupSecureScreenListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id == R.id.recoveryIntroFragment ||
-                destination.id == R.id.recoveryCheckFragment ||
-                destination.id == R.id.recoveryWordsFragment ||
-                destination.id == R.id.recoveryPhraseFragment
-            ) {
-                setSecureScreen(true)
-            } else {
-                setSecureScreen(false)
+            // If enhancedPrivacy is turned off, secure only specific screens
+            if(!settingsManager.getApplicationSettings().enhancedPrivacy) {
+                if(secureFragments.contains(destination.id)) {
+                    setSecureScreen(true)
+                } else {
+                    setSecureScreen(false)
+                }
+            }
+        }
+
+        settingsManager.getApplicationSettingsLiveData().observe(this){
+            // Skip changing secure screen if we are on a secure fragment
+            if(it.enhancedPrivacy || !secureFragments.contains(navController.currentDestination?.id)){
+                setSecureScreen(it.enhancedPrivacy)
             }
         }
     }

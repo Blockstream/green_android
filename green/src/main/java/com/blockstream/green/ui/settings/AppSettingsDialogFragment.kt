@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import com.blockstream.green.R
 import com.blockstream.green.databinding.DialogAppSettingsBottomSheetBinding
-import com.blockstream.green.settings.ApplicationSettings
 import com.blockstream.green.utils.endIconCopyMode
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -20,7 +19,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AppSettingsDialogFragment : BottomSheetDialogFragment() {
-
     private val viewModel: AppSettingsViewModel by viewModels()
 
     private lateinit var binding: DialogAppSettingsBottomSheetBinding
@@ -86,5 +84,4 @@ class AppSettingsDialogFragment : BottomSheetDialogFragment() {
 
         isCancelable = false
     }
-
 }

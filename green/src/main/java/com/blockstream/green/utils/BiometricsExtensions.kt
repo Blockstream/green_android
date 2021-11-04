@@ -1,5 +1,7 @@
 package com.blockstream.green.utils
 
+import android.content.Context
+import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -39,17 +41,20 @@ fun Fragment.authenticateWithBiometrics(callback : AuthenticationCallback){
     }
 }
 
-open class AuthenticationCallback(val fragment: Fragment) : BiometricPrompt.AuthenticationCallback() {
+open class AuthenticationCallback constructor(val context: Context) : BiometricPrompt.AuthenticationCallback() {
+
+    constructor(fragment: Fragment) : this(fragment.requireContext())
+
     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
         if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON || errorCode == BiometricPrompt.ERROR_CANCELED) {
             // This is errorCode OK, no need to handle it
         } else {
             // TODO INVALIDATE ALL BIOMETRIC LOGIN CREDENTIALS
-            fragment.toast(fragment.getString(R.string.id_authentication_error_s, "$errorCode $errString"))
+            Toast.makeText(context, context.getString(R.string.id_authentication_error_s, "$errorCode $errString"), Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onAuthenticationFailed() {
-        fragment.toast(fragment.getString(R.string.id_authentication_failed))
+        Toast.makeText(context, context.getString(R.string.id_authentication_failed), Toast.LENGTH_SHORT).show()
     }
 }

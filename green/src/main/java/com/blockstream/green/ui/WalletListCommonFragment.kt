@@ -86,7 +86,7 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
             walletSession.bridgeSession()
             navigate(LoginFragmentDirections.actionGlobalOverviewFragment(wallet))
         }else{
-            navigate(NavGraphDirections.actionGlobalLoginFragment(wallet))
+            navigate(NavGraphDirections.actionGlobalLoginFragment(wallet = wallet, autoLogin = true))
         }
     }
 }

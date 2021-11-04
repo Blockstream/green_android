@@ -59,6 +59,7 @@
                 android:textAppearance="?attr/textAppearanceCaption"
                 android:textSize="12sp"
                 android:visibility="gone"
+                android:includeFontPadding="false"
                 tools:text="Caption\nMultiline"
                 tools:visibility="visible" />
 

@@ -1001,4 +1001,7 @@
   <string name="id_edit_fee">Edit Fee</string>
   <string name="id_confirmation_time">Confirmation Time</string>
   <string name="id_block_height">Block Height</string>
+  <string name="id_unlock_green">Unlock Green</string>
+  <string name="id_enhanced_privacy">Enhanced Privacy</string>
+  <string name="id_use_secure_display_and_screen_lock">Use Secure Display and Screen Lock</string>
 </resources>

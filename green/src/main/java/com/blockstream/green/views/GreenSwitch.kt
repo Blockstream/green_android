@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import com.blockstream.green.R
 import com.blockstream.green.databinding.GreenSwitchBinding
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 
 class GreenSwitch @JvmOverloads constructor(
@@ -19,11 +20,12 @@ class GreenSwitch @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), Checkable {
-
-
     private var switchInvalid: Boolean = false
     private var binding: GreenSwitchBinding =
         GreenSwitchBinding.inflate(LayoutInflater.from(context), this, true)
+
+    val switch: SwitchMaterial
+        get() = binding.switchmaterial
 
     init {
 
@@ -80,6 +82,11 @@ class GreenSwitch @JvmOverloads constructor(
 
     override fun isChecked(): Boolean {
         return binding.switchmaterial.isChecked
+    }
+
+    fun setCaption(text: String?){
+        binding.caption.text = text
+        binding.caption.visibility = if (text.isNullOrBlank()) View.GONE else View.VISIBLE
     }
 
     fun setInvalid(invalid: Boolean) {

@@ -96,7 +96,7 @@ class GreenApplication : Application(){
 
                                     walletRepository.getWalletSync(walletId)?.let {
                                         builder.setDestination(R.id.loginFragment)
-                                        builder.setArguments(LoginFragmentArgs(it).toBundle())
+                                        builder.setArguments(LoginFragmentArgs(wallet = it, autoLogin = true).toBundle())
                                     }
                                 }
                             }

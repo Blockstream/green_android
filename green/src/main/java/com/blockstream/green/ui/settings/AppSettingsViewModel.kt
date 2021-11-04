@@ -20,6 +20,7 @@ class AppSettingsViewModel @Inject constructor(
         proxyURLInvalid.postValue(it.isBlank())
     }
 
+    val enableEnhancedPrivacy = MutableLiveData(appSettings.enhancedPrivacy)
     val enableTestnet = MutableLiveData(appSettings.testnet)
     val enableTorRouting = MutableLiveData(appSettings.tor)
     val enableProxy = MutableLiveData(appSettings.proxyUrl != null)
@@ -50,6 +51,7 @@ class AppSettingsViewModel @Inject constructor(
     val spvTestnetLiquidElectrumServer = MutableLiveData(appSettings.spvTestnetLiquidElectrumServer ?: "")
 
     fun getSettings() = ApplicationSettings(
+        enhancedPrivacy = enableEnhancedPrivacy.value ?: false,
         testnet = enableTestnet.value ?: false,
         proxyUrl = if (enableProxy.value == true && !proxyURL.value.isNullOrBlank()) proxyURL.value else null,
         electrumNode = enableElectrumNode.value ?: false,

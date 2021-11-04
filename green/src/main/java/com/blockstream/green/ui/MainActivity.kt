@@ -2,13 +2,18 @@ package com.blockstream.green.ui
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -16,6 +21,8 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.MainActivityBinding
 import com.blockstream.green.devices.DeviceManager
 import com.blockstream.green.gdk.SessionManager
+import com.blockstream.green.utils.AppKeystore
+import com.blockstream.green.utils.AuthenticationCallback
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.getVersionName
 import com.google.android.material.snackbar.Snackbar
@@ -32,6 +39,11 @@ class MainActivity : AppActivity() {
     @Inject
     lateinit var sessionManager: SessionManager
 
+    @Inject
+    lateinit var appKeystore: AppKeystore
+
+    private var unlockPrompt: BiometricPrompt? = null
+
     private lateinit var binding: MainActivityBinding
     private val viewModel: MainViewModel by viewModels()
 
@@ -40,6 +52,8 @@ class MainActivity : AppActivity() {
 
         binding = MainActivityBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
+        binding.vm = viewModel
+
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
@@ -59,6 +73,10 @@ class MainActivity : AppActivity() {
 
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
 
+        binding.buttonUnlock.setOnClickListener {
+            showUnlockPrompt()
+        }
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.appBarLayout.isInvisible =
                 (destination.id == R.id.introFragment || destination.id == R.id.onBoardingCompleteFragment)
@@ -71,11 +89,82 @@ class MainActivity : AppActivity() {
         setupSecureScreenListener()
 
         handleIntent(intent)
+
+        viewModel.lockScreen.value = canLock()
+
+        viewModel.lockScreen.observe(this){ isLocked ->
+            if(isLocked){
+                showUnlockPrompt()
+            }
+        }
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         handleIntent(intent)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        if(canLock()){
+            lifecycleScope.launchWhenResumed {
+                viewModel.lockScreen.value = true
+            }
+        }
+    }
+
+    private fun canLock() = settingsManager.getApplicationSettings().enhancedPrivacy && appKeystore.canUseBiometrics(this)
+
+    private fun showUnlockPrompt(){
+        unlockPrompt?.cancelAuthentication()
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle(getString(R.string.id_unlock_green))
+            .setConfirmationRequired(false)
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+        } else {
+            promptInfo.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+        }
+
+        unlockPrompt = BiometricPrompt(
+            this,
+            ContextCompat.getMainExecutor(this),
+            object : AuthenticationCallback(this) {
+                override fun onAuthenticationFailed() {
+                    unlockPrompt = null
+                    super.onAuthenticationFailed()
+                }
+
+                override fun onAuthenticationError(
+                    errorCode: Int,
+                    errString: CharSequence
+                ) {
+                    unlockPrompt = null
+                    if(errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL){
+                        // User hasn't enabled any device credential,
+                        viewModel.lockScreen.value = false
+                    }else{
+                        super.onAuthenticationError(errorCode, errString)
+                    }
+                }
+
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    unlockPrompt = null
+                    viewModel.lockScreen.value = false
+                }
+            })
+
+        try {
+            // Ask for user presence
+            unlockPrompt?.authenticate(promptInfo.build())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            unlockPrompt = null
+            viewModel.lockScreen.value = false
+        }
     }
 
     private fun handleIntent(intent: Intent?) {

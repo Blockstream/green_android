@@ -120,7 +120,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
                 /**
                  * We can get multiple events, so launch prompt only the first time
                  */
-                if(viewModel.initialAction.value == false){
+                if(args.autoLogin && viewModel.initialAction.value == false){
                     viewModel.initialAction.value = true
                     launchBiometricPrompt(it)
                 }
