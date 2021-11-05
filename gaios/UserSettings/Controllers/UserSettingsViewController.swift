@@ -75,7 +75,7 @@ class UserSettingsViewController: UIViewController {
 
     func getSections() -> [UserSettingsSections] {
         if isWatchOnly {
-            return [.logout, .advanced, .about]
+            return [.logout, .about]
         } else if isResetActive {
             return [.logout, .general, .security, .recovery, .about]
         } else if isSingleSig {
@@ -194,16 +194,8 @@ class UserSettingsViewController: UIViewController {
             subtitle: "",
             section: .advanced,
             type: .Pgp)
-        let sweep = UserSettingsItem(
-            title: NSLocalizedString("id_sweep", comment: ""),
-            subtitle: NSLocalizedString("id_sweep_from_paper_wallet", comment: ""),
-            section: .advanced,
-            type: .Sweep)
         if !isWatchOnly {
             items += [pgp]
-        }
-        if !isLiquid {
-            items += [sweep]
         }
         return items
     }
@@ -422,12 +414,6 @@ extension UserSettingsViewController: UITableViewDelegate, UITableViewDataSource
             let storyboard = UIStoryboard(name: "UserSettings", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "PgpViewController")
             navigationController?.pushViewController(vc, animated: true)
-        case .Sweep:
-            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountsViewController") as? AccountsViewController {
-                vc.isSweep = true
-                navigationController?.pushViewController(vc, animated: true)
-            }
         case .Version:
             break
         case .TermsOfUse:
