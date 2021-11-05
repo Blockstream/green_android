@@ -35,9 +35,9 @@ class DialogReceiveMoreOptionsViewController: UIViewController {
     }
 
     func setContent() {
-        lblTitle.text = "More Options"
-        btnRequestAmount.setTitle("Request Amount", for: .normal)
-        btnSweep.setTitle("Sweep from Paper Wallet", for: .normal)
+        lblTitle.text = NSLocalizedString("id_more_options", comment: "")
+        btnRequestAmount.setTitle(NSLocalizedString("id_request_amount", comment: ""), for: .normal)
+        btnSweep.setTitle(NSLocalizedString("id_sweep_from_paper_wallet", comment: ""), for: .normal)
         btnSweep.isHidden = isLiquid
     }
 

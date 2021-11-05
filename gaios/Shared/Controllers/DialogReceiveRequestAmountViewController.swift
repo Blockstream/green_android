@@ -44,12 +44,12 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     }
 
     func setContent() {
-        lblTitle.text = "Request Amount"
-        lblHint.text = "Amount in BTC"
-        btnClear.setTitle("Clear", for: .normal)
-        btnConfirm.setTitle("OK", for: .normal)
+        lblTitle.text = NSLocalizedString("id_request_amount", comment: "")
+        lblHint.text = ""
+        btnClear.setTitle(NSLocalizedString("id_clear", comment: ""), for: .normal)
+        btnConfirm.setTitle(NSLocalizedString("id_ok", comment: ""), for: .normal)
         amountTextField.attributedPlaceholder = NSAttributedString(
-            string: "Receive Amount",
+            string: NSLocalizedString("id_amount", comment: ""),
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.lightGray])
     }
 

@@ -59,10 +59,10 @@ class ReceiveViewController: UIViewController {
     func setContent() {
         title = NSLocalizedString("id_receive", comment: "")
         btnShare.setTitle(NSLocalizedString("id_share_address", comment: ""), for: .normal)
-        btnEdit.setTitle("Edit", for: .normal)
-        btnOptions.setTitle("More Options", for: .normal)
-        btnVerify.setTitle("Verify on Device", for: .normal)
-        lblVerifyHint.text = "Please verify that the address shown on your hardware wallet matchesthe one on your phone"
+        btnEdit.setTitle(NSLocalizedString("id_edit", comment: ""), for: .normal)
+        btnOptions.setTitle(NSLocalizedString("id_more_options", comment: ""), for: .normal)
+        btnVerify.setTitle(NSLocalizedString("id_verify_on_device", comment: ""), for: .normal)
+        lblVerifyHint.text = NSLocalizedString("id_please_verify_that_the_address", comment: "")
     }
 
     func setStyle() {
