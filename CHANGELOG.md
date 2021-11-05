@@ -9,10 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - using gdk microsec for transaction date
-
 - Overhaul receive view
+
 ### Fixed
 - Fix unblinded url for liquid transactions
+- Improve ble scan and error messages
 
 ## [3.7.5] - 2021-10-27
 
