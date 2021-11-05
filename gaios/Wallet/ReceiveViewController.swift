@@ -215,9 +215,7 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
             if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveRequestAmountViewController") as? DialogReceiveRequestAmountViewController {
                 vc.modalPresentationStyle = .overFullScreen
                 vc.delegate = self
-                if let amount = self.satoshi {
-                    vc.prefill = "\(toBTC(amount))"
-                }
+                vc.prefill = self.satoshi
                 present(vc, animated: false, completion: nil)
             }
         case .sweep:

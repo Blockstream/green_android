@@ -31,7 +31,7 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
     var buttonConstraint: NSLayoutConstraint?
     var isAccountRename = false
     var selectedType = TransactionType.BTC
-    var prefill: String?
+    var prefill: UInt64?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +40,13 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
         setStyle()
         view.alpha = 0.0
         amountTextField.attributedPlaceholder = NSAttributedString(string: "0.00".localeFormattedString(2), attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
-        amountTextField.text = prefill
+        if let satoshi = prefill {
+            if let (amount, _) = Balance.convert(details: ["satoshi": satoshi])?.get(tag: "btc") {
+                if let valid = amount {
+                    amountTextField.text = "\(valid)"
+                }
+            }
+        }
     }
 
     func setContent() {
