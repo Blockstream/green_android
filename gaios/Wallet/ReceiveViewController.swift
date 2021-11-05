@@ -184,6 +184,7 @@ class ReceiveViewController: UIViewController {
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogReceiveMoreOptionsViewController") as? DialogReceiveMoreOptionsViewController {
             vc.modalPresentationStyle = .overFullScreen
             vc.isLiquid = account?.gdkNetwork?.liquid ?? false
+            vc.isSingleSig = account?.isSingleSig ?? false
             vc.delegate = self
             present(vc, animated: false, completion: nil)
         }
@@ -219,12 +220,11 @@ extension ReceiveViewController: DialogReceiveMoreOptionsViewControllerDelegate 
                 present(vc, animated: false, completion: nil)
             }
         case .sweep:
-            let storyboard = UIStoryboard(name: "Accounts", bundle: nil)
-            if let vc = storyboard.instantiateViewController(withIdentifier: "AccountsViewController") as? AccountsViewController {
+            let storyboard = UIStoryboard(name: "Send", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SendBtcViewController") as? SendBtcViewController {
                 vc.isSweep = true
-                navigationController?.pushViewController(viewController: vc, animated: true, completion: {
-                    self.navigationController?.viewControllers.remove(at: 1)
-                })
+                vc.wallet = wallet
+                navigationController?.pushViewController(vc, animated: true)
             }
         case .cancel:
             break

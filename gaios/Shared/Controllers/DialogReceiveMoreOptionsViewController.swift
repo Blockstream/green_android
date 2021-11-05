@@ -23,6 +23,7 @@ class DialogReceiveMoreOptionsViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
 
     var isLiquid = false
+    var isSingleSig = false
 
     weak var delegate: DialogReceiveMoreOptionsViewControllerDelegate?
 
@@ -38,7 +39,7 @@ class DialogReceiveMoreOptionsViewController: UIViewController {
         lblTitle.text = NSLocalizedString("id_more_options", comment: "")
         btnRequestAmount.setTitle(NSLocalizedString("id_request_amount", comment: ""), for: .normal)
         btnSweep.setTitle(NSLocalizedString("id_sweep_from_paper_wallet", comment: ""), for: .normal)
-        btnSweep.isHidden = isLiquid
+        btnSweep.isHidden = isLiquid || isSingleSig
     }
 
     func setStyle() {
