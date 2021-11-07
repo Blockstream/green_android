@@ -8,6 +8,7 @@ import com.blockstream.green.databinding.RenameAccountBottomSheetBinding
 import com.blockstream.green.utils.errorDialog
 import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.gdk.observable
+import com.blockstream.green.ui.overview.OverviewFragment
 import com.blockstream.green.utils.nameCleanup
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,17 +21,7 @@ class RenameAccountBottomSheetDialogFragment : WalletBottomSheetDialogFragment<R
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.session.observable {
-             it.getSubAccount(viewModel.session.activeAccount)
-        }.subscribeBy(
-            onError = {
-                errorDialog(it)
-                dismiss()
-            },
-            onSuccess = {
-                binding.name = it.name
-            }
-        )
+        binding.name = (parentFragment as OverviewFragment).viewModel.getSubAccountLiveData().value?.name
 
         binding.buttonSave.setOnClickListener {
             viewModel.renameSubAccount(viewModel.session.activeAccount, binding.name.nameCleanup() ?: "")
