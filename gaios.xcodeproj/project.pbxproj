@@ -23,7 +23,6 @@
 		09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */; };
 		098E247D20EDC97D00D7BC38 /* QRImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */; };
 		0992F85A20DD859200F6AAAB /* SendBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85920DD859200F6AAAB /* SendBtcViewController.swift */; };
-		0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */; };
 		0992F86220E30EB300F6AAAB /* SendBtcDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */; };
 		0992F86420E311D500F6AAAB /* SendBTCConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */; };
 		0992F87420E6E40B00F6AAAB /* AuthenticationTypeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */; };
@@ -229,7 +228,6 @@
 		816F0AF423E4713600569A5D /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF323E4713600569A5D /* UIViewController.swift */; };
 		816F0AF623E47E1E00569A5D /* Wally.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816F0AF523E47E1E00569A5D /* Wally.swift */; };
 		817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817417362236E85500A28E36 /* ScreenLockWindow.swift */; };
-		817A630522245B090054FC60 /* ReceiveBtcView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 817A630422245B090054FC60 /* ReceiveBtcView.xib */; };
 		817A6307222461280054FC60 /* SendBtcDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 817A6306222461280054FC60 /* SendBtcDetailsView.xib */; };
 		817A6309222461510054FC60 /* SendBTCConfirmationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 817A6308222461510054FC60 /* SendBTCConfirmationView.xib */; };
 		818201B2226A1AD200BE12C3 /* Send.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 818201B1226A1AD200BE12C3 /* Send.storyboard */; };
@@ -326,7 +324,6 @@
 		09841F9C215F1E7800FC268E /* SetPhoneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPhoneViewController.swift; sourceTree = "<group>"; };
 		098E247C20EDC97D00D7BC38 /* QRImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageGenerator.swift; sourceTree = "<group>"; };
 		0992F85920DD859200F6AAAB /* SendBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcViewController.swift; sourceTree = "<group>"; };
-		0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveBtcViewController.swift; sourceTree = "<group>"; };
 		0992F86120E30EB300F6AAAB /* SendBtcDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetailsViewController.swift; sourceTree = "<group>"; };
 		0992F86320E311D500F6AAAB /* SendBTCConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBTCConfirmationViewController.swift; sourceTree = "<group>"; };
 		0992F87320E6E40B00F6AAAB /* AuthenticationTypeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationTypeHandler.swift; sourceTree = "<group>"; };
@@ -547,7 +544,6 @@
 		816F0AF323E4713600569A5D /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
 		816F0AF523E47E1E00569A5D /* Wally.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wally.swift; sourceTree = "<group>"; };
 		817417362236E85500A28E36 /* ScreenLockWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLockWindow.swift; sourceTree = "<group>"; };
-		817A630422245B090054FC60 /* ReceiveBtcView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ReceiveBtcView.xib; sourceTree = "<group>"; };
 		817A6306222461280054FC60 /* SendBtcDetailsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendBtcDetailsView.xib; sourceTree = "<group>"; };
 		817A6308222461510054FC60 /* SendBTCConfirmationView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendBTCConfirmationView.xib; sourceTree = "<group>"; };
 		818201B1226A1AD200BE12C3 /* Send.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Send.storyboard; sourceTree = "<group>"; };
@@ -689,6 +685,14 @@
 				7E88DA8680A9CE15F3154259 /* libPods-gaiosUITests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		34128F9C27391A99002E19F5 /* Receive */ = {
+			isa = PBXGroup;
+			children = (
+				347C037B272838D500C2EEF6 /* ReceiveViewController.swift */,
+			);
+			path = Receive;
 			sourceTree = "<group>";
 		};
 		343476642682298B00D7AD43 /* Screens */ = {
@@ -1279,8 +1283,6 @@
 			children = (
 				81A3B5442244B2790091B6BC /* Views */,
 				81A3B5432244B23F0091B6BC /* TableViewCells */,
-				817A630422245B090054FC60 /* ReceiveBtcView.xib */,
-				0992F85B20DD85A100F6AAAB /* ReceiveBtcViewController.swift */,
 				34C3020326E7531E00A3F910 /* OverviewViewController.swift */,
 				81A8EBC72224524A00F5C577 /* SystemMessageView.xib */,
 				81BB2C7D2215B86A0015F086 /* SystemMessageViewController.swift */,
@@ -1288,7 +1290,7 @@
 				81FE672423EB1D22001B2E48 /* ContainerViewController.swift */,
 				3403BDAB2630282600118C64 /* Learn2faViewController.swift */,
 				34BADA1A2637F65F00FB8011 /* Reactivate2faViewController.swift */,
-				347C037B272838D500C2EEF6 /* ReceiveViewController.swift */,
+				34128F9C27391A99002E19F5 /* Receive */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -1564,7 +1566,6 @@
 				34DDD0A9260A486300020380 /* Shared.storyboard in Resources */,
 				81286115222212B5005598D3 /* SetEmailView.xib in Resources */,
 				6DD813B322BC58A7002DCC8B /* Assets.storyboard in Resources */,
-				817A630522245B090054FC60 /* ReceiveBtcView.xib in Resources */,
 				3497936425F8B18C0029ECB1 /* OnBoard.storyboard in Resources */,
 				81640CE021FB2B4200E7F79C /* FeeButton.xib in Resources */,
 				81A8EBC82224524A00F5C577 /* SystemMessageView.xib in Resources */,
@@ -1751,7 +1752,6 @@
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
-				0992F85C20DD85A100F6AAAB /* ReceiveBtcViewController.swift in Sources */,
 				34D678AF261F060F00DBC0BB /* WalletDrawerCell.swift in Sources */,
 				340F07F02620A6BB0065A986 /* DialogRecoveryHelpViewController.swift in Sources */,
 				81FE672523EB1D22001B2E48 /* ContainerViewController.swift in Sources */,

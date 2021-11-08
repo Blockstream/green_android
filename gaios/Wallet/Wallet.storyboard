@@ -97,41 +97,6 @@
             </objects>
             <point key="canvasLocation" x="2233" y="737"/>
         </scene>
-        <!--Receive-->
-        <scene sceneID="5RU-Fp-d7a">
-            <objects>
-                <viewController storyboardIdentifier="ReceiveBtcViewController" hidesBottomBarWhenPushed="YES" id="R7F-mq-oqL" customClass="ReceiveBtcViewController" customModule="gaios" customModuleProvider="target" propertyAccessControl="none" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="UDg-yk-7Wh" customClass="ReceiveBtcView" customModule="gaios" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="qlN-GG-xcs"/>
-                        <color key="backgroundColor" name="customTitaniumDark"/>
-                    </view>
-                    <navigationItem key="navigationItem" title="Receive" id="2PC-cD-kAY">
-                        <barButtonItem key="backBarButtonItem" title=" " id="Fir-pb-QXN"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="DTG-Jq-mq7">
-                            <connections>
-                                <action selector="refreshClick:" destination="R7F-mq-oqL" id="IlF-pk-ia2"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
-                    <connections>
-                        <outlet property="content" destination="UDg-yk-7Wh" id="XkR-iJ-ToA"/>
-                        <segue destination="SIm-iI-3C4" kind="presentation" identifier="auth_info" id="q8M-QR-zkO"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="17k-IJ-Clx" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7446" y="907"/>
-        </scene>
-        <!--AccountInfoViewController-->
-        <scene sceneID="Yxm-PF-MYW">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Accounts" referencedIdentifier="AccountInfoViewController" id="SIm-iI-3C4" sceneMemberID="viewController"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Yvr-3v-zHf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="8046" y="907"/>
-        </scene>
         <!--System Message View Controller-->
         <scene sceneID="GjV-kl-YkR">
             <objects>

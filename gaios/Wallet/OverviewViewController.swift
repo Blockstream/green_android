@@ -185,11 +185,6 @@ class OverviewViewController: UIViewController {
             vc.wallet = presentingWallet
             navigationController?.pushViewController(vc, animated: true)
         }
-//        let storyboard = UIStoryboard(name: "Wallet", bundle: nil)
-//        if let vc = storyboard.instantiateViewController(withIdentifier: "ReceiveBtcViewController") as? ReceiveBtcViewController {
-//            vc.wallet = presentingWallet
-//            navigationController?.pushViewController(vc, animated: true)
-//        }
     }
 
     func systemMessageScreen(text: String) {
