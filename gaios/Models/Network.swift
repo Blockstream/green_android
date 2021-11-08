@@ -29,7 +29,7 @@ struct GdkNetwork: Codable, Equatable {
 
     /// Get the asset used to pay transaction fees
     func getFeeAsset() -> String {
-        return self.liquid ? self.policyAsset ?? "" : "btc"
+        return self.liquid ? self.policyAsset ?? "" : "ntw_btc"
     }
 }
 
@@ -45,7 +45,7 @@ func getGdkNetwork(_ network: String, data: [String: Any]? = nil) -> GdkNetwork 
     else {
         fatalError("invalid network")
     }
-    network.icon = network.network.lowercased() == "mainnet" ? "btc" : "btc_testnet"
-    network.icon = network.liquid ? "btc_liquid" : network.icon
+    network.icon = network.network.lowercased() == "mainnet" ? "ntw_btc" : "ntw_testnet"
+    network.icon = network.liquid ? "ntw_liquid" : network.icon
     return network
 }

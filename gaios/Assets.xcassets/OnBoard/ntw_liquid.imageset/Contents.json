@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "lbtc_main.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "lbtc_main@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "networksLiquid@2x.png",
+      "filename" : "lbtc_main@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

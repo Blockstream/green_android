@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "assetsBitcoinTestnet.pdf",
-      "idiom" : "universal"
+      "filename" : "btc_test.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "btc_test@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "btc_test@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {
