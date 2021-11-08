@@ -154,7 +154,9 @@ class ReceiveViewController: UIViewController {
             btnEdit.isHidden = true
             return address
         }
-        btnEdit.isHidden = false
+        if !(account?.gdkNetwork?.liquid ?? false) {
+            btnEdit.isHidden = false
+        }
         return String(format: "%@:%@?amount=%.8f", ntwPrefix, address, toBTC(satoshi!))
     }
 
