@@ -82,10 +82,6 @@ class ReceiveViewModel @AssistedInject constructor(
             session.hwWallet?.observable(timeout = 30) {
                 val subAccount = session.getSubAccount(session.activeAccount)
                 it.getGreenAddress(subAccount.getSubaccountDataV3(), address.branch, address.pointer, address.subType ?: 0)
-            }?.doOnSubscribe {
-                onProgress.postValue(true)
-            }?.doOnTerminate {
-                onProgress.postValue(false)
             }?.subscribeBy(
                 onError = {
                     onError.value = ConsumableEvent(it)

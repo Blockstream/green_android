@@ -68,12 +68,12 @@ class DeviceInfoFragment : AppFragment<DeviceInfoFragmentBinding>(
     override fun getAppViewModel(): AppViewModel = viewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         if (deviceManager.getDevice(args.deviceId) == null) {
             findNavController().popBackStack()
             return
         }
+
+        super.onViewCreated(view, savedInstanceState)
 
         // Get result from AddWalletFragment accepting terms
         getNavigationResult<String>()?.observe(viewLifecycleOwner) { network ->
