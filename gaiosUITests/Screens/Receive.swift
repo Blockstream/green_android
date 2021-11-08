@@ -1,15 +1,15 @@
 import XCTest
 
-class ReceiveBtc: Screen {
+class Receive: Screen {
 
     override var rootElement: XCUIElement {
-        return app.otherElements[AccessibilityIdentifiers.ReceiveBtcScreen.view]
+        return app.otherElements[AccessibilityIdentifiers.ReceiveScreen.view]
     }
     
     
     @discardableResult
     func tapQrCode() -> Self {
-        tap(app.images[AccessibilityIdentifiers.ReceiveBtcScreen.qrCodeView])
+        tap(button: AccessibilityIdentifiers.ReceiveScreen.qrCodeBtn)
         return self
     }
     

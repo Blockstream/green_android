@@ -151,10 +151,9 @@ struct AccessibilityIdentifiers {
         static let loginBtn = "login_btn"
     }
     
-    struct ReceiveBtcScreen {
-        static let view = "view_receive_btc"
-        static let qrCodeView = "qr_code_view"
-
+    struct ReceiveScreen {
+        static let view = "view_receive"
+        static let qrCodeBtn = "qr_code_btn"
     }
     
     struct SendBtcScreen {

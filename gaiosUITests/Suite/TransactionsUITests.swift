@@ -11,7 +11,7 @@ class TransactionstUITests: XCTestBase {
             .pause(1)
             .tapReceive()
         
-        ReceiveBtc()
+        Receive()
             .pause(1)
             .tapQrCode()
             .pause(1)

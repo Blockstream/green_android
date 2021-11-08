@@ -78,7 +78,7 @@
 		344FE35326850C8500C087A5 /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344FE35226850C8500C087A5 /* Container.swift */; };
 		345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142802693148B00E8BE1B /* TransactionsUITests.swift */; };
 		345142832693154100E8BE1B /* XCTestBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142822693154100E8BE1B /* XCTestBase.swift */; };
-		3451428526932B9300E8BE1B /* ReceiveBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428426932B9300E8BE1B /* ReceiveBtc.swift */; };
+		3451428526932B9300E8BE1B /* Receive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428426932B9300E8BE1B /* Receive.swift */; };
 		3451428726933C6E00E8BE1B /* SendBtc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3451428626933C6E00E8BE1B /* SendBtc.swift */; };
 		345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345142882693445000E8BE1B /* SendBtcDetails.swift */; };
 		3452E6002696E2F4003F3FAA /* ChangePinUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */; };
@@ -395,7 +395,7 @@
 		344FE35226850C8500C087A5 /* Container.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Container.swift; sourceTree = "<group>"; };
 		345142802693148B00E8BE1B /* TransactionsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsUITests.swift; sourceTree = "<group>"; };
 		345142822693154100E8BE1B /* XCTestBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestBase.swift; sourceTree = "<group>"; };
-		3451428426932B9300E8BE1B /* ReceiveBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveBtc.swift; sourceTree = "<group>"; };
+		3451428426932B9300E8BE1B /* Receive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receive.swift; sourceTree = "<group>"; };
 		3451428626933C6E00E8BE1B /* SendBtc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtc.swift; sourceTree = "<group>"; };
 		345142882693445000E8BE1B /* SendBtcDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendBtcDetails.swift; sourceTree = "<group>"; };
 		3452E5FF2696E2F4003F3FAA /* ChangePinUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePinUITests.swift; sourceTree = "<group>"; };
@@ -772,7 +772,7 @@
 				344B1BBB268C5567000182B0 /* Mnemonic.swift */,
 				34C978A4268DAF740061264D /* Settings.swift */,
 				34C978A9268DDD8C0061264D /* WatchOnly.swift */,
-				3451428426932B9300E8BE1B /* ReceiveBtc.swift */,
+				3451428426932B9300E8BE1B /* Receive.swift */,
 				3451428626933C6E00E8BE1B /* SendBtc.swift */,
 				345142882693445000E8BE1B /* SendBtcDetails.swift */,
 				34767E0D269439F4005F938B /* SendBtcConfirmation.swift */,
@@ -2010,7 +2010,7 @@
 				3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */,
 				34C978A8268DC14D0061264D /* Extensions.swift in Sources */,
 				345142892693445000E8BE1B /* SendBtcDetails.swift in Sources */,
-				3451428526932B9300E8BE1B /* ReceiveBtc.swift in Sources */,
+				3451428526932B9300E8BE1B /* Receive.swift in Sources */,
 				349DB75F26A84D17004FF265 /* TorUITests.swift in Sources */,
 				344FE34D2684CB3900C087A5 /* SetPin.swift in Sources */,
 				3434767026823B1A00D7AD43 /* ChooseNetwork.swift in Sources */,

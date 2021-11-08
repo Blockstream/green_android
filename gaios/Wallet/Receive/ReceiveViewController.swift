@@ -41,6 +41,9 @@ class ReceiveViewController: UIViewController {
         helpBtn.setImage(UIImage(named: "ic_help"), for: .normal)
         helpBtn.addTarget(self, action: #selector(helpBtnTap), for: .touchUpInside)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: helpBtn)
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.view
+        btnQRCode.accessibilityIdentifier = AccessibilityIdentifiers.ReceiveScreen.qrCodeBtn
     }
 
     override func viewWillAppear(_ animated: Bool) {
