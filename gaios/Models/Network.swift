@@ -29,7 +29,7 @@ struct GdkNetwork: Codable, Equatable {
 
     /// Get the asset used to pay transaction fees
     func getFeeAsset() -> String {
-        return self.liquid ? self.policyAsset ?? "" : "ntw_btc"
+        return self.liquid ? self.policyAsset ?? "" : "btc"
     }
 }
 
