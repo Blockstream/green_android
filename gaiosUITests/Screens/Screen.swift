@@ -38,7 +38,9 @@ class Screen {
     
     @discardableResult
     func type(value: String, in element: XCUIElement) -> Self {
-        element.tap()
+        if !element.hasFocus() {
+            element.tap()
+        }
         element.typeText(value)
         return self
     }
