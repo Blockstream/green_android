@@ -26,13 +26,13 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
         tx.assets(session.network)
     }
 
-    val date
-        get() = tx.createdAt.formatAuto()
+    val date by lazy { tx.createdAt.formatAuto() }
 
-    val memo: String
-        get() = tx.memo
+    val memo: String by lazy {
+        tx.memo
             .replace("\n", " ")
             .replace("\\s+".toRegex(), " ")
+    }
 
     val fee : String
         get() = tx.fee.toBTCLook(session, withUnit = true, withGrouping = true, withMinimumDigits = true)
@@ -47,26 +47,43 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
 
     fun isPolicyAsset(index: Int) = assets[index].first == session.policyAsset
 
-
+    // Cache amounts to avoid calling convert every time for performance reasons
+    private val cacheAmounts = hashMapOf<Int, String>()
     fun amount(index: Int): String {
-        if (tx.txType == Transaction.Type.REDEPOSIT) {
-            return tx.fee.toBTCLook(session, withUnit = false, withDirection = tx.txType, withGrouping = true, withMinimumDigits = true)
-        }
-
-        assets[index].let{
-            return if(it.first == session.network.policyAsset){
-                it.second.toBTCLook(session, withUnit = false, withDirection = tx.txType, withGrouping = true, withMinimumDigits = true)
-            }else{
-                val assetId = it.first
-                it.second.toAssetLook(
+        if(!cacheAmounts.containsKey(index)) {
+            if (tx.txType == Transaction.Type.REDEPOSIT) {
+                cacheAmounts[index] = tx.fee.toBTCLook(
                     session,
-                    assetId,
                     withUnit = false,
                     withDirection = tx.txType,
-                    withGrouping = true
+                    withGrouping = true,
+                    withMinimumDigits = true
                 )
+            } else {
+                cacheAmounts[index] = assets[index].let {
+                     if (it.first == session.network.policyAsset) {
+                        it.second.toBTCLook(
+                            session,
+                            withUnit = false,
+                            withDirection = tx.txType,
+                            withGrouping = true,
+                            withMinimumDigits = true
+                        )
+                    } else {
+                        val assetId = it.first
+                        it.second.toAssetLook(
+                            session,
+                            assetId,
+                            withUnit = false,
+                            withDirection = tx.txType,
+                            withGrouping = true
+                        )
+                    }
+                }
             }
         }
+
+        return cacheAmounts[index] ?: ""
     }
 
 
