@@ -3,14 +3,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.7.6] - 2021-11-10
 ### Added
-- Supports GDK 0.0.47
+- Support to connect to your personal electrum server in app settings
 
 ### Changed
+- Supports GDK 0.0.47
+- Update project dependencies
 
 ### Fixed
-- Disconnect Ledger X when on Dashboard app
+- Disconnects Ledger X sessions when on Dashboard app
+- Accounts renaming
+- Pasting PGP keys in settings
+- Biometric authentication for Android 12
 
 ## [3.7.5] - 2021-10-26
 ### Changed
