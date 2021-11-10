@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+
+### Added
+
+### Changed
+
+### Fixed
+
 ## [3.7.6] - 2021-11-10
 ### Added
 - Support for send to bech32m P2TR address types, available 144 blocks after Taproot activation
