@@ -47,11 +47,13 @@
 "id_address_1s" = "Adres: %1$@";
 "id_address_copied_to_clipboard" = "Adres gekopieerd naar klembord";
 "id_address_verified" = "Address verified!";
+"id_address_was_filled_by_a_payment" = "Address was filled by a Payment URI";
 "id_addresses" = "Addresses";
 "id_advanced" = "Advanced";
 "id_advanced_network_settings" = "Geavanceerde netwerkinstellingen";
 "id_advanced_options_for_your_third" = "Advanced options for your third recovery key";
 "id_all" = "Alles";
+"id_all_assets" = "All Assets";
 "id_all_of_the_accounts_in_your" = "All of the accounts in your wallet need to be empty before deleting it.";
 "id_all_the_coins_received_or" = "All the coins received or created as change.";
 "id_all_wallets" = "All wallets";
@@ -74,10 +76,13 @@
 "id_assets" = "Assets";
 "id_attempts_remaining_d" = "Resterende pogingen: %d";
 "id_authenticate_to_view_the" = "Authenticate to view the recovery phrase";
+"id_authentication_error_s" = "Authentication error: %@";
+"id_authentication_failed" = "Authentication failed";
 "id_authenticator_app" = "Authenticator app";
 "id_authenticator_qr_code" = "Authenticator QR Code";
 "id_authenticator_secret_key" = "Authenticator secret key";
 "id_auto_logout_timeout" = "Time-out auto-afmelding";
+"id_auto_logout_timeout_expired" = "Auto logout timeout expired";
 "id_autolock_after" = "Auto-vergrendeling na";
 "id_back" = "Back";
 "id_back_up_recovery_phrase" = "Back Up Recovery Phrase";
@@ -87,6 +92,7 @@
 "id_be_sure_your_recovery_phrase_is" = "Be sure your recovery phrase is backed up before removing this wallet.";
 "id_biometric_login_is_disabled" = "Biometric Login is Disabled";
 "id_biometric_login_is_enabled" = "Biometric Login is Enabled";
+"id_biometrics_authentication" = "Biometrics Authentication";
 "id_bip49_accounts_allow_you_to" = "BIP49 accounts allow you to segregate funds, and to receive on wrapped segwit addresses, thus ensuring the highest backwards compatibility when receiving funds from anyone on the network.";
 "id_bip84_accounts_allow_you_to" = "BIP84 accounts allow you to segregate your funds, and to receive on bech32 native segwit addresses. This account type ensures cheaper transactions when sending funds, but not all services support bech32 addresses yet.";
 "id_bitcoin_denomination" = "Bitcoin-waardevertoning";
@@ -119,6 +125,7 @@
 "id_change_address" = "Change address";
 "id_change_pin" = "Change PIN";
 "id_changing_reference_exchange" = "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to adjust the 2FA threshold after spending.";
+"id_check_for_updates" = "Check for updates";
 "id_check_for_updates_on_startup" = "Check for updates on startup";
 "id_check_your_backup" = "Check your backup";
 "id_choose" = "Kiezen";
@@ -228,6 +235,7 @@
 "id_deleting_your_pin_will_remove" = "Het verwijderen van je PIN zorgt ervoor dat je permanent geen toegang meer hebt tot je wallet, tenzij je beschikt over de woordenlijst. Druk op \"OK\" om door te gaan.";
 "id_denomination" = "Waardevertoning";
 "id_deposit" = "Storten";
+"id_details" = "Details";
 "id_device" = "Device";
 "id_devices" = "Devices";
 "id_disable" = "Uitschakelen";
@@ -401,6 +409,7 @@
 "id_invalid_address" = "Ongeldig adres";
 "id_invalid_amount" = "Ongeldig bedrag";
 "id_invalid_clipboard_contents" = "Invalid clipboard contents";
+"id_invalid_merkle_proof" = "Invalid Merkle proof";
 "id_invalid_mnemonic" = "Ongeldige woordenlijst";
 "id_invalid_mnemonic_continue" = "Invalid mnemonic. Continue typing or ask for help";
 "id_invalid_mnemonic_must_be_24_or" = "Ongeldige woordenlijst (24 of 27 woorden vereist)";
@@ -442,6 +451,8 @@
 "id_liquid_electrum_server" = "Liquid Electrum server";
 "id_liquid_is_a_sidechainbased" = "Liquid is a sidechain-based settlement network for traders and exchanges, enabling faster, more confidential Bitcoin transactions and the issuance of digital assets.";
 "id_liquid_securities" = "Liquid Securities";
+"id_liquid_testnet_electrum_server" = "Liquid Testnet Electrum Server";
+"id_liquid_testnet_wallets" = "Liquid testnet wallets";
 "id_liquid_wallets" = "Liquid wallets";
 "id_loading" = "Loading";
 "id_loading_accounts" = "Loading accounts…";
@@ -494,8 +505,8 @@
 "id_months" = "maanden";
 "id_more_info" = "More Info";
 "id_more_options" = "More Options";
+"id_multi_server_validation" = "Multi Server Validation";
 "id_multiple_assets" = "Meerdere assets";
-"id_multiserver_validation" = "Multi-server validation";
 "id_multisig_shield" = "Multisig Shield";
 "id_my_notes" = "MIJN NOTITIES";
 "id_name" = "Naam";
@@ -521,6 +532,7 @@
 "id_nfc_logo" = "NFC-logo";
 "id_nfc_tags_written" = "NFC-tags beschreven:";
 "id_no_amount_specified" = "Geen bedrag opgegeven";
+"id_no_asset_in_this_account" = "No asset in this account";
 "id_no_attempts_remaining" = "Geen pogingen meer";
 "id_no_device_connected" = "No device connected";
 "id_no_more_assets" = "No more assets.";
@@ -541,6 +553,7 @@
 "id_not_confidential" = "Not confidential";
 "id_not_connected_connecting_in_ds_" = "Niet verbonden. Verbinden in %ds …";
 "id_not_initialized" = "Not initialized";
+"id_not_on_longest_chain" = "Not on longest chain";
 "id_notifications" = "Notificaties";
 "id_now" = "Nu";
 "id_of_24" = "of 24";
@@ -572,6 +585,7 @@
 "id_path_used_for_signing" = "Path used for signing";
 "id_pending_confirmation" = "Pending confirmation";
 "id_permanently_block_this_wallet" = "Permanently Block This Wallet";
+"id_personal_electrum_server" = "Personal Electrum Server";
 "id_pgp_key" = "PGP-sleutel";
 "id_phone_call" = "Telefoongesprek";
 "id_phone_number" = "Telefoonnummer";
@@ -603,6 +617,7 @@
 "id_previous_fee" = "Previous fee";
 "id_privacy_policy" = "Privacybeleid";
 "id_private_but_less_stable" = "Private, but less stable connection";
+"id_private_key" = "Private Key";
 "id_problem_with_key_1s" = "Probleem met sleutel %1$@";
 "id_provide_this_id_to_the_asset" = "Geef je id aan een asset-uitgever indien daarom wordt gevraagd.";
 "id_provide_your_amp_id_to_the" = "Provide your AMP ID to the asset issuer if requested.";
@@ -612,6 +627,7 @@
 "id_qr_code" = "QR Code";
 "id_qr_scanner" = "QR-scanner";
 "id_radio_firmware" = "Radio firmware";
+"id_read_more" = "Read more";
 "id_read_more_at_our_s" = "Read more at our %@";
 "id_ready_to_start" = "Ready to start";
 "id_receive" = "Ontvangen";
@@ -826,6 +842,7 @@
 "id_tip_we_recommend_you_enable" = "Tip: We recommend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you'll have to wait at least one year until the 2FA expires.";
 "id_to" = "NAAR";
 "id_to_keep_you_in_control_of_your" = "To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don't move funds often enough.";
+"id_too_many_pin_attempts" = "Too many PIN attempts";
 "id_tor" = "Tor";
 "id_tor_connectivity_disabled" = "Tor-connectiviteit uitgeschakeld!";
 "id_tor_is_connected" = "Tor is connected";
@@ -870,6 +887,7 @@
 "id_unlock_jade_to_continue" = "Unlock Jade to continue";
 "id_unlocked_coins_can_be_spent_and" = "Unlocked coins can be spent and are included in your balance.";
 "id_unlocking_coins" = "Unlocking coins";
+"id_unstable_internet_connection" = "Unstable internet connection";
 "id_update" = "Update";
 "id_updated" = "bijgewerkt";
 "id_updating_firmware" = "Updating firmware…";
@@ -886,13 +904,14 @@
 "id_value_must_be_between_144_and" = "Value must be between 144 and 200000";
 "id_verified" = "Verified";
 "id_verify_on_device" = "Verify on Device";
+"id_verify_your_bitcoin" = "Verify your bitcoin transactions are included on the blockchain";
 "id_verify_your_pin" = "Controleer je PIN";
-"id_verify_your_transactions_are" = "Verify your transactions are included on the blockchain";
 "id_verifying_transactions" = "Verifying transactions…";
 "id_version" = "Versie";
 "id_version_1s" = "Versie: %1$@";
 "id_version_1s_2s" = "Versie %1$@ %2$@";
 "id_view_in_explorer" = "In Explorer bekijken";
+"id_view_more" = "View More";
 "id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_visit_the_blockstream_help" = "Visit the Blockstream Help Center";
 "id_waiting_for_transaction" = "Wachten op transactie…";
@@ -938,10 +957,12 @@
 "id_you_are_now_connected" = "Je bent nu verbonden";
 "id_you_can_change_these_later_on" = "You can change these later on.";
 "id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
+"id_you_have_clicked_a_payment_uri" = "You have clicked a Payment URI, select a wallet to handle it";
 "id_you_have_control_on_your_funds" = "Je hebt toegang tot je balans";
 "id_you_have_no_coins_to_send" = "You have no coins to send. Generate an address to receive some bitcoins.";
 "id_you_have_received_s" = "Je hebt %@ ontvangen";
 "id_you_have_successfully_changed" = "You have successfully changed your PIN";
+"id_you_have_to_authenticate_using" = "You have to Authenticate using biometrics";
 "id_you_have_tor_enabled_are_you" = "You have Tor enabled, are you sure you want to open this webpage?";
 "id_you_must_first_log_out_before" = "Je moet je afmelden voor je je kunt aanmelden.";
 "id_you_must_save_this_mnemonic_now" = "Je MOET deze woordenlijst NU opslaan";
@@ -952,6 +973,7 @@
 "id_youll_need_your_recovery_phrase" = "You'll need your recovery phrase to restore this wallet";
 "id_youll_see_your_coins_here_when" = "You'll see your coins here when you receive funds";
 "id_your_2fa_expires_so_that_if_you" = "Your 2FA expires, so that if you lose access to your 2FA method, or the Blockstream Green service becomes unavailable, you can always recover your bitcoin using this open source tool";
+"id_your_device_was_disconnected" = "Your device was disconnected";
 "id_your_favourite_exchange_rate_is" = "Your favourite exchange rate is not available at the moment. You can change it from settings.";
 "id_your_funds_are_secured_by" = "Your funds are secured by multiple keys, with one key on your device and another on our servers protected by your 2FA. Select this option for enhanced security.";
 "id_your_funds_are_secured_by_a" = "Your funds are secured by a single key held on your device. Simpler to set up and operate than multisig. If in doubt, select this option.";

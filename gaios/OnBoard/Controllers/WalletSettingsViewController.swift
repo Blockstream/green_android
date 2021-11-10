@@ -117,7 +117,7 @@ class WalletSettingsViewController: KeyboardViewController {
 
         lblSPVTitle.text = NSLocalizedString("id_custom_servers_and_validation", comment: "")
         lblSPVHint.text = NSLocalizedString("id_spv_mode_is_currently_available", comment: "")
-        lblSPVPersonalNodeTitle.text = NSLocalizedString("id_personal_node", comment: "")
+        lblSPVPersonalNodeTitle.text = NSLocalizedString("id_personal_electrum_server", comment: "")
         lblSPVPersonalNodeHint.text = NSLocalizedString("id_choose_the_electrum_servers_you", comment: "")
         lblSPVbtcServer.text = NSLocalizedString("id_bitcoin_electrum_server", comment: "")
         lblSPVliquidServer.text = NSLocalizedString("id_liquid_electrum_server", comment: "")
@@ -126,7 +126,7 @@ class WalletSettingsViewController: KeyboardViewController {
         fieldSPVliquidServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         fieldSPVtestnetServer.placeholder = NSLocalizedString("id_server_ip_and_port_ipport", comment: "")
         lblTxCheckTitle.text = NSLocalizedString("id_spv_verification", comment: "")
-        lblTxCheckHint.text = NSLocalizedString("id_verify_your_transactions_are", comment: "")
+        lblTxCheckHint.text = NSLocalizedString("id_verify_your_bitcoin", comment: "")
         lblMultiTitle.text = NSLocalizedString("id_multiserver_validation", comment: "")
         lblMultiHint.text = NSLocalizedString("id_double_check_spv_with_other", comment: "")
         lblElectBtcTitle.text = NSLocalizedString("id_bitcoin_electrum_server", comment: "")

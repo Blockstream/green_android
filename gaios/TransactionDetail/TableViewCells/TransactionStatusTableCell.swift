@@ -49,10 +49,10 @@ class TransactionStatusTableCell: UITableViewCell {
             spvVerifyLabel.text = NSLocalizedString("id_verified", comment: "")
         case "not_verified":
             spvVerifyLabel.textColor = .red
-            spvVerifyLabel.text = NSLocalizedString("Invalid SPV proof", comment: "")
+            spvVerifyLabel.text = NSLocalizedString("id_invalid_merkle_proof", comment: "")
         case "not_longest":
             spvVerifyLabel.textColor = .yellow
-            spvVerifyLabel.text = NSLocalizedString("Not on longest chain", comment: "")
+            spvVerifyLabel.text = NSLocalizedString("id_not_on_longest_chain", comment: "")
         default:
             spvVerifyLabel.textColor = .white
             spvVerifyLabel.text = NSLocalizedString("id_verifying_transactions", comment: "")

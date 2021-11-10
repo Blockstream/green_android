@@ -47,11 +47,13 @@
 "id_address_1s" = "주소:%1$@";
 "id_address_copied_to_clipboard" = "클립보드로 주소 복사됨";
 "id_address_verified" = "Address verified!";
+"id_address_was_filled_by_a_payment" = "Address was filled by a Payment URI";
 "id_addresses" = "Addresses";
 "id_advanced" = "Advanced";
 "id_advanced_network_settings" = "네트워크 상세설정";
 "id_advanced_options_for_your_third" = "Advanced options for your third recovery key";
 "id_all" = "전부";
+"id_all_assets" = "All Assets";
 "id_all_of_the_accounts_in_your" = "All of the accounts in your wallet need to be empty before deleting it.";
 "id_all_the_coins_received_or" = "All the coins received or created as change.";
 "id_all_wallets" = "All wallets";
@@ -74,10 +76,13 @@
 "id_assets" = "Assets";
 "id_attempts_remaining_d" = "남은 시도: %d";
 "id_authenticate_to_view_the" = "Authenticate to view the recovery phrase";
+"id_authentication_error_s" = "Authentication error: %@";
+"id_authentication_failed" = "Authentication failed";
 "id_authenticator_app" = "Authenticator app";
 "id_authenticator_qr_code" = "Authenticator QR Code";
 "id_authenticator_secret_key" = "Authenticator secret key";
 "id_auto_logout_timeout" = "자동 로그아웃 시간";
+"id_auto_logout_timeout_expired" = "Auto logout timeout expired";
 "id_autolock_after" = "자동 잠금 시간";
 "id_back" = "Back";
 "id_back_up_recovery_phrase" = "Back Up Recovery Phrase";
@@ -87,6 +92,7 @@
 "id_be_sure_your_recovery_phrase_is" = "Be sure your recovery phrase is backed up before removing this wallet.";
 "id_biometric_login_is_disabled" = "Biometric Login is Disabled";
 "id_biometric_login_is_enabled" = "Biometric Login is Enabled";
+"id_biometrics_authentication" = "Biometrics Authentication";
 "id_bip49_accounts_allow_you_to" = "BIP49 accounts allow you to segregate funds, and to receive on wrapped segwit addresses, thus ensuring the highest backwards compatibility when receiving funds from anyone on the network.";
 "id_bip84_accounts_allow_you_to" = "BIP84 accounts allow you to segregate your funds, and to receive on bech32 native segwit addresses. This account type ensures cheaper transactions when sending funds, but not all services support bech32 addresses yet.";
 "id_bitcoin_denomination" = "비트코인 단위명";
@@ -119,6 +125,7 @@
 "id_change_address" = "Change address";
 "id_change_pin" = "Change PIN";
 "id_changing_reference_exchange" = "Changing reference exchange rate will reset your 2FA threshold to 0. Remember to adjust the 2FA threshold after spending.";
+"id_check_for_updates" = "Check for updates";
 "id_check_for_updates_on_startup" = "Check for updates on startup";
 "id_check_your_backup" = "Check your backup";
 "id_choose" = "선택";
@@ -228,6 +235,7 @@
 "id_deleting_your_pin_will_remove" = "비밀번호를 삭제할 경우 니모닉(복원 코드)이 없으면 영원히 지갑을 사용하실 수 없게 됩니다. 진행하시려면 \"확인\"을 누르세요.";
 "id_denomination" = "단위";
 "id_deposit" = "입금";
+"id_details" = "Details";
 "id_device" = "Device";
 "id_devices" = "Devices";
 "id_disable" = "비활성화";
@@ -401,6 +409,7 @@
 "id_invalid_address" = "유효하지 않은 주소";
 "id_invalid_amount" = "유효하지 않은 액수";
 "id_invalid_clipboard_contents" = "Invalid clipboard contents";
+"id_invalid_merkle_proof" = "Invalid Merkle proof";
 "id_invalid_mnemonic" = "유효하지 않은 니모닉(복원 코드)";
 "id_invalid_mnemonic_continue" = "Invalid mnemonic. Continue typing or ask for help";
 "id_invalid_mnemonic_must_be_24_or" = "유효하지 않은 니모닉(복원 코드) (24개 또는 27 단어여야 합니다)";
@@ -442,6 +451,8 @@
 "id_liquid_electrum_server" = "Liquid Electrum server";
 "id_liquid_is_a_sidechainbased" = "Liquid is a sidechain-based settlement network for traders and exchanges, enabling faster, more confidential Bitcoin transactions and the issuance of digital assets.";
 "id_liquid_securities" = "Liquid Securities";
+"id_liquid_testnet_electrum_server" = "Liquid Testnet Electrum Server";
+"id_liquid_testnet_wallets" = "Liquid testnet wallets";
 "id_liquid_wallets" = "Liquid wallets";
 "id_loading" = "Loading";
 "id_loading_accounts" = "Loading accounts…";
@@ -494,8 +505,8 @@
 "id_months" = "달";
 "id_more_info" = "More Info";
 "id_more_options" = "More Options";
+"id_multi_server_validation" = "Multi Server Validation";
 "id_multiple_assets" = "여러 자산들";
-"id_multiserver_validation" = "Multi-server validation";
 "id_multisig_shield" = "Multisig Shield";
 "id_my_notes" = "내 메모";
 "id_name" = "이름";
@@ -521,6 +532,7 @@
 "id_nfc_logo" = "NFC 로고";
 "id_nfc_tags_written" = "쓰여진 NFC 태그들:";
 "id_no_amount_specified" = "금액을 지정하지 않았습니다";
+"id_no_asset_in_this_account" = "No asset in this account";
 "id_no_attempts_remaining" = "시도 남지 않음";
 "id_no_device_connected" = "No device connected";
 "id_no_more_assets" = "No more assets.";
@@ -541,6 +553,7 @@
 "id_not_confidential" = "Not confidential";
 "id_not_connected_connecting_in_ds_" = "접속되지 않았습니다. 접속 시도 중 %d 초...";
 "id_not_initialized" = "Not initialized";
+"id_not_on_longest_chain" = "Not on longest chain";
 "id_notifications" = "알람";
 "id_now" = "지금";
 "id_of_24" = "of 24";
@@ -572,6 +585,7 @@
 "id_path_used_for_signing" = "Path used for signing";
 "id_pending_confirmation" = "Pending confirmation";
 "id_permanently_block_this_wallet" = "Permanently Block This Wallet";
+"id_personal_electrum_server" = "Personal Electrum Server";
 "id_pgp_key" = "PGP 키";
 "id_phone_call" = "전화";
 "id_phone_number" = "전화번호";
@@ -603,6 +617,7 @@
 "id_previous_fee" = "Previous fee";
 "id_privacy_policy" = "개인정보처리방침";
 "id_private_but_less_stable" = "Private, but less stable connection";
+"id_private_key" = "Private Key";
 "id_problem_with_key_1s" = "키 %1$@에 문제있음";
 "id_provide_this_id_to_the_asset" = "Provide this ID to the asset issuer if requested.";
 "id_provide_your_amp_id_to_the" = "Provide your AMP ID to the asset issuer if requested.";
@@ -612,6 +627,7 @@
 "id_qr_code" = "QR Code";
 "id_qr_scanner" = "QR 스캐너";
 "id_radio_firmware" = "Radio firmware";
+"id_read_more" = "Read more";
 "id_read_more_at_our_s" = "Read more at our %@";
 "id_ready_to_start" = "Ready to start";
 "id_receive" = "받기";
@@ -826,6 +842,7 @@
 "id_tip_we_recommend_you_enable" = "Tip: We recommend you enable more than one 2FA method. If you only set up one 2FA method and then lose it, you'll have to wait at least one year until the 2FA expires.";
 "id_to" = "받는 분";
 "id_to_keep_you_in_control_of_your" = "To keep you in control of your funds, Two-Factor Authentication protection expires after roughly %d days since your last payment. You will be prompted to make a Two-Factor Reactivation transaction, if you don't move funds often enough.";
+"id_too_many_pin_attempts" = "Too many PIN attempts";
 "id_tor" = "Tor";
 "id_tor_connectivity_disabled" = "Tor 연결이 비활성화됐습니다!";
 "id_tor_is_connected" = "Tor is connected";
@@ -870,6 +887,7 @@
 "id_unlock_jade_to_continue" = "Unlock Jade to continue";
 "id_unlocked_coins_can_be_spent_and" = "Unlocked coins can be spent and are included in your balance.";
 "id_unlocking_coins" = "Unlocking coins";
+"id_unstable_internet_connection" = "Unstable internet connection";
 "id_update" = "Update";
 "id_updated" = "업데이트됨";
 "id_updating_firmware" = "Updating firmware…";
@@ -886,13 +904,14 @@
 "id_value_must_be_between_144_and" = "Value must be between 144 and 200000";
 "id_verified" = "Verified";
 "id_verify_on_device" = "Verify on Device";
+"id_verify_your_bitcoin" = "Verify your bitcoin transactions are included on the blockchain";
 "id_verify_your_pin" = "비밀번호를 확인하세요";
-"id_verify_your_transactions_are" = "Verify your transactions are included on the blockchain";
 "id_verifying_transactions" = "Verifying transactions…";
 "id_version" = "버전";
 "id_version_1s" = "버전: %1$@";
 "id_version_1s_2s" = "버전 %1$@%2$@";
 "id_view_in_explorer" = "탐색기에서 보기";
+"id_view_more" = "View More";
 "id_visit_s_for_further_information" = "Visit %@ for further information about the software";
 "id_visit_the_blockstream_help" = "Visit the Blockstream Help Center";
 "id_waiting_for_transaction" = "거래 기다리는중...";
@@ -938,10 +957,12 @@
 "id_you_are_now_connected" = "연결되었습니다.";
 "id_you_can_change_these_later_on" = "You can change these later on.";
 "id_you_cannot_create_or_restore_a" = "You cannot create or restore a wallet on %@ as you already have a PIN protected wallet.";
+"id_you_have_clicked_a_payment_uri" = "You have clicked a Payment URI, select a wallet to handle it";
 "id_you_have_control_on_your_funds" = "자산의 모든 권한을 가지고 계십니다. ";
 "id_you_have_no_coins_to_send" = "You have no coins to send. Generate an address to receive some bitcoins.";
 "id_you_have_received_s" = "%@를 받았습니다";
 "id_you_have_successfully_changed" = "You have successfully changed your PIN";
+"id_you_have_to_authenticate_using" = "You have to Authenticate using biometrics";
 "id_you_have_tor_enabled_are_you" = "You have Tor enabled, are you sure you want to open this webpage?";
 "id_you_must_first_log_out_before" = "로그인하기 전에 로그아웃을 먼저 해야 합니다.";
 "id_you_must_save_this_mnemonic_now" = "지금 당장 이 니모닉(복원 코드)을 꼭 저장하여야 합니다.";
@@ -952,6 +973,7 @@
 "id_youll_need_your_recovery_phrase" = "You'll need your recovery phrase to restore this wallet";
 "id_youll_see_your_coins_here_when" = "You'll see your coins here when you receive funds";
 "id_your_2fa_expires_so_that_if_you" = "Your 2FA expires, so that if you lose access to your 2FA method, or the Blockstream Green service becomes unavailable, you can always recover your bitcoin using this open source tool";
+"id_your_device_was_disconnected" = "Your device was disconnected";
 "id_your_favourite_exchange_rate_is" = "Your favourite exchange rate is not available at the moment. You can change it from settings.";
 "id_your_funds_are_secured_by" = "Your funds are secured by multiple keys, with one key on your device and another on our servers protected by your 2FA. Select this option for enhanced security.";
 "id_your_funds_are_secured_by_a" = "Your funds are secured by a single key held on your device. Simpler to set up and operate than multisig. If in doubt, select this option.";
