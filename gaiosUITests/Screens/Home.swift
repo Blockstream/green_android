@@ -28,14 +28,15 @@ class Home: Screen {
         var existsWallet = walletLabel.waitForExistence(timeout: 3)
 
         var swipeUpTimes = 0
-        while !existsWallet && swipeUpTimes < maxSwipeUp {
-            rootElement.tables.cells.element(boundBy: 0).swipeUp()
+        while (!existsWallet || !walletLabel.isHittable) && swipeUpTimes < maxSwipeUp {
+//            rootElement.tables.cells.element(boundBy: 0).swipeUp()
+            rootElement.tables.firstMatch.swipeUp()
             swipeUpTimes += 1
 
             existsWallet = walletLabel.exists
         }
 
-        return existsWallet
+        return existsWallet && walletLabel.isHittable
     }
     
     @discardableResult

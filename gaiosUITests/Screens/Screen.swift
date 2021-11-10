@@ -2,7 +2,7 @@ import XCTest
 
 class Screen {
     static let defautlTimeOut: TimeInterval = 20
-    let maxSwipeUp = 1
+    let maxSwipeUp = 3
     let app = XCUIApplication()
 
     typealias Completion = (() -> Void)?
