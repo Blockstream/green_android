@@ -3,17 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.7.6] - 2021-11-10
 ### Added
-- SPV expose personal node settings
+- Support for send to bech32m P2TR address types, available 144 blocks after Taproot activation
+- Support to connect to your personal electrum server, available in app settings for singlesig wallets 
+- Support to validate transaction inclusion in a block (SPV), available in app settings for singlesig wallets 
 
 ### Changed
-- using gdk microsec for transaction date
-- Overhaul receive view
+- Revamps receive view with new UI and button to verify addresses on hardware wallets
+- Supports GDK 0.0.47
 
 ### Fixed
-- Fix unblinded url for liquid transactions
-- Improve ble scan and error messages
+- Loading of trasactions in the home view
+- URL with unblinding data for Liquid transactions
+- Improves BLE scanning and error messages
 
 ## [3.7.5] - 2021-10-27
 
