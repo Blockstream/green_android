@@ -49,11 +49,13 @@
   <string name="id_address_1s">Adresa: %1$s</string>
   <string name="id_address_copied_to_clipboard">Adresa byla zkopírována do schránky</string>
   <string name="id_address_verified">Adresa ověřena!</string>
+  <string name="id_address_was_filled_by_a_payment">Address was filled by a Payment URI</string>
   <string name="id_addresses">Adresy</string>
   <string name="id_advanced">Pokročilé</string>
   <string name="id_advanced_network_settings">Pokročilé nastavení sítě</string>
   <string name="id_advanced_options_for_your_third">Rozšířené možnosti pro třetí klíč pro obnovení</string>
   <string name="id_all">Vše</string>
+  <string name="id_all_assets">All Assets</string>
   <string name="id_all_of_the_accounts_in_your">Před odstraněním musí být všechny účty v peněžence prázdné.</string>
   <string name="id_all_the_coins_received_or">Všechny mince přijaté nebo vytvořené jako rozměněné.</string>
   <string name="id_all_wallets">Všechny peněženky</string>
@@ -76,10 +78,13 @@
   <string name="id_assets">Aktiva</string>
   <string name="id_attempts_remaining_d">Zbývající pokusy: %d</string>
   <string name="id_authenticate_to_view_the">Ověření pro zobrazení fráze pro obnovení</string>
+  <string name="id_authentication_error_s">Authentication error: %s</string>
+  <string name="id_authentication_failed">Authentication failed</string>
   <string name="id_authenticator_app">Autentizační aplikace</string>
   <string name="id_authenticator_qr_code">Autentizační QR kód</string>
   <string name="id_authenticator_secret_key">Tajný klíč autentizátoru</string>
   <string name="id_auto_logout_timeout">Časový limit automatického odhlášení</string>
+  <string name="id_auto_logout_timeout_expired">Auto logout timeout expired</string>
   <string name="id_autolock_after">Automatické uzamčení po</string>
   <string name="id_back">Zpět</string>
   <string name="id_back_up_recovery_phrase">Zálohovat frázi pro obnovení</string>
@@ -89,10 +94,11 @@
   <string name="id_be_sure_your_recovery_phrase_is">Před odstraněním této peněženky se ujistěte, že je vaše fráze pro obnovení zálohovaná.</string>
   <string name="id_biometric_login_is_disabled">Biometrické přihlášení je zakázáno</string>
   <string name="id_biometric_login_is_enabled">Biometrické přihlášení je povoleno</string>
+  <string name="id_biometrics_authentication">Biometrics Authentication</string>
   <string name="id_bip49_accounts_allow_you_to">Účty BIP49 umožňují oddělit prostředky a přijímat na zabalených adresách segwit, čímž je zajištěna nejvyšší zpětná kompatibilita při přijímání prostředků od kohokoli v síti.</string>
   <string name="id_bip84_accounts_allow_you_to">Účty BIP84 umožňují oddělit finanční prostředky a přijímat je na nativních adresách bech32 segwit. Tento typ účtu zajišťuje levnější transakce při odesílání prostředků, ale ne všechny služby zatím podporují adresy bech32.</string>
   <string name="id_bitcoin_denomination">Nominální hodnota bitcoinu</string>
-  <string name="id_bitcoin_electrum_server">Bitcoin Electrum server</string>
+  <string name="id_bitcoin_electrum_server">Server Bitcoin Electrum</string>
   <string name="id_bitcoin_is_the_worlds_leading">Bitcoin je přední světová P2P kryptoměnová síť. Vyberte pro odesílání a přijímání bitcoinů.</string>
   <string name="id_bitcoin_wallet">Bitcoin peněženka.</string>
   <string name="id_bitcoin_wallets">Bitcoinové peněženky</string>
@@ -121,6 +127,7 @@
   <string name="id_change_address">Změnit adresu</string>
   <string name="id_change_pin">Změnit PIN</string>
   <string name="id_changing_reference_exchange">Změnou referenčního směnného kurzu se nastaví prahová hodnota 2FA na 0. Po utrácení nezapomeňte upravit prahovou hodnotu 2FA.</string>
+  <string name="id_check_for_updates">Check for updates</string>
   <string name="id_check_for_updates_on_startup">Kontrola aktualizací při spuštění</string>
   <string name="id_check_your_backup">Zkontrolujte svou zálohu</string>
   <string name="id_choose">Zvolit</string>
@@ -165,7 +172,7 @@
   <string name="id_confirmations">Potvrzení</string>
   <string name="id_congratulations">Gratulujeme!</string>
   <string name="id_connect_hardware_wallet">Připojit hardwarovou peněženku</string>
-  <string name="id_connect_jade_with_a_usb_cable">Connect Jade with a USB cable to download the latest firmware update</string>
+  <string name="id_connect_jade_with_a_usb_cable">Připojte zařízení Jade pomocí USB kabelu a stáhněte si nejnovější aktualizaci firmwaru.</string>
   <string name="id_connect_through_a_proxy">Připojit se přes proxy</string>
   <string name="id_connect_with_tor">Připojit se přes Tor</string>
   <string name="id_connect_your_jade_to_use_it">Připojte svůj Jade a použijte jej s Green peněženkou</string>
@@ -210,7 +217,7 @@
   <string name="id_custom_network_added_enable_it">Přidána vlastní síť, povolte ji v nastavení sítě</string>
   <string name="id_custom_network_not_found">Vlastní síť nebyla nalezena</string>
   <string name="id_custom_network_with_this_name">Vlastní síť s tímto názvem již existuje</string>
-  <string name="id_custom_servers_and_validation">Custom servers and validation</string>
+  <string name="id_custom_servers_and_validation">Vlastní servery a ověřování</string>
   <string name="id_customize_2fa_expiration_of">Přizpůsobte si vypršení platnosti 2FA u vašich mincí </string>
   <string name="id_d6_confirmations">%d/6 potvrzení</string>
   <string name="id_d_asset_in_this_account">%d aktivum v tomto účtu</string>
@@ -230,6 +237,7 @@
   <string name="id_deleting_your_pin_will_remove">Smazáním kódu PIN se trvale odstraní přístup k peněžence, pokud nemáte k dispozici mnemonickou frázi. Pokračujte stisknutím tlačítka „OK“.</string>
   <string name="id_denomination">Nominální hodnota</string>
   <string name="id_deposit">Vklad</string>
+  <string name="id_details">Details</string>
   <string name="id_device">Zařízení</string>
   <string name="id_devices">Zařízení</string>
   <string name="id_disable">Zakázat</string>
@@ -403,6 +411,7 @@
   <string name="id_invalid_address">Neplatná adresa</string>
   <string name="id_invalid_amount">Neplatná částka</string>
   <string name="id_invalid_clipboard_contents">Neplatný obsah schránky</string>
+  <string name="id_invalid_merkle_proof">Invalid Merkle proof</string>
   <string name="id_invalid_mnemonic">Neplatná mnemotechnická fráze</string>
   <string name="id_invalid_mnemonic_continue">Neplatná mnemotechnická fráze. Pokračujte v psaní nebo požádejte o pomoc</string>
   <string name="id_invalid_mnemonic_must_be_24_or">Neplatná mnemotechnická fráze (musí mít 24 nebo 27 slov)</string>
@@ -441,9 +450,11 @@
   <string name="id_legacy_account">Starší účet</string>
   <string name="id_legacy_script_coins">Starší skriptové mince</string>
   <string name="id_lets_get_you_set_up">Pojďme se připravit.</string>
-  <string name="id_liquid_electrum_server">Liquid Electrum server</string>
+  <string name="id_liquid_electrum_server">Server Liquid Electrum</string>
   <string name="id_liquid_is_a_sidechainbased">Liquid je síť pro vypořádání založená na postranním řetězci pro obchodníky a burzy, která umožňuje rychlejší a důvěrnější bitcoinové transakce a vydávání digitálních aktiv.</string>
   <string name="id_liquid_securities">Liquid Securities</string>
+  <string name="id_liquid_testnet_electrum_server">Liquid Testnet Electrum Server</string>
+  <string name="id_liquid_testnet_wallets">Liquid testnet peněženky</string>
   <string name="id_liquid_wallets">Peněženky Liquid</string>
   <string name="id_loading">Načítání</string>
   <string name="id_loading_accounts">Načítání účtů…</string>
@@ -496,8 +507,8 @@
   <string name="id_months">měsíce</string>
   <string name="id_more_info">Více informací</string>
   <string name="id_more_options">Více možností</string>
+  <string name="id_multi_server_validation">Multi Server Validation</string>
   <string name="id_multiple_assets">Více aktiv</string>
-  <string name="id_multiserver_validation">Ověření více serverů</string>
   <string name="id_multisig_shield">Multisig Shield</string>
   <string name="id_my_notes">MOJE POZNÁMKY</string>
   <string name="id_name">Jméno</string>
@@ -523,6 +534,7 @@
   <string name="id_nfc_logo">NFC Logo</string>
   <string name="id_nfc_tags_written">NFC TAG(y) napsal:</string>
   <string name="id_no_amount_specified">Nebyla zadána žádná částka</string>
+  <string name="id_no_asset_in_this_account">No asset in this account</string>
   <string name="id_no_attempts_remaining">Nezbývají žádné pokusy</string>
   <string name="id_no_device_connected">Není připojeno žádné zařízení</string>
   <string name="id_no_more_assets">Žádná další aktiva.</string>
@@ -543,6 +555,7 @@
   <string name="id_not_confidential">Není důvěrné</string>
   <string name="id_not_connected_connecting_in_ds_">Nepřipojeno. Připojování za %d s ...</string>
   <string name="id_not_initialized">Není inicializováno</string>
+  <string name="id_not_on_longest_chain">Not on longest chain</string>
   <string name="id_notifications">Oznámení</string>
   <string name="id_now">Nyní</string>
   <string name="id_of_24">z 24</string>
@@ -574,6 +587,7 @@
   <string name="id_path_used_for_signing">Cesta používaná pro podepisování</string>
   <string name="id_pending_confirmation">Čekající transakce</string>
   <string name="id_permanently_block_this_wallet">Trvale blokovat tuto peněženku</string>
+  <string name="id_personal_electrum_server">Personal Electrum Server</string>
   <string name="id_pgp_key">PGP klíč</string>
   <string name="id_phone_call">Telefonát</string>
   <string name="id_phone_number">telefonní číslo</string>
@@ -605,6 +619,7 @@
   <string name="id_previous_fee">Předchozí poplatek</string>
   <string name="id_privacy_policy">Zásady ochrany osobních údajů</string>
   <string name="id_private_but_less_stable">Soukromé, ale méně stabilní připojení</string>
+  <string name="id_private_key">Private Key</string>
   <string name="id_problem_with_key_1s">Problém s klíčem %1$s</string>
   <string name="id_provide_this_id_to_the_asset">Na požádání poskytněte toto ID vydavateli aktiva.</string>
   <string name="id_provide_your_amp_id_to_the">Na požádání poskytněte své AMP ID vydavateli aktiva.</string>
@@ -614,6 +629,7 @@
   <string name="id_qr_code">QR kód</string>
   <string name="id_qr_scanner">QR čtečka</string>
   <string name="id_radio_firmware">Rádiový firmware</string>
+  <string name="id_read_more">Read more</string>
   <string name="id_read_more_at_our_s">Přečtěte si více na našem %s</string>
   <string name="id_ready_to_start">Připraveno ke spuštění</string>
   <string name="id_receive">Příjmout</string>
@@ -706,7 +722,7 @@
   <string name="id_sending_request">Odesílá se žádost…</string>
   <string name="id_sent">Odesláno</string>
   <string name="id_sent_to">Odesláno na</string>
-  <string name="id_server_ip_and_port_ipport">Server IP and port (ip:port)</string>
+  <string name="id_server_ip_and_port_ipport">IP adresa a port serveru (ip:port)</string>
   <string name="id_set_2fa_expiry">Nastavit vypršení platnosti 2FA</string>
   <string name="id_set_a_limit_to_spend_without">Nastavte limit pro utrácení bez 2-Faktorové autentizace</string>
   <string name="id_set_a_new_pin">Nastavit nový PIN</string>
@@ -761,7 +777,7 @@
   <string name="id_something_went_wrong">Něco se pokazilo</string>
   <string name="id_spend_your_bitcoin_without_2fa">Utraťte své bitcoiny bez 2FA až do určité hranice. Poté, co utratíte bitcoiny až do této částky, budete muset obnovit prahovou hodnotu, abyste mohli pokračovat v utrácení bez 2FA.</string>
   <string name="id_spv_is_always_synchronized_on">SPV je vždy synchronizován v jiných než mobilních sítích, jako je WiFi nebo Ethernet. Toto nastavení ho také synchronizuje při používání mobilních dat. To může být drahé v závislosti na vašem datovém plánu, takže při aktivaci buďte opatrní.</string>
-  <string name="id_spv_mode_is_currently_available">SPV mode is currently available for singlesig bitcoin wallets only.</string>
+  <string name="id_spv_mode_is_currently_available">Režim SPV je v současné době k dispozici pouze pro singlesig bitcoinové peněženky.</string>
   <string name="id_spv_not_fully_synced">SPV není plně synchronizováno</string>
   <string name="id_spv_notifications">Oznámení SPV</string>
   <string name="id_spv_reset_and_restarted">Obnovení a restartování SPV</string>
@@ -792,7 +808,7 @@
   <string name="id_telegram">Telegram</string>
   <string name="id_terms_of_service">Podmínky služby</string>
   <string name="id_terms_of_use">Podmínky použití</string>
-  <string name="id_testnet_electrum_server">Testnet Electrum server</string>
+  <string name="id_testnet_electrum_server">Server Testnet Electrum</string>
   <string name="id_testnet_wallets">Testnet peněženky</string>
   <string name="id_thank_you_for_downloading_green">Děkujeme za stažení Green! Pokud máte čas, zanechte nám prosím recenzi</string>
   <string name="id_the_1_year_2fa_reset_process">Proces resetování 2FA na 1 rok probíhal, ale někdo jej zablokoval zpochybněním resetování 2FA.</string>
@@ -810,7 +826,7 @@
   <string name="id_the_password_cant_be_empty">Heslo nemůže být prázdné</string>
   <string name="id_the_recovery_key_below_will_not">Klíč pro obnovení uvedený níže nebude znovu zobrazen. Vytvořte si prosím bezpečnou zálohu, abyste měli vždy přístup ke svým finančním prostředkům.</string>
   <string name="id_the_recovery_phrase_can_be_used">Frázi pro obnovení lze kdykoli použít k vyzvednutí finančních prostředků. Mějte ji v bezpečí a soukromí</string>
-  <string name="id_the_recovery_phrase_doesnt">The recovery phrase doesn\'t match the previously existing wallet. Please retry with a different recovery phrase.</string>
+  <string name="id_the_recovery_phrase_doesnt">Fráze pro obnovení se neshoduje s dříve existující peněženkou. Zkuste to prosím znovu s jinou frází pro obnovení.</string>
   <string name="id_the_source_code_is_available_at">Zdrojový kód je k dispozici na %s</string>
   <string name="id_the_transaction_contains">Transakce obsahuje nedůvěrné prostředky.</string>
   <string name="id_the_waiting_period_is_necessary">Čekací doba je nezbytná k zajištění bezpečnosti vaší peněženky, aby se zabránilo tomu, že by zloději obcházeli vaši ochranu dvou faktorů.</string>
@@ -820,7 +836,7 @@
   <string name="id_these_settings_apply_for_every">Tato nastavení platí pro každou peněženku, kterou používáte na Blockstream Green.</string>
   <string name="id_this_feature_is_coming_soon">Tato funkce se brzy objeví, zůstaňte naladěni!</string>
   <string name="id_this_transaction_spent">Tato transakce utratila nedůvěrné prostředky.</string>
-  <string name="id_this_wallet_operates_on_a_test">This wallet operates on a test network. Anything you receive or send here has no value</string>
+  <string name="id_this_wallet_operates_on_a_test">Tato peněženka funguje v testovací síti. Cokoli, co zde obdržíte nebo odešlete, nemá žádnou hodnotu.</string>
   <string name="id_this_will_disable_pin_login_for">Tím deaktivujete přihlášení pomocí PINu pro tuto peněženku na všech svých zařízeních. Pro přístup do peněženky budete potřebovat frázi pro obnovení.</string>
   <string name="id_this_will_log_you_out_and">Tím se odhlásíte a odstraníte tuto peněženku z aplikace a databáze serverů Blockstream.</string>
   <string name="id_ticker">Ticker</string>
@@ -828,6 +844,7 @@
   <string name="id_tip_we_recommend_you_enable">Tip: Doporučujeme povolit více než jednu metodu 2FA. Pokud nastavíte pouze jednu metodu 2FA a poté ji ztratíte, budete muset počkat alespoň jeden rok, než platnost 2FA vyprší.</string>
   <string name="id_to">KOMU</string>
   <string name="id_to_keep_you_in_control_of_your">Abyste si udrželi kontrolu nad svými prostředky, vyprší ochrana 2-Faktorové autentizace zhruba po %d dnech od vaší poslední platby. Pokud nepřesunete prostředky dostatečně často, budete vyzváni k provedení transakce dvoufaktorové reaktivace.</string>
+  <string name="id_too_many_pin_attempts">Too many PIN attempts</string>
   <string name="id_tor">Tor</string>
   <string name="id_tor_connectivity_disabled">Tor připojení zakázáno!</string>
   <string name="id_tor_is_connected">Tor je připojen</string>
@@ -872,6 +889,7 @@
   <string name="id_unlock_jade_to_continue">Chcete-li pokračovat, odemkněte Jade</string>
   <string name="id_unlocked_coins_can_be_spent_and">Odemčené mince lze utratit a jsou zahrnuty do vašeho zůstatku.</string>
   <string name="id_unlocking_coins">Odemykání mincí</string>
+  <string name="id_unstable_internet_connection">Unstable internet connection</string>
   <string name="id_update">Aktualizace</string>
   <string name="id_updated">aktualizováno</string>
   <string name="id_updating_firmware">Aktualizace firmwaru...</string>
@@ -886,15 +904,16 @@
   <string name="id_username">Uživatelské jméno</string>
   <string name="id_username_not_available">Uživatelské jméno není dostupné</string>
   <string name="id_value_must_be_between_144_and">Hodnota musí být mezi 144 a 200000</string>
-  <string name="id_verified">Verified</string>
+  <string name="id_verified">Ověřeno</string>
   <string name="id_verify_on_device">Ověřit na zařízení</string>
+  <string name="id_verify_your_bitcoin">Verify your bitcoin transactions are included on the blockchain</string>
   <string name="id_verify_your_pin">Ověřte svůj PIN</string>
-  <string name="id_verify_your_transactions_are">Ověřte, zda jsou vaše transakce zahrnuty do blockchainu</string>
-  <string name="id_verifying_transactions">Verifying transactions…</string>
+  <string name="id_verifying_transactions">Ověřování transakcí...</string>
   <string name="id_version">Verze</string>
   <string name="id_version_1s">Verze: %1$s</string>
   <string name="id_version_1s_2s">Verze %1$s %2$s</string>
   <string name="id_view_in_explorer">Zobrazit v průzkumníku</string>
+  <string name="id_view_more">View More</string>
   <string name="id_visit_s_for_further_information">Navštivte %s pro další informace o softwaru</string>
   <string name="id_visit_the_blockstream_help">Navštivte centrum nápovědy Blockstream</string>
   <string name="id_waiting_for_transaction">Čekání na transakci…</string>
@@ -940,10 +959,12 @@
   <string name="id_you_are_now_connected">Nyní jste připojeni</string>
   <string name="id_you_can_change_these_later_on">Později je můžete změnit.</string>
   <string name="id_you_cannot_create_or_restore_a">Nelze vytvořit ani obnovit peněženku na %s, protože již máte peněženku chráněnou pomocí PIN.</string>
+  <string name="id_you_have_clicked_a_payment_uri">You have clicked a Payment URI, select a wallet to handle it</string>
   <string name="id_you_have_control_on_your_funds">Máte kontrolu nad svými prostředky</string>
   <string name="id_you_have_no_coins_to_send">Nemáte žádné mince, které byste mohli poslat. Vygenerujte si adresu pro příjem bitcoinů.</string>
   <string name="id_you_have_received_s">Obdrželi jste %s</string>
   <string name="id_you_have_successfully_changed">Úspěšně jste změnili svůj PIN</string>
+  <string name="id_you_have_to_authenticate_using">You have to Authenticate using biometrics</string>
   <string name="id_you_have_tor_enabled_are_you">Máte povolen Tor, jste si jisti, že chcete otevřít tuto webovou stránku?</string>
   <string name="id_you_must_first_log_out_before">Před přihlášením se musíte nejprve odhlásit.</string>
   <string name="id_you_must_save_this_mnemonic_now">Tuto mnemotechnickou frázi si MUSÍTE ULOŽIT NYNÍ</string>
@@ -954,6 +975,7 @@
   <string name="id_youll_need_your_recovery_phrase">K obnovení této peněženky budete potřebovat frázi pro obnovení.</string>
   <string name="id_youll_see_your_coins_here_when">Zde uvidíte své mince, jakmile obdržíte finanční prostředky.</string>
   <string name="id_your_2fa_expires_so_that_if_you">Platnost vašeho 2FA vyprší, takže pokud ztratíte přístup ke své metodě 2FA nebo služba Blockstream Green nebude k dispozici, můžete své bitcoiny kdykoli obnovit pomocí tohoto nástroje s otevřeným zdrojovým kódem</string>
+  <string name="id_your_device_was_disconnected">Your device was disconnected</string>
   <string name="id_your_favourite_exchange_rate_is">Váš oblíbený směnný kurz není v tuto chvíli k dispozici. Můžete jej změnit z nastavení.</string>
   <string name="id_your_funds_are_secured_by">Vaše prostředky jsou zabezpečeny několika klíči, přičemž jeden klíč je na vašem zařízení a druhý na našich serverech chráněn vaším 2FA. Tuto možnost vyberte pro lepší zabezpečení.</string>
   <string name="id_your_funds_are_secured_by_a">Vaše prostředky jsou zabezpečeny jediným klíčem drženým ve vašem zařízení. Jednodušší nastavení a provoz než multisig. Pokud máte pochybnosti, vyberte tuto možnost.</string>

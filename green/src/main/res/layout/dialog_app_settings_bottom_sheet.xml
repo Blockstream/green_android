@@ -153,7 +153,7 @@
                 android:layout_marginBottom="4dp"
                 app:captionText="@string/id_choose_the_electrum_servers_you"
                 app:icon="@drawable/ic_electrum_60"
-                app:titleText="@string/id_personal_node" />
+                app:titleText="@string/id_personal_electrum_server" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/personalBitcoinElectrumServerInputLayout"
@@ -222,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="@string/id_testnet_liquid_electrum_server"
+                android:hint="@string/id_liquid_testnet_electrum_server"
                 tools:ignore="HardcodedText"
                 app:isVisible="@{vm.enableElectrumNode &amp;&amp; vm.enableTestnet}">
 
@@ -241,7 +241,7 @@
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableSPV}"
                 android:layout_marginBottom="4dp"
-                app:captionText="@string/id_verify_your_transactions_are"
+                app:captionText="@string/id_verify_your_bitcoin"
                 app:icon="@drawable/ic_spv_60"
                 app:titleText="@string/id_spv_verification" />
 
@@ -320,7 +320,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
-                android:hint="@string/id_testnet_liquid_electrum_server"
+                android:hint="@string/id_liquid_testnet_electrum_server"
                 tools:ignore="HardcodedText"
                 app:isVisible="@{vm.enableMultiServerValidation &amp;&amp; vm.enableTestnet}">
 

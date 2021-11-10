@@ -10,7 +10,7 @@ import java.security.InvalidAlgorithmParameterException
 fun Fragment.authenticateWithBiometrics(callback : AuthenticationCallback){
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle(getString(R.string.id_biometrics_authentication))
-        .setDescription(getString(R.string.id_you_have_to_authenticate_using_biometrics))
+        .setDescription(getString(R.string.id_you_have_to_authenticate_using))
         .setNegativeButtonText(getString(R.string.id_cancel))
         .setConfirmationRequired(false)
         .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
@@ -45,7 +45,7 @@ open class AuthenticationCallback(val fragment: Fragment) : BiometricPrompt.Auth
             // This is errorCode OK, no need to handle it
         } else {
             // TODO INVALIDATE ALL BIOMETRIC LOGIN CREDENTIALS
-            fragment.toast(fragment.getString(R.string.id_authentication_error, "$errorCode $errString"))
+            fragment.toast(fragment.getString(R.string.id_authentication_error_s, "$errorCode $errString"))
         }
     }
 

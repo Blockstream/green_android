@@ -20,7 +20,7 @@
   <string name="id_4_hours">~ 4 Часа</string>
   <string name="id_5_seconds_minimum">5 секунд минимум</string>
   <string name="id_6_months_25920_blocks">6 месяцев (25920 блоков)</string>
-  <string name="id_a_2of3_account_requires_two_out">Аккаунт 2of3 требует двух подписей из трех, чтобы тратить монеты. Третья подпись - это резервный ключ, известный только вам. Это дает вам преимущества безопасности стандартной учетной записи, в то же время позволяя вам перемещать свои монеты независимо в любой момент времени..</string>
+  <string name="id_a_2of3_account_requires_two_out">Аккаунт 2из3 требует двух подписей из трех, чтобы тратить монеты. Третья подпись - это резервный ключ, известный только вам. Это дает вам преимущества безопасности стандартной учетной записи, в то же время позволяя вам перемещать свои монеты независимо в любой момент времени.</string>
   <string name="id_a_new_transaction_has_just">Новая транзакция только что поступила на ваш кошелек.</string>
   <string name="id_a_screen_lock_must_be_enabled">Блокировка экрана должна быть включена в настройках Android</string>
   <string name="id_a_wallet_is_detected_on_this">На этом устройстве обнаружен кошелек:</string>
@@ -28,7 +28,7 @@
   <string name="id_accept">ПРИНЯТЬ</string>
   <string name="id_access">Доступ</string>
   <string name="id_account">АККАУНТ</string>
-  <string name="id_account_id">Идентификатор учетной записи</string>
+  <string name="id_account_id">ID аккаунта</string>
   <string name="id_account_name">Имя учетной записи</string>
   <string name="id_account_type">Тип учетной записи</string>
   <string name="id_accounts_summary">Сводка по счетам</string>
@@ -49,11 +49,13 @@
   <string name="id_address_1s">Адрес: %1$s</string>
   <string name="id_address_copied_to_clipboard">Адрес скопирован в буфер обмена</string>
   <string name="id_address_verified">Адрес подтвержден!</string>
+  <string name="id_address_was_filled_by_a_payment">Address was filled by a Payment URI</string>
   <string name="id_addresses">Адреса</string>
   <string name="id_advanced">Передовой</string>
   <string name="id_advanced_network_settings">Расширенные настройки сети</string>
   <string name="id_advanced_options_for_your_third">Расширенные параметры для вашего третьего ключа восстановления</string>
   <string name="id_all">Все</string>
+  <string name="id_all_assets">All Assets</string>
   <string name="id_all_of_the_accounts_in_your">Перед удалением все аккаунты в вашем кошельке должны быть пустыми.</string>
   <string name="id_all_the_coins_received_or">Все монеты, полученные или созданные в качестве сдачи.</string>
   <string name="id_all_wallets">Все кошельки</string>
@@ -76,10 +78,13 @@
   <string name="id_assets">Активы</string>
   <string name="id_attempts_remaining_d">Осталось попыток: %d</string>
   <string name="id_authenticate_to_view_the">Выполните аутентификацию, чтобы просмотреть фразу восстановления</string>
+  <string name="id_authentication_error_s">Authentication error: %s</string>
+  <string name="id_authentication_failed">Authentication failed</string>
   <string name="id_authenticator_app">Приложение для аутентификации</string>
   <string name="id_authenticator_qr_code">QR-код аутентификатора</string>
   <string name="id_authenticator_secret_key">Секретный ключ аутентификатора</string>
   <string name="id_auto_logout_timeout">Автоматический выход</string>
+  <string name="id_auto_logout_timeout_expired">Auto logout timeout expired</string>
   <string name="id_autolock_after">Автоматическая блокировка</string>
   <string name="id_back">Назад</string>
   <string name="id_back_up_recovery_phrase">Бэкап фразы восстановления</string>
@@ -89,10 +94,11 @@
   <string name="id_be_sure_your_recovery_phrase_is">Перед удалением кошелька убедитесь, что вы сделали резервную копию фразы восстановления.</string>
   <string name="id_biometric_login_is_disabled">Биометрический вход отключен</string>
   <string name="id_biometric_login_is_enabled">Биометрический вход включен</string>
+  <string name="id_biometrics_authentication">Biometrics Authentication</string>
   <string name="id_bip49_accounts_allow_you_to">Учетные записи BIP49 позволяют разделять средства и получать их на SegWit адреса, обеспечивая тем самым высочайшую обратную совместимость при получении средств от кого-либо в сети.</string>
   <string name="id_bip84_accounts_allow_you_to">Учетные записи BIP84 позволяют разделять ваши средства и получать их на собственные SegWit адреса в формате bech32. Этот тип счета обеспечивает более дешевые транзакции при отправке средств, но пока не все сервисы поддерживают адреса в формате bech32.</string>
   <string name="id_bitcoin_denomination">Деноминация биткоина</string>
-  <string name="id_bitcoin_electrum_server">Bitcoin Electrum server</string>
+  <string name="id_bitcoin_electrum_server">Electrum-сервер для Bitcoin</string>
   <string name="id_bitcoin_is_the_worlds_leading">Bitcoin - ведущая в мире сеть криптовалют P2P. Выберите, чтобы отправлять и получать биткоины.</string>
   <string name="id_bitcoin_wallet">Биткоин-кошелек</string>
   <string name="id_bitcoin_wallets">Биткоин-кошельки</string>
@@ -107,7 +113,7 @@
   <string name="id_blockstream_greennsimple_and">Blockstream Green:\nПросто и безопасно</string>
   <string name="id_blockstream_store">Магазин Blockstream</string>
   <string name="id_btchip_is_not_set_up_please_set">BTChip не установлен. Для того, чтобы использовать BTChip, пожалуйста, установите десктоп-приложение.</string>
-  <string name="id_by_proceeding_to_the_next_steps">Переходя к следующему шагу, вы соглашаетесь с 1%s</string>
+  <string name="id_by_proceeding_to_the_next_steps">Переходя к следующему шагу, вы соглашаетесь с %s</string>
   <string name="id_cable">Кабель</string>
   <string name="id_call">Звонок</string>
   <string name="id_camera_problem">Проблема с камерой</string>
@@ -121,6 +127,7 @@
   <string name="id_change_address">Сменить адрес</string>
   <string name="id_change_pin">Изменить PIN-код</string>
   <string name="id_changing_reference_exchange">При изменении референтного обменного курса ваш порог 2FA сбрасывается до 0. Не забудьте настроить порог 2FA после траты.</string>
+  <string name="id_check_for_updates">Check for updates</string>
   <string name="id_check_for_updates_on_startup">Проверять обновления при запуске</string>
   <string name="id_check_your_backup">Проверьте свою резервную копию</string>
   <string name="id_choose">Выбрать</string>
@@ -165,7 +172,7 @@
   <string name="id_confirmations">Подтверждения</string>
   <string name="id_congratulations">Поздравляем!</string>
   <string name="id_connect_hardware_wallet">Подключите аппаратный кошелек</string>
-  <string name="id_connect_jade_with_a_usb_cable">Connect Jade with a USB cable to download the latest firmware update</string>
+  <string name="id_connect_jade_with_a_usb_cable">Подключите Jade с помощью USB-кабеля, чтобы загрузить последнее обновление прошивки</string>
   <string name="id_connect_through_a_proxy">Установить соединение через прокси-сервер</string>
   <string name="id_connect_with_tor">Установить соединение с Tor</string>
   <string name="id_connect_your_jade_to_use_it">Подключите свой Jade, чтобы использовать его с Green</string>
@@ -210,7 +217,7 @@
   <string name="id_custom_network_added_enable_it">Настраиваемая сеть добавлена, включите ее в сетевых настройках</string>
   <string name="id_custom_network_not_found">Настраиваемая сеть не найдена</string>
   <string name="id_custom_network_with_this_name">Настраиваемая сеть с таким именем уже существует</string>
-  <string name="id_custom_servers_and_validation">Custom servers and validation</string>
+  <string name="id_custom_servers_and_validation">Пользовательские серверы и валидация</string>
   <string name="id_customize_2fa_expiration_of">Настройте срок действия 2FA для ваших монет</string>
   <string name="id_d6_confirmations">%d/6 подтверждений</string>
   <string name="id_d_asset_in_this_account">%d актив на этом аккаунте</string>
@@ -230,6 +237,7 @@
   <string name="id_deleting_your_pin_will_remove">Удаление PIN-кода заблокирует ваш кошелек, доступ к которому может быть восстановлен только в случае использования мнемонической фразы. Нажмите "OK" для продолжения.</string>
   <string name="id_denomination">Деноминация</string>
   <string name="id_deposit">Депозит</string>
+  <string name="id_details">Details</string>
   <string name="id_device">Устройство</string>
   <string name="id_devices">Устройства</string>
   <string name="id_disable">Отключить</string>
@@ -264,7 +272,7 @@
   <string name="id_enable_experimental_features">Включить экспериментальные функции</string>
   <string name="id_enable_face_id">Включить Face ID</string>
   <string name="id_enable_location_services">Активируйте сервисы локации</string>
-  <string name="id_enable_or_change_your_pin_to">Включить или изменить PIN для быстрого доступа к средствам</string>
+  <string name="id_enable_or_change_your_pin_to">Активировать или изменить PIN-код для быстрого доступа к вашему кошельку</string>
   <string name="id_enable_spv">Включить SPV</string>
   <string name="id_enable_spv_and_modify_spv">Включить SPV и изменить настройки SPV</string>
   <string name="id_enable_testnet">Включить тестнет</string>
@@ -320,7 +328,7 @@
   <string name="id_fee">Комиссия</string>
   <string name="id_fee_amount_size_fee_rate">Сумма комиссии, размер, комиссия</string>
   <string name="id_fee_rate">Комиссия</string>
-  <string name="id_fee_rate_is_above_maximum">Размер комиссии выше максимального допустимого</string>
+  <string name="id_fee_rate_is_above_maximum">Размер комиссии выше максимального допустимого.</string>
   <string name="id_fee_rate_is_below_minimum">Комиссия ниже минимальной принятой ставки</string>
   <string name="id_fee_rate_must_be_at_least_s">Комиссия должна быть не менее %s сатоши/vbyte.</string>
   <string name="id_fee_rate_s">Комиссия: %s</string>
@@ -403,6 +411,7 @@
   <string name="id_invalid_address">Невалидный адрес</string>
   <string name="id_invalid_amount">Недопустимая сумма</string>
   <string name="id_invalid_clipboard_contents">Неверное содержимое буфера обмена</string>
+  <string name="id_invalid_merkle_proof">Invalid Merkle proof</string>
   <string name="id_invalid_mnemonic">Недопустимая мнемоническая фраза</string>
   <string name="id_invalid_mnemonic_continue">Неверная мнемоническая фраза. Продолжайте печатать или попросите о помощи</string>
   <string name="id_invalid_mnemonic_must_be_24_or">Недопустимая мнемоническая фраза (должно быть 24 или 27 слов)</string>
@@ -441,9 +450,11 @@
   <string name="id_legacy_account">Аккаунт Legacy</string>
   <string name="id_legacy_script_coins">Монеты с легаси-скриптом</string>
   <string name="id_lets_get_you_set_up">Давайте произведем настройку.</string>
-  <string name="id_liquid_electrum_server">Liquid Electrum server</string>
+  <string name="id_liquid_electrum_server">Сервер Liquid Electrum</string>
   <string name="id_liquid_is_a_sidechainbased">Liquid - это расчетная сеть на основе сайдчейна для трейдеров и бирж, позволяющая осуществлять более быстрые и конфиденциальные биткоин-транзакции и выпуск цифровых активов.</string>
   <string name="id_liquid_securities">Ценные бумаги Liquid</string>
+  <string name="id_liquid_testnet_electrum_server">Liquid Testnet Electrum Server</string>
+  <string name="id_liquid_testnet_wallets">Кошельки Liquid Testnet</string>
   <string name="id_liquid_wallets">Liquid-кошельки</string>
   <string name="id_loading">Загрузка</string>
   <string name="id_loading_accounts">Загрузка аккаунтов…</string>
@@ -496,8 +507,8 @@
   <string name="id_months">месяцев</string>
   <string name="id_more_info">Больше информации</string>
   <string name="id_more_options">Больше опций</string>
+  <string name="id_multi_server_validation">Multi Server Validation</string>
   <string name="id_multiple_assets">Множественные активы</string>
-  <string name="id_multiserver_validation">Мультисерверная валидация</string>
   <string name="id_multisig_shield">Multisig Shield</string>
   <string name="id_my_notes">МОИ ЗАМЕТКИ</string>
   <string name="id_name">Имя</string>
@@ -523,6 +534,7 @@
   <string name="id_nfc_logo">Логотип NFC</string>
   <string name="id_nfc_tags_written">NFC-теги:</string>
   <string name="id_no_amount_specified">Сумма не указана</string>
+  <string name="id_no_asset_in_this_account">No asset in this account</string>
   <string name="id_no_attempts_remaining">Попыток не осталось</string>
   <string name="id_no_device_connected">Устройство не подключено</string>
   <string name="id_no_more_assets">У вас больше нет активов.</string>
@@ -543,6 +555,7 @@
   <string name="id_not_confidential">Not confidential</string>
   <string name="id_not_connected_connecting_in_ds_">Нет соединения. Соединение произойдет через%d сек...</string>
   <string name="id_not_initialized">Не инициализировано</string>
+  <string name="id_not_on_longest_chain">Not on longest chain</string>
   <string name="id_notifications">Уведомления</string>
   <string name="id_now">Сейчас</string>
   <string name="id_of_24">из 24</string>
@@ -574,6 +587,7 @@
   <string name="id_path_used_for_signing">Путь, используемый для подписи</string>
   <string name="id_pending_confirmation">Ожидание подтверждения</string>
   <string name="id_permanently_block_this_wallet">Заблокировать кошелек навсегда</string>
+  <string name="id_personal_electrum_server">Personal Electrum Server</string>
   <string name="id_pgp_key">PGP-ключ</string>
   <string name="id_phone_call">Телефонный звонок</string>
   <string name="id_phone_number">Номер телефона</string>
@@ -605,6 +619,7 @@
   <string name="id_previous_fee">Предыдущая комиссия</string>
   <string name="id_privacy_policy">Политика конфиденциальности</string>
   <string name="id_private_but_less_stable">Приватное, но менее стабильное соединение</string>
+  <string name="id_private_key">Private Key</string>
   <string name="id_problem_with_key_1s">Проблема с ключом %1$s</string>
   <string name="id_provide_this_id_to_the_asset">Если необходимо, предоставьте этот идентификатор эмитенту актива.</string>
   <string name="id_provide_your_amp_id_to_the">Если необходимо, сообщите свой идентификатор AMP эмитенту актива.</string>
@@ -614,6 +629,7 @@
   <string name="id_qr_code">QR-код</string>
   <string name="id_qr_scanner">QR-сканер</string>
   <string name="id_radio_firmware">Radio firmware</string>
+  <string name="id_read_more">Read more</string>
   <string name="id_read_more_at_our_s">Узнайте больше на нашем %s</string>
   <string name="id_ready_to_start">Готов начать</string>
   <string name="id_receive">Получить</string>
@@ -706,7 +722,7 @@
   <string name="id_sending_request">Отправка запроса...</string>
   <string name="id_sent">Отправлено</string>
   <string name="id_sent_to">Отправить на</string>
-  <string name="id_server_ip_and_port_ipport">Server IP and port (ip:port)</string>
+  <string name="id_server_ip_and_port_ipport">IP-адрес и порт сервера (ip: порт)</string>
   <string name="id_set_2fa_expiry">Установить срок действия 2FA</string>
   <string name="id_set_a_limit_to_spend_without">Установите лимит расходов без двухфакторной аутентификации</string>
   <string name="id_set_a_new_pin">Установить новый PIN-код </string>
@@ -761,7 +777,7 @@
   <string name="id_something_went_wrong">Что-то пошло не так</string>
   <string name="id_spend_your_bitcoin_without_2fa">Тратьте свои биткоины без 2FA до определенного порога. После того, как вы потратите сумму, не превышающую этот порог, вам нужно будет его сбросить, чтобы продолжать тратить биткоины без двухфакторной аутентификации.</string>
   <string name="id_spv_is_always_synchronized_on">SPV всегда синхронизируется в  таких сетях, как WiFi или Ethernet. Этот параметр также синхронизируется при использовании мобильных данных. Может быть дорогостоящим в зависимости от вашего тарифного плана, поэтому будьте внимательны при включении.</string>
-  <string name="id_spv_mode_is_currently_available">SPV mode is currently available for singlesig bitcoin wallets only.</string>
+  <string name="id_spv_mode_is_currently_available">Режим SPV в настоящее время доступен только для одноподписных биткоин-кошельков.</string>
   <string name="id_spv_not_fully_synced">SPV не полностью синхронизирован</string>
   <string name="id_spv_notifications">Уведомления SPV</string>
   <string name="id_spv_reset_and_restarted">SPV переустановлен и перезапущен</string>
@@ -792,7 +808,7 @@
   <string name="id_telegram">Telegram</string>
   <string name="id_terms_of_service">Условия обслуживания</string>
   <string name="id_terms_of_use">Условия использования</string>
-  <string name="id_testnet_electrum_server">Testnet Electrum server</string>
+  <string name="id_testnet_electrum_server">Сервер Testnet Electrum</string>
   <string name="id_testnet_wallets">Testnet-кошельки</string>
   <string name="id_thank_you_for_downloading_green">Благодарим вас за загрузку кошелька Green! Пожалуйста, оставьте свой отзыв, если у вас будет такая возможность</string>
   <string name="id_the_1_year_2fa_reset_process">Процесс сброса 2FA продолжался в течение 1 года, но кто-то заблокировал его, оспорив сброс 2FA.</string>
@@ -810,7 +826,7 @@
   <string name="id_the_password_cant_be_empty">Поле пароля не может быть пустым</string>
   <string name="id_the_recovery_key_below_will_not">Ключ восстановления больше не будет показан. Сделайте резервное копирование для того, чтобы всегда иметь доступ к своим средствам.</string>
   <string name="id_the_recovery_phrase_can_be_used">Фразу восстановления можно использовать для востребования ваших средств в любой момент. Держите ее в безопасности и в секрете.</string>
-  <string name="id_the_recovery_phrase_doesnt">The recovery phrase doesn\'t match the previously existing wallet. Please retry with a different recovery phrase.</string>
+  <string name="id_the_recovery_phrase_doesnt">Фраза восстановления не соответствует ранее существовавшему кошельку. Повторите попытку, используя другую фразу восстановления.</string>
   <string name="id_the_source_code_is_available_at">Исходный код доступен по адресу %s</string>
   <string name="id_the_transaction_contains">Транзакция содержит неконфиденциальные средства.</string>
   <string name="id_the_waiting_period_is_necessary">Период ожидания необходим для обеспечения безопасности вашего кошелька, чтобы злоумышленники не смогли обойти вашу двухфакторную защиту.</string>
@@ -820,7 +836,7 @@
   <string name="id_these_settings_apply_for_every">Эти настройки применяются для каждого кошелька, который вы используете в Blockstream Green.</string>
   <string name="id_this_feature_is_coming_soon">Эта функция скоро появится, следите за обновлениями!</string>
   <string name="id_this_transaction_spent">На эту транзакцию потрачены неконфиденциальные средства.</string>
-  <string name="id_this_wallet_operates_on_a_test">This wallet operates on a test network. Anything you receive or send here has no value</string>
+  <string name="id_this_wallet_operates_on_a_test">Этот кошелек работает в тестовой сети. Все, что вы получаете или отправляете здесь, не имеет ценности</string>
   <string name="id_this_will_disable_pin_login_for">Это действие отключит вход с помощью PIN-кода для этого кошелька на всех ваших устройствах. Для доступа к кошельку вам понадобится фраза восстановления.</string>
   <string name="id_this_will_log_you_out_and">Это действие приведет к выходу из системы и удалению этого кошелька из приложения и базы данных серверов Blockstream.</string>
   <string name="id_ticker">Тикер</string>
@@ -828,6 +844,7 @@
   <string name="id_tip_we_recommend_you_enable">Совет: мы рекомендуем вам включить более одного метода 2FA. Если вы настроили только один метод 2FA, а затем потеряете его, вам придется подождать как минимум один год, пока истечет срок действия 2FA.</string>
   <string name="id_to">ДО</string>
   <string name="id_to_keep_you_in_control_of_your">Для контроля ваших средств, защита с помощью двухфакторной аутентификации истекает примерно через %d дней с момента вашего последнего платежа. Вам будет предложено совершить транзакцию двухфакторной реактивации, если вы недостаточно часто переводите средства.</string>
+  <string name="id_too_many_pin_attempts">Too many PIN attempts</string>
   <string name="id_tor">Tor</string>
   <string name="id_tor_connectivity_disabled">Соединение с Tor разорвано!</string>
   <string name="id_tor_is_connected">Tor подключен</string>
@@ -872,6 +889,7 @@
   <string name="id_unlock_jade_to_continue">Разблокируйте Jade, чтобы продолжить</string>
   <string name="id_unlocked_coins_can_be_spent_and">Разблокированные монеты можно потратить, и они будут включены в ваш баланс.</string>
   <string name="id_unlocking_coins">Разблокировка монет</string>
+  <string name="id_unstable_internet_connection">Unstable internet connection</string>
   <string name="id_update">Обновление</string>
   <string name="id_updated">обновленный</string>
   <string name="id_updating_firmware">Обновление прошивки…</string>
@@ -886,15 +904,16 @@
   <string name="id_username">Имя пользователя</string>
   <string name="id_username_not_available">Имя пользователя недоступно</string>
   <string name="id_value_must_be_between_144_and">Значение должно быть от 144 до 200000.</string>
-  <string name="id_verified">Verified</string>
+  <string name="id_verified">Верифицировано</string>
   <string name="id_verify_on_device">Проверить на устройстве</string>
+  <string name="id_verify_your_bitcoin">Verify your bitcoin transactions are included on the blockchain</string>
   <string name="id_verify_your_pin">Проверьте PIN-код</string>
-  <string name="id_verify_your_transactions_are">Убедитесь, что ваши транзакции включены в блокчейн</string>
-  <string name="id_verifying_transactions">Verifying transactions…</string>
+  <string name="id_verifying_transactions">Верификация транзакций…</string>
   <string name="id_version">Версия</string>
   <string name="id_version_1s">Версия: %1$s</string>
   <string name="id_version_1s_2s">Версия %1$s %2$s</string>
   <string name="id_view_in_explorer">Посмотреть в обозревателе</string>
+  <string name="id_view_more">View More</string>
   <string name="id_visit_s_for_further_information">Посетите %s для получения дополнительной информации о программном обеспечении</string>
   <string name="id_visit_the_blockstream_help">Посетите Blockstream Help Center</string>
   <string name="id_waiting_for_transaction">Ожидание транзакции ...</string>
@@ -940,10 +959,12 @@
   <string name="id_you_are_now_connected">Соединение есть</string>
   <string name="id_you_can_change_these_later_on">Вы можете изменить их позже.</string>
   <string name="id_you_cannot_create_or_restore_a">Вы не можете создать или восстановить кошелек на %s так как у вас уже есть кошелек, защищенный PIN-кодом.</string>
+  <string name="id_you_have_clicked_a_payment_uri">You have clicked a Payment URI, select a wallet to handle it</string>
   <string name="id_you_have_control_on_your_funds">Ваши средства у вас под контролем.</string>
   <string name="id_you_have_no_coins_to_send">У вас нет монет для отправки. Создайте адрес для получения биткоинов.</string>
   <string name="id_you_have_received_s">Вы получили %s</string>
   <string name="id_you_have_successfully_changed">Вы успешно изменили свой PIN-код</string>
+  <string name="id_you_have_to_authenticate_using">You have to Authenticate using biometrics</string>
   <string name="id_you_have_tor_enabled_are_you">У вас включен Tor, вы уверены, что хотите открыть эту веб-страницу?</string>
   <string name="id_you_must_first_log_out_before">Прежде, чем войти, произведите выход.</string>
   <string name="id_you_must_save_this_mnemonic_now">Вы ДОЛЖНЫ сохранить эту мнемоническую фразу СЕЙЧАС</string>
@@ -954,6 +975,7 @@
   <string name="id_youll_need_your_recovery_phrase">Вам понадобится фраза восстановления, чтобы восстановить этот кошелек</string>
   <string name="id_youll_see_your_coins_here_when">Вы увидите здесь свои монеты тогда, когда получите средства</string>
   <string name="id_your_2fa_expires_so_that_if_you">Срок действия вашей 2FA истекает, поэтому, если вы потеряете доступ к своему методу 2FA или служба Blockstream Green станет недоступной, вы всегда можете восстановить свои биткоины с помощью этого инструмента с открытым исходным кодом.</string>
+  <string name="id_your_device_was_disconnected">Your device was disconnected</string>
   <string name="id_your_favourite_exchange_rate_is">Ваш предпочитаемый обменный курс в данный момент недоступен. Вы можете изменить его в настройках.</string>
   <string name="id_your_funds_are_secured_by">Ваши средства защищены несколькими ключами, один из которых находится на вашем устройстве, а другой - на наших серверах, защищенных вашей 2FA. Выберите этот вариант для повышения безопасности.</string>
   <string name="id_your_funds_are_secured_by_a">Ваши средства защищены одним ключом на вашем устройстве. Проще в настройке и эксплуатации, чем с мультиподписью. Если сомневаетесь, выберите этот вариант.</string>

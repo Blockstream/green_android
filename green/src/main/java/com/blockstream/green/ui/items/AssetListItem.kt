@@ -53,7 +53,7 @@ data class AssetListItem constructor(
         binding.secondPart = showInfo
 
         if(showInfo) {
-            binding.domain.text = res.getString(R.string.id_issuer_domain)
+            binding.domain.text = res.getString(R.string.id_issuer_domain_s)
                 .format(look.issuer ?: res.getString(R.string.id_unknown))
 
             binding.content.text = fiatValue?.let {

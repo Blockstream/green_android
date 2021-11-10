@@ -125,7 +125,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                         wallet, address = bip21Uri
                     )
                 )
-                snackbar(R.string.id_address_was_filled_by_a_payment_uri)
+                snackbar(R.string.id_address_was_filled_by_a_payment)
             }
         }
 

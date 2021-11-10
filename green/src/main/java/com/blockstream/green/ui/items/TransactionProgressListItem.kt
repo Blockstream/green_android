@@ -56,7 +56,7 @@ data class TransactionProgressListItem constructor(
                     R.string.id_verifying_transactions
                 }
                 spv == Transaction.SPVResult.NotVerified -> {
-                    R.string.id_invalid_spv
+                    R.string.id_invalid_merkle_proof
                 }
                 spv == Transaction.SPVResult.NotLongest -> {
                     R.string.id_not_on_longest_chain

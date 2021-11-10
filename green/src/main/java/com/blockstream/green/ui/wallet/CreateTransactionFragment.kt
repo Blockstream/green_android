@@ -58,7 +58,7 @@ class CreateTransactionFragment : WalletFragment<CreateTransactionFragmentBindin
         sessionManager.pendingBip21Uri.observe(viewLifecycleOwner) {
             it?.getContentIfNotHandledOrReturnNull()?.let { bip21Uri ->
                 viewModel.address.value = bip21Uri
-                snackbar(R.string.id_address_was_filled_by_a_payment_uri)
+                snackbar(R.string.id_address_was_filled_by_a_payment)
             }
         }
 

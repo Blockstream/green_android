@@ -49,11 +49,13 @@
   <string name="id_address_1s">Endereço: %1$s</string>
   <string name="id_address_copied_to_clipboard">Endereço copiado para a área de transferência</string>
   <string name="id_address_verified">Endereço verificado!</string>
+  <string name="id_address_was_filled_by_a_payment">Address was filled by a Payment URI</string>
   <string name="id_addresses">Endereços</string>
   <string name="id_advanced">Avançado</string>
   <string name="id_advanced_network_settings">Configurações avançadas de rede</string>
   <string name="id_advanced_options_for_your_third">Advanced options for your third recovery key</string>
   <string name="id_all">Todos</string>
+  <string name="id_all_assets">All Assets</string>
   <string name="id_all_of_the_accounts_in_your">Para excluir sua carteira, primeiro é necessário esvaziar as contas contidas nela. </string>
   <string name="id_all_the_coins_received_or">All the coins received or created as change.</string>
   <string name="id_all_wallets">Todas carteiras</string>
@@ -76,10 +78,13 @@
   <string name="id_assets">Ativos</string>
   <string name="id_attempts_remaining_d">Tentativas restantes: %d</string>
   <string name="id_authenticate_to_view_the">Autentique para ver sua seed</string>
+  <string name="id_authentication_error_s">Authentication error: %s</string>
+  <string name="id_authentication_failed">Authentication failed</string>
   <string name="id_authenticator_app">Authenticator app</string>
   <string name="id_authenticator_qr_code">Authenticator QR Code</string>
   <string name="id_authenticator_secret_key">Authenticator secret key</string>
   <string name="id_auto_logout_timeout">Tempo de espera para encerrar a sessão automaticamente</string>
+  <string name="id_auto_logout_timeout_expired">Auto logout timeout expired</string>
   <string name="id_autolock_after">Bloquear após</string>
   <string name="id_back">Voltar</string>
   <string name="id_back_up_recovery_phrase">Seed</string>
@@ -89,6 +94,7 @@
   <string name="id_be_sure_your_recovery_phrase_is">Be sure your recovery phrase is backed up before removing this wallet.</string>
   <string name="id_biometric_login_is_disabled">Acesso com biometria desativado</string>
   <string name="id_biometric_login_is_enabled">Acesso com biometria habilitado</string>
+  <string name="id_biometrics_authentication">Biometrics Authentication</string>
   <string name="id_bip49_accounts_allow_you_to">BIP49 accounts allow you to segregate funds, and to receive on wrapped segwit addresses, thus ensuring the highest backwards compatibility when receiving funds from anyone on the network.</string>
   <string name="id_bip84_accounts_allow_you_to">BIP84 accounts allow you to segregate your funds, and to receive on bech32 native segwit addresses. This account type ensures cheaper transactions when sending funds, but not all services support bech32 addresses yet.</string>
   <string name="id_bitcoin_denomination">Unidade de Bitcoin</string>
@@ -121,6 +127,7 @@
   <string name="id_change_address">Alterar endereço</string>
   <string name="id_change_pin">Alterar PIN</string>
   <string name="id_changing_reference_exchange">Changing reference exchange rate will reset your 2FA threshold to 0. Remember to adjust the 2FA threshold after spending.</string>
+  <string name="id_check_for_updates">Check for updates</string>
   <string name="id_check_for_updates_on_startup">Verificar se há atualizações ao iniciar</string>
   <string name="id_check_your_backup">Verifique seu backup</string>
   <string name="id_choose">Escolha</string>
@@ -230,6 +237,7 @@
   <string name="id_deleting_your_pin_will_remove">Remover o seu PIN impossibilitará o acesso a sua carteira permanentemente a não ser que você tenha acesso ao seu mnemômico. Pressione "OK" para continuar.</string>
   <string name="id_denomination">Unidade</string>
   <string name="id_deposit">Depósito</string>
+  <string name="id_details">Details</string>
   <string name="id_device">Dispositivo</string>
   <string name="id_devices">Dispositivos</string>
   <string name="id_disable">Desativar</string>
@@ -403,6 +411,7 @@
   <string name="id_invalid_address">Endereço inválido</string>
   <string name="id_invalid_amount">Quantidade inválida</string>
   <string name="id_invalid_clipboard_contents">Invalid clipboard contents</string>
+  <string name="id_invalid_merkle_proof">Invalid Merkle proof</string>
   <string name="id_invalid_mnemonic">Seed inválida</string>
   <string name="id_invalid_mnemonic_continue">Invalid mnemonic. Continue typing or ask for help</string>
   <string name="id_invalid_mnemonic_must_be_24_or">Seed inválida (deve ter 24 ou 27 palavras)</string>
@@ -444,6 +453,8 @@
   <string name="id_liquid_electrum_server">Liquid Electrum server</string>
   <string name="id_liquid_is_a_sidechainbased">Liquid is a sidechain-based settlement network for traders and exchanges, enabling faster, more confidential Bitcoin transactions and the issuance of digital assets.</string>
   <string name="id_liquid_securities">Valores Mobiliários</string>
+  <string name="id_liquid_testnet_electrum_server">Liquid Testnet Electrum Server</string>
+  <string name="id_liquid_testnet_wallets">Liquid testnet wallets</string>
   <string name="id_liquid_wallets">Carteiras Liquid</string>
   <string name="id_loading">Carregando</string>
   <string name="id_loading_accounts">Carregando contas…</string>
@@ -496,8 +507,8 @@
   <string name="id_months">meses</string>
   <string name="id_more_info">Mais info</string>
   <string name="id_more_options">Mais opções</string>
+  <string name="id_multi_server_validation">Multi Server Validation</string>
   <string name="id_multiple_assets">Vários ativos</string>
-  <string name="id_multiserver_validation">Multi-server validation</string>
   <string name="id_multisig_shield">Multisig Shield</string>
   <string name="id_my_notes">MINHAS ANOTAÇÕES</string>
   <string name="id_name">Nome</string>
@@ -523,6 +534,7 @@
   <string name="id_nfc_logo">Logotipo do NFC</string>
   <string name="id_nfc_tags_written">Tags NFC Escritas:</string>
   <string name="id_no_amount_specified">Quantidade não especificada</string>
+  <string name="id_no_asset_in_this_account">No asset in this account</string>
   <string name="id_no_attempts_remaining">Sem tentativas restantes</string>
   <string name="id_no_device_connected">No device connected</string>
   <string name="id_no_more_assets">No more assets.</string>
@@ -543,6 +555,7 @@
   <string name="id_not_confidential">Não confidencial</string>
   <string name="id_not_connected_connecting_in_ds_">Não conectado. Conectando em %ds …</string>
   <string name="id_not_initialized">Não inicializado</string>
+  <string name="id_not_on_longest_chain">Not on longest chain</string>
   <string name="id_notifications">Notificações</string>
   <string name="id_now">Agora</string>
   <string name="id_of_24">de 24</string>
@@ -574,6 +587,7 @@
   <string name="id_path_used_for_signing">Path used for signing</string>
   <string name="id_pending_confirmation">Confirmação pendente</string>
   <string name="id_permanently_block_this_wallet">Bloquear permanentemente esta carteira</string>
+  <string name="id_personal_electrum_server">Personal Electrum Server</string>
   <string name="id_pgp_key">Chave PGP</string>
   <string name="id_phone_call">Ligação de telefone</string>
   <string name="id_phone_number">número de telefone</string>
@@ -605,6 +619,7 @@
   <string name="id_previous_fee">Taxa anterior</string>
   <string name="id_privacy_policy">Política de privacidade</string>
   <string name="id_private_but_less_stable">Privado, mas conexão instável</string>
+  <string name="id_private_key">Private Key</string>
   <string name="id_problem_with_key_1s">Problema com a chave %1$s</string>
   <string name="id_provide_this_id_to_the_asset">Forneça esta identificação ao emissor do ativo, caso solicitado.</string>
   <string name="id_provide_your_amp_id_to_the">Provide your AMP ID to the asset issuer if requested.</string>
@@ -614,6 +629,7 @@
   <string name="id_qr_code">Código QR</string>
   <string name="id_qr_scanner">Leitor de código QR</string>
   <string name="id_radio_firmware">Radio firmware</string>
+  <string name="id_read_more">Read more</string>
   <string name="id_read_more_at_our_s">Saiba mais em nossa%s</string>
   <string name="id_ready_to_start">Pronto para começar</string>
   <string name="id_receive">Receber</string>
@@ -828,6 +844,7 @@
   <string name="id_tip_we_recommend_you_enable">Dica: É recomendado habilitar mais de um método de autenticação. Se você tiver só um método habilitado e perde-lo, você terá que esperar pelo menos 1 ano completo para conseguir movimentar seus fundos.  </string>
   <string name="id_to">PARA</string>
   <string name="id_to_keep_you_in_control_of_your">Para garantir que você tenha o controle dos fundos, a proteção de autenticação de dois fatores expira após um período aproximado de %d após seu último pagamento. Se você não realizar transações com frequência, será solicitado que você faça uma transação de reativação de Fator Duplo.</string>
+  <string name="id_too_many_pin_attempts">Too many PIN attempts</string>
   <string name="id_tor">Tor</string>
   <string name="id_tor_connectivity_disabled">Conectividade Tor Desativada!</string>
   <string name="id_tor_is_connected">Conectado a rede Tor</string>
@@ -872,6 +889,7 @@
   <string name="id_unlock_jade_to_continue">Unlock Jade to continue</string>
   <string name="id_unlocked_coins_can_be_spent_and">Unlocked coins can be spent and are included in your balance.</string>
   <string name="id_unlocking_coins">Unlocking coins</string>
+  <string name="id_unstable_internet_connection">Unstable internet connection</string>
   <string name="id_update">Atualizar</string>
   <string name="id_updated">atualizado</string>
   <string name="id_updating_firmware">Updating firmware…</string>
@@ -888,13 +906,14 @@
   <string name="id_value_must_be_between_144_and">O valor precisa ser entre 144 e 200000</string>
   <string name="id_verified">Verified</string>
   <string name="id_verify_on_device">Verify on Device</string>
+  <string name="id_verify_your_bitcoin">Verify your bitcoin transactions are included on the blockchain</string>
   <string name="id_verify_your_pin">Verifique seu PIN</string>
-  <string name="id_verify_your_transactions_are">Verify your transactions are included on the blockchain</string>
   <string name="id_verifying_transactions">Verifying transactions…</string>
   <string name="id_version">Versão</string>
   <string name="id_version_1s">Versão: %1$s</string>
   <string name="id_version_1s_2s">Versão %1$s %2$s</string>
   <string name="id_view_in_explorer">Ver no Explorer</string>
+  <string name="id_view_more">View More</string>
   <string name="id_visit_s_for_further_information">Acesse %s para obter mais informações sobre o software </string>
   <string name="id_visit_the_blockstream_help">Visit the Blockstream Help Center</string>
   <string name="id_waiting_for_transaction">Aguardando transação…</string>
@@ -940,10 +959,12 @@
   <string name="id_you_are_now_connected">Agora você está conectado</string>
   <string name="id_you_can_change_these_later_on">You can change these later on.</string>
   <string name="id_you_cannot_create_or_restore_a">Você não pode criar ou restaurar uma carteira na %s porque você já tem uma carteira protegida com PIN.</string>
+  <string name="id_you_have_clicked_a_payment_uri">You have clicked a Payment URI, select a wallet to handle it</string>
   <string name="id_you_have_control_on_your_funds">Você tem controle sobre seus fundos</string>
-  <string name="id_you_have_no_coins_to_send">You have no coins to send. Generate an address to receive some bitcoins.</string>
+  <string name="id_you_have_no_coins_to_send">Esta conta está vazia. Clique em receber para gerar um endereço bitcoin.</string>
   <string name="id_you_have_received_s">Você recebeu %s</string>
   <string name="id_you_have_successfully_changed">Você alterou com sucesso seu PIN</string>
+  <string name="id_you_have_to_authenticate_using">You have to Authenticate using biometrics</string>
   <string name="id_you_have_tor_enabled_are_you">You have Tor enabled, are you sure you want to open this webpage?</string>
   <string name="id_you_must_first_log_out_before">Você primeiro precisa sair antes de entrar.</string>
   <string name="id_you_must_save_this_mnemonic_now">Você DEVE salvar esta seed AGORA</string>
@@ -954,6 +975,7 @@
   <string name="id_youll_need_your_recovery_phrase">You\'ll need your recovery phrase to restore this wallet</string>
   <string name="id_youll_see_your_coins_here_when">You\'ll see your coins here when you receive funds</string>
   <string name="id_your_2fa_expires_so_that_if_you">A proteção 2FA expira para permitir você recuperar seus fundos mesmo que o serviço da Blockstream Green fique indisponível ou você perca o acesso ao seus métodos de autenticação. Você sempre pode recuperar seus bitcoins usando a ferramenta de recuperação</string>
+  <string name="id_your_device_was_disconnected">Your device was disconnected</string>
   <string name="id_your_favourite_exchange_rate_is">Seu câmbio de referência favorito não está disponível no momento. Você pode alterá-lo nas configurações.</string>
   <string name="id_your_funds_are_secured_by">Your funds are secured by multiple keys, with one key on your device and another on our servers protected by your 2FA. Select this option for enhanced security.</string>
   <string name="id_your_funds_are_secured_by_a">Your funds are secured by a single key held on your device. Simpler to set up and operate than multisig. If in doubt, select this option.</string>
