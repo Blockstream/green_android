@@ -6,6 +6,7 @@ import CoreBluetooth
 
 enum BLEManagerError: Error {
     case powerOff(txt: String)
+    case unauthorized(txt: String)
     case notReady(txt: String)
     case scanErr(txt: String)
     case bleErr(txt: String)
@@ -72,6 +73,9 @@ class BLEManager {
     func start() {
         if manager.state == .poweredOff {
             let err = BLEManagerError.powerOff(txt: NSLocalizedString("id_turn_on_bluetooth_to_connect", comment: ""))
+            self.scanDelegate?.onError(err)
+        } else if manager.state == .unauthorized {
+            let err = BLEManagerError.unauthorized(txt: NSLocalizedString("id_give_bluetooth_permissions", comment: ""))
             self.scanDelegate?.onError(err)
         }
 

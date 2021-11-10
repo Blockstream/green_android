@@ -270,6 +270,8 @@ extension HWWConnectViewController: BLEManagerDelegate {
             lblStateHint.text = txt
         case .firmwareErr(txt: let txt):
             lblStateHint.text = txt
+        case .unauthorized(txt: let txt):
+            lblStateHint.text = txt
         }
     }
 

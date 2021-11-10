@@ -99,6 +99,15 @@ extension HWWScanViewController: BLEManagerScanDelegate {
 
     func onError(_ error: BLEManagerError) {
         switch error {
+        case .unauthorized(let txt):
+            let alert = UIAlertController(title: NSLocalizedString("id_warning", comment: ""), message: txt, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .default) { _ in })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_settings", comment: ""), style: .cancel) { _ in
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            })
+            self.present(alert, animated: true, completion: nil)
         case .powerOff(let txt):
             showError(txt)
         case .notReady(let txt):
