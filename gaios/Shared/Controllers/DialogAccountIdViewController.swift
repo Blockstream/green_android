@@ -51,7 +51,7 @@ class DialogAccountIdViewController: UIViewController {
     @IBAction func btnCopy(_ sender: Any) {
         if let address = lblAccountId.text {
             UIPasteboard.general.string = address
-            DropAlert().warning(message: NSLocalizedString("id_address_copied_to_clipboard", comment: ""), delay: 2.0)
+            DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 2.0)
             dismiss()
         }
     }
