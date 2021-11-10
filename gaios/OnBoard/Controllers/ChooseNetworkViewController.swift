@@ -76,6 +76,10 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     @objc func didPressCardLiquid() {
+        if restoreSingleSig == true && !isDebug {
+            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
+            return
+        }
         OnBoardManager.shared.params = OnBoardParams(network: "liquid")
         next()
     }
@@ -86,11 +90,6 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     @objc func didPressCardLiquidTestnet() {
-        // not available yet for liquid network
-        if restoreSingleSig == true && !isDebug {
-            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
-            return
-        }
         OnBoardManager.shared.params = OnBoardParams(network: "testnet-liquid")
         next()
     }

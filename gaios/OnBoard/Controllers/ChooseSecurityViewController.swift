@@ -45,7 +45,7 @@ class ChooseSecurityViewController: UIViewController {
         if isDebug {
             return true
         }
-        if ntw == "testnet" || ntw == "mainnet" {
+        if ntw == "testnet" || ntw == "mainnet" || ntw == "testnet-liquid" {
             return true
         }
         return false
