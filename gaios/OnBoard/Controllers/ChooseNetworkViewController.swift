@@ -20,14 +20,9 @@ class ChooseNetworkViewController: UIViewController {
     @IBOutlet weak var cardLiquidTestnet: UIView!
 
     var restoreSingleSig = false
-    var isDebug = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        #if DEBUG
-        isDebug = true
-        #endif
 
         setContent()
         setStyle()
@@ -76,10 +71,6 @@ class ChooseNetworkViewController: UIViewController {
     }
 
     @objc func didPressCardLiquid() {
-        if restoreSingleSig == true && !isDebug {
-            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
-            return
-        }
         OnBoardManager.shared.params = OnBoardParams(network: "liquid")
         next()
     }

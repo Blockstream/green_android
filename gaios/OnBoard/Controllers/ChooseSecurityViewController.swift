@@ -13,14 +13,8 @@ class ChooseSecurityViewController: UIViewController {
     @IBOutlet weak var lblAdvancedTitle: UILabel!
     @IBOutlet weak var lblAdvancedHint: UILabel!
 
-    var isDebug = false
-
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        #if DEBUG
-        isDebug = true
-        #endif
 
         setContent()
         setStyle()
@@ -40,17 +34,6 @@ class ChooseSecurityViewController: UIViewController {
         lblAdvancedHint.text = NSLocalizedString("id_your_funds_are_secured_by", comment: "")
     }
 
-    func isSingleSigEnabled() -> Bool {
-        let ntw = OnBoardManager.shared.params?.network ?? ""
-        if isDebug {
-            return true
-        }
-        if ntw == "testnet" || ntw == "mainnet" || ntw == "testnet-liquid" {
-            return true
-        }
-        return false
-    }
-
     func setStyle() {
         cardSimple.layer.cornerRadius = 5.0
         cardAdvanced.layer.cornerRadius = 5.0
@@ -64,10 +47,6 @@ class ChooseSecurityViewController: UIViewController {
     }
 
     @objc func didPressCardSimple() {
-        if !isSingleSigEnabled() {
-            DropAlert().warning(message: NSLocalizedString("id_this_feature_is_coming_soon", comment: ""), delay: 3)
-            return
-        }
         OnBoardManager.shared.params?.singleSig = true
         next()
     }
