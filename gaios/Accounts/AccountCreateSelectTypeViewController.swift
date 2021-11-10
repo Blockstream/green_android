@@ -78,12 +78,16 @@ class AccountCreateSelectTypeViewController: UIViewController {
         if let account = AccountsManager.shared.current {
             let isSingleSig = (account.isSingleSig ?? false)
             let isLiquid = account.network == "liquid"
-
+            let isLiquidTestnet = account.network == "testnet-liquid"
             cardLegacy.isHidden = !isSingleSig
             cardSegWit.isHidden = !isSingleSig
             cardStandard.isHidden = isSingleSig
-            cardAmp.isHidden = !(!isSingleSig && isLiquid)
-            card2of3.isHidden = isSingleSig || isLiquid
+            if (!isSingleSig && isLiquid) == true || (!isSingleSig && isLiquidTestnet) == true {
+                cardAmp.isHidden = false
+            } else {
+                cardAmp.isHidden = true
+            }
+            card2of3.isHidden = isSingleSig || isLiquid || isLiquidTestnet
         }
     }
 
