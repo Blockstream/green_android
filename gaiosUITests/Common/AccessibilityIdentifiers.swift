@@ -10,6 +10,7 @@ struct AccessibilityIdentifiers {
     struct HomeScreen {
         static let view = "view_home"
         static let addWalletView = "add_wallet_view"
+        static let appSettingsBtn = "appSettingsBtn"
     }
 
     struct LandingScreen {
@@ -209,6 +210,7 @@ struct AccessibilityIdentifiers {
         static let torSwitch = "view_tor_switch"
         static let saveBtn = "save_btn"
         static let cancelBtn = "cancel_btn"
+        static let testnetSwitch = "view_testnet_switch"
     }
     
     struct DialogTorSingleSigScreen {

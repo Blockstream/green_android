@@ -52,5 +52,23 @@ class WalletSettings: Screen {
         return (value == switchTotValue)
     }
     
+    @discardableResult
+    func isTestnetSetTo(_ value: Bool) -> Bool {
+        let switchTor = app.switches[AccessibilityIdentifiers.WalletSettingsScreen.testnetSwitch]
+        var switchTotValue = false
+        if(switchTor.value as? String == "1") {
+            switchTotValue = true
+        }
+        return (value == switchTotValue)
+    }
+    
+    @discardableResult
+    func tapTestnetSwitch() -> Self {
+        
+        let switchTestnet = app.switches[AccessibilityIdentifiers.WalletSettingsScreen.testnetSwitch]
+        switchTestnet.tap()
+        
+        return self
+    }
 }
 

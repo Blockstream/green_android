@@ -19,6 +19,7 @@ class HomeViewController: UIViewController {
         setStyle()
         updateUI()
         view.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.view
+        btnSettings.accessibilityIdentifier = AccessibilityIdentifiers.HomeScreen.appSettingsBtn
     }
 
     override func viewWillAppear(_ animated: Bool) {

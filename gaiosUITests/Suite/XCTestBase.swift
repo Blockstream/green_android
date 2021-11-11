@@ -8,6 +8,25 @@ class XCTestBase: XCTestCase {
 
         continueAfterFailure = false
         XCUIApplication().launch()
+        
+        Home()
+            .tapAppSettings()
+        
+        WalletSettings()
+            .pause(1)
+
+        if WalletSettings().isTestnetSetTo(true) {
+
+            WalletSettings()
+                .pause(1)
+                .tapCancel()
+        } else {
+
+            WalletSettings()
+                .tapTestnetSwitch()
+                .pause(1)
+                .tapSave()
+        }
     }
     
     override func tearDown() {

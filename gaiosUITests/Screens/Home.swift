@@ -56,4 +56,10 @@ class Home: Screen {
 
         return tap(walletLabel)
     }
+    
+    @discardableResult
+    func tapAppSettings() -> Self {
+        tap(button: AccessibilityIdentifiers.HomeScreen.appSettingsBtn)
+        return self
+    }
 }
