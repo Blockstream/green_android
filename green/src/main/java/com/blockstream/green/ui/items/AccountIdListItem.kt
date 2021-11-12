@@ -13,7 +13,7 @@ class AccountIdListItem constructor(val listener : View.OnClickListener) : Abstr
         get() = R.id.fastadapter_account_id_item_id
 
     init {
-        identifier = javaClass.hashCode().toLong()
+        identifier = "AccountIdListItem".hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemAccountIdBinding, payloads: List<Any>) {

@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.blockstream.gdk.BalancePair
 import com.blockstream.gdk.data.AccountType
@@ -204,7 +205,7 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                showAccountInToolbar = (recyclerView.layoutManager as NpaLinearLayoutManager).findFirstVisibleItemPosition() > 0
+                showAccountInToolbar = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() > 0
             }
         })
 
@@ -391,7 +392,12 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
         // Assets Balance
         val assetsBalanceAdapter = ModelAdapter<BalancePair, AssetListItem>() {
-            AssetListItem(session = session,balancePair = it, showInfo = isAssetState && viewModel.wallet.isLiquid, isLoading = (it.first.isEmpty() && it.second == -1L))
+            AssetListItem(
+                session = session,
+                balancePair = it,
+                showInfo = isAssetState && viewModel.wallet.isLiquid,
+                isLoading = (it.first.isEmpty() && it.second == -1L)
+            )
         }.observeMap(viewLifecycleOwner, viewModel.getBalancesLiveData() as LiveData<Map<*, *>>, toModel = {
             BalancePair(it.key as String, it.value as Long)
         })

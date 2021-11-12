@@ -6,7 +6,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewTreeLifecycleOwner
-import androidx.lifecycle.observe
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemGenericDetailBinding
 import com.blockstream.green.utils.StringHolder
@@ -27,7 +26,7 @@ class GenericDetailListItem constructor(
         get() = R.id.fastadapter_generic_detail_item_id
 
     init {
-        identifier = title.hashCode().toLong()
+        identifier = title.hashCode().toLong() + content.hashCode().toLong()
     }
 
     override fun attachToWindow(binding: ListItemGenericDetailBinding) {

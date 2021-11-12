@@ -19,7 +19,7 @@ data class ButtonActionListItem constructor(
         get() = R.id.fastadapter_button_action_item_id
 
     init {
-        identifier = text.hashCode().toLong()
+        identifier = hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemButtonActionBinding, payloads: List<Any>) {

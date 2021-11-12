@@ -9,7 +9,7 @@ import com.blockstream.green.databinding.ListItemWalletBinding
 import com.blockstream.green.gdk.GreenSession
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
-class WalletListItem(val wallet: Wallet, val greenSession: GreenSession) : AbstractBindingItem<ListItemWalletBinding>() {
+class WalletListItem constructor(val wallet: Wallet, val greenSession: GreenSession) : AbstractBindingItem<ListItemWalletBinding>() {
     override val type: Int
         get() = R.id.fastadapter_wallet_item_id
 

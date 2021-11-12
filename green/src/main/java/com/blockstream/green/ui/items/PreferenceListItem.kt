@@ -6,8 +6,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemPreferenceBinding
+import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
-import com.mikepenz.fastadapter.ui.utils.StringHolder
 
 data class PreferenceListItem constructor(
     var title: StringHolder = StringHolder(null),
@@ -27,7 +27,7 @@ data class PreferenceListItem constructor(
         get() = R.id.fastadapter_preference_item_id
 
     init {
-        identifier = hashCode().toLong()
+        identifier = title.hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemPreferenceBinding, payloads: List<Any>) {

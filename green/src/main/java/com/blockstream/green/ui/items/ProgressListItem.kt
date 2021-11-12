@@ -2,20 +2,17 @@ package com.blockstream.green.ui.items
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemProgressBinding
-import com.blockstream.green.databinding.ListItemTitleBinding
-import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
+import kotlin.random.Random
 
 class ProgressListItem : AbstractBindingItem<ListItemProgressBinding>() {
     override val type: Int
         get() = R.id.fastadapter_progress_item_id
 
     init {
-        identifier = hashCode().toLong()
+        identifier = Random.nextLong()
     }
 
     override fun bindView(binding: ListItemProgressBinding, payloads: List<Any>) {

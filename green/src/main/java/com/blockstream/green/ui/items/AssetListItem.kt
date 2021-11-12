@@ -7,7 +7,6 @@ import com.blockstream.gdk.BalancePair
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemAssetBinding
 import com.blockstream.green.gdk.GreenSession
-import com.blockstream.gdk.data.Asset
 import com.blockstream.green.ui.looks.AssetLook
 import com.blockstream.green.utils.fiat
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
@@ -28,7 +27,7 @@ data class AssetListItem constructor(
         get() = look.name
 
     init {
-        identifier = balancePair.first.hashCode().toLong() // asset.hashCode().toLong()
+        identifier = (if(balancePair.first.isBlank()) "AssetListItem" else balancePair.first).hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemAssetBinding, payloads: List<Any>) {

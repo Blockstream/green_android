@@ -15,7 +15,7 @@ class AlertListItem constructor(private val alertType: AlertType, val action : (
         get() = R.id.fastadapter_alert_item_id
 
     init {
-        identifier = javaClass.hashCode().toLong() + alertType.hashCode().toLong()
+        identifier = "AlertListItem".hashCode() + alertType.hashCode().toLong()
     }
 
     override fun bindView(binding: ListItemAlertBinding, payloads: List<Any>) {

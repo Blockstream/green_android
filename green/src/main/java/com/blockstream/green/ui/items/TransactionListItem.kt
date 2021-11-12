@@ -3,11 +3,11 @@ package com.blockstream.green.ui.items
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.size
-import com.blockstream.green.R
-import com.blockstream.green.gdk.GreenSession
 import com.blockstream.gdk.data.Transaction
+import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionAssetBinding
 import com.blockstream.green.databinding.ListItemTransactionBinding
+import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.ui.looks.TransactionListLook
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 import mu.KLogging
@@ -26,7 +26,7 @@ data class TransactionListItem constructor(
     private val look: TransactionListLook
 
     init {
-        identifier = tx.txHash.hashCode().toLong()
+        identifier = (if(tx.txHash.isBlank()) "TransactionListItem" else tx.txHash).hashCode().toLong()
         look = TransactionListLook(session, tx)
     }
 

@@ -30,7 +30,7 @@ data class AccountListItem constructor(val session: GreenSession,
         get() = R.id.fastadapter_account_item_id
 
     init {
-        identifier = javaClass.hashCode() + subAccount.pointer
+        identifier = "AccountListItem".hashCode() + subAccount.pointer
     }
 
     override fun bindView(binding: ListItemAccountBinding, payloads: List<Any>) {
