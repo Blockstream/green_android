@@ -13,7 +13,6 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -29,6 +28,13 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import mu.KLogging
 import javax.inject.Inject
+import android.view.ViewGroup
+
+import androidx.databinding.ViewDataBinding
+
+import androidx.databinding.OnRebindCallback
+import androidx.transition.TransitionManager
+
 
 @AndroidEntryPoint
 class MainActivity : AppActivity() {
@@ -45,14 +51,14 @@ class MainActivity : AppActivity() {
     private var unlockPrompt: BiometricPrompt? = null
 
     private lateinit var binding: MainActivityBinding
-    private val viewModel: MainViewModel by viewModels()
+    private val activityViewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = MainActivityBinding.inflate(layoutInflater)
         binding.lifecycleOwner = this
-        binding.vm = viewModel
+        binding.vm = activityViewModel
 
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
@@ -83,19 +89,32 @@ class MainActivity : AppActivity() {
         }
 
         // Set version into the main VM
-        viewModel.buildVersion.value =
+        activityViewModel.buildVersion.value =
             getString(R.string.id_version_1s_2s).format(getVersionName(this), "")
 
         setupSecureScreenListener()
 
         handleIntent(intent)
 
-        viewModel.lockScreen.value = canLock()
-
-        viewModel.lockScreen.observe(this){ isLocked ->
-            if(isLocked){
-                showUnlockPrompt()
+        // Animate Screen Lock
+        // https://medium.com/androiddevelopers/android-data-binding-animations-55f6b5956a64
+        binding.addOnRebindCallback(object : OnRebindCallback<MainActivityBinding>() {
+            override fun onPreBind(binding: MainActivityBinding): Boolean {
+                // Animate only when unlocking as we want immediate hiding of contents
+                if(activityViewModel.lockScreen.value == false) {
+                    TransitionManager.beginDelayedTransition((binding.root as ViewGroup))
+                }
+                return super.onPreBind(binding)
             }
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if(activityViewModel.lockScreen.value == true && unlockPrompt == null){
+            // check unlockPrompt if there is already a prompt displayed
+            showUnlockPrompt()
         }
     }
 
@@ -103,18 +122,6 @@ class MainActivity : AppActivity() {
         super.onNewIntent(intent)
         handleIntent(intent)
     }
-
-    override fun onPause() {
-        super.onPause()
-
-        if(canLock()){
-            lifecycleScope.launchWhenResumed {
-                viewModel.lockScreen.value = true
-            }
-        }
-    }
-
-    private fun canLock() = settingsManager.getApplicationSettings().enhancedPrivacy && appKeystore.canUseBiometrics(this)
 
     private fun showUnlockPrompt(){
         unlockPrompt?.cancelAuthentication()
@@ -145,7 +152,7 @@ class MainActivity : AppActivity() {
                     unlockPrompt = null
                     if(errorCode == BiometricPrompt.ERROR_NO_DEVICE_CREDENTIAL){
                         // User hasn't enabled any device credential,
-                        viewModel.lockScreen.value = false
+                        activityViewModel.unlock()
                     }else{
                         super.onAuthenticationError(errorCode, errString)
                     }
@@ -153,7 +160,7 @@ class MainActivity : AppActivity() {
 
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     unlockPrompt = null
-                    viewModel.lockScreen.value = false
+                    activityViewModel.unlock()
                 }
             })
 
@@ -163,7 +170,7 @@ class MainActivity : AppActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
             unlockPrompt = null
-            viewModel.lockScreen.value = false
+            activityViewModel.unlock()
         }
     }
 

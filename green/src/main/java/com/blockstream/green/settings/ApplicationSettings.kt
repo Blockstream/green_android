@@ -3,12 +3,15 @@ package com.blockstream.green.settings
 import android.content.SharedPreferences
 import android.os.Parcelable
 import com.blockstream.gdk.data.Network
+import com.blockstream.green.ui.settings.ScreenLockSetting
 import kotlinx.parcelize.Parcelize
+import java.lang.Exception
 
 
 @Parcelize
 data class ApplicationSettings constructor(
     val enhancedPrivacy: Boolean = false,
+    val screenLockInSeconds: Int = ScreenLockSetting.LOCK_IMMEDIATELY.seconds,
     val testnet: Boolean = false,
     val proxyUrl: String? = null,
     val tor: Boolean = false,
@@ -59,6 +62,7 @@ data class ApplicationSettings constructor(
 
     companion object {
         private const val ENHANCED_PRIVACY = "enhancedPrivacy"
+        private const val SCREEN_LOCK_IN_SECONDS = "screenLockInSeconds"
         private const val TESTNET = "testnet"
         private const val PROXY_URL = "proxyURL"
         private const val TOR = "tor"
@@ -77,30 +81,36 @@ data class ApplicationSettings constructor(
         private const val SPV_TESTNET_LIQUID_ELECTRUM_SERVER = "spvTestnetLiquidElectrumServer"
 
         fun fromSharedPreferences(prefs: SharedPreferences): ApplicationSettings {
-            return ApplicationSettings(
-                enhancedPrivacy = prefs.getBoolean(ENHANCED_PRIVACY, false),
-                testnet = prefs.getBoolean(TESTNET, false),
-                proxyUrl = prefs.getString(PROXY_URL, null),
-                tor = prefs.getBoolean(TOR, false),
-                electrumNode = prefs.getBoolean(ELECTRUM_NODE, false),
-                spv = prefs.getBoolean(SPV, false),
-                multiServerValidation = prefs.getBoolean(MULTI_SERVER_VALIDATION, false),
+            try{
+                return ApplicationSettings(
+                    enhancedPrivacy = prefs.getBoolean(ENHANCED_PRIVACY, false),
+                    screenLockInSeconds = prefs.getInt(SCREEN_LOCK_IN_SECONDS, -1),
+                    testnet = prefs.getBoolean(TESTNET, false),
+                    proxyUrl = prefs.getString(PROXY_URL, null),
+                    tor = prefs.getBoolean(TOR, false),
+                    electrumNode = prefs.getBoolean(ELECTRUM_NODE, false),
+                    spv = prefs.getBoolean(SPV, false),
+                    multiServerValidation = prefs.getBoolean(MULTI_SERVER_VALIDATION, false),
 
-                personalBitcoinElectrumServer = prefs.getString(PERSONAL_BITCOIN_ELECTRUM_SERVER, null),
-                personalLiquidElectrumServer = prefs.getString(PERSONAL_LIQUID_ELECTRUM_SERVER, null),
-                personalTestnetElectrumServer = prefs.getString(PERSONAL_TESTNET_ELECTRUM_SERVER, null),
-                personalTestnetLiquidElectrumServer = prefs.getString(PERSONAL_TESTNET_LIQUID_ELECTRUM_SERVER, null),
+                    personalBitcoinElectrumServer = prefs.getString(PERSONAL_BITCOIN_ELECTRUM_SERVER, null),
+                    personalLiquidElectrumServer = prefs.getString(PERSONAL_LIQUID_ELECTRUM_SERVER, null),
+                    personalTestnetElectrumServer = prefs.getString(PERSONAL_TESTNET_ELECTRUM_SERVER, null),
+                    personalTestnetLiquidElectrumServer = prefs.getString(PERSONAL_TESTNET_LIQUID_ELECTRUM_SERVER, null),
 
-                spvBitcoinElectrumServer = prefs.getString(SPV_BITCOIN_ELECTRUM_SERVER, null),
-                spvLiquidElectrumServer = prefs.getString(SPV_LIQUID_ELECTRUM_SERVER, null),
-                spvTestnetElectrumServer = prefs.getString(SPV_TESTNET_ELECTRUM_SERVER, null),
-                spvTestnetLiquidElectrumServer = prefs.getString(SPV_TESTNET_LIQUID_ELECTRUM_SERVER, null),
-            )
+                    spvBitcoinElectrumServer = prefs.getString(SPV_BITCOIN_ELECTRUM_SERVER, null),
+                    spvLiquidElectrumServer = prefs.getString(SPV_LIQUID_ELECTRUM_SERVER, null),
+                    spvTestnetElectrumServer = prefs.getString(SPV_TESTNET_ELECTRUM_SERVER, null),
+                    spvTestnetLiquidElectrumServer = prefs.getString(SPV_TESTNET_LIQUID_ELECTRUM_SERVER, null),
+                )
+            }catch (e: Exception){
+                return ApplicationSettings()
+            }
         }
 
         fun toSharedPreferences(appSettings: ApplicationSettings, prefs: SharedPreferences) {
             prefs.edit().also {
                 it.putBoolean(ENHANCED_PRIVACY, appSettings.enhancedPrivacy)
+                it.putInt(SCREEN_LOCK_IN_SECONDS, appSettings.screenLockInSeconds)
                 it.putBoolean(TESTNET, appSettings.testnet)
                 it.putString(PROXY_URL, appSettings.proxyUrl)
                 it.putBoolean(TOR, appSettings.tor)

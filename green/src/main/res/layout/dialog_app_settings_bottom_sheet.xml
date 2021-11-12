@@ -85,6 +85,25 @@
                 app:captionText="@string/id_use_secure_display_and_screen_lock"
                 app:titleText="@string/id_enhanced_privacy" />
 
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                android:layout_marginLeft="@dimen/settings_element_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/id_screen_lock"
+                isVisible="@{vm.enableEnhancedPrivacy}"
+                android:layout_marginBottom="4dp">
+
+                <AutoCompleteTextView
+                    android:id="@+id/screenLockSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
             <com.blockstream.green.views.DividerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -176,7 +195,6 @@
                 android:layout_marginLeft="@dimen/settings_element_margin"
                 android:layout_marginBottom="4dp"
                 android:hint="@string/id_bitcoin_electrum_server"
-                tools:ignore="HardcodedText"
                 app:isVisible="@{vm.enableElectrumNode}">
 
                 <com.blockstream.green.views.PlaceholderTextInputEditText

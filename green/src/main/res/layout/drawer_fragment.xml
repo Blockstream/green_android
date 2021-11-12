@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.MainViewModel" />
+            type="com.blockstream.green.ui.MainActivityViewModel" />
     </data>
 
     <!--  Make it clickable to consume all the click events, not allowing the to pass behind the fragment  -->

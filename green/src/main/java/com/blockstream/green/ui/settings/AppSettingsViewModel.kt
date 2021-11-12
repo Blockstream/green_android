@@ -1,6 +1,8 @@
 package com.blockstream.green.ui.settings
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import com.blockstream.green.R
 import com.blockstream.green.lifecycle.ListenableLiveData
 import com.blockstream.green.settings.ApplicationSettings
 import com.blockstream.green.settings.SettingsManager
@@ -21,6 +23,8 @@ class AppSettingsViewModel @Inject constructor(
     }
 
     val enableEnhancedPrivacy = MutableLiveData(appSettings.enhancedPrivacy)
+    // screenLockSetting must be optional as is accessed by enableEnhancedPrivacy before being initialized
+    val screenLockSetting : MutableLiveData<Int> = MutableLiveData(appSettings.screenLockInSeconds)
     val enableTestnet = MutableLiveData(appSettings.testnet)
     val enableTorRouting = MutableLiveData(appSettings.tor)
     val enableProxy = MutableLiveData(appSettings.proxyUrl != null)
@@ -52,6 +56,7 @@ class AppSettingsViewModel @Inject constructor(
 
     fun getSettings() = ApplicationSettings(
         enhancedPrivacy = enableEnhancedPrivacy.value ?: false,
+        screenLockInSeconds = screenLockSetting.value ?: ScreenLockSetting.LOCK_IMMEDIATELY.seconds,
         testnet = enableTestnet.value ?: false,
         proxyUrl = if (enableProxy.value == true && !proxyURL.value.isNullOrBlank()) proxyURL.value else null,
         electrumNode = enableElectrumNode.value ?: false,
@@ -86,5 +91,27 @@ class AppSettingsViewModel @Inject constructor(
         const val DEFAULT_MULTI_SPV_LIQUID_URL = "blockstream.info:995"
         const val DEFAULT_MULTI_SPV_TESTNET_URL = "electrum.blockstream.info:60002"
         const val DEFAULT_MULTI_SPV_TESTNET_LIQUID_URL = "blockstream.info:465"
+    }
+}
+
+enum class ScreenLockSetting constructor(val seconds: Int){
+    // Keep same order with getStringList
+    LOCK_IMMEDIATELY(0),
+    LOCK_AFTER_60(60);
+
+    companion object {
+        fun bySeconds(seconds: Int) = when(seconds){
+            60 -> LOCK_AFTER_60
+            else -> LOCK_IMMEDIATELY
+        }
+
+        fun byPosition(position: Int): ScreenLockSetting{
+            return values()[position]
+        }
+
+        fun getStringList(context: Context): List<String>{
+            return listOf(context.getString(
+                R.string.id_lock_immediately), context.getString(R.string.id_lock_after_1_minute))
+        }
     }
 }

@@ -13,7 +13,6 @@ import com.blockstream.green.ui.items.DeviceBrandListItem
 import com.blockstream.green.ui.items.WalletListItem
 import com.blockstream.green.ui.wallet.LoginFragmentDirections
 import com.blockstream.green.utils.observeList
-import com.greenaddress.Bridge
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.adapters.ModelAdapter
@@ -29,14 +28,14 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
     @Inject
     lateinit var walletRepository: WalletRepository
 
-    internal val viewModel: MainViewModel by activityViewModels()
+    internal val activityViewModel: MainActivityViewModel by activityViewModels()
 
     fun init(binding: WalletListCommonBinding){
-        binding.vm = viewModel
+        binding.vm = activityViewModel
 
         val softwareWalletsAdapter = FastAdapter.with(ModelAdapter { model: Wallet ->
             WalletListItem(model, sessionManager.getWalletSession(model))
-        }.observeList(viewLifecycleOwner, viewModel.wallets))
+        }.observeList(viewLifecycleOwner, activityViewModel.wallets))
 
         softwareWalletsAdapter.onClickListener = { _, _, item, _ ->
             navigate(item.wallet)

@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.MainViewModel" />
+            type="com.blockstream.green.ui.MainActivityViewModel" />
     </data>
 
     <merge>
