@@ -147,7 +147,7 @@ class BLEManager {
                     throw DeviceError.dashboard // open app from dashboard
                 } else if name != self.networkLabel(network) {
                     throw DeviceError.wrong_app // change app
-                } else if name == "Bitcoin" && (version[0]! < 1 || version[1]! < 4) {
+                } else if name == "Bitcoin" && version[0] ?? 0 < 1 {
                     throw DeviceError.outdated_app
                 }
             }.compactMap { _ in

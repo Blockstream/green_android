@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Fixed
+- Support Ledger firmware 2.0.0
 
 ## [3.7.6] - 2021-11-10
 ### Added
