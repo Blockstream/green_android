@@ -6,12 +6,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 31
+    buildToolsVersion "31.0.0"
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 31
 
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -25,6 +25,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
     task fetchGdk (type: Exec) {
         workingDir '.'
@@ -43,7 +46,6 @@ afterEvaluate {
 
 dependencies {
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
     /** ----------------------------------------------------------------------------------------- */

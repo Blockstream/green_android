@@ -55,9 +55,10 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     @Inject
     lateinit var deviceManager: DeviceManager
 
-    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        // Nothing to do here, it's already handled by DeviceManager
-    }
+    private val requestPermission =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
+            // Nothing to do here, it's already handled by DeviceManager
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,9 +73,9 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
 
         fastAdapter.onClickListener = { _, _, item, _ ->
 
-            if(item.device.hasPermissionsOrIsBonded()){
+            if (item.device.hasPermissionsOrIsBonded()) {
                 navigateToDevice(item.device)
-            }else{
+            } else {
                 viewModel.askForPermissionOrBond(item.device)
             }
 
@@ -106,13 +107,17 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
         }
 
         binding.buttonRequestPermission.setOnClickListener {
+            // Also RxBleClient.getRecommendedScanRuntimePermissions can be used
             requestPermission.launch(BLE_LOCATION_PERMISSION)
         }
 
         binding.buttonEnableLocationService.setOnClickListener {
-            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Green_MaterialAlertDialog)
+            MaterialAlertDialogBuilder(
+                requireContext(),
+                R.style.ThemeOverlay_Green_MaterialAlertDialog
+            )
                 .setMessage(R.string.id_location_services_are_disabled)
-                .setPositiveButton(R.string.id_enable){ _: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.id_enable) { _: DialogInterface, _: Int ->
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
                 .setNegativeButton(R.string.id_cancel, null)
@@ -139,11 +144,11 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     override fun onResume() {
         super.onResume()
 
-        if(args.deviceBrand.hasBleConnectivity){
+        if (args.deviceBrand.hasBleConnectivity) {
             deviceManager.startBluetoothScanning()
         }
 
-        if(args.deviceBrand == DeviceBrand.Blockstream){
+        if (args.deviceBrand == DeviceBrand.Blockstream) {
             setToolbar(
                 drawable = ContextCompat.getDrawable(
                     requireContext(),
@@ -152,7 +157,7 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
             ) {
                 openBrowser(settingsManager.getApplicationSettings(), Urls.JADE_STORE)
             }
-        }else{
+        } else {
             setToolbar(
                 title = args.deviceBrand.brand,
                 drawable = ContextCompat.getDrawable(
@@ -168,39 +173,23 @@ class DeviceListFragment : AppFragment<DeviceListFragmentBinding>(
     override fun onPause() {
         super.onPause()
 
-        if(args.deviceBrand.hasBleConnectivity) {
+        if (args.deviceBrand.hasBleConnectivity) {
             deviceManager.pauseBluetoothScanning()
         }
     }
 
-    private fun navigateToDevice(device: Device){
-
-
-        //    navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
-
-            // navigate(NavGraphDirections.actionGlobalDeviceBottomSheetDialogFragment(device.id))
-            navigate(DeviceListFragmentDirections.actionDeviceListFragmentToDeviceInfoFragment(deviceId = device.id))
-//            Bridge.bridgeSession(sessionManager.getHardwareSessionV3().gaSession, "mainnet",null)
-//
-//            val intent = Intent(requireContext(), RequestLoginActivity::class.java).also {
-//                if(device.isUsb){
-//                    it.action = GaActivity.ACTION_USB_ATTACHED
-//                    it.putExtra(UsbManager.EXTRA_DEVICE, device.usbDevice)
-//                }else{
-//                    it.action = RequestLoginActivity.ACTION_BLE_SELECTED
-//                    it.putExtra(BluetoothDevice.EXTRA_UUID, device.bleService)
-//                    it.putExtra(BluetoothDevice.EXTRA_DEVICE, device.bleDevice?.bluetoothDevice)
-//                }
-//            }
-
-//            startActivity(intent)
+    private fun navigateToDevice(device: Device) {
+        navigate(DeviceListFragmentDirections.actionDeviceListFragmentToDeviceInfoFragment(deviceId = device.id))
     }
 
-    companion object : KLogging(){
+    companion object : KLogging() {
         // NOTE: BLE_LOCATION_PERMISSION should be set to FINE for Android 10 and above, or COARSE for 9 and below
         // See: https://developer.android.com/about/versions/10/privacy/changes#location-telephony-bluetooth-wifi
         private val BLE_LOCATION_PERMISSION =
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) Manifest.permission.ACCESS_FINE_LOCATION else Manifest.permission.ACCESS_COARSE_LOCATION
-
+            when {
+                Build.VERSION.SDK_INT > Build.VERSION_CODES.R -> listOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
+                Build.VERSION.SDK_INT > Build.VERSION_CODES.P -> listOf(Manifest.permission.ACCESS_FINE_LOCATION)
+                else -> listOf(Manifest.permission.ACCESS_COARSE_LOCATION)
+            }.toTypedArray()
     }
 }

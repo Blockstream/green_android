@@ -4,12 +4,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 31
+    buildToolsVersion "31.0.0"
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 31
         // Don't use defaultConfig.getProperty("versionCode") in versionName
         // because it breaks F-Droid!
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -62,8 +62,7 @@ dependencies {
     /** ----------------------------------------------------------------------------------------- */
 
     /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinx_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
     /** ----------------------------------------------------------------------------------------- */
