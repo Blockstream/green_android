@@ -2,6 +2,7 @@ package com.blockstream.green.ui.onboarding
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
@@ -27,6 +28,12 @@ class ChooseSecurityFragment :
 
     private val args: ChooseSecurityFragmentArgs by navArgs()
 
+    @Inject
+    lateinit var viewModelFactory: ChooseSecurityViewModel.AssistedFactory
+    val viewModel: ChooseSecurityViewModel by viewModels {
+        ChooseSecurityViewModel.provideFactory(viewModelFactory, args.onboardingOptions)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -34,15 +41,33 @@ class ChooseSecurityFragment :
 
         binding.singleSig.setOnClickListener {
             options?.apply {
-                navigate(createCopyForNetwork(greenWallet, networkType!!, true))
+                navigate(
+                    createCopyForNetwork(
+                        greenWallet = greenWallet,
+                        networkType = networkType!!,
+                        isElectrum = true,
+                    )
+                )
             }
         }
 
         binding.multiSig.setOnClickListener {
             options?.apply {
-                navigate(createCopyForNetwork(greenWallet, networkType!!, false))
+                navigate(
+                    createCopyForNetwork(
+                        greenWallet = greenWallet,
+                        networkType = networkType!!,
+                        isElectrum = false,
+                    )
+                )
             }
         }
+
+        binding.toggleRecoverySize.addOnButtonCheckedListener { _, checkedId, _ ->
+            viewModel.recoverySize.value = checkedId
+        }
+
+        binding.toggleRecoverySize.check(viewModel.recoverySize.value ?: R.id.button12)
     }
 
     private fun navigate(
@@ -57,11 +82,12 @@ class ChooseSecurityFragment :
                 navOptionsBuilder = navOptionsBuilder
             )
         } else {
+            val mnemonic = if(viewModel.recoverySize.value == R.id.button12) greenWallet.generateMnemonic12() else greenWallet.generateMnemonic24()
             navigate(
                 ChooseSecurityFragmentDirections.actionChooseSecurityFragmentToRecoveryIntroFragment(
                     wallet = null,
                     onboardingOptions = options,
-                    mnemonic = greenWallet.generateMnemonic12()
+                    mnemonic = mnemonic
                 ), navOptionsBuilder = navOptionsBuilder
             )
         }

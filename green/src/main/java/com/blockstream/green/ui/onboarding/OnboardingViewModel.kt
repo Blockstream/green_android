@@ -24,11 +24,11 @@ open class OnboardingViewModel(
 
     private fun withPinData(options: OnboardingOptions) = options.walletName?.contains(SkipPinData) != true
 
-    fun createNewWallet(options: OnboardingOptions, pin: String, mnemonic: String?) {
+    fun createNewWallet(options: OnboardingOptions, pin: String, mnemonic: String) {
 
         session.observable {
             val network = options.network!!
-            val loginData = it.createNewWallet(network, mnemonic)
+            val loginData = it.createNewWallet(network = network, mnemonic = mnemonic)
 
             var pinData : PinData? = null
 
@@ -40,7 +40,7 @@ open class OnboardingViewModel(
                 walletHashId = loginData.walletHashId,
                 name = generateWalletName(network, options.walletName),
                 network = network.id,
-                isRecoveryPhraseConfirmed = options.isRestoreFlow || !mnemonic.isNullOrBlank(),
+                isRecoveryPhraseConfirmed = true, // options.isRestoreFlow || !mnemonic.isNullOrBlank(),
                 isHardware = false
             )
 

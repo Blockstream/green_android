@@ -348,11 +348,10 @@ class GreenSession constructor(
         return httpRequest(details)
     }
 
-    fun createNewWallet(network: Network, providedMnemonic: String?): LoginData {
+    fun createNewWallet(network: Network, mnemonic: String): LoginData {
         isWatchOnly = false
 
         connect(network)
-        val mnemonic = providedMnemonic ?: generateMnemonic12()
 
         AuthHandler(
             greenWallet,

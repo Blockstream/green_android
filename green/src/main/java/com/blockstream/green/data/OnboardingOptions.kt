@@ -9,7 +9,7 @@ import com.blockstream.green.utils.isProductionFlavor
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class OnboardingOptions(
+data class OnboardingOptions constructor(
     val isRestoreFlow: Boolean,
     val isWatchOnly: Boolean = false,
     val isSingleSig: Boolean = false,

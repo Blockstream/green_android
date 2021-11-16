@@ -216,8 +216,7 @@
             app:destination="@id/onBoardingCompleteFragment" />
         <argument
             android:name="mnemonic"
-            app:argType="string"
-            app:nullable="true" />
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/enterRecoveryPhraseFragment"

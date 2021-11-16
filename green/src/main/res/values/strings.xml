@@ -1006,4 +1006,6 @@
   <string name="id_use_secure_display_and_screen_lock">Use Secure Display and Screen Lock</string>
   <string name="id_lock_after_1_minute">Lock after 1 minute</string>
   <string name="id_lock_immediately">Lock immediately</string>
+  <string name="id_recovery_phrase_length">Recovery phrase length</string>
+
 </resources>
