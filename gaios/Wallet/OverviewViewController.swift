@@ -752,18 +752,19 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                 }
             }
         case OverviewSection.transaction.rawValue:
-//            let transaction = transactions[indexPath.row]
+            let transaction = transactions[indexPath.row]
 //            let storyboard = UIStoryboard(name: "TransactionDetail", bundle: nil)
 //            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionDetailViewController") as? TransactionDetailViewController {
 //                vc.transaction = transaction
 //                vc.wallet = presentingWallet
 //                navigationController?.pushViewController(vc, animated: true)
 //            }
-
             let storyboard = UIStoryboard(name: "Transaction", bundle: nil)
-            let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController")
-            navigationController?.pushViewController(vc, animated: true)
-
+            if let vc = storyboard.instantiateViewController(withIdentifier: "TransactionViewController") as? TransactionViewController {
+                vc.transaction = transaction
+                vc.wallet = presentingWallet
+                navigationController?.pushViewController(vc, animated: true)
+            }
         default:
             break
         }

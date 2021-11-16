@@ -1,4 +1,5 @@
 import UIKit
+import PromiseKit
 
 enum TransactionSection: Int, CaseIterable {
     case amount = 0
@@ -11,8 +12,39 @@ class TransactionViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
 
+    var wallet: WalletItem!
+    var transaction: Transaction!
+
+    private var isLiquid: Bool = false
+    private var isIncoming: Bool = false
+    private var isRedeposit: Bool = false
+
+    private var account = AccountsManager.shared.current
+    private var amounts: [(key: String, value: UInt64)] {
+        get {
+            return Transaction.sort(transaction.amounts)
+        }
+    }
+
+    var viewInExplorerPreference: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: getNetwork() + "_view_in_explorer")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: getNetwork() + "_view_in_explorer")
+        }
+    }
+
+    private var transactionToken: NSObjectProtocol?
+    private var blockToken: NSObjectProtocol?
+    private var cantBumpFees: Bool {
+        get {
+            return SessionManager.shared.isResetActive ?? false ||
+            !transaction.canRBF || account?.isWatchonly ?? false
+        }
+    }
+
     var headerH: CGFloat = 44.0
-    var footerH: CGFloat = 54.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +52,34 @@ class TransactionViewController: UIViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: refreshTransaction)
+        blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: refreshTransaction)
+//        transactionDetailTableView.reloadData()
+
+        let shareBtn = UIButton(type: .system)
+        shareBtn.setImage(UIImage(named: "ic_share"), for: .normal)
+        shareBtn.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: shareBtn)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let token = transactionToken {
+            NotificationCenter.default.removeObserver(token)
+            transactionToken = nil
+        }
+        if let token = blockToken {
+            NotificationCenter.default.removeObserver(token)
+            blockToken = nil
+        }
+    }
+
+    deinit {
+        print("DEINIT")
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
@@ -32,8 +92,81 @@ class TransactionViewController: UIViewController {
         let storyboard = UIStoryboard(name: "Shared", bundle: nil)
         if let vc = storyboard.instantiateViewController(withIdentifier: "DialogNoteViewController") as? DialogNoteViewController {
             vc.modalPresentationStyle = .overFullScreen
+            vc.prefill = transaction.memo
             vc.delegate = self
             present(vc, animated: false, completion: nil)
+        }
+    }
+
+    @objc func shareButtonTapped(_ sender: UIButton) {
+        // We have more options in liquid for confidential txs
+        if isLiquid {
+            let alert = shareTransactionSheet()
+            self.present(alert, animated: true, completion: nil)
+        } else {
+            if let url = urlForTx() {
+                let tx: [Any] = [url]
+                let shareVC = UIActivityViewController(activityItems: tx, applicationActivities: nil)
+                shareVC.popoverPresentationController?.sourceView = sender
+                self.present(shareVC, animated: true, completion: nil)
+            }
+        }
+    }
+
+    func shareTransactionSheet() -> UIAlertController {
+        let alert = UIAlertController(title: NSLocalizedString("Share Transaction", comment: ""), message: "", preferredStyle: .actionSheet)
+        // View the transaction in blockstream.info
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_view_in_explorer", comment: ""), style: .default) { _ in
+            guard let alert: UIAlertController = self.explorerUrlOrAlert() else { return }
+            self.present(alert, animated: true, completion: nil)
+        })
+        // Share the unblinded transaction explorer url
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_share_nonconfidential", comment: ""), style: .default) { _ in
+            let unblindedUrl = (self.account?.gdkNetwork?.txExplorerUrl ?? "") + self.transaction.hash + self.transaction.blindingUrlString()
+            let shareVC = UIActivityViewController(activityItems: [unblindedUrl], applicationActivities: nil)
+            self.present(shareVC, animated: true, completion: nil)
+        })
+        // Share data needed to unblind the transaction
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_share_unblinding_data", comment: ""), style: .default) { _ in
+            let blindingData = try? JSONSerialization.data(withJSONObject: self.transaction.blindingData() ?? "", options: [])
+            let shareVC = UIActivityViewController(activityItems: [String(data: blindingData!, encoding: .utf8)!], applicationActivities: nil)
+            self.present(shareVC, animated: true, completion: nil)
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
+        return alert
+    }
+
+    func urlForTx() -> URL? {
+        return URL(string: (account?.gdkNetwork?.txExplorerUrl ?? "") + self.transaction.hash)
+    }
+
+    func explorerUrlOrAlert() -> UIAlertController? {
+        guard let url: URL = urlForTx() else { return nil }
+        let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!
+        if viewInExplorerPreference {
+            UIApplication.shared.open(url, options: [:])
+            return nil
+        }
+        let message = String(format: NSLocalizedString("id_are_you_sure_you_want_to_view", comment: ""), host)
+        let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { (_: UIAlertAction) in
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_only_this_time", comment: ""), style: .default) { (_: UIAlertAction) in
+            UIApplication.shared.open(url, options: [:])
+        })
+        alert.addAction(UIAlertAction(title: NSLocalizedString("id_always", comment: ""), style: .default) { (_: UIAlertAction) in
+            self.viewInExplorerPreference = true
+            UIApplication.shared.open(url, options: [:])
+        })
+
+        return alert
+    }
+
+    func refreshTransaction(_ notification: Notification) {
+        Guarantee().done { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData {}
+            }
         }
     }
 }
@@ -81,10 +214,19 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 return cell
             }
         case TransactionSection.detail.rawValue:
+            let noteAction: VoidToVoid? = { [weak self] in
+                self?.editNote()
+            }
+            let explorerAction: VoidToVoid? = { [weak self] in
+                guard let alert: UIAlertController = self?.explorerUrlOrAlert() else { return }
+                self?.present(alert, animated: true, completion: nil)
+            }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailCell") as? TransactionDetailCell {
-                cell.configure(noteAction: { [weak self] in
-                    self?.editNote()
-                })
+                cell.configure(
+                    transaction: self.transaction,
+                    noteAction: noteAction,
+                    explorerAction: explorerAction
+                )
                 cell.selectionStyle = .none
                 return cell
             }
@@ -162,7 +304,16 @@ extension TransactionViewController {
 extension TransactionViewController: DialogNoteViewControllerDelegate {
 
     func didSave(_ note: String) {
-        print(note)
+        self.startAnimating()
+        let bgq = DispatchQueue.global(qos: .background)
+        Guarantee().map(on: bgq) { _ in
+            try gaios.SessionManager.shared.setTransactionMemo(txhash_hex: self.transaction.hash, memo: note, memo_type: 0)
+            self.transaction.memo = note
+            }.ensure {
+                self.stopAnimating()
+            }.done {
+                self.tableView.reloadData {}
+            }.catch { _ in}
     }
 
     func didCancel() {

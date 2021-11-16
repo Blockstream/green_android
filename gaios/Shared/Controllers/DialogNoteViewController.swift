@@ -27,6 +27,7 @@ class DialogNoteViewController: KeyboardViewController {
 
     var buttonConstraint: NSLayoutConstraint?
     var isAccountRename = false
+    var prefill: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,6 +46,11 @@ class DialogNoteViewController: KeyboardViewController {
         view.alpha = 0.0
 
         updateUI()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        nameTextField.text = prefill
     }
 
     override func viewDidAppear(_ animated: Bool) {
