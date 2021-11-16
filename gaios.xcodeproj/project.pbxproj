@@ -45,6 +45,8 @@
 		3418BABC2743984400F9B2D0 /* TransactionDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BABB2743984400F9B2D0 /* TransactionDetailCell.swift */; };
 		3418BABE2743AC4600F9B2D0 /* DialogNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BABD2743AC4600F9B2D0 /* DialogNoteViewController.swift */; };
 		3418BAE32743BDAD00F9B2D0 /* ArcView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAE22743BDAD00F9B2D0 /* ArcView.swift */; };
+		3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */; };
+		3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
 		342560A8268B2BB900136ACC /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560A7268B2BB900136ACC /* Login.swift */; };
 		342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */; };
@@ -359,6 +361,8 @@
 		3418BABB2743984400F9B2D0 /* TransactionDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailCell.swift; sourceTree = "<group>"; };
 		3418BABD2743AC4600F9B2D0 /* DialogNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogNoteViewController.swift; sourceTree = "<group>"; };
 		3418BAE22743BDAD00F9B2D0 /* ArcView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcView.swift; sourceTree = "<group>"; };
+		3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionBarItem.swift; sourceTree = "<group>"; };
+		3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionBarItem.xib; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
 		342560A7268B2BB900136ACC /* Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login.swift; sourceTree = "<group>"; };
 		342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWallet.swift; sourceTree = "<group>"; };
@@ -730,6 +734,15 @@
 			path = ArcView;
 			sourceTree = "<group>";
 		};
+		3418BAE42743F99600F9B2D0 /* TransactionBarItem */ = {
+			isa = PBXGroup;
+			children = (
+				3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */,
+				3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */,
+			);
+			path = TransactionBarItem;
+			sourceTree = "<group>";
+		};
 		343476642682298B00D7AD43 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
@@ -957,6 +970,7 @@
 		34AB8BAF260367A9009C930A /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				3418BAE42743F99600F9B2D0 /* TransactionBarItem */,
 				3418BAE12743BD9500F9B2D0 /* ArcView */,
 				3497935C25F8B18C0029ECB1 /* ProgressView */,
 			);
@@ -1604,6 +1618,7 @@
 				81E9B80221C92EF7004D87B6 /* AccountCardView.xib in Resources */,
 				347FD0AD25FFA91700BB3FAB /* Home.storyboard in Resources */,
 				6D8099CF22FA235A0069A69F /* TransactionDetail.storyboard in Resources */,
+				3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */,
 				811B963A21F5FC9500DE02CB /* AccountsHeaderCollection.xib in Resources */,
 				676FCF291F9D0CF800354E93 /* Assets.xcassets in Resources */,
 				817A6309222461510054FC60 /* SendBTCConfirmationView.xib in Resources */,
@@ -1887,6 +1902,7 @@
 				34C2464B26709D1C009E8FCE /* AccountCreateSelectTypeViewController.swift in Sources */,
 				34B826CD2608830C00579C0B /* RecoveryCreateViewController.swift in Sources */,
 				34DEF525272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift in Sources */,
+				3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */,
 				3470F9F52600D1A3009B5E33 /* WalletCell.swift in Sources */,
 				34A31EAF26B2A9030072E82E /* TwoFactorAuthenticationViewController.swift in Sources */,
 				81BF4E3122E9E9EA005A04C6 /* LedgerCommands.swift in Sources */,

@@ -13,6 +13,7 @@ class TransactionDetailCell: UITableViewCell {
     @IBOutlet weak var bgNote: UIView!
     var noteAction: VoidToVoid?
     var explorerAction: VoidToVoid?
+    var copyAction: VoidToVoid?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -28,22 +29,28 @@ class TransactionDetailCell: UITableViewCell {
         lblNoteTxt.text = ""
     }
 
-    func configure(transaction: Transaction, noteAction: VoidToVoid?, explorerAction: VoidToVoid?) {
-        lblConfirmationsTitle.text = "Confirmations"
+    func configure(transaction: Transaction,
+                   noteAction: VoidToVoid?,
+                   explorerAction: VoidToVoid?,
+                   copyAction: VoidToVoid?) {
+        lblConfirmationsTitle.text = NSLocalizedString("id_confirmations", comment: "")
         lblConfirmationsHint.text = "1234"
         lblTxidTitle.text = NSLocalizedString("id_transaction_id", comment: "")
         lblTxidHint.text = transaction.hash
-        btnExplorer.setTitle("View in Explorer", for: .normal)
+        btnExplorer.setTitle(NSLocalizedString("id_view_in_explorer", comment: ""), for: .normal)
         lblNoteTitle.text = NSLocalizedString("id_my_notes", comment: "")
         if !transaction.memo.isEmpty {
             lblNoteTxt.text = transaction.memo
+        } else {
+            lblNoteTxt.text = ""
         }
         self.noteAction = noteAction
         self.explorerAction = explorerAction
+        self.copyAction = copyAction
     }
 
     @IBAction func btnCopy(_ sender: Any) {
-        print("copy")
+        copyAction?()
     }
 
     @IBAction func btnExplorer(_ sender: Any) {

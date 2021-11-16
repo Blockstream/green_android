@@ -15,10 +15,6 @@ class TransactionViewController: UIViewController {
     var wallet: WalletItem!
     var transaction: Transaction!
 
-    private var isLiquid: Bool = false
-    private var isIncoming: Bool = false
-    private var isRedeposit: Bool = false
-
     private var account = AccountsManager.shared.current
     private var amounts: [(key: String, value: UInt64)] {
         get {
@@ -44,6 +40,21 @@ class TransactionViewController: UIViewController {
         }
     }
 
+    var isIncoming: Bool {
+        get {
+            transaction.type == "incoming"
+        }
+    }
+    var isRedeposit: Bool {
+        get {
+            transaction.type == "redeposit"
+        }
+    }
+    var isLiquid: Bool {
+        get {
+            account?.gdkNetwork?.liquid ?? false
+        }
+    }
     var headerH: CGFloat = 44.0
 
     override func viewDidLoad() {
@@ -52,18 +63,31 @@ class TransactionViewController: UIViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
+
+        //        cellTypes.remove(at: cellTypes.firstIndex(of: .asset)!)
+        //        if isLiquid {
+        //            if isIncoming {
+        //                for _ in amounts {
+        //                    cellTypes.insert(.asset, at: 1)
+        //                }
+        //            } else {
+        //                cellTypes.insert(.asset, at: 1)
+        //            }
+        //            _ = isRedeposit || amounts.count > 0 ?
+        //                cellTypes.remove(at: cellTypes.firstIndex(of: .amount)!) :
+        //                cellTypes.remove(at: cellTypes.firstIndex(of: .fee)!)
+        //        }
+        //        _ = isIncoming || isRedeposit ? cellTypes.remove(at: cellTypes.firstIndex(of: .recipient)!) : cellTypes.remove(at: cellTypes.firstIndex(of: .wallet)!)
+
+        navBarSetup()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: refreshTransaction)
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: refreshTransaction)
-//        transactionDetailTableView.reloadData()
 
-        let shareBtn = UIButton(type: .system)
-        shareBtn.setImage(UIImage(named: "ic_share"), for: .normal)
-        shareBtn.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: shareBtn)
+//        tableView.reloadData {}
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -80,6 +104,26 @@ class TransactionViewController: UIViewController {
 
     deinit {
         print("DEINIT")
+    }
+
+    func navBarSetup() {
+        var status = NSLocalizedString("id_sent", comment: "")
+        if isRedeposit {
+            status = NSLocalizedString("id_redeposited", comment: "")
+        } else if isIncoming {
+            status = NSLocalizedString("id_received_on", comment: "")
+        }
+        let leftBarItem = ((Bundle.main.loadNibNamed("TransactionBarItem", owner: self, options: nil)![0] as? TransactionBarItem)!)
+        leftBarItem.configure(status: status, account: wallet.localizedName()) {
+            [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftBarItem)
+
+        let shareBtn = UIButton(type: .system)
+        shareBtn.setImage(UIImage(named: "ic_share"), for: .normal)
+        shareBtn.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: shareBtn)
     }
 
     @objc func handleRefresh(_ sender: UIRefreshControl? = nil) {
@@ -169,6 +213,12 @@ class TransactionViewController: UIViewController {
             }
         }
     }
+
+    func copyToClipboard() {
+        UIPasteboard.general.string = self.transaction.hash
+        DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
 }
 
 extension TransactionViewController: UITableViewDelegate, UITableViewDataSource {
@@ -221,11 +271,15 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 guard let alert: UIAlertController = self?.explorerUrlOrAlert() else { return }
                 self?.present(alert, animated: true, completion: nil)
             }
+            let copyAction: VoidToVoid? = { [weak self] in
+                self?.copyToClipboard()
+            }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailCell") as? TransactionDetailCell {
                 cell.configure(
                     transaction: self.transaction,
                     noteAction: noteAction,
-                    explorerAction: explorerAction
+                    explorerAction: explorerAction,
+                    copyAction: copyAction
                 )
                 cell.selectionStyle = .none
                 return cell
