@@ -253,13 +253,13 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case TransactionSection.fee.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionFeeCell") as? TransactionFeeCell {
-                cell.configure()
+                cell.configure(transaction: transaction, isLiquid: isLiquid)
                 cell.selectionStyle = .none
                 return cell
             }
         case TransactionSection.status.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionStatusCell") as? TransactionStatusCell {
-                cell.configure(num: 1)
+                cell.configure(transaction: transaction, isLiquid: isLiquid)
                 cell.selectionStyle = .none
                 return cell
             }
@@ -276,7 +276,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionDetailCell") as? TransactionDetailCell {
                 cell.configure(
-                    transaction: self.transaction,
+                    transaction: transaction,
                     noteAction: noteAction,
                     explorerAction: explorerAction,
                     copyAction: copyAction
