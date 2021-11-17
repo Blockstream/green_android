@@ -31,13 +31,15 @@ class ChooseSecurityFragment :
     @Inject
     lateinit var viewModelFactory: ChooseSecurityViewModel.AssistedFactory
     val viewModel: ChooseSecurityViewModel by viewModels {
-        ChooseSecurityViewModel.provideFactory(viewModelFactory, args.onboardingOptions)
+        ChooseSecurityViewModel.provideFactory(viewModelFactory, args.onboardingOptions, args.isManualRestore)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         options = args.onboardingOptions
+
+        binding.vm = viewModel
 
         binding.singleSig.setOnClickListener {
             options?.apply {
@@ -76,8 +78,10 @@ class ChooseSecurityFragment :
     ) {
         if (options.isRestoreFlow) {
             navigate(
-                ChooseSecurityFragmentDirections.actionChooseSecurityFragmentToChooseRecoveryPhraseFragment(
-                    options
+                ChooseSecurityFragmentDirections.actionChooseSecurityFragmentToWalletNameFragment(
+                    onboardingOptions = options,
+                    mnemonic = args.mnemonic ?: "",
+                    mnemonicPassword = args.mnemonicPassword ?: ""
                 ),
                 navOptionsBuilder = navOptionsBuilder
             )

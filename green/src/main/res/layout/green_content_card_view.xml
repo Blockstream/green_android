@@ -5,7 +5,14 @@
     tools:context="com.blockstream.green.views.GreenContentCardView">
 
     <data>
+        <import type="com.blockstream.green.gdk.ExtensionsKt"/>
+        <variable
+            name="title"
+            type="String" />
 
+        <variable
+            name="caption"
+            type="String" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,6 +28,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             app:gap="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -28,32 +36,36 @@
                 android:id="@+id/icon"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:visibility="gone"
-                tools:visibility="visible"
                 android:layout_marginRight="8dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_btc" />
+                app:srcCompat="@drawable/ic_btc"
+                tools:visibility="visible" />
 
             <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
+                android:id="@+id/titleTextView"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{title}"
                 android:textAppearance="?attr/textAppearanceHeadline3"
                 tools:text="Bitcoin" />
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/caption"
+            android:id="@+id/captionTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:text="@{caption}"
+            isVisible="@{ExtensionsKt.isNotBlank(caption)}"
             android:textAppearance="?attr/textAppearanceCaption"
             app:layout_constraintEnd_toEndOf="@+id/gappedLinearLayout"
             app:layout_constraintStart_toStartOf="@+id/gappedLinearLayout"
             app:layout_constraintTop_toBottomOf="@+id/gappedLinearLayout"
-            tools:text="Caption" />
+            tools:text="@string/id_import_a_wallet_created_with" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

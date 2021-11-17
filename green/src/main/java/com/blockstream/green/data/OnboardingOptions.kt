@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.Networks
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.utils.isProductionFlavor
 import kotlinx.parcelize.Parcelize
@@ -18,23 +19,7 @@ data class OnboardingOptions constructor(
     val walletName: String? = null
 ) : Parcelable{
     fun createCopyForNetwork(greenWallet: GreenWallet, networkType: String, isElectrum: Boolean): OnboardingOptions {
-        val id = when (networkType) {
-            Network.GreenMainnet -> {
-                if (isElectrum) Network.ElectrumMainnet else Network.GreenMainnet
-            }
-            Network.GreenLiquid -> {
-                if (isElectrum) Network.ElectrumLiquid else Network.GreenLiquid
-            }
-            Network.GreenTestnetLiquid -> {
-                if (isElectrum) Network.ElectrumTestnetLiquid else Network.GreenTestnetLiquid
-            }
-            Network.GreenTestnet -> {
-                if (isElectrum) Network.ElectrumTestnet else Network.GreenTestnet
-            }else -> {
-                networkType
-            }
-        }
-
+        val id = greenWallet.networks.getNetworkByType(networkTypeOrId = networkType, isElectrum = isElectrum).id
         return copy(network = greenWallet.networks.getNetworkById(id), networkType = networkType)
     }
 

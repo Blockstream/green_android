@@ -11,6 +11,7 @@ import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.databinding.WalletNameFragmentBinding
 import com.blockstream.green.ui.dialogs.showTorSinglesigWarningIfNeeded
+import com.blockstream.green.utils.dialog
 import com.blockstream.green.utils.errorDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -60,7 +61,13 @@ class WalletNameFragment :
 
         viewModel.onError.observe(viewLifecycleOwner){
             it?.getContentIfNotHandledOrReturnNull()?.let{ error ->
-                errorDialog(error)
+                if(error.message == "id_login_failed"){
+                    dialog(title = getString(R.string.id_login_failed), message = getString(R.string.id_no_multisig_shield_wallet_exists)) {
+                        popBackStack()
+                    }
+                }else{
+                    errorDialog(error)
+                }
             }
         }
 

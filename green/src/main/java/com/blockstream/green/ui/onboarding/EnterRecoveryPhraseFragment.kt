@@ -167,14 +167,24 @@ class EnterRecoveryPhraseFragment :
 
     fun navigate(options: OnboardingOptions? , mnemonic: String, mnemonicPassword: String ){
         options?.let {
-            navigate(EnterRecoveryPhraseFragmentDirections
-                .actionEnterRecoveryPhraseFragmentToWalletNameFragment(
+            if(args.restoreWallet == null) {
+                navigate(
+                    EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToScanWalletFragment(
+                        onboardingOptions = options,
+                        mnemonic = mnemonic,
+                        mnemonicPassword = mnemonicPassword,
+                        restoreWallet = args.restoreWallet
+                    )
+                )
+            }else{
+                navigate(EnterRecoveryPhraseFragmentDirections.actionEnterRecoveryPhraseFragmentToWalletNameFragment(
                     onboardingOptions = options,
                     mnemonic = mnemonic,
                     mnemonicPassword = mnemonicPassword,
                     restoreWallet = args.restoreWallet
                 )
-            )
+                )
+            }
         }
     }
 

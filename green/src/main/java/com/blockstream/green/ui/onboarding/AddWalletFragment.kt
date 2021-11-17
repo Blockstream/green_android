@@ -50,7 +50,7 @@ class AddWalletFragment :
 
         binding.buttonRestoreWallet.setOnClickListener {
             val options = OnboardingOptions(isRestoreFlow = true)
-            navigate(AddWalletFragmentDirections.actionAddWalletFragmentToRestoreWalletFragment(options))
+            navigate(AddWalletFragmentDirections.actionAddWalletFragmentToChooseNetworkFragment(options))
         }
 
         binding.buttonWatchOnly.setOnClickListener {

@@ -1,7 +1,10 @@
 package com.blockstream.green.ui.onboarding
 
+import com.blockstream.gdk.data.LoginData
 import com.blockstream.gdk.data.Network
+
 import com.blockstream.gdk.data.PinData
+
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.CredentialType

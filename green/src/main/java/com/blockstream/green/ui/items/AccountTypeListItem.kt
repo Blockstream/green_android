@@ -22,11 +22,8 @@ class AccountTypeListItem constructor(
     }
 
     override fun bindView(binding: ListItemAccountTypeBinding, payloads: List<Any>) {
-        StringHolder(accountType.titleRes())
-            .applyToOrHide(binding.card.title)
-
-        StringHolder(accountType.descriptionRes())
-            .applyToOrHide(binding.card.caption)
+        binding.card.setTitle(StringHolder(accountType.titleRes()).getText(binding.root.context))
+        binding.card.setCaption(StringHolder(accountType.descriptionRes()).getText(binding.root.context))
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemAccountTypeBinding {

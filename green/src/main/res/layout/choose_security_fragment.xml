@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:text="@string/id_choose_security_policy"
+            android:text="@{vm.isManualRestore ? @string/id_manual_restore : @string/id_choose_security_policy}"
             android:textAppearance="?attr/textAppearanceHeadline1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +34,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/id_once_selected_this_spending"
+            android:text="@{vm.isManualRestore ? @string/id_choose_the_security_policy_you_want_to_restore : @string/id_once_selected_this_spending}"
             android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="@+id/textView3"
             app:layout_constraintStart_toStartOf="@+id/textView3"
@@ -64,7 +64,7 @@
                     android:id="@+id/singleSig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:captionText="@string/id_your_funds_are_secured_by_a"
+                    captionText="@{vm.onboardingOptions.restoreFlow ? @string/id_restore_a_singlesig_wallet : @string/id_your_funds_are_secured_by_a}"
                     app:icon="@drawable/ic_singlesig"
                     app:titleText="@string/id_singlesig" />
 
@@ -72,7 +72,7 @@
                     android:id="@+id/multiSig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:captionText="@string/id_your_funds_are_secured_by"
+                    captionText="@{vm.onboardingOptions.restoreFlow ? @string/id_import_a_multisig_shield_wallet : @string/id_your_funds_are_secured_by}"
                     app:icon="@drawable/ic_multisig"
                     app:titleText="@string/id_multisig_shield" />
 
@@ -87,6 +87,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="24dp"
+            isVisible="@{vm.onboardingOptions.restoreFlow == false}"
             app:cardBackgroundColor="@color/brand_surface_variant"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

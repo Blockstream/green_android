@@ -44,8 +44,25 @@ data class Networks(
         networks[network.id] = network
     }
 
+    fun getNetworkByType(networkTypeOrId: String, isElectrum: Boolean): Network {
+        return when (networkTypeOrId) {
+            Network.GreenMainnet, Network.ElectrumMainnet -> {
+                if (isElectrum) bitcoinElectrum else bitcoinGreen
+            }
+            Network.GreenLiquid, Network.ElectrumLiquid  -> {
+                if (isElectrum) liquidElectrum else liquidGreen
+            }
+            Network.GreenTestnetLiquid, Network.ElectrumTestnetLiquid -> {
+                if (isElectrum) testnetLiquidElectrum else testnetLiquidGreen
+            }
+            else -> { // Network.GreenTestnet, Network.ElectrumTestnet
+                if (isElectrum) testnetElectrum else testnetGreen
+            }
+        }
+    }
+
     companion object {
-        val CustomNetworkId = "custom-network"
+        const val CustomNetworkId = "custom-network"
 
         /**
         Transform the gdk json to a more appropriate format

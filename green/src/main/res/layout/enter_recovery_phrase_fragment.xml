@@ -161,7 +161,7 @@
                 android:text="@string/id_help"
                 app:icon="@drawable/ic_baseline_help_outline_18"
                 app:iconGravity="start"
-                app:layout_constraintBottom_toBottomOf="@+id/recoveryPhraseKeyboardView"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                  />
 

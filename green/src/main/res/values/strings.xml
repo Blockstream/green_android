@@ -1007,5 +1007,17 @@
   <string name="id_lock_after_1_minute">Lock after 1 minute</string>
   <string name="id_lock_immediately">Lock immediately</string>
   <string name="id_recovery_phrase_length">Recovery phrase length</string>
+  <string name="id_we_will_do_our_best_to_find_a_wallet">We will do our best to find a wallet corresponding to this recovery phrase</string>
+  <string name="id_any_wallet_found_wil_be_displayed_here">Any wallet found will be displayed here.</string>
+  <string name="id_no_existing_wallet_could_be_found">No existing wallet could be found.\nTry manually restoring your wallet.</string>
+  <string name="id_any_wallet_found_will_be_displayed_here">Any wallet found will be displayed here</string>
+  <string name="id_looking_for_wallets">Looking for wallets</string>
+  <string name="id_existing_wallets">Existing Wallets</string>
+  <string name="id_manual_restore">Manual Restore</string>
+  <string name="id_choose_the_security_policy_you_want_to_restore">Choose the security policy you want to restore this wallet on.</string>
+  <string name="id_no_multisig_shield_wallet_exists">No multisig shield wallet exists for this recovery phrase.</string>
+  <string name="id_wallet_found">Wallet found</string>
+  <string name="id_wallet_not_found">Wallet not found</string>
+  <string name="id_wallet_already_restored">Wallet already restored</string>
 
 </resources>

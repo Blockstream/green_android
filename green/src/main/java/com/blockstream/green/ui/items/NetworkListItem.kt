@@ -29,11 +29,9 @@ class NetworkListItem constructor(val network: String, val networkName: String, 
         var card: GreenContentCardView = view.findViewById(R.id.card)
 
         override fun bindView(item: NetworkListItem, payloads: List<Any>) {
-            card.title.text = item.networkName
-            card.caption.text = item.caption
-            card.caption.visibility = if(item.caption.isEmpty()) View.GONE else View.VISIBLE
-            card.icon.setImageResource(item.network.getNetworkIcon())
-            card.icon.isVisible = true
+            card.setTitle(item.networkName)
+            card.setCaption(item.caption)
+            card.setIcon(item.network.getNetworkIcon())
         }
 
         override fun unbindView(item: NetworkListItem) {

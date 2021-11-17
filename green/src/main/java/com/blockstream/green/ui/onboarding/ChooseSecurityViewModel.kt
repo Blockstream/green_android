@@ -15,6 +15,7 @@ class ChooseSecurityViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
     walletRepository: WalletRepository,
     @Assisted val onboardingOptions: OnboardingOptions,
+    @Assisted val isManualRestore: Boolean,
 ) : OnboardingViewModel(sessionManager, walletRepository, null) {
 
     var recoverySize = MutableLiveData(R.id.button12)
@@ -22,18 +23,20 @@ class ChooseSecurityViewModel @AssistedInject constructor(
     @dagger.assisted.AssistedFactory
     interface AssistedFactory {
         fun create(
-            onboardingOptions: OnboardingOptions
+            onboardingOptions: OnboardingOptions,
+            isManualRestore: Boolean
         ): ChooseSecurityViewModel
     }
 
     companion object {
         fun provideFactory(
             assistedFactory: AssistedFactory,
-            onboardingOptions: OnboardingOptions
+            onboardingOptions: OnboardingOptions,
+            isManualRestore: Boolean
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return assistedFactory.create(onboardingOptions) as T
+                return assistedFactory.create(onboardingOptions, isManualRestore) as T
             }
         }
     }
