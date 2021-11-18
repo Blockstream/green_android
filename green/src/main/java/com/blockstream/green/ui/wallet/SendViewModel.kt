@@ -48,7 +48,7 @@ class SendViewModel @AssistedInject constructor(
     private val assets: MutableLiveData<Balances> = MutableLiveData()
     fun getAssetsLiveData(): LiveData<Balances> = assets
 
-    val feeSlider = MutableLiveData(3f) // fee slider selection, 0 for custom
+    val feeSlider = MutableLiveData<Float>(SliderHighIndex.toFloat()) // fee slider selection, 0 for custom
     val feeAmount = MutableLiveData("") // total tx fee
     val feeAmountFiat = MutableLiveData("") // total tx fee in fiat
     val feeAmountRate = MutableLiveData("") // fee rate
@@ -125,11 +125,13 @@ class SendViewModel @AssistedInject constructor(
         }
         .retry(1)
         .subscribeBy(
-            onSuccess = {
-                feeEstimation = it
+            onSuccess = { fees ->
+                feeEstimation = fees
 
-                if (feeRate == null) {
-                    feeRate = feeEstimation?.fees?.getOrNull(GreenWallet.FeeBlockTarget.last())
+                // skip if custom fee is selected
+                if (feeRate == null && feeSlider.value?.toInt() != SliderCustomIndex) {
+                    // update based on currect slider selection
+                    feeRate = fees.fees.getOrNull(GreenWallet.FeeBlockTarget[3 - (feeSlider.value ?: SliderHighIndex).toInt()])
                 }
             },
             onError = {
@@ -547,6 +549,7 @@ class SendViewModel @AssistedInject constructor(
 
     companion object : KLogging() {
         const val SliderCustomIndex = 0
+        const val SliderHighIndex = 3
 
         fun provideFactory(
             assistedFactory: AssistedFactory,

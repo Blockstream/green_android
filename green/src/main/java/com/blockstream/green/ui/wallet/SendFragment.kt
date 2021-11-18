@@ -52,7 +52,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     val args: SendFragmentArgs by navArgs()
 
     override val wallet by lazy { args.wallet }
-    val isSweep by lazy { args.isSweep }
+    private val isSweep by lazy { args.isSweep }
 
     val bindings = mutableListOf<ListItemTransactionRecipientBinding>()
 
