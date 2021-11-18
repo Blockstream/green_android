@@ -38,6 +38,10 @@
             type="String" />
 
         <variable
+            name="changeCurrencyTo"
+            type="String" />
+
+        <variable
             name="canConvert"
             type="Boolean" />
 
@@ -240,8 +244,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
-                android:text="@{amountCurrency}"
+                android:text="@{changeCurrencyTo}"
                 isInvisible="@{vm.isSweep || !canConvert}"
+                android:textColor="@color/material_on_surface_emphasis_high_type"
                 android:enabled="@{liveData.enableAmount &amp;&amp; !liveData.isSendAll}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/amountTextInputLayout"
                 app:layout_constraintEnd_toEndOf="parent"

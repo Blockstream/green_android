@@ -313,9 +313,8 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
         }
 
         viewModel.getRecipientLiveData(index)?.isFiat?.observe(viewLifecycleOwner){ isFiat ->
-            (if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)).let {
-                recipientBinding.amountCurrency = it
-            }
+            recipientBinding.amountCurrency = if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)
+            recipientBinding.changeCurrencyTo = if(isFiat) getBitcoinOrLiquidUnit(session) else getFiatCurrency(session)
         }
 
         // When changing asset and send all is enabled, listen for the event resetting the send all flag
