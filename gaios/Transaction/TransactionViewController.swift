@@ -230,7 +230,25 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case TransactionSection.amount.rawValue:
-            return 2
+            var items = 0
+            if isLiquid {
+                if isIncoming {
+                    items = amounts.count
+                } else {
+                    items = 1
+                }
+                if isRedeposit {
+                    items = 0
+                }
+//                    || amounts.count > 0 ?
+//                    cellTypes.remove(at: cellTypes.firstIndex(of: .amount)!) :
+//                    cellTypes.remove(at: cellTypes.firstIndex(of: .fee)!)
+            } else {
+                if !isRedeposit {
+                    items = 1
+                }
+            }
+            return items
         case TransactionSection.fee.rawValue:
             return 1
         case TransactionSection.status.rawValue:
@@ -247,7 +265,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
         switch indexPath.section {
         case TransactionSection.amount.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
-                cell.configure()
+                cell.configure(transaction: transaction, network: account?.network)
                 cell.selectionStyle = .none
                 return cell
             }
