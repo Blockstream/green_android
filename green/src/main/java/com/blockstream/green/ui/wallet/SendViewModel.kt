@@ -27,6 +27,7 @@ import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.coroutines.flow.*
 import mu.KLogging
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 class SendViewModel @AssistedInject constructor(
@@ -154,6 +155,7 @@ class SendViewModel @AssistedInject constructor(
             .asFlow()
             .drop(1)// drop initial value
             .distinctUntilChanged()
+            .debounce(50)
             .onEach {
                 checkTransaction()
             }
@@ -177,6 +179,7 @@ class SendViewModel @AssistedInject constructor(
             .asFlow()
             .drop(1)// drop initial value
             .distinctUntilChanged()
+            .debounce(200) // debounce as user types
             .onEach {
                 // Skip if is a bip21 field or is Send all or sweep
                 if (
@@ -191,7 +194,7 @@ class SendViewModel @AssistedInject constructor(
             }
             .launchIn(viewModelScope)
 
-        // Amount
+        // Send All
         addressParamsLiveData.isSendAll
             .asFlow()
             .drop(1)// drop initial value
@@ -291,7 +294,17 @@ class SendViewModel @AssistedInject constructor(
         }
     }
 
-    private fun checkTransaction(userInitiated: Boolean = false) {
+    var pendingCheck = false
+    var isCheckingTransaction = AtomicBoolean(false)
+    private fun checkTransaction(userInitiated: Boolean = false, finalCheckBeforeContinue: Boolean = false) {
+        // Prevent race condition
+        if (!isCheckingTransaction.compareAndSet(false, true)){
+            pendingCheck = true
+            return
+        }
+
+        pendingCheck = false
+
         logger.info { "checkTransaction" }
         session.observable {
             val params = createTransactionParams()
@@ -328,6 +341,12 @@ class SendViewModel @AssistedInject constructor(
             onProgress.postValue(true)
         }.doOnTerminate {
             onProgress.postValue(false)
+            isCheckingTransaction.set(false)
+        }
+        .doAfterTerminate {
+            if(pendingCheck){
+                checkTransaction(userInitiated = userInitiated, finalCheckBeforeContinue = finalCheckBeforeContinue)
+            }
         }.subscribeBy(
             onSuccess = { tx ->
                 transaction = tx
@@ -367,6 +386,11 @@ class SendViewModel @AssistedInject constructor(
                 feeAmountFiat.value = tx.fee?.toFiatLook(session = session, withUnit = true, withGrouping = true) ?: ""
 
                 transactionError.value = null
+
+                if(!pendingCheck && finalCheckBeforeContinue){
+                    Session.getSession().pendingTransaction = tx.toObjectNode()
+                    onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
+                }
             },
             onError = {
                 it.printStackTrace()
@@ -400,10 +424,7 @@ class SendViewModel @AssistedInject constructor(
 
     fun confirmTransaction() {
         transaction?.let {
-            if(it.error.isNullOrBlank()){
-                Session.getSession().pendingTransaction = it.toObjectNode()
-                onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
-            }
+            checkTransaction(finalCheckBeforeContinue = true)
         } ?: run {
             checkTransaction(userInitiated = true)
         }
