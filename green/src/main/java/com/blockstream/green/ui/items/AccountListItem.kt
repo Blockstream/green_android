@@ -55,15 +55,33 @@ data class AccountListItem constructor(val session: GreenSession,
         binding.ticker = getBitcoinOrLiquidUnit(session)
 
         if(session.isLiquid){
-            val iconSize = context.toPixels(20)
             // Clear all icons
             binding.assetsIcons.removeAllViews()
 
+            var assetWithoutIconShown = false
             walletBalances[subAccount.pointer.toInt()]?.let { balances ->
                 balances.onEachIndexed { index, balance ->
+
+                    val isAssetWithoutIcon = if (balance.key == session.network.policyAsset) {
+                        false
+                    } else {
+                        session.getAssetDrawableOrNull(balance.key) == null
+                    }
+
+                    if(isAssetWithoutIcon){
+                        if(assetWithoutIconShown){
+                            return@onEachIndexed
+                        }else{
+                            assetWithoutIconShown = true
+                        }
+                    }
+
                     ImageView(context).also { imageView ->
                         imageView.setImageDrawable(balance.key.getAssetIcon(context, session))
-                        imageView.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.MATCH_PARENT).also {
+                        imageView.layoutParams = FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.WRAP_CONTENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT
+                        ).also {
                             it.updateMargins(left = context.toPixels(12 * index))
                         }
                         imageView.adjustViewBounds = true

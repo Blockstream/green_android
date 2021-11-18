@@ -77,12 +77,16 @@ class AssetManager(
         return metadata[assetId]
     }
 
-    fun getAssetDrawableOrDefault(assetId: String): Drawable {
+    fun getAssetDrawableOrNull(assetId: String): Drawable? {
         getAssetIcon(assetId)?.let {
             return BitmapDrawable(context.resources, it)
         }
 
-        return context.getDrawable(R.drawable.ic_unknown_asset_60)!!
+        return null
+    }
+
+    fun getAssetDrawableOrDefault(assetId: String): Drawable {
+        return getAssetDrawableOrNull(assetId) ?: context.getDrawable(R.drawable.ic_unknown_asset_60)!!
     }
 
     fun updateAssetsIfNeeded(provider: AssetsProvider) {

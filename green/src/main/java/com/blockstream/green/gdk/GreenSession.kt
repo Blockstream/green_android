@@ -866,6 +866,7 @@ class GreenSession constructor(
     }
 
     fun getAsset(assetId : String): Asset? = assetsManager.getAsset(assetId)
+    fun getAssetDrawableOrNull(assetId : String): Drawable? = assetsManager.getAssetDrawableOrNull(assetId)
     fun getAssetDrawableOrDefault(assetId : String): Drawable = assetsManager.getAssetDrawableOrDefault(assetId)
 
     internal fun destroy() {
