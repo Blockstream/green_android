@@ -37,6 +37,8 @@ import com.greenaddress.greenbits.ui.send.SendConfirmActivity
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
@@ -53,6 +55,8 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     override val wallet by lazy { args.wallet }
     private val isSweep by lazy { args.isSweep }
+    private val isBump by lazy { !args.bumpTransaction.isNullOrBlank() }
+    private val bumpTransaction by lazy { if(isBump) Json.parseToJsonElement(args.bumpTransaction ?: "") else null }
 
     val bindings = mutableListOf<ListItemTransactionRecipientBinding>()
 
@@ -66,7 +70,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     @Inject
     lateinit var viewModelFactory: SendViewModel.AssistedFactory
     val viewModel: SendViewModel by viewModels {
-        SendViewModel.provideFactory(viewModelFactory, wallet, isSweep, args.address)
+        SendViewModel.provideFactory(viewModelFactory, wallet, isSweep, args.address, bumpTransaction)
     }
 
     override fun getWalletViewModel() = viewModel
@@ -186,18 +190,6 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
                 getExpectedConfirmationTime(requireContext(), GreenWallet.FeeBlockTarget[3 - (slider.toInt())])
             }
         }
-
-        // Setup read-only
-//        final JsonNode readOnlyNode = tx.get("addressees_read_only");
-//        if (readOnlyNode != null && readOnlyNode.asBoolean()) {
-//            mAmountText.setEnabled(false);
-//            mSendAllButton.setVisibility(View.GONE);
-//            mAccountBalance.setVisibility(View.GONE);
-//        } else {
-//            mAmountText.requestFocus();
-//            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-//        }
-
     }
 
     private fun getExpectedConfirmationTime(context: Context, blocks: Int): String {
@@ -367,7 +359,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
                         if (input.isNullOrBlank()) {
                             viewModel.setCustomFeeRate(null)
                         } else {
-                            val minFeeRateKB: Long = viewModel.feeEstimation?.fees?.firstOrNull() ?: session.network.defaultFee
+                            val minFeeRateKB: Long = viewModel.feeEstimation?.firstOrNull() ?: session.network.defaultFee
                             val enteredFeeRate = dialogBinding.text?.toDouble() ?: 0.0
                             if (enteredFeeRate * 1000 < minFeeRateKB) {
                                 snackbar(
@@ -395,7 +387,12 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     override fun onResume() {
         super.onResume()
-        setToolbar(title = getString(if(isSweep) R.string.id_sweep else R.string.id_send))
+
+        setToolbar(title = getString(when{
+            isBump -> R.string.id_increase_fee
+            isSweep -> R.string.id_sweep
+            else -> R.string.id_send
+        }))
     }
 
     override fun onPause() {

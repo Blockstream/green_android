@@ -530,6 +530,9 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_assetBottomSheetFragment"
             app:destination="@id/assetBottomSheetFragment" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_sendFragment"
+            app:destination="@id/sendFragment" />
     </fragment>
     <fragment
         android:id="@+id/sweepFragment"
@@ -556,6 +559,11 @@
             android:name="isSweep"
             app:argType="boolean"
             android:defaultValue="false" />
+        <argument
+            android:name="bumpTransaction"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 
 </navigation>

@@ -36,6 +36,7 @@ import com.mikepenz.fastadapter.binding.listeners.addClickListener
 import com.mikepenz.fastadapter.diff.FastAdapterDiffUtil
 import com.mikepenz.itemanimators.AlphaInAnimator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.json.JsonElement
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -98,8 +99,11 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         }
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
-            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
-                startForResultFeeBump.launch(Intent(requireContext(), SendAmountActivity::class.java))
+            consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateWithData>()?.let {
+                navigate(TransactionDetailsFragmentDirections.actionTransactionDetailsFragmentToSendFragment(
+                    wallet = wallet,
+                    bumpTransaction = it.data as String
+                ))
             }
         }
 

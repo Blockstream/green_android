@@ -5,18 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.gdk.data.Transactions
-import com.blockstream.gdk.params.BalanceParams
-import com.blockstream.gdk.params.BumpTransactionParams
 import com.blockstream.gdk.params.TransactionParams
 import com.blockstream.green.data.NavigateEvent
-import com.blockstream.green.database.CredentialType
-import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.greenapi.Session
 import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -28,7 +23,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import java.lang.Long.max
 
 class TransactionDetailsViewModel @AssistedInject constructor(
     sessionManager: SessionManager,
@@ -96,31 +90,15 @@ class TransactionDetailsViewModel @AssistedInject constructor(
                 throw Exception("Couldn't find the transaction")
             }
 
-            val unspentOutputs = it.getUnspentOutputs(BalanceParams(subaccount = wallet.activeAccount, confirmations = 1))
+            Json.encodeToString(transaction)
 
-            val params = BumpTransactionParams(
-                subAccount = wallet.activeAccount,
-                utxos = unspentOutputs.unspentOutputsAsJsonElement,
-                previousTransaction = transaction
-            )
-
-            it.createTransaction(params).let { tx ->
-                tx.error?.let { error ->
-                    if(error.isNotBlank() && error != "id_invalid_replacement_fee_rate"){
-                        throw Exception(error)
-                    }
-                }
-
-                tx.toObjectNode()
-            }
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
             onProgress.postValue(false)
         }.subscribeBy(
             onSuccess = {
-                Session.getSession().pendingTransaction = it
-                onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
+                onEvent.postValue(ConsumableEvent(NavigateEvent.NavigateWithData(it)))
             },
             onError = {
                 it.printStackTrace()

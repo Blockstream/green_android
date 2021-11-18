@@ -75,7 +75,7 @@
 
             <ImageView
                 android:id="@+id/buttonRemove"
-                isVisible="@{vm.recipientsLiveData.size() != 1}"
+                isVisible="@{vm.recipientsLiveData.size() != 1 &amp;&amp; !vm.isBump}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -95,6 +95,7 @@
                 android:layout_weight="@integer/material_motion_duration_long_1"
                 android:hint="@{vm.isSweep ? @string/id_private_key : @string/id_recipient_address}"
                 android:orientation="horizontal"
+                android:enabled="@{!vm.isBump}"
                 gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) ? vm.transactionError : null}"
                 app:layout_constraintEnd_toStartOf="@+id/barrier"
                 app:layout_constraintStart_toStartOf="parent"
@@ -121,6 +122,7 @@
                 android:paddingBottom="4dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_qr_60"
+                isInvisible="@{vm.isBump}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/addressInputLayout"
                 app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
@@ -136,6 +138,7 @@
                 isVisible="@{!vm.isSweep}"
                 android:hint="@{vm.session.network.isLiquid ? @string/id_asset : @string/id_coin}"
                 tools:hint="@string/id_asset"
+                android:enabled="@{!vm.isBumpOrSweep}"
                 app:endIconDrawable="@drawable/ic_baseline_arrow_drop_down_24"
                 app:endIconMode="custom"
                 app:helperText="@{vm.isSweep ? null : assetBalance}"
@@ -168,7 +171,7 @@
                 android:paddingBottom="4dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_more_settings"
-                isVisible="@{!vm.isSweep &amp;&amp; false}"
+                isVisible="@{!vm.isSweep &amp;&amp; !vm.isBump &amp;&amp;  false}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/assetTextInputLayout"
                 app:layout_constraintTop_toTopOf="@+id/assetTextInputLayout" />
@@ -190,7 +193,7 @@
                 android:id="@+id/toggleGroupSendAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                isVisible="@{!vm.isSweep}"
+                isVisible="@{!vm.isBumpOrSweep}"
                 app:layout_constraintEnd_toEndOf="@+id/assetTextInputLayout"
                 app:layout_constraintTop_toBottomOf="@+id/assetTextInputLayout">
 
@@ -215,7 +218,7 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
-                android:enabled="@{liveData.assetId != null &amp;&amp; liveData.enableAmount &amp;&amp; !liveData.isSendAll &amp;&amp; !vm.isSweep}"
+                android:enabled="@{liveData.assetId != null &amp;&amp; liveData.enableAmount &amp;&amp; !liveData.isSendAll &amp;&amp; !vm.isBumpOrSweep}"
                 android:gravity="end"
                 android:hint="@string/id_amount"
                 app:errorEnabled="true"
@@ -245,7 +248,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
                 android:text="@{changeCurrencyTo}"
-                isInvisible="@{vm.isSweep || !canConvert}"
+                isInvisible="@{vm.isBumpOrSweep || !canConvert}"
                 android:textColor="@color/material_on_surface_emphasis_high_type"
                 android:enabled="@{liveData.enableAmount &amp;&amp; !liveData.isSendAll}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/amountTextInputLayout"

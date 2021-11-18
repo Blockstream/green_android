@@ -57,7 +57,7 @@
                 <Button
                     android:id="@+id/buttonAddRecipient"
                     style="@style/Widget.Green.Button.Outlined"
-                    isVisible="@{enableMultipleRecipients}"
+                    isGone="@{vm.bumpOrSweep || !enableMultipleRecipients}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/id_add_recipient" />
