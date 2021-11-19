@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.*
 import com.blockstream.gdk.Balances
 import com.blockstream.gdk.GreenWallet
+import com.blockstream.gdk.GreenWallet.Companion.FeeBlockTarget
 import com.blockstream.gdk.data.CreateTransaction
 import com.blockstream.gdk.data.FeeEstimation
 import com.blockstream.gdk.params.AddressParams
@@ -71,7 +72,7 @@ class SendViewModel @AssistedInject constructor(
     var transaction: CreateTransaction? = null
     val transactionError: MutableLiveData<String?> = MutableLiveData("") // empty string as an initial error to disable next button
 
-    val handledGdkErrors = listOf("id_insufficient_funds", "id_invalid_private_key", "id_invalid_address", "id_invalid_amount", "Invalid AssetID")
+    val handledGdkErrors = listOf("id_insufficient_funds", "id_invalid_private_key", "id_invalid_address", "id_invalid_amount", "id_invalid_asset_id",)
 
     init {
         updateFeeEstimation()
@@ -106,6 +107,14 @@ class SendViewModel @AssistedInject constructor(
                 }
             )
             .addTo(disposables)
+
+        session.getSettings()?.let {
+            FeeBlockTarget
+                .indexOf(it.requiredNumBlocks)
+                .takeIf { it > -1 }?.let {
+                feeSlider.postValue(3 - it.toFloat())
+            }
+        }
 
         // Fee Slider
         feeSlider
@@ -508,22 +517,6 @@ class SendViewModel @AssistedInject constructor(
     }
 
     private fun isSendAll(): Boolean {
-        // Send all support for multiple recipients ?
-//        if (recipients.value?.size == 1) {
-//            getRecipientLiveData(0)?.let {
-//                if (it.assetId.value == session.policyAsset && it.isFiat.value == false) {
-//
-//                    if (UserInput.parseUserInputSafe(session, it.amount.value, isFiat = false)
-//                            .getBalance(session)?.satoshi ?: 0 == assets.value?.get(session.policyAsset)
-//                    ) {
-//                        return true
-//                    }
-//
-//                }
-//            }
-//        }
-//        return false
-
         return recipients.value?.map {
             it.isSendAll.value ?: false
         }?.reduceOrNull { acc, b ->
@@ -538,19 +531,6 @@ class SendViewModel @AssistedInject constructor(
                 addressParams.amount.value = ""
             }
         }
-
-//        if(recipients.value?.size == 1){
-//            getRecipientLiveData(0)?.let { addressParams ->
-//                addressParams.assetId.value?.let { assetId ->
-//                    addressParams.amount.value =
-//                        AssetLook(id = assetId, assets.value?.get(assetId) ?: 0, session).balance(
-//                            withUnit = false
-//                        )
-//                }
-//            }
-//        }else{
-//            onError.postValue(ConsumableEvent(Exception("Send all is allowed only when you send to a single recipient")))
-//        }
     }
 
     fun toggleCurrency(index: Int) {

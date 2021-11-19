@@ -218,7 +218,7 @@
                 android:layout_gravity="end"
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
-                android:enabled="@{liveData.assetId != null &amp;&amp; liveData.enableAmount &amp;&amp; !liveData.isSendAll &amp;&amp; !vm.isBumpOrSweep}"
+                android:enabled="@{ExtensionsKt.isNotBlank(liveData.assetId) &amp;&amp; liveData.enableAmount &amp;&amp; !liveData.isSendAll &amp;&amp; !vm.isBumpOrSweep}"
                 android:gravity="end"
                 android:hint="@string/id_amount"
                 app:errorEnabled="true"

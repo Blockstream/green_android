@@ -81,6 +81,7 @@ fun String.getNetworkIcon(): Int{
 
 // Helper fn for Data Binding as the original fn is InlineOnly
 fun String?.isBlank() = isNullOrBlank()
+fun String?.isNotBlank() = !isNullOrBlank()
 
 fun Wallet.getIcon(): Int = network.getNetworkIcon()
 

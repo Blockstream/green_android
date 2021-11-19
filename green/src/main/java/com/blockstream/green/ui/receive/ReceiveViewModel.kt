@@ -29,7 +29,6 @@ class ReceiveViewModel @AssistedInject constructor(
     var addressUri = MutableLiveData<String>()
 
     val requestAmount = MutableLiveData<String?>()
-
     var label = MutableLiveData<String?>()
 
     var addressQRBitmap = MutableLiveData<Bitmap?>()
@@ -128,6 +127,11 @@ class ReceiveViewModel @AssistedInject constructor(
                 if (!label.value.isNullOrBlank()) {
                     it.appendQueryParameter("label", label.value)
                 }
+
+                if(session.isLiquid){
+                    it.appendQueryParameter("assetid", session.network.policyAsset)
+                }
+
             }.toString()
 
             addressUri.value = scheme + query
