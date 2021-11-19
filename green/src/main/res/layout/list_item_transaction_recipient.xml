@@ -6,6 +6,7 @@
     <data>
 
         <import type="com.blockstream.green.gdk.ExtensionsKt" />
+
         <import type="android.view.View" />
 
 
@@ -35,10 +36,6 @@
 
         <variable
             name="amountCurrency"
-            type="String" />
-
-        <variable
-            name="changeCurrencyTo"
             type="String" />
 
         <variable
@@ -90,13 +87,13 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/addressInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) ? vm.transactionError : null}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="@integer/material_motion_duration_long_1"
+                android:enabled="@{!vm.isBump}"
                 android:hint="@{vm.isSweep ? @string/id_private_key : @string/id_recipient_address}"
                 android:orientation="horizontal"
-                android:enabled="@{!vm.isBump}"
-                gdkError="@{`id_invalid_address`.equals(vm.transactionError) || `id_invalid_private_key`.equals(vm.transactionError) ? vm.transactionError : null}"
                 app:layout_constraintEnd_toStartOf="@+id/barrier"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/barrierIndex">
@@ -113,39 +110,38 @@
 
             <ImageButton
                 android:id="@+id/buttonScan"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="14dp"
+                isVisible="@{!vm.isBump}"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
                 android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="10dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_qr_60"
-                isInvisible="@{vm.isBump}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/addressInputLayout"
                 app:layout_constraintTop_toTopOf="@+id/addressInputLayout" />
 
 
             <com.blockstream.green.views.RightTextInputLayout
                 android:id="@+id/assetTextInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                isVisible="@{!vm.isSweep}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_weight="1"
-                isVisible="@{!vm.isSweep}"
-                android:hint="@{vm.session.network.isLiquid ? @string/id_asset : @string/id_coin}"
-                tools:hint="@string/id_asset"
                 android:enabled="@{!vm.isBumpOrSweep}"
+                android:hint="@{vm.session.network.isLiquid ? @string/id_asset : @string/id_coin}"
                 app:endIconDrawable="@drawable/ic_baseline_arrow_drop_down_24"
                 app:endIconMode="custom"
                 app:helperText="@{vm.isSweep ? null : assetBalance}"
                 app:helperTextTextColor="@color/color_on_surface_emphasis_medium"
                 app:layout_constraintEnd_toStartOf="@+id/barrier"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/addressInputLayout">
+                app:layout_constraintTop_toBottomOf="@+id/addressInputLayout"
+                tools:hint="@string/id_asset">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/assetInputEditText"
@@ -162,28 +158,27 @@
 
             <ImageButton
                 android:id="@+id/buttonCoinControl"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="14dp"
+                isVisible="@{!vm.isSweep &amp;&amp; !vm.isBump &amp;&amp;  false}"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
                 android:adjustViewBounds="true"
-                android:background="@android:color/transparent"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="10dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_more_settings"
-                isVisible="@{!vm.isSweep &amp;&amp; !vm.isBump &amp;&amp;  false}"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/assetTextInputLayout"
                 app:layout_constraintTop_toTopOf="@+id/assetTextInputLayout" />
 
             <ImageView
                 android:id="@+id/utxoSelectionIcon"
+                isVisible="@{!vm.isSweep &amp;&amp; false}"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="20dp"
                 android:src="@drawable/indicator_dot_filled"
-                isVisible="@{!vm.isSweep &amp;&amp; false}"
                 app:layout_constraintBottom_toBottomOf="@+id/buttonCoinControl"
                 app:layout_constraintEnd_toEndOf="@+id/buttonCoinControl"
                 app:layout_constraintStart_toStartOf="@+id/buttonCoinControl"
@@ -191,21 +186,20 @@
 
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/toggleGroupSendAll"
+                isVisible="@{!vm.isBumpOrSweep}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                isVisible="@{!vm.isBumpOrSweep}"
                 app:layout_constraintEnd_toEndOf="@+id/assetTextInputLayout"
                 app:layout_constraintTop_toBottomOf="@+id/assetTextInputLayout">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonSendAll"
+                    style="@style/Widget.Green.Button.Outlined.Tiny"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/Widget.Green.Button.Outlined.Tiny"
                     android:enabled="@{!ExtensionsKt.isBlank(liveData.assetId) &amp;&amp; assetSatoshi != 0}"
                     android:paddingEnd="16dp"
-                    android:text="@string/id_send_all_funds"
-                     />
+                    android:text="@string/id_send_all_funds" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -213,16 +207,16 @@
                 android:id="@+id/amountTextInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 gdkError="@{`id_invalid_amount`.equals(vm.transactionError) || `id_insufficient_funds`.equals(vm.transactionError) ? vm.transactionError : null}"
+                helperTextWithError="@{liveData.exchange}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
-                android:enabled="@{ExtensionsKt.isNotBlank(liveData.assetId) &amp;&amp; liveData.enableAmount &amp;&amp; !liveData.isSendAll &amp;&amp; !vm.isBumpOrSweep}"
+                android:enabled="@{ExtensionsKt.isNotBlank(liveData.assetId) &amp;&amp; liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false &amp;&amp; vm.isBumpOrSweep == false}"
                 android:gravity="end"
                 android:hint="@string/id_amount"
                 app:errorEnabled="true"
-                helperTextWithError="@{liveData.exchange}"
                 app:helperTextEnabled="true"
                 app:helperTextTextColor="@color/color_on_surface_emphasis_medium"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -236,33 +230,42 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
+                    android:singleLine="true"
                     android:text="@={liveData.amount}"
                     android:textAlignment="textEnd" />
 
             </com.blockstream.green.views.RightTextInputLayout>
 
-            <Button
+            <ImageButton
                 android:id="@+id/buttonCurrency"
-                style="@style/Widget.Green.Button.Text.Small"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                isVisible="@{!vm.isBumpOrSweep &amp;&amp; canConvert}"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
-                android:text="@{changeCurrencyTo}"
-                isInvisible="@{vm.isBumpOrSweep || !canConvert}"
-                android:textColor="@color/material_on_surface_emphasis_high_type"
-                android:enabled="@{liveData.enableAmount &amp;&amp; !liveData.isSendAll}"
-                app:layout_constraintBaseline_toBaselineOf="@+id/amountTextInputLayout"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:enabled="@{liveData.amountBip21 == false &amp;&amp; liveData.isSendAll == false}"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_change"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/amountTextInputLayout"
-                tools:text="L-BTC" />
+                app:layout_constraintTop_toTopOf="@+id/amountTextInputLayout" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:barrierDirection="left"
                 app:barrierAllowsGoneWidgets="false"
-                app:constraint_referenced_ids="buttonCoinControl,buttonCurrency,buttonScan" />
+                app:barrierDirection="left"
+                app:constraint_referenced_ids="buttonCoinControl,buttonCurrency,buttonScan,guidelineRightMargin" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineRightMargin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="16dp" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrierIndex"
@@ -272,6 +275,8 @@
                 app:constraint_referenced_ids="textViewIndex,buttonRemove"
                 tools:layout_editor_absoluteX="251dp"
                 tools:layout_editor_absoluteY="24dp" />
+
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

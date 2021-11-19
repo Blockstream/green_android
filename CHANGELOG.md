@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+### Changed
+- Show asset icons and balance on Account cards
+- Revamp Send view with new UI
+- Improves sweep paper wallet
+- Improves increasing a transaction fee
+- Show a QR code of the recovery phrase in settings
+
 ## [3.7.6] - 2021-11-10
 ### Added
 - Support to connect to your personal electrum server in app settings

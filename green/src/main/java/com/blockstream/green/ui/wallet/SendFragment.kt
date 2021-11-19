@@ -37,7 +37,6 @@ import com.greenaddress.greenbits.ui.send.SendConfirmActivity
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.text.NumberFormat
 import java.util.*
@@ -230,8 +229,10 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
         recipientBinding.assetInputEditText.setOnClickListener {
             if(session.isLiquid) {
-                // Skip if we have a bip21 asset
-                if(viewModel.getRecipientLiveData(recipientBinding.index ?: 0)?.enableAsset?.value == false){
+                val liveData = viewModel.getRecipientLiveData(recipientBinding.index ?: 0)
+
+                // Skip if we have a bip21 asset / bump / sweep
+                if(liveData?.assetBip21?.value == true || isBump || isSweep){
                     return@setOnClickListener
                 }
 
@@ -306,7 +307,6 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
         viewModel.getRecipientLiveData(index)?.isFiat?.observe(viewLifecycleOwner){ isFiat ->
             recipientBinding.amountCurrency = if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)
-            recipientBinding.changeCurrencyTo = if(isFiat) getBitcoinOrLiquidUnit(session) else getFiatCurrency(session)
         }
 
         // When changing asset and send all is enabled, listen for the event resetting the send all flag
