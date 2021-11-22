@@ -9,6 +9,8 @@ class TransactionFeeCell: UITableViewCell {
     @IBOutlet weak var feeBtnView: UIView!
     @IBOutlet weak var btnFee: UIButton!
 
+    var feeAction: VoidToVoid?
+
     private var btc: String {
         return AccountsManager.shared.current?.gdkNetwork?.getFeeAsset() ?? ""
     }
@@ -30,11 +32,12 @@ class TransactionFeeCell: UITableViewCell {
         lblHint.text = ""
     }
 
-    func configure(transaction: Transaction, isLiquid: Bool) {
+    func configure(transaction: Transaction, isLiquid: Bool, feeAction: VoidToVoid?) {
         lblFee.text = NSLocalizedString("id_fee", comment: "")
 
         btnFee.setTitle(NSLocalizedString("id_increase_fee", comment: "") + " »", for: .normal)
         btnFee.setStyle(.primary)
+        self.feeAction = feeAction
 
         if let balance = Balance.convert(details: ["satoshi": transaction.fee]) {
             let (amount, denom) = balance.get(tag: btc)
@@ -46,5 +49,9 @@ class TransactionFeeCell: UITableViewCell {
         let isWatchonly = AccountsManager.shared.current?.isWatchonly ?? false
         let showBumpFee = !isLiquid && transaction.canRBF && !isWatchonly && !(SessionManager.shared.isResetActive ?? false)
         feeBtnView.isHidden = !showBumpFee
+    }
+
+    @IBAction func btnFee(_ sender: Any) {
+        feeAction?()
     }
 }

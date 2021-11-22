@@ -63,22 +63,6 @@ class TransactionViewController: UIViewController {
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl!.tintColor = UIColor.white
         tableView.refreshControl!.addTarget(self, action: #selector(handleRefresh(_:)), for: .valueChanged)
-
-        //        cellTypes.remove(at: cellTypes.firstIndex(of: .asset)!)
-        //        if isLiquid {
-        //            if isIncoming {
-        //                for _ in amounts {
-        //                    cellTypes.insert(.asset, at: 1)
-        //                }
-        //            } else {
-        //                cellTypes.insert(.asset, at: 1)
-        //            }
-        //            _ = isRedeposit || amounts.count > 0 ?
-        //                cellTypes.remove(at: cellTypes.firstIndex(of: .amount)!) :
-        //                cellTypes.remove(at: cellTypes.firstIndex(of: .fee)!)
-        //        }
-        //        _ = isIncoming || isRedeposit ? cellTypes.remove(at: cellTypes.firstIndex(of: .recipient)!) : cellTypes.remove(at: cellTypes.firstIndex(of: .wallet)!)
-
         navBarSetup()
     }
 
@@ -86,8 +70,6 @@ class TransactionViewController: UIViewController {
         super.viewWillAppear(animated)
         transactionToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Transaction.rawValue), object: nil, queue: .main, using: refreshTransaction)
         blockToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: EventType.Block.rawValue), object: nil, queue: .main, using: refreshTransaction)
-
-//        tableView.reloadData {}
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -219,6 +201,36 @@ class TransactionViewController: UIViewController {
         DropAlert().info(message: NSLocalizedString("id_copied_to_clipboard", comment: ""), delay: 1.0)
         UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
+
+    func increaseFeeTapped() {
+        if self.cantBumpFees { return }
+        firstly {
+            self.startAnimating()
+            return Guarantee()
+        }.then {
+            try SessionManager.shared.getUnspentOutputs(details: ["subaccount": self.wallet?.pointer ?? 0, "num_confs": 1]).resolve()
+        }.compactMap { data in
+            let result = data["result"] as? [String: Any]
+            let unspent = result?["unspent_outputs"] as? [String: Any]
+            return ["previous_transaction": self.transaction.details,
+                    "fee_rate": self.transaction.feeRate,
+                    "subaccount": self.wallet.pointer,
+                    "utxos": unspent ?? [:]]
+        }.then { details in
+            gaios.createTransaction(details: details)
+        }.ensure {
+            self.stopAnimating()
+        }.done { [weak self] tx in
+            let storyboard = UIStoryboard(name: "Send", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "SendBtcDetailsViewController") as? SendBtcDetailsViewController {
+                vc.transaction = tx
+                vc.wallet = self?.wallet
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        }.catch { err in
+            print(err.localizedDescription)
+        }
+    }
 }
 
 extension TransactionViewController: UITableViewDelegate, UITableViewDataSource {
@@ -240,9 +252,6 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 if isRedeposit {
                     items = 0
                 }
-//                    || amounts.count > 0 ?
-//                    cellTypes.remove(at: cellTypes.firstIndex(of: .amount)!) :
-//                    cellTypes.remove(at: cellTypes.firstIndex(of: .fee)!)
             } else {
                 if !isRedeposit {
                     items = 1
@@ -260,6 +269,10 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
         }
     }
 
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        //
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         switch indexPath.section {
@@ -271,7 +284,11 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
             }
         case TransactionSection.fee.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionFeeCell") as? TransactionFeeCell {
-                cell.configure(transaction: transaction, isLiquid: isLiquid)
+                cell.configure(transaction: transaction,
+                               isLiquid: isLiquid,
+                               feeAction: { [weak self] in
+                    self?.increaseFeeTapped()
+                })
                 cell.selectionStyle = .none
                 return cell
             }
@@ -388,7 +405,5 @@ extension TransactionViewController: DialogNoteViewControllerDelegate {
             }.catch { _ in}
     }
 
-    func didCancel() {
-        print("cancel")
-    }
+    func didCancel() { }
 }

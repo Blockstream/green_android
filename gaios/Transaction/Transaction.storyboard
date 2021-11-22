@@ -181,6 +181,9 @@
                                                                     <inset key="contentEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
                                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                                     <state key="normal" title="Increase fee »"/>
+                                                                    <connections>
+                                                                        <action selector="btnFee:" destination="nMY-LG-45d" eventType="touchUpInside" id="2zj-3d-fIi"/>
+                                                                    </connections>
                                                                 </button>
                                                             </subviews>
                                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -248,6 +251,9 @@
                                                                 <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="check" translatesAutoresizingMaskIntoConstraints="NO" id="S80-79-PtY">
                                                                     <rect key="frame" x="12.5" y="12.5" width="25" height="25"/>
                                                                 </imageView>
+                                                                <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_spv_progress" translatesAutoresizingMaskIntoConstraints="NO" id="qxR-Cl-NVh">
+                                                                    <rect key="frame" x="6.5" y="6.5" width="37.5" height="37.5"/>
+                                                                </imageView>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" horizontalCompressionResistancePriority="749" text="1/6" textAlignment="natural" lineBreakMode="characterWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tVW-j5-W1n">
                                                                     <rect key="frame" x="15.5" y="16.5" width="19.5" height="17"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -262,11 +268,15 @@
                                                                 <constraint firstItem="3We-EV-TLX" firstAttribute="height" secondItem="fgS-JP-o68" secondAttribute="height" id="CVj-ix-yr8"/>
                                                                 <constraint firstItem="3We-EV-TLX" firstAttribute="centerX" secondItem="fgS-JP-o68" secondAttribute="centerX" id="HhU-73-HmZ"/>
                                                                 <constraint firstItem="tVW-j5-W1n" firstAttribute="centerX" secondItem="fgS-JP-o68" secondAttribute="centerX" id="MOT-rD-mGz"/>
+                                                                <constraint firstItem="qxR-Cl-NVh" firstAttribute="centerX" secondItem="fgS-JP-o68" secondAttribute="centerX" id="MmF-C7-bns"/>
                                                                 <constraint firstItem="S80-79-PtY" firstAttribute="height" secondItem="fgS-JP-o68" secondAttribute="height" multiplier="0.5" id="MyA-OT-SLu"/>
                                                                 <constraint firstItem="S80-79-PtY" firstAttribute="centerX" secondItem="fgS-JP-o68" secondAttribute="centerX" id="OGU-hj-J7p"/>
                                                                 <constraint firstAttribute="height" constant="50" id="SZb-zd-k54"/>
                                                                 <constraint firstItem="tVW-j5-W1n" firstAttribute="centerY" secondItem="fgS-JP-o68" secondAttribute="centerY" id="TBv-Pm-UUj"/>
+                                                                <constraint firstItem="qxR-Cl-NVh" firstAttribute="height" secondItem="fgS-JP-o68" secondAttribute="height" multiplier="0.75" id="YLS-2B-YSv"/>
+                                                                <constraint firstItem="qxR-Cl-NVh" firstAttribute="centerY" secondItem="fgS-JP-o68" secondAttribute="centerY" id="evX-aH-5XR"/>
                                                                 <constraint firstItem="S80-79-PtY" firstAttribute="width" secondItem="fgS-JP-o68" secondAttribute="width" multiplier="0.5" id="n4o-c6-rpf"/>
+                                                                <constraint firstItem="qxR-Cl-NVh" firstAttribute="width" secondItem="fgS-JP-o68" secondAttribute="width" multiplier="0.75" id="s9Y-n2-U6n"/>
                                                                 <constraint firstAttribute="width" constant="50" id="smg-S4-nqQ"/>
                                                                 <constraint firstItem="S80-79-PtY" firstAttribute="centerY" secondItem="fgS-JP-o68" secondAttribute="centerY" id="vW2-la-pkS"/>
                                                             </constraints>
@@ -298,6 +308,7 @@
                                             <outlet property="lblDate" destination="EVQ-Ow-PPB" id="ER6-wB-sqm"/>
                                             <outlet property="lblStatus" destination="NMb-Zp-8PK" id="KWv-Ky-NNm"/>
                                             <outlet property="lblStep" destination="tVW-j5-W1n" id="t8L-5B-E6s"/>
+                                            <outlet property="spvVerifyIcon" destination="qxR-Cl-NVh" id="bQh-bg-RPg"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="TransactionDetailCell" rowHeight="339" id="lqH-yv-0J3" customClass="TransactionDetailCell" customModule="gaios" customModuleProvider="target">
@@ -533,6 +544,7 @@
         <image name="check" width="25" height="25"/>
         <image name="copy" width="25" height="25"/>
         <image name="default_asset_icon" width="32" height="32"/>
+        <image name="ic_spv_progress" width="60" height="60"/>
         <image name="notepen" width="10" height="10"/>
         <namedColor name="customGrayLight">
             <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

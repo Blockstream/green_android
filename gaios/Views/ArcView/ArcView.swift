@@ -1,9 +1,11 @@
 import UIKit
 class ArcView: UIView {
-    var num: Int = 0
+    var step: Int = 0
+    var steps: Int = 0
 
-    init(frame: CGRect, num: Int) {
-        self.num = num
+    init(frame: CGRect, step: Int, steps: Int) {
+        self.step = step
+        self.steps = steps
         super.init(frame: frame)
         self.backgroundColor = .clear
     }
@@ -23,7 +25,7 @@ class ArcView: UIView {
         let borderWidth = 4.0
         let radius = (rect.size.width - borderWidth) / 2.0
         let startAngle = -CGFloat.pi / 2.0
-        let endAngle = -CGFloat.pi / 2.0 + (CGFloat(num)) / 6.0 * 2 * CGFloat.pi
+        let endAngle = -CGFloat.pi / 2.0 + (CGFloat(step)) / CGFloat(steps) * 2 * CGFloat.pi
         context.setLineWidth(borderWidth)
         context.setStrokeColor(UIColor.customGrayLight().cgColor)
 
