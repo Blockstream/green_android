@@ -34,7 +34,11 @@ class TransactionDetailCell: UITableViewCell {
                    explorerAction: VoidToVoid?,
                    copyAction: VoidToVoid?) {
         lblConfirmationsTitle.text = NSLocalizedString("id_confirmations", comment: "")
-        lblConfirmationsHint.text = "\(SessionManager.shared.notificationManager.blockHeight  - transaction.blockHeight + 1)"
+        if transaction.blockHeight == 0 {
+            lblConfirmationsHint.text = "0"
+        } else {
+            lblConfirmationsHint.text = "\(SessionManager.shared.notificationManager.blockHeight  - transaction.blockHeight + 1)"
+        }
         lblTxidTitle.text = NSLocalizedString("id_transaction_id", comment: "")
         lblTxidHint.text = transaction.hash
         btnExplorer.setTitle(NSLocalizedString("id_view_in_explorer", comment: ""), for: .normal)
