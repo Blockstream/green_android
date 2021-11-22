@@ -4,7 +4,7 @@ matrix:
   include:
     - services:
         - docker
-      script: docker run -v $PWD:/ga greenaddress/android@sha256:3dd3e673d8045e9af17bc5bf72585768da12d44b05e2e51aff00ae17229a595d /bin/sh -c "cd /ga && ./gradlew lintProductionRelease && ./gradlew assembleProductionRelease"
+      script: docker run -v $PWD:/ga greenaddress/android@sha256:1ba279240efe7526185ff344e7b65aa5af4e8eee8e4987a62fc8ee2477de7ff0 /bin/sh -c "cd /ga && ./gradlew lintProductionRelease && ./gradlew assembleProductionRelease"
     - os: osx
       osx_image: xcode8.3
       env:
@@ -15,8 +15,8 @@ matrix:
         - mkdir -p $HOME/opt && curl -sSO https://dl.google.com/android/repository/${SDK_FILENAME} && unzip -qq ${SDK_FILENAME} -d $HOME/opt &> /dev/null
         - brew install gnu-sed &> /dev/null
         - yes | $HOME/opt/tools/bin/sdkmanager "tools" "platform-tools" &> /dev/null
-        - yes | $HOME/opt/tools/bin/sdkmanager "build-tools;30.0.3" &> /dev/null
-        - yes | $HOME/opt/tools/bin/sdkmanager "platforms;android-30" &> /dev/null
+        - yes | $HOME/opt/tools/bin/sdkmanager "build-tools;31.0.0" &> /dev/null
+        - yes | $HOME/opt/tools/bin/sdkmanager "platforms;android-31" &> /dev/null
       script:
         - export JAVA_HOME="$(/usr/libexec/java_home -v 1.8)"
         - ./gradlew lintProductionRelease

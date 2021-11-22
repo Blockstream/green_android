@@ -1,5 +1,5 @@
-FROM debian:buster@sha256:125ab9ab9718f4dba6c3342407bb1923afce4f6b2a12b3a502d818274db9faf9
-COPY buster_deps.sh /deps.sh
+FROM debian:bullseye@sha256:e8c184b56a94db0947a9d51ec68f42ef5584442f20547fa3bd8cbd00203b2e7a
+COPY bullseye_deps.sh /deps.sh
 RUN /deps.sh && rm /deps.sh
 VOLUME /ga
 ENV JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
