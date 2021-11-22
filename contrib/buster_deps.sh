@@ -23,11 +23,11 @@ ls -la ${ANDROID_SDK_ROOT}/cmdline-tools/latest/
 # Non-standard components: MIPS system images, preview versions, GDK (Google Glass) and Android Google TV require separate licenses, not accepted there
 yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses
 
-${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "tools" "platform-tools" "build-tools;30.0.3"
+${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "tools" "platform-tools" "build-tools;31.0.0"
 ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "extras;android;m2repository" "extras;google;m2repository"
 
 # The `yes` is for accepting all non-standard tool licenses.
-yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-30"
+yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-31"
 
 apt autoremove -yqq
 apt clean -yqq
