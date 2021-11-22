@@ -291,7 +291,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
             biometricPrompt = BiometricPrompt(
                 this,
-                ContextCompat.getMainExecutor(context),
+                ContextCompat.getMainExecutor(requireContext()),
                 object : AuthenticationCallback(this) {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         if (isV4Authentication) {

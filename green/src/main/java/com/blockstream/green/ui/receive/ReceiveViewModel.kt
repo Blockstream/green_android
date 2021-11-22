@@ -168,7 +168,7 @@ class ReceiveViewModel @AssistedInject constructor(
             wallet: Wallet
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(wallet) as T
             }
         }

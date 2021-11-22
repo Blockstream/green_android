@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingStart="22dp"
+    android:paddingEnd="22dp">
 
     <EditText
         android:id="@+id/set_custom_feerate_amount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:inputType="numberDecimal" />
-
+        android:inputType="numberDecimal"
+        android:textColor="@color/white" />
 </LinearLayout>

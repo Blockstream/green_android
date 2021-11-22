@@ -729,7 +729,7 @@ class WalletSettingsFragment :
 
         val biometricPrompt = BiometricPrompt(
             this,
-            ContextCompat.getMainExecutor(context),
+            ContextCompat.getMainExecutor(requireContext()),
             object : AuthenticationCallback(fragment = this) {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     result.cryptoObject?.cipher?.let {

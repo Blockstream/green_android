@@ -26,13 +26,11 @@ import io.reactivex.schedulers.Schedulers;
 
 public abstract class LoggedActivity extends GaActivity {
 
-    private Timer mTimer = new Timer();
     private Snackbar mSnackbar;
     private Timer mOfflineTimer = new Timer();
     private Long mTryingAt = 0L;
 
-    private Disposable networkDisposable, transactionDisposable,
-                       logoutDisposable;
+    private Disposable networkDisposable, transactionDisposable;
 
     @Override
     public void onResume() {
@@ -112,8 +110,6 @@ public abstract class LoggedActivity extends GaActivity {
             networkDisposable.dispose();
         if (transactionDisposable != null)
             transactionDisposable.dispose();
-        if (logoutDisposable != null)
-            logoutDisposable.dispose();
     }
 
     private void updateNetwork(final JsonNode networkNode) {
@@ -183,45 +179,5 @@ public abstract class LoggedActivity extends GaActivity {
 
     protected String getBitcoinUnitClean() throws Exception {
         return Conversion.getUnitKey(getSession());
-    }
-
-    // for btc and fiat
-    protected void setAmountText(final EditText amountText, final boolean isFiat,
-                                 final ObjectNode currentAmount) throws Exception {
-        final NumberFormat btcNf = Conversion.getNumberFormat(getSession());
-        setAmountText(amountText, isFiat, currentAmount, btcNf, getNetwork().getPolicyAsset());
-    }
-
-    // for liquid assets and l-btc
-    protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
-                                 final String asset) throws Exception {
-
-        NumberFormat nf = Conversion.getNumberFormat(getSession());
-        if (!getNetwork().getPolicyAsset().equals(asset) && asset != null) {
-            final AssetInfoData assetInfoData = getSession().getRegistry().getAssetInfo(asset);
-            final int precision = assetInfoData == null ? 0 : assetInfoData.getPrecision();
-            nf = Conversion.getNumberFormat(precision);
-        }
-
-        setAmountText(amountText, isFiat, currentAmount, nf, asset);
-    }
-
-    protected void setAmountText(final EditText amountText, final boolean isFiat, final ObjectNode currentAmount,
-                                 final NumberFormat btcOrAssetNf, final String asset) throws Exception {
-        final NumberFormat us = Conversion.getNumberFormat(8, Locale.US);
-        final String source = currentAmount.get(getNetwork().getPolicyAsset().equals(asset) ? getBitcoinUnitClean() : asset).asText();
-        final String btc = btcOrAssetNf.format(us.parse(source));
-
-        if(isFiat) {
-            final NumberFormat fiatNf = Conversion.getNumberFormat(2);
-            final String fiat = fiatNf.format(us.parse(currentAmount.get("fiat").asText()));
-            amountText.setText(fiat);
-        }else{
-            amountText.setText(btc);
-        }
-    }
-
-    protected int getActiveAccount() {
-        return Bridge.INSTANCE.getActiveAccount();
     }
 }

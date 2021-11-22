@@ -17,7 +17,7 @@ fun Fragment.authenticateWithBiometrics(callback : AuthenticationCallback){
 
     val biometricPrompt = BiometricPrompt(
         this,
-        ContextCompat.getMainExecutor(context),
+        ContextCompat.getMainExecutor(requireContext()),
         object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)

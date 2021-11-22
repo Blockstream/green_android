@@ -122,7 +122,7 @@ class TransactionDetailsViewModel @AssistedInject constructor(
             transaction: Transaction
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(wallet, transaction) as T
             }
         }

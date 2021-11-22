@@ -218,8 +218,7 @@ public class SendConfirmActivity extends LoggedActivity implements SwipeButton.O
             final String msg = UI.i18n(res, e.getMessage());
             if (msg.equals(res.getString(R.string.id_signature_validation_failed_if))) {
                 UI.popup(this, R.string.id_error, R.string.id_continue)
-                        .content(getString(R.string.id_signature_validation_failed_if))
-                        .build()
+                        .setMessage(R.string.id_signature_validation_failed_if)
                         .show();
                 mSwipeButton.setEnabled(true);
                 mSwipeButton.moveButtonBack();

@@ -42,9 +42,6 @@ import io.reactivex.rxjava3.core.SingleEmitter;
  * support code to handle service initialization, error handling etc.
  */
 public abstract class GaActivity extends AppCompatActivity implements HWWalletBridge {
-    public static final int
-            REQUEST_BITCOIN_URL_SEND = 3;
-
     public static final int HARDWARE_PIN_REQUEST = 59212;
     public static final int HARDWARE_PASSPHRASE_REQUEST = 21392;
 
@@ -133,10 +130,6 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
         runOnUiThread(() -> mProgressBarHandler.stop());
     }
 
-    public ProgressBarHandler getProgressBarHandler() {
-        return mProgressBarHandler;
-    }
-
     public boolean isLoading() {
         return mProgressBarHandler != null && mProgressBarHandler.isLoading();
     }
@@ -201,10 +194,6 @@ public abstract class GaActivity extends AppCompatActivity implements HWWalletBr
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-    }
-
-    public SharedPreferences cfg() {
-        return getSharedPreferences(network(), MODE_PRIVATE);
     }
 
     protected String network() {

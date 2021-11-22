@@ -576,7 +576,7 @@ class SendViewModel @AssistedInject constructor(
             bumpTransaction: JsonElement?
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return assistedFactory.create(wallet, isSweep, address, bumpTransaction) as T
             }
         }

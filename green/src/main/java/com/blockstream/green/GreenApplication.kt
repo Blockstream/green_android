@@ -129,17 +129,6 @@ class GreenApplication : Application(){
             sessionManager.getWalletSession(gaSession)?.isConnected ?: false
         }
 
-        Bridge.getSubaccountFn = { gaSession ->
-            val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-            if(walletId >= 0){
-                 walletRepository.getWalletSync(walletId)?.activeAccount?.toInt() ?: 0
-            }else{
-                // On HHW activeAccount is saved on the Wallet object (but not on the DB) and into the GreenSession
-                sessionManager.getWalletSession(gaSession)?.activeAccount?.toInt() ?: 0
-            }
-        }
-
         Bridge.getWalletIdFn = { gaSession ->
             val walletId = sessionManager.getWalletIdFromSession(gaSession)
 

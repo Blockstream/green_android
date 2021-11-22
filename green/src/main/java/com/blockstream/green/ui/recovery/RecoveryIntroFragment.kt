@@ -95,7 +95,7 @@ class RecoveryIntroFragment : WalletFragment<RecoveryIntroFragmentBinding>(
 
         biometricPrompt = BiometricPrompt(
             this,
-            ContextCompat.getMainExecutor(context),
+            ContextCompat.getMainExecutor(requireContext()),
             object : AuthenticationCallback(this) {
                 override fun onAuthenticationError(
                     errorCode: Int,

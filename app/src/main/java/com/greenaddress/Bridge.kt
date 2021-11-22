@@ -42,7 +42,6 @@ object Bridge {
     var greenWallet: GreenWallet? = null
 
     var navigateFn: ((activity: FragmentActivity, type: NavigateType, gaSession: Any?, extraData: Any?) -> Unit)? = null
-    var getSubaccountFn: ((gaSession: Any?) -> Int)? = null
     var getWalletIdFn: ((gaSession: Any?) -> Long?)? = null
     var getHWWalletFn: ((gaSession: Any?) -> HWWallet?)? = null
     var walletsProviderFn: ((gaSession: Any?) -> List<HashMap<String, String>>)? = null
@@ -90,8 +89,6 @@ object Bridge {
 
     fun isSessionConnected() = sessionIsConnectedProviderFn?.invoke(Session.getSession().nativeSession) ?: false
 
-    fun getWallets() = walletsProviderFn?.invoke(Session.getSession().nativeSession)
-
     fun navigateToLogin(activity: FragmentActivity, walletId: Long? = null){
         navigateFn?.invoke(activity, NavigateType.LOGOUT, Session.getSession().nativeSession, walletId)
     }
@@ -119,21 +116,6 @@ object Bridge {
 
             null
         }
-    }
-
-    fun getActiveAccount(): Int {
-        return getSubaccountFn?.let {
-
-            val session = Session.getSession()
-
-            if(session != null && session.nativeSession != null){
-                session.nativeSession.let { nativeSession ->
-                    return@getActiveAccount it.invoke(nativeSession)
-                }
-            }
-
-            0
-        } ?: 0
     }
 
     fun getHWWallet() = getHWWalletFn?.invoke(Session.getSession().nativeSession)
