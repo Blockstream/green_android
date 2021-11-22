@@ -171,21 +171,10 @@ class OverviewViewModel @AssistedInject constructor(
         // the ordering is important
         setState(State.Asset)
         selectedAsset.value = balancePair.first
-        // shownBalances.value = linkedMapOf(balancePair)
     }
 
     fun setState(newState: State) {
-//        val oldState = state.value!!
-
         state.value = newState
-
-//        if (newState == State.Overview && oldState == State.Asset) {
-//            shownBalances.value = allBalances
-//        }
-    }
-
-    fun refreshTransactions(): Boolean {
-        return session.updateTransactionsAndBalance(isReset = false, isLoadMore = false)
     }
 
     fun loadMoreTransactions(): Boolean {

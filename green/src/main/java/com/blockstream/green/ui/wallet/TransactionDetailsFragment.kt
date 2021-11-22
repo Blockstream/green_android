@@ -25,7 +25,6 @@ import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.looks.TransactionDetailsLook
 import com.blockstream.green.utils.*
-import com.greenaddress.greenbits.ui.send.SendAmountActivity
 import com.kennyc.bottomsheet.BottomSheetListener
 import com.kennyc.bottomsheet.BottomSheetMenuDialogFragment
 import com.mikepenz.fastadapter.FastAdapter

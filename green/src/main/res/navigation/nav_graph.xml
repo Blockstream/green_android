@@ -357,9 +357,6 @@
             android:id="@+id/action_overviewFragment_to_transactionDetailsFragment"
             app:destination="@id/transactionDetailsFragment" />
         <action
-            android:id="@+id/action_overviewFragment_to_sweepFragment"
-            app:destination="@id/sweepFragment" />
-        <action
             android:id="@+id/action_overviewFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
     </fragment>
@@ -471,9 +468,6 @@
             android:name="wallet"
             app:argType="com.blockstream.green.database.Wallet" />
         <action
-            android:id="@+id/action_receiveFragment_to_sweepFragment"
-            app:destination="@id/sweepFragment" />
-        <action
             android:id="@+id/action_receiveFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
     </fragment>
@@ -533,15 +527,6 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_sendFragment"
             app:destination="@id/sendFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/sweepFragment"
-        android:name="com.blockstream.green.ui.wallet.SweepFragment"
-        android:label="@string/id_sweep_from_paper_wallet"
-        tools:layout="@layout/sweep_fragment">
-        <argument
-            android:name="wallet"
-            app:argType="com.blockstream.green.database.Wallet" />
     </fragment>
     <fragment
         android:id="@+id/sendFragment"

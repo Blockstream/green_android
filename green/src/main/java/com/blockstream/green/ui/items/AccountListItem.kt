@@ -19,13 +19,14 @@ import com.blockstream.green.utils.toPixels
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
-data class AccountListItem constructor(val session: GreenSession,
-                                       val subAccount: SubAccount,
-                                       val walletBalances: WalletBalances,
-                                       val isTopAccount: Boolean = false,
-                                       var showFakeCard: Boolean = false,
-                                       var isAccountListOpen : Boolean = false) :
-    AbstractBindingItem<ListItemAccountBinding>() {
+data class AccountListItem constructor(
+    val session: GreenSession,
+    val subAccount: SubAccount,
+    val walletBalances: WalletBalances,
+    val isTopAccount: Boolean = false,
+    var showFakeCard: Boolean = false,
+    var isAccountListOpen: Boolean = false
+) : AbstractBindingItem<ListItemAccountBinding>() {
     override val type: Int
         get() = R.id.fastadapter_account_item_id
 

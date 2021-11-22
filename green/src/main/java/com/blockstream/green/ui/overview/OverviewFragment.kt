@@ -141,8 +141,9 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
             when {
                 session.isWatchOnly -> {
                     navigate(
-                        OverviewFragmentDirections.actionOverviewFragmentToSweepFragment(
-                            wallet
+                        OverviewFragmentDirections.actionOverviewFragmentToSendFragment(
+                            wallet = wallet,
+                            isSweep = true
                         )
                     )
                 }
