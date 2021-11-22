@@ -250,7 +250,8 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_change"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/amountTextInputLayout" />
+                app:layout_constraintTop_toTopOf="@+id/amountTextInputLayout"
+                app:tint="@color/selector_image_button" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrier"
