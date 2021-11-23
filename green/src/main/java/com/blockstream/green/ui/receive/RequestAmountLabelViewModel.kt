@@ -1,8 +1,6 @@
 package com.blockstream.green.ui.receive
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.blockstream.gdk.params.Convert
 import com.blockstream.green.gdk.GreenSession
 import com.blockstream.green.gdk.observable
@@ -11,6 +9,9 @@ import com.blockstream.green.utils.*
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.subscribeBy
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 
 class RequestAmountLabelViewModel @AssistedInject constructor(
@@ -38,9 +39,13 @@ class RequestAmountLabelViewModel @AssistedInject constructor(
     var label = MutableLiveData<String?>(initialLabel)
 
     init {
-        requestAmount.observe(viewLifecycleOwner){
-            updateExchange()
-        }
+        requestAmount
+            .asFlow()
+            .debounce(10)
+            .onEach {
+                updateExchange()
+            }
+            .launchIn(viewModelScope)
 
         isFiat.observe(viewLifecycleOwner){ isFiat ->
             (if(isFiat) getFiatCurrency(session) else getBitcoinOrLiquidUnit(session)).let {

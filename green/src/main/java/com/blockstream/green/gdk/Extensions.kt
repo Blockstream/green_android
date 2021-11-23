@@ -38,21 +38,43 @@ fun AccountType?.descriptionRes(): Int = when (this) {
     else -> R.string.id_unknown
 }
 
+fun Network.getNetworkIcon(): Int{
+    return id.getNetworkIcon()
+}
+
+fun String.getNetworkIcon(): Int{
+    if (Network.isMainnet(this)) return R.drawable.ic_bitcoin_network_60
+    if (Network.isLiquid(this)) return R.drawable.ic_liquid_network_60
+    if (Network.isTestnet(this)) return R.drawable.ic_bitcoin_testnet_network_60
+    if (Network.isTestnetLiquid(this)) return R.drawable.ic_liquid_testnet_network_60
+    return R.drawable.ic_unknown_network_60
+}
+
 fun String.getAssetIcon(context: Context, session: GreenSession): Drawable {
     return if (session.network.policyAsset == this) {
         ContextCompat.getDrawable(
             context,
-            session.network.getNetworkIcon()
+            when {
+                Network.isMainnet(session.network.id) -> {
+                    R.drawable.ic_bitcoin_network_60
+                }
+                Network.isLiquid(session.network.id) -> {
+                    R.drawable.ic_liquid_bitcoin_60
+                }
+                Network.isTestnet(session.network.id) -> {
+                    R.drawable.ic_bitcoin_testnet_network_60
+                }
+                Network.isTestnetLiquid(session.network.id) -> {
+                    R.drawable.ic_liquid_testnet_bitcoin_60
+                }
+                else -> {
+                    R.drawable.ic_unknown_asset_60
+                }
+            }
         )!!
     } else {
         session.getAssetDrawableOrDefault(this)
     }
-}
-
-fun Asset.getIcon(context: Context, session: GreenSession): Drawable = assetId.getAssetIcon(context, session)
-
-fun Network.getIcon(): Int {
-    return network.getNetworkIcon()
 }
 
 fun Device.getIcon(): Int{
@@ -69,14 +91,6 @@ fun com.blockstream.green.devices.Device.getIcon(): Int{
         isLedger -> R.drawable.ledger_device
         else -> R.drawable.blockstream_jade_device
     }
-}
-
-fun String.getNetworkIcon(): Int{
-    if (Network.isMainnet(this)) return R.drawable.ic_bitcoin_network_60
-    if (Network.isLiquid(this)) return R.drawable.ic_liquid_network_60
-    if (Network.isTestnet(this)) return R.drawable.ic_bitcoin_testnet_network_60
-    if (Network.isTestnetLiquid(this)) return R.drawable.ic_liquid_testnet_network_60
-    return R.drawable.ic_unknown_network_60
 }
 
 // Helper fn for Data Binding as the original fn is InlineOnly

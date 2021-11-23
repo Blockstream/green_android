@@ -446,8 +446,11 @@ class WalletSettingsFragment :
     }
 
     private fun updateSharedPreferencesSummaries() {
-        customFeeRatePreference.subtitle = StringHolder(getDefaultFeeRateAsDouble().feeRateWithUnit())
-        notifyDataSetChanged()
+        if(::customFeeRatePreference.isInitialized) {
+            customFeeRatePreference.subtitle =
+                StringHolder(getDefaultFeeRateAsDouble().feeRateWithUnit())
+            notifyDataSetChanged()
+        }
     }
 
     private fun notifyDataSetChanged() { binding.recycler.adapter?.notifyDataSetChanged() }
@@ -523,40 +526,43 @@ class WalletSettingsFragment :
     }
 
     private fun handlePriceSource() {
-
         viewModel.settingsLiveData.value?.let { settings ->
+            try{
+                val currencies = session.availableCurrencies()
+                
+                val entries : Array<CharSequence> = currencies.map {
+                    getString(R.string.id_s_from_s, it.currency, it.exchange)
+                }.toTypedArray()
 
-            val currencies = session.availableCurrencies
+                val values = currencies.map {
+                    it.toIdentifiable()
+                }.toTypedArray()
 
-            val entries : Array<CharSequence> = currencies.map {
-                getString(R.string.id_s_from_s, it.currency, it.exchange)
-            }.toTypedArray()
+                showChoiceDialog(
+                    getString(R.string.id_reference_exchange_rate), entries, values.indexOf(
+                        settings.pricing.toIdentifiable()
+                    )
+                ) {
+                    values[it].asPricing()?.let{ pricing ->
+                        viewModel.saveSettings(settings.copy(pricing = pricing))
 
-            val values = currencies.map {
-                it.toIdentifiable()
-            }.toTypedArray()
+                        // Update Limits as changing exchange reference can also change limits
+                        viewModel.updateTwoFactorConfig()
 
-            showChoiceDialog(
-                getString(R.string.id_reference_exchange_rate), entries, values.indexOf(
-                    settings.pricing.toIdentifiable()
-                )
-            ) {
-                values[it].asPricing()?.let{ pricing ->
-                    viewModel.saveSettings(settings.copy(pricing = pricing))
-
-                    // Update Limits as changing exchange reference can also change limits
-                    viewModel.updateTwoFactorConfig()
-
-                    // Show 2FA warning
-                    viewModel.twoFactorConfigLiveData.value?.let { twoFactorConfig ->
-                        if(twoFactorConfig.limits.satoshi > 0){
-                            dialog(
-                                R.string.id_warning,
-                                R.string.id_changing_reference_exchange
-                            )
+                        // Show 2FA warning
+                        viewModel.twoFactorConfigLiveData.value?.let { twoFactorConfig ->
+                            if(twoFactorConfig.limits.satoshi > 0){
+                                dialog(
+                                    R.string.id_warning,
+                                    R.string.id_changing_reference_exchange
+                                )
+                            }
                         }
                     }
                 }
+
+            }catch (e: Exception){
+                errorDialog(e)
             }
         }
     }

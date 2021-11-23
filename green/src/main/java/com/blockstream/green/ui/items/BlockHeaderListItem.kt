@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemBlockHeaderBinding
+import com.blockstream.green.gdk.getNetworkIcon
 import com.blockstream.green.utils.StringHolder
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 

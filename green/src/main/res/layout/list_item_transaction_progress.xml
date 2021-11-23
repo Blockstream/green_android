@@ -99,7 +99,7 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:src="@drawable/ic_spv_in_progress"
-                    isVisible="@{spvEnabled}"
+                    isVisible="@{confirmations >= confirmationsRequired &amp;&amp; spvEnabled}"
                     app:layout_constraintBottom_toBottomOf="@+id/progress"
                     app:layout_constraintEnd_toEndOf="@+id/progress"
                     app:layout_constraintStart_toStartOf="@+id/progress"

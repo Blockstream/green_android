@@ -74,14 +74,6 @@ data class Network(
         return if (isMainnet) Wally.BIP32_VER_MAIN_PUBLIC else Wally.BIP32_VER_TEST_PUBLIC
     }
 
-    fun getNetworkIcon(): Int{
-        if (isMainnet(id)) return R.drawable.ic_bitcoin_network_60
-        if (isLiquid(id)) return R.drawable.ic_liquid_network_60
-        if (isTestnet(id)) return R.drawable.ic_bitcoin_testnet_network_60
-        if (isTestnetLiquid(id)) return R.drawable.ic_liquid_testnet_network_60
-        return R.drawable.ic_unknown_network_60
-    }
-
     override fun kSerializer(): KSerializer<Network> = serializer()
 
     companion object: KLogging(){

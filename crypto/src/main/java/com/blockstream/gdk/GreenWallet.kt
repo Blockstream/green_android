@@ -184,8 +184,7 @@ class GreenWallet constructor(
             put("value", value)
         })
 
-    fun getAvailableCurrencies(session: GASession): List<Pricing> =
-        Pricing.fromJsonElement(gdk.getAvailableCurrencies(session) as JsonElement)
+    fun getAvailableCurrencies(session: GASession): List<Pricing> = Pricing.fromJsonElement(gdk.getAvailableCurrencies(session) as JsonElement)
 
     fun getSettings(session: GASession): Settings =
         JsonDeserializer.decodeFromJsonElement(gdk.getSettings(session) as JsonElement)

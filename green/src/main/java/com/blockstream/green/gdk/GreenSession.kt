@@ -131,10 +131,8 @@ class GreenSession constructor(
 
     fun getSettings() : Settings? = settingsSubject.value
 
-
-    val availableCurrencies by lazy {
-        greenWallet.getAvailableCurrencies(gaSession)
-    }
+    @Throws
+    fun availableCurrencies() = greenWallet.getAvailableCurrencies(gaSession)
 
     fun networkFromWallet(wallet: Wallet) = greenWallet.networks.getNetworkById(wallet.network)
 

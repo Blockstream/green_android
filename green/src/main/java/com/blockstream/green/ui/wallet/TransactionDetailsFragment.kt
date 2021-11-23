@@ -56,12 +56,6 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
 
     lateinit var noteListItem: GenericDetailListItem
 
-    private val startForResultFeeBump = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            popBackStack()
-        }
-    }
-
     @Inject
     lateinit var viewModelFactory: TransactionDetailsViewModel.AssistedFactory
     val viewModel: TransactionDetailsViewModel by viewModels {
