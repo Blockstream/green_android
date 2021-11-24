@@ -16,17 +16,22 @@ class TransactionAmountCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
         bg.layer.cornerRadius = 5.0
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
-    func configure(transaction: Transaction, network: String?) {
+    override func prepareForReuse() {
+        lblAmount.text = ""
+        lblAsset.text = ""
+        self.icon.image = UIImage()
+        lblFiat.isHidden = true
+        lblRecipient.isHidden = true
+    }
+
+    func configure(transaction: Transaction, network: String?, index: Int) {
 
         let isIncoming = transaction.type == "incoming"
         let isOutgoing = transaction.type == "outgoing"
@@ -52,21 +57,17 @@ class TransactionAmountCell: UITableViewCell {
         if transaction.defaultAsset == btc {
             if let balance = Balance.convert(details: ["satoshi": transaction.satoshi]) {
                 let (amount, denom) = balance.get(tag: btc)
-                lblAmount.text = String(format: "%@%@", isOutgoing ? "-" : "+", amount ?? "")
-
+                lblAmount.text = String(format: "%@", amount ?? "")
                 lblAsset.text = "\(denom)"
                 if let fiat = balance.fiat {
                     lblFiat.text = "≈ \(fiat) \(balance.fiatCurrency)"
                 }
-
-    //            if isBtc || tag == getGdkNetwork("liquid").policyAsset {
                 let (fiat, fiatCurrency) = balance.get(tag: "fiat")
                 lblFiat.text = "≈ \(fiat ?? "N.A.") \(fiatCurrency)"
-    //            }
             }
         } else {
             let amounts = Transaction.sort(transaction.amounts)
-            if let amount = isIncoming ? amounts[0] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
+            if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
                 let info = Registry.shared.infos[amount.key]
                 let icon = Registry.shared.image(for: amount.key)
                 let tag = amount.key
@@ -76,7 +77,7 @@ class TransactionAmountCell: UITableViewCell {
 
                 if let balance = Balance.convert(details: details) {
                     let (amount, denom) = balance.get(tag: tag)
-                    lblAmount.text = String(format: "%@%@", isOutgoing ? "-" : "+", amount ?? "")
+                    lblAmount.text = String(format: "%@", amount ?? "")
                     lblAsset.text = denom
                     self.icon.image = icon
                     lblFiat.isHidden = true

@@ -309,7 +309,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
         switch indexPath.section {
         case TransactionSection.amount.rawValue:
             if let cell = tableView.dequeueReusableCell(withIdentifier: "TransactionAmountCell") as? TransactionAmountCell {
-                cell.configure(transaction: transaction, network: account?.network)
+                cell.configure(transaction: transaction, network: account?.network, index: indexPath.row)
                 cell.selectionStyle = .none
                 return cell
             }
