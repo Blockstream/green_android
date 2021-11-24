@@ -65,8 +65,7 @@ class TransactionStatusCell: UITableViewCell {
         //status widget
         lblStep.isHidden = true
         iconCheck.isHidden = true
-        if transaction.spvVerified == "disabled" ||
-            transaction.spvVerified == nil {
+        if !shouldShowSpvStatus(tx: transaction) {
             lblStep.isHidden = status == .confirmed
             arc.subviews.forEach { $0.removeFromSuperview() }
             iconCheck.isHidden = !(status == .confirmed)
@@ -92,6 +91,19 @@ class TransactionStatusCell: UITableViewCell {
                 }
             }
         }
+    }
+
+    func shouldShowSpvStatus(tx: Transaction) -> Bool {
+        if tx.spvVerified == "disabled" || tx.spvVerified == nil {
+            return false
+        }
+        if tx.blockHeight == 0 {
+            return false
+        }
+        if SessionManager.shared.notificationManager.blockHeight - tx.blockHeight + 1 < 6 {
+            return false
+        }
+        return true
     }
 
     func setSpvVerifyIcon(tx: Transaction) {
