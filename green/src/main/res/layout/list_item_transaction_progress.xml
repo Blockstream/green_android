@@ -67,7 +67,7 @@
 
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progress"
-                    indeterminate="@{spvInProgress}"
+                    indeterminate="@{(confirmations == 0 || confirmations >= confirmationsRequired) &amp;&amp; spvInProgress}"
                     isInvisible="@{spvFailed}"
                     progress="@{Math.min(confirmations, confirmationsRequired)}"
                     android:layout_width="wrap_content"
