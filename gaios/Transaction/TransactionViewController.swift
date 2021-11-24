@@ -262,6 +262,27 @@ class TransactionViewController: UIViewController {
             print(err.localizedDescription)
         }
     }
+
+    func didSelectAmountAt(_ index: Int) {
+        let storyboard = UIStoryboard(name: "Assets", bundle: nil)
+        if let vc = storyboard.instantiateViewController(withIdentifier: "AssetDetailTableViewController") as? AssetDetailTableViewController {
+            if isLiquid {
+                if let amount = isIncoming ? amounts[index] : amounts.filter({ $0.key == transaction.defaultAsset}).first {
+                    vc.tag = amount.key
+                    if let asset = Registry.shared.infos[amount.key] {
+                        vc.asset = asset
+                    } else {
+                        vc.asset = AssetInfo(assetId: amount.key,
+                                             name: NSLocalizedString("id_no_registered_name_for_this", comment: ""),
+                                             precision: 0,
+                                             ticker: NSLocalizedString("id_no_registered_ticker_for_this", comment: ""))
+                    }
+                    vc.satoshi = wallet?.satoshi?[amount.key] ?? 0
+                    present(vc, animated: true) {}
+                }
+            }
+        }
+    }
 }
 
 extension TransactionViewController: UITableViewDelegate, UITableViewDataSource {
@@ -388,7 +409,9 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        if indexPath.section == TransactionSection.amount.rawValue {
+            didSelectAmountAt(indexPath.row)
+        }
     }
 }
 
