@@ -90,6 +90,8 @@
 		345E1A86261EE6E500A1D934 /* DrawerPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */; };
 		345E1A8A261EEB7000A1D934 /* DrawerNetworkSelection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */; };
 		345E1A91261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */; };
+		346300E0274D114A00B28521 /* DialogExplorerOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */; };
+		346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */; };
 		3463EBBA26AEBAC900F3F2D9 /* UserSettings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */; };
 		3463EBBF26AEBB1000F3F2D9 /* UserSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */; };
 		3463EBC426AEE64000F3F2D9 /* UserSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */; };
@@ -405,6 +407,8 @@
 		345E1A85261EE6E500A1D934 /* DrawerPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerPresentationController.swift; sourceTree = "<group>"; };
 		345E1A89261EEB7000A1D934 /* DrawerNetworkSelection.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = DrawerNetworkSelection.storyboard; sourceTree = "<group>"; };
 		345E1A90261EEBE400A1D934 /* DrawerNetworkSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerNetworkSelectionViewController.swift; sourceTree = "<group>"; };
+		346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogExplorerOptionsViewController.swift; sourceTree = "<group>"; };
+		346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogShareTxOptionViewController.swift; sourceTree = "<group>"; };
 		3463EBB926AEBAC900F3F2D9 /* UserSettings.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = UserSettings.storyboard; sourceTree = "<group>"; };
 		3463EBBE26AEBB1000F3F2D9 /* UserSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsViewController.swift; sourceTree = "<group>"; };
 		3463EBC326AEE64000F3F2D9 /* UserSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingsCell.swift; sourceTree = "<group>"; };
@@ -1085,6 +1089,8 @@
 				34DEF524272ABD56008C38EA /* DialogReceiveVerifyAddressViewController.swift */,
 				3448E63A2730141400C7ADFF /* DialogReceiveShareTypeViewController.swift */,
 				3418BABD2743AC4600F9B2D0 /* DialogNoteViewController.swift */,
+				346300DF274D114A00B28521 /* DialogExplorerOptionsViewController.swift */,
+				346300E1274D4FBF00B28521 /* DialogShareTxOptionViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1816,6 +1822,7 @@
 				8189BF002236F2270091B466 /* ScreenLocker.swift in Sources */,
 				3497936825F8B18C0029ECB1 /* WalletNameViewController.swift in Sources */,
 				09309F1A212F8D8700DE093B /* SearchTextField.swift in Sources */,
+				346300E2274D4FBF00B28521 /* DialogShareTxOptionViewController.swift in Sources */,
 				817417372236E85500A28E36 /* ScreenLockWindow.swift in Sources */,
 				34DDD0B0260A491300020380 /* DialogWalletNameViewController.swift in Sources */,
 				092A84D3211C0D870062F0B2 /* SetEmailViewController.swift in Sources */,
@@ -1840,6 +1847,7 @@
 				3463EBC626AFF25F00F3F2D9 /* UserSettings.swift in Sources */,
 				3434766C26822B2F00D7AD43 /* AccessibilityIdentifiers.swift in Sources */,
 				34DEF5212729824D008C38EA /* DialogReceiveMoreOptionsViewController.swift in Sources */,
+				346300E0274D114A00B28521 /* DialogExplorerOptionsViewController.swift in Sources */,
 				818EE78026A5C2ED008CD09E /* HWDevice.swift in Sources */,
 				81BF4E2E22E9E9EA005A04C6 /* Ledger.swift in Sources */,
 				09841F9D215F1E7800FC268E /* SetPhoneViewController.swift in Sources */,

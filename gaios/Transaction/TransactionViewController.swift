@@ -127,8 +127,12 @@ class TransactionViewController: UIViewController {
     @objc func shareButtonTapped(_ sender: UIButton) {
         // We have more options in liquid for confidential txs
         if isLiquid {
-            let alert = shareTransactionSheet()
-            self.present(alert, animated: true, completion: nil)
+            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogShareTxOptionViewController") as? DialogShareTxOptionViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                vc.delegate = self
+                present(vc, animated: false, completion: nil)
+            }
         } else {
             if let url = urlForTx() {
                 let tx: [Any] = [url]
@@ -139,39 +143,54 @@ class TransactionViewController: UIViewController {
         }
     }
 
-    func shareTransactionSheet() -> UIAlertController {
-        let alert = UIAlertController(title: NSLocalizedString("Share Transaction", comment: ""), message: "", preferredStyle: .actionSheet)
-        // View the transaction in blockstream.info
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_view_in_explorer", comment: ""), style: .default) { _ in
-            guard let alert: UIAlertController = self.explorerUrlOrAlert() else { return }
-            self.present(alert, animated: true, completion: nil)
-        })
-        // Share the unblinded transaction explorer url
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_share_nonconfidential", comment: ""), style: .default) { _ in
-            let unblindedUrl = (self.account?.gdkNetwork?.txExplorerUrl ?? "") + self.transaction.hash + self.transaction.blindingUrlString()
-            let shareVC = UIActivityViewController(activityItems: [unblindedUrl], applicationActivities: nil)
-            self.present(shareVC, animated: true, completion: nil)
-        })
-        // Share data needed to unblind the transaction
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_share_unblinding_data", comment: ""), style: .default) { _ in
-            let blindingData = try? JSONSerialization.data(withJSONObject: self.transaction.blindingData() ?? "", options: [])
-            let shareVC = UIActivityViewController(activityItems: [String(data: blindingData!, encoding: .utf8)!], applicationActivities: nil)
-            self.present(shareVC, animated: true, completion: nil)
-        })
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_cancel", comment: ""), style: .cancel) { _ in })
-        return alert
-    }
-
     func urlForTx() -> URL? {
         return URL(string: (account?.gdkNetwork?.txExplorerUrl ?? "") + self.transaction.hash)
     }
 
-    func explorerUrlOrAlert() -> UIAlertController? {
-        guard let url: URL = urlForTx() else { return nil }
+    func urlForTxUnblinded() -> URL? {
+        return URL(string: (self.account?.gdkNetwork?.txExplorerUrl ?? "") + self.transaction.hash + self.transaction.blindingUrlString())
+    }
+
+    func blidingDataString() -> String? {
+        let blindingData: Data? = try? JSONSerialization.data(withJSONObject: self.transaction.blindingData() ?? "", options: [])
+        guard let data = blindingData else { return nil }
+        guard let dataString = String(data: data, encoding: .utf8) else { return nil }
+        return dataString
+    }
+
+    func openShare(_ option: TxShareOption) {
+        switch option {
+        case .confidential:
+            if let url = urlForTx() {
+                let shareVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                present(shareVC, animated: true, completion: nil)
+            }
+        case .nonConfidential:
+            if let url = urlForTxUnblinded() {
+                let shareVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                present(shareVC, animated: true, completion: nil)
+            }
+        case .unblindingData:
+            if let str = blidingDataString() {
+                let shareVC = UIActivityViewController(activityItems: [str], applicationActivities: nil)
+                present(shareVC, animated: true, completion: nil)
+            }
+        }
+    }
+
+    func openExplorer(_ option: ExplorerOption) {
+        var exUrl: URL?
+        switch option {
+        case .confidential:
+            exUrl = urlForTx()
+        case .nonConfidential:
+            exUrl = urlForTxUnblinded()
+        }
+        guard let url = exUrl else { return }
         let host = url.host!.starts(with: "www.") ? String(url.host!.prefix(5)) : url.host!
         if viewInExplorerPreference {
             UIApplication.shared.open(url, options: [:])
-            return nil
+            return
         }
         let message = String(format: NSLocalizedString("id_are_you_sure_you_want_to_view", comment: ""), host)
         let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
@@ -184,8 +203,20 @@ class TransactionViewController: UIViewController {
             self.viewInExplorerPreference = true
             UIApplication.shared.open(url, options: [:])
         })
+        present(alert, animated: true, completion: nil)
+    }
 
-        return alert
+    func explorerAction() {
+        if isLiquid {
+            let storyboard = UIStoryboard(name: "Shared", bundle: nil)
+            if let vc = storyboard.instantiateViewController(withIdentifier: "DialogExplorerOptionsViewController") as? DialogExplorerOptionsViewController {
+                vc.modalPresentationStyle = .overFullScreen
+                vc.delegate = self
+                present(vc, animated: false, completion: nil)
+            }
+        } else {
+            openExplorer(.confidential)
+        }
     }
 
     func refreshTransaction(_ notification: Notification) {
@@ -303,8 +334,7 @@ extension TransactionViewController: UITableViewDelegate, UITableViewDataSource 
                 self?.editNote()
             }
             let explorerAction: VoidToVoid? = { [weak self] in
-                guard let alert: UIAlertController = self?.explorerUrlOrAlert() else { return }
-                self?.present(alert, animated: true, completion: nil)
+                self?.explorerAction()
             }
             let copyAction: VoidToVoid? = { [weak self] in
                 self?.copyToClipboard()
@@ -406,4 +436,16 @@ extension TransactionViewController: DialogNoteViewControllerDelegate {
     }
 
     func didCancel() { }
+}
+
+extension TransactionViewController: DialogExplorerOptionsViewControllerDelegate {
+    func didSelect(_ option: ExplorerOption) {
+        openExplorer(option)
+    }
+}
+
+extension TransactionViewController: DialogShareTxOptionViewControllerDelegate {
+    func didSelect(_ option: TxShareOption) {
+        openShare(option)
+    }
 }
