@@ -129,6 +129,7 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
 
         binding.ticker.text = ticker(index)
         binding.icon.setImageDrawable(getIcon(index, binding.icon.context))
+        binding.icon.updateAssetPadding(session, assets[index].first, 3)
 
         if (hideSPVInAsset || tx.spv.disabledOrVerified()) {
             binding.spv.isVisible = false

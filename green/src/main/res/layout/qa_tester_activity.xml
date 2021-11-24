@@ -112,7 +112,7 @@
                             android:layout_height="wrap_content"
                             android:checked="@={qaTester.assetsIconsFetchDisabled}"
                             app:captionText="Disable Icons fetching"
-                            app:icon="@drawable/ic_liquid_bitcoin_60"
+                            app:icon="@drawable/ic_liquid_network_60"
                             app:titleText="Disable Assets Icons fetching" />
 
                         <com.blockstream.green.views.DividerView

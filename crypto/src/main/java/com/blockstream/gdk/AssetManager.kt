@@ -77,6 +77,8 @@ class AssetManager(
         return metadata[assetId]
     }
 
+    fun hasAssetIcon(assetId: String): Boolean = getAssetIcon(assetId) != null
+
     fun getAssetDrawableOrNull(assetId: String): Drawable? {
         getAssetIcon(assetId)?.let {
             return BitmapDrawable(context.resources, it)
@@ -177,24 +179,6 @@ class AssetManager(
     }
 
     fun getAssetIcon(assetId: String): Bitmap? {
-        // Icon from GDK (cache or up2date)
-        return icons[assetId] ?: run {
-
-            // Icon from app hardcoded cache
-            try {
-                val res = context.resources.getIdentifier(
-                    "asset_$assetId",
-                    "drawable",
-                    applicationId
-                )
-                if (res > 0) {
-                    return BitmapFactory.decodeResource(context.resources, res)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            null
-        }
+        return icons[assetId]
     }
 }

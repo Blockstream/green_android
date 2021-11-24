@@ -98,10 +98,10 @@ public class AssetsAdapter extends RecyclerView.Adapter<AssetsAdapter.Item> {
         }else{
             if(isTestnet){
                 holder.mAssetName.setText("Testnet Bitcoin");
-                holder.mAssetIcon.setImageResource(R.drawable.ic_testnet_btc);
+                holder.mAssetIcon.setImageResource(R.drawable.ic_bitcoin_testnet_network_60);
             }else{
                 holder.mAssetName.setText("Bitcoin");
-                holder.mAssetIcon.setImageResource(R.drawable.ic_btc);
+                holder.mAssetIcon.setImageResource(R.drawable.ic_bitcoin_network_60);
             }
             holder.mAssetDomain.setVisibility(View.GONE);
             try {

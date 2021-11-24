@@ -59,13 +59,13 @@ fun String.getAssetIcon(context: Context, session: GreenSession): Drawable {
                     R.drawable.ic_bitcoin_network_60
                 }
                 Network.isLiquid(session.network.id) -> {
-                    R.drawable.ic_liquid_bitcoin_60
+                    R.drawable.ic_liquid_network_60
                 }
                 Network.isTestnet(session.network.id) -> {
                     R.drawable.ic_bitcoin_testnet_network_60
                 }
                 Network.isTestnetLiquid(session.network.id) -> {
-                    R.drawable.ic_liquid_testnet_bitcoin_60
+                    R.drawable.ic_liquid_testnet_network_60
                 }
                 else -> {
                     R.drawable.ic_unknown_asset_60

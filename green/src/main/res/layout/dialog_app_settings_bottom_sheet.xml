@@ -127,9 +127,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="@={vm.enableTestnet}"
-                app:icon="@drawable/ic_testnet_btc"
+                app:icon="@drawable/ic_bitcoin_testnet_network_60"
                 app:titleText="@string/id_enable_testnet" />
-
 
             <TextView
                 android:layout_width="match_parent"

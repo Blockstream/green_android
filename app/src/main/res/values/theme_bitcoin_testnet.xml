@@ -1,7 +1,7 @@
 <resources>
     <style name="BitcoinTestnetTheme" parent="AppTheme">
         <item name="themeCardview">@drawable/cardview_testnet</item>
-        <item name="themeIcon">@drawable/ic_testnet_btc</item>
+        <item name="themeIcon">@drawable/ic_bitcoin_testnet_network_60</item>
         <item name="themeIconNoPadding">@drawable/ic_testnet_btc_no_padding</item>
 
         <item name="drawableSendReceiveIcColor">@color/colorAccent</item>

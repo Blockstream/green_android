@@ -75,19 +75,6 @@ public class NetworkData extends JSONData implements Comparable<NetworkData>, Se
     }
 
     @JsonIgnore
-    public int getIcon() {
-        if (network.equals("mainnet") || network.equals("electrum-mainnet"))
-            return R.drawable.ic_btc;
-        if (network.equals("testnet") || network.equals("electrum-testnet"))
-            return R.drawable.ic_testnet_btc;
-        if (network.equals("localtest-liquid"))
-            return R.drawable.ic_liquid;
-        if (network.equals("liquid") || network.equals("electrum-liquid"))
-            return R.drawable.ic_liquid;
-        return R.drawable.ic_testnet_btc;
-    }
-
-    @JsonIgnore
     public boolean isElectrum() { return "electrum".equals(getServerType()); }
 
     // Return the identifier of the asset used to pay transaction fees

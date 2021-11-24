@@ -1,7 +1,11 @@
 package com.blockstream.green.utils
 
+import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import com.blockstream.green.R
+import com.blockstream.green.gdk.GreenSession
+import com.blockstream.green.gdk.getAssetIcon
 import com.google.android.material.textfield.TextInputLayout
 
 fun TextInputLayout.endIconCopyMode() {
@@ -22,4 +26,14 @@ fun TextInputLayout.endIconCopyMode() {
             editText?.text?.clear()
         }
     }
+}
+
+fun ImageView.updateAssetPadding(session: GreenSession, assetId: String, padding : Int){
+    var imagePadding = 0
+    if(session.isLiquid){
+        if(session.policyAsset != assetId && session.hasAssetIcon(assetId)){
+            imagePadding = context.toPixels(padding)
+        }
+    }
+    setPadding(imagePadding, imagePadding, imagePadding, imagePadding)
 }

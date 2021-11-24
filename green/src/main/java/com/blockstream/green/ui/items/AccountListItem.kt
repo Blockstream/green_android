@@ -16,6 +16,7 @@ import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.utils.getBitcoinOrLiquidUnit
 import com.blockstream.green.utils.toBTCLook
 import com.blockstream.green.utils.toPixels
+import com.blockstream.green.utils.updateAssetPadding
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
@@ -87,6 +88,7 @@ data class AccountListItem constructor(
                         imageView.adjustViewBounds = true
                         imageView.scaleType = ImageView.ScaleType.FIT_CENTER
                         imageView.elevation = (balances.size - index).toFloat()
+                        imageView.updateAssetPadding(session, balance.key, 2)
 
                         binding.assetsIcons.addView(imageView)
                     }
