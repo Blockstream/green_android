@@ -264,7 +264,7 @@ class OverviewViewController: UIViewController {
         self.isLoading = true
         self.loadWallet()
         .compactMap {
-            self.reloadSections([OverviewSection.accountId], animated: true)
+            self.reloadSections([OverviewSection.account, OverviewSection.accountId], animated: true)
             return self.loadAssets()
         }
         .then {
@@ -352,6 +352,9 @@ class OverviewViewController: UIViewController {
             return Guarantee()
         }.then(on: bgq) {
             SessionManager.shared.subaccounts()
+        }.then(on: bgq) { wallets -> Promise<[WalletItem]> in
+            let balances = wallets.map { wallet in { wallet.getBalance() } }
+            return Promise.chain(balances).compactMap { _ in wallets }
         }
         .ensure {
             self.stopAnimating()
@@ -574,7 +577,7 @@ extension OverviewViewController: UITableViewDelegate, UITableViewDataSource {
                         }
                     }
                 }
-                cell.configure(account: accounts[indexPath.row], action: action, color: color, showAccounts: showAccounts)
+                cell.configure(account: accounts[indexPath.row], action: action, color: color, showAccounts: showAccounts, isLiquid: isLiquid)
                 cell.selectionStyle = .none
                 return cell
             }
