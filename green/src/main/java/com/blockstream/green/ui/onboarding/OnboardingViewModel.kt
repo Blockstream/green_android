@@ -1,6 +1,7 @@
 package com.blockstream.green.ui.onboarding
 
 import com.blockstream.gdk.data.Network
+import com.blockstream.gdk.data.PinData
 import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.database.CredentialType
@@ -11,6 +12,7 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
+import mu.KLogging
 
 
 open class OnboardingViewModel(
@@ -20,13 +22,19 @@ open class OnboardingViewModel(
 ) : AppViewModel() {
     val session = sessionManager.getOnBoardingSession(restoreWallet)
 
+    private fun withPinData(options: OnboardingOptions) = options.walletName?.contains(SkipPinData) != true
+
     fun createNewWallet(options: OnboardingOptions, pin: String, mnemonic: String?) {
 
         session.observable {
             val network = options.network!!
             val loginData = it.createNewWallet(network, mnemonic)
 
-            var pinData = it.setPin(pin)
+            var pinData : PinData? = null
+
+            if(withPinData(options)){
+                pinData = it.setPin(pin)
+            }
 
             val wallet = Wallet(
                 walletHashId = loginData.walletHashId,
@@ -38,7 +46,7 @@ open class OnboardingViewModel(
 
             wallet.id = walletRepository.addWallet(wallet)
 
-            pinData.let {
+            pinData?.let {
                 walletRepository.addLoginCredentialsSync(
                     LoginCredentials(
                         walletId = wallet.id,
@@ -63,7 +71,7 @@ open class OnboardingViewModel(
     }
 
     private fun generateWalletName(network:Network, userInputName: String?) : String{
-        return userInputName ?: run {
+        return userInputName?.replace(SkipPinData, "")?.trim() ?: run {
             val wallets = walletRepository.getWalletsForNetworkSync(network)
 
             return@run if(wallets.isNotEmpty()){
@@ -108,7 +116,11 @@ open class OnboardingViewModel(
         session.observable {
             val network = options.network!!
 
-            val pinData = it.setPin(pin)
+            var pinData : PinData? = null
+
+            if(withPinData(options)){
+                pinData = it.setPin(pin)
+            }
 
             val wallet : Wallet
 
@@ -131,13 +143,15 @@ open class OnboardingViewModel(
                 walletRepository.updateWalletSync(wallet)
             }
 
-            walletRepository.addLoginCredentialsSync(
-                LoginCredentials(
-                    walletId = wallet.id,
-                    credentialType = CredentialType.PIN,
-                    pinData = pinData
+            pinData?.let {
+                walletRepository.addLoginCredentialsSync(
+                    LoginCredentials(
+                        walletId = wallet.id,
+                        credentialType = CredentialType.PIN,
+                        pinData = pinData
+                    )
                 )
-            )
+            }
 
             sessionManager.upgradeOnBoardingSessionToWallet(wallet)
 
@@ -150,5 +164,9 @@ open class OnboardingViewModel(
             onProgress.value = false
             onError.value = ConsumableEvent(it)
         })
+    }
+
+    companion object: KLogging(){
+        const val SkipPinData = "_skip_pin_data_"
     }
 }

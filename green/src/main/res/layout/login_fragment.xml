@@ -57,6 +57,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
+                android:textAlignment="center"
                 android:text="@string/id_youve_entered_an_invalid_pin"
                 android:textAppearance="?attr/textAppearanceSubtitle2"
                 app:layout_constraintBottom_toTopOf="@+id/buttonRestoreWallet"
