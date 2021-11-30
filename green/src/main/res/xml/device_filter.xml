@@ -88,6 +88,8 @@
     <usb-device vendor-id="11415" product-id="16414"/>
     <usb-device vendor-id="11415" product-id="16415"/>
 
-    <!-- VID 0x10c4 PID 0xea60 - Jade -->
+    <!-- VID 0x10c4 PID 0xea60 - Jade Original -->
     <usb-device vendor-id="4292" product-id="60000"/>
+    <!-- VID 0x1a86 PID 0x55d4 - Jade New serial chip -->
+    <usb-device vendor-id="6790" product-id="21972"/>
 </resources>

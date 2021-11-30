@@ -119,7 +119,7 @@ class Device constructor(
 
     @IgnoredOnParcel
     open val isJade by lazy {
-        bleService == ParcelUuid(JadeBleImpl.IO_SERVICE_UUID) || usbDevice?.vendorId == VENDOR_JADE
+        bleService == ParcelUuid(JadeBleImpl.IO_SERVICE_UUID) || usbDevice?.vendorId == VENDOR_JADE_A  || usbDevice?.vendorId == VENDOR_JADE_B
     }
 
     @IgnoredOnParcel
@@ -170,7 +170,8 @@ class Device constructor(
         const val VENDOR_LEDGER = 0x2c97
         const val VENDOR_TREZOR = 0x534c
         const val VENDOR_TREZOR_V2 = 0x1209
-        const val VENDOR_JADE = 0x10c4
+        const val VENDOR_JADE_A = 0x10c4
+        const val VENDOR_JADE_B = 0x1a86
 
         private fun hasSuportedVendorId(usbDevice: UsbDevice) : Boolean{
             val vId = usbDevice.vendorId
@@ -178,7 +179,8 @@ class Device constructor(
                     vId == VENDOR_LEDGER ||
                     vId == VENDOR_TREZOR ||
                     vId == VENDOR_TREZOR_V2 ||
-                    vId == VENDOR_JADE)
+                    vId == VENDOR_JADE_A ||
+                    vId == VENDOR_JADE_B)
         }
 
         fun fromDevice(deviceManager: DeviceManager, usbDevice: UsbDevice): Device? {
