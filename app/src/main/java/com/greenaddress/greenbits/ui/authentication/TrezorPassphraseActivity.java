@@ -12,6 +12,7 @@ import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
+@Deprecated
 public class TrezorPassphraseActivity extends GaActivity {
 
     @Override

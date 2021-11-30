@@ -28,9 +28,10 @@ import com.blockstream.green.gdk.getIcon
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.ui.devices.DeviceInteractionRequestBottomSheetDialogFragment
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.clearNavigationResult
+import com.blockstream.green.utils.getNavigationResult
 import com.blockstream.green.utils.navigate
 import com.greenaddress.greenbits.ui.GaActivity
-import com.greenaddress.greenbits.ui.authentication.TrezorPassphraseActivity
 import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity
 import io.reactivex.rxjava3.core.Completable
 import mu.KLogging
@@ -100,6 +101,18 @@ abstract class AppFragment<T : ViewDataBinding>(
                         is DeviceRequestEvent.RequestPassphrase -> {
                             requestPassphrase()
                         }
+                    }
+                }
+            }
+
+            // Register listener for Passphrase result
+            getNavigationResult<String>(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)?.observe(viewLifecycleOwner) { result ->
+                result?.let {
+                    clearNavigationResult(PassphraseBottomSheetDialogFragment.PASSPHRASE_RESULT)
+                    if(result.isBlank()){
+                        getAppViewModel()?.requestPinPassphraseEmitter?.onError(Exception("id_action_canceled"))
+                    }else{
+                        getAppViewModel()?.requestPinPassphraseEmitter?.onSuccess(result)
                     }
                 }
             }
@@ -177,21 +190,14 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
     }
 
-    private val startForResultPassphrase = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data
-            getAppViewModel()?.requestPinPassphraseEmitter?.onSuccess(intent?.getStringExtra(GaActivity.HARDWARE_PASSPHRASE_REQUEST.toString()) ?: "")
-        }else{
-            getAppViewModel()?.requestPinPassphraseEmitter?.onError(Exception("id_action_canceled"))
-        }
-    }
-
     private fun requestPinMatrix() {
         startForResultPinMatrix.launch(Intent(requireContext(), TrezorPinActivity::class.java))
     }
 
-    private fun requestPassphrase() {
-        startForResultPassphrase.launch(Intent(requireContext(), TrezorPassphraseActivity::class.java))
+    fun requestPassphrase() {
+        PassphraseBottomSheetDialogFragment().also {
+            it.show(childFragmentManager, it.toString())
+        }
     }
 
     companion object: KLogging()

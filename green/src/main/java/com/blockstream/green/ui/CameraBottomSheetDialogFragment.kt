@@ -65,6 +65,7 @@ class CameraBottomSheetDialogFragment: BottomSheetDialogFragment(){
         savedInstanceState: Bundle?
     ): View? {
         binding = CameraBottomSheetBinding.inflate(layoutInflater)
+        binding.lifecycleOwner = viewLifecycleOwner
 
         binding.buttonClose.setOnClickListener {
             dismiss()

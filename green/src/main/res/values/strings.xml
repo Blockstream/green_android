@@ -1025,4 +1025,5 @@
   <string name="id_xpub">xPub</string>
   <string name="id_12_words">12 words</string>
   <string name="id_24_words">24 words</string>
+  <string name="id_passphrase">Passphrase</string>
 </resources>
