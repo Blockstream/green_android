@@ -2,13 +2,9 @@ package com.blockstream.green.ui
 
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.MenuRes
@@ -31,8 +27,6 @@ import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.clearNavigationResult
 import com.blockstream.green.utils.getNavigationResult
 import com.blockstream.green.utils.navigate
-import com.greenaddress.greenbits.ui.GaActivity
-import com.greenaddress.greenbits.ui.authentication.TrezorPinActivity
 import io.reactivex.rxjava3.core.Completable
 import mu.KLogging
 import javax.inject.Inject
@@ -116,6 +110,18 @@ abstract class AppFragment<T : ViewDataBinding>(
                     }
                 }
             }
+
+            // Register listener for Pin result
+            getNavigationResult<String>(PinMatrixBottomSheetDialogFragment.PIN_RESULT)?.observe(viewLifecycleOwner) { result ->
+                result?.let {
+                    clearNavigationResult(PinMatrixBottomSheetDialogFragment.PIN_RESULT)
+                    if(result.isBlank()){
+                        getAppViewModel()?.requestPinMatrixEmitter?.onError(Exception("id_action_canceled"))
+                    }else{
+                        getAppViewModel()?.requestPinMatrixEmitter?.onSuccess(result)
+                    }
+                }
+            }
         }
     }
 
@@ -181,20 +187,13 @@ abstract class AppFragment<T : ViewDataBinding>(
         }
     }
 
-    private val startForResultPinMatrix = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data
-            getAppViewModel()?.requestPinMatrixEmitter?.onSuccess(intent?.getStringExtra(GaActivity.HARDWARE_PIN_REQUEST.toString()) ?: "")
-        }else{
-            getAppViewModel()?.requestPinMatrixEmitter?.onError(Exception("id_action_canceled"))
+    private fun requestPinMatrix() {
+        PinMatrixBottomSheetDialogFragment().also {
+            it.show(childFragmentManager, it.toString())
         }
     }
 
-    private fun requestPinMatrix() {
-        startForResultPinMatrix.launch(Intent(requireContext(), TrezorPinActivity::class.java))
-    }
-
-    fun requestPassphrase() {
+    private fun requestPassphrase() {
         PassphraseBottomSheetDialogFragment().also {
             it.show(childFragmentManager, it.toString())
         }

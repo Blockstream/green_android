@@ -196,4 +196,14 @@
         <item name="android:includeFontPadding">false</item>
     </style>
 
+    <style name="SquarePinButton" parent="Widget.Green.Button.Outlined">
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:insetLeft">4dp</item>
+        <item name="android:insetRight">4dp</item>
+        <item name="android:insetTop">4dp</item>
+        <item name="android:insetBottom">4dp</item>
+    </style>
+
 </resources>

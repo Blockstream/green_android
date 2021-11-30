@@ -13,7 +13,7 @@ import com.greenaddress.greenbits.ui.GaActivity;
 import com.greenaddress.greenbits.ui.R;
 import com.greenaddress.greenbits.ui.UI;
 
-
+@Deprecated
 public class TrezorPinActivity extends GaActivity {
     private StringBuffer value = new StringBuffer();
 
