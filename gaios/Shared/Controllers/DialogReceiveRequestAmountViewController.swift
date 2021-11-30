@@ -172,7 +172,12 @@ class DialogReceiveRequestAmountViewController: KeyboardViewController {
             selectedType = TransactionType.BTC
         }
         let tag = selectedType == TransactionType.BTC ? "btc" : "fiat"
-        amountTextField.text = String(format: "%@", balance?.get(tag: tag).0 ?? "")
+        let amountStr = balance?.get(tag: tag).0 ?? ""
+        let amount = Double(amountStr)
+        amountTextField.text = amountStr
+        if amount == 0.0 {
+            amountTextField.text = ""
+        }
         reload()
     }
 
