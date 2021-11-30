@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "lbtc_test.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "lbtc_test@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "lbtc_test@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "ntw_liquid_testnet.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

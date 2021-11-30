@@ -35,9 +35,16 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.title = account?.name ?? ""
         navigationItem.setHidesBackButton(true, animated: false)
+
+        let ntwBtn = UIButton(type: .system)
+        ntwBtn.setImage((account?.icon ?? UIImage(named: ""))!
+                            .withRenderingMode(.alwaysOriginal), for: .normal)
+        ntwBtn.imageView?.contentMode = .scaleAspectFit
+        ntwBtn.addTarget(self, action: #selector(LoginViewController.back), for: .touchUpInside)
+        ntwBtn.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         navigationItem.leftBarButtonItems =
             [UIBarButtonItem(image: UIImage.init(named: "backarrow"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(LoginViewController.back)),
-             UIBarButtonItem(image: (account?.icon ?? UIImage(named: ""))?.withRenderingMode(.alwaysOriginal), style: UIBarButtonItem.Style.plain, target: self, action: #selector(LoginViewController.back))
+             UIBarButtonItem(customView: ntwBtn)
             ]
         menuButton.setImage(UIImage(named: "ellipses"), for: .normal)
         menuButton.addTarget(self, action: #selector(menuButtonTapped), for: .touchUpInside)

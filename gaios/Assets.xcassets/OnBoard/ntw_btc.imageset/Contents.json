@@ -1,17 +1,8 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "assetsBitcoin@2x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "ntw_btc.pdf",
+      "idiom" : "universal"
     }
   ],
   "info" : {

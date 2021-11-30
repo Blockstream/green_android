@@ -235,7 +235,7 @@
                                 <rect key="frame" x="0.0" y="88" width="375" height="690"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7aH-dV-hnh">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="920"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="910"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gM0-fC-lHf">
                                                 <rect key="frame" x="36" y="36" width="303" height="36"/>
@@ -250,26 +250,26 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="gNa-Ap-G2r">
-                                                <rect key="frame" x="36" y="141.33333333333331" width="303" height="758.66666666666674"/>
+                                                <rect key="frame" x="36" y="141.33333333333331" width="303" height="748.66666666666674"/>
                                                 <subviews>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f16-z9-AzG">
                                                         <rect key="frame" x="0.0" y="0.0" width="303" height="188"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_btc" translatesAutoresizingMaskIntoConstraints="NO" id="HGi-Zv-1Hv">
-                                                                <rect key="frame" x="24" y="24" width="60" height="60"/>
+                                                                <rect key="frame" x="24" y="24" width="50" height="50"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="height" constant="60" id="dG9-kr-0bm"/>
-                                                                    <constraint firstAttribute="width" constant="60" id="rVU-UN-2gs"/>
+                                                                    <constraint firstAttribute="height" constant="50" id="dG9-kr-0bm"/>
+                                                                    <constraint firstAttribute="width" constant="50" id="rVU-UN-2gs"/>
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Bitcoin" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DMr-ae-jvb">
-                                                                <rect key="frame" x="100" y="37.333333333333343" width="179" height="33.666666666666657"/>
+                                                                <rect key="frame" x="90" y="32.333333333333343" width="189" height="33.666666666666657"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Bitcoin is the world's leading P2P cryptocurrency network. Select to send and receive bitcoin." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SGp-VC-OoJ">
-                                                                <rect key="frame" x="24" y="91.999999999999972" width="255" height="72"/>
+                                                                <rect key="frame" x="24" y="81.999999999999972" width="255" height="82"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                                 <color key="textColor" name="customGrayLight"/>
                                                                 <nil key="highlightedColor"/>
@@ -292,20 +292,20 @@
                                                         <rect key="frame" x="0.0" y="212" width="303" height="188"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_liquid" translatesAutoresizingMaskIntoConstraints="NO" id="cVH-AJ-H0D">
-                                                                <rect key="frame" x="24" y="24" width="60" height="60"/>
+                                                                <rect key="frame" x="24" y="24" width="50" height="50"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="width" constant="60" id="ceE-b5-fQx"/>
-                                                                    <constraint firstAttribute="height" constant="60" id="y0m-cf-fQV"/>
+                                                                    <constraint firstAttribute="width" constant="50" id="ceE-b5-fQx"/>
+                                                                    <constraint firstAttribute="height" constant="50" id="y0m-cf-fQV"/>
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Liquid" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X4y-DR-k7f">
-                                                                <rect key="frame" x="100" y="37.333333333333371" width="179" height="33.666666666666657"/>
+                                                                <rect key="frame" x="90" y="32.333333333333371" width="189" height="33.666666666666657"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="Bitcoin is the world's leading P2P cryptocurrency network. Select to send and receive bitcoin." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fuy-qS-ykZ">
-                                                                <rect key="frame" x="24" y="92.000000000000057" width="255" height="72"/>
+                                                                <rect key="frame" x="24" y="82.000000000000057" width="255" height="82"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                                 <color key="textColor" name="customGrayLight"/>
                                                                 <nil key="highlightedColor"/>
@@ -328,20 +328,20 @@
                                                         <rect key="frame" x="0.0" y="424.00000000000006" width="303" height="182.66666666666669"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_testnet" translatesAutoresizingMaskIntoConstraints="NO" id="4pa-SV-YOb">
-                                                                <rect key="frame" x="24" y="24" width="60" height="60"/>
+                                                                <rect key="frame" x="24" y="24" width="50" height="50"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="height" constant="60" id="43M-Fp-Bfz"/>
-                                                                    <constraint firstAttribute="width" constant="60" id="ke1-ok-8bo"/>
+                                                                    <constraint firstAttribute="height" constant="50" id="43M-Fp-Bfz"/>
+                                                                    <constraint firstAttribute="width" constant="50" id="ke1-ok-8bo"/>
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Testnet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5FQ-4z-krd">
-                                                                <rect key="frame" x="100" y="37.333333333333258" width="179" height="33.666666666666657"/>
+                                                                <rect key="frame" x="90" y="32.333333333333258" width="189" height="33.666666666666657"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GKs-9U-1vj">
-                                                                <rect key="frame" x="24" y="92" width="255" height="66.666666666666686"/>
+                                                                <rect key="frame" x="24" y="82" width="255" height="76.666666666666686"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                                 <color key="textColor" name="customGrayLight"/>
                                                                 <nil key="highlightedColor"/>
@@ -361,21 +361,17 @@
                                                         </constraints>
                                                     </view>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ghu-yg-cvP" userLabel="Card Liquid Testnet">
-                                                        <rect key="frame" x="0.0" y="630.66666666666663" width="303" height="128"/>
+                                                        <rect key="frame" x="0.0" y="630.66666666666663" width="303" height="118"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ntw_testnet_liquid" translatesAutoresizingMaskIntoConstraints="NO" id="h90-VL-jbg">
-                                                                <rect key="frame" x="24" y="24" width="60" height="60"/>
+                                                                <rect key="frame" x="24" y="24" width="50" height="50"/>
                                                                 <constraints>
-                                                                    <constraint firstAttribute="width" constant="60" id="6dq-2o-rUf"/>
-                                                                    <constraint firstAttribute="height" constant="60" id="s8k-MA-Qkn"/>
+                                                                    <constraint firstAttribute="width" constant="50" id="6dq-2o-rUf"/>
+                                                                    <constraint firstAttribute="height" constant="50" id="s8k-MA-Qkn"/>
                                                                 </constraints>
                                                             </imageView>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Liquid Testnet" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hf4-J4-4c7">
-                                                                <rect key="frame" x="100" y="37.333333333333371" width="179" height="33.666666666666657"/>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="height" constant="33.666666666666657" id="8kA-uT-tLJ"/>
-                                                                    <constraint firstAttribute="width" constant="179" id="MJu-0Y-KdS"/>
-                                                                </constraints>
+                                                                <rect key="frame" x="90" y="32.333333333333371" width="189" height="33.666666666666657"/>
                                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                 <nil key="highlightedColor"/>
@@ -2718,10 +2714,10 @@
         <image name="ic_tor" width="60" height="60"/>
         <image name="ic_tx_check" width="60" height="60"/>
         <image name="main_connect" width="200" height="129.33332824707031"/>
-        <image name="ntw_btc" width="40" height="40"/>
-        <image name="ntw_liquid" width="60" height="60"/>
-        <image name="ntw_testnet" width="60" height="60"/>
-        <image name="ntw_testnet_liquid" width="60" height="60"/>
+        <image name="ntw_btc" width="60" height="61"/>
+        <image name="ntw_liquid" width="50" height="61"/>
+        <image name="ntw_testnet" width="60" height="61"/>
+        <image name="ntw_testnet_liquid" width="50" height="61"/>
         <image name="rightArrow" width="9" height="14"/>
         <namedColor name="customGrayLight">
             <color red="0.42699998617172241" green="0.47099998593330383" blue="0.50199997425079346" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
