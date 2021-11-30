@@ -14,7 +14,7 @@ import com.blockstream.green.utils.*
 
 class AssetLook constructor(
     private val id: String,
-    val amount: Long,
+    var amount: Long,
     val session: GreenSession
 ) {
     private val asset = session.getAsset(id)

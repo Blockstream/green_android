@@ -497,26 +497,17 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 }
 
                 is ButtonActionListItem -> {
-                    navigate(
-                        OverviewFragmentDirections.actionOverviewFragmentToChooseAccountTypeFragment(
-                            wallet = args.wallet
-                        )
-                    )
+                    AssetBottomSheetFragment().also {
+                        it.show(childFragmentManager, it.toString())
+                    }
                     closeInnerAdapter()
                 }
                 is AssetListItem -> {
-                    if(viewModel.wallet.isLiquid) {
-                        if (AssetFilteringIsEnabled && isOverviewState && viewModel.wallet.isLiquid) {
-                            viewModel.setAsset(item.balancePair)
-                        } else {
-                            if(item.balancePair.first != session.network.policyAsset){
-                                navigate(
-                                        OverviewFragmentDirections.actionOverviewFragmentToAssetBottomSheetFragment(
-                                                item.balancePair.first,
-                                                wallet
-                                        )
-                                )
-                            }
+                    if (AssetFilteringIsEnabled && isOverviewState && viewModel.wallet.isLiquid) {
+                        viewModel.setAsset(item.balancePair)
+                    } else {
+                        AssetBottomSheetFragment.newInstance(item.balancePair.first).also {
+                            it.show(childFragmentManager, it.toString())
                         }
                     }
                 }

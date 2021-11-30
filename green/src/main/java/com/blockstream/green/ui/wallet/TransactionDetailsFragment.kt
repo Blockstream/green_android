@@ -24,6 +24,7 @@ import com.blockstream.green.gdk.getConfirmationsMax
 import com.blockstream.green.ui.WalletFragment
 import com.blockstream.green.ui.items.*
 import com.blockstream.green.ui.looks.TransactionDetailsLook
+import com.blockstream.green.ui.overview.AssetBottomSheetFragment
 import com.blockstream.green.utils.*
 import com.kennyc.bottomsheet.BottomSheetListener
 import com.kennyc.bottomsheet.BottomSheetMenuDialogFragment
@@ -148,13 +149,8 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
             when (item) {
                 is TransactionAmountListItem -> {
                     val assetId = item.look.assets[item.index].first
-                    if (assetId != session.policyAsset) {
-                        navigate(
-                            TransactionDetailsFragmentDirections.actionTransactionDetailsFragmentToAssetBottomSheetFragment(
-                                assetId = assetId,
-                                wallet = wallet
-                            )
-                        )
+                    AssetBottomSheetFragment.newInstance(assetId).also {
+                        it.show(childFragmentManager, it.toString())
                     }
                 }
             }
