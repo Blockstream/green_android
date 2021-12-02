@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="headline1_textsize">30sp</dimen>
-    <dimen name="headline5_textsize">24sp</dimen>
-    <dimen name="headline6_textsize">20sp</dimen>
-    <dimen name="body1_textsize">16sp</dimen>
-    <dimen name="body2_textsize">16sp</dimen>
-</resources>

@@ -2,9 +2,9 @@ package com.greenaddress.greenapi;
 
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.Network;
+import com.blockstream.gdk.data.SubAccount;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.greenaddress.greenapi.data.InputOutputData;
-import com.greenaddress.greenapi.data.SubaccountData;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -119,7 +119,7 @@ public abstract class HWWallet {
 
     public abstract int getIconResourceId();
 
-    public abstract String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer, final long csvBlocks) throws Exception;
+    public abstract String getGreenAddress(final SubAccount subaccount, final long branch, final long pointer, final long csvBlocks) throws Exception;
 
     public Network getNetwork() {
         return mNetwork;

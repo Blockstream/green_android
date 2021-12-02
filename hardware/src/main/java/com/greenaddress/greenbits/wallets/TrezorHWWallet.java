@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import com.blockstream.DeviceBrand;
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.Network;
+import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
 import com.blockstream.libwally.Wally;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,8 +17,6 @@ import com.google.protobuf.Message;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.data.InputOutputData;
-import com.greenaddress.greenapi.data.NetworkData;
-import com.greenaddress.greenapi.data.SubaccountData;
 import com.satoshilabs.trezor.Trezor;
 import com.satoshilabs.trezor.protobuf.TrezorMessage;
 import com.satoshilabs.trezor.protobuf.TrezorType;
@@ -28,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.rxjava3.subjects.BehaviorSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 
@@ -385,7 +383,7 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer,
+    public String getGreenAddress(final SubAccount subaccount, final long branch, final long pointer,
                                   final long csvBlocks) {
         return null;
     }

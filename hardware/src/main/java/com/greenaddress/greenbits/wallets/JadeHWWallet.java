@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.blockstream.gdk.data.Device;
 import com.blockstream.gdk.data.Network;
+import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
 import com.blockstream.libgreenaddress.GDK;
 import com.blockstream.libwally.Wally;
@@ -18,7 +19,6 @@ import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HardwareQATester;
 import com.greenaddress.greenapi.data.InputOutputData;
-import com.greenaddress.greenapi.data.SubaccountData;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.Commitment;
 import com.greenaddress.jade.entities.JadeError;
@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Single;
-import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.subjects.CompletableSubject;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
@@ -527,7 +526,7 @@ public class JadeHWWallet extends HWWallet {
     }
 
     @Override
-    public String getGreenAddress(final SubaccountData subaccount, final long branch, final long pointer,
+    public String getGreenAddress(final SubAccount subaccount, final long branch, final long pointer,
                                   final long csvBlocks) {
         Log.d(TAG,
               "getGreenAddress() for subaccount: " + subaccount.getPointer() + ", branch: " + branch + ", pointer " +

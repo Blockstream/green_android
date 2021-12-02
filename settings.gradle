@@ -1,4 +1,3 @@
 include ':crypto'
 include ':hardware'
 include ':green'
-include ':app'
