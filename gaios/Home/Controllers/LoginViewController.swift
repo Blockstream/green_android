@@ -37,8 +37,8 @@ class LoginViewController: UIViewController {
         navigationItem.setHidesBackButton(true, animated: false)
 
         let ntwBtn = UIButton(type: .system)
-        ntwBtn.setImage((account?.icon ?? UIImage(named: ""))!
-                            .withRenderingMode(.alwaysOriginal), for: .normal)
+        let img = account?.icon ?? UIImage()
+        ntwBtn.setImage(img.withRenderingMode(.alwaysOriginal), for: .normal)
         ntwBtn.imageView?.contentMode = .scaleAspectFit
         ntwBtn.addTarget(self, action: #selector(LoginViewController.back), for: .touchUpInside)
         ntwBtn.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
