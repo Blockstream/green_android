@@ -1,10 +1,10 @@
 package com.greenaddress.greenbits.wallets;
 
-import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
-
 import androidx.annotation.Nullable;
 
+import com.blockstream.gdk.ExtensionsKt;
 import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
 import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
@@ -21,7 +21,6 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
-import com.greenaddress.greenapi.data.InputOutputData;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -164,8 +163,8 @@ public class BTChipHWWallet extends HWWallet {
 
     @Override
     public SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                        final List<InputOutputData> inputs,
-                                        final List<InputOutputData> outputs,
+                                        final List<InputOutput> inputs,
+                                        final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
                                         final List<String> addressTypes,
                                         final boolean useAeProtocol) {
@@ -190,7 +189,7 @@ public class BTChipHWWallet extends HWWallet {
                                                            transactions) : new ArrayList<>();
 
             final List<String> sigs = new ArrayList<>(inputs.size());
-            for (final InputOutputData in : inputs) {
+            for (final InputOutput in : inputs) {
                 final boolean swInput = !in.getAddressType().equals("p2sh");
                 final byte[] sig = (swInput ? swSigs : p2shSigs).remove(0);
                 sigs.add(Wally.hex_from_bytes(sig));
@@ -204,8 +203,8 @@ public class BTChipHWWallet extends HWWallet {
 
     @Override
     public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                              final List<InputOutputData> inputs,
-                                              final List<InputOutputData> outputs,
+                                              final List<InputOutput> inputs,
+                                              final List<InputOutput> outputs,
                                               final Map<String, String> transactions,
                                               final List<String> addressTypes,
                                               final boolean useAeProtocol) {
@@ -240,8 +239,8 @@ public class BTChipHWWallet extends HWWallet {
 
                 assetCommitments.add(Wally.hex_from_bytes(resp.getAssetCommitments().get(i)));
                 valueCommitments.add(Wally.hex_from_bytes(resp.getValueCommitments().get(i)));
-                assetBlinders.add(Wally.hex_from_bytes(reverseBytes(resp.getAbfs().get(i))));
-                amountBlinders.add(Wally.hex_from_bytes(reverseBytes(resp.getVbfs().get(i))));
+                assetBlinders.add(Wally.hex_from_bytes(ExtensionsKt.reverseBytes(resp.getAbfs().get(i))));
+                amountBlinders.add(Wally.hex_from_bytes(ExtensionsKt.reverseBytes(resp.getVbfs().get(i))));
             }
 
             final List<String> sigs = new ArrayList<>(inputs.size());
@@ -295,12 +294,12 @@ public class BTChipHWWallet extends HWWallet {
 
     // This assumes segwit = true
     private LiquidSigCommitment signLiquid(final HWWalletBridge parent, final ObjectNode tx,
-                                           final List<InputOutputData> inputs,
-                                           final List<InputOutputData> outputs) throws BTChipException {
+                                           final List<InputOutput> inputs,
+                                           final List<InputOutput> outputs) throws BTChipException {
         final BTChipDongle.BTChipLiquidInput hwInputs[] = new BTChipDongle.BTChipLiquidInput[inputs.size()];
 
         for (int i = 0; i < hwInputs.length; ++i) {
-            final InputOutputData in = inputs.get(i);
+            final InputOutput in = inputs.get(i);
             hwInputs[i] = mDongle.createLiquidInput(inputLiquidBytes(in), sequenceBytes(in));
         }
 
@@ -318,7 +317,7 @@ public class BTChipHWWallet extends HWWallet {
         List<byte[]> abfs = new ArrayList<>();
         List<byte[]> vbfs = new ArrayList<>();
 
-        for (InputOutputData in : inputs) {
+        for (InputOutput in : inputs) {
             inputValues.add(in.getSatoshi());
             abfs.add(in.getAbfs());
             vbfs.add(in.getVbfs());
@@ -355,7 +354,7 @@ public class BTChipHWWallet extends HWWallet {
         }
 
         for (int i = 0; i < hwInputs.length; ++i) {
-            final InputOutputData in = inputs.get(i);
+            final InputOutput in = inputs.get(i);
             singleInput[0] = hwInputs[i];
             final byte script[] = Wally.hex_to_bytes(in.getPrevoutScript());
 
@@ -373,7 +372,7 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     // Helper to get the hw inputs
-    private BTChipDongle.BTChipInput[] getHwInputs(final List<InputOutputData> inputs,
+    private BTChipDongle.BTChipInput[] getHwInputs(final List<InputOutput> inputs,
                                                    final Map<String, String> transactions,
                                                    final boolean segwit) throws BTChipException {
         final BTChipDongle.BTChipInput[] hwInputs = new BTChipDongle.BTChipInput[inputs.size()];
@@ -381,18 +380,18 @@ public class BTChipHWWallet extends HWWallet {
 
         if (preferTrustedInputs && mDongle.supportScreen()) {
             for (int i = 0; i < hwInputs.length; ++i) {
-                final InputOutputData in = inputs.get(i);
-                final String txHex = transactions.get(in.getTxhash());
+                final InputOutput in = inputs.get(i);
+                final String txHex = transactions.get(in.getTxHash());
                 if (txHex == null)
-                    throw new BTChipException(String.format("previous transaction %s not found", in.getTxhash()));
+                    throw new BTChipException(String.format("previous transaction %s not found", in.getTxHash()));
 
                 final ByteArrayInputStream is = new ByteArrayInputStream(Wally.hex_to_bytes(txHex));
-                hwInputs[i] = mDongle.getTrustedInput(new BitcoinTransaction(is), in.getPtIdx(),
-                                                      in.getSequence(), segwit);
+                hwInputs[i] = mDongle.getTrustedInput(new BitcoinTransaction(is), in.getPtIdxInt(),
+                                                      in.getSequenceInt(), segwit);
             }
         } else {
             for (int i = 0; i < hwInputs.length; ++i) {
-                final InputOutputData in = inputs.get(i);
+                final InputOutput in = inputs.get(i);
                 hwInputs[i] = mDongle.createInput(inputBytes(in, segwit), sequenceBytes(in), false, segwit);
             }
         }
@@ -401,8 +400,8 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     private List<byte[]> signSW(final HWWalletBridge parent, final ObjectNode tx,
-                                final List<InputOutputData> inputs,
-                                final List<InputOutputData> outputs,
+                                final List<InputOutput> inputs,
+                                final List<InputOutput> outputs,
                                 final Map<String, String> transactions) throws BTChipException {
         final BTChipDongle.BTChipInput[] hwInputs = getHwInputs(inputs, transactions, true);
 
@@ -424,7 +423,7 @@ public class BTChipHWWallet extends HWWallet {
         final List<byte[]> sigs = new ArrayList<>(hwInputs.length);
 
         for (int i = 0; i < hwInputs.length; ++i) {
-            final InputOutputData in = inputs.get(i);
+            final InputOutput in = inputs.get(i);
             if (in.getAddressType().equals("p2sh"))
                 continue; // sign segwit only
             singleInput[0] = hwInputs[i];
@@ -436,8 +435,8 @@ public class BTChipHWWallet extends HWWallet {
     }
 
     private List<byte[]> signNonSW(final HWWalletBridge parent, final ObjectNode tx,
-                                   final List<InputOutputData> inputs,
-                                   final List<InputOutputData> outputs,
+                                   final List<InputOutput> inputs,
+                                   final List<InputOutput> outputs,
                                    final Map<String, String> transactions) throws BTChipException {
         final BTChipDongle.BTChipInput[] hwInputs = getHwInputs(inputs, transactions, false);
 
@@ -448,7 +447,7 @@ public class BTChipHWWallet extends HWWallet {
         final List<byte[]> sigs = new ArrayList<>(hwInputs.length);
 
         for (int i = 0; i < hwInputs.length; ++i) {
-            final InputOutputData in = inputs.get(i);
+            final InputOutput in = inputs.get(i);
             final byte[] script = Wally.hex_to_bytes(in.getPrevoutScript());
 
             mDongle.startUntrustedTransaction(version, i == 0, i, hwInputs, script, false);
@@ -463,10 +462,10 @@ public class BTChipHWWallet extends HWWallet {
         return sigs;
     }
 
-    private byte[] outputBytes(final List<InputOutputData> outputs) {
+    private byte[] outputBytes(final List<InputOutput> outputs) {
         final ByteArrayOutputStream os = new ByteArrayOutputStream(outputs.size() * (8 + 256));
         putVarInt(os, outputs.size());
-        for (final InputOutputData out : outputs) {
+        for (final InputOutput out : outputs) {
             BufferUtils.writeUint64LE(os, out.getSatoshi()); // int64ToByteStreamLE in bitcoinj
             final byte[] script = Wally.hex_to_bytes(out.getScript());
             putVarInt(os, script.length).write(script, 0, script.length);
@@ -474,7 +473,7 @@ public class BTChipHWWallet extends HWWallet {
         return os.toByteArray();
     }
 
-    private List<byte[]> outputLiquidBytes(final List<InputOutputData> outputs,
+    private List<byte[]> outputLiquidBytes(final List<InputOutput> outputs,
                                            final List<BTChipDongle.BTChipLiquidTrustedCommitments> commitments) {
         final List<byte[]> res = new ArrayList<>();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -482,7 +481,7 @@ public class BTChipHWWallet extends HWWallet {
         res.add(os.toByteArray());
 
         int index = 0;
-        for (final InputOutputData out : outputs) {
+        for (final InputOutput out : outputs) {
             if (out.getScript().length() == 0) { // TODO: should be used for every unblinded output, not only for fees
                 os = new ByteArrayOutputStream(33 + 9);
                 os.write(0x01);
@@ -520,28 +519,28 @@ public class BTChipHWWallet extends HWWallet {
         return res;
     }
 
-    private byte[] inputBytes(final InputOutputData in, final boolean isSegwit) {
+    private byte[] inputBytes(final InputOutput in, final boolean isSegwit) {
         final ByteArrayOutputStream os = new ByteArrayOutputStream(32 + (isSegwit ? 12 : 4));
         final byte[] txid = in.getTxid();
         os.write(txid, 0, txid.length);
-        BufferUtils.writeUint32LE(os, in.getPtIdx());
+        BufferUtils.writeUint32LE(os, in.getPtIdxInt());
         if (isSegwit)
             BufferUtils.writeUint64LE(os, in.getSatoshi());
         return os.toByteArray();
     }
 
-    private byte[] inputLiquidBytes(final InputOutputData in) {
+    private byte[] inputLiquidBytes(final InputOutput in) {
         final ByteArrayOutputStream os = new ByteArrayOutputStream(32 + 4 + 33);
         final byte[] txid = in.getTxid();
         os.write(txid, 0, txid.length);
-        BufferUtils.writeUint32LE(os, in.getPtIdx());
+        BufferUtils.writeUint32LE(os, in.getPtIdxInt());
         os.write(in.getCommitmentBytes(), 0, in.getCommitmentBytes().length);
         return os.toByteArray();
     }
 
-    private byte[] sequenceBytes(final InputOutputData in) {
+    private byte[] sequenceBytes(final InputOutput in) {
         final ByteArrayOutputStream os = new ByteArrayOutputStream(4);
-        BufferUtils.writeUint32LE(os, in.getSequence());
+        BufferUtils.writeUint32LE(os, in.getSequenceInt());
         return os.toByteArray();
     }
 

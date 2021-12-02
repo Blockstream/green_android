@@ -46,7 +46,7 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
 
         return when (requiredData.action) {
             "get_xpubs" -> {
-                hwWallet.getXpubs(hwWalletBridge, requiredData.paths).let {
+                hwWallet.getXpubs(hwWalletBridge, requiredData.paths?.map { it.map { it.toInt() } }).let {
                     DeviceResolvedData(
                         xpubs = it
                     )
@@ -56,7 +56,7 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
             "sign_message" -> {
                 hwWallet.signMessage(
                     hwWalletBridge,
-                    requiredData.path,
+                    requiredData.path?.map { it.toInt() },
                     requiredData.message,
                     requiredData.useAeProtocol ?: false,
                     requiredData.aeHostCommitment,
@@ -87,8 +87,8 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
                     result = hwWallet.signLiquidTransaction(
                         hwWalletBridge,
                         toObjectNode(requiredData.transaction),
-                        requiredData.getSigningInputsAsInputOutputData(),
-                        requiredData.getTransactionOutputsAsInputOutputData(),
+                        requiredData.signingInputs,
+                        requiredData.transactionOutputs,
                         requiredData.signingTransactions,
                         requiredData.signingAddressTypes,
                         requiredData.useAeProtocol ?: false
@@ -97,8 +97,8 @@ class DeviceResolver(private val hwWalletBridge: HWWalletBridge?, private val hw
                     result = hwWallet.signTransaction(
                         hwWalletBridge,
                         toObjectNode(requiredData.transaction),
-                        requiredData.getSigningInputsAsInputOutputData(),
-                        requiredData.getTransactionOutputsAsInputOutputData(),
+                        requiredData.signingInputs,
+                        requiredData.transactionOutputs,
                         requiredData.signingTransactions,
                         requiredData.signingAddressTypes,
                         requiredData.useAeProtocol ?: false

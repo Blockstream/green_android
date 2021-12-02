@@ -1,7 +1,6 @@
 package com.blockstream.gdk.data
 
 import com.blockstream.gdk.GAJson
-import com.greenaddress.greenapi.data.InputOutputData
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -11,8 +10,8 @@ import kotlinx.serialization.json.JsonElement
 data class DeviceRequiredData constructor(
     @SerialName("action") val action: String,
     @SerialName("device") val device: Device,
-    @SerialName("paths") val paths: List<List<Int>>? = null,
-    @SerialName("path") val path: List<Int>? = null,
+    @SerialName("paths") val paths: List<List<UInt>>? = null,
+    @SerialName("path") val path: List<UInt>? = null,
     @SerialName("message") val message: String? = null,
 
     @SerialName("use_ae_protocol") val useAeProtocol: Boolean? = null,
@@ -32,17 +31,5 @@ data class DeviceRequiredData constructor(
 
     override fun kSerializer(): KSerializer<DeviceRequiredData> {
         return serializer()
-    }
-
-    fun getSigningInputsAsInputOutputData(): List<InputOutputData>{
-        return signingInputs?.map {
-            it.toInputOutputData()
-        } ?: arrayListOf()
-    }
-
-    fun getTransactionOutputsAsInputOutputData(): List<InputOutputData>{
-        return transactionOutputs?.map {
-            it.toInputOutputData()
-        } ?: arrayListOf()
     }
 }

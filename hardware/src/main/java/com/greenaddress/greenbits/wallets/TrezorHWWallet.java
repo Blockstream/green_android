@@ -5,7 +5,9 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.blockstream.DeviceBrand;
+import com.blockstream.gdk.ExtensionsKt;
 import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
 import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
@@ -16,7 +18,6 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
-import com.greenaddress.greenapi.data.InputOutputData;
 import com.satoshilabs.trezor.Trezor;
 import com.satoshilabs.trezor.protobuf.TrezorMessage;
 import com.satoshilabs.trezor.protobuf.TrezorType;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.rxjava3.subjects.PublishSubject;
+import kotlin.UInt;
+import kotlin.UIntKt;
 
 
 public class TrezorHWWallet extends HWWallet {
@@ -97,8 +100,8 @@ public class TrezorHWWallet extends HWWallet {
 
     @Override
     public SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                        final List<InputOutputData> inputs,
-                                        final List<InputOutputData> outputs,
+                                        final List<InputOutput> inputs,
+                                        final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
                                         final List<String> addressTypes,
                                         final boolean useAeProtocol)
@@ -120,8 +123,8 @@ public class TrezorHWWallet extends HWWallet {
 
     @Override
     public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                              final List<InputOutputData> inputs,
-                                              final List<InputOutputData> outputs,
+                                              final List<InputOutput> inputs,
+                                              final List<InputOutput> outputs,
                                               final Map<String, String> transactions,
                                               final List<String> addressTypes,
                                               final boolean useAeProtocol) {
@@ -129,8 +132,8 @@ public class TrezorHWWallet extends HWWallet {
     }
 
     private SignTxResult signTransactionImpl(final HWWalletBridge parent, final ObjectNode tx,
-                                             final List<InputOutputData> inputs,
-                                             final List<InputOutputData> outputs,
+                                             final List<InputOutput> inputs,
+                                             final List<InputOutput> outputs,
                                              final Map<String, String> transactions,
                                              final List<String> addressTypes)
     {
@@ -145,10 +148,10 @@ public class TrezorHWWallet extends HWWallet {
         }
 
         // Fetch and cache all required pubkeys before signing
-        for (final InputOutputData in : inputs)
+        for (final InputOutput in : inputs)
             makeRedeemScript(parent, in);
-        for (final InputOutputData out : outputs)
-            if (out.getIsChange())
+        for (final InputOutput out : outputs)
+            if (out.isChange())
                 makeRedeemScript(parent, out);
 
         Message m = mTrezor.io(TrezorMessage.SignTx.newBuilder()
@@ -269,7 +272,7 @@ public class TrezorHWWallet extends HWWallet {
         return TrezorType.HDNodePathType.newBuilder().setNode(node).addAddressN(pointer).build();
     }
 
-    private TrezorType.MultisigRedeemScriptType makeRedeemScript(final HWWalletBridge parent, final InputOutputData in) {
+    private TrezorType.MultisigRedeemScriptType makeRedeemScript(final HWWalletBridge parent, final InputOutput in) {
         final int pointer = in.getPointer();
         final TrezorType.HDNodeType serviceParent = getXpub(mServiceXPubs, in.getServiceXpub());
         final TrezorType.HDNodeType userParent =
@@ -288,11 +291,11 @@ public class TrezorHWWallet extends HWWallet {
 
     private TrezorType.TxOutputType.Builder createOutput(final HWWalletBridge parent,
                                                          final TrezorType.TxRequestDetailsType txRequest,
-                                                         final List<InputOutputData> outputs) {
-        final InputOutputData out = outputs.get(txRequest.getRequestIndex());
+                                                         final List<InputOutput> outputs) {
+        final InputOutput out = outputs.get(txRequest.getRequestIndex());
         final TrezorType.TxOutputType.Builder b = TrezorType.TxOutputType.newBuilder().setAmount(out.getSatoshi());
 
-        if (out.getIsChange()) {
+        if (out.isChange()) {
             b.setScriptType(out.getAddressType().equals("p2sh") ?
                             TrezorType.OutputScriptType.PAYTOMULTISIG : TrezorType.OutputScriptType.PAYTOP2SHWITNESS);
             return b.addAllAddressN(out.getUserPathAsInts()).setMultisig(makeRedeemScript(parent, out));
@@ -310,13 +313,13 @@ public class TrezorHWWallet extends HWWallet {
 
     private TrezorType.TxInputType.Builder createInput(final HWWalletBridge parent,
                                                        final TrezorType.TxRequestDetailsType txRequest,
-                                                       final List<InputOutputData> inputs) {
+                                                       final List<InputOutput> inputs) {
         final int index = txRequest.getRequestIndex();
 
         final boolean isPrevTx = txRequest.hasTxHash();
         if (isPrevTx) {
             final Object prevTx = findPrevTx(txRequest);
-            final byte[] txhash = InputOutputData.reverseBytes(Wally.tx_get_input_txhash(prevTx, index));
+            final byte[] txhash = ExtensionsKt.reverseBytes(Wally.tx_get_input_txhash(prevTx, index));
             return TrezorType.TxInputType.newBuilder()
                    .setPrevHash(ByteString.copyFrom(txhash))
                    .setPrevIndex(Wally.tx_get_input_index(prevTx, index))
@@ -324,12 +327,12 @@ public class TrezorHWWallet extends HWWallet {
                    .setScriptSig(ByteString.copyFrom(Wally.tx_get_input_script(prevTx, index)));
         }
 
-        final InputOutputData in = inputs.get(index);
+        final InputOutput in = inputs.get(index);
         TrezorType.TxInputType.Builder txin;
         txin = TrezorType.TxInputType.newBuilder()
-               .setPrevHash(ByteString.copyFrom(Wally.hex_to_bytes(in.getTxhash())))
-               .setPrevIndex((int) (long) in.getPtIdx())
-               .setSequence((int) (long) in.getSequence())
+               .setPrevHash(ByteString.copyFrom(Wally.hex_to_bytes(in.getTxHash())))
+               .setPrevIndex(in.getPtIdxInt())
+               .setSequence(in.getSequenceInt())
                .addAllAddressN(in.getUserPathAsInts())
                .setMultisig(makeRedeemScript(parent, in));
 

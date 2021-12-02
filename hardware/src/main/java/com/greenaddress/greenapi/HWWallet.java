@@ -1,10 +1,10 @@
 package com.greenaddress.greenapi;
 
 import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
 import com.blockstream.gdk.data.SubAccount;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.greenaddress.greenapi.data.InputOutputData;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -98,15 +98,15 @@ public abstract class HWWallet {
                                               final boolean useAeProtocol, final String aeHostCommitment, final String aeHostEntropy);
 
     public abstract SignTxResult signTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                                 final List<InputOutputData> inputs,
-                                                 final List<InputOutputData> outputs,
+                                                 final List<InputOutput> inputs,
+                                                 final List<InputOutput> outputs,
                                                  final Map<String,String> transactions,
                                                  final List<String> addressTypes,
                                                  final boolean useAeProtocol);
 
     public abstract SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                                       final List<InputOutputData> inputs,
-                                                       final List<InputOutputData> outputs,
+                                                       final List<InputOutput> inputs,
+                                                       final List<InputOutput> outputs,
                                                        final Map<String,String> transactions,
                                                        final List<String> addressTypes,
                                                        final boolean useAeProtocol);

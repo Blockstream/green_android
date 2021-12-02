@@ -1,12 +1,12 @@
 package com.greenaddress.greenbits.wallets;
 
-import static com.greenaddress.greenapi.data.InputOutputData.reverseBytes;
-
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.blockstream.gdk.ExtensionsKt;
 import com.blockstream.gdk.data.Device;
+import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.gdk.data.Network;
 import com.blockstream.gdk.data.SubAccount;
 import com.blockstream.hardware.R;
@@ -18,7 +18,6 @@ import com.google.common.primitives.Longs;
 import com.greenaddress.greenapi.HWWallet;
 import com.greenaddress.greenapi.HWWalletBridge;
 import com.greenaddress.greenapi.HardwareQATester;
-import com.greenaddress.greenapi.data.InputOutputData;
 import com.greenaddress.jade.JadeAPI;
 import com.greenaddress.jade.entities.Commitment;
 import com.greenaddress.jade.entities.JadeError;
@@ -212,11 +211,11 @@ public class JadeHWWallet extends HWWallet {
     }
 
     // Helper to get the change paths for auto-validation
-    private static List<TxChangeOutput> getChangeData(final List<InputOutputData> outputs) {
+    private static List<TxChangeOutput> getChangeData(final List<InputOutput> outputs) {
         // Get the change outputs and paths
         final List<TxChangeOutput> change = new ArrayList<>(outputs.size());
-        for (final InputOutputData output : outputs) {
-            if (output.getIsChange()) {
+        for (final InputOutput output : outputs) {
+            if (output.isChange()) {
                 // change - get path
                 change.add(new TxChangeOutput(output.getUserPath(),
                                               output.getRecoveryXpub(),
@@ -232,8 +231,8 @@ public class JadeHWWallet extends HWWallet {
     @Override
     public SignTxResult signTransaction(final HWWalletBridge parent,
                                         final ObjectNode tx,
-                                        final List<InputOutputData> inputs,
-                                        final List<InputOutputData> outputs,
+                                        final List<InputOutput> inputs,
+                                        final List<InputOutput> outputs,
                                         final Map<String, String> transactions,
                                         final List<String> addressTypes,
                                         final boolean useAeProtocol) {
@@ -248,7 +247,7 @@ public class JadeHWWallet extends HWWallet {
 
             // Get the inputs in the form Jade expects
             final List<TxInput> txInputs = new ArrayList<>(inputs.size());
-            for (final InputOutputData input : inputs) {
+            for (final InputOutput input : inputs) {
                 final boolean swInput = !input.getAddressType().equals("p2sh");
                 final byte[] script = hexToBytes(input.getPrevoutScript());
 
@@ -264,9 +263,9 @@ public class JadeHWWallet extends HWWallet {
                 } else {
                     // Non-SegWit input or there are several inputs - in which case we always send
                     // the entire prior transaction up to Jade (so it can verify the spend amounts).
-                    final String txhex = transactions.get(input.getTxhash());
+                    final String txhex = transactions.get(input.getTxHash());
                     if (txhex == null) {
-                        throw new RuntimeException("Required input transaction not found: " + input.getTxhash());
+                        throw new RuntimeException("Required input transaction not found: " + input.getTxHash());
                     }
                     final byte[] inputTx = hexToBytes(txhex);
                     txInputs.add(new TxInputBtc(swInput,
@@ -297,7 +296,7 @@ public class JadeHWWallet extends HWWallet {
 
     // Helper to get the commitment and blinding key from Jade
     private Commitment getTrustedCommitment(final int index,
-                                            final InputOutputData output,
+                                            final InputOutput output,
                                             final byte[] hashPrevOuts,
                                             final byte[] customVbf) throws IOException {
         final byte[] assetId = hexToBytes(output.getAssetId());
@@ -337,10 +336,10 @@ public class JadeHWWallet extends HWWallet {
                 final String valueCommitment = hexFromBytes(commitment.getValueCommitment());
                 valueCommitments.add(valueCommitment);
 
-                final String abf = hexFromBytes(reverseBytes(commitment.getAbf()));
+                final String abf = hexFromBytes(ExtensionsKt.reverseBytes(commitment.getAbf()));
                 abfs.add(abf);
 
-                final String vbf = hexFromBytes(reverseBytes(commitment.getVbf()));
+                final String vbf = hexFromBytes(ExtensionsKt.reverseBytes(commitment.getVbf()));
                 vbfs.add(vbf);
             }
         }
@@ -374,8 +373,8 @@ public class JadeHWWallet extends HWWallet {
 
     @Override
     public SignTxResult signLiquidTransaction(final HWWalletBridge parent, final ObjectNode tx,
-                                              final List<InputOutputData> inputs,
-                                              final List<InputOutputData> outputs,
+                                              final List<InputOutput> inputs,
+                                              final List<InputOutput> outputs,
                                               final Map<String,String> transactions,
                                               final List<String> addressTypes,
                                               final boolean useAeProtocol) {
@@ -393,7 +392,7 @@ public class JadeHWWallet extends HWWallet {
 
             // Collect data from the tx inputs
             final List<TxInputLiquid> txInputs = new ArrayList<>(inputs.size());
-            for (final InputOutputData input : inputs) {
+            for (final InputOutput input : inputs) {
                 // Get the input in the form Jade expects
                 final boolean swInput = !input.getAddressType().equals("p2sh");
                 final byte[] script = hexToBytes(input.getPrevoutScript());
@@ -412,7 +411,7 @@ public class JadeHWWallet extends HWWallet {
 
                 // Get the input prevout txid and index for hashing later
                 inputPrevouts.add(input.getTxid());
-                inputPrevouts.add(valueToLE(input.getPtIdx().intValue()));
+                inputPrevouts.add(valueToLE(input.getPtIdxInt()));
             }
 
             // Compute the hash of all input prevouts for making deterministic blinding factors
@@ -426,7 +425,7 @@ public class JadeHWWallet extends HWWallet {
             // FIXME: assumes last entry is unblinded fee entry - assumes all preceding entries are blinded
             final int lastBlindedIndex = outputs.size()-2;  // Could determine this properly
             for (int i = 0; i < lastBlindedIndex; ++i) {
-                final InputOutputData output = outputs.get(i);
+                final InputOutput output = outputs.get(i);
                 final Commitment commitment = getTrustedCommitment(i, output, hashPrevOuts, null);
                 trustedCommitments.add(commitment);
 
@@ -436,7 +435,7 @@ public class JadeHWWallet extends HWWallet {
             }
 
             // For the last blinded output, get the abf only
-            final InputOutputData lastBlindedOutput = outputs.get(lastBlindedIndex);
+            final InputOutput lastBlindedOutput = outputs.get(lastBlindedIndex);
             values.add(lastBlindedOutput.getSatoshi());
             final byte[] lastAbf = this.jade.getBlindingFactor(hashPrevOuts, lastBlindedIndex, "ASSET");
             abfs.add(lastAbf);

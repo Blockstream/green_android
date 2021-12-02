@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlinx-serialization'
     id 'com.adarshr.test-logger' version '2.1.1'
 }
 
@@ -39,10 +40,15 @@ dependencies {
     implementation project(':crypto')
     /** ----------------------------------------------------------------------------------------- */
 
+    /**  --- Kotlin & KotlinX ------------------------------------------------------------------- */
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:$kotlinx_serialization_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
+    /** ----------------------------------------------------------------------------------------- */
+
     /**  --- AndroidX --------------------------------------------------------------------------- */
     implementation 'androidx.arch.core:core-common:2.1.0'
     /** ----------------------------------------------------------------------------------------- */
-    
+
     /**  --- Guava ------------------------------------------------------------------------------ */
     // Upgrade Guava to remove this package
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'

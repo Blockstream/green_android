@@ -19,6 +19,7 @@
 
 package com.btchip;
 
+import com.blockstream.gdk.data.InputOutput;
 import com.blockstream.libwally.Wally;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.utils.BufferUtils;
@@ -26,7 +27,6 @@ import com.btchip.utils.CoinFormatUtils;
 import com.btchip.utils.Dump;
 import com.btchip.utils.VarintUtils;
 import com.google.common.primitives.Longs;
-import com.greenaddress.greenapi.data.InputOutputData;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -657,12 +657,12 @@ public class BTChipDongle implements BTChipConstants {
 		exchangeApdu(BTCHIP_CLA, BTCHIP_INS_GET_LIQUID_ISSUANCE_INFORMATION, (byte)0x80, (byte)0x00, data.toByteArray(), OK);
 	}
 
-	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> abfs, List<byte[]> vbfs, final long numInputs, List<InputOutputData> outputData) throws BTChipException {
+	public List<BTChipLiquidTrustedCommitments> getLiquidCommitments(List<Long> values, List<byte[]> abfs, List<byte[]> vbfs, final long numInputs, List<InputOutput> outputData) throws BTChipException {
 		ByteArrayOutputStream data;
 		List<BTChipLiquidTrustedCommitments> out = new ArrayList<>();
 
 		int i = 0;
-		for (InputOutputData output : outputData) {
+		for (InputOutput output : outputData) {
 			// skip the fee output TODO: also skip the voluntarily unblinded outputs (currently unsupported by gdk)
 			if (output.getScript().length() == 0) {
 				out.add(null);

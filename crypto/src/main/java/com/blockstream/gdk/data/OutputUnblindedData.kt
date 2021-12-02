@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OutputUnblindedData(
-    @SerialName("vout") val vout: Long,
+    @SerialName("vout") val vout: UInt,
     @SerialName("asset_id") val assetId: String,
     @SerialName("satoshi") val satoshi: Long,
     @SerialName("assetblinder") val assetblinder: String,

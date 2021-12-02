@@ -512,7 +512,7 @@ class GreenSession constructor(
     override fun refreshAssets(params: AssetsParams) = greenWallet.refreshAssets(gaSession, params)
 
     fun createSubAccount(params: SubAccountParams) = AuthHandler(greenWallet, greenWallet.createSubAccount(gaSession, params))
-            .result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+            .result<SubAccount>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     fun getSubAccounts(params: SubAccountsParams = SubAccountsParams()) = AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession, params))
         .result<SubAccounts>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
@@ -535,7 +535,7 @@ class GreenSession constructor(
 
     fun getTransactions(params: TransactionParams) = AuthHandler(greenWallet, greenWallet.getTransactions(gaSession, params))
         .result<Transactions>(
-            hardwareWalletResolver = HardwareCodeResolver(hwWallet)
+            hardwareWalletResolver = DeviceResolver(null, hwWallet)
         )
 
     private var txOffset = 0

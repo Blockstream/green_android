@@ -1,13 +1,11 @@
 package com.blockstream.gdk.data
 
 import android.os.Parcelable
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.greenaddress.greenapi.data.InputOutputData
+import com.blockstream.gdk.reverseBytes
+import com.blockstream.libwally.Wally
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 /*
  * Note: all fields are Optionals with default value null as there is no documentation to guarantee
@@ -29,14 +27,14 @@ data class InputOutput(
 
     @SerialName("pointer") val pointer: Int? = null,
     @SerialName("prevout_script") val prevoutScript: String? = null,
-    @SerialName("pt_idx") val ptIdx: Long? = null,
+    @SerialName("pt_idx") val ptIdx: Long? = null, // this is UInt until Parcelize is supported
     @SerialName("recovery_xpub") val recoveryXpub: String? = null,
 
     @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("script") val script: String? = null,
     @SerialName("script_type") val scriptType: Int? = null,
 
-    @SerialName("sequence") val sequence: Long? = null,
+    @SerialName("sequence") val sequence: Long? = null, // this is UInt until Parcelize is supported
     @SerialName("subaccount") val subaccount: Int? = null,
     @SerialName("subtype") val subtype: Int? = null,
 
@@ -58,18 +56,52 @@ data class InputOutput(
     @SerialName("eph_keypair_pub") val ephKeypairPub: String? = null, // and the public key
 ) : Parcelable {
 
+    // Called from Java to use the UInt.toInt() inline fun
+    fun getPtIdxInt() = ptIdx?.toInt() ?: 0
+    fun getSequenceInt() = sequence?.toInt() ?: 0
+
     fun getUnblindedString(): String? = if (hasUnblindingData()) {
         // <value_in_satoshi>,<asset_id_hex>,<amount_blinder_hex>,<asset_blinder_hex>
         String.format("%d,%s,%s,%s", satoshi, assetId, amountblinder, assetblinder)
     } else null
-
+  
     fun hasUnblindingData(): Boolean {
         return assetId != null && satoshi != null && assetblinder != null && amountblinder != null && assetId.isNotEmpty() && amountblinder.isNotEmpty() && assetblinder.isNotEmpty()
     }
 
-    private val objectMapper by lazy { ObjectMapper() }
+    fun getAssetIdBytes(): ByteArray {
+        return Wally.hex_to_bytes(assetId)
+    }
 
-    fun toInputOutputData(): InputOutputData {
-        return objectMapper.treeToValue(objectMapper.readTree(Json.encodeToString(this)), InputOutputData::class.java)
+    fun getAbfs(): ByteArray {
+        return Wally.hex_to_bytes(assetblinder).reverseBytes()
+    }
+
+    fun getVbfs(): ByteArray {
+        return Wally.hex_to_bytes(amountblinder).reverseBytes()
+    }
+
+    fun getTxid(): ByteArray {
+        return Wally.hex_to_bytes(txHash).reverseBytes()
+    }
+
+    fun getEphKeypairPubBytes(): ByteArray {
+        return Wally.hex_to_bytes(ephKeypairPub)
+    }
+
+    fun getPublicKeyBytes(): ByteArray {
+        return Wally.hex_to_bytes(publicKey)
+    }
+
+    fun getRevertedAssetIdBytes(): ByteArray {
+        return Wally.hex_to_bytes(assetId).reverseBytes()
+    }
+
+    fun getCommitmentBytes(): ByteArray {
+        return Wally.hex_to_bytes(commitment)
+    }
+
+    fun getUserPathAsInts(): List<Int>? {
+        return userPath?.map { it.toInt() }
     }
 }
