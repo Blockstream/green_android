@@ -194,6 +194,12 @@ class GreenWallet constructor(
 
     fun updateTransaction(session: GASession, createTransaction: JsonElement) = gdk.updateTransaction(session, createTransaction)
 
+    fun signTransaction(session: GASession, createTransaction: JsonElement) = gdk.signTransaction(session, createTransaction)
+
+    fun broadcastTransaction(session: GASession, transaction: String) = gdk.broadcastTransaction(session, transaction)
+
+    fun sendTransaction(session: GASession, createTransaction: JsonElement) = gdk.sendTransaction(session, createTransaction)
+
     fun createSubAccount(session: GASession, params: SubAccountParams) = gdk.createSubAccount(
         session,
         params

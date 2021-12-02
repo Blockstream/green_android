@@ -5,31 +5,31 @@ import android.view.ViewGroup
 import com.blockstream.gdk.data.Transaction
 import com.blockstream.green.R
 import com.blockstream.green.databinding.ListItemTransactionAmountBinding
+import com.blockstream.green.ui.looks.AddreseeLookInterface
 import com.blockstream.green.ui.looks.TransactionDetailsLook
 import com.mikepenz.fastadapter.binding.AbstractBindingItem
 
 
 data class TransactionAmountListItem constructor(
-    val tx: Transaction,
     val index: Int,
-    val look: TransactionDetailsLook
+    val look: AddreseeLookInterface
 ) : AbstractBindingItem<ListItemTransactionAmountBinding>() {
     override val type: Int
         get() = R.id.fastadapter_asset_item_id
 
     init {
-        identifier = tx.txHash.hashCode() + index.toLong()
+        identifier = index.toLong()
     }
 
-    override fun bindView(binding: ListItemTransactionAmountBinding, payloads: List<Any>) {
-        binding.type = tx.txType
-        // GDK returns non-confidential addresses for Liquid. Hide them for now
-        binding.address = if(look.session.isLiquid) null else tx.addressees.getOrNull(index)
+    val assetId: String
+        get() = look.getAssetId(index)
 
+    override fun bindView(binding: ListItemTransactionAmountBinding, payloads: List<Any>) {
+        binding.isChange = look.isChange(index)
+        binding.type = look.txType
+        binding.address = look.getAddress(index)
         look.setAssetToBinding(index, binding.amount)
 
-        // disable the animation on some assets
-        binding.root.isClickable = !look.isPolicyAsset(index)
     }
 
     override fun createBinding(inflater: LayoutInflater, parent: ViewGroup?): ListItemTransactionAmountBinding {

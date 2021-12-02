@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.view.*
-import android.view.LayoutInflater
-import android.view.View
 import androidx.arch.core.util.Function
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -29,10 +27,7 @@ import com.blockstream.green.ui.AppFragment
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.ui.items.NetworkListItem
 import com.blockstream.green.ui.items.TitleExpandableListItem
-import com.blockstream.green.utils.clearNavigationResult
-import com.blockstream.green.utils.getNavigationResult
-import com.blockstream.green.utils.openBrowser
-import com.blockstream.green.utils.snackbar
+import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager

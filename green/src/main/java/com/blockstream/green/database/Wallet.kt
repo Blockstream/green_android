@@ -3,7 +3,6 @@ package com.blockstream.green.database
 import android.os.Parcelable
 import androidx.room.*
 import com.blockstream.gdk.data.Network
-import com.greenaddress.greenapi.Session
 
 import kotlinx.parcelize.Parcelize
 import mu.KLogging

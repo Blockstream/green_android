@@ -11,11 +11,11 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.wallet.SendViewModel" />
+            type="com.blockstream.green.ui.send.SendViewModel" />
 
         <variable
             name="liveData"
-            type="com.blockstream.green.ui.wallet.AddressParamsLiveData" />
+            type="com.blockstream.green.ui.send.AddressParamsLiveData" />
 
         <variable
             name="index"

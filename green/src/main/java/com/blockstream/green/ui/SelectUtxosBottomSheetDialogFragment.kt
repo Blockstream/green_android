@@ -8,7 +8,7 @@ import com.blockstream.green.R
 import com.blockstream.green.databinding.SelectUtxosBottomSheetBinding
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.items.UtxoListItem
-import com.blockstream.green.ui.wallet.SendViewModel
+import com.blockstream.green.ui.send.SendViewModel
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator

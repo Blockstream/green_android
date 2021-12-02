@@ -62,7 +62,7 @@
             android:paddingRight="10dp"
             android:paddingBottom="10dp"
             android:text="@={self.liveContent}"
-            android:textColor="@color/textColor"
+            android:textColor="@color/color_on_surface_emphasis_high"
             tools:text="This is a note" />
 
         <com.google.android.material.button.MaterialButton

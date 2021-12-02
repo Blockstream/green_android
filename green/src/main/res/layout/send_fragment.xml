@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.blockstream.green.ui.wallet.SendViewModel" />
+            type="com.blockstream.green.ui.send.SendViewModel" />
 
         <variable
             name="enableMultipleRecipients"
@@ -169,7 +169,7 @@
                             app:layout_constraintBottom_toBottomOf="@+id/feeAmountFiat"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/feeAmount"
-                            app:tint="@color/colorAccent" />
+                            app:tint="@color/brand_green" />
 
                         <TextView
                             android:id="@+id/confirmationTimeLabel"
@@ -238,7 +238,7 @@
                             android:src="@drawable/ic_baseline_keyboard_double_arrow_right_18"
                             app:layout_constraintBottom_toBottomOf="@+id/feeSlider"
                             app:layout_constraintEnd_toEndOf="@+id/feeSlider"
-                            app:tint="@color/colorAccent" />
+                            app:tint="@color/brand_green" />
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -250,7 +250,7 @@
                             android:src="@drawable/ic_baseline_keyboard_arrow_right_18"
                             app:layout_constraintBottom_toBottomOf="@+id/feeSlider"
                             app:layout_constraintEnd_toStartOf="@+id/guidelineMedium"
-                            app:tint="@color/colorAccent" />
+                            app:tint="@color/brand_green" />
 
                         <ImageView
                             android:id="@+id/imageView5"
@@ -263,7 +263,7 @@
                             android:src="@drawable/ic_baseline_keyboard_arrow_right_18"
                             app:layout_constraintBottom_toBottomOf="@+id/feeSlider"
                             app:layout_constraintStart_toStartOf="@+id/guidelineSlow"
-                            app:tint="@color/colorAccent" />
+                            app:tint="@color/brand_green" />
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -275,7 +275,7 @@
                             app:layout_constraintBottom_toBottomOf="@+id/imageView5"
                             app:layout_constraintStart_toStartOf="@+id/feeSlider"
                             app:layout_constraintTop_toTopOf="@+id/imageView5"
-                            app:tint="@color/colorAccent" />
+                            app:tint="@color/brand_green" />
 
                         <androidx.constraintlayout.widget.Barrier
                             android:id="@+id/barrier"

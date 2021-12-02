@@ -15,6 +15,7 @@ data class CreateTransactionParams constructor(
     @SerialName("private_key") val privateKey: String? = null, // sweep
     @SerialName("passphrase") val passphrase: String? = null, // sweep
     @SerialName("previous_transaction") val previousTransaction: JsonElement? = null, // bump
+    @SerialName("memo") val memo: String? = null,
     @SerialName("utxos") val utxos: JsonElement? = null,
 ) : GAJson<CreateTransactionParams>() {
     override val encodeDefaultsValues = false

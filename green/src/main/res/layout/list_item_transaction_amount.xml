@@ -12,6 +12,10 @@
             type="Type" />
 
         <variable
+            name="isChange"
+            type="Boolean" />
+
+        <variable
             name="address"
             type="String" />
 
@@ -38,7 +42,7 @@
                 android:textAppearance="?attr/textAppearanceSubtitle1"
                 android:textColor="@color/color_on_surface_emphasis_low"
                 android:includeFontPadding="false"
-                android:text="@{type == Type.OUT ? @string/id_recipient : @string/id_received}"
+                android:text="@{isChange ? @string/id_change : type == Type.OUT ? @string/id_recipient : @string/id_received}"
                 tools:text="Recipient" />
 
             <TextView

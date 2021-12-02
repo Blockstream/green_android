@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.MenuRes
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.navArgs
@@ -152,8 +153,7 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         fastAdapter.onClickListener = { _, _, item: GenericItem, position: Int ->
             when (item) {
                 is TransactionAmountListItem -> {
-                    val assetId = item.look.assets[item.index].first
-                    AssetBottomSheetFragment.newInstance(assetId).also {
+                    AssetBottomSheetFragment.newInstance(item.assetId).also {
                         it.show(childFragmentManager, it.toString())
                     }
                 }
@@ -221,10 +221,10 @@ class TransactionDetailsFragment : WalletFragment<BaseRecyclerViewBinding>(
         var list = mutableListOf<GenericItem>()
 
         for (i in 0 until look.assetSize) {
-            list += TransactionAmountListItem(transaction, i, look)
+            list += TransactionAmountListItem(i, look)
         }
 
-        list += TransactionFeeListItem(transaction, look)
+        list += TransactionFeeListItem(look)
 
         FastAdapterDiffUtil.set(amountsAdapter.itemAdapter, list, true)
 

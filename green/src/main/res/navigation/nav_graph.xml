@@ -587,7 +587,7 @@
     </fragment>
     <fragment
         android:id="@+id/sendFragment"
-        android:name="com.blockstream.green.ui.wallet.SendFragment"
+        android:name="com.blockstream.green.ui.send.SendFragment"
         tools:layout="@layout/send_fragment" >
         <argument
             android:name="wallet"
@@ -606,6 +606,19 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_sendFragment_to_sendConfirmFragment"
+            app:destination="@id/sendConfirmFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/sendConfirmFragment"
+        android:name="com.blockstream.green.ui.send.SendConfirmFragment"
+        android:label="@string/id_review"
+        tools:layout="@layout/send_confirm_fragment" >
+        <argument
+            android:name="wallet"
+            app:argType="com.blockstream.green.database.Wallet" />
     </fragment>
     <fragment
         android:id="@+id/enterXpubFragment"

@@ -1,15 +1,11 @@
-package com.blockstream.green.ui.wallet
+package com.blockstream.green.ui.send
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.viewModels
@@ -34,8 +30,6 @@ import com.blockstream.green.ui.looks.AssetLook
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.greenaddress.greenbits.ui.preferences.PrefKeys
-import com.greenaddress.greenbits.ui.send.SendConfirmActivity
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.ModelAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,17 +59,16 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
     val bindings = mutableListOf<ListItemTransactionRecipientBinding>()
 
-    private val startForResultReviewTransaction =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                findNavController().popBackStack(R.id.overviewFragment, false)
-            }
-        }
-
     @Inject
     lateinit var viewModelFactory: SendViewModel.AssistedFactory
     val viewModel: SendViewModel by viewModels {
-        SendViewModel.provideFactory(viewModelFactory, wallet, isSweep, args.address, bumpTransaction)
+        SendViewModel.provideFactory(
+            viewModelFactory,
+            wallet,
+            isSweep,
+            args.address,
+            bumpTransaction
+        )
     }
 
     override fun getWalletViewModel() = viewModel
@@ -122,18 +115,11 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
 
         viewModel.onEvent.observe(viewLifecycleOwner) { consumableEvent ->
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.Navigate>()?.let {
-                    startForResultReviewTransaction.launch(
-                        Intent(
-                            requireContext(),
-                            SendConfirmActivity::class.java
-                        ).also {
-                            it.putExtra(PrefKeys.SWEEP, isSweep)
-                            session.hwWallet?.device?.let { device ->
-                                it.putExtra("hww", device)
-                            }
-                        }
-                    )
-                }
+
+                navigate(SendFragmentDirections.actionSendFragmentToSendConfirmFragment(
+                    wallet = wallet
+                ))
+            }
 
             consumableEvent?.getContentIfNotHandledForType<NavigateEvent.NavigateBack>()?.let {
                 it.reason?.let {

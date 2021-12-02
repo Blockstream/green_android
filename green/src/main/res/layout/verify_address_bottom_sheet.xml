@@ -57,7 +57,7 @@
             app:layout_constraintEnd_toEndOf="@+id/icon"
             app:layout_constraintStart_toStartOf="@+id/icon"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/green" />
+            app:tint="@color/brand_green" />
 
         <TextView
             android:id="@+id/textView5"

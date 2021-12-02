@@ -1026,4 +1026,6 @@
   <string name="id_12_words">12 words</string>
   <string name="id_24_words">24 words</string>
   <string name="id_passphrase">Passphrase</string>
+  <string name="id_confirm_on_your_device">Confirm on your device</string>
+
 </resources>

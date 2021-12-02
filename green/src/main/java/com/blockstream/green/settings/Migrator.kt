@@ -13,7 +13,7 @@ import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.utils.EncryptedData
 import com.blockstream.libwally.Wally
-import com.greenaddress.greenbits.ui.preferences.PrefKeys
+import mu.KLogging
 import java.security.KeyStore
 import java.security.UnrecoverableKeyException
 
@@ -64,14 +64,14 @@ class Migrator(
             }
 
             // Update Proxy settings only if are enabled. Keep only the first value
-            if(networkPreferences.getBoolean(PrefKeys.PROXY_ENABLED, false) && proxyURL == null){
-                proxyURL = networkPreferences.getString(PrefKeys.PROXY_HOST, "") + ":" + networkPreferences.getString(
-                    PrefKeys.PROXY_PORT,
+            if(networkPreferences.getBoolean(PROXY_ENABLED, false) && proxyURL == null){
+                proxyURL = networkPreferences.getString(PROXY_HOST, "") + ":" + networkPreferences.getString(
+                    PROXY_PORT,
                     ""
                 )
             }
 
-            enableTOR = networkPreferences.getBoolean(PrefKeys.TOR_ENABLED, false) || enableTOR
+            enableTOR = networkPreferences.getBoolean(TOR_ENABLED, false) || enableTOR
 
             val network = greenWallet.networks.getNetworkById(networkId)
 
@@ -81,7 +81,7 @@ class Migrator(
                 network = network.id,
                 isRecoveryPhraseConfirmed = true,
                 isHardware = false,
-                activeAccount = networkPreferences.getInt(PrefKeys.ACTIVE_SUBACCOUNT, 0).toLong()
+                activeAccount = networkPreferences.getInt(ACTIVE_SUBACCOUNT, 0).toLong()
             )
 
             wallet.id = walletRepository.addWallet(wallet)
@@ -247,5 +247,14 @@ class Migrator(
 
         // Else is from v2
         return "NativeAndroidAuth"
+    }
+
+    companion object: KLogging(){
+        const val VERSION = "version"
+        const val PROXY_ENABLED = "proxy_enabled"
+        const val PROXY_HOST = "proxy_host"
+        const val PROXY_PORT = "proxy_port"
+        const val TOR_ENABLED = "tor_enabled"
+        const val ACTIVE_SUBACCOUNT = "active_subaccount"
     }
 }

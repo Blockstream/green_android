@@ -1,12 +1,10 @@
 package com.blockstream.green.database
 
 import android.content.Context
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.blockstream.green.utils.isDevelopmentFlavor
-import com.greenaddress.Bridge
 
 @Database(
     entities = [Wallet::class, LoginCredentials::class],
@@ -38,12 +36,6 @@ abstract class AppDatabase : RoomDatabase() {
 
             if (context.isDevelopmentFlavor()) {
                 builder.fallbackToDestructiveMigration()
-            }
-
-            // Only allow this if we use v3 codebase
-            // In v4 we use proper async code
-            if (Bridge.appModuleInUse) {
-                builder.allowMainThreadQueries()
             }
 
             return builder.build()

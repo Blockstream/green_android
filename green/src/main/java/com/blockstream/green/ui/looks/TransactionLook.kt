@@ -13,7 +13,7 @@ import com.blockstream.green.gdk.getAssetIcon
 import com.blockstream.green.utils.*
 import mu.KLogging
 
-abstract class TransactionLook constructor(open val session: GreenSession, internal open val tx: Transaction) {
+abstract class TransactionLook constructor(open val session: GreenSession, internal open val tx: Transaction): FeeLookInterface, AddreseeLookInterface {
     abstract val showFiat : Boolean
     abstract val assetSize : Int
     abstract val hideSPVInAsset: Boolean
@@ -30,18 +30,26 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
             .replace("\\s+".toRegex(), " ")
     }
 
-    val fee : String
+    override fun isChange(index: Int): Boolean = false
+
+    override val txType
+        get() = tx.txType
+
+    override val fee : String
         get() = tx.fee.toAmountLook(session, withUnit = true, withGrouping = true, withMinimumDigits = true)
 
-    val feeFiat: String?
+    override val feeFiat: String?
         get() = session.convertAmount(Convert(satoshi = tx.fee)).fiatOrNull(session, withUnit = true).let {
             if(it == null) it else "≈ $it"
         }
 
-    val feeRate : String
+    override val feeRate : String
         get() = tx.feeRate.feeRateWithUnit()
 
-    fun isPolicyAsset(index: Int) = assets[index].first == session.policyAsset
+    override fun getAssetId(index: Int): String = assets[index].first
+
+    // GDK returns non-confidential addresses for Liquid. Hide them for now
+    override fun getAddress(index: Int) = if(session.isLiquid) null else tx.addressees.getOrNull(index)
 
     // Cache amounts to avoid calling convert every time for performance reasons
     private val cacheAmounts = hashMapOf<Int, String>()
@@ -98,20 +106,10 @@ abstract class TransactionLook constructor(open val session: GreenSession, inter
     }
 
     fun getIcon(index: Int, context: Context): Drawable? {
-        return when {
-            session.isLiquid -> {
-                assets[index].first.getAssetIcon(context, session)
-            }
-            session.isMainnet -> {
-                ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_network_60)
-            }
-            else -> {
-                ContextCompat.getDrawable(context, R.drawable.ic_bitcoin_testnet_network_60)
-            }
-        }
+        return assets[index].first.getAssetIcon(context, session)
     }
 
-    fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding) {
+    override fun setAssetToBinding(index: Int, binding: ListItemTransactionAssetBinding) {
         binding.directionColor = ContextCompat.getColor(binding.root.context, valueColor)
 
         binding.amount = amount(index)

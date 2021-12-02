@@ -1,4 +1,4 @@
-package com.blockstream.green.ui.wallet;
+package com.blockstream.green.ui.send;
 
 import android.content.SharedPreferences
 import androidx.lifecycle.*
@@ -14,6 +14,7 @@ import com.blockstream.green.data.NavigateEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.*
+import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
 import com.greenaddress.greenapi.Session
 import dagger.assisted.Assisted
@@ -43,7 +44,12 @@ class SendViewModel @AssistedInject constructor(
 
     var activeRecipient = 0
 
-    private val recipients = MutableLiveData(mutableListOf(AddressParamsLiveData.create(index = 0, address = address)))
+    private val recipients = MutableLiveData(mutableListOf(
+        AddressParamsLiveData.create(
+            index = 0,
+            address = address
+        )
+    ))
     fun getRecipientsLiveData() = recipients
 
     fun getRecipientLiveData(index: Int) = recipients.value?.getOrNull(index)
@@ -365,10 +371,12 @@ class SendViewModel @AssistedInject constructor(
         pendingCheck = false
 
         logger.info { "checkTransaction" }
-        session.observable {
-            val params = createTransactionParams()
 
-            val tx = it.createTransaction(params)
+        var params: CreateTransactionParams? = null
+        session.observable {
+            params = createTransactionParams()
+
+            val tx = it.createTransaction(params!!)
             var balance: Balances? = null
 
             if(finalCheckBeforeContinue){
@@ -458,6 +466,8 @@ class SendViewModel @AssistedInject constructor(
 
                 if(!pendingCheck && finalCheckBeforeContinue){
                     Session.getSession().pendingTransaction = tx.toObjectNode()
+
+                    session.pendingTransaction = params!! to tx
                     onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
                 }
             },

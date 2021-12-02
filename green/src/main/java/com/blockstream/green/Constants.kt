@@ -1,8 +1,5 @@
 package com.blockstream.green
 
-import androidx.preference.Preference
-import com.greenaddress.greenbits.ui.preferences.PrefKeys
-
 object Database {
     const val DATABASE_NAME = "green.db"
 }

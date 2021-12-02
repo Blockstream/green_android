@@ -107,6 +107,8 @@ class GreenSession constructor(
     val hasDevice
         get() = device != null
 
+    var pendingTransaction: Pair<CreateTransactionParams, CreateTransaction>? = null
+
     private val userAgent by lazy {
         String.format("green_android_%s_%s", BuildConfig.VERSION_NAME, BuildConfig.BUILD_TYPE)
     }
@@ -811,6 +813,20 @@ class GreenSession constructor(
             greenWallet,
             greenWallet.updateTransaction(gaSession, createTransaction = createTransaction.jsonElement!!)
         ).result<CreateTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+
+    fun signTransaction(createTransaction: CreateTransaction) =
+        AuthHandler(
+            greenWallet,
+            greenWallet.signTransaction(gaSession, createTransaction = createTransaction.jsonElement!!)
+        ).result<CreateTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+
+    fun broadcastTransaction(transaction: String) = greenWallet.broadcastTransaction(gaSession, transaction)
+
+    fun sendTransaction(createTransaction: CreateTransaction, twoFactorResolver: TwoFactorResolver) =
+        AuthHandler(
+            greenWallet,
+            greenWallet.sendTransaction(gaSession, createTransaction = createTransaction.jsonElement!!)
+        ).result<CreateTransaction>(twoFactorResolver = twoFactorResolver, hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
     fun onNewNotification(notification: Notification) {
         logger.info { "onNewNotification $notification" }

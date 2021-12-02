@@ -215,21 +215,6 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-//            R.id.delete -> {
-//                DeleteWalletBottomSheetDialogFragment().also {
-//                    it.show(childFragmentManager, it.toString())
-//                }
-//            }
-//
-//            R.id.rename -> {
-//                RenameWalletBottomSheetDialogFragment().also {
-//                    it.show(childFragmentManager, it.toString())
-//                }
-//            }
-//            R.id.logout -> {
-//                viewModel.logout()
-//                return true
-//            }
             R.id.settings -> {
                 navigate(
                     OverviewFragmentDirections.actionOverviewFragmentToWalletSettingsFragment(wallet)

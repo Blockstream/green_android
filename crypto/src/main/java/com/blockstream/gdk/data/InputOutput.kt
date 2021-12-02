@@ -16,29 +16,27 @@ data class InputOutput(
     @SerialName("address") val address: String? = null,
     @SerialName("addressee") val addressee: String? = null,
     @SerialName("address_type") val addressType: String? = null,
-
     @SerialName("is_blinded") val isBlinded: Boolean? = null,
     @SerialName("unblinded_address") val unblindedAddress: String? = null,
-
     @SerialName("is_change") val isChange: Boolean? = null,
     @SerialName("is_output") val isOutput: Boolean? = null,
     @SerialName("is_relevant") val isRelevant: Boolean? = null,
     @SerialName("is_spent") val isSpent: Boolean? = null,
 
-    @SerialName("pointer") val pointer: Int,
+    @SerialName("pointer") val pointer: Int? = null,
     @SerialName("prevout_script") val prevoutScript: String? = null,
-    @SerialName("pt_idx") val ptIdx: Long,
+    @SerialName("pt_idx") val ptIdx: Long? = null,
     @SerialName("recovery_xpub") val recoveryXpub: String? = null,
 
     @SerialName("satoshi") val satoshi: Long? = null,
     @SerialName("script") val script: String? = null,
-    @SerialName("script_type") val scriptType: Int,
+    @SerialName("script_type") val scriptType: Int? = null,
 
     @SerialName("sequence") val sequence: Long? = null,
-    @SerialName("subaccount") val subaccount: Int,
-    @SerialName("subtype") val subtype: Int,
+    @SerialName("subaccount") val subaccount: Int? = null,
+    @SerialName("subtype") val subtype: Int? = null,
 
-    @SerialName("txhash") val txhash: String? = null,
+    @SerialName("txhash") val txHash: String? = null,
     @SerialName("service_spub") val serviceXpub: String? = null,
 
     @SerialName("user_path") val userPath: List<Long>? = null,

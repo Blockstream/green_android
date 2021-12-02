@@ -84,6 +84,7 @@ class LoginFragment : WalletFragment<LoginFragmentBinding>(
 
         viewModel.pinCredentials.observe(viewLifecycleOwner) {
             it?.also {
+
                 if(it.counter > 0){
                     val errorMessage = if(it.counter == 2) {
                         getString(R.string.id_last_attempt_if_failed_you_will)

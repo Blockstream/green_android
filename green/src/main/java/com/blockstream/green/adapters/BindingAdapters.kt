@@ -94,8 +94,8 @@ fun setProgress(progressIndicator: BaseProgressIndicator<*>, progress: Int) {
 }
 
 @BindingAdapter("gdkDevice")
-fun setGdkDevice(view: ImageView, device: Device) {
-    view.setImageResource(device.getIcon())
+fun setGdkDevice(view: ImageView, device: Device?) {
+    view.setImageResource(device?.getIcon() ?: 0)
 }
 
 @BindingAdapter("greenDevice")

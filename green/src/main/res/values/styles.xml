@@ -113,7 +113,7 @@
     </style>
 
     <style name="Widget.Green.SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
-        <item name="android:textColor">@color/green</item>
+        <item name="android:textColor">@color/brand_green</item>
     </style>
 
     <style name="Widget.Green.SnackbarTextView" parent="Widget.MaterialComponents.Snackbar.TextView">
@@ -178,7 +178,7 @@
     </style>
 
     <style name="GreenPinViewDigit">
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/brand_green</item>
         <item name="android:textSize">@dimen/pin_textsize</item>
         <item name="android:fontFamily">monospace</item>
         <item name="fontFamily">monospace</item>
