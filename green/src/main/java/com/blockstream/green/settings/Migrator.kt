@@ -250,11 +250,17 @@ class Migrator(
     }
 
     companion object: KLogging(){
+        const val NETWORK_ID_ACTIVE = "network_id_active"
+        const val UNIT = "unit"
+        const val DEFAULT_FEERATE_SATBYTE = "default_feerate_satbyte"
         const val VERSION = "version"
         const val PROXY_ENABLED = "proxy_enabled"
         const val PROXY_HOST = "proxy_host"
         const val PROXY_PORT = "proxy_port"
         const val TOR_ENABLED = "tor_enabled"
+        const val TRUSTED_ADDRESS = "trusted_address"
+        const val SPV_ENABLED = "spv_enabled"
         const val ACTIVE_SUBACCOUNT = "active_subaccount"
+        const val SWEEP = "sweep"
     }
 }

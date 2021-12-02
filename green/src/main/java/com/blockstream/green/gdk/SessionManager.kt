@@ -11,11 +11,9 @@ import com.blockstream.green.settings.SettingsManager
 import com.blockstream.green.utils.ConsumableEvent
 import com.blockstream.green.utils.QATester
 import com.blockstream.libgreenaddress.GASession
-import com.greenaddress.greenapi.Session
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
 import mu.KLogging
 import java.util.*
 import kotlin.concurrent.schedule
@@ -49,13 +47,6 @@ class SessionManager constructor(
             sessions[gaSession]?.apply {
 
                 try{
-                    // Pass notification to to GDKSession
-                    Session.getSession().also {
-                        if(it.nativeSession == gaSession){
-                            it.notificationModel.onNewNotification(gaSession, jsonObject)
-                        }
-                    }
-
                     onNewNotification(JsonDeserializer.decodeFromJsonElement(jsonObject as JsonElement))
                 }catch (e: Exception){
                     e.printStackTrace()
@@ -67,11 +58,6 @@ class SessionManager constructor(
         qaTester.getSessionNotificationInjectorObservable().subscribeBy { notification ->
             for(session in sessions.values){
                 session.onNewNotification(notification)
-            }
-
-            // Pass notification to to GDKSession
-            Session.getSession().also {
-                it.notificationModel.onNewNotification(it.nativeSession, JsonDeserializer.encodeToJsonElement(notification))
             }
         }
     }

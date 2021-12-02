@@ -189,7 +189,7 @@ class SendFragment : WalletFragment<SendFragmentBinding>(
     private fun getExpectedConfirmationTime(context: Context, blocks: Int): String {
         val blocksPerHour = session.network.blocksPerHour
         val n = if (blocks % blocksPerHour == 0) blocks / blocksPerHour else blocks * (60 / blocksPerHour)
-        val s = context.getString(if (blocks % blocksPerHour == 0) if (blocks == blocksPerHour) R.string.id_hour else R.string.id_hours else com.greenaddress.greenbits.ui.R.string.id_minutes)
+        val s = context.getString(if (blocks % blocksPerHour == 0) if (blocks == blocksPerHour) R.string.id_hour else R.string.id_hours else R.string.id_minutes)
         return String.format(Locale.getDefault(), " ~ %d %s", n, s)
     }
 

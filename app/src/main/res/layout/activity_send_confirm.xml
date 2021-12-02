@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.greenaddress.greenbits.ui.send.SendConfirmActivity">
+    android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -127,30 +126,5 @@
         android:background="@color/primaryDark"
         android:padding="16dp">
 
-        <com.greenaddress.greenbits.ui.send.SwipeButton
-            android:id="@+id/swipeButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            app:button_background="?attr/materialButton"
-            app:button_bottom_padding="15dp"
-            app:button_image_disabled="@drawable/ic_send_white"
-            app:button_image_enabled="@drawable/ic_send_white"
-            app:button_image_height="60dp"
-            app:button_image_width="60dp"
-            app:button_left_padding="15dp"
-            app:button_right_padding="15dp"
-            app:button_top_padding="15dp"
-            app:button_trail_enabled="true"
-            app:has_activate_state="false"
-            app:initial_state="disabled"
-            app:inner_text="@string/id_slide_to_send"
-            app:inner_text_background="@drawable/shape_rounded"
-            app:inner_text_bottom_padding="18dp"
-            app:inner_text_color="@android:color/white"
-            app:inner_text_size="16sp"
-            app:inner_text_top_padding="18dp"
-            />
     </FrameLayout>
 </LinearLayout>

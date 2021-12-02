@@ -12,13 +12,14 @@ import com.blockstream.gdk.data.DeviceSupportsAntiExfilProtocol;
 import com.blockstream.gdk.data.DeviceSupportsLiquid;
 import com.blockstream.green.BuildConfig;
 import com.blockstream.green.R;
+import com.blockstream.green.utils.QATester;
 import com.btchip.BTChipConstants;
 import com.btchip.BTChipDongle;
 import com.btchip.BTChipException;
 import com.btchip.comm.BTChipTransport;
 import com.btchip.comm.android.BTChipTransportAndroid;
-import com.greenaddress.Bridge;
 import com.greenaddress.greenapi.HWWallet;
+import com.greenaddress.greenapi.HardwareQATester;
 import com.greenaddress.greenbits.wallets.BTChipHWWallet;
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest;
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager;
@@ -50,11 +51,18 @@ public class HardwareConnect {
     private static final JadeVersion JADE_VERSION_SUPPORTS_HOST_UNBLINDING = new JadeVersion("0.1.27");
 
     private final CompositeDisposable mDisposables = new CompositeDisposable();
+    private final HardwareQATester qaTester;
+    private final boolean isDevelopmentFlavor;
     private HWWallet mHwWallet;
     private com.blockstream.green.devices.Device device;
     private JadeFirmwareManager jadeFirmwareManager;
 
-    public void setJadeFirmwareManager(JadeFirmwareManager jadeFirmwareManager){
+    public HardwareConnect(HardwareQATester qaTester, boolean isDevelopmentFlavor){
+        this.qaTester = qaTester;
+        this.isDevelopmentFlavor = isDevelopmentFlavor;
+    }
+
+    public void setJadeFirmwareManager(JadeFirmwareManager jadeFirmwareManager) {
         this.jadeFirmwareManager = jadeFirmwareManager;
     }
 
@@ -177,7 +185,7 @@ public class HardwareConnect {
                         DeviceSupportsLiquid.Lite,
                         DeviceSupportsAntiExfilProtocol.Optional))
                 .map(device -> {
-                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, interaction.getConnectionNetwork(), device, Bridge.INSTANCE.getHardwareQATester());
+                    final JadeHWWallet jadeWallet = new JadeHWWallet(jade, interaction.getConnectionNetwork(), device, qaTester);
                     return jadeWallet;
                 })
                 .flatMap(jadeWallet -> jadeWallet.authenticate(interaction, jadeFirmwareManager != null ? jadeFirmwareManager : new JadeFirmwareManager(interaction, interaction.getGreenSession())).as(RxJavaBridge.toV3Single()))
@@ -244,8 +252,8 @@ public class HardwareConnect {
                 (version.get(0) == 1 && version.get(1) == 6 && version.get(2) < 0) ||
                 (version.get(0) == 2 && version.get(1) < 1);
         if (isFirmwareOutdated) {
-            interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Trezor, true,null, null, null, null, !Bridge.INSTANCE.isDevelopmentFlavor()), isPositive -> {
-                if(isPositive != null) {
+            interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Trezor, true,null, null, null, null, !isDevelopmentFlavor), isPositive -> {
+                if (isPositive != null) {
                     onTrezorConnected(interaction, t);
                 }else{
                     closeTrezor(interaction, t);
@@ -319,7 +327,7 @@ public class HardwareConnect {
             }
 
             if (isFirmwareOutdated) {
-                interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Ledger, transport.isUsb(), null, null, null, null, !Bridge.INSTANCE.isDevelopmentFlavor()), isPositive -> {
+                interaction.askForFirmwareUpgrade(new FirmwareUpgradeRequest(DeviceBrand.Ledger, transport.isUsb(), null, null, null,null, !isDevelopmentFlavor), isPositive -> {
                     if (isPositive != null) {
                         onLedgerConnected(interaction, dongle, bleDisconnectEvent);
                     } else {

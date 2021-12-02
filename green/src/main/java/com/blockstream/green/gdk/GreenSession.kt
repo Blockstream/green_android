@@ -8,15 +8,13 @@ import com.blockstream.gdk.params.*
 import com.blockstream.green.BuildConfig
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.devices.Device
+import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.settings.SettingsManager
 import com.blockstream.libgreenaddress.GASession
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.greenaddress.Bridge
 import com.greenaddress.greenapi.HWWallet
-import com.greenaddress.greenapi.Session
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import com.greenaddress.jade.HttpRequestHandler
 import com.greenaddress.jade.HttpRequestProvider
 import io.reactivex.rxjava3.core.Observable
@@ -24,7 +22,10 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import mu.KLogging
 import java.net.URL
 import java.util.concurrent.atomic.AtomicBoolean
@@ -206,14 +207,6 @@ class GreenSession constructor(
         )
     }
 
-    fun bridgeSession(){
-        // Bridge Session to GDKSession
-        Bridge.bridgeSession(
-            gaSession,
-            network.network
-        )
-    }
-
     fun connect(n: Network) {
         disconnect(disconnectDevice = false)
         network = n
@@ -221,8 +214,6 @@ class GreenSession constructor(
 
         // Prevent multiple open sessions
         sessionManager.disconnectSessions(this)
-
-        bridgeSession()
 
         greenWallet.connect(
             gaSession,
@@ -236,15 +227,6 @@ class GreenSession constructor(
     private fun emulateConnectionEvent(){
         NetworkEvent(connected = true, loginRequired = false, waiting = 0).let {
             networkSubject.onNext(it)
-
-            // Pass notification to to GDKSession
-            Session.getSession().also { v3Session ->
-                v3Session
-                    .notificationModel
-                    .onNewNotification(
-                        v3Session.nativeSession, GreenWallet.JsonDeserializer.encodeToJsonElement(Notification("network", network = it))
-                    )
-            }
         }
     }
 
@@ -441,7 +423,7 @@ class GreenSession constructor(
                    AuthHandler(greenWallet,
                        greenWallet
                            .createSubAccount(gaSession, SubAccountParams("Segwit Account", AccountType.BIP84_SEGWIT))
-                   ).resolve(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+                   ).resolve(hardwareWalletResolver = DeviceResolver(null, hwWallet))
                }
            }
 
@@ -469,7 +451,7 @@ class GreenSession constructor(
                 deviceParams = DeviceParams(),
                 loginCredentialsParams = LoginCredentialsParams()
             )
-        ).result<LoginData>(hardwareWalletResolver = HardwareCodeResolver(hwWallet)).also {
+        ).result<LoginData>(hardwareWalletResolver = DeviceResolver(null, hwWallet)).also {
             emulateConnectionEvent()
         }
     }
@@ -525,7 +507,7 @@ class GreenSession constructor(
     fun getReceiveAddress(index: Long) = AuthHandler(
         greenWallet,
         greenWallet.getReceiveAddress(gaSession, ReceiveAddressParams(index))
-    ).result<Address>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+    ).result<Address>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     override fun refreshAssets(params: AssetsParams) = greenWallet.refreshAssets(gaSession, params)
 
@@ -533,10 +515,10 @@ class GreenSession constructor(
             .result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
 
     fun getSubAccounts(params: SubAccountsParams = SubAccountsParams()) = AuthHandler(greenWallet, greenWallet.getSubAccounts(gaSession, params))
-        .result<SubAccounts>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+        .result<SubAccounts>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     fun getSubAccount(index: Long) = AuthHandler(greenWallet, greenWallet.getSubAccount(gaSession, index)
-        ).result<SubAccount>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+        ).result<SubAccount>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     fun renameSubAccount(index: Long, name: String) = greenWallet.renameSubAccount(
         gaSession,
@@ -644,7 +626,7 @@ class GreenSession constructor(
     }
 
     fun getBalance(params: BalanceParams): Balances {
-        AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+        AuthHandler(greenWallet, greenWallet.getBalance(gaSession, params)).resolve(hardwareWalletResolver = DeviceResolver(null, hwWallet))
             .result<BalanceMap>().let { balanceMap ->
                 return LinkedHashMap(
                     balanceMap.toSortedMap { o1, o2 ->
@@ -788,7 +770,7 @@ class GreenSession constructor(
     fun getUnspentOutputs(params: BalanceParams) = AuthHandler(
         greenWallet,
         greenWallet.getUnspentOutputs(gaSession, params)
-    ).result<UnspentOutputs>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+    ).result<UnspentOutputs>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     fun createTransaction(unspentOutputs: UnspentOutputs, addresses: List<AddressParams>): CreateTransaction {
         val params = CreateTransactionParams(
@@ -800,25 +782,25 @@ class GreenSession constructor(
         return AuthHandler(
             greenWallet,
             greenWallet.createTransaction(gaSession, params)
-        ).result<CreateTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+        ).result<CreateTransaction>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
     }
 
     fun createTransaction(params: GAJson<*>) = AuthHandler(
         greenWallet,
         greenWallet.createTransaction(gaSession, params)
-    ).result<CreateTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+    ).result<CreateTransaction>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     fun updateCreateTransaction(createTransaction: CreateTransaction) =
         AuthHandler(
             greenWallet,
             greenWallet.updateTransaction(gaSession, createTransaction = createTransaction.jsonElement!!)
-        ).result<CreateTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+        ).result<CreateTransaction>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     fun signTransaction(createTransaction: CreateTransaction) =
         AuthHandler(
             greenWallet,
             greenWallet.signTransaction(gaSession, createTransaction = createTransaction.jsonElement!!)
-        ).result<CreateTransaction>(hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+        ).result<CreateTransaction>(hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     fun broadcastTransaction(transaction: String) = greenWallet.broadcastTransaction(gaSession, transaction)
 
@@ -826,7 +808,7 @@ class GreenSession constructor(
         AuthHandler(
             greenWallet,
             greenWallet.sendTransaction(gaSession, createTransaction = createTransaction.jsonElement!!)
-        ).result<CreateTransaction>(twoFactorResolver = twoFactorResolver, hardwareWalletResolver = HardwareCodeResolver(hwWallet))
+        ).result<CreateTransaction>(twoFactorResolver = twoFactorResolver, hardwareWalletResolver = DeviceResolver(null, hwWallet))
 
     fun onNewNotification(notification: Notification) {
         logger.info { "onNewNotification $notification" }

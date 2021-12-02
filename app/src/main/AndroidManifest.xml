@@ -44,23 +44,6 @@
         android:allowBackup="false"
         android:label="@string/app_name"
         android:supportsRtl="true">
-        <activity
-            android:name=".send.SendConfirmActivity"
-            android:label="@string/id_send"
-            android:theme="@style/BitcoinTheme"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustPan"
-            />
-        <activity
-            android:name=".authentication.TrezorPinActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            />
-        <activity
-            android:name=".authentication.TrezorPassphraseActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BitcoinTheme"
-            />
 
     </application>
 

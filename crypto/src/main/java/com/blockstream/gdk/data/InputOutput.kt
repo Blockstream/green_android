@@ -1,9 +1,13 @@
 package com.blockstream.gdk.data
 
 import android.os.Parcelable
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.greenaddress.greenapi.data.InputOutputData
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /*
  * Note: all fields are Optionals with default value null as there is no documentation to guarantee
@@ -37,9 +41,12 @@ data class InputOutput(
     @SerialName("subtype") val subtype: Int? = null,
 
     @SerialName("txhash") val txHash: String? = null,
-    @SerialName("service_spub") val serviceXpub: String? = null,
+    @SerialName("service_xpub") val serviceXpub: String? = null,
 
     @SerialName("user_path") val userPath: List<Long>? = null,
+
+    @SerialName("ae_host_commitment") val aeHostCommitment: String? = null,
+    @SerialName("ae_host_entropy") val aeHostEntropy: String? = null,
 
     @SerialName("commitment") val commitment: String? = null, // blinded value
     @SerialName("assetblinder") val assetblinder: String? = null, // asset blinding factor
@@ -58,5 +65,11 @@ data class InputOutput(
 
     fun hasUnblindingData(): Boolean {
         return assetId != null && satoshi != null && assetblinder != null && amountblinder != null && assetId.isNotEmpty() && amountblinder.isNotEmpty() && assetblinder.isNotEmpty()
+    }
+
+    private val objectMapper by lazy { ObjectMapper() }
+
+    fun toInputOutputData(): InputOutputData {
+        return objectMapper.treeToValue(objectMapper.readTree(Json.encodeToString(this)), InputOutputData::class.java)
     }
 }

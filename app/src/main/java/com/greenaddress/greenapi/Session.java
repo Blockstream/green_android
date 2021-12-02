@@ -45,10 +45,6 @@ public class Session extends GDKSession {
         getNotificationModel().reset();
     }
 
-    public Registry getRegistry() {
-        return Registry.getInstance();
-    }
-
     public boolean isWatchOnly() {
         return false;
     }
@@ -128,14 +124,5 @@ public class Session extends GDKSession {
 
     public void setSettings(final SettingsData settings) {
         mSettings = settings;
-    }
-
-    public void setPendingTransaction(@Nullable ObjectNode pendingTransaction){
-        this.pendingTransaction = pendingTransaction;
-    }
-
-    @Nullable
-    public ObjectNode getPendingTransaction(){
-        return this.pendingTransaction;
     }
 }

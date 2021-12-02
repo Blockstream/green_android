@@ -4,7 +4,6 @@ import com.blockstream.gdk.GreenWallet.Companion.JsonDeserializer
 import com.blockstream.gdk.data.DeviceRequiredData
 import com.blockstream.gdk.data.TwoFactorStatus
 import com.blockstream.libgreenaddress.GAAuthHandler
-import com.greenaddress.greenapi.data.HWDeviceRequiredData
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -15,7 +14,6 @@ interface TwoFactorResolver {
 }
 
 interface HardwareWalletResolver {
-    fun requestDataFromDeviceV3(requiredData: HWDeviceRequiredData): Single<String>
     fun requestDataFromDevice(requiredData: DeviceRequiredData): Single<String>
 }
 
@@ -93,11 +91,7 @@ class AuthHandler(
                                 var dataFromDevice : String? = null
 
                                 try {
-                                    // Use v3 codebase for HWW handling
-                                    dataFromDevice = it.requestDataFromDeviceV3(twoFactorStatus.getTwoFactorStatusDataV3().requiredData).blockingGet()
-
-                                    // Needs v4 implementation
-                                    // dataFromDevice = it.requestDataFromDevice(twoFactorStatus.requiredData!!).blockingGet()
+                                     dataFromDevice = it.requestDataFromDevice(twoFactorStatus.requiredData).blockingGet()
                                 }catch (e: Exception){
                                     // TODO Handle all cancel exceptions so that we can catch the exceptions from the hardware wallet.
                                     // eg. signing a message in Trezor on testnet network

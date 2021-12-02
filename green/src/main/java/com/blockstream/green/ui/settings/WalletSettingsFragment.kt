@@ -30,8 +30,6 @@ import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.greenaddress.Bridge.versionName
-import com.greenaddress.greenbits.ui.BuildConfig
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.IAdapter
@@ -149,7 +147,7 @@ class WalletSettingsFragment :
                 getString(R.string.app_name),
                 getString(
                     R.string.id_version_1s_2s,
-                    versionName,
+                    BuildConfig.VERSION_NAME,
                     BuildConfig.BUILD_TYPE
                 )
             )))

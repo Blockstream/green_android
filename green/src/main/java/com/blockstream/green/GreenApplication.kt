@@ -1,15 +1,12 @@
 package com.blockstream.green
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.FragmentActivity
-import androidx.navigation.NavDeepLinkBuilder
 import com.blockstream.gdk.AssetManager
 import com.blockstream.gdk.GreenWallet
 import com.blockstream.gdk.data.Network
@@ -18,20 +15,13 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.settings.Migrator
 import com.blockstream.green.settings.SettingsManager
-import com.blockstream.green.ui.MainActivity
 import com.blockstream.green.ui.QATesterActivity
-import com.blockstream.green.ui.settings.*
-import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
-import com.blockstream.green.ui.wallet.*
 import com.blockstream.green.utils.QATester
 import com.blockstream.green.utils.isDevelopmentFlavor
 import com.blockstream.libgreenaddress.GASession
-import com.greenaddress.Bridge
-import com.greenaddress.greenapi.Registry
 import com.pandulapeter.beagle.Beagle
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 typealias ApplicationScope = kotlinx.coroutines.CoroutineScope
@@ -68,89 +58,6 @@ class GreenApplication : Application(){
 
     override fun onCreate() {
         super.onCreate()
-
-        // Initialize Bridge
-        Bridge.initializeBridge(this, isDevelopmentFlavor(), BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME, qaTester, greenWallet)
-
-        Bridge.navigateFn = { activity: FragmentActivity, type: Bridge.NavigateType, gaSession: GASession?, extraData: Any? ->
-            when(type){
-                Bridge.NavigateType.LOGOUT -> {
-
-                    // Disconnect session
-                    gaSession?.let {
-                        sessionManager.getWalletSession(it)?.disconnectAsync()
-                    }
-
-                    // Navigate to MainActivity
-                    NavDeepLinkBuilder(activity.applicationContext)
-                        .setGraph(R.navigation.nav_graph)
-                        .setComponentName(MainActivity::class.java)
-                        .setDestination(R.id.introFragment).also { builder ->
-                            // Navigate to Login
-                            if(extraData is Long){
-                                extraData.let { navigateToWallet ->
-                                    val walletId =
-                                        if (navigateToWallet == -1L) sessionManager.getWalletIdFromSession(
-                                            gaSession
-                                        ) else navigateToWallet
-
-                                    walletRepository.getWalletSync(walletId)?.let {
-                                        builder.setDestination(R.id.loginFragment)
-                                        builder.setArguments(LoginFragmentArgs(wallet = it, autoLogin = true).toBundle())
-                                    }
-                                }
-                            }
-                        }
-                        .createPendingIntent()
-                        .send()
-                }
-            }
-        }
-
-        Bridge.walletsProviderFn = { gaSession ->
-
-            val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-            val wallets = mutableListOf<HashMap<String, String>>()
-            for(wallet in walletRepository.getWalletsSync()){
-                val w = hashMapOf<String, String>()
-                w["id"] = wallet.id.toString()
-                w["name"] = wallet.name
-                w["network"] = wallet.network
-                w["active"] = if(walletId == wallet.id) "true" else "false"
-
-                wallets.add(w)
-            }
-
-            wallets
-        }
-
-        Bridge.sessionIsConnectedProviderFn = { gaSession ->
-            sessionManager.getWalletSession(gaSession)?.isConnected ?: false
-        }
-
-        Bridge.getWalletIdFn = { gaSession ->
-            val walletId = sessionManager.getWalletIdFromSession(gaSession)
-
-            if(walletId >= 0){
-                walletRepository.getWalletSync(walletId)?.id
-            }else{
-                null
-            }
-        }
-
-        Bridge.createTwoFactorResolverFn = { context: Context ->
-            DialogTwoFactorResolver(context)
-        }
-
-        Bridge.getHWWalletFn = { gaSession ->
-            gaSession?.let {
-                return@let sessionManager.getWalletSession(it)?.hwWallet
-            }
-        }
-
-        // Init Registry
-        Registry.init(assetManager)
 
         applicationScope.launch {
             migrator.migrate()

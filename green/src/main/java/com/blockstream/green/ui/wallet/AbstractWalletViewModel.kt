@@ -6,12 +6,12 @@ import com.blockstream.gdk.data.SubAccount
 import com.blockstream.green.data.AppEvent
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
+import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.async
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -202,7 +202,7 @@ abstract class AbstractWalletViewModel constructor(
     fun ackSystemMessage(message : String){
         session.observable {
             session.ackSystemMessage(message)
-                .resolve(hardwareWalletResolver = HardwareCodeResolver(session.hwWallet))
+                .resolve(hardwareWalletResolver = DeviceResolver(null, session.hwWallet))
             session.updateSystemMessage()
         }.doOnSubscribe {
             onProgress.postValue(true)

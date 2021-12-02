@@ -81,8 +81,6 @@ abstract class WalletListCommonFragment<T : ViewDataBinding>(
         val walletSession = sessionManager.getWalletSession(wallet)
 
         if(walletSession.isConnected){
-            // Bridge session
-            walletSession.bridgeSession()
             navigate(LoginFragmentDirections.actionGlobalOverviewFragment(wallet))
         }else{
             navigate(NavGraphDirections.actionGlobalLoginFragment(wallet = wallet, autoLogin = true))

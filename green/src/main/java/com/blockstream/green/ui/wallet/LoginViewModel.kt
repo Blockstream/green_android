@@ -8,10 +8,10 @@ import com.blockstream.green.database.LoginCredentials
 import com.blockstream.green.database.Wallet
 import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.devices.Device
+import com.blockstream.green.devices.DeviceResolver
 import com.blockstream.green.gdk.*
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.greenbits.wallets.HardwareCodeResolver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -225,7 +225,7 @@ class LoginViewModel @AssistedInject constructor(
             it.loginWithDevice(it.networks.getNetworkById(wallet.network),
                 registerUser = true,
                 device = device,
-                hardwareWalletResolver = HardwareCodeResolver(this, device.hwWallet)
+                hardwareWalletResolver = DeviceResolver(this, device.hwWallet!!)
             )
         }
         .observeOn(AndroidSchedulers.mainThread())

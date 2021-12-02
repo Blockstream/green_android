@@ -28,6 +28,7 @@ import io.reactivex.rxjava3.core.Single;
 import kotlin.jvm.Throws;
 
 
+@Deprecated
 public class HardwareCodeResolver implements HardwareWalletResolver {
     private final static String TAG = "HWC";
     private HWWallet hwWallet;

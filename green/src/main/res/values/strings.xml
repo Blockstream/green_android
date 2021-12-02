@@ -1027,5 +1027,5 @@
   <string name="id_passphrase">Passphrase</string>
   <string name="id_confirm_on_your_device">Confirm on your device</string>
   <string name="id_hold_button_to_send">Hold button to Send</string>
-
+  <string name="id_coin">Coin</string>
 </resources>

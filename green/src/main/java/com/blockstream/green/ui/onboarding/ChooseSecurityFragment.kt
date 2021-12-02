@@ -6,13 +6,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.navArgs
 import com.blockstream.gdk.GreenWallet
-import com.blockstream.gdk.data.Network
 import com.blockstream.green.R
 import com.blockstream.green.data.OnboardingOptions
 import com.blockstream.green.databinding.ChooseSecurityFragmentBinding
-import com.blockstream.green.ui.ComingSoonBottomSheetDialogFragment
-import com.blockstream.green.ui.HelpBottomSheetDialogFragment
-import com.greenaddress.Bridge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

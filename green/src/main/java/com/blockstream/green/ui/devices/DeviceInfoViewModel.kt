@@ -20,6 +20,8 @@ import com.blockstream.green.gdk.SessionManager
 import com.blockstream.green.gdk.observable
 import com.blockstream.green.ui.AppViewModel
 import com.blockstream.green.utils.ConsumableEvent
+import com.blockstream.green.utils.QATester
+import com.blockstream.green.utils.isDevelopmentFlavor
 import com.greenaddress.greenbits.wallets.FirmwareUpgradeRequest
 import com.greenaddress.greenbits.wallets.JadeFirmwareManager
 import com.greenaddress.jade.HttpRequestProvider
@@ -35,6 +37,7 @@ import javax.inject.Inject
 class DeviceInfoViewModel @AssistedInject constructor(
     val sessionManager: SessionManager,
     val deviceManager: DeviceManager,
+    val qaTester: QATester,
     @SuppressLint("StaticFieldLeak")
     @Assisted val applicationContext: Context,
     @Assisted val device: Device
@@ -51,7 +54,7 @@ class DeviceInfoViewModel @AssistedInject constructor(
 
     var requestPinEmitter: SingleEmitter<String>? = null
 
-    val hardwareConnect = HardwareConnect()
+    private val hardwareConnect = HardwareConnect(qaTester, applicationContext.isDevelopmentFlavor())
 
     @Inject
     lateinit var greenWallet: GreenWallet

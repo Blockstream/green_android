@@ -24,7 +24,6 @@ import com.blockstream.green.ui.twofactor.DialogTwoFactorResolver
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.AppKeystore
 import com.blockstream.green.utils.ConsumableEvent
-import com.greenaddress.Bridge
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
@@ -277,8 +276,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
         session.observable {
             it.changeSettings(newSettings).resolve()
             it.updateSettings()
-
-            Bridge.updateSettingsV3()
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {
@@ -299,7 +296,6 @@ open class WalletSettingsViewModel @AssistedInject constructor(
             it.setCsvTime(csvTime).resolve(twoFactorResolver = twoFactorResolver)
 
             it.updateSettings()
-            Bridge.updateSettingsV3()
         }.doOnSubscribe {
             onProgress.postValue(true)
         }.doOnTerminate {

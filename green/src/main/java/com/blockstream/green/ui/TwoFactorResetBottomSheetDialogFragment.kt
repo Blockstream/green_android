@@ -17,7 +17,6 @@ import com.blockstream.green.utils.StringHolder
 import com.blockstream.green.utils.navigate
 import com.blockstream.green.utils.toPixels
 import com.blockstream.green.views.SpaceItemDecoration
-import com.greenaddress.Bridge
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.adapters.ItemAdapter
 import com.mikepenz.fastadapter.binding.listeners.addClickListener
@@ -44,12 +43,7 @@ class TwoFactorResetBottomSheetDialogFragment : WalletBottomSheetDialogFragment<
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(Bridge.appModuleInUse) {
-            setStyle(
-                STYLE_NORMAL,
-                R.style.Green_BottomSheetDialogTheme
-            )
-        }
+        setStyle(STYLE_NORMAL, R.style.Green_BottomSheetDialogTheme)
 
         arguments?.getParcelable<TwoFactorReset>(TWO_FACTOR_RESET)?.let {
             twoFactorReset = it

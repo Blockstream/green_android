@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.blockstream.green.Preferences;
-import com.greenaddress.greenbits.ui.preferences.PrefKeys;
 
 import java.util.Map;
 import java.util.Set;
@@ -23,10 +22,10 @@ public class MigratorJava {
             // in that case it stay how it was
 
             final SharedPreferences preferences = context.getSharedPreferences(getCurrentNetwork(context), MODE_PRIVATE);
-            final boolean isEnabled = preferences.getBoolean(PrefKeys.SPV_ENABLED, false);
-            final boolean haveTrustedPeers = !"".equals(preferences.getString(PrefKeys.TRUSTED_ADDRESS, "").trim());
+            final boolean isEnabled = preferences.getBoolean(Migrator.SPV_ENABLED, false);
+            final boolean haveTrustedPeers = !"".equals(preferences.getString(Migrator.TRUSTED_ADDRESS, "").trim());
             if (haveTrustedPeers && isEnabled) {
-                preferences.edit().putBoolean(PrefKeys.SPV_ENABLED, true).apply();
+                preferences.edit().putBoolean(Migrator.SPV_ENABLED, true).apply();
             }
             // mainnet PIN migration
             copyPreferences(context.getSharedPreferences("pin", MODE_PRIVATE), context.getSharedPreferences("mainnet_pin", MODE_PRIVATE));
@@ -38,8 +37,9 @@ public class MigratorJava {
         if (source.getAll().isEmpty())
             return;
         final SharedPreferences.Editor destinationEditor = destination.edit();
-        for (final Map.Entry<String, ?> entry : source.getAll().entrySet())
+        for (final Map.Entry<String, ?> entry : source.getAll().entrySet()) {
             writePreference(entry.getKey(), entry.getValue(), destinationEditor);
+        }
         destinationEditor.apply();
     }
 
@@ -61,7 +61,7 @@ public class MigratorJava {
     }
 
     public static String getCurrentNetwork(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getString(PrefKeys.NETWORK_ID_ACTIVE, "mainnet");
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(Migrator.NETWORK_ID_ACTIVE, "mainnet");
     }
 
 }

@@ -16,7 +16,6 @@ import com.blockstream.green.database.WalletRepository
 import com.blockstream.green.gdk.*
 import com.blockstream.green.ui.wallet.AbstractWalletViewModel
 import com.blockstream.green.utils.*
-import com.greenaddress.greenapi.Session
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.kotlin.addTo
@@ -465,8 +464,6 @@ class SendViewModel @AssistedInject constructor(
                 feeAmountFiat.value = tx.fee?.toFiatLook(session = session, withUnit = true, withGrouping = true) ?: ""
 
                 if(!pendingCheck && finalCheckBeforeContinue){
-                    Session.getSession().pendingTransaction = tx.toObjectNode()
-
                     session.pendingTransaction = params!! to tx
                     onEvent.postValue(ConsumableEvent(NavigateEvent.Navigate))
                 }
