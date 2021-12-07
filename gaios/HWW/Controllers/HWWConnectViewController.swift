@@ -62,9 +62,9 @@ class HWWConnectViewController: UIViewController {
 
     func setContent() {
         lblTitle.text = account.name
-        btnTryAgain.setTitle("Try Again", for: .normal)
+        btnTryAgain.setTitle(NSLocalizedString("id_try_again", comment: ""), for: .normal)
         btnLogin.setTitle(NSLocalizedString("id_login", comment: ""), for: .normal)
-        lblSingleSigWarn.text = "Singlesig wallets are not yet supported for use with hardware devices. By continuing you'll access a Multisig Shield wallet."
+        lblSingleSigWarn.text = NSLocalizedString("id_singlesig_wallets_are_not_yet", comment: "")
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -118,7 +118,7 @@ class HWWConnectViewController: UIViewController {
         switch hwwState {
         case .connecting:
             showLoader()
-            lblStateHint.text = "Connecting to your device"
+            lblStateHint.text = NSLocalizedString("id_connecting_to_your_device", comment: "")
         case .connected:
             showLoader()
             lblStateHint.text = NSLocalizedString("id_logging_in", comment: "")
@@ -136,15 +136,15 @@ class HWWConnectViewController: UIViewController {
             singleSigWarnCard.isHidden = false
         case .followDevice:
             hideLoader()
-            lblStateHint.text = "Follow the instructions on your device."
+            lblStateHint.text = NSLocalizedString("id_follow_the_instructions_on_your", comment: "")
             navigationItem.setHidesBackButton(false, animated: true)
             arrowImage.isHidden = false
         case .upgradingFirmware:
             showLoader()
-            lblStateHint.text = "Upgrading firmware..."
+            lblStateHint.text = NSLocalizedString("id_updating_firmware", comment: "")
             navigationItem.setHidesBackButton(false, animated: true)
         case .initialized:
-            lblStateHint.text = "Ready to start"
+            lblStateHint.text = NSLocalizedString("id_ready_to_start", comment: "")
             btnLogin.isHidden = false
         case .upgradedFirmware:
             lblStateHint.text = NSLocalizedString("id_firmware_update_completed", comment: "")
