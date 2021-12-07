@@ -422,7 +422,12 @@ extension Jade {
             throw JadeError.Abort("Unsupported hardware, firmware updates not available")
         }
         // Get the index file from that path
-        guard let res = download("\(fwPath)\(Jade.FW_VERSIONS_FILE)"),
+        #if DEBUG
+        let link = "\(fwPath)BETA"
+        #else
+        let link = "\(fwPath)\(Jade.FW_VERSIONS_FILE)"
+        #endif
+        guard let res = download(link),
               let body = res["body"] as? String else {
             throw JadeError.Abort("Failed to fetch firmware file")
         }
