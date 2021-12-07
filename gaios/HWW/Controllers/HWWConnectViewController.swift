@@ -146,6 +146,9 @@ class HWWConnectViewController: UIViewController {
         case .initialized:
             lblStateHint.text = "Ready to start"
             btnLogin.isHidden = false
+        case .upgradedFirmware:
+            lblStateHint.text = NSLocalizedString("id_firmware_update_completed", comment: "")
+            btnLogin.isHidden = false
         case .none:
             break
         }
@@ -163,8 +166,14 @@ class HWWConnectViewController: UIViewController {
     }
 
     @IBAction func btnLogin(_ sender: Any) {
-        hwwState = .connected
-        BLEManager.shared.login(peripheral)
+        if hwwState == .upgradedFirmware {
+            hwwState = .connecting
+            BLEManager.shared.dispose()
+            BLEManager.shared.prepare(peripheral)
+        } else {
+            hwwState = .connected
+            BLEManager.shared.login(peripheral)
+        }
     }
 
     func connect(_ peripheral: Peripheral, network: String) {
@@ -340,13 +349,13 @@ extension HWWConnectViewController: BLEManagerDelegate {
         }
     }
 
-    func onUpdateFirmware(_ peripheral: Peripheral) {
-        let alert = UIAlertController(title: NSLocalizedString("id_firmware_update_completed", comment: ""), message: "", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in
-            self.hwwState = .connecting
-            BLEManager.shared.dispose()
-            BLEManager.shared.prepare(peripheral)
-        })
-        self.present(alert, animated: true, completion: nil)
+    func onUpdateFirmware(_ peripheral: Peripheral, version: String) {
+        self.hwwState = .upgradedFirmware
+        if version == "0.1.31" {
+            let msg = "The new firmware requires you do delete Jade from your bluetooth devices and establish a new pairing"
+             let alert = UIAlertController(title: NSLocalizedString("id_firmware_update_completed", comment: ""), message: msg, preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }

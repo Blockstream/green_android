@@ -38,7 +38,7 @@ protocol BLEManagerDelegate: class {
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
     func onCheckFirmware(_: Peripheral, fmw: [String: String], currentVersion: String, needCableUpdate: Bool)
-    func onUpdateFirmware(_: Peripheral)
+    func onUpdateFirmware(_: Peripheral, version: String)
 }
 
 class BLEManager {
@@ -232,7 +232,8 @@ class BLEManager {
             .flatMap { Jade.shared.updateFirmare(verInfo: $0, fmwFile: fmwFile) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
-                self.delegate?.onUpdateFirmware(p)
+                self.enstablishDispose?.dispose()
+                self.delegate?.onUpdateFirmware(p, version: fmwFile["version"] ?? "")
             }, onError: { err in
                 self.onError(err, network: nil)
             })

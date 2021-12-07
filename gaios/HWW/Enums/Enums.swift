@@ -7,6 +7,7 @@ enum HWWState {
     case selectNetwork
     case followDevice
     case upgradingFirmware
+    case upgradedFirmware
     case initialized
 }
 
