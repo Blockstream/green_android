@@ -101,7 +101,7 @@ class LandingViewController: UIViewController {
     @IBAction func btnRestoreWallet(_ sender: Any) {
         LandingViewController.flowType = .restore
         let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "RestoreWalletViewController")
+        let vc = storyboard.instantiateViewController(withIdentifier: "ChooseNetworkViewController")
         navigationController?.pushViewController(vc, animated: true)
     }
 

@@ -92,7 +92,6 @@ class ChooseNetworkViewController: UIViewController {
             let vc = storyboard.instantiateViewController(withIdentifier: "ChooseSecurityViewController")
             navigationController?.pushViewController(vc, animated: true)
         case .restore:
-            OnBoardManager.shared.params?.singleSig = restoreSingleSig
             let storyboard = UIStoryboard(name: "OnBoard", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryPhraseViewController")
             navigationController?.pushViewController(vc, animated: true)

@@ -27,7 +27,7 @@ class RecoveryPhraseViewController: UIViewController {
     func setContent() {
         title = ""
         lblTitle.text = NSLocalizedString("id_enter_your_recovery_phrase", comment: "")
-        lblHint.text = ""
+        lblHint.text = "We will do our best to find a wallet corresponding to this recovery phrase"
         lblQRTitle.text = NSLocalizedString("id_qr_code", comment: "")
         lblQRHint.text = NSLocalizedString("id_as_easy_as_snapping_a_photo", comment: "")
         lblPhraseTitle.text = NSLocalizedString("id_recovery_phrase", comment: "")

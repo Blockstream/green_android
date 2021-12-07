@@ -210,7 +210,13 @@ class MnemonicViewController: KeyboardViewController, SuggestionsDelegate {
 
     @IBAction func doneButtonClicked(_ sender: Any) {
         _ = getMnemonicString()
-            .done { self.validate($0.0, $0.1) }
+            .done {
+                OnBoardManager.shared.params?.mnemonic = $0.0
+                OnBoardManager.shared.params?.mnemomicPassword = $0.1
+                let storyboard = UIStoryboard(name: "AutomaticRestore", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "ExistingWalletsViewController")
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
     }
 
     func checkTextfield(textField: UITextField) {
