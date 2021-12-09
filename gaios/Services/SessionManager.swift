@@ -7,6 +7,7 @@ class SessionManager: Session {
 
     var account: Account?
     var connected = false
+    var logged = false
     var notificationManager: NotificationManager
     var twoFactorConfig: TwoFactorConfig?
     var settings: Settings?
@@ -40,6 +41,7 @@ class SessionManager: Session {
         try? session.disconnect()
         session.account = account
         session.connected = false
+        session.logged = false
         session.twoFactorConfig = nil
         session.settings = nil
         return SessionManager.shared
@@ -212,6 +214,7 @@ class SessionManager: Session {
             }.then(on: bgq) { device in
                 try super.loginUser(details: details, hw_device: device).resolve()
             }.then { _ -> Promise<Void> in
+                self.logged = true
                 if let account = self.account,
                         !account.isWatchonly && !(account.isSingleSig ?? false) {
                     return self.loadTwoFactorConfig().then { _ in Promise<Void>() }

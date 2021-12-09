@@ -51,8 +51,11 @@ class NotificationManager {
                 post(event: EventType.Network, data: data)
                 return
             }
+            guard SessionManager.shared.connected && SessionManager.shared.logged else {
+                return
+            }
             // Restore connection through hidden login
-            reconnect().done { _ in
+            SessionManager.shared.login(details: [:], hwDevice: nil).done { _ in
                 self.post(event: EventType.Network, data: data)
             }.catch { err in
                 print("Error on reconnected with hw: \(err.localizedDescription)")
@@ -73,11 +76,4 @@ class NotificationManager {
                                         object: nil, userInfo: data)
     }
 
-    func reconnect() -> Promise<[String: Any]> {
-        let bgq = DispatchQueue.global(qos: .background)
-        let session = SessionManager.shared
-        return Guarantee().then(on: bgq) { _ in
-            return try session.loginUser(details: [:], hw_device: [:]).resolve()
-        }
-    }
 }
