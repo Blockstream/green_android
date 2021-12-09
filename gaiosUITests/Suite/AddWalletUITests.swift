@@ -3,6 +3,11 @@ import XCTest
 
 class AddWalletUITests: XCTestBase {
     
+    func testAAAUninstall() {
+        let app = XCUIApplication()
+        app.uninstall(name: "Green")
+    }
+    
     func testAddWallet() {
         
         Home()
