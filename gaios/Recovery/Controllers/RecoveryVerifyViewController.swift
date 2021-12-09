@@ -13,30 +13,41 @@ class RecoveryVerifyViewController: UIViewController {
     @IBOutlet weak var button2: UIButton!
     @IBOutlet weak var button3: UIButton!
 
-    @IBOutlet weak var progressBarView: UIView!
-
+    @IBOutlet weak var progressBarView: UIStackView!
     @IBOutlet weak var processNode1: UIView!
     @IBOutlet weak var processNode2: UIView!
     @IBOutlet weak var processNode3: UIView!
+    @IBOutlet weak var processNode4: UIView!
     @IBOutlet weak var progressBarConnector1: UIView!
     @IBOutlet weak var progressBarConnector2: UIView!
+    @IBOutlet weak var progressBarConnector3: UIView!
 
     lazy var buttonsArray: [UIButton] = [button0, button1, button2, button3]
-    lazy var processNodes: [UIView] = [processNode1, processNode2, processNode3]
-    lazy var processConnectors: [UIView] = [progressBarConnector1, progressBarConnector2]
+    lazy var processNodes: [UIView] = [processNode1, processNode2, processNode3, processNode4]
+    lazy var processConnectors: [UIView] = [progressBarConnector1, progressBarConnector2, progressBarConnector3]
 
+    private var mnemonicSize: Int {
+        if OnBoardManager.shared.params?.mnemonicSize == MnemonicSize._24.rawValue {
+            return MnemonicSize._24.rawValue
+        }
+        return MnemonicSize._12.rawValue
+    }
     var mnemonic: [Substring]!
     var selectionWordNumbers: [Int] = [Int](repeating: 0, count: Constants.wordsPerQuiz)
-    var expectedWordNumbers: [Int] = [Int](repeating: 0, count: (Constants.wordsCount / Constants.wordsPerQuiz))
+    var expectedWordNumbers: [Int] = []
     var questionCounter: Int = 0
     var questionPosition: Int = 0
-    let numberOfSteps: Int = Constants.wordsCount / Constants.wordsPerQuiz
+    var numberOfSteps: Int {
+        if mnemonicSize == 24 { return 4 }
+        return 3
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         expectedWordNumbers = generateExpectedWordNumbers()
         newRandomWords()
 
+        prepareProcessBar()
         updateProcessBar()
         navigationItem.titleView = progressBarView
         reload()
@@ -53,7 +64,6 @@ class RecoveryVerifyViewController: UIViewController {
         for node in processNodes {
             node.layer.cornerRadius = node.frame.size.width / 2.0
         }
-
         view.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.view
         button0.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word0btn
         button1.accessibilityIdentifier = AccessibilityIdentifiers.RecoveryVerifyScreen.word1btn
@@ -106,6 +116,20 @@ class RecoveryVerifyViewController: UIViewController {
         }
     }
 
+    func prepareProcessBar() {
+        if mnemonicSize != MnemonicSize._24.rawValue {
+            processNode4.isHidden = true
+            progressBarConnector3.isHidden = true
+        }
+        processNodes.forEach { item in
+            item.backgroundColor = UIColor.customGrayLight()
+            item.borderColor = UIColor.black
+        }
+        processConnectors.forEach { item in
+            item.backgroundColor = UIColor.customGrayLight()
+        }
+    }
+
     func updateProcessBar() {
         processNodes[questionCounter].backgroundColor = UIColor.customMatrixGreen()
         processNodes[questionCounter].borderColor = UIColor.customMatrixGreen()
@@ -138,10 +162,10 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func generateExpectedWordNumbers() -> [Int] {
-        var words: [Int] = [Int](repeating: 0, count: (Constants.wordsCount / Constants.wordsPerQuiz))
+        var words: [Int] = [Int](repeating: 0, count: (mnemonicSize / Constants.wordsPerQuiz))
         repeat {
             words = words.map { (_) -> Int in getIndexFromUniformUInt32(count: mnemonic.endIndex) }
-        } while Set(words).count != (Constants.wordsCount / Constants.wordsPerQuiz)
+        } while Set(words).count != (mnemonicSize / Constants.wordsPerQuiz)
         return words
     }
 
