@@ -17,7 +17,13 @@ class Overview: Screen {
         tap(app.otherElements[AccessibilityIdentifiers.OverviewScreen.receiveView])
         return self
     }
-    
+
+    @discardableResult
+    func appTap() -> Self {
+        app.tap() //required to dismiss System Dialog
+        return self
+    }
+
     @discardableResult
     func tapSend() -> Self {
         tap(app.otherElements[AccessibilityIdentifiers.OverviewScreen.sendView])
