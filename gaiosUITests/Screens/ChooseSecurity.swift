@@ -17,4 +17,11 @@ class ChooseSecurity: Screen {
         tap(app.otherElements[AccessibilityIdentifiers.ChooseSecurityScreen.singleSigCard])
         return self
     }
+    
+    @discardableResult
+    func select24() -> Self {
+        app.otherElements[AccessibilityIdentifiers.ChooseSecurityScreen.view].segmentedControls.buttons.element(boundBy: 1).tap()
+        return self
+    }
+    
 }

@@ -75,82 +75,83 @@ class AddWalletUITests: XCTestBase {
             .pause(1)
     }
 
-//    func testAddWallet24() {
-//        
-//        Home()
-//            .tapAddWalletView()
-//        
-//        Landing()
-//            .tapAcceptTerms()
-//            .pause(1)
-//            .tapNewWallet()
-//        
-//        ChooseNetwork()
-//            .tapTestnetCard()
-//    
-//        ChooseSecurity()
-//            .tapMultiSigCard()
-//            
-//        RecoveryInstructions()
-//            .tapContinue()
-//        
-//        RecoveryCreate()
-//            .cleanWords()
-//            .readWords()
-//            .pause(1)
-//            .tapNext()
-//            .pause(1)
-//            .readWords()
-//            .pause(1)
-//            .tapNext()
-//            .pause(1)
-//            .readWords()
-//            .pause(1)
-//            .tapNext()
-//            .pause(1)
-//            .readWords()
-//            .pause(1)
-//            .tapNext()
-//            .pause(1)
-//        
-//        RecoveryVerify()
-//            .pause(1)
-//            .chooseWord()
-//            .pause(1)
-//            .chooseWord()
-//            .pause(1)
-//            .chooseWord()
-//            .pause(1)
-//            .chooseWord()
-//            .pause(1)
-//        
-//        RecoverySuccess()
-//            .pause(1)
-//            .tapNext()
-//
-//        WalletName()
-//            .pause(1)
-//            .typeName(nil)
-//            .pause(1)
-//            .closeKey()
-//            .pause(1)
-//            .tapNext()
-//            .pause(1)
-//        
-//        SetPin()
-//            .pause(1)
-//            .setPin()
-//            .pause(1)
-//            .setPin()
-//            .tapNext()
-//        
-//        WalletSuccess()
-//            .pause(1)
-//            .tapNext()
-//            
-//        Overview()
-//            .pause(1)
-//    }
+    func testAddWallet24() {
+        
+        Home()
+            .tapAddWalletView()
+        
+        Landing()
+            .tapAcceptTerms()
+            .pause(1)
+            .tapNewWallet()
+        
+        ChooseNetwork()
+            .tapTestnetCard()
+    
+        ChooseSecurity()
+            .select24()
+            .tapMultiSigCard()
+            
+        RecoveryInstructions()
+            .tapContinue()
+        
+        RecoveryCreate()
+            .cleanWords()
+            .readWords()
+            .pause(1)
+            .tapNext()
+            .pause(1)
+            .readWords()
+            .pause(1)
+            .tapNext()
+            .pause(1)
+            .readWords()
+            .pause(1)
+            .tapNext()
+            .pause(1)
+            .readWords()
+            .pause(1)
+            .tapNext()
+            .pause(1)
+        
+        RecoveryVerify()
+            .pause(1)
+            .chooseWord()
+            .pause(1)
+            .chooseWord()
+            .pause(1)
+            .chooseWord()
+            .pause(1)
+            .chooseWord()
+            .pause(1)
+        
+        RecoverySuccess()
+            .pause(1)
+            .tapNext()
+
+        WalletName()
+            .pause(1)
+            .typeName(nil)
+            .pause(1)
+            .closeKey()
+            .pause(1)
+            .tapNext()
+            .pause(1)
+        
+        SetPin()
+            .pause(1)
+            .setPin()
+            .pause(1)
+            .setPin()
+            .tapNext()
+        
+        WalletSuccess()
+            .pause(1)
+            .tapNext()
+            
+        Overview()
+            .pause(1)
+    }
 
     func testRestoreWallet() {
         let walletName = Constants.walletName
