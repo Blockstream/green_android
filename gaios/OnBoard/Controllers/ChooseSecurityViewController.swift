@@ -83,6 +83,8 @@ class ChooseSecurityViewController: UIViewController {
     func next() {
         if segmentMnemonicSize.selectedSegmentIndex == 1 {
             OnBoardManager.shared.params?.mnemonicSize = MnemonicSize._24.rawValue
+        } else {
+            OnBoardManager.shared.params?.mnemonicSize = MnemonicSize._12.rawValue
         }
         let storyboard = UIStoryboard(name: "Recovery", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "RecoveryInstructionViewController")
