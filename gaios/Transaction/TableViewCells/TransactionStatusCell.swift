@@ -10,6 +10,12 @@ class TransactionStatusCell: UITableViewCell {
     @IBOutlet weak var arc: UIView!
     @IBOutlet weak var spvVerifyIcon: UIImageView!
 
+    enum TransactionStatus {
+        case confirmed
+        case confirming
+        case unconfirmed
+    }
+
     let loadingIndicator: ProgressView = {
         let progress = ProgressView(colors: [UIColor.customMatrixGreen()], lineWidth: 2)
         progress.translatesAutoresizingMaskIntoConstraints = false
