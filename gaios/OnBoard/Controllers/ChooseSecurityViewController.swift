@@ -36,6 +36,7 @@ class ChooseSecurityViewController: UIViewController {
         lblAdvancedTitle.text = NSLocalizedString("id_multisig_shield", comment: "")
         lblAdvancedHint.text = NSLocalizedString("id_your_funds_are_secured_by", comment: "")
         viewMnemonicSize.isHidden = LandingViewController.flowType != .add
+        lblMnemonicSize.text = NSLocalizedString("id_choose_recovery_phrase_length", comment: "")
     }
 
     func setStyle() {
