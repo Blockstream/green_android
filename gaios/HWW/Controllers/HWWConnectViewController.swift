@@ -153,6 +153,7 @@ class HWWConnectViewController: UIViewController {
             btnLogin.isHidden = false
         case .upgradedFirmware:
             lblStateHint.text = NSLocalizedString("id_firmware_update_completed", comment: "")
+            btnLogin.setTitle(NSLocalizedString("id_continue", comment: ""), for: .normal)
             btnLogin.isHidden = false
         case .none:
             break
@@ -178,7 +179,7 @@ class HWWConnectViewController: UIViewController {
         if hwwState == .upgradedFirmware {
             hwwState = .connecting
             BLEManager.shared.dispose()
-            BLEManager.shared.prepare(peripheral)
+            navigationController?.popViewController(animated: true)
         } else {
             hwwState = .connected
             BLEManager.shared.login(peripheral)
@@ -361,9 +362,12 @@ extension HWWConnectViewController: BLEManagerDelegate {
     func onUpdateFirmware(_ peripheral: Peripheral, version: String, prevVersion: String) {
         self.hwwState = .upgradedFirmware
         if prevVersion <= "0.1.30" && version >= "0.1.31" {
-            let msg = "The new firmware requires you do delete Jade from your bluetooth devices and establish a new pairing"
+            let msg = "The new firmware requires you to unpair your Jade from the iOS Bluetooth settings."
              let alert = UIAlertController(title: NSLocalizedString("id_firmware_update_completed", comment: ""), message: msg, preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
+            alert.addAction(UIAlertAction(title: NSLocalizedString("id_more_info", comment: ""), style: .cancel) { _ in
+                BLEManager.shared.dispose()
+                UIApplication.shared.open(ExternalUrls.jadeMoreInfo, options: [:], completionHandler: nil)
+            })
             self.present(alert, animated: true, completion: nil)
         }
     }
