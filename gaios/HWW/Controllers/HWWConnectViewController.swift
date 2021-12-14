@@ -11,6 +11,7 @@ class HWWConnectViewController: UIViewController {
     @IBOutlet weak var failureCircle: UIView!
     @IBOutlet weak var faailureImage: UIImageView!
     @IBOutlet weak var btnTryAgain: UIButton!
+    @IBOutlet weak var btnNeedHelp: UIButton!
     @IBOutlet weak var btnLogin: UIButton!
     @IBOutlet weak var deviceImage: UIImageView!
     @IBOutlet weak var arrowImage: UIImageView!
@@ -63,6 +64,7 @@ class HWWConnectViewController: UIViewController {
     func setContent() {
         lblTitle.text = account.name
         btnTryAgain.setTitle(NSLocalizedString("id_try_again", comment: ""), for: .normal)
+        btnNeedHelp.setTitle(NSLocalizedString("id_need_help", comment: ""), for: .normal)
         btnLogin.setTitle(NSLocalizedString("id_login", comment: ""), for: .normal)
         lblSingleSigWarn.text = NSLocalizedString("id_singlesig_wallets_are_not_yet", comment: "")
     }
@@ -92,6 +94,7 @@ class HWWConnectViewController: UIViewController {
         failureCircle.layer.cornerRadius = successCircle.frame.size.width / 2.0
         failureCircle.borderColor = UIColor.white
         btnTryAgain.cornerRadius = 4.0
+        btnNeedHelp.cornerRadius = 4.0
         arrowImage.image = UIImage(named: "ic_hww_arrow")?.maskWithColor(color: UIColor.customMatrixGreen())
         faailureImage.image = UIImage(named: "cancel")?.maskWithColor(color: UIColor.white)
         tableViewHeight.constant = CGFloat(networks.count) * CGFloat(cellH)
@@ -109,6 +112,7 @@ class HWWConnectViewController: UIViewController {
         successCircle.isHidden = true
         failureCircle.isHidden = true
         btnTryAgain.isHidden = true
+        btnNeedHelp.isHidden = true
         btnLogin.isHidden = true
         deviceImage.isHidden = false
         arrowImage.isHidden = true
@@ -128,6 +132,7 @@ class HWWConnectViewController: UIViewController {
             lblStateHint.text = NSLocalizedString("id_connection_failed", comment: "")
             failureCircle.isHidden = false
             btnTryAgain.isHidden = false
+            btnNeedHelp.isHidden = false
         case .selectNetwork:
             hideLoader()
             lblStateHint.text = NSLocalizedString("id_select_network", comment: "")
@@ -163,6 +168,10 @@ class HWWConnectViewController: UIViewController {
         }
         BLEManager.shared.dispose()
         BLEManager.shared.prepare(peripheral)
+    }
+
+    @IBAction func btnNeedHelp(_ sender: Any) {
+        UIApplication.shared.open(ExternalUrls.jadeNeedHelp, options: [:], completionHandler: nil)
     }
 
     @IBAction func btnLogin(_ sender: Any) {
