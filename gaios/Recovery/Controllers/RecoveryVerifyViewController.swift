@@ -37,10 +37,7 @@ class RecoveryVerifyViewController: UIViewController {
     var expectedWordNumbers: [Int] = []
     var questionCounter: Int = 0
     var questionPosition: Int = 0
-    var numberOfSteps: Int {
-        if mnemonicSize == 24 { return 4 }
-        return 3
-    }
+    var numberOfSteps: Int = 4
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,7 +105,6 @@ class RecoveryVerifyViewController: UIViewController {
                 newRandomWords()
                 reload()
                 updateProcessBar()
-//                viewTitle.text = getTitle()
             }
         } else {
             DropAlert().warning(message: NSLocalizedString("id_wrong_choice_check_your", comment: ""), delay: 4)
@@ -117,10 +113,6 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func prepareProcessBar() {
-        if mnemonicSize != MnemonicSize._24.rawValue {
-            processNode4.isHidden = true
-            progressBarConnector3.isHidden = true
-        }
         processNodes.forEach { item in
             item.backgroundColor = UIColor.customGrayLight()
             item.borderColor = UIColor.black
@@ -162,10 +154,10 @@ class RecoveryVerifyViewController: UIViewController {
     }
 
     func generateExpectedWordNumbers() -> [Int] {
-        var words: [Int] = [Int](repeating: 0, count: (mnemonicSize / Constants.wordsPerQuiz))
+        var words: [Int] = [Int](repeating: 0, count: numberOfSteps)
         repeat {
             words = words.map { (_) -> Int in getIndexFromUniformUInt32(count: mnemonic.endIndex) }
-        } while Set(words).count != (mnemonicSize / Constants.wordsPerQuiz)
+        } while Set(words).count != numberOfSteps
         return words
     }
 
