@@ -38,7 +38,7 @@ protocol BLEManagerDelegate: class {
     func onError(_: BLEManagerError)
     func onConnectivityChange(peripheral: Peripheral, status: Bool)
     func onCheckFirmware(_: Peripheral, fmw: [String: String], currentVersion: String, needCableUpdate: Bool)
-    func onUpdateFirmware(_: Peripheral, version: String)
+    func onUpdateFirmware(_: Peripheral, version: String, prevVersion: String)
 }
 
 class BLEManager {
@@ -224,7 +224,7 @@ class BLEManager {
             }
     }
 
-    func updateFirmware(_ p: Peripheral, fmwFile: [String: String]) {
+    func updateFirmware(_ p: Peripheral, fmwFile: [String: String], currentVersion: String) {
         _ = Observable.just(p)
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
             .flatMap { _ in Jade.shared.version() }
@@ -233,7 +233,7 @@ class BLEManager {
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.enstablishDispose?.dispose()
-                self.delegate?.onUpdateFirmware(p, version: fmwFile["version"] ?? "")
+                self.delegate?.onUpdateFirmware(p, version: fmwFile["version"] ?? "", prevVersion: currentVersion)
             }, onError: { err in
                 self.onError(err, network: nil)
             })
@@ -355,9 +355,11 @@ class BLEManager {
         }
 
         // dummy 1st connection for jade
-        enstablishDispose = peripheral.establishConnection()
+        enstablishDispose = Observable.just(peripheral)
+            .timeoutIfNoEvent(RxTimeInterval.seconds(20))
+            .flatMap { $0.establishConnection() }
             .observeOn(SerialDispatchQueueScheduler(qos: .background))
-            .compactMap { _ in sleep(2) }
+            .compactMap { _ in sleep(3) }
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { _ in
                 self.delegate?.onPrepare(peripheral)

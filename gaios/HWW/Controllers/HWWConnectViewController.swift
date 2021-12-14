@@ -340,7 +340,7 @@ extension HWWConnectViewController: BLEManagerDelegate {
                 switch action {
                 case .update:
                     self?.hwwState = .upgradingFirmware
-                    BLEManager.shared.updateFirmware(peripheral, fmwFile: fmw)
+                    BLEManager.shared.updateFirmware(peripheral, fmwFile: fmw, currentVersion: currentVersion)
                 case .readMore:
                     BLEManager.shared.dispose()
                     UIApplication.shared.open(ExternalUrls.otaReadMore, options: [:], completionHandler: nil)
@@ -358,9 +358,9 @@ extension HWWConnectViewController: BLEManagerDelegate {
         }
     }
 
-    func onUpdateFirmware(_ peripheral: Peripheral, version: String) {
+    func onUpdateFirmware(_ peripheral: Peripheral, version: String, prevVersion: String) {
         self.hwwState = .upgradedFirmware
-        if version == "0.1.31" {
+        if prevVersion <= "0.1.30" && version >= "0.1.31" {
             let msg = "The new firmware requires you do delete Jade from your bluetooth devices and establish a new pairing"
              let alert = UIAlertController(title: NSLocalizedString("id_firmware_update_completed", comment: ""), message: msg, preferredStyle: .actionSheet)
             alert.addAction(UIAlertAction(title: NSLocalizedString("id_continue", comment: ""), style: .cancel) { _ in })
