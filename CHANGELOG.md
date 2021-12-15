@@ -5,14 +5,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+### Changed
+### Fixed
+
+## [3.7.7] - 2021-12-17
+### Added
+- Automatic wallet restore, Green will find any wallet associated with your recovery phrase
 - Enhanced privacy option enabling secure display throughout the app & screen lock
+- PIN keyboard shuffle, to augment your privacy when entering PIN on login
+- L-BTC and BTC asset details
 
 ### Changed
-- Show asset icons and balance on Account cards
-- Revamp Send view with new UI
-- Improves sweep paper wallet
-- Improves increasing a transaction fee
-- Show a QR code of the recovery phrase in settings
+- Improved swifter Send flow, easier to use, easier to read
+- Improved sweep paper wallet
+- Improved transaction fee bumping
+- Added balances on account cards, to facilitate navigation across accounts
+- Support for wallet creation with both 12 or 24 words recovery phrases
+- Updated GDK to 0.0.48
+- Added Android 12 target
+
+### Fixed
+- Fix SPV progress indicator
 
 ## [3.7.6] - 2021-11-10
 ### Added
