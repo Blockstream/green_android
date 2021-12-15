@@ -47,6 +47,8 @@
 		3418BAE82743FA1600F9B2D0 /* TransactionBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */; };
 		3418BAEA2743FA2E00F9B2D0 /* TransactionBarItem.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */; };
 		341C191B260A03B20028BA21 /* WatchOnlyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */; };
+		34237FC7276A479700618502 /* ExistingWallets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC6276A479700618502 /* ExistingWallets.swift */; };
+		34237FC9276A520800618502 /* ManualRestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34237FC8276A520800618502 /* ManualRestore.swift */; };
 		342560A8268B2BB900136ACC /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560A7268B2BB900136ACC /* Login.swift */; };
 		342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */; };
 		342560AE268B4EBE00136ACC /* DialogWalletDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */; };
@@ -363,6 +365,8 @@
 		3418BAE72743FA1600F9B2D0 /* TransactionBarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionBarItem.swift; sourceTree = "<group>"; };
 		3418BAE92743FA2E00F9B2D0 /* TransactionBarItem.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionBarItem.xib; sourceTree = "<group>"; };
 		341C191A260A03B20028BA21 /* WatchOnlyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOnlyViewController.swift; sourceTree = "<group>"; };
+		34237FC6276A479700618502 /* ExistingWallets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExistingWallets.swift; sourceTree = "<group>"; };
+		34237FC8276A520800618502 /* ManualRestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualRestore.swift; sourceTree = "<group>"; };
 		342560A7268B2BB900136ACC /* Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login.swift; sourceTree = "<group>"; };
 		342560AB268B4C5300136ACC /* PopoverMenuWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverMenuWallet.swift; sourceTree = "<group>"; };
 		342560AD268B4EBE00136ACC /* DialogWalletDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogWalletDelete.swift; sourceTree = "<group>"; };
@@ -780,6 +784,8 @@
 				3453C74126A6BD7E00451FB3 /* HWWScan.swift */,
 				349DB76026A84D20004FF265 /* WalletSettings.swift */,
 				3498806326A9692A00E11216 /* DialogTorSingleSig.swift */,
+				34237FC6276A479700618502 /* ExistingWallets.swift */,
+				34237FC8276A520800618502 /* ManualRestore.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -2005,6 +2011,7 @@
 				345142832693154100E8BE1B /* XCTestBase.swift in Sources */,
 				34347675268247F400D7AD43 /* RecoveryCreate.swift in Sources */,
 				34347663268228C600D7AD43 /* AddWalletUITests.swift in Sources */,
+				34237FC9276A520800618502 /* ManualRestore.swift in Sources */,
 				34767E0E269439F4005F938B /* SendBtcConfirmation.swift in Sources */,
 				344B1BBA268C53F1000182B0 /* RecoveryPhrase.swift in Sources */,
 				3453C73826A5A41A00451FB3 /* Drawer.swift in Sources */,
@@ -2019,6 +2026,7 @@
 				34C978AA268DDD8C0061264D /* WatchOnly.swift in Sources */,
 				345142812693148B00E8BE1B /* TransactionsUITests.swift in Sources */,
 				342560AC268B4C5300136ACC /* PopoverMenuWallet.swift in Sources */,
+				34237FC7276A479700618502 /* ExistingWallets.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

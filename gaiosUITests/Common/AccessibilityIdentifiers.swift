@@ -217,4 +217,15 @@ struct AccessibilityIdentifiers {
         static let view = "view_dialog_tor_singlesig"
         static let continueBtn = "continue_btn"
     }
+
+    struct ExistingWalletsScreen {
+        static let view = "view_existing_wallets"
+        static let manualRestoreBtn = "manual_restore_btn"
+    }
+
+    struct ManualRestoreScreen {
+        static let view = "view_manual_restore"
+        static let singleSigCard = "single_sig_card"
+        static let multiSigCard = "multi_sig_card"
+    }
 }

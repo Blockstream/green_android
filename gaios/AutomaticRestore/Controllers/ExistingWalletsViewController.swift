@@ -38,6 +38,9 @@ class ExistingWalletsViewController: UIViewController {
         showLoader()
         lblLoading.isHidden = false
         validateMnemonic()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.ExistingWalletsScreen.view
+        btnManualRestore.accessibilityIdentifier = AccessibilityIdentifiers.ExistingWalletsScreen.manualRestoreBtn
     }
 
     func setContent() {

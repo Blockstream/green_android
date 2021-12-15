@@ -19,6 +19,10 @@ class ManualRestoreViewController: UIViewController {
         setContent()
         setStyle()
         setActions()
+
+        view.accessibilityIdentifier = AccessibilityIdentifiers.ManualRestoreScreen.view
+        cardSingleSig.accessibilityIdentifier = AccessibilityIdentifiers.ManualRestoreScreen.singleSigCard
+        cardMultiSig.accessibilityIdentifier = AccessibilityIdentifiers.ManualRestoreScreen.multiSigCard
     }
 
     func setContent() {

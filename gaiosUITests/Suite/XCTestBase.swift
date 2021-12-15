@@ -43,14 +43,6 @@ class XCTestBase: XCTestCase {
             .pause(1)
             .tapRestoreWallet()
 
-        if isSingleSig {
-            RestoreWallet()
-                .tapSingleSigCard()
-        } else {
-            RestoreWallet()
-                .tapMultiSigCard()
-        }
-
         ChooseNetwork()
             .tapTestnetCard()
         
@@ -63,6 +55,24 @@ class XCTestBase: XCTestCase {
             .closeKey()
             .pause(1)
             .tapDone()
+
+        if isSingleSig {
+            ExistingWallets()
+                .pause(2)
+                .checkWalletsExistance()
+                .pause(1)
+                .tapManualRestore()
+            
+            ManualRestore()
+                .pause(1)
+                .tapSingleSigCard()
+            
+        } else {
+            ExistingWallets()
+                .pause(2)
+                .checkWalletsExistance()
+                .tapMultisig()
+        }
         
         WalletName()
             .pause(1)
@@ -72,18 +82,18 @@ class XCTestBase: XCTestCase {
             .pause(1)
             .tapNext()
             .pause(1)
-        
+
         SetPin()
             .pause(1)
             .setPin()
             .pause(1)
             .setPin()
             .tapNext()
-        
+
         WalletSuccess()
             .pause(1)
             .tapNext()
-            
+
         Overview()
             .pause(1)
     }
