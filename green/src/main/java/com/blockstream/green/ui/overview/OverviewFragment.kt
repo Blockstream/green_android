@@ -497,9 +497,11 @@ class OverviewFragment : WalletFragment<OverviewFragmentBinding>(
                 }
 
                 is ButtonActionListItem -> {
-                    AssetBottomSheetFragment().also {
-                        it.show(childFragmentManager, it.toString())
-                    }
+                    navigate(
+                        OverviewFragmentDirections.actionOverviewFragmentToChooseAccountTypeFragment(
+                            wallet = args.wallet
+                        )
+                    )
                     closeInnerAdapter()
                 }
                 is AssetListItem -> {
